@@ -1,0 +1,19 @@
+<package>
+    <description brief="CanFestival, CanOpen framewwork.">
+	CanFestival is a framework interfacing on top of can drivers (such as socketCan) to handle the CanOpen standards.
+    </description>
+    <author>http://www.canfestival.org/</author>
+    <license>LGPL</license>
+    
+    <depend package="rtt" />
+    <depend package="ocl" />
+    <depend package="eigen" />
+    <depend package="rosbuild" />
+	
+	<export>
+		<cpp cflags="-I${prefix}/include -I${prefix}/include/canfestival" lflags="-L${prefix}/lib -llibcanfestival_unix.a -llibcanfestival.a"/>
+		<rosbuild cmake_directory="${prefix}/cmake"/>
+	</export>
+    
+</package>
+

@@ -1,0 +1,18 @@
+#goal definition
+int32 type
+float64 x_des
+float64 y_des
+float64 theta_des
+---
+#result definition
+float64 x_end
+float64 y_end
+float64 theta_end
+---
+#feedback
+float64 x_current
+float64 y_current
+float64 theta_current
+float64 lin_vel
+float64 ang_vel
+

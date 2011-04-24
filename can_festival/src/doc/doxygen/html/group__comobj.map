@@ -1,0 +1,6 @@
+<map id="structs" name="structs">
+<area shape="rect" id="node1" href="$group__pdo.html" title="Process Data Object (PDO)" alt="" coords="340,5,521,35"/>
+<area shape="rect" id="node2" href="$group__emcyo.html" title="Emergency Object" alt="" coords="367,58,495,89"/>
+<area shape="rect" id="node3" href="$group__userapi.html" title="User API" alt="" coords="5,58,80,89"/>
+<area shape="rect" id="node4" href="$group__sdo.html" title="Service Data Object (SDO)" alt="" coords="341,111,520,142"/>
+</map>

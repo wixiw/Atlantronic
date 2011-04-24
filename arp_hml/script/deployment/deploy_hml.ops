@@ -1,0 +1,49 @@
+require("print");              
+require("os");
+
+import("arp_core");
+import("arp_arp_hml");
+
+
+//runScript("deployment/deploy_core.ops")
+print.log(Warning, "====================");
+print.log(Warning, "début déploiment arp_hml");
+
+loadComponent("Joystick","arp_hml::LogitechExtreme3D");
+//loadComponent("PcBoard","arp_hml::PCM3362");
+loadComponent("Can1","arp_hml::CanOpenController");
+loadComponent("Motor","arp_hml::Faulhaber3268Bx4");
+
+setActivity("Joystick",0.050,0,ORO_SCHED_OTHER);
+//setActivity("PcBoard",0.050,0,ORO_SCHED_OTHER);
+setActivity("Can1",0.050,0,ORO_SCHED_OTHER);
+setActivity("Motor",0.100,0,ORO_SCHED_OTHER);
+
+connect("Motor.inSpeedCmd", "Joystick.outY",ConnPolicy());
+addPeer("Motor", "Can1");
+
+Joystick.configure();
+//PcBoard.configure();
+//TODO comprendre pourquoi segfault ! (à mettre après Can1 pour ne pas etre embeté)
+//Motor.configure();
+Can1.configure(); 
+
+Joystick.start();
+//PcBoard.start();
+Can1.start();
+
+yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;
+yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;
+yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;
+yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;
+yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;
+yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;
+yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;
+
+Motor.configure();
+Motor.start();
+
+//Can1.prgConfigureCan1.start();
+
+print.log(Warning, "Fin déploiment arp_hml");
+print.log(Warning, "====================");

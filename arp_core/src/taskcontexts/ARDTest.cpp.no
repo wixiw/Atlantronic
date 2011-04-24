@@ -1,0 +1,83 @@
+/*
+ * ARDTest.cpp
+ *
+ *  Created on: 23 oct. 2010
+ *      Author: ard
+ */
+
+#include "ARDTest.hpp"
+#define BOOST_TEST_DYN_LINK
+#define BOOST_TEST_NO_MAIN
+#define BOOST_TEST_ALTERNATIVE_INIT_API
+#include <boost/test/unit_test.hpp>
+
+
+
+using namespace Core;
+using namespace CoreTest;
+
+ARDTest::ARDTest(const std::string& name) :
+    ARDTaskContext(name)
+{
+    //changement du chemin de propriété pour loader depuis les dossiers de tests
+    m_propertyPath = "integration-tests";
+    m_scriptPath = "integration-tests";
+    m_stateMachinePath = "integration-tests";
+
+    addOperation("coCheckEqualInt", &ARDTest::coCheckEqualInt, this, ClientThread)
+        .doc("")
+        .arg("a","fisrt operande")
+        .arg("b","second operande");
+}
+
+bool ARDTest::startHook()
+{
+    bool res = ARDTaskContext::startHook();
+
+    if( getProvider<Scripting>("scripting")->hasProgram("mainTest") )
+    {
+        getProvider<Scripting>("scripting")->startProgram("mainTest");
+        res &= true;
+    }
+    else
+    {
+        LOG(Error) << "Program mainTest does not exist"<< endlog();
+        res &= false;
+    }
+
+    return res;
+}
+
+void ARDTest::cleanupHook()
+{
+    if( getProvider<Scripting>("scripting")->hasProgram("mainTest") )
+    {
+        getProvider<Scripting>("scripting")->stopProgram("maintTest");
+    }
+
+    ARDTaskContext::cleanupHook();
+}
+
+bool ARDTest::coCheckEqualInt(int a, int b)
+{
+    bool res = false;
+    string report;
+
+    if( a==b )
+    {
+        report = "<TestLog><TestSuite name=\"" + getName() +"\"><TestCase name=\"" + getName() + "\"test_hello\"><Info file=\""
+                + __FILE__ "\" >check passed</Info></TestCase></TestSuite></TestLog>";
+        res = true;
+    }
+    else
+    {
+        report = "<TestLog><TestSuite name=\"" + getName() +"\"><TestCase name=\"" + getName() + "\"test_hello\"><Info file=\""
+                + __FILE__ "\" >check failed</Info></TestCase></TestSuite></TestLog>";
+        res = false;
+    }
+
+    LOG(Info) << report << endlog();
+
+    return res;
+}
+

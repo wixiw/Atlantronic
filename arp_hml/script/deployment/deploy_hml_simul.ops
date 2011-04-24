@@ -1,0 +1,30 @@
+
+
+import("arp_core");
+import("arp_hml");
+
+
+//require("print");              
+require("os");
+require("ros_integration");
+
+print.log(Warning, "====================");
+print.log(Warning, "début déploiment arp_hml");
+
+loadComponent("Hml","arp_hml::HmlItf");
+setActivity("Hml",0.050,0,ORO_SCHED_OTHER);
+Hml.configure();
+Hml.start();
+
+var ConnPolicy cp;
+cp.transport = 3; // ROS == 3
+cp.name_id = "/Protokrot/differential_command"; // ros topic
+stream("Hml.inDifferentialCmd", cp);
+
+var ConnPolicy cp2;
+cp2.transport = 3; // ROS == 3
+cp2.name_id = "/Protokrot/odo_hml"; // ros topic
+stream("Hml.outOdometryMeasures", cp2);
+
+print.log(Warning, "Fin déploiment arp_hml");
+print.log(Warning, "====================");

@@ -1,0 +1,18 @@
+<package>
+  <description brief="advantech_susi">
+
+     advantech_susi is a package containing the SUSI library from Advantech. It contains drivers related to the PCM-3362 board. The sources are not provided.
+
+  </description>
+  <author>ARD</author>
+  <license>non-free</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/advantech_susi</url>
+
+  <export>
+    <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -llibSUSI-3.02.so"/>
+  </export>
+
+</package>
+
+

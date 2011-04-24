@@ -1,0 +1,5 @@
+/* ARD arp_core main deployment file */
+path("/home/ard/ros/ros/../ard/arp_core/lib/orocos");
+require("print");
+loadComponent("Component1","Arp_core");
+Component1.start()

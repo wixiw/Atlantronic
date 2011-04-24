@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "cpf.dtd">
+<properties>
+  <simple name="propAutoLoadScript" type="string"><description>If non empty, the component will automatically load this script during configure() (le dossier ops est automatiquement ajouté, l'extension est mise par le soft)</description><value>can/ConfigureNodeMotor</value></simple>
+  <simple name="propAutoLoadStateMachines" type="string"><description>If non empty, the component will automatically load this state machine during configure() (le dossier fsm-osd est automatiquement ajouté, l'extension est mise par le soft)</description><value></value></simple>
+  <simple name="propEnableLog" type="boolean"><description>If set to true the composant is allowed to write in the log file, if set to false it will not log anything. Use it when a component is spamming log and this annoys you</description><value>1</value></simple>
+  <simple name="propCanOpenControllerName" type="string"><description>name of the CanOpenController this component will connect</description><value>Can1</value></simple>
+  <simple name="propNodeId" type="long"><description>CAN adress of the node</description><value>33</value></simple>
+  <simple name="propNmtTimeout" type="long"><description>Timeout before considering a node is not responding to a NMT request (in ms)</description><value>2000</value></simple>
+  <simple name="propConfigureNodeTimeout" type="long"><description>Timeout before considering configureNode has failed (in ms)</description><value>9000</value></simple>
+</properties>

@@ -1,0 +1,11 @@
+<launch>
+<node name="Simu" 		pkg="arp_master" 	type="SimuNode" 		args="" output="screen"/>
+<node name="Localizator" 	pkg="arp_master" 	type="LocalizatorNode" 	args="" output="screen"/>
+<node name="Command" 		pkg="arp_master" 	type="CommandNode" 		args="" output="screen"/>
+<node name="Teleop" 	pkg="arp_master" 	type="TeleopNode" 		args="" output="screen"/>
+<node name="MotionControl" 	pkg="arp_master" 	type="MotionControlNode" 		args="" output="screen"/>
+<node name="TinyStrat" 	pkg="arp_master" 	type="TinyStratNode" 		args="" output="screen"/>
+<!-- pas encore prêt
+<include file=$(find arp_hml)/script/deployment/hml_simul.launch"/>
+-->
+</launch>

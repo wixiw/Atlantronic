@@ -1,0 +1,15 @@
+<package>
+    <description brief="Orocos arp_hml Component package">
+        This package contains the components of the arp_hml package
+    </description>
+    <author>ARD, http://team-ard.com</author>
+    <license>BSD</license>
+    <url>http://88.191.124.77/redmine/projects/hardware/wiki</url>
+    <depend package="arp_core" />
+    <depend package="advantech_susi" />
+    <depend package="socket_can" />
+    <depend package="can_festival" />
+  	<depend package="rtt_ros_integration_arp_master_msgs"/>
+
+</package>
+

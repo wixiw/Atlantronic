@@ -1,0 +1,9 @@
+program mainTest
+{
+    coLog(2,"Bite mainTest...");
+    
+    Bite.outNbDePoils.write(11);
+    
+    coCheckEqualInt(1,2);
+}
+

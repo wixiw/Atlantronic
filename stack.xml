@@ -1,0 +1,9 @@
+<stack>
+  <description brief="ard">ard</description>
+  <author>Maintained by Advanced Robotics Design</author>
+  <license>BSD</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/ard</url>
+  <depend stack="ros" />
+  <depend stack="orocos_toolchain_ros" />
+</stack>

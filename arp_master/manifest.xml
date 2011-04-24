@@ -1,0 +1,26 @@
+<package>
+    <description brief="Orocos arp_master Component package">
+        This package contains the components of the arp_master package
+    </description>
+    <!--NOTE: set the license and author before you publish this code-->
+    <license></license>
+    <author>ARD, http://team-ard.com</author>
+    <url>http://88.191.124.77/redmine/projects/master/wiki/Wiki</url>
+  <depend package="roscpp"/>
+  <depend package="roslib"/>
+  <depend package="rosconsole"/>
+  <depend package="std_srvs"/>
+  <depend package="eigen" />
+  <depend package="actionlib" />
+  <depend package="actionlib_msgs" />
+  <depend package="arp_core" />
+  <depend package="arp_hml" />
+  
+  <rosdep name="wxwidgets"/>
+
+ <export>
+    <cpp cflags="-I${prefix}/msg_gen/cpp -I${prefix}/srv_gen/cpp"/>
+  </export>
+    
+</package>
+

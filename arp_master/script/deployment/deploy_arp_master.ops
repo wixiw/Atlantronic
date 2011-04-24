@@ -1,0 +1,6 @@
+/* ARD arp_master main deployment file */
+path("/media/DD_data/opt/ros/ard/arp_master/lib/orocos");
+require("print");
+loadComponent("Component1","Arp_master");
+loadService ("Component1","myservice");
+Component1.start()

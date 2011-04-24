@@ -1,0 +1,7 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$sdo_8c.html#a58d1f9691977617601beb9e5b4123252" title="Search for an unused line in the transfers array to store a new SDO. ie a line which value of the fie..." alt="" coords="188,5,303,35"/>
+<area shape="rect" id="node5" href="$sdo_8c.html#abb0c376b048ab2c6e0524b135b62376f" title="Search for the line, in the transfers array, which contains the beginning of the reception of a fragm..." alt="" coords="181,58,309,89"/>
+<area shape="rect" id="node7" href="$sdo_8c.html#ab9c873a15f55b29112b5527a6cc6898d" title="Initialize some fields of the structure." alt="" coords="359,137,444,167"/>
+<area shape="rect" id="node9" href="$sdo_8c.html#a42d33be015d4c4c83c73f1f0e588f481" title="Reset an unused line." alt="" coords="196,162,295,193"/>
+<area shape="rect" id="node12" href="$sdo_8c.html#ac6b5d7d1439d537da992a96644a1ca5d" title="Transmit a SDO frame on the bus bus_id." alt="" coords="207,215,284,246"/>
+</map>

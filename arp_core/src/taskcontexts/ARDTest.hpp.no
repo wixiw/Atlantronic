@@ -1,0 +1,39 @@
+/*
+ * ARDTest.hpp
+ *
+ *  Created on: 23 oct. 2010
+ *      Author: ard
+ */
+
+#ifndef ARDTESTCONTEXT_HPP_
+#define ARDTESTCONTEXT_HPP_
+
+#include "ARDTaskContext.hpp"
+
+namespace CoreTest
+{
+    /** \ingroup ARP-Core
+     *
+     * \class ARDTest
+     *
+     * Cette classe contient l'instrumentation de base utile
+     * pour tester les composants Orocos
+     */
+
+    class ARDTest: public Core::ARDTaskContext
+    {
+    public:
+        ARDTest(const std::string& name);
+
+        /** Surchargé pour démarrer le programme mainTest s'il est présent */
+        virtual bool startHook();
+        /** Surcharge pour arrêter le programme mainTest s'il est présent */
+        virtual void cleanupHook();
+
+        /** Permet l'appel a BOOST_CHECK(a==b)*/
+        virtual bool coCheckEqualInt(int a, int b);
+    };
+
+}
+
+#endif /* ARDTESTCONTEXT_HPP_ */

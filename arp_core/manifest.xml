@@ -1,0 +1,19 @@
+<package>
+    <description brief="Orocos arp_core Component package">
+        This package contains the components of the arp_core package
+    </description>
+    <author>ARD, http://team-ard.com</author>
+    <license>BSD</license>
+    <url>http://88.191.124.77/redmine/projects/core/wiki</url>    
+    <depend package="rtt" />
+    <depend package="ocl" />
+    <depend package="eigen" />
+    <depend package="rosbuild" />
+	
+	<export>
+		<cpp cflags="-I${prefix}/src" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -larp-core-gnulinux"/>
+		<rosbuild cmake_directory="${prefix}/cmake"/>
+	</export>
+    
+</package>
+
