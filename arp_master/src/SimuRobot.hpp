@@ -10,21 +10,21 @@
 
 #include <ros/ros.h>
 #include <boost/shared_ptr.hpp>
-
-#include "Geometry.hpp"
-
-#include <arp_master/Pose.h>
-#include <arp_master/Velocity.h>
-#include <arp_master/DifferentialCommand.h>
-#include <arp_master/SetPen.h>
-#include <arp_master/Odo.h>
-
 #include <wx/wx.h>
 
-#include "math/math.hpp"
+#include <math/Geometry.hpp>
+#include <math/math.hpp>
 
+//ros messages
+#include <arp_core/Pose.h>
+#include <arp_core/Velocity.h>
+#include <arp_core/DifferentialCommand.h>
+#include <arp_core/Odo.h>
+//ros services
+#include <arp_master/SetPen.h>
 
 using namespace arp_math;
+using namespace arp_core;
 using namespace arp_master;
 
 namespace arp_master

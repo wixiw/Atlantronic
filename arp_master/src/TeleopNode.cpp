@@ -1,8 +1,9 @@
 #include <ros/ros.h>
-#include <arp_master/Velocity.h>
 #include <signal.h>
 #include <termios.h>
 #include <stdio.h>
+
+#include <arp_core/Velocity.h>
 
 #define KEYCODE_R 0x43 
 #define KEYCODE_L 0x44
@@ -10,7 +11,7 @@
 #define KEYCODE_D 0x42
 #define KEYCODE_Q 0x71
 
-using namespace arp_master;
+using namespace arp_core;
 
 namespace arp_master
 {
@@ -31,7 +32,7 @@ private:
   ros::Publisher vel_pub_;
   
 };
-}
+
 
 Teleop::Teleop():
   linear_(0),
@@ -53,19 +54,6 @@ void quit(int sig)
   tcsetattr(kfd, TCSANOW, &cooked);
   ros::shutdown();
   exit(0);
-}
-
-
-int main(int argc, char** argv)
-{
-  ros::init(argc, argv, "teleop_robot");
-  Teleop teleop_robot;
-
-  signal(SIGINT,quit);
-
-  teleop_robot.keyLoop();
-  
-  return(0);
 }
 
 
@@ -139,6 +127,17 @@ void Teleop::keyLoop()
 
   return;
 }
+}
 
+using namespace arp_master;
+int main(int argc, char** argv)
+{
+  ros::init(argc, argv, "teleop_robot");
+  Teleop teleop_robot;
 
+  signal(SIGINT,quit);
 
+  teleop_robot.keyLoop();
+
+  return(0);
+}

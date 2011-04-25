@@ -4,7 +4,7 @@
 
 # add the orocos dependency
 #
-#add_orocos()
+add_orocos()
 
 find_package(wxWidgets REQUIRED)
 include(${wxWidgets_USE_FILE})

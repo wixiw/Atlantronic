@@ -10,10 +10,14 @@
 
 #include <ros/ros.h>
 #include <actionlib/server/simple_action_server.h>
-#include <arp_master/Velocity.h>
-#include <arp_master/Pose.h>
 #include <arp_master/OrderAction.h>
-#include "math/Geometry.hpp"
+
+#include <arp_core/Velocity.h>
+#include <arp_core/Pose.h>
+
+#include <math/Geometry.hpp>
+
+using namespace arp_core;
 
 namespace arp_master
 {

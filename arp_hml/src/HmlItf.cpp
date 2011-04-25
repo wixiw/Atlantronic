@@ -19,9 +19,9 @@ HmlItf::HmlItf(const std::string& name):
     attrOdometers()
 {
     //TODO WLA : workaround en attendant de trouver dans quel dossier on est lancé dans ROS
-    attrPropertyPath = "/opt/ros/ard/arp_hml/script/conf";
-    attrScriptPath = "/opt/ros/ard/arp_hml/script/ops";
-    attrStateMachinePath = "/opt/ros/ard/arp_hml/script/osd";
+    attrPropertyPath = "/opt/ros/ard/arp_hml/script/orocos/conf";
+    attrScriptPath = "/opt/ros/ard/arp_hml/script/orocos/ops";
+    attrStateMachinePath = "/opt/ros/ard/arp_hml/script/orocos/osd";
 
     addAttribute("attrCurrentCmd", attrCurrentCmd);
     addAttribute("attrOdometers", attrOdometers);

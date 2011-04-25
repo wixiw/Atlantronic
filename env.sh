@@ -5,5 +5,5 @@ ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:`rosstack find ard`/arp_core
 ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:`rosstack find ard`/arp_hml
 ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:`rosstack find ard`/advantech_susi
 ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:`rosstack find ard`/arp_master
-ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:`rosstack find ard`/rtt_ros_integration_arp_master_msgs
+ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:`rosstack find ard`/rtt_ros_integration_arp_core_msgs
 ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:`rosstack find ard`/rtt_ros_integration_actionlib_msgs

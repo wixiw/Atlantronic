@@ -8,15 +8,18 @@
 #ifndef ARP_MASTER_LOCALIZATOR_HPP
 #define ARP_MASTER_LOCALIZATOR_HPP
 
-#include "ros/ros.h"
-
-#include <arp_master/Odo.h>
-#include <arp_master/Pose.h>
-#include <arp_master/Spawn.h>
-
+#include <ros/ros.h>
 #include <sstream>
 
-#include "math/Geometry.hpp"
+#include <math/Geometry.hpp>
+
+//ros messages
+#include <arp_core/Odo.h>
+#include <arp_core/Pose.h>
+//ros services
+#include <arp_master/Spawn.h>
+
+using namespace arp_core;
 
 namespace arp_master
 {

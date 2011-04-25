@@ -1,0 +1,3 @@
+<launch>
+<node name="ARP_HML" pkg="ocl" type="deployer-gnulinux" args="-s $(find arp_hml)/script/orocos/deployment/deploy_hml.ops --" output="screen"/>
+</launch>

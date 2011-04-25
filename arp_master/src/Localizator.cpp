@@ -3,14 +3,13 @@
 using namespace arp_master;
 using namespace arp_math;
 
-// TODO Passer ces paramètres en param ROS
+//FIXME 39 Passer ces paramètres en param ROS
 #define DEFAULT_BASE_LINE 0.4   // distance between wheels
 #define DEFAULT_WHEEL_DIAM 0.07 // wheel diameter
 
 
-namespace arp_master
-{
-  Localizator::Localizator():
+using namespace arp_master;
+Localizator::Localizator():
   nh(),
   odo_sub(),
   pose_pub(),
@@ -22,7 +21,7 @@ namespace arp_master
   duration(),
   trans(),
   orient(0.0)
-  {
+{
     odo_sub = nh.subscribe("Protokrot/odo", 1, &Localizator::odoCallback, this);
     pose_pub = nh.advertise<Pose>("Localizator/pose", 1);
 #define PI 3.14159265
@@ -34,16 +33,16 @@ namespace arp_master
     last_time = ros::WallTime::now();
     last_odo_left = 0.0;
     last_odo_right = 0.0;
-  }
+}
 
-  Localizator::~Localizator()
-  {
+Localizator::~Localizator()
+{
     ;
-  }
+}
 
 
-  bool Localizator::respawnCallback(Spawn::Request& req, Spawn::Response& res)
-  {
+bool Localizator::respawnCallback(Spawn::Request& req, Spawn::Response& res)
+{
     ROS_INFO("Respawing ARDLocalizator to x=%f, y=%f and theta=%f", req.x, req.y, req.theta);
     trans.x() = req.x;
     trans.y() = req.y;
@@ -52,10 +51,10 @@ namespace arp_master
     last_odo_left = 0.0;
     last_odo_right = 0.0;
     return true;
-  }
+}
 
-  void Localizator::odoCallback(const OdoConstPtr& o)
-  {
+void Localizator::odoCallback(const OdoConstPtr& o)
+{
     ros::WallTime t = ros::WallTime::now();
     double dt = (t - last_time).toSec();
 
@@ -87,5 +86,4 @@ namespace arp_master
     last_time = t;
     last_odo_right = odo_right;
     last_odo_left  = odo_left;
-  }
 }

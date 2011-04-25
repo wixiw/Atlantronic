@@ -56,8 +56,9 @@ create_folder_structure()
 {
 	echo "[*] Creating ARD directories structure..."
 	mkdir $package_name/cmake $package_name/doc $package_name/test $package_name/ressource $package_name/src $package_name/script $package_name/bin
-	mkdir $package_name/script/deployment $package_name/script/linux $package_name/script/conf $package_name/script/ops $package_name/script/osd
-
+	mkdir $package_name/script/orocos $package_name/script/linux $package_name/script/ros
+	mkdir $package_name/script/orocos/deployment $package_name/script/orocos/conf $package_name/script/orocos/ops $package_name/script/orocos/osd
+	mkdir $package_name/script/ros/launch $package_name/srv $package_name/script/msg
 	echo "[*] Moving default sources into src folder ..."
 	mv $package_name/*.?pp $package_name/src
 }

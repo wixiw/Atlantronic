@@ -1,14 +1,11 @@
 #include "SimuRobot.hpp"
 
-#include <wx/wx.h>
-
-
-// TODO Passer ces paramètres en param ROS
+//FIXME 39 Passer ces paramètres en param ROS
 #define DEFAULT_BASE_LINE 0.4   // distance between wheels
 #define DEFAULT_WHEEL_DIAM 0.07 // wheel diameter
 
-namespace arp_master
-{
+using namespace arp_core;
+using namespace arp_master;
 
 SimuRobot::SimuRobot(const ros::NodeHandle& nh, const wxImage& robot_image, const Vector2& pos, double orient, double one_meter_in_pixel)
 : nh_(nh)
@@ -181,7 +178,5 @@ void SimuRobot::paint(wxDC& dc)
                 canvas_x_ - (robot_.GetWidth() / 2), 
                 canvas_y_ - (robot_.GetHeight() / 2),
                 true);
-
-}
 
 }

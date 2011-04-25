@@ -1,7 +1,6 @@
 #include "CircularTraj.hpp"
 
-namespace arp_master
-{
+using namespace arp_master;
 
 CircularTraj::CircularTraj():
   direction_(FORWARD),
@@ -118,7 +117,7 @@ std::string CircularTraj::printPoints(Color col, Direction dir)
         for(unsigned int i = 0 ; i < pts_.size() ; i++)
         {
           pt = pts_[pts_.size() - 1 - i].get(col, BACKWARD);
-          ss << "  [" << pts_.size() - 1 - i << "] " << pt << std::endl;              
+          ss << "  [" << /*pts_.size() - 1 - i <<*/ "] " << pt << std::endl;
         }
         break;
     }
@@ -163,5 +162,4 @@ Point CircularTraj::getNextPoint(std::vector<WayPoint>::iterator & it, Color col
   return pt;
 }
 
-}
 

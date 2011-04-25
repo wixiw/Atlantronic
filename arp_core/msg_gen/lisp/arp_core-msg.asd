@@ -1,0 +1,21 @@
+
+(cl:in-package :asdf)
+
+(defsystem "arp_core-msg"
+  :depends-on (:roslisp-msg-protocol :roslisp-utils )
+  :components ((:file "_package")
+    (:file "Velocity" :depends-on ("_package_Velocity"))
+    (:file "_package_Velocity" :depends-on ("_package"))
+    (:file "Obstacle" :depends-on ("_package_Obstacle"))
+    (:file "_package_Obstacle" :depends-on ("_package"))
+    (:file "DifferentialCommand" :depends-on ("_package_DifferentialCommand"))
+    (:file "_package_DifferentialCommand" :depends-on ("_package"))
+    (:file "Pose" :depends-on ("_package_Pose"))
+    (:file "_package_Pose" :depends-on ("_package"))
+    (:file "StartColor" :depends-on ("_package_StartColor"))
+    (:file "_package_StartColor" :depends-on ("_package"))
+    (:file "Start" :depends-on ("_package_Start"))
+    (:file "_package_Start" :depends-on ("_package"))
+    (:file "Odo" :depends-on ("_package_Odo"))
+    (:file "_package_Odo" :depends-on ("_package"))
+  ))

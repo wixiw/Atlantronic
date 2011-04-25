@@ -9,7 +9,7 @@
     <depend package="advantech_susi" />
     <depend package="socket_can" />
     <depend package="can_festival" />
-  	<depend package="rtt_ros_integration_arp_master_msgs"/>
+  	<depend package="rtt_ros_integration_arp_core_msgs"/>
 
 </package>
 

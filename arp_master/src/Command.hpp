@@ -8,13 +8,14 @@
 #ifndef ARP_MASTER_COMMAND_HPP
 #define ARP_MASTER_COMMAND_HPP
 
-#include "ros/ros.h"
+#include <ros/ros.h>
 
-#include <arp_master/Velocity.h>
-#include <arp_master/DifferentialCommand.h>
+#include <arp_core/Velocity.h>
+#include <arp_core/DifferentialCommand.h>
 
 #include <sstream>
 
+using namespace arp_core;
 
 namespace arp_master
 {

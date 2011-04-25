@@ -9,11 +9,10 @@
 #define HMLITF_HPP_
 
 #include <taskcontexts/ARDTaskContext.hpp>
-#include <arp_master/DifferentialCommand.h>
-#include <arp_master/Odo.h>
+#include <arp_core/DifferentialCommand.h>
+#include <arp_core/Odo.h>
 
 using namespace arp_core;
-using namespace arp_master;
 
 namespace arp_hml
 {

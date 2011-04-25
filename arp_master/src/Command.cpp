@@ -1,27 +1,27 @@
 #include "Command.hpp"
 
-// TODO Passer ces paramètres en param ROS
+//FIXME 39 Passer ces paramètres en param ROS
 #define DEFAULT_BASE_LINE 0.4   // distance between wheels
 #define DEFAULT_WHEEL_DIAM 0.07 // wheel diameter
 
-namespace arp_master
-{
-  Command::Command():
+using namespace arp_master;
+
+Command::Command():
     nh(),
     velocity_sub(),
     command_pub()
-  {  
+{
     velocity_sub = nh.subscribe("Command/velocity", 1, &Command::velocityCallback, this);
     command_pub = nh.advertise<DifferentialCommand>("Protokrot/differential_command", 1);
-  }
+}
 
-  Command::~Command()
-  {
+Command::~Command()
+{
     ;
-  }
+}
 
-  void Command::velocityCallback(const VelocityConstPtr& v)
-  {
+void Command::velocityCallback(const VelocityConstPtr& v)
+{
     double lin_vel = v->linear;
     double ang_vel = v->angular;
 
@@ -34,6 +34,6 @@ namespace arp_master
     command_pub.publish(c);
 
     //ROS_INFO("lin_vel=%f, ang_vel=%f, v_left=%f, v_right=%f", lin_vel, ang_vel, v_left, v_right);
-  }
 }
+
 

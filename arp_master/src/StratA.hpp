@@ -13,15 +13,18 @@
 #include <actionlib/client/terminal_state.h>
 
 #include <arp_master/OrderAction.h>
-#include <arp_master/Obstacle.h>
-#include <arp_master/StartColor.h>
-#include <arp_master/Start.h>
+//ros messages
+#include <arp_core/Obstacle.h>
+#include <arp_core/StartColor.h>
+#include <arp_core/Start.h>
+//ros services
 #include <arp_master/Spawn.h>
 
-#include "math/math.hpp"
+#include <math/math.hpp>
 #include "WayPoint.hpp"
 #include "CircularTraj.hpp"
      
+using namespace arp_core;
 
 namespace arp_master
 {

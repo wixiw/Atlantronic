@@ -19,6 +19,11 @@ project(@PROJECT_NAME@)
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 rosbuild_init()
      
+#uncomment if you have defined messages
+#rosbuild_genmsg()
+#uncomment if you have defined services
+#rosbuild_gensrv()
+
 #ARD generic configuration
 include(cmake/ARP_common_functions.cmake)
 configure_ard_project()
