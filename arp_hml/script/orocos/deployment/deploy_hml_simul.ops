@@ -2,13 +2,14 @@
 
 import("arp_core");
 import("arp_hml");
-
-
-//require("print");              
+          
 require("os");
 require("ros_integration");
 
 print.log(Warning, "====================");
+
+runScript("/opt/ros/ard/arp_core/script/orocos/deployment/deploy_arp_core.ops")
+
 print.log(Warning, "début déploiment arp_hml");
 
 loadComponent("Hml","arp_hml::HmlItf");
@@ -26,5 +27,9 @@ cp2.transport = 3; // ROS == 3
 cp2.name_id = "/Protokrot/odo_hml"; // ros topic
 stream("Hml.outOdometryMeasures", cp2);
 
-print.log(Warning, "Fin déploiment arp_hml");
+print.log(Warning, "fin déploiment arp_hml");
 print.log(Warning, "====================");
+
+addPeer ("Reporting","Hml")
+Reporting.reportData ("Hml","attrCurrentCmd")
+Reporting.start();

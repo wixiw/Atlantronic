@@ -41,8 +41,9 @@ void HmlItf::updateHook()
     }
     else
     {
-        attrCurrentCmd.v_left = 0;
-        attrCurrentCmd.v_right = 0;
+        //on fait quoi dans ce cas ? rien ? on continue comme avant ?
+        //attrCurrentCmd.v_left = 0;
+        //attrCurrentCmd.v_right = 0;
     }
 
     double dt = getPeriod();
