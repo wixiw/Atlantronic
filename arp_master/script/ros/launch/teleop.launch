@@ -5,7 +5,5 @@
 <node name="Teleop" 	pkg="arp_master" 	type="TeleopNode" 		args="" output="screen"/>
 <node name="MotionControl" 	pkg="arp_master" 	type="MotionControlNode" 		args="" output="screen"/>
 <node name="TinyStrat" 	pkg="arp_master" 	type="TinyStratNode" 		args="" output="screen"/>
-<!-- pas encore prêt
-<include file=$(find arp_hml)/script/deployment/hml_simul.launch"/>
--->
+<include file="$(find arp_hml)/script/ros/launch/hml_simul.launch"/>
 </launch>
