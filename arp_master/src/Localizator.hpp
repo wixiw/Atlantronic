@@ -8,27 +8,30 @@
 #ifndef ARP_MASTER_LOCALIZATOR_HPP
 #define ARP_MASTER_LOCALIZATOR_HPP
 
-#include <ros/ros.h>
-#include <sstream>
+#include "ros/ros.h"
 
-#include <math/Geometry.hpp>
-
-//ros messages
 #include <arp_core/Odo.h>
 #include <arp_core/Pose.h>
-//ros services
 #include <arp_master/Spawn.h>
 
-using namespace arp_core;
+#include <sstream>
+
+#include "math/Geometry.hpp"
 
 namespace arp_master
 {
   /**
+  * \ingroup arp_master
+  *
+  * \class Localizator
+  *
+  * \brief Use odo to estimate pose
+  *
   * At the moment Localizator class is pretty simple.
   * It just exists to avoid having code in Node file.
   *
   * When you instantiate a Localizator, your Localizator will subscribe to 
-  * a Odo topic named "Protokrot/odo" and will publish
+  * an Odo topic named "Protokrot/odo" and will publish
   * a Pose on a topic named "Localizator/pose".
   * Localizator provide also a respawnService, pretty usefull for resetting.
   */
@@ -90,14 +93,26 @@ namespace arp_master
     arp_math::Rotation2 orient;
 
     /**
+    * Distance in meters between wheels.
+    */
+    double base_line;
+
+    /**
+    * Diameter in meters.
+    */
+    double wheel_diameter;
+
+    /**
     * Called when resetting service used called
+    * \returns success boolean
     */
     bool respawnCallback(Spawn::Request& req, Spawn::Response& res);
 
     /**
     * Called when a new odo message is received
+    * \returns succes boolean
     */
-    void odoCallback(const OdoConstPtr& o);
+    void odoCallback(const arp_core::OdoConstPtr& o);
   };
 }
 

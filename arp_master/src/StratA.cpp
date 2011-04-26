@@ -1,6 +1,7 @@
 #include "StratA.hpp"
 
 using namespace arp_math;
+using namespace arp_core;
 using namespace arp_master;
 
 
@@ -20,9 +21,7 @@ StratA::StratA():
 
 StratA::~StratA()
 {
-  ac_.cancelAllGoals();
-  ac_.stopTrackingGoal();
-  ros::shutdown();
+  shutDown();
 }
 
 void StratA::waitForServer()
@@ -56,12 +55,11 @@ void StratA::go()
 {
 
   ROS_INFO("Waiting for start");
-  ROS_INFO("TIPS (open a new terminal) :");
-  ROS_INFO("* Choose color with :");
-  ROS_INFO("\trostopic pub -1 /color arp_core/StartColor -- \"red\"");
-  ROS_INFO("\tor rostopic pub -1 /color arp_core/StartColor -- \"blue\"");
-  ROS_INFO("* Start with : rostopic pub -1 /start arp_core/Start -- 1");
-  ROS_INFO("* Simule obstacle with : rostopic pub -1 /obstacle arp_core/Obstacle -- 1");
+  ROS_INFO("TIPS :");
+  ROS_INFO(" in new terminal type, choose color with : rostopic pub -1 /color arp_master/StartColor -- \"red\"");
+  ROS_INFO("   or rostopic pub -1 /color arp_master/StartColor -- \"blue\"");
+  ROS_INFO(" Start with : rostopic pub -1 /start arp_master/Start -- 1");
+  ROS_INFO(" Simule obstacle with : rostopic pub -1 /obstacle arp_master/Obstacle -- 1");
 
   while(!start_)
   {
@@ -84,16 +82,11 @@ void StratA::go()
 
     if( actionFinished_ )
     {
-      Point pt;
+      arp_master::Point pt;
       pt = ct_.getNextPoint();
       std::stringstream ss;
-      //TODO BMO
-      ss << "WLA to BMO: j'arrive pas à faire compiler ça :( !";
-      /*
-      ss << "Next Goal Point is : " << pt;
-      */
-      ROS_INFO("%s", ss.str().c_str() );
-
+      //ss << "Next Goal Point is : " << pt;
+      //ROS_INFO("%s", ss.str().c_str() );
 
       // send a goal to the action
       arp_master::OrderGoal goal;
@@ -111,6 +104,12 @@ void StratA::go()
   ROS_INFO("Time out !!");
   ac_.cancelAllGoals();
 
+}
+
+void StratA::shutDown()
+{
+  ac_.cancelAllGoals();
+  ac_.stopTrackingGoal();
 }
 
 void StratA::obstacleCallback(const ObstacleConstPtr& c)
@@ -186,3 +185,4 @@ void StratA::doneCb(const actionlib::SimpleClientGoalState& state,
   ROS_INFO("Action finished: %s",state.toString().c_str());
   actionFinished_ = true;
 }
+

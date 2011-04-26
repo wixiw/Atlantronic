@@ -1,11 +1,11 @@
 #include "SimuRobot.hpp"
 
-//FIXME 39 Passer ces paramètres en param ROS
-#define DEFAULT_BASE_LINE 0.4   // distance between wheels
-#define DEFAULT_WHEEL_DIAM 0.07 // wheel diameter
+#include <wx/wx.h>
 
 using namespace arp_core;
+
 using namespace arp_master;
+
 
 SimuRobot::SimuRobot(const ros::NodeHandle& nh, const wxImage& robot_image, const Vector2& pos, double orient, double one_meter_in_pixel)
 : nh_(nh)
@@ -14,39 +14,43 @@ SimuRobot::SimuRobot(const ros::NodeHandle& nh, const wxImage& robot_image, cons
 , orient_(orient)
 , old_pos_(pos)
 , old_orient_(orient)
+, v_left_(0.0)
+, v_right_(0.0)
+, lin_vel_(0.0)
+, ang_vel_(0.0)
+, meter_(one_meter_in_pixel)
+, pen_on_(true)
+, pen_(wxColour(DEFAULT_PEN_R, DEFAULT_PEN_G, DEFAULT_PEN_B))
 , odo_left_(0.0)
 , odo_right_(0.0)
 , canvas_x_(0.0)
 , canvas_y_(0.0)
 , old_canvas_x_(0.0)
 , old_canvas_y_(0.0)
-, lin_vel_(0.0)
-, ang_vel_(0.0)
-, meter_(one_meter_in_pixel)
-, pen_on_(true)
-, pen_(wxColour(DEFAULT_PEN_R, DEFAULT_PEN_G, DEFAULT_PEN_B))
 {
   pen_.SetWidth(3);
   robot_ = wxBitmap(robot_image_);
-
-  // Parameters
-  nh_.setParam("base_line",      DEFAULT_BASE_LINE);
-  nh_.setParam("wheel_diameter", DEFAULT_WHEEL_DIAM);
 
   // Suscribers
   differential_command_sub_ = nh_.subscribe("differential_command", 1, &SimuRobot::commandCallback, this);
 
   // Publishers
-  pose_pub_ = nh_.advertise<Pose>("pose", 1);
-  odo_pub_ = nh_.advertise<Odo>("odo", 1);
+  pose_pub_ = nh_.advertise<arp_core::Pose>("pose", 1);
+  odo_pub_ = nh_.advertise<arp_core::Odo>("odo", 1);
 
   // Services
   set_pen_srv_ = nh_.advertiseService("set_pen", &SimuRobot::setPenCallback, this);
- 
+
+  // Parameters
+  base_line      = 0.4;
+  wheel_diameter = 0.07;
+  nh_.setParam("/Protokrot/base_line", base_line);
+  nh_.setParam("/Protokrot/wheel_diameter", wheel_diameter);
+
 }
 
 
-void SimuRobot::commandCallback(const DifferentialCommandConstPtr& c)
+void SimuRobot::commandCallback(const arp_core::DifferentialCommandConstPtr& c)
 {
   last_command_time_ = ros::WallTime::now();
   v_left_ = c->v_left;
@@ -72,7 +76,7 @@ bool SimuRobot::setPenCallback(SetPen::Request& req, SetPen::Response&)
 }
 
 
-void SimuRobot::update(double dt, wxMemoryDC& path_dc, wxColour background_color, float canvas_width, float canvas_height)
+void SimuRobot::update(double dt, wxMemoryDC& path_dc, float canvas_width, float canvas_height)
 {
   // Maintient de la commande pendant 0.2 seconde
   if (ros::WallTime::now() - last_command_time_ > ros::WallDuration(0.2))
@@ -83,8 +87,8 @@ void SimuRobot::update(double dt, wxMemoryDC& path_dc, wxColour background_color
 
 
   // Calcul du Twist
-  lin_vel_ = 0.25 * ( v_right_ + v_left_ ) * DEFAULT_WHEEL_DIAM;
-  ang_vel_ = 0.50 * ( v_right_ - v_left_ ) * DEFAULT_WHEEL_DIAM / DEFAULT_BASE_LINE;
+  lin_vel_ = 0.25 * ( v_right_ + v_left_ ) * wheel_diameter;
+  ang_vel_ = 0.50 * ( v_right_ - v_left_ ) * wheel_diameter / base_line;
 
 
   // Calcul de la position réelle (integration)
@@ -98,8 +102,8 @@ void SimuRobot::update(double dt, wxMemoryDC& path_dc, wxColour background_color
   double ang_vel_odo = ang_vel_;
 
   // On simule des odo (ils sont suposés parfaits)
-  double v_left_odo  = (2.0 * lin_vel_odo + DEFAULT_BASE_LINE * ang_vel_odo ) / DEFAULT_WHEEL_DIAM;
-  double v_right_odo = (2.0 * lin_vel_odo - DEFAULT_BASE_LINE * ang_vel_odo ) / DEFAULT_WHEEL_DIAM;
+  double v_left_odo  = (2.0 * lin_vel_odo + base_line * ang_vel_odo ) / wheel_diameter;
+  double v_right_odo = (2.0 * lin_vel_odo - base_line * ang_vel_odo ) / wheel_diameter;
   odo_right_ += v_left_odo  * dt;
   odo_left_  += v_right_odo * dt;
   
@@ -180,3 +184,5 @@ void SimuRobot::paint(wxDC& dc)
                 true);
 
 }
+
+

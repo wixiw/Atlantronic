@@ -1,9 +1,11 @@
 #include "TinyStrat.hpp"
-#include <math/math.hpp>
+
 
 using namespace arp_core;
 using namespace arp_math;
+        
 using namespace arp_master;
+
 
 TinyStrat::TinyStrat():
   start_(false),
@@ -112,6 +114,4 @@ void TinyStrat::startCallback(const StartConstPtr& s)
     }
   }
 }
-
-
 

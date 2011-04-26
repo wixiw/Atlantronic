@@ -5,12 +5,11 @@
 #include <ctime>
 
 
-namespace arp_master
-{
+using namespace arp_master;
 
-SimuFrame::SimuFrame(wxWindow* parent)
-: wxFrame(parent, 
-          wxID_ANY, 
+SimuFrame::SimuFrame()
+: wxFrame(NULL,
+          wxID_ANY,
           wxT("ARDSimulator"), 
           wxDefaultPosition, 
           wxSize(table_length_in_pixel, table_width_in_pixel),
@@ -118,7 +117,6 @@ void SimuFrame::updateRobot()
   last_robot_update_ = t;
   mRobot->update(dt, 
                  path_dc_, 
-                 path_dc_.GetBackground().GetColour(), 
                  table_length_in_pixel/one_meter_in_pixel, 
                  table_width_in_pixel/one_meter_in_pixel );
 
@@ -132,4 +130,3 @@ bool SimuFrame::clearCallback(std_srvs::Empty::Request&, std_srvs::Empty::Respon
   return true;
 }
 
-}

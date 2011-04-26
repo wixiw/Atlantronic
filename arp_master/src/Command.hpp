@@ -15,12 +15,17 @@
 
 #include <sstream>
 
-using namespace arp_core;
 
 namespace arp_master
 {
 
   /**
+  * \ingroup arp_master
+  *
+  * \class Command
+  *
+  * \brief Use twist to compute differential command
+  *
   * At the moment Command class is pretty simple.
   * It just exists to avoid having code in Node file.
   *
@@ -53,7 +58,18 @@ namespace arp_master
       /**
       * This callback do stuff every time Velocity message is reveived.
       */
-      void velocityCallback(const VelocityConstPtr& v);
+      void velocityCallback(const arp_core::VelocityConstPtr& v);
+
+      /**
+      * Distance in meters between wheels.
+      */
+      double base_line;
+
+      /**
+      * Diameter in meters.
+      */
+      double wheel_diameter;
+
   };
 
 }

@@ -1,9 +1,9 @@
 #include <ros/ros.h>
+#include <arp_core/Velocity.h>
+
 #include <signal.h>
 #include <termios.h>
 #include <stdio.h>
-
-#include <arp_core/Velocity.h>
 
 #define KEYCODE_R 0x43 
 #define KEYCODE_L 0x44
@@ -11,7 +11,6 @@
 #define KEYCODE_D 0x42
 #define KEYCODE_Q 0x71
 
-using namespace arp_core;
 
 namespace arp_master
 {
@@ -32,9 +31,9 @@ private:
   ros::Publisher vel_pub_;
   
 };
+}
 
-
-Teleop::Teleop():
+arp_master::Teleop::Teleop():
   linear_(0),
   angular_(0),
   l_scale_(0.5),
@@ -43,7 +42,7 @@ Teleop::Teleop():
   nh_.param("scale_angular", a_scale_, a_scale_);
   nh_.param("scale_linear", l_scale_, l_scale_);
 
-  vel_pub_ = nh_.advertise<Velocity>("Command/velocity", 1);
+  vel_pub_ = nh_.advertise<arp_core::Velocity>("Command/velocity", 1);
 }
 
 int kfd = 0;
@@ -57,7 +56,20 @@ void quit(int sig)
 }
 
 
-void Teleop::keyLoop()
+int main(int argc, char** argv)
+{
+  ros::init(argc, argv, "teleop_robot");
+  arp_master::Teleop teleop_robot;
+
+  signal(SIGINT,quit);
+
+  teleop_robot.keyLoop();
+  
+  return(0);
+}
+
+
+void arp_master::Teleop::keyLoop()
 {
   char c;
   bool dirty=false;
@@ -114,7 +126,7 @@ void Teleop::keyLoop()
     }
    
 
-    Velocity vel;
+    arp_core::Velocity vel;
     vel.angular = a_scale_*angular_;
     vel.linear = l_scale_*linear_;
     if(dirty ==true)
@@ -127,17 +139,6 @@ void Teleop::keyLoop()
 
   return;
 }
-}
 
-using namespace arp_master;
-int main(int argc, char** argv)
-{
-  ros::init(argc, argv, "teleop_robot");
-  Teleop teleop_robot;
 
-  signal(SIGINT,quit);
 
-  teleop_robot.keyLoop();
-
-  return(0);
-}
