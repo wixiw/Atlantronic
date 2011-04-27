@@ -16,8 +16,8 @@ then
 	echo -e $JAUNE "run -s script/orocos/deployment/deploy_hml.ops" $NORMAL
 	gdb `rospack find ocl`/install/bin/deployer-gnulinux
 else
-	#rosrun ocl deployer-gnulinux -s script/orocos/deployment/deploy_hml.ops	
-	rosrun ocl deployer-gnulinux -s script/orocos/deployment/deploy_hml_simul.ops	
+	rosrun ocl deployer-gnulinux -s script/orocos/deployment/deploy_protokrot.ops	
+	#rosrun ocl deployer-gnulinux -s script/orocos/deployment/deploy_hml_simul.ops	
 fi
 
 

@@ -1,18 +1,14 @@
-
-
 import("arp_core");
 import("arp_hml");
           
 require("os");
 require("ros_integration");
 
-print.log(Warning, "====================");
-
 runScript("/opt/ros/ard/arp_core/script/orocos/deployment/deploy_arp_core.ops")
-
+print.log(Warning, "====================");
 print.log(Warning, "début déploiment arp_hml");
 
-loadComponent("Hml","arp_hml::HmlItf");
+loadComponent("Hml","arp_hml::ProtokrotItf");
 setActivity("Hml",0.050,0,ORO_SCHED_OTHER);
 Hml.configure();
 Hml.start();

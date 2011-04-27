@@ -21,6 +21,16 @@ extern UNS32 FrontSteering_FaulhaberCommand;		/* Mapped at index 0x2210, subinde
 extern UNS8 FrontSteering_FaulHaberCommandReturn;		/* Mapped at index 0x2210, subindex 0x07 */
 extern UNS8 FrontSteering_FaulHaberCommandReturnCode;		/* Mapped at index 0x2210, subindex 0x08 */
 extern UNS32 FrontSteering_FaulHaberCommandReturnParameter;		/* Mapped at index 0x2210, subindex 0x09 */
+extern INTEGER32 LeftDriving_MeasuredSpeed;		/* Mapped at index 0x2320, subindex 0x01 */
+extern UNS16 LeftDriving_Ds402State;		/* Mapped at index 0x2320, subindex 0x02 */
+extern INTEGER32 LeftDriving_MeasuredPosition;		/* Mapped at index 0x2320, subindex 0x03 */
+extern INTEGER16 LeftDriving_MeasuredCurrent;		/* Mapped at index 0x2320, subindex 0x04 */
+extern UNS32 LeftDriving_FaulhaberCommandParameter;		/* Mapped at index 0x2320, subindex 0x05 */
+extern UNS8 LeftDriving_FaulhaberCommand;		/* Mapped at index 0x2320, subindex 0x06 */
+extern UNS8 LeftDriving_FaulHaberCommandReturn;		/* Mapped at index 0x2320, subindex 0x07 */
+extern UNS8 LeftDriving_FaulHaberCommandReturnCode;		/* Mapped at index 0x2320, subindex 0x08 */
+extern UNS32 LeftDriving_FaulHaberCommandReturnParameter;		/* Mapped at index 0x2320, subindex 0x09 */
+extern UNS8 LeftDriving_Undefined;		/* Mapped at index 0x2320, subindex 0x0A */
 extern INTEGER32 RightDriving_MeasuredSpeed;		/* Mapped at index 0x2330, subindex 0x01 */
 extern UNS16 RightDriving_Ds402State;		/* Mapped at index 0x2330, subindex 0x02 */
 extern INTEGER32 RightDriving_MeasuredPosition;		/* Mapped at index 0x2330, subindex 0x03 */

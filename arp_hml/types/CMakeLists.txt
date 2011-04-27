@@ -1,1 +1,1 @@
-orocos_component(arp_hml-typekit HMLTypeKit.cpp)
+orocos_typekit(arp_hml-typekit HMLTypeKit.cpp)

@@ -16,9 +16,9 @@ ARDTaskContext::ARDTaskContext(const std::string& name) :
     propAutoLoadScript(""),
     propAutoLoadStateMachines(""),
     propEnableLog(true),
-    attrPropertyPath("script/conf"),
-    attrScriptPath("script/ops"),
-    attrStateMachinePath("script/osd"),
+    attrPropertyPath("script/orocos/conf"),
+    attrScriptPath("script/orocos/ops"),
+    attrStateMachinePath("script/orocos/osd"),
     /* TODO logger(dynamic_cast<OCL::logging::Category*>(&log4cpp::Category::getInstance("ard")))*/
     logger(name)
 {

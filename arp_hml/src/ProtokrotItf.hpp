@@ -1,12 +1,12 @@
 /*
- * HmlItf.hpp
+ * ProtokrotItf.hpp
  *
  *  Created on: 10 april 2011
  *      Author: wla
  */
 
-#ifndef HMLITF_HPP_
-#define HMLITF_HPP_
+#ifndef PROTOKROTITF_HPP_
+#define PROTOKROTITF_HPP_
 
 #include <taskcontexts/ARDTaskContext.hpp>
 #include <arp_core/DifferentialCommand.h>
@@ -17,10 +17,10 @@ using namespace arp_core;
 namespace arp_hml
 {
 
-    class HmlItf: public ARDTaskContext
+    class ProtokrotItf: public ARDTaskContext
     {
     public:
-        HmlItf(const std::string& name);
+    	ProtokrotItf(const std::string& name);
         void updateHook();
 
         DifferentialCommand attrCurrentCmd;

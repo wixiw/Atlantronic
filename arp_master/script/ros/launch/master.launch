@@ -4,5 +4,5 @@
 <node name="Command" 		pkg="arp_master" 	type="CommandNode" 		args="" output="screen"/>
 <node name="MotionControl" 	pkg="arp_master" 	type="MotionControlNode" 		args="" output="screen"/>
 <node name="StratA" 	pkg="arp_master" 	type="StratANode" 		args="" output="screen"/>
-<include file="$(find arp_hml)/script/ros/launch/hml_simul.launch"/>
+<!--<include file="$(find arp_hml)/script/ros/launch/hml_simul.launch"/>-->
 </launch>

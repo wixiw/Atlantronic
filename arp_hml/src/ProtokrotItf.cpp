@@ -1,19 +1,19 @@
 /*
- * HmlItf.cpp
+ * ProtokrotItf.cpp
  *
  *  Created on: 26 oct. 2010
  *      Author: wla
  */
 
-#include "HmlItf.hpp"
+#include "ProtokrotItf.hpp"
 #include <ocl/Component.hpp>
 
 using namespace arp_hml;
 using namespace arp_core;
 
-ORO_LIST_COMPONENT_TYPE( arp_hml::HmlItf )
+ORO_LIST_COMPONENT_TYPE( arp_hml::ProtokrotItf )
 
-HmlItf::HmlItf(const std::string& name):
+ProtokrotItf::ProtokrotItf(const std::string& name):
     ARDTaskContext(name),
     attrCurrentCmd(),
     attrOdometers()
@@ -32,7 +32,7 @@ HmlItf::HmlItf(const std::string& name):
         .doc("");
 }
 
-void HmlItf::updateHook()
+void ProtokrotItf::updateHook()
 {
     DifferentialCommand cmd;
     if(NewData==inDifferentialCmd.read(cmd))

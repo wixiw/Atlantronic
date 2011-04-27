@@ -69,12 +69,16 @@ then
 	rsync  -avzh `rosstack find ard` root@$2:/opt/ros \
 	--delete \
 	--exclude "build" \
-	--exclude ".svn"
+	--exclude ".svn" \
+	--exclude ".git" \
+	--exclude ".hg"
 else
 	rsync  -avzh `rospack find $package_name` root@$2:`rosstack find ard` \
 	--delete \
 	--exclude "build" \
-	--exclude ".svn"
+	--exclude ".svn"  \
+	--exclude ".git" \
+	--exclude ".hg"
 fi
 echo -e $NORMAL 
 #check success of rsync

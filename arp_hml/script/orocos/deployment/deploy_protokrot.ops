@@ -1,26 +1,31 @@
-require("print");              
-require("os");
-
 import("arp_core");
-import("arp_arp_hml");
+import("arp_hml");
+          
+require("os");
+require("ros_integration");
 
-
-//runScript("deployment/deploy_core.ops")
+runScript("/opt/ros/ard/arp_core/script/orocos/deployment/deploy_arp_core.ops")
 print.log(Warning, "====================");
 print.log(Warning, "début déploiment arp_hml");
+
 
 loadComponent("Joystick","arp_hml::LogitechExtreme3D");
 //loadComponent("PcBoard","arp_hml::PCM3362");
 loadComponent("Can1","arp_hml::CanOpenController");
-loadComponent("Motor","arp_hml::Faulhaber3268Bx4");
+loadComponent("LeftDriving","arp_hml::Faulhaber3268Bx4");
+loadComponent("RightDriving","arp_hml::Faulhaber3268Bx4");
 
 setActivity("Joystick",0.050,0,ORO_SCHED_OTHER);
 //setActivity("PcBoard",0.050,0,ORO_SCHED_OTHER);
 setActivity("Can1",0.050,0,ORO_SCHED_OTHER);
-setActivity("Motor",0.100,0,ORO_SCHED_OTHER);
+setActivity("LeftDriving",0.100,0,ORO_SCHED_OTHER);
+setActivity("RightDriving",0.100,0,ORO_SCHED_OTHER);
 
-connect("Motor.inSpeedCmd", "Joystick.outY",ConnPolicy());
-addPeer("Motor", "Can1");
+//connect("Motor.inSpeedCmd", "Joystick.outY",ConnPolicy());
+//addPeer("Motor", "Can1");
+addPeer("LeftDriving", "Can1");
+addPeer("RightDriving", "Can1");
+
 
 Joystick.configure();
 //PcBoard.configure();
@@ -40,8 +45,10 @@ yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yi
 yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;
 yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;
 
-Motor.configure();
-Motor.start();
+LeftDriving.configure();
+RightDriving.configure();
+LeftDriving.start();
+RightDriving.start();
 
 //Can1.prgConfigureCan1.start();
 
