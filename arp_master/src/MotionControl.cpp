@@ -3,7 +3,6 @@
 using namespace arp_math;
 using namespace arp_master;
 
-
 MotionControl::MotionControl(std::string name) :
             as_(nh_, name,
                     boost::bind(&MotionControl::executeCB, this, _1), false),
@@ -233,5 +232,3 @@ double MotionControl::smoothStep(double x, double startValue,
     return 0;
 
 }
-
-

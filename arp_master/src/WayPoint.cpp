@@ -1,9 +1,8 @@
 #include "WayPoint.hpp"
+#include <math/math.hpp>
 
-#define PI 3.14159265
-
+using namespace arp_math;
 using namespace arp_master;
-
 
 Point::Point():
   x_(0.0),
@@ -43,12 +42,10 @@ double & Point::angle()
   return angle_;
 }
 
-
 std::ostream & operator<<( std::ostream & os, arp_master::Point & pt)
 {
   return os << "x=" << pt.x() << "  y=" << pt.y() << "  angle=" << pt.angle();
 }
-
 
 WayPoint::WayPoint(const WayPoint & wp):
   Point(0.0, 0.0, 0.0),
@@ -102,4 +99,3 @@ Point WayPoint::get(const Color col, const Direction dir) const
   Point pt(x, y, angle);
   return pt;
 }
-

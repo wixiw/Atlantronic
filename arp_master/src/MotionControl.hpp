@@ -15,7 +15,9 @@
 #include <arp_core/Velocity.h>
 #include <arp_core/Pose.h>
 
-#include "math/Geometry.hpp"
+#include <math/Geometry.hpp>
+
+using namespace arp_core;
 
 namespace arp_master
 {
@@ -158,7 +160,7 @@ namespace arp_master
         /**
          * Called when a new pose message is received
          */
-        void poseCallback(const arp_core::PoseConstPtr& c);
+        void poseCallback(const PoseConstPtr& c);
 
         /**
          * Called when a new order is received

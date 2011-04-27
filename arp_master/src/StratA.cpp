@@ -55,11 +55,12 @@ void StratA::go()
 {
 
   ROS_INFO("Waiting for start");
-  ROS_INFO("TIPS :");
-  ROS_INFO(" in new terminal type, choose color with : rostopic pub -1 /color arp_master/StartColor -- \"red\"");
-  ROS_INFO("   or rostopic pub -1 /color arp_master/StartColor -- \"blue\"");
-  ROS_INFO(" Start with : rostopic pub -1 /start arp_master/Start -- 1");
-  ROS_INFO(" Simule obstacle with : rostopic pub -1 /obstacle arp_master/Obstacle -- 1");
+  ROS_INFO("TIPS (open a new terminal) :");
+  ROS_INFO("* Choose color with :");
+  ROS_INFO("\trostopic pub -1 /color arp_core/StartColor -- \"red\"");
+  ROS_INFO("\tor rostopic pub -1 /color arp_core/StartColor -- \"blue\"");
+  ROS_INFO("* Start with : rostopic pub -1 /start arp_core/Start -- 1");
+  ROS_INFO("* Simule obstacle with : rostopic pub -1 /obstacle arp_core/Obstacle -- 1");
 
   while(!start_)
   {
