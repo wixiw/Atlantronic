@@ -31,6 +31,12 @@ SimuRobot::SimuRobot(const ros::NodeHandle& nh, const wxImage& robot_image, cons
   pen_.SetWidth(3);
   robot_ = wxBitmap(robot_image_);
 
+  // Parameters
+  base_line      = 0.4;
+  wheel_diameter = 0.07;
+  nh_.setParam("/Protokrot/base_line", base_line);
+  nh_.setParam("/Protokrot/wheel_diameter", wheel_diameter);
+
   // Suscribers
   differential_command_sub_ = nh_.subscribe("differential_command", 1, &SimuRobot::commandCallback, this);
 
@@ -41,11 +47,6 @@ SimuRobot::SimuRobot(const ros::NodeHandle& nh, const wxImage& robot_image, cons
   // Services
   set_pen_srv_ = nh_.advertiseService("set_pen", &SimuRobot::setPenCallback, this);
 
-  // Parameters
-  base_line      = 0.4;
-  wheel_diameter = 0.07;
-  nh_.setParam("/Protokrot/base_line", base_line);
-  nh_.setParam("/Protokrot/wheel_diameter", wheel_diameter);
 
 }
 

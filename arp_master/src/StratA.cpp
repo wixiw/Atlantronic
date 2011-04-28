@@ -109,8 +109,11 @@ void StratA::go()
 
 void StratA::shutDown()
 {
-  ac_.cancelAllGoals();
-  ac_.stopTrackingGoal();
+  if(!actionFinished_)
+  {
+    ac_.cancelAllGoals();
+    ac_.stopTrackingGoal();
+  }
 }
 
 void StratA::obstacleCallback(const ObstacleConstPtr& c)

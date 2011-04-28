@@ -13,6 +13,7 @@
 #include <arp_core/Odo.h>
 #include <arp_core/Pose.h>
 #include <arp_master/Spawn.h>
+#include <arp_master/Init.h>
 
 #include <sstream>
 
@@ -63,6 +64,11 @@ namespace arp_master
     ros::ServiceServer respawn_srv;
 
     /**
+    * Used to provide a init service
+    */
+    ros::ServiceServer init_srv;
+
+    /**
     * buffer last left odo
     */
     double last_odo_left;
@@ -103,7 +109,7 @@ namespace arp_master
     double wheel_diameter;
 
     /**
-    * Called when resetting service used called
+    * Called when resetting service is called
     * \returns success boolean
     */
     bool respawnCallback(Spawn::Request& req, Spawn::Response& res);
@@ -113,6 +119,7 @@ namespace arp_master
     * \returns succes boolean
     */
     void odoCallback(const arp_core::OdoConstPtr& o);
+
   };
 }
 

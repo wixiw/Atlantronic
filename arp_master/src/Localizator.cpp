@@ -4,13 +4,13 @@ using namespace arp_master;
 using namespace arp_math;
 using namespace arp_core;
 
-using namespace arp_master;
 
 Localizator::Localizator():
 nh(),
 odo_sub(),
 pose_pub(),
 respawn_srv(),
+init_srv(),
 last_odo_left(0.0),
 last_odo_right(0.0),
 last_time(),
@@ -22,25 +22,6 @@ odo_sub = nh.subscribe("Protokrot/odo", 1, &Localizator::odoCallback, this);
 pose_pub = nh.advertise<Pose>("Localizator/pose", 1);
 respawn_srv = nh.advertiseService("Localizator/respawn", &Localizator::respawnCallback, this);
 
-if( nh.getParam("/Protokrot/base_line", base_line))
-{
-  ROS_INFO("Got param named '/Protokrot/base_line' : %f", base_line);
-}
-else
-{
-  ROS_ERROR("Failed to get param '/Protokrot/base_line'. Take default value (0.4)");
-  base_line = 0.4;
-}
-
-if( nh.getParam("/Protokrot/wheel_diameter", wheel_diameter))
-{
-  ROS_INFO("Got param named '/Protokrot/wheel_diameter' : %f", wheel_diameter);
-}
-else
-{
-  ROS_ERROR("Failed to get param '/Protokrot/wheel_diameter'. Take default value (0.07)");
-  wheel_diameter = 0.07;
-}
 
 // Initialize
 trans = Vector2(0.0, 0.0);
@@ -65,6 +46,26 @@ orient = arp_math::Rotation2(req.theta);
 last_time = ros::WallTime::now();
 last_odo_left = 0.0;
 last_odo_right = 0.0;
+
+if( nh.getParam("/Protokrot/base_line", base_line))
+{
+  ROS_INFO("Got param named '/Protokrot/base_line' : %f", base_line);
+}
+else
+{
+  ROS_ERROR("Failed to get param '/Protokrot/base_line'. Take default value (0.4)");
+  base_line = 0.4;
+}
+
+if( nh.getParam("/Protokrot/wheel_diameter", wheel_diameter))
+{
+  ROS_INFO("Got param named '/Protokrot/wheel_diameter' : %f", wheel_diameter);
+}
+else
+{
+  ROS_ERROR("Failed to get param '/Protokrot/wheel_diameter'. Take default value (0.07)");
+  wheel_diameter = 0.07;
+}
 return true;
 }
 
