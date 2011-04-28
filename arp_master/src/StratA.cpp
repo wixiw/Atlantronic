@@ -186,4 +186,3 @@ void StratA::doneCb(const actionlib::SimpleClientGoalState& state,
   ROS_INFO("Action finished: %s",state.toString().c_str());
   actionFinished_ = true;
 }
-

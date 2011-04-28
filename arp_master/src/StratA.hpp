@@ -106,7 +106,7 @@ private:
   void doneCb(const actionlib::SimpleClientGoalState& state,
               const OrderResultConstPtr& result);
 
-private:  
+private:
   /**
    * CircularTraj instanciate in initTraj()
    */
