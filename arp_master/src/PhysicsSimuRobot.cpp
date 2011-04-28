@@ -1,15 +1,13 @@
-#include "SimuRobot.hpp"
+#include "PhysicsSimuRobot.hpp"
 
-#include <wx/wx.h>
 
 using namespace arp_core;
 
 using namespace arp_master;
 
 
-SimuRobot::SimuRobot(const ros::NodeHandle& nh, const wxImage& robot_image, const Vector2& pos, double orient, double one_meter_in_pixel)
+SimuRobot::SimuRobot(const ros::NodeHandle& nh, const Vector2& pos, double orient, double one_meter_in_pixel)
 : nh_(nh)
-, robot_image_(robot_image)
 , pos_(pos)
 , orient_(orient)
 , old_pos_(pos)
@@ -19,17 +17,15 @@ SimuRobot::SimuRobot(const ros::NodeHandle& nh, const wxImage& robot_image, cons
 , lin_vel_(0.0)
 , ang_vel_(0.0)
 , meter_(one_meter_in_pixel)
-, pen_on_(true)
-, pen_(wxColour(DEFAULT_PEN_R, DEFAULT_PEN_G, DEFAULT_PEN_B))
 , odo_left_(0.0)
 , odo_right_(0.0)
-, canvas_x_(0.0)
-, canvas_y_(0.0)
-, old_canvas_x_(0.0)
-, old_canvas_y_(0.0)
 {
-  pen_.SetWidth(3);
-  robot_ = wxBitmap(robot_image_);
+
+  // Parameters
+  base_line      = 0.4;
+  wheel_diameter = 0.07;
+  nh_.setParam("/Protokrot/base_line", base_line);
+  nh_.setParam("/Protokrot/wheel_diameter", wheel_diameter);
 
   // Suscribers
   differential_command_sub_ = nh_.subscribe("differential_command", 1, &SimuRobot::commandCallback, this);
@@ -37,15 +33,6 @@ SimuRobot::SimuRobot(const ros::NodeHandle& nh, const wxImage& robot_image, cons
   // Publishers
   pose_pub_ = nh_.advertise<arp_core::Pose>("pose", 1);
   odo_pub_ = nh_.advertise<arp_core::Odo>("odo", 1);
-
-  // Services
-  set_pen_srv_ = nh_.advertiseService("set_pen", &SimuRobot::setPenCallback, this);
-
-  // Parameters
-  base_line      = 0.4;
-  wheel_diameter = 0.07;
-  nh_.setParam("/Protokrot/base_line", base_line);
-  nh_.setParam("/Protokrot/wheel_diameter", wheel_diameter);
 
 }
 
@@ -57,26 +44,8 @@ void SimuRobot::commandCallback(const arp_core::DifferentialCommandConstPtr& c)
   v_right_ = c->v_right;
 }
 
-bool SimuRobot::setPenCallback(SetPen::Request& req, SetPen::Response&)
-{
-  pen_on_ = !req.off;
-  if (req.off)
-  {
-    return true;
-  }
 
-  wxPen pen(wxColour(req.r, req.g, req.b));
-  if (req.width != 0)
-  {
-    pen.SetWidth(req.width);
-  }
-
-  pen_ = pen;
-  return true;
-}
-
-
-void SimuRobot::update(double dt, wxMemoryDC& path_dc, float canvas_width, float canvas_height)
+void SimuRobot::update(double dt, double canvas_width, double canvas_height)
 {
   // Maintient de la commande pendant 0.2 seconde
   if (ros::WallTime::now() - last_command_time_ > ros::WallDuration(0.2))
@@ -118,27 +87,6 @@ void SimuRobot::update(double dt, wxMemoryDC& path_dc, float canvas_width, float
   pos_.x() = std::min(std::max(pos_.x(), -canvas_width/(double)2.0), canvas_width/(double)2.0);
   pos_.y() = std::min(std::max(pos_.y(), -canvas_height/(double)2.0), canvas_height/(double)2.0);
 
-  // Conversion en coordonnees image
-  canvas_x_ = (canvas_width  / 2.0 + pos_.x()) * meter_;
-  canvas_y_ = (canvas_height / 2.0 - pos_.y()) * meter_;
-
-  {
-    wxImage rotated_image = robot_image_.Rotate(orient_.angle() - PI/2.0, wxPoint(robot_image_.GetWidth() / 2, robot_image_.GetHeight() / 2), false);
-
-    for (int y = 0; y < rotated_image.GetHeight(); ++y)
-    {
-      for (int x = 0; x < rotated_image.GetWidth(); ++x)
-      {
-        if (rotated_image.GetRed(x, y) == 255 && rotated_image.GetBlue(x, y) == 255 && rotated_image.GetGreen(x, y) == 255)
-        {
-          rotated_image.SetAlpha(x, y, 0);
-        }
-      }
-    }
-
-    robot_ = wxBitmap(rotated_image);
-  }
-
 
   // Publishing
   Pose p;
@@ -154,35 +102,11 @@ void SimuRobot::update(double dt, wxMemoryDC& path_dc, float canvas_width, float
   o.odo_right = odo_right_;
   odo_pub_.publish(o);
 
-
   ROS_DEBUG("[%s]: pos_x: %f pos_y: %f theta: %f", nh_.getNamespace().c_str(), pos_.x(), pos_.y(), orient_.angle());
-
-  if (pen_on_)
-  {
-    if (pos_ != old_pos_)
-    {
-      path_dc.SetPen(pen_);
-      path_dc.DrawLine( canvas_x_,
-                        canvas_y_,
-                        old_canvas_x_,
-                        old_canvas_y_);
-    }
-  }
 
   // Buffer
   old_pos_ = pos_;
   old_orient_ = orient_;
-  old_canvas_x_ = canvas_x_;
-  old_canvas_y_ = canvas_y_;
-}
-
-void SimuRobot::paint(wxDC& dc)
-{
-  dc.DrawBitmap(robot_,
-                canvas_x_ - (robot_.GetWidth() / 2),
-                canvas_y_ - (robot_.GetHeight() / 2),
-                true);
-
 }
 
 

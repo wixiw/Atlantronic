@@ -1,4 +1,4 @@
-#include "SimuRobot.hpp"
+#include "GraphicsSimuRobot.hpp"
 
 #include <wx/wx.h>
 
