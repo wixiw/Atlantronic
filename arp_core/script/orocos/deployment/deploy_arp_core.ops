@@ -1,10 +1,12 @@
 /* ARD arp_core main deployment file */
 require("print");
+print.log(Warning, "====================");
 print.log(Warning, "début déploiment arp_core");
 
-path("/home/ard/ros/ros/../ard/arp_core/lib/orocos");
+import("arp_core");
 
 loadComponent("Reporting","OCL::FileReporting")
 Reporting.setPeriod (0.050)
 
 print.log(Warning, "fin déploiment arp_core");
+print.log(Warning, "====================");

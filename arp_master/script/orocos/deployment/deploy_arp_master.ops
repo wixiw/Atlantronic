@@ -1,6 +1,19 @@
-/* ARD arp_master main deployment file */
-path("/media/DD_data/opt/ros/ard/arp_master/lib/orocos");
-require("print");
-loadComponent("Component1","Arp_master");
-loadService ("Component1","myservice");
-Component1.start()
+runScript("/opt/ros/ard/arp_hml/script/orocos/deployment/deploy_protokrot.ops")
+print.log(Warning, "début déploiment arp_master");
+
+import("arp_master");
+
+loadComponent("Teleop","arp_master::Logitech3DTeleop");
+setActivity("Teleop",0.050,0,ORO_SCHED_OTHER);
+Teleop.configure();
+Teleop.start();
+
+connect("Teleop.inY", "Joystick.outY",ConnPolicy());
+connect("Teleop.inZ", "Joystick.outZ",ConnPolicy());
+connect("Teleop.inDeadMan", "Joystick.outButton5",ConnPolicy())
+
+connect("LeftDriving.inSpeedCmd", "Teleop.outLeftSpeed",ConnPolicy());
+connect("RightDriving.inSpeedCmd", "Teleop.outRightSpeed",ConnPolicy());
+
+print.log(Warning, "Fin déploiment arp_core");
+print.log(Warning, "====================");

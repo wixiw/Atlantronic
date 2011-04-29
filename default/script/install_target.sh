@@ -81,6 +81,7 @@ else
 	--exclude ".hg"
 fi
 echo -e $NORMAL 
+
 #check success of rsync
 if [ $? != 0 ]; then
     echo -e $ROUGE "[!] Syncronization failed !"  $NORMAL
@@ -88,3 +89,5 @@ if [ $? != 0 ]; then
 else
 	echo -e $VERT "[.] rsync succeed" $NORMAL
 fi
+
+date

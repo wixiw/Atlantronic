@@ -13,7 +13,6 @@
 #include <arp_core/Odo.h>
 #include <arp_core/Pose.h>
 #include <arp_master/Spawn.h>
-#include <arp_master/Init.h>
 
 #include <sstream>
 

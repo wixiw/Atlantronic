@@ -1,13 +1,9 @@
-import("arp_core");
-import("arp_hml");
-          
-require("os");
-require("ros_integration");
-
 runScript("/opt/ros/ard/arp_core/script/orocos/deployment/deploy_arp_core.ops")
-print.log(Warning, "====================");
 print.log(Warning, "début déploiment arp_hml");
 
+import("arp_hml");
+require("os");
+require("ros_integration");
 
 loadComponent("Joystick","arp_hml::LogitechExtreme3D");
 loadComponent("PcBoard","arp_hml::SimplePCM3362");

@@ -19,6 +19,7 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         CanOpenNode(name),
         ArdMotorItf(),
         attrState(ArdDs402::UnknownDs402State),
+        propInvertDriveDirection(false),
         inSpeedCmd()
 {
     outMeasuredPosition.write(0.0);
@@ -34,6 +35,8 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
     m_ds402State = CanARDDictionnaryAccessor::getUNS16Pointer(name,"Ds402State");
 
     addAttribute("attrState",attrState);
+
+    addProperty("propInvertDriveDirection",propInvertDriveDirection);
 
     addPort("inSpeedCmd",inSpeedCmd)
             .doc("");
@@ -117,7 +120,7 @@ bool Faulhaber3268Bx4::configureHook()
 
 void Faulhaber3268Bx4::updateHook()
 {
-    double speed = 0;
+    int speed = 0;
 
     //appel du parent car il log les bootUp
     CanOpenNode::updateHook();
@@ -127,9 +130,13 @@ void Faulhaber3268Bx4::updateHook()
     //mise à jour de la consigne de vitesse
     if( inSpeedCmd.readNewest(speed) == NewData )
     {
+    	if( propInvertDriveDirection )
+    	{
+    		speed = -speed;
+    	}
         *m_faulhaberCommand = F_CMD_V;
-        *m_faulhaberCommandParameter = 7000*speed;
-        outCommandedSpeed.write(7000*speed);
+        *m_faulhaberCommandParameter = (UNS32)(speed);
+        outCommandedSpeed.write((int)(*m_faulhaberCommandParameter));
     }
 
     //lecture de la vitesse
@@ -157,9 +164,9 @@ void Faulhaber3268Bx4::ooSendSpeed(int speed)
 {
 	EnterMutex();
     *m_faulhaberCommand = F_CMD_V;
-    *m_faulhaberCommandParameter = 7000*speed;
+    *m_faulhaberCommandParameter = speed;
     LeaveMutex();
-    outCommandedSpeed.write(7000*speed);
+    outCommandedSpeed.write(speed);
 }
 
 void Faulhaber3268Bx4::ooReadSpeed()

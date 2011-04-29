@@ -43,9 +43,11 @@ namespace arp_hml
     protected:
         ArdDs402::enum_DS402_state attrState;
 
-        InputPort<double> inSpeedCmd;
+        bool propInvertDriveDirection;
 
-        OutputPort<double> outCommandedSpeed;
+        InputPort<int> inSpeedCmd;
+
+        OutputPort<int> outCommandedSpeed;
         OutputPort<double> outMeasuredPosition;
         OutputPort<double> outMeasuredCurrent;
 

@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <!DOCTYPE PyObject SYSTEM "PyObjects.dtd">
-<PyObject module="node" class="Node" id="164072844">
-<attr name="Profile" type="dict" id="165334252" >
+<PyObject module="node" class="Node" id="178309996">
+<attr name="Profile" type="dict" id="181665004" >
 </attr>
 <attr name="Description" type="string">default</attr>
-<attr name="Dictionary" type="dict" id="165348732" >
+<attr name="Dictionary" type="dict" id="181680028" >
   <entry>
     <key type="numeric" value="4096" />
     <val type="numeric" value="0" />
@@ -15,7 +15,7 @@
   </entry>
   <entry>
     <key type="numeric" value="5122" />
-    <val type="list" id="165328940" >
+    <val type="list" id="181661548" >
       <item type="numeric" value="929" />
       <item type="numeric" value="0" />
       <item type="numeric" value="0" />
@@ -25,7 +25,7 @@
   </entry>
   <entry>
     <key type="numeric" value="4739" />
-    <val type="list" id="165319500" >
+    <val type="list" id="181659724" >
       <item type="numeric" value="1541" />
       <item type="numeric" value="1413" />
       <item type="numeric" value="5" />
@@ -33,7 +33,7 @@
   </entry>
   <entry>
     <key type="numeric" value="5124" />
-    <val type="list" id="165322252" >
+    <val type="list" id="181659788" >
       <item type="numeric" value="690" />
       <item type="numeric" value="0" />
       <item type="numeric" value="0" />
@@ -47,11 +47,11 @@
   </entry>
   <entry>
     <key type="numeric" value="4102" />
-    <val type="numeric" value="20000000" />
+    <val type="numeric" value="50000" />
   </entry>
   <entry>
     <key type="numeric" value="5121" />
-    <val type="list" id="165322188" >
+    <val type="list" id="181659852" >
       <item type="numeric" value="673" />
       <item type="numeric" value="0" />
       <item type="numeric" value="0" />
@@ -61,7 +61,7 @@
   </entry>
   <entry>
     <key type="numeric" value="5128" />
-    <val type="list" id="165322124" >
+    <val type="list" id="181658988" >
       <item type="numeric" value="947" />
       <item type="numeric" value="0" />
       <item type="numeric" value="0" />
@@ -71,7 +71,7 @@
   </entry>
   <entry>
     <key type="numeric" value="5129" />
-    <val type="list" id="165361868" >
+    <val type="list" id="181659500" >
       <item type="numeric" value="389" />
       <item type="numeric" value="0" />
       <item type="numeric" value="0" />
@@ -81,14 +81,14 @@
   </entry>
   <entry>
     <key type="numeric" value="5634" />
-    <val type="list" id="165321004" >
+    <val type="list" id="181659308" >
       <item type="numeric" value="571474720" />
       <item type="numeric" value="571474960" />
     </val>
   </entry>
   <entry>
     <key type="numeric" value="8720" />
-    <val type="list" id="165321132" >
+    <val type="list" id="181657644" >
       <item type="numeric" value="0" />
       <item type="numeric" value="0" />
       <item type="numeric" value="0" />
@@ -102,7 +102,7 @@
   </entry>
   <entry>
     <key type="numeric" value="6146" />
-    <val type="list" id="165321868" >
+    <val type="list" id="181657836" >
       <item type="numeric" value="819" />
       <item type="numeric" value="1" />
       <item type="numeric" value="0" />
@@ -112,14 +112,14 @@
   </entry>
   <entry>
     <key type="numeric" value="6658" />
-    <val type="list" id="165319180" >
+    <val type="list" id="181661196" >
       <item type="numeric" value="590349832" />
-      <item type="numeric" value="589301024" />
+      <item type="numeric" value="590349600" />
     </val>
   </entry>
   <entry>
     <key type="numeric" value="5123" />
-    <val type="list" id="165318956" >
+    <val type="list" id="181660556" >
       <item type="numeric" value="434" />
       <item type="numeric" value="0" />
       <item type="numeric" value="0" />
@@ -133,14 +133,14 @@
   </entry>
   <entry>
     <key type="numeric" value="4608" />
-    <val type="list" id="165322380" >
+    <val type="list" id="181660460" >
       <item type="string" value="&quot;$NODEID+0x600&quot;" />
       <item type="string" value="&quot;$NODEID+0x580&quot;" />
     </val>
   </entry>
   <entry>
     <key type="numeric" value="4120" />
-    <val type="list" id="165321644" >
+    <val type="list" id="181660332" >
       <item type="numeric" value="0" />
       <item type="numeric" value="0" />
       <item type="numeric" value="0" />
@@ -149,7 +149,7 @@
   </entry>
   <entry>
     <key type="numeric" value="5636" />
-    <val type="list" id="165320716" >
+    <val type="list" id="181660652" >
       <item type="numeric" value="589301512" />
       <item type="numeric" value="589302048" />
       <item type="numeric" value="589301768" />
@@ -157,7 +157,7 @@
   </entry>
   <entry>
     <key type="numeric" value="4736" />
-    <val type="list" id="165320876" >
+    <val type="list" id="181659532" >
       <item type="numeric" value="1569" />
       <item type="numeric" value="1441" />
       <item type="numeric" value="33" />
@@ -165,7 +165,7 @@
   </entry>
   <entry>
     <key type="numeric" value="5125" />
-    <val type="list" id="165321996" >
+    <val type="list" id="181658508" >
       <item type="numeric" value="946" />
       <item type="numeric" value="0" />
       <item type="numeric" value="0" />
@@ -175,7 +175,7 @@
   </entry>
   <entry>
     <key type="numeric" value="8992" />
-    <val type="list" id="165322092" >
+    <val type="list" id="181658636" >
       <item type="numeric" value="0" />
       <item type="numeric" value="0" />
       <item type="numeric" value="0" />
@@ -190,7 +190,7 @@
   </entry>
   <entry>
     <key type="numeric" value="5126" />
-    <val type="list" id="165322412" >
+    <val type="list" id="181658124" >
       <item type="numeric" value="435" />
       <item type="numeric" value="0" />
       <item type="numeric" value="0" />
@@ -200,7 +200,7 @@
   </entry>
   <entry>
     <key type="numeric" value="5120" />
-    <val type="list" id="165321932" >
+    <val type="list" id="181658252" >
       <item type="numeric" value="417" />
       <item type="numeric" value="0" />
       <item type="numeric" value="0" />
@@ -210,7 +210,7 @@
   </entry>
   <entry>
     <key type="numeric" value="5639" />
-    <val type="list" id="165322284" >
+    <val type="list" id="181658860" >
       <item type="numeric" value="590350088" />
       <item type="numeric" value="590350624" />
       <item type="numeric" value="590350344" />
@@ -218,7 +218,7 @@
   </entry>
   <entry>
     <key type="numeric" value="9008" />
-    <val type="list" id="165320044" >
+    <val type="list" id="181660876" >
       <item type="numeric" value="0" />
       <item type="numeric" value="0" />
       <item type="numeric" value="0" />
@@ -232,14 +232,14 @@
   </entry>
   <entry>
     <key type="numeric" value="5640" />
-    <val type="list" id="165320204" >
+    <val type="list" id="181660684" >
       <item type="numeric" value="590349088" />
       <item type="numeric" value="590349328" />
     </val>
   </entry>
   <entry>
     <key type="numeric" value="4738" />
-    <val type="list" id="165327660" >
+    <val type="list" id="181660236" >
       <item type="numeric" value="1587" />
       <item type="numeric" value="1459" />
       <item type="numeric" value="51" />
@@ -247,26 +247,26 @@
   </entry>
   <entry>
     <key type="numeric" value="6656" />
-    <val type="list" id="165321420" >
+    <val type="list" id="181660748" >
       <item type="numeric" value="571475488" />
       <item type="numeric" value="571475232" />
     </val>
   </entry>
   <entry>
     <key type="numeric" value="5632" />
-    <val type="list" id="165319788" >
+    <val type="list" id="181660940" >
       <item type="numeric" value="571474448" />
     </val>
   </entry>
   <entry>
     <key type="numeric" value="5641" />
-    <val type="list" id="165362636" >
+    <val type="list" id="181660108" >
       <item type="numeric" value="542114056" />
     </val>
   </entry>
   <entry>
     <key type="numeric" value="4737" />
-    <val type="list" id="165327724" >
+    <val type="list" id="181660172" >
       <item type="numeric" value="1586" />
       <item type="numeric" value="1458" />
       <item type="numeric" value="50" />
@@ -274,7 +274,7 @@
   </entry>
   <entry>
     <key type="numeric" value="6144" />
-    <val type="list" id="165327468" >
+    <val type="list" id="181659980" >
       <item type="numeric" value="801" />
       <item type="numeric" value="1" />
       <item type="numeric" value="0" />
@@ -284,20 +284,20 @@
   </entry>
   <entry>
     <key type="numeric" value="5637" />
-    <val type="list" id="165327532" >
+    <val type="list" id="181660044" >
       <item type="numeric" value="589300512" />
       <item type="numeric" value="589300752" />
     </val>
   </entry>
   <entry>
     <key type="numeric" value="8272" />
-    <val type="list" id="165330732" >
+    <val type="list" id="181661100" >
       <item type="numeric" value="0" />
     </val>
   </entry>
   <entry>
     <key type="numeric" value="5633" />
-    <val type="list" id="165327596" >
+    <val type="list" id="181661036" >
       <item type="numeric" value="571475720" />
       <item type="numeric" value="571476256" />
       <item type="numeric" value="571475976" />
@@ -305,13 +305,13 @@
   </entry>
   <entry>
     <key type="numeric" value="5635" />
-    <val type="list" id="165321292" >
+    <val type="list" id="181660812" >
       <item type="numeric" value="589300240" />
     </val>
   </entry>
   <entry>
     <key type="numeric" value="6145" />
-    <val type="list" id="165329996" >
+    <val type="list" id="181661164" >
       <item type="numeric" value="818" />
       <item type="numeric" value="1" />
       <item type="numeric" value="0" />
@@ -321,20 +321,20 @@
   </entry>
   <entry>
     <key type="numeric" value="5638" />
-    <val type="list" id="165330124" >
+    <val type="list" id="181657900" >
       <item type="numeric" value="590348816" />
     </val>
   </entry>
   <entry>
     <key type="numeric" value="6657" />
-    <val type="list" id="165329036" >
+    <val type="list" id="181657772" >
       <item type="numeric" value="589301256" />
       <item type="numeric" value="589301024" />
     </val>
   </entry>
   <entry>
     <key type="numeric" value="5127" />
-    <val type="list" id="165328364" >
+    <val type="list" id="181658412" >
       <item type="numeric" value="691" />
       <item type="numeric" value="0" />
       <item type="numeric" value="0" />
@@ -343,13 +343,13 @@
     </val>
   </entry>
 </attr>
-<attr name="SpecificMenu" type="list" id="165328300" >
+<attr name="SpecificMenu" type="list" id="181658476" >
 </attr>
 <attr name="DefaultStringSize" type="numeric" value="8" />
-<attr name="ParamsDictionary" type="dict" id="165348868" >
+<attr name="ParamsDictionary" type="dict" id="181680164" >
   <entry>
     <key type="numeric" value="9008" />
-    <val type="dict" id="165349004" >
+    <val type="dict" id="181680300" >
       <entry>
         <key type="string" value="callback" />
         <val type="True" value="" />
@@ -358,7 +358,7 @@
   </entry>
   <entry>
     <key type="numeric" value="8720" />
-    <val type="dict" id="165349140" >
+    <val type="dict" id="181680436" >
       <entry>
         <key type="string" value="callback" />
         <val type="True" value="" />
@@ -367,7 +367,7 @@
   </entry>
   <entry>
     <key type="numeric" value="8992" />
-    <val type="dict" id="165384508" >
+    <val type="dict" id="181680572" >
       <entry>
         <key type="string" value="callback" />
         <val type="True" value="" />
@@ -375,18 +375,18 @@
     </val>
   </entry>
 </attr>
-<attr name="UserMapping" type="dict" id="165349276" >
+<attr name="UserMapping" type="dict" id="181680708" >
   <entry>
     <key type="numeric" value="9008" />
-    <val type="dict" id="165349412" >
+    <val type="dict" id="181680844" >
       <entry>
         <key type="string" value="need" />
         <val type="False" value="" />
       </entry>
       <entry>
         <key type="string" value="values" />
-        <val type="list" id="165328652" >
-          <item type="dict" id="165349548" >
+        <val type="list" id="181650220" >
+          <item type="dict" id="181680980" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="ro" />
@@ -404,7 +404,7 @@
               <val type="string" value="Number of Entries" />
             </entry>
           </item>
-          <item type="dict" id="165349684" >
+          <item type="dict" id="181681116" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -422,7 +422,7 @@
               <val type="string">MeasuredSpeed</val>
             </entry>
           </item>
-          <item type="dict" id="165349820" >
+          <item type="dict" id="181681252" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -440,7 +440,7 @@
               <val type="string">Ds402State</val>
             </entry>
           </item>
-          <item type="dict" id="165349956" >
+          <item type="dict" id="181681388" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -458,7 +458,7 @@
               <val type="string">MeasuredPosition</val>
             </entry>
           </item>
-          <item type="dict" id="165350092" >
+          <item type="dict" id="181681524" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -476,7 +476,7 @@
               <val type="string">MeasuredCurrent</val>
             </entry>
           </item>
-          <item type="dict" id="165350228" >
+          <item type="dict" id="181681660" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -494,7 +494,7 @@
               <val type="string">FaulhaberCommandParameter</val>
             </entry>
           </item>
-          <item type="dict" id="165350364" >
+          <item type="dict" id="181681796" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -512,7 +512,7 @@
               <val type="string">FaulhaberCommand</val>
             </entry>
           </item>
-          <item type="dict" id="165350500" >
+          <item type="dict" id="181681932" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -530,7 +530,7 @@
               <val type="string">FaulhaberCommandReturn</val>
             </entry>
           </item>
-          <item type="dict" id="165350636" >
+          <item type="dict" id="181686316" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -548,7 +548,7 @@
               <val type="string">FaulhaberCommandReturnCode</val>
             </entry>
           </item>
-          <item type="dict" id="165350772" >
+          <item type="dict" id="181686452" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -580,15 +580,15 @@
   </entry>
   <entry>
     <key type="numeric" value="8720" />
-    <val type="dict" id="165350908" >
+    <val type="dict" id="181686588" >
       <entry>
         <key type="string" value="need" />
         <val type="False" value="" />
       </entry>
       <entry>
         <key type="string" value="values" />
-        <val type="list" id="165327820" >
-          <item type="dict" id="165351044" >
+        <val type="list" id="181651628" >
+          <item type="dict" id="181686724" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="ro" />
@@ -606,7 +606,7 @@
               <val type="string" value="Number of Entries" />
             </entry>
           </item>
-          <item type="dict" id="165351180" >
+          <item type="dict" id="181686860" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -624,7 +624,7 @@
               <val type="string">MeasuredSpeed</val>
             </entry>
           </item>
-          <item type="dict" id="165351468" >
+          <item type="dict" id="181686996" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -642,7 +642,7 @@
               <val type="string">Ds402State</val>
             </entry>
           </item>
-          <item type="dict" id="165351604" >
+          <item type="dict" id="181687132" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -660,7 +660,7 @@
               <val type="string">MeasuredPosition</val>
             </entry>
           </item>
-          <item type="dict" id="165351740" >
+          <item type="dict" id="181687268" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -678,7 +678,7 @@
               <val type="string">MeasuredCurrent</val>
             </entry>
           </item>
-          <item type="dict" id="165351876" >
+          <item type="dict" id="181687404" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -696,7 +696,7 @@
               <val type="string">FaulhaberCommandParameter</val>
             </entry>
           </item>
-          <item type="dict" id="165352012" >
+          <item type="dict" id="181687540" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -714,7 +714,7 @@
               <val type="string">FaulhaberCommand</val>
             </entry>
           </item>
-          <item type="dict" id="165352148" >
+          <item type="dict" id="181687676" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -732,7 +732,7 @@
               <val type="string">FaulhaberCommandReturn</val>
             </entry>
           </item>
-          <item type="dict" id="165352284" >
+          <item type="dict" id="181687812" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -750,7 +750,7 @@
               <val type="string">FaulhaberCommandReturnCode</val>
             </entry>
           </item>
-          <item type="dict" id="165352420" >
+          <item type="dict" id="181687948" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -782,15 +782,15 @@
   </entry>
   <entry>
     <key type="numeric" value="8272" />
-    <val type="dict" id="165379852" >
+    <val type="dict" id="181688084" >
       <entry>
         <key type="string" value="need" />
         <val type="False" value="" />
       </entry>
       <entry>
         <key type="string" value="values" />
-        <val type="list" id="165362828" >
-          <item type="dict" id="165396100" >
+        <val type="list" id="181682508" >
+          <item type="dict" id="181688220" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="ro" />
@@ -808,7 +808,7 @@
               <val type="string" value="Number of Entries" />
             </entry>
           </item>
-          <item type="dict" id="165380140" >
+          <item type="dict" id="181688356" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -840,15 +840,15 @@
   </entry>
   <entry>
     <key type="numeric" value="8992" />
-    <val type="dict" id="165352556" >
+    <val type="dict" id="181688492" >
       <entry>
         <key type="string" value="need" />
         <val type="False" value="" />
       </entry>
       <entry>
         <key type="string" value="values" />
-        <val type="list" id="165329708" >
-          <item type="dict" id="165352692" >
+        <val type="list" id="181683724" >
+          <item type="dict" id="181688628" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="ro" />
@@ -866,7 +866,7 @@
               <val type="string" value="Number of Entries" />
             </entry>
           </item>
-          <item type="dict" id="165352828" >
+          <item type="dict" id="181688764" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -884,7 +884,7 @@
               <val type="string">MeasuredSpeed</val>
             </entry>
           </item>
-          <item type="dict" id="165352964" >
+          <item type="dict" id="181688900" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -902,7 +902,7 @@
               <val type="string">Ds402State</val>
             </entry>
           </item>
-          <item type="dict" id="165353100" >
+          <item type="dict" id="181689036" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -920,7 +920,7 @@
               <val type="string">MeasuredPosition</val>
             </entry>
           </item>
-          <item type="dict" id="165353236" >
+          <item type="dict" id="181689172" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -938,7 +938,7 @@
               <val type="string">MeasuredCurrent</val>
             </entry>
           </item>
-          <item type="dict" id="165353372" >
+          <item type="dict" id="181689308" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -956,7 +956,7 @@
               <val type="string">FaulhaberCommandParameter</val>
             </entry>
           </item>
-          <item type="dict" id="165353508" >
+          <item type="dict" id="181689444" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -974,7 +974,7 @@
               <val type="string">FaulhaberCommand</val>
             </entry>
           </item>
-          <item type="dict" id="165353644" >
+          <item type="dict" id="181689580" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -992,7 +992,7 @@
               <val type="string">FaulhaberCommandReturn</val>
             </entry>
           </item>
-          <item type="dict" id="165353780" >
+          <item type="dict" id="181689716" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -1010,7 +1010,7 @@
               <val type="string">FaulhaberCommandReturnCode</val>
             </entry>
           </item>
-          <item type="dict" id="165353916" >
+          <item type="dict" id="181689852" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -1028,7 +1028,7 @@
               <val type="string">FaulhaberCommandReturnParameter</val>
             </entry>
           </item>
-          <item type="dict" id="165354052" >
+          <item type="dict" id="181689988" >
             <entry>
               <key type="string" value="access" />
               <val type="string" value="rw" />
@@ -1059,7 +1059,7 @@
     </val>
   </entry>
 </attr>
-<attr name="DS302" type="dict" id="165354188" >
+<attr name="DS302" type="dict" id="181690124" >
 </attr>
 <attr name="ProfileName" type="string" value="None" />
 <attr name="Type" type="string" value="master" />

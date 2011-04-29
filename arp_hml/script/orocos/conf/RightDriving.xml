@@ -8,4 +8,5 @@
   <simple name="propNodeId" type="long"><description>CAN adress of the node</description><value>51</value></simple>
   <simple name="propNmtTimeout" type="long"><description>Timeout before considering a node is not responding to a NMT request (in ms)</description><value>2000</value></simple>
   <simple name="propConfigureNodeTimeout" type="long"><description>Timeout before considering configureNode has failed (in ms)</description><value>9000</value></simple>
+  <simple name="propInvertDriveDirection" type="boolean"><value>0</value></simple>
 </properties>
