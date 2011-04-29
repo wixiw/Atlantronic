@@ -13,15 +13,15 @@ setActivity("Hml",0.050,0,ORO_SCHED_OTHER);
 Hml.configure();
 Hml.start();
 
-var ConnPolicy cp;
+var ConnPolicy differential_command;
 cp.transport = 3; // ROS == 3
 cp.name_id = "/Protokrot/differential_command"; // ros topic
-stream("Hml.inDifferentialCmd", cp);
+stream("Hml.inDifferentialCmd", differential_command);
 
-var ConnPolicy cp2;
+var ConnPolicy odo_hml;
 cp2.transport = 3; // ROS == 3
 cp2.name_id = "/Protokrot/odo_hml"; // ros topic
-stream("Hml.outOdometryMeasures", cp2);
+stream("Hml.outOdometryMeasures", odo_hml);
 
 print.log(Warning, "fin déploiment arp_hml");
 print.log(Warning, "====================");

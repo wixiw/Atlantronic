@@ -13,7 +13,7 @@ CYAN="\\033[1;36m"
 if [ $# == 1 ]
 then
 	echo -e $JAUNE "You probably need to copy paste this into gdb :" $NORMAL
-	echo -e $JAUNE "run -s script/orocos/deployment/deploy_hml.ops" $NORMAL
+	echo -e $JAUNE "run -s script/orocos/deployment/deploy_protokrot.ops" $NORMAL
 	gdb `rospack find ocl`/install/bin/deployer-gnulinux
 else
 	rosrun ocl deployer-gnulinux -s script/orocos/deployment/deploy_protokrot.ops	

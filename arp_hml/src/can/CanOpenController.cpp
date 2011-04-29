@@ -138,7 +138,11 @@ bool CanOpenController::startHook()
 {
     bool res = ARDTaskContext::startHook();
 
-    if( setState(&CanARD_Data, Operational) != Operational )
+    EnterMutex();
+    UNS8 cmdResult = setState(&CanARD_Data, Operational);
+    LeaveMutex();
+
+    if( cmdResult != Operational )
     {
         LOG(Error) << "startHook: failed to switch to Operationl state" << endlog();
         res = false;
@@ -314,6 +318,7 @@ bool CanOpenController::coWriteInRemoteDico(CanDicoEntry dicoEntry)
     bool res = true;
 
     //send SDO to remote node
+    EnterMutex();
     int writeResult = writeNetworkDict (
             &CanARD_Data,
             (UNS8) (dicoEntry.nodeId),
@@ -323,6 +328,7 @@ bool CanOpenController::coWriteInRemoteDico(CanDicoEntry dicoEntry)
             dicoEntry.dataType,
             &(dicoEntry.value)
             );
+    LeaveMutex();
 
     if( writeResult == 0xFF )
     {
@@ -333,17 +339,23 @@ bool CanOpenController::coWriteInRemoteDico(CanDicoEntry dicoEntry)
     {
         //check received SDO
         UNS32 abortCode;
+        EnterMutex();
         writeResult = getWriteResultNetworkDict (&CanARD_Data, dicoEntry.nodeId, &abortCode);
+        LeaveMutex();
         while ( writeResult == SDO_DOWNLOAD_IN_PROGRESS )
         {
+        	EnterMutex();
             writeResult = getWriteResultNetworkDict (&CanARD_Data, dicoEntry.nodeId, &abortCode);
+            LeaveMutex();
             usleep(1000);
         }
 
         if( writeResult == SDO_FINISHED )
         {
             /* Finalise last SDO transfer with this node */
-            closeSDOtransfer(&CanARD_Data, dicoEntry.nodeId, SDO_CLIENT);
+        	EnterMutex();
+        	closeSDOtransfer(&CanARD_Data, dicoEntry.nodeId, SDO_CLIENT);
+        	LeaveMutex();
         }
         else
         {
@@ -360,6 +372,7 @@ bool CanOpenController::coReadInRemoteDico(CanDicoEntry dicoEntry, int* received
     bool res = true;
     uint32_t dataSize;
 
+    EnterMutex();
     int readResult = readNetworkDict (
             &CanARD_Data,
             (UNS8) dicoEntry.nodeId,
@@ -367,6 +380,7 @@ bool CanOpenController::coReadInRemoteDico(CanDicoEntry dicoEntry, int* received
             (UNS8) dicoEntry.subindex,
             (UNS8) dicoEntry.dataType
             );
+    LeaveMutex();
 
     if( readResult == 0xFF )
     {
@@ -377,17 +391,23 @@ bool CanOpenController::coReadInRemoteDico(CanDicoEntry dicoEntry, int* received
     {
         //check received SDO
         UNS32 abortCode;
+        EnterMutex();
         readResult = getReadResultNetworkDict (&CanARD_Data, dicoEntry.nodeId, receivedData, &dataSize, &abortCode);
+        LeaveMutex();
         while ( readResult == SDO_UPLOAD_IN_PROGRESS )
         {
+        	EnterMutex();
             readResult = getReadResultNetworkDict (&CanARD_Data, dicoEntry.nodeId, receivedData, &dataSize, &abortCode);
+            LeaveMutex();
             usleep(1000);
         }
 
         if( readResult == SDO_FINISHED )
         {
             /* Finalise last SDO transfer with this node */
+        	EnterMutex();
             closeSDOtransfer(&CanARD_Data, dicoEntry.nodeId, SDO_CLIENT);
+            LeaveMutex();
         }
         else
         {
@@ -401,11 +421,15 @@ bool CanOpenController::coReadInRemoteDico(CanDicoEntry dicoEntry, int* received
 
 void CanOpenController::ooResetSdoBuffers()
 {
+	EnterMutex();
     resetSDO(&CanARD_Data);
+    LeaveMutex();
 }
 
 enum_nodeState CanOpenController::coMasterSetNmtNodeState(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd, int timeout )
 {
+	int cmdResult;
+
     //vérification du paramètre de requete NMT
     if( nmtStateCmd == UnknownRequest )
     {
@@ -421,7 +445,10 @@ enum_nodeState CanOpenController::coMasterSetNmtNodeState(nodeID_t nodeId, enum_
     }
 
     //envoit de la requête NMT sur le CAN
-    if( masterSendNMTstateChange(&CanARD_Data, (UNS8) nodeId, (UNS8) nmtStateCmd) )
+    EnterMutex();
+    cmdResult = masterSendNMTstateChange(&CanARD_Data, (UNS8) nodeId, (UNS8) nmtStateCmd);
+    LeaveMutex();
+    if( cmdResult )
     {
         LOG(Error) << "coMasterSetNmtNodeState failed (0x" << std::hex << nodeId << ";" << nmtStateCmd << ")" << endlog();
         goto failed;
@@ -437,6 +464,7 @@ enum_nodeState CanOpenController::coMasterSetNmtNodeState(nodeID_t nodeId, enum_
 enum_nodeState CanOpenController::coMasterAskNmtNodeState(nodeID_t nodeId, int timeout )
 {
     int chrono = 0;
+    int cmdResult;
 
     //vérification du paramètre node ID interdiction du broadcast
     if( nodeId == 0x00 )
@@ -446,7 +474,11 @@ enum_nodeState CanOpenController::coMasterAskNmtNodeState(nodeID_t nodeId, int t
     }
 
     //envoit de la demande d'état
-    if( masterRequestNodeState (&CanARD_Data, (UNS8) nodeId) )
+    EnterMutex();
+    cmdResult = masterRequestNodeState (&CanARD_Data, (UNS8) nodeId);
+    LeaveMutex();
+
+    if( cmdResult )
     {
         LOG(Error) << "coMasterAskNmtNodeState failed (0x" << std::hex << nodeId << ")" << endlog();
         goto failed;
@@ -469,8 +501,6 @@ enum_nodeState CanOpenController::coMasterAskNmtNodeState(nodeID_t nodeId, int t
         }
     }
 
-    //si on en est là c'est que tout s'est bien passé
-    //TODO WLA gros danger de thread safety
     m_dispatcher.dispatchNmtState(nodeId);
     return CanARD_Data.NMTable[nodeId];
 

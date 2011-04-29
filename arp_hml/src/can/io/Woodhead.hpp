@@ -23,6 +23,7 @@ namespace arp_hml
     {
     public:
     	Woodhead(const std::string& name);
+    	bool configureHook();
     	void updateHook();
 
     protected:
@@ -34,6 +35,8 @@ namespace arp_hml
     	OutputPort<bool> outBit6;
     	OutputPort<bool> outBit7;
     	OutputPort<bool> outBit8;
+
+    	UNS8* m_outputs;
 
     };
 

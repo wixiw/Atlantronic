@@ -30,6 +30,11 @@ namespace arp_hml
 
 
         InputPort<DifferentialCommand> inDifferentialCmd;
+        InputPort<bool> inIoStart;
+        InputPort<bool> inIoColorSwitch;
+        InputPort<double> inLeftDrivingPosition;
+        InputPort<double> inRightDrivingPosition;
+
         OutputPort<Odo> outOdometryMeasures;
         OutputPort<Start> outIoStart;
         OutputPort<StartColor> outIoColorSwitch;

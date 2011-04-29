@@ -8,6 +8,7 @@
 #include "Faulhaber3268Bx4.hpp"
 #include <ocl/Component.hpp>
 #include "can/dictionnary/CanARD.h"
+#include "can/wrappers/CanARDDictionnaryAccessor.hpp"
 
 using namespace arp_hml;
 using namespace arp_core;
@@ -20,7 +21,17 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         attrState(ArdDs402::UnknownDs402State),
         inSpeedCmd()
 {
-    outMeasuredSpeed.write(0.0);
+    outMeasuredPosition.write(0.0);
+    outMeasuredCurrent.write(0.0);
+
+    m_measuredPosition = CanARDDictionnaryAccessor::getINTEGER32Pointer(name,"MeasuredPosition");
+    m_measuredCurrent = CanARDDictionnaryAccessor::getINTEGER16Pointer(name,"MeasuredCurrent");
+    m_faulhaberCommand = CanARDDictionnaryAccessor::getUNS8Pointer(name,"FaulhaberCommand");
+    m_faulhaberCommandParameter = CanARDDictionnaryAccessor::getUNS32Pointer(name,"FaulhaberCommandParameter");
+    m_faulhaberCommandReturn = CanARDDictionnaryAccessor::getUNS8Pointer(name,"FaulhaberCommandReturn");
+    m_faulhaberCommandReturnCode = CanARDDictionnaryAccessor::getUNS8Pointer(name,"FaulhaberCommandReturnCode");
+    m_faulhaberCommandReturnParameter = CanARDDictionnaryAccessor::getUNS32Pointer(name,"FaulhaberCommandReturnParameter");
+    m_ds402State = CanARDDictionnaryAccessor::getUNS16Pointer(name,"Ds402State");
 
     addAttribute("attrState",attrState);
 
@@ -28,7 +39,7 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
             .doc("");
     addPort("outCommandedSpeed",outCommandedSpeed)
         .doc("");
-    addPort("outMeasuredSpeed",outMeasuredSpeed)
+    addPort("outMeasuredPosition",outMeasuredPosition)
         .doc("");
     addPort("outMeasuredCurrent",outMeasuredCurrent)
         .doc("");
@@ -51,9 +62,55 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
 
 bool Faulhaber3268Bx4::configureHook()
 {
-    bool res = CanOpenNode::configureHook();
+    bool res = true;
 
-    enableDrive();
+    if( m_measuredCurrent == NULL )
+    {
+    	res = false;
+    	LOG(Error) << "failed to configure : did not get CAN pointer m_measuredCurrent" << endlog();
+    }
+    if( m_measuredPosition == NULL )
+    {
+    	res = false;
+    	LOG(Error) << "failed to configure : did not get CAN pointer m_measuredPosition" << endlog();
+    }
+    if( m_faulhaberCommand == NULL )
+    {
+    	res = false;
+    	LOG(Error) << "failed to configure : did not get CAN pointer m_faulhaberCommand" << endlog();
+    }
+    if( m_faulhaberCommandParameter == NULL )
+    {
+    	res = false;
+    	LOG(Error) << "failed to configure : did not get CAN pointer m_faulhaberCommandParameter" << endlog();
+    }
+    if( m_faulhaberCommandReturn == NULL )
+    {
+    	res = false;
+    	LOG(Error) << "failed to configure : did not get CAN pointer m_faulhaberCommandReturn" << endlog();
+    }
+    if( m_faulhaberCommandReturnCode == NULL )
+    {
+    	res = false;
+    	LOG(Error) << "failed to configure : did not get CAN pointer m_faulhaberCommandReturnCode" << endlog();
+    }
+    if( m_faulhaberCommandReturnParameter == NULL )
+    {
+    	res = false;
+    	LOG(Error) << "failed to configure : did not get CAN pointer m_faulhaberCommandReturnParameter" << endlog();
+    }
+
+    if( res == true )
+    {
+        res = CanOpenNode::configureHook();
+
+    }
+
+    if( res == true )
+    {
+        res = enableDrive();
+
+    }
 
     return res;
 }
@@ -65,25 +122,29 @@ void Faulhaber3268Bx4::updateHook()
     //appel du parent car il log les bootUp
     CanOpenNode::updateHook();
 
+    EnterMutex();
+
     //mise à jour de la consigne de vitesse
     if( inSpeedCmd.readNewest(speed) == NewData )
     {
-        FrontSteering_FaulhaberCommand = F_CMD_V;
-        FrontSteering_FaulhaberCommandParameter = 7000*speed;
+        *m_faulhaberCommand = F_CMD_V;
+        *m_faulhaberCommandParameter = 7000*speed;
         outCommandedSpeed.write(7000*speed);
     }
 
     //lecture de la vitesse
-    outMeasuredSpeed.write( FrontSteering_MeasuredPosition );
+    outMeasuredPosition.write( *m_measuredPosition );
     //lecture du courant
-    outMeasuredCurrent.write( FrontSteering_MeasuredCurrent );
+    outMeasuredCurrent.write( *m_measuredCurrent );
 
     //lecture de la dernière commande envoyée :
-    outLastSentCommand.write( FrontSteering_FaulHaberCommandReturn );
-    outLastSentCommandParam.write( FrontSteering_FaulHaberCommandReturnParameter );
-    outLastSentCommandReturn.write( FrontSteering_FaulHaberCommandReturnCode );
+    outLastSentCommand.write( *m_faulhaberCommandReturn );
+    outLastSentCommandParam.write( *m_faulhaberCommandReturnParameter );
+    outLastSentCommandReturn.write( *m_faulhaberCommandReturnCode );
 
-    attrState = ArdDs402::getStateFromCanStatusWord( FrontSteering_Ds402State );
+    attrState = ArdDs402::getStateFromCanStatusWord( *m_ds402State );
+
+    LeaveMutex();
 }
 
 void Faulhaber3268Bx4::stopHook()
@@ -94,17 +155,19 @@ void Faulhaber3268Bx4::stopHook()
 
 void Faulhaber3268Bx4::ooSendSpeed(int speed)
 {
-    FrontSteering_FaulhaberCommand = F_CMD_V;
-    FrontSteering_FaulhaberCommandParameter = 7000*speed;
+	EnterMutex();
+    *m_faulhaberCommand = F_CMD_V;
+    *m_faulhaberCommandParameter = 7000*speed;
+    LeaveMutex();
     outCommandedSpeed.write(7000*speed);
 }
 
 void Faulhaber3268Bx4::ooReadSpeed()
 {
     int receivedData;
-    CanDicoEntry speedMeasureSdo =  CanDicoEntry(0x21,0x6069, 0, 0, 0, 4);
+    CanDicoEntry speedMeasureSdo =  CanDicoEntry(propNodeId,0x6069, 0, 0, 0, 4);
     m_coReadInRemoteDico(speedMeasureSdo,&receivedData);
-    outMeasuredSpeed.write(receivedData);
+    cout << "speed = " << receivedData << endl;
 }
 
 void Faulhaber3268Bx4::ooEnableDrive(bool enable)
@@ -131,8 +194,10 @@ bool Faulhaber3268Bx4::init()
 
 bool Faulhaber3268Bx4::enableDrive()
 {
-    FrontSteering_FaulhaberCommand = F_CMD_EN;
-    FrontSteering_FaulhaberCommandParameter = 0;
+	EnterMutex();
+    *m_faulhaberCommand = F_CMD_EN;
+    *m_faulhaberCommandParameter = 0;
+    LeaveMutex();
     //TODO WLA a remplacer par un check du resultat precedent
     usleep(1000*100);
     return true;
@@ -140,8 +205,10 @@ bool Faulhaber3268Bx4::enableDrive()
 
 bool Faulhaber3268Bx4::disableDrive()
 {
-    FrontSteering_FaulhaberCommand = F_CMD_DI;
-    FrontSteering_FaulhaberCommandParameter = 0;
+	EnterMutex();
+    *m_faulhaberCommand = F_CMD_DI;
+    *m_faulhaberCommandParameter = 0;
+    LeaveMutex();
     //TODO WLA a remplacer par un check du resultat precedent
     usleep(1000*100);
     return true;

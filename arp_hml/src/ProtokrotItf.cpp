@@ -28,7 +28,22 @@ ProtokrotItf::ProtokrotItf(const std::string& name):
 
     addPort("inDifferentialCmd",inDifferentialCmd)
             .doc("");
+    addPort("inIoStart",inIoStart)
+            .doc("");
+    addPort("inIoColorSwitch",inIoColorSwitch)
+            .doc("");
+    addPort("inLeftDrivingPosition",inLeftDrivingPosition)
+            .doc("");
+    addPort("inRightDrivingPosition",inRightDrivingPosition)
+            .doc("");
+
     addPort("outOdometryMeasures",outOdometryMeasures)
+        .doc("");
+    addPort("outIoStart",outIoStart)
+        .doc("");
+    addPort("outIoColorSwitch",outIoColorSwitch)
+        .doc("");
+    addPort("outEmergencyStop",outEmergencyStop)
         .doc("");
 }
 
@@ -46,9 +61,17 @@ void ProtokrotItf::updateHook()
         //attrCurrentCmd.v_right = 0;
     }
 
-    double dt = getPeriod();
-    attrOdometers.odo_left += attrCurrentCmd.v_left*dt;
-    attrOdometers.odo_right+= attrCurrentCmd.v_right*dt;
-
+    //lecture des valeurs des odomètres
+    double odoValue;
+    if(NewData==inLeftDrivingPosition.read(odoValue))
+    {
+    	attrOdometers.odo_left = odoValue;
+    }
+    if(NewData==inRightDrivingPosition.read(odoValue))
+    {
+    	attrOdometers.odo_right = odoValue;
+    }
     outOdometryMeasures.write(attrOdometers);
+
+
 }

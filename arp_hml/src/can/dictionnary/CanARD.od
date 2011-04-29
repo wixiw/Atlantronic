@@ -527,7 +527,7 @@
             </entry>
             <entry>
               <key type="string" value="name" />
-              <val type="string">FaulHaberCommandReturn</val>
+              <val type="string">FaulhaberCommandReturn</val>
             </entry>
           </item>
           <item type="dict" id="165350636" >
@@ -545,7 +545,7 @@
             </entry>
             <entry>
               <key type="string" value="name" />
-              <val type="string">FaulHaberCommandReturnCode</val>
+              <val type="string">FaulhaberCommandReturnCode</val>
             </entry>
           </item>
           <item type="dict" id="165350772" >
@@ -563,7 +563,7 @@
             </entry>
             <entry>
               <key type="string" value="name" />
-              <val type="string">FaulHaberCommandReturnParameter</val>
+              <val type="string">FaulhaberCommandReturnParameter</val>
             </entry>
           </item>
         </val>
@@ -729,7 +729,7 @@
             </entry>
             <entry>
               <key type="string" value="name" />
-              <val type="string">FaulHaberCommandReturn</val>
+              <val type="string">FaulhaberCommandReturn</val>
             </entry>
           </item>
           <item type="dict" id="165352284" >
@@ -747,7 +747,7 @@
             </entry>
             <entry>
               <key type="string" value="name" />
-              <val type="string">FaulHaberCommandReturnCode</val>
+              <val type="string">FaulhaberCommandReturnCode</val>
             </entry>
           </item>
           <item type="dict" id="165352420" >
@@ -765,7 +765,7 @@
             </entry>
             <entry>
               <key type="string" value="name" />
-              <val type="string">FaulHaberCommandReturnParameter</val>
+              <val type="string">FaulhaberCommandReturnParameter</val>
             </entry>
           </item>
         </val>
@@ -989,7 +989,7 @@
             </entry>
             <entry>
               <key type="string" value="name" />
-              <val type="string">FaulHaberCommandReturn</val>
+              <val type="string">FaulhaberCommandReturn</val>
             </entry>
           </item>
           <item type="dict" id="165353780" >
@@ -1007,7 +1007,7 @@
             </entry>
             <entry>
               <key type="string" value="name" />
-              <val type="string">FaulHaberCommandReturnCode</val>
+              <val type="string">FaulhaberCommandReturnCode</val>
             </entry>
           </item>
           <item type="dict" id="165353916" >
@@ -1025,7 +1025,7 @@
             </entry>
             <entry>
               <key type="string" value="name" />
-              <val type="string">FaulHaberCommandReturnParameter</val>
+              <val type="string">FaulhaberCommandReturnParameter</val>
             </entry>
           </item>
           <item type="dict" id="165354052" >

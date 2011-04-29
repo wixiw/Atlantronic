@@ -13,18 +13,18 @@ INTEGER32 FrontSteering_MeasuredPosition = 0x0;		/* Mapped at index 0x2210, subi
 INTEGER16 FrontSteering_MeasuredCurrent = 0x0;		/* Mapped at index 0x2210, subindex 0x04 */
 UNS32 FrontSteering_FaulhaberCommandParameter = 0x0;		/* Mapped at index 0x2210, subindex 0x05 */
 UNS32 FrontSteering_FaulhaberCommand = 0x0;		/* Mapped at index 0x2210, subindex 0x06 */
-UNS8 FrontSteering_FaulHaberCommandReturn = 0x0;		/* Mapped at index 0x2210, subindex 0x07 */
-UNS8 FrontSteering_FaulHaberCommandReturnCode = 0x0;		/* Mapped at index 0x2210, subindex 0x08 */
-UNS32 FrontSteering_FaulHaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2210, subindex 0x09 */
+UNS8 FrontSteering_FaulhaberCommandReturn = 0x0;		/* Mapped at index 0x2210, subindex 0x07 */
+UNS8 FrontSteering_FaulhaberCommandReturnCode = 0x0;		/* Mapped at index 0x2210, subindex 0x08 */
+UNS32 FrontSteering_FaulhaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2210, subindex 0x09 */
 INTEGER32 LeftDriving_MeasuredSpeed = 0x0;		/* Mapped at index 0x2320, subindex 0x01 */
 UNS16 LeftDriving_Ds402State = 0x0;		/* Mapped at index 0x2320, subindex 0x02 */
 INTEGER32 LeftDriving_MeasuredPosition = 0x0;		/* Mapped at index 0x2320, subindex 0x03 */
 INTEGER16 LeftDriving_MeasuredCurrent = 0x0;		/* Mapped at index 0x2320, subindex 0x04 */
 UNS32 LeftDriving_FaulhaberCommandParameter = 0x0;		/* Mapped at index 0x2320, subindex 0x05 */
 UNS8 LeftDriving_FaulhaberCommand = 0x0;		/* Mapped at index 0x2320, subindex 0x06 */
-UNS8 LeftDriving_FaulHaberCommandReturn = 0x0;		/* Mapped at index 0x2320, subindex 0x07 */
-UNS8 LeftDriving_FaulHaberCommandReturnCode = 0x0;		/* Mapped at index 0x2320, subindex 0x08 */
-UNS32 LeftDriving_FaulHaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2320, subindex 0x09 */
+UNS8 LeftDriving_FaulhaberCommandReturn = 0x0;		/* Mapped at index 0x2320, subindex 0x07 */
+UNS8 LeftDriving_FaulhaberCommandReturnCode = 0x0;		/* Mapped at index 0x2320, subindex 0x08 */
+UNS32 LeftDriving_FaulhaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2320, subindex 0x09 */
 UNS8 LeftDriving_Undefined = 0x0;		/* Mapped at index 0x2320, subindex 0x0A */
 INTEGER32 RightDriving_MeasuredSpeed = 0x0;		/* Mapped at index 0x2330, subindex 0x01 */
 UNS16 RightDriving_Ds402State = 0x0;		/* Mapped at index 0x2330, subindex 0x02 */
@@ -32,9 +32,9 @@ INTEGER32 RightDriving_MeasuredPosition = 0x0;		/* Mapped at index 0x2330, subin
 INTEGER16 RightDriving_MeasuredCurrent = 0x0;		/* Mapped at index 0x2330, subindex 0x04 */
 UNS32 RightDriving_FaulhaberCommandParameter = 0x0;		/* Mapped at index 0x2330, subindex 0x05 */
 UNS8 RightDriving_FaulhaberCommand = 0x0;		/* Mapped at index 0x2330, subindex 0x06 */
-UNS8 RightDriving_FaulHaberCommandReturn = 0x0;		/* Mapped at index 0x2330, subindex 0x07 */
-UNS8 RightDriving_FaulHaberCommandReturnCode = 0x0;		/* Mapped at index 0x2330, subindex 0x08 */
-UNS32 RightDriving_FaulHaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2330, subindex 0x09 */
+UNS8 RightDriving_FaulhaberCommandReturn = 0x0;		/* Mapped at index 0x2330, subindex 0x07 */
+UNS8 RightDriving_FaulhaberCommandReturnCode = 0x0;		/* Mapped at index 0x2330, subindex 0x08 */
+UNS32 RightDriving_FaulhaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2330, subindex 0x09 */
 
 /**************************************************************************/
 /* Declaration of value range types                                       */
@@ -677,9 +677,9 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, int16, sizeof (INTEGER16), (void*)&FrontSteering_MeasuredCurrent },
                        { RW, uint32, sizeof (UNS32), (void*)&FrontSteering_FaulhaberCommandParameter },
                        { RW, uint32, sizeof (UNS32), (void*)&FrontSteering_FaulhaberCommand },
-                       { RW, uint8, sizeof (UNS8), (void*)&FrontSteering_FaulHaberCommandReturn },
-                       { RW, uint8, sizeof (UNS8), (void*)&FrontSteering_FaulHaberCommandReturnCode },
-                       { RW, uint32, sizeof (UNS32), (void*)&FrontSteering_FaulHaberCommandReturnParameter }
+                       { RW, uint8, sizeof (UNS8), (void*)&FrontSteering_FaulhaberCommandReturn },
+                       { RW, uint8, sizeof (UNS8), (void*)&FrontSteering_FaulhaberCommandReturnCode },
+                       { RW, uint32, sizeof (UNS32), (void*)&FrontSteering_FaulhaberCommandReturnParameter }
                      };
 
 /* index 0x2320 :   Mapped variable LeftDriving */
@@ -707,9 +707,9 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, int16, sizeof (INTEGER16), (void*)&LeftDriving_MeasuredCurrent },
                        { RW, uint32, sizeof (UNS32), (void*)&LeftDriving_FaulhaberCommandParameter },
                        { RW, uint8, sizeof (UNS8), (void*)&LeftDriving_FaulhaberCommand },
-                       { RW, uint8, sizeof (UNS8), (void*)&LeftDriving_FaulHaberCommandReturn },
-                       { RW, uint8, sizeof (UNS8), (void*)&LeftDriving_FaulHaberCommandReturnCode },
-                       { RW, uint32, sizeof (UNS32), (void*)&LeftDriving_FaulHaberCommandReturnParameter },
+                       { RW, uint8, sizeof (UNS8), (void*)&LeftDriving_FaulhaberCommandReturn },
+                       { RW, uint8, sizeof (UNS8), (void*)&LeftDriving_FaulhaberCommandReturnCode },
+                       { RW, uint32, sizeof (UNS32), (void*)&LeftDriving_FaulhaberCommandReturnParameter },
                        { RW, uint8, sizeof (UNS8), (void*)&LeftDriving_Undefined }
                      };
 
@@ -737,9 +737,9 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, int16, sizeof (INTEGER16), (void*)&RightDriving_MeasuredCurrent },
                        { RW, uint32, sizeof (UNS32), (void*)&RightDriving_FaulhaberCommandParameter },
                        { RW, uint8, sizeof (UNS8), (void*)&RightDriving_FaulhaberCommand },
-                       { RW, uint8, sizeof (UNS8), (void*)&RightDriving_FaulHaberCommandReturn },
-                       { RW, uint8, sizeof (UNS8), (void*)&RightDriving_FaulHaberCommandReturnCode },
-                       { RW, uint32, sizeof (UNS32), (void*)&RightDriving_FaulHaberCommandReturnParameter }
+                       { RW, uint8, sizeof (UNS8), (void*)&RightDriving_FaulhaberCommandReturn },
+                       { RW, uint8, sizeof (UNS8), (void*)&RightDriving_FaulhaberCommandReturnCode },
+                       { RW, uint32, sizeof (UNS32), (void*)&RightDriving_FaulhaberCommandReturnParameter }
                      };
 
 /**************************************************************************/

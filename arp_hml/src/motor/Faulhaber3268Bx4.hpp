@@ -40,20 +40,27 @@ namespace arp_hml
         static const int F_CMD_EN = 0x0F;
         static const int F_CMD_V = 0x93;
 
-    private:
+    protected:
         ArdDs402::enum_DS402_state attrState;
 
         InputPort<double> inSpeedCmd;
 
         OutputPort<double> outCommandedSpeed;
-        OutputPort<double> outMeasuredSpeed;
+        OutputPort<double> outMeasuredPosition;
         OutputPort<double> outMeasuredCurrent;
 
         OutputPort<int> outLastSentCommand;
         OutputPort<double> outLastSentCommandParam;
         OutputPort<int> outLastSentCommandReturn;
 
-
+        INTEGER32* m_measuredPosition;
+        INTEGER16* m_measuredCurrent;
+        UNS8* m_faulhaberCommand;
+        UNS32* m_faulhaberCommandParameter;
+        UNS8* m_faulhaberCommandReturn;
+        UNS8* m_faulhaberCommandReturnCode;
+        UNS32* m_faulhaberCommandReturnParameter;
+        UNS16* m_ds402State;
 
         void ooSendSpeed( int speed);
         void ooReadSpeed();

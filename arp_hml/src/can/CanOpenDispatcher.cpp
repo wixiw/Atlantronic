@@ -179,7 +179,9 @@ void CanOpenDispatcher::dispatchNmtState()
         else
         {
             //on récupère leur état NMT dans la table
+        	EnterMutex();
             nodeState = CanARD_Data.NMTable[foundNodeId];
+            LeaveMutex();
             (*itPort).second->outNmtState.write(nodeState);
         }
     }
@@ -188,6 +190,7 @@ void CanOpenDispatcher::dispatchNmtState()
 bool CanOpenDispatcher::dispatchNmtState(nodeID_t nodeId)
 {
     map< nodeID_t, nodeRegistration_t* >::iterator itPort;
+    e_nodeState currentNodeState;
 
     LOG(Info) << "dispatchNmtState node : 0x" << std::hex << nodeId << " state : " << CanARD_Data.NMTable[nodeId] << endlog();
 
@@ -210,7 +213,10 @@ bool CanOpenDispatcher::dispatchNmtState(nodeID_t nodeId)
          goto failed;
      }
 
-     (*itPort).second->outNmtState.write(CanARD_Data.NMTable[nodeId]);
+     EnterMutex();
+     currentNodeState = CanARD_Data.NMTable[nodeId];
+     LeaveMutex();
+     (*itPort).second->outNmtState.write(currentNodeState);
      goto success;
 
      success:

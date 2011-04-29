@@ -10,18 +10,21 @@ print.log(Warning, "début déploiment arp_hml");
 
 
 loadComponent("Joystick","arp_hml::LogitechExtreme3D");
-//loadComponent("PcBoard","arp_hml::PCM3362");
+loadComponent("PcBoard","arp_hml::SimplePCM3362");
 loadComponent("Can1","arp_hml::CanOpenController");
 loadComponent("LeftDriving","arp_hml::Faulhaber3268Bx4");
 loadComponent("RightDriving","arp_hml::Faulhaber3268Bx4");
 loadComponent("Io","arp_hml::Woodhead");
+loadComponent("Protokrot","arp_hml::ProtokrotItf");
 
 setActivity("Joystick",0.050,0,ORO_SCHED_OTHER);
-//setActivity("PcBoard",0.050,0,ORO_SCHED_OTHER);
+setActivity("PcBoard",0.050,0,ORO_SCHED_OTHER);
 setActivity("Can1",0.050,0,ORO_SCHED_OTHER);
 setActivity("LeftDriving",0.100,0,ORO_SCHED_OTHER);
 setActivity("RightDriving",0.100,0,ORO_SCHED_OTHER);
 setActivity("Io",0.100,0,ORO_SCHED_OTHER);
+setActivity("Protokrot",0.050,0,ORO_SCHED_OTHER);
+
 
 //connect("Motor.inSpeedCmd", "Joystick.outY",ConnPolicy());
 //addPeer("Motor", "Can1");
@@ -30,14 +33,16 @@ addPeer("RightDriving", "Can1");
 addPeer("Io", "Can1");
 
 Joystick.configure();
-//PcBoard.configure();
+PcBoard.configure();
 //TODO comprendre pourquoi segfault ! (à mettre après Can1 pour ne pas etre embeté)
 //Motor.configure();
 Can1.configure(); 
+Protokrot.configure();
 
 Joystick.start();
-//PcBoard.start();
+PcBoard.start();
 Can1.start();
+Protokrot.start();
 
 yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;
 yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;
@@ -54,7 +59,36 @@ LeftDriving.start();
 RightDriving.start();
 Io.start();
 
-//Can1.prgConfigureCan1.start();
+
+
+/* Connection de l'interface Protokrot */
+connect("Protokrot.inIoStart", "Io.outBit2",ConnPolicy());
+connect("Protokrot.inIoColorSwitch", "Io.outBit6",ConnPolicy());
+connect("Protokrot.inLeftDrivingPosition", "LeftDriving.outMeasuredPosition",ConnPolicy());
+connect("Protokrot.inRightDrivingPosition", "RightDriving.outMeasuredPosition",ConnPolicy());
+var ConnPolicy differential_command;
+differential_command.transport = 3; // ROS == 3
+differential_command.name_id = "/Protokrot/differential_command"; // ros topic
+stream("Protokrot.inDifferentialCmd", differential_command);
+var ConnPolicy odo;
+odo.transport = 3; // ROS == 3
+odo.name_id = "/Protokrot/odo"; // ros topic
+stream("Protokrot.outOdometryMeasures", odo);
+var ConnPolicy emergency_stop;
+emergency_stop.transport = 3; // ROS == 3
+emergency_stop.name_id = "/Protokrot/emergency_stop"; // ros topic
+stream("Protokrot.outEmergencyStop", emergency_stop);
+var ConnPolicy start;
+start.transport = 3; // ROS == 3
+start.name_id = "/Protokrot/start"; // ros topic
+stream("Protokrot.outIoStart", start);
+var ConnPolicy color;
+color.transport = 3; // ROS == 3
+color.name_id = "/Protokrot/color"; // ros topic
+stream("Protokrot.outIoColorSwitch", color);
+
+
+
 
 print.log(Warning, "Fin déploiment arp_hml");
 print.log(Warning, "====================");
