@@ -1,0 +1,1 @@
+orocos_component(arp-master Master.cpp Logitech3DTeleop.cpp)
