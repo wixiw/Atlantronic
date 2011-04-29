@@ -14,18 +14,20 @@ loadComponent("Joystick","arp_hml::LogitechExtreme3D");
 loadComponent("Can1","arp_hml::CanOpenController");
 loadComponent("LeftDriving","arp_hml::Faulhaber3268Bx4");
 loadComponent("RightDriving","arp_hml::Faulhaber3268Bx4");
+loadComponent("Io","arp_hml::Woodhead");
 
 setActivity("Joystick",0.050,0,ORO_SCHED_OTHER);
 //setActivity("PcBoard",0.050,0,ORO_SCHED_OTHER);
 setActivity("Can1",0.050,0,ORO_SCHED_OTHER);
 setActivity("LeftDriving",0.100,0,ORO_SCHED_OTHER);
 setActivity("RightDriving",0.100,0,ORO_SCHED_OTHER);
+setActivity("Io",0.100,0,ORO_SCHED_OTHER);
 
 //connect("Motor.inSpeedCmd", "Joystick.outY",ConnPolicy());
 //addPeer("Motor", "Can1");
 addPeer("LeftDriving", "Can1");
 addPeer("RightDriving", "Can1");
-
+addPeer("Io", "Can1");
 
 Joystick.configure();
 //PcBoard.configure();
@@ -47,8 +49,10 @@ yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yi
 
 LeftDriving.configure();
 RightDriving.configure();
+Io.configure();
 LeftDriving.start();
 RightDriving.start();
+Io.start();
 
 //Can1.prgConfigureCan1.start();
 

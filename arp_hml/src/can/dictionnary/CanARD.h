@@ -12,6 +12,7 @@ const indextable * CanARD_scanIndexOD (UNS16 wIndex, UNS32 * errorCode, ODCallba
 
 /* Master node data struct */
 extern CO_Data CanARD_Data;
+extern UNS8 Woodhead_outputs;		/* Mapped at index 0x2050, subindex 0x01 */
 extern INTEGER32 FrontSteering_MeasuredSpeed;		/* Mapped at index 0x2210, subindex 0x01 */
 extern UNS16 FrontSteering_Ds402State;		/* Mapped at index 0x2210, subindex 0x02 */
 extern INTEGER32 FrontSteering_MeasuredPosition;		/* Mapped at index 0x2210, subindex 0x03 */
