@@ -2,7 +2,7 @@
 #
 
 #chargement du driver
-modprobe sja1000_isa irq=11,11 mem=0xD0000,0xD0200 ocr=0x5e,0x5e cdr=0,0
+modprobe sja1000_isa irq=10,10 mem=0xD0000,0xD0200 ocr=0x5e,0x5e cdr=0,0
 
 #chargement de l'interface dans ifconfig
 ip link set can0 type can bitrate 250000 restart-ms 1000

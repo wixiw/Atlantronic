@@ -11,6 +11,8 @@
 #include <taskcontexts/ARDTaskContext.hpp>
 #include <arp_core/DifferentialCommand.h>
 #include <arp_core/Odo.h>
+#include <arp_core/Start.h>
+#include <arp_core/StartColor.h>
 
 using namespace arp_core;
 
@@ -29,6 +31,9 @@ namespace arp_hml
 
         InputPort<DifferentialCommand> inDifferentialCmd;
         OutputPort<Odo> outOdometryMeasures;
+        OutputPort<Start> outIoStart;
+        OutputPort<StartColor> outIoColorSwitch;
+        OutputPort<bool> outEmergencyStop;
     };
 
 }
