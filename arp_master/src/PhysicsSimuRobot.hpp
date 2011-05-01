@@ -46,7 +46,7 @@ public:
      * \param orient Robot initial orientation (in radian)
      * \param one_meter_in_pixel number of pixel corresponding to 1 meter in robot_image
      */
-  SimuRobot(const ros::NodeHandle& nh, const Vector2& pos, double orient, double one_meter_in_pixel);
+  SimuRobot(const ros::NodeHandle& nh, const Vector2& pos, double orient);
 
   /**
    * update one time step and plot trace
@@ -155,10 +155,6 @@ private:
    */
   ros::WallTime last_command_time_;
 
-  /**
-   * number of pixels corresponding to 1 meter
-   */
-  double meter_;
 
 };
 typedef boost::shared_ptr<SimuRobot> SimuRobotPtr;

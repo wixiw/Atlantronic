@@ -37,26 +37,16 @@ class PhysicsSimu
 {
 
 private:
-/**
- * used to cadence thread for physical simulation.
- * Only for cadencing. The actual time is measured internaly by SimuRobot
- */
-  static const double default_dt_ms = 20.0;
-
-  /**
-   * one meter in pixel
-   */
-  static const double one_meter_in_pixel = 200.0;
 
   /**
    * table length in pixel. Should be the width of table image
    */
-  static const double table_length_in_pixel = 609.0;
+  static const double table_length_in_meter = 3.045;
 
   /**
    * table width in pixel. Should be the height of table image
    */
-  static const double table_width_in_pixel = 429.0;  
+  static const double table_width_in_meter = 2.145;
 public:
 
   /**
@@ -75,19 +65,13 @@ public:
    */
   void spawnRobot(double x, double y, double angle);
 
+  /**
+     * should be called each time step
+     * Measure actual time and call SimuRobot update
+     */
+    void updateRobot();
+
 private:
-  /**
-   * called by timer. Manage physical simulation
-   */
-  void onUpdate();
-
-
-  /**
-   * called by onUpdate
-   * Measure actual time and call SimuRobot update
-   */
-  void updateRobot();
-
 
   /**
    * used by respawn service

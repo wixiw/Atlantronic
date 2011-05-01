@@ -6,7 +6,7 @@ using namespace arp_core;
 using namespace arp_master;
 
 
-SimuRobot::SimuRobot(const ros::NodeHandle& nh, const Vector2& pos, double orient, double one_meter_in_pixel)
+SimuRobot::SimuRobot(const ros::NodeHandle& nh, const Vector2& pos, double orient)
 : nh_(nh)
 , pos_(pos)
 , orient_(orient)
@@ -16,7 +16,6 @@ SimuRobot::SimuRobot(const ros::NodeHandle& nh, const Vector2& pos, double orien
 , v_right_(0.0)
 , lin_vel_(0.0)
 , ang_vel_(0.0)
-, meter_(one_meter_in_pixel)
 , odo_left_(0.0)
 , odo_right_(0.0)
 {
@@ -53,7 +52,6 @@ void SimuRobot::update(double dt, double canvas_width, double canvas_height)
     v_right_ = 0.0f;
     v_left_ = 0.0f;
   }
-
 
   // Calcul du Twist
   lin_vel_ = 0.25 * ( v_right_ + v_left_ ) * wheel_diameter;
