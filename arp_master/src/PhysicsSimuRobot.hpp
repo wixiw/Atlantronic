@@ -1,5 +1,5 @@
 /*
- * SimuRobot.hpp
+ * PhysicsSimuRobot.hpp
  *
  *  Created on: 15 apr. 2011
  *      Author: boris
@@ -27,7 +27,7 @@ namespace arp_master
 /** \ingroup arp_master
 * \nonstableyet
 *
-* \class SimuRobot
+* \class PhysicsSimuRobot
 *
 * \brief Robot Simulation
 *
@@ -36,7 +36,7 @@ namespace arp_master
 *
 */
 
-class SimuRobot
+class PhysicsSimuRobot
 {
 public:
     /**
@@ -46,7 +46,7 @@ public:
      * \param orient Robot initial orientation (in radian)
      * \param one_meter_in_pixel number of pixel corresponding to 1 meter in robot_image
      */
-  SimuRobot(const ros::NodeHandle& nh, const Vector2& pos, double orient);
+  PhysicsSimuRobot(const ros::NodeHandle& nh, const Vector2& pos, double orient);
 
   /**
    * update one time step and plot trace
@@ -74,7 +74,7 @@ private:
 
   // Callbacks
   /**
-   * called every time SimuRobot receives a DifferentialCommand message
+   * called every time PhysicsSimuRobot receives a DifferentialCommand message
    */
   void commandCallback(const arp_core::DifferentialCommandConstPtr& c);
 
@@ -92,16 +92,6 @@ private:
    * current orientation
    */
   Rotation2 orient_;
-
-  /**
-   * last position (translation)
-   */
-  Vector2 old_pos_;
-
-  /**
-   * last orientation
-   */
-  Rotation2 old_orient_;
 
   /**
    * desired angular velocity (in rad/sec) for left wheel (received via DifferentialMessage)
@@ -157,7 +147,7 @@ private:
 
 
 };
-typedef boost::shared_ptr<SimuRobot> SimuRobotPtr;
+typedef boost::shared_ptr<PhysicsSimuRobot> PhysicsSimuRobotPtr;
 
 }
 

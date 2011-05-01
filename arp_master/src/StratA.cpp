@@ -16,7 +16,8 @@ StratA::StratA():
   color_sub_ = nh_.subscribe("color", 1, &StratA::colorCallback, this);
   start_sub_ = nh_.subscribe("start", 1, &StratA::startCallback, this);
   loc_spawn_ = nh_.serviceClient<arp_master::Spawn>("Localizator/respawn");
-  simu_spawn_ = nh_.serviceClient<arp_master::Spawn>("ARDSimu/respawn");
+  simu_spawn_ = nh_.serviceClient<arp_master::Spawn>("PhysicsSimu/respawn");
+  robot_setpen_ = nh_.serviceClient<arp_master::SetPen>("Protokrot/set_pen");
 }
 
 StratA::~StratA()
@@ -138,14 +139,16 @@ void StratA::colorCallback(const StartColorConstPtr& o)
       srv.request.x = START_POSITION_RED_X;
       srv.request.y = START_POSITION_RED_Y;
       srv.request.theta = START_POSITION_RED_THETA;
+
+      if(simu_spawn_.call(srv))
+        ROS_INFO("Strat sent respawn call to PhysicsSimulator");
+      else
+        ROS_INFO("Strat failed to send respawn call to PhysicsSimulator");
       if(loc_spawn_.call(srv))
         ROS_INFO("Strat sent respawn call to Localizator");
       else
         ROS_INFO("Strat failed to send respawn call to Localizator");
-      if(simu_spawn_.call(srv))
-        ROS_INFO("Strat sent respawn call to Simulator");
-      else
-        ROS_INFO("Strat failed to send respawn call to Simulator");
+
     }
     else if( o->color.compare("blue") == 0 )
     {
@@ -155,14 +158,15 @@ void StratA::colorCallback(const StartColorConstPtr& o)
       srv.request.x = -START_POSITION_RED_X;
       srv.request.y = START_POSITION_RED_Y;
       srv.request.theta = fmod(START_POSITION_RED_THETA + PI, 2*PI);
+      if(simu_spawn_.call(srv))
+        ROS_INFO("Strat sent respawn call to PhysicsSimulator");
+      else
+        ROS_INFO("Strat failed to send respawn call to PhysicsSimulator");
       if(loc_spawn_.call(srv))
         ROS_INFO("Strat sent respawn call to Localizator");
       else
         ROS_INFO("Strat failed to send respawn call to Localizator");
-      if(simu_spawn_.call(srv))
-        ROS_INFO("Strat sent respawn call to Simulator");
-      else
-        ROS_INFO("Strat failed to send respawn call to Simulator");
+
     }
     else
     {
@@ -179,7 +183,19 @@ void StratA::startCallback(const StartConstPtr& s)
     {
       start_ = true;
       ROS_INFO("Start !");
+
+      arp_master::SetPen srv_setpen;
+      srv_setpen.request.r = 0xb3;
+      srv_setpen.request.g = 0xb8;
+      srv_setpen.request.b = 0xff;
+      srv_setpen.request.width = 3;
+      srv_setpen.request.off = false;
+      if(robot_setpen_.call(srv_setpen))
+        ROS_INFO("Strat sent set_pen call to Protokrot");
+      else
+        ROS_INFO("Strat failed to send set_pen off call to Protokrot");
     }
+
   }
 }
 

@@ -7,22 +7,21 @@
 
 using namespace arp_master;
 
-SimuFrame::SimuFrame()
+GraphicsSimuFrame::GraphicsSimuFrame()
 : wxFrame(NULL,
           wxID_ANY,
-          wxT("ARDSimulator"), 
+          wxT("GraphicsSimu"),
           wxDefaultPosition, 
           wxSize(table_length_in_pixel, table_width_in_pixel),
           wxDEFAULT_FRAME_STYLE)
-, nh_(ros::NodeHandle("ARDSimu"))
+, nh_(ros::NodeHandle("GraphicsSimu"))
 {
-  srand(time(NULL));
 
   update_timer_ = new wxTimer(this);
-  update_timer_->Start(default_dt_ms);
+  update_timer_->Start(20.);
 
-  Connect(update_timer_->GetId(), wxEVT_TIMER, wxTimerEventHandler(SimuFrame::onUpdate), NULL, this);
-  Connect(wxEVT_PAINT, wxPaintEventHandler(SimuFrame::onPaint), NULL, this);
+  Connect(update_timer_->GetId(), wxEVT_TIMER, wxTimerEventHandler(GraphicsSimuFrame::onUpdate), NULL, this);
+  Connect(wxEVT_PAINT, wxPaintEventHandler(GraphicsSimuFrame::onPaint), NULL, this);
 
 
   std::string images_path = ros::package::getPath("arp_master") + "/ressource/images/";
@@ -42,50 +41,36 @@ SimuFrame::SimuFrame()
   path_dc_.SelectObject(table_bitmap_);
   clear();
 
-  clear_srv_ = nh_.advertiseService("clear", &SimuFrame::clearCallback, this);
-  respawn_srv_ = nh_.advertiseService("respawn", &SimuFrame::respawnCallback, this);
+  clear_srv_ = nh_.advertiseService("clear", &GraphicsSimuFrame::clearCallback, this);
 
-  ROS_INFO("Starting ARDSimu with node name %s", ros::this_node::getName().c_str()) ;
+  ROS_INFO("Starting GraphicsSimulator with node name %s", ros::this_node::getName().c_str()) ;
 
-  spawnRobot(0.0, 0.0, 0.0);
+  GraphicsSimuRobotPtr t(new GraphicsSimuRobot(ros::NodeHandle("Protokrot"), robot_image_, Vector2(0., 0.), 0., one_meter_in_pixel));
+  mRobot = t;
+
 }
 
-SimuFrame::~SimuFrame()
+GraphicsSimuFrame::~GraphicsSimuFrame()
 {
   delete update_timer_;
 }
 
-bool SimuFrame::respawnCallback(Spawn::Request& req, Spawn::Response& res)
-{
-  ROS_INFO("Respawing ARDSimu to x=%f, y=%f and theta=%f", req.x, req.y, req.theta);
-  mRobot.reset();  //"deleting" shared_ptr
-  spawnRobot(req.x, req.y, req.theta);
-  clear();
-  return true;
-}
 
-
-void SimuFrame::spawnRobot(double x, double y, double angle)
-{
-  SimuRobotPtr t(new SimuRobot(ros::NodeHandle("Protokrot"), robot_image_, Vector2(x, y), angle, one_meter_in_pixel));
-  mRobot = t;
-
-  ROS_INFO("Spawning robot [%s] at x=[%f], y=[%f], theta=[%f]", "Protokrot", x, y, angle);
-
-  return;
-}
-
-void SimuFrame::clear()
+void GraphicsSimuFrame::clear()
 {
   path_dc_.SetBackground(wxBrush( table_image_ ));
   path_dc_.Clear();
 }
 
-void SimuFrame::onUpdate(wxTimerEvent& evt)
+void GraphicsSimuFrame::onUpdate(wxTimerEvent& evt)
 {
   ros::spinOnce();
 
-  updateRobot();
+  mRobot->update(path_dc_,
+                 table_length_in_pixel/one_meter_in_pixel,
+                 table_width_in_pixel/one_meter_in_pixel );
+
+  Refresh();
 
   if (!ros::ok())
   {
@@ -93,39 +78,19 @@ void SimuFrame::onUpdate(wxTimerEvent& evt)
   }
 }
 
-void SimuFrame::onPaint(wxPaintEvent& evt)
+void GraphicsSimuFrame::onPaint(wxPaintEvent& evt)
 {
   wxPaintDC dc(this);
 
   dc.DrawBitmap(table_bitmap_, 0, 0, true);
 
   mRobot->paint(dc);
-}
-
-void SimuFrame::updateRobot()
-{
-  if (last_robot_update_.isZero())
-  {
-    last_robot_update_ = ros::WallTime::now();
-    return;
-  }
-
-  Refresh();
-
-  ros::WallTime t = ros::WallTime::now();
-  double dt = (t - last_robot_update_).toSec();
-  last_robot_update_ = t;
-  mRobot->update(dt, 
-                 path_dc_, 
-                 table_length_in_pixel/one_meter_in_pixel, 
-                 table_width_in_pixel/one_meter_in_pixel );
 
 }
 
-
-bool SimuFrame::clearCallback(std_srvs::Empty::Request&, std_srvs::Empty::Response&)
+bool GraphicsSimuFrame::clearCallback(std_srvs::Empty::Request&, std_srvs::Empty::Response&)
 {
-  ROS_INFO("Clearing ARDSimu.");
+  ROS_INFO("Clearing GraphicsSimulator.");
   clear();
   return true;
 }

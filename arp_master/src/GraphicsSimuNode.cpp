@@ -5,7 +5,7 @@
 
 #include <boost/thread.hpp>
 
-#include "SimuFrame.hpp"
+#include "GraphicsSimuFrame.hpp"
 
 
 namespace arp_master
@@ -31,12 +31,12 @@ public:
       local_argv_[ i ] = strdup( wxString( argv[ i ] ).mb_str() );
     }
 
-    ros::init(argc, local_argv_, "ARDSimu");
+    ros::init(argc, local_argv_, "GraphicsSimulator");
     nh_.reset(new ros::NodeHandle);
 
     wxInitAllImageHandlers();
 
-    arp_master::SimuFrame* frame = new arp_master::SimuFrame();
+    arp_master::GraphicsSimuFrame* frame = new arp_master::GraphicsSimuFrame();
 
     SetTopWindow(frame);
     frame->Show();

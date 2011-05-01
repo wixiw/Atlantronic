@@ -26,17 +26,18 @@ PhysicsSimu::~PhysicsSimu()
 
 bool PhysicsSimu::respawnCallback(Spawn::Request& req, Spawn::Response& res)
 {
-  ROS_INFO("Respawing ARDSimu to x=%f, y=%f and theta=%f", req.x, req.y, req.theta);
+  ROS_INFO("Respawing Simu to x=%f, y=%f and theta=%f", req.x, req.y, req.theta);
   mRobot.reset();  //"deleting" shared_ptr
   spawnRobot(req.x, req.y, req.theta);
   res.name = "Protokrot";
+  this->updateRobot();
   return true;
 }
 
 
 void PhysicsSimu::spawnRobot(double x, double y, double angle)
 {
-  SimuRobotPtr t(new SimuRobot(ros::NodeHandle("Protokrot"), Vector2(x, y), angle));
+  PhysicsSimuRobotPtr t(new PhysicsSimuRobot(ros::NodeHandle("Protokrot"), Vector2(x, y), angle));
   mRobot = t;
 
   ROS_INFO("Spawning robot [%s] at x=[%f], y=[%f], theta=[%f]", "Protokrot", x, y, angle);

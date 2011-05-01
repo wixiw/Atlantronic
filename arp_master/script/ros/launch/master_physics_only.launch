@@ -1,6 +1,5 @@
 <launch>
 <node name="PhysicsSimu"     pkg="arp_master"  type="PhysicsSimuNode"     args="" output="screen"/>
-<node name="GraphicsSimu"     pkg="arp_master"  type="GraphicsSimuNode"     args="" output="screen"/>
 <node name="Localizator"  pkg="arp_master"  type="LocalizatorNode"  args="" output="screen"/>
 <node name="Command"    pkg="arp_master"  type="CommandNode"    args="" output="screen"/>
 <node name="MotionControl"  pkg="arp_master"  type="MotionControlNode"    args="" output="screen"/>

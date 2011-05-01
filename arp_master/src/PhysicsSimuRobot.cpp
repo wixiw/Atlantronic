@@ -6,12 +6,10 @@ using namespace arp_core;
 using namespace arp_master;
 
 
-SimuRobot::SimuRobot(const ros::NodeHandle& nh, const Vector2& pos, double orient)
+PhysicsSimuRobot::PhysicsSimuRobot(const ros::NodeHandle& nh, const Vector2& pos, double orient)
 : nh_(nh)
 , pos_(pos)
 , orient_(orient)
-, old_pos_(pos)
-, old_orient_(orient)
 , v_left_(0.0)
 , v_right_(0.0)
 , lin_vel_(0.0)
@@ -27,7 +25,7 @@ SimuRobot::SimuRobot(const ros::NodeHandle& nh, const Vector2& pos, double orien
   nh_.setParam("/Protokrot/wheel_diameter", wheel_diameter);
 
   // Suscribers
-  differential_command_sub_ = nh_.subscribe("differential_command", 1, &SimuRobot::commandCallback, this);
+  differential_command_sub_ = nh_.subscribe("differential_command", 1, &PhysicsSimuRobot::commandCallback, this);
 
   // Publishers
   pose_pub_ = nh_.advertise<arp_core::Pose>("pose", 1);
@@ -36,7 +34,7 @@ SimuRobot::SimuRobot(const ros::NodeHandle& nh, const Vector2& pos, double orien
 }
 
 
-void SimuRobot::commandCallback(const arp_core::DifferentialCommandConstPtr& c)
+void PhysicsSimuRobot::commandCallback(const arp_core::DifferentialCommandConstPtr& c)
 {
   last_command_time_ = ros::WallTime::now();
   v_left_ = c->v_left;
@@ -44,7 +42,7 @@ void SimuRobot::commandCallback(const arp_core::DifferentialCommandConstPtr& c)
 }
 
 
-void SimuRobot::update(double dt, double canvas_width, double canvas_height)
+void PhysicsSimuRobot::update(double dt, double canvas_width, double canvas_height)
 {
   // Maintient de la commande pendant 0.2 seconde
   if (ros::WallTime::now() - last_command_time_ > ros::WallDuration(0.2))
@@ -102,9 +100,6 @@ void SimuRobot::update(double dt, double canvas_width, double canvas_height)
 
   ROS_DEBUG("[%s]: pos_x: %f pos_y: %f theta: %f", nh_.getNamespace().c_str(), pos_.x(), pos_.y(), orient_.angle());
 
-  // Buffer
-  old_pos_ = pos_;
-  old_orient_ = orient_;
 }
 
 

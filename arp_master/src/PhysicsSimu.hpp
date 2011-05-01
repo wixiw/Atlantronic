@@ -97,7 +97,7 @@ private:
   /**
    * robot
    */
-  SimuRobotPtr mRobot;
+  PhysicsSimuRobotPtr mRobot;
 
   /**
    * used to compute actual time step

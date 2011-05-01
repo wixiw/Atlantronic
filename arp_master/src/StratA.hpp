@@ -18,6 +18,8 @@
 #include <arp_core/Start.h>
 
 #include <arp_master/Spawn.h>
+#include <std_srvs/Empty.h>
+#include <arp_master/SetPen.h>
 
 #include "math/math.hpp"
 #include "WayPoint.hpp"
@@ -141,6 +143,11 @@ private:
    * used to call spawn service of Simulator
    */
   ros::ServiceClient simu_spawn_;
+
+  /**
+   * used to call setpen service of GraphicsSimuRobot
+   */
+  ros::ServiceClient robot_setpen_;
 
   /**
    * is match begin ?

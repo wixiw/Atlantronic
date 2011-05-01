@@ -14,10 +14,6 @@
 #include "math/Geometry.hpp"
 
 #include <arp_core/Pose.h>
-#include <arp_core/Velocity.h>
-#include <arp_core/DifferentialCommand.h>
-#include <arp_core/Odo.h>
-
 #include <arp_master/SetPen.h>
 
 
@@ -43,27 +39,26 @@ namespace arp_master
 *
 */
 
-class SimuRobot
+class GraphicsSimuRobot
 {
 public:
     /**
      * Constructor
-     * \param nh NodeHandle of Physical simulator
+     * \param nh NodeHandle of Graphical simulator
      * \param robot_image wxImage of robot.
      * \param pos Robot initial translation
      * \param orient Robot initial orientation (in radian)
      * \param one_meter_in_pixel number of pixel corresponding to 1 meter in robot_image
      */
-  SimuRobot(const ros::NodeHandle& nh, const wxImage& robot_image, const Vector2& pos, double orient, double one_meter_in_pixel);
+    GraphicsSimuRobot(const ros::NodeHandle& nh, const wxImage& robot_image, const Vector2& pos, double orient, double one_meter_in_pixel);
 
   /**
    * update one time step and plot trace
-   * \param dt time step in sec
    * \param path_dc wx Device Controller (used by the pen to plot trace)
    * \param canvas_width table width in meter
    * \param canvas_height table height in meter
    */
-  void update(double dt, wxMemoryDC& path_dc, float canvas_width, float canvas_height);
+  void update(wxMemoryDC& path_dc, float canvas_width, float canvas_height);
 
   /**
    * plot robot
@@ -80,22 +75,12 @@ private:
   static const int DEFAULT_PEN_G = 0xb8;
   static const int DEFAULT_PEN_B = 0xff;
 
-  /**
-   * distance between wheels in meter
-   */
-  double base_line;
-
-  /**
-   * wheel diameter in meter
-   */
-  double wheel_diameter;
-
 
   // Callbacks
   /**
-   * called every time SimuRobot receives a DifferentialCommand message
+   * called every time SimuRobot receives a Pose message
    */
-  void commandCallback(const arp_core::DifferentialCommandConstPtr& c);
+  void poseCallback(const arp_core::PoseConstPtr& c);
 
   /**
      * called every time SimuRobot receives a SetPen service call
@@ -108,26 +93,16 @@ private:
   ros::NodeHandle nh_;
 
   /**
-   * wx Image of Robot.
-   */
-  wxImage robot_image_;
+     * current position (translation)
+     */
+    Vector2 pos_;
 
-  /**
-   * associated bitmap
-   */
-  wxBitmap robot_;
+    /**
+     * current orientation
+     */
+    Rotation2 orient_;
 
-  /**
-   * current position (translation)
-   */
-  Vector2 pos_;
-
-  /**
-   * current orientation
-   */
-  Rotation2 orient_;
-
-  /**
+    /**
    * last position (translation)
    */
   Vector2 old_pos_;
@@ -138,24 +113,14 @@ private:
   Rotation2 old_orient_;
 
   /**
-   * desired angular velocity (in rad/sec) for left wheel (received via DifferentialMessage)
+   * wx Image of Robot.
    */
-  double v_left_;
+  wxImage robot_image_;
 
   /**
-   * desired angular velocity (in rad/sec) for right wheel (received via DifferentialMessage)
+   * associated bitmap
    */
-  double v_right_;
-
-  /**
-   * linear velocity (in m/sec) computed from v_left_ and v_right_
-   */
-  double lin_vel_;
-
-  /**
-   * angular velocity (in rad/sec) computed from v_left_ and v_right_
-   */
-  double ang_vel_;
+  wxBitmap robot_;
 
   /**
    * boolean used to (des-)activate pen
@@ -166,16 +131,6 @@ private:
    * pen used to trace route
    */
   wxPen pen_;
-
-  /**
-   * left odo data (in radian, cumulated since start)
-   */
-  double odo_left_;
-
-  /**
-   * right odo data (in radian, cumulated since start)
-   */
-  double odo_right_;
 
   /**
    * current position in pixel along longest axis
@@ -197,21 +152,10 @@ private:
    */
   int old_canvas_y_;
 
-
   /**
    * Subscriber used to receive DifferentialCommand
    */
-  ros::Subscriber differential_command_sub_;
-
-  /**
-   * Publisher used to publish Pose
-   */
-  ros::Publisher pose_pub_;
-
-  /**
-   * Publisher used to publish Odo
-   */
-  ros::Publisher odo_pub_;
+  ros::Subscriber pose_sub_;
 
 
   /**
@@ -219,10 +163,6 @@ private:
    */
   ros::ServiceServer set_pen_srv_;
 
-  /**
-   * time of last command received
-   */
-  ros::WallTime last_command_time_;
 
   /**
    * number of pixels corresponding to 1 meter
@@ -230,7 +170,7 @@ private:
   double meter_;
 
 };
-typedef boost::shared_ptr<SimuRobot> SimuRobotPtr;
+typedef boost::shared_ptr<GraphicsSimuRobot> GraphicsSimuRobotPtr;
 
 }
 

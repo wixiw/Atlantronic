@@ -14,7 +14,7 @@ SimuFrame::SimuFrame()
           wxDefaultPosition, 
           wxSize(table_length_in_pixel, table_width_in_pixel),
           wxDEFAULT_FRAME_STYLE)
-, nh_(ros::NodeHandle("ARDSimu"))
+, nh_(ros::NodeHandle("PhysicsSimu"))
 {
   srand(time(NULL));
 

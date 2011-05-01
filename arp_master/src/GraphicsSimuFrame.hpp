@@ -1,5 +1,5 @@
 /*
- * SimuFrame.hpp
+ * GraphicsSimuFrame.hpp
  *
  *  Created on: 15 apr. 2011
  *      Author: boris
@@ -19,7 +19,7 @@
 #include <arp_master/Kill.h>
 #include <map>
 
-#include "SimuRobot.hpp"
+#include "GraphicsSimuRobot.hpp"
 
 
 namespace arp_master
@@ -27,7 +27,7 @@ namespace arp_master
 /** \ingroup arp_master
   * \nonstableyet
   *
-  * \class SimuFrame
+  * \class GraphicsSimuFrame
   *
   * \brief Table Simulation
   *
@@ -36,15 +36,10 @@ namespace arp_master
   *
   */
 
-class SimuFrame : public wxFrame
+class GraphicsSimuFrame : public wxFrame
 {
 
 private:
-/**
- * used to cadence thread for physical simulation.
- * Only for cadencing. The actual time is measured internaly by SimuRobot
- */
-  static const double default_dt_ms = 20.0;
 
   /**
    * one meter in pixel
@@ -67,34 +62,22 @@ public:
    * A timer is set width default_dt_ms time step
    * onUpdate is then called every default_dt_ms
    */
-  SimuFrame();
-  ~SimuFrame();
+  GraphicsSimuFrame();
+  ~GraphicsSimuFrame();
 
-  /**
-   * used by spawn service
-   * \param x desired position in meter along table longest axis
-   * \param y desired position in meter along table shortest axis
-   * \param angle desired orientation
-   */
-  void spawnRobot(double x, double y, double angle);
 
 private:
+
   /**
-   * called by timer. Manage physical simulation
-   */
-  void onUpdate(wxTimerEvent& evt);
+     * called by timer. Manage ros::spinOnce
+     */
+    void onUpdate(wxTimerEvent& evt);
 
   /**
    * called by PaintEvent.
    * Paint table then robot
    */
   void onPaint(wxPaintEvent& evt);
-
-  /**
-   * called by onUpdate
-   * Measure actual time and call SimuRobot update
-   */
-  void updateRobot();
 
   /**
    * clear the table of all trace
@@ -107,13 +90,8 @@ private:
   bool clearCallback(std_srvs::Empty::Request&, std_srvs::Empty::Response&);
 
   /**
-   * used by respawn service
-   */
-  bool respawnCallback(Spawn::Request&, Spawn::Response&);
-
-  /**
    * Simulator Nodehandle
-   * Instanciated by SimuFrame constructor
+   * Instanciated by GraphicsSimuFrame constructor
    */
   ros::NodeHandle nh_;
 
@@ -121,11 +99,6 @@ private:
    * ServiceServer used to clear table of all trace
    */
   ros::ServiceServer clear_srv_;
-
-  /**
-   * ServiceServer used to respawn robot
-   */
-  ros::ServiceServer respawn_srv_;
 
   /**
    * used to call onUpdate
@@ -151,17 +124,14 @@ private:
   /**
    * robot
    */
-  SimuRobotPtr mRobot;
+  GraphicsSimuRobotPtr mRobot;
 
   /**
    * robot associated image
    */
   wxImage robot_image_;
 
-  /**
-   * used to compute actual time step
-   */
-  ros::WallTime last_robot_update_;
+
 
 };
 
