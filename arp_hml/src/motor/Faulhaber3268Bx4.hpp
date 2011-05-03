@@ -40,6 +40,14 @@ namespace arp_hml
         static const int F_CMD_EN = 0x0F;
         static const int F_CMD_V = 0x93;
 
+        static const int F_RET_OK = 1;
+        static const int F_RET_EEPROM_WRITTEN = -2;
+        static const int F_RET_OVER_TEMP = -4;
+        static const int F_RET_INVALID_PARAM = -5;
+        static const int F_RET_UNKNOWN_CMD = -7;
+        static const int F_RET_CMD_UNAVAILABLE = -8;
+        static const int F_RET_FLASH_DEFECT = -13;
+
     protected:
         ArdDs402::enum_DS402_state attrState;
 
@@ -64,9 +72,41 @@ namespace arp_hml
         UNS32* m_faulhaberCommandReturnParameter;
         UNS16* m_ds402State;
 
+        /** current mode of operation */
+        operationMode m_mode;
+        /** last command line faulhaber request */
+        UNS8 m_faulhaberScriptCommand;
+        UNS32 m_faulhaberScriptCommandParam;
+
         void ooSendSpeed( int speed);
         void ooReadSpeed();
-        void ooEnableDrive(bool enable);
+
+        /**
+         * Enable motors to move
+         */
+        void ooEnableDrive();
+
+        /**
+         * Enable motors to move
+         */
+        void ooDisableDrive();
+
+        /**
+         * Allows to send faulhaber commands in command line
+         * param cmd : the faulhaber code of the command
+         * param param : the faulhaber command's parameters
+         */
+        void ooFaulhaberCmd(int cmd, int param);
+
+        /**
+         * In this mode the motor is driven by speed commands
+         */
+        void speedMode();
+
+        /**
+         * In this mode the motor is driven by command line in faulhaber mode of operation
+         */
+        void faulhaberCommandMode();
 
     };
 

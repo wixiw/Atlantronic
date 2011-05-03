@@ -11,3 +11,7 @@ Io.configure();
 LeftDriving.start();
 RightDriving.start();
 Io.start();
+
+//enabling drive
+LeftDriving.ooEnableDrive();
+RightDriving.ooEnableDrive();

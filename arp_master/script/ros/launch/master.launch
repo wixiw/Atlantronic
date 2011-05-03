@@ -1,4 +1,4 @@
 <launch>
-<include file="$(find arp_master)/script/ros/launch/nogui_master.launch"/>
-<node name="GraphicsSimu"     pkg="arp_master"  type="GraphicsSimuNode"     args="/Protokrot/pose" output="screen"/>
+	<include file="$(find arp_master)/script/ros/launch/nogui_master.launch"/>
+	<node name="GraphicsSimu"     pkg="arp_master"  type="GraphicsSimuNode"     args="/Protokrot/pose" output="screen"/>
 </launch>

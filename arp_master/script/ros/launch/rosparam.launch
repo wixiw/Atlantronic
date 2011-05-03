@@ -1,0 +1,4 @@
+<launch>
+	<param name="/Protokrot/base_line" value="0.305" />
+	<param name="/Protokrot/wheel_diameter" value="0.07" /> 
+</launch>

@@ -60,6 +60,10 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         .doc("");
     addOperation("ooEnableDrive", &Faulhaber3268Bx4::ooEnableDrive,this, OwnThread )
         .doc("");
+    addOperation("ooDisableDrive", &Faulhaber3268Bx4::ooDisableDrive,this, OwnThread )
+        .doc("");
+    addOperation("ooFaulhaberCmd", &Faulhaber3268Bx4::ooFaulhaberCmd,this, OwnThread )
+        .doc("");
 
 }
 
@@ -109,24 +113,55 @@ bool Faulhaber3268Bx4::configureHook()
 
     }
 
-    if( res == true )
-    {
-        res = enableDrive();
-
-    }
-
     return res;
 }
 
 void Faulhaber3268Bx4::updateHook()
 {
-    int speed = 0;
-
     //appel du parent car il log les bootUp
     CanOpenNode::updateHook();
 
-    EnterMutex();
+    switch (m_mode)
+    {
+		case SPEED_CONTROL:
+			speedMode();
+			break;
+		case OTHER:
+			faulhaberCommandMode();
+			break;
 
+		default:
+			LOG(Error) << "Unknown mode of operation" << endlog();
+			break;
+	}
+
+
+    EnterMutex();
+    //lecture de la vitesse
+	if( propInvertDriveDirection )
+	{
+		outMeasuredPosition.write( - (*m_measuredPosition) );
+	}
+	else
+	{
+		outMeasuredPosition.write( *m_measuredPosition );
+	}
+    //lecture du courant
+    outMeasuredCurrent.write( *m_measuredCurrent );
+    //lecture de la dernière commande envoyée :
+    outLastSentCommand.write( *m_faulhaberCommandReturn );
+    outLastSentCommandParam.write( *m_faulhaberCommandReturnParameter );
+    outLastSentCommandReturn.write( *m_faulhaberCommandReturnCode );
+    //lecture de l'état DS402s
+    attrState = ArdDs402::getStateFromCanStatusWord( *m_ds402State );
+    LeaveMutex();
+}
+
+void Faulhaber3268Bx4::speedMode()
+{
+	int speed = 0;
+
+    EnterMutex();
     //mise à jour de la consigne de vitesse
     if( inSpeedCmd.readNewest(speed) == NewData )
     {
@@ -139,27 +174,33 @@ void Faulhaber3268Bx4::updateHook()
         outCommandedSpeed.write((int)(*m_faulhaberCommandParameter));
     }
 
-    //lecture de la vitesse
-	if( propInvertDriveDirection )
-	{
-		outMeasuredPosition.write( - (*m_measuredPosition) );
-	}
-	else
-	{
-		outMeasuredPosition.write( *m_measuredPosition );
-	}
-
-    //lecture du courant
-    outMeasuredCurrent.write( *m_measuredCurrent );
-
-    //lecture de la dernière commande envoyée :
-    outLastSentCommand.write( *m_faulhaberCommandReturn );
-    outLastSentCommandParam.write( *m_faulhaberCommandReturnParameter );
-    outLastSentCommandReturn.write( *m_faulhaberCommandReturnCode );
-
-    attrState = ArdDs402::getStateFromCanStatusWord( *m_ds402State );
-
     LeaveMutex();
+}
+
+void Faulhaber3268Bx4::faulhaberCommandMode()
+{
+	EnterMutex();
+    *m_faulhaberCommand = m_faulhaberScriptCommand;
+    *m_faulhaberCommandParameter = m_faulhaberScriptCommandParam;
+    LeaveMutex();
+
+    //temps que ma commande n'est pas prise en compte j'attend
+    if( outLastSentCommand.getLastWrittenValue() != m_faulhaberScriptCommand )
+    	return;
+
+    if( outLastSentCommandReturn.getLastWrittenValue() != F_RET_OK )
+    {
+    	LOG(Error) << "faulhaber command " << m_faulhaberScriptCommand << " failed : return code " << outLastSentCommandReturn.getLastWrittenValue() << endlog();
+    }
+    else
+    {
+    	LOG(Info) << "faulhaber " << m_faulhaberScriptCommand << " command succeed" << endlog();
+    }
+
+    //retour en mode speed
+    m_mode = SPEED_CONTROL;
+
+
 }
 
 void Faulhaber3268Bx4::stopHook()
@@ -185,16 +226,25 @@ void Faulhaber3268Bx4::ooReadSpeed()
     cout << "speed = " << receivedData << endl;
 }
 
-void Faulhaber3268Bx4::ooEnableDrive(bool enable)
+void Faulhaber3268Bx4::ooEnableDrive()
 {
-    if( enable )
-    {
-        enableDrive();
-    }
-    else
-    {
-        disableDrive();
-    }
+	m_mode = OTHER;
+	m_faulhaberScriptCommand = F_CMD_EN;
+	m_faulhaberScriptCommandParam = 0;
+}
+
+void Faulhaber3268Bx4::ooDisableDrive()
+{
+	m_mode = OTHER;
+	m_faulhaberScriptCommand = F_CMD_DI;
+	m_faulhaberScriptCommandParam = 0;
+}
+
+void Faulhaber3268Bx4::ooFaulhaberCmd(int cmd, int param)
+{
+	m_mode = OTHER;
+	m_faulhaberScriptCommand = (UNS8) cmd;
+	m_faulhaberScriptCommandParam = (UNS32) param;
 }
 
 bool Faulhaber3268Bx4::setOperationMode(int operationMode)
@@ -209,24 +259,60 @@ bool Faulhaber3268Bx4::init()
 
 bool Faulhaber3268Bx4::enableDrive()
 {
+	int chrono = 0;
 	EnterMutex();
     *m_faulhaberCommand = F_CMD_EN;
     *m_faulhaberCommandParameter = 0;
     LeaveMutex();
-    //TODO WLA a remplacer par un check du resultat precedent
-    usleep(1000*100);
-    return true;
+    while( outLastSentCommand.getLastWrittenValue() != F_CMD_EN && chrono < propNmtTimeout )
+    {
+    	usleep(100*1000);
+    	chrono+=100;
+    }
+    if( chrono >= propNmtTimeout )
+    {
+    	LOG(Error) << "timeout expired, failed to receive enableDrive return code" << endlog();
+        return false;
+    }
+
+
+    if( outLastSentCommand.getLastWrittenValue() == F_CMD_EN
+    		&& outLastSentCommandReturn.getLastWrittenValue() == F_RET_OK )
+    	return true;
+    else
+    {
+    	LOG(Error) << "failed to enable drive : return code " << outLastSentCommandReturn.getLastWrittenValue() << endlog();
+        return false;
+    }
 }
 
 bool Faulhaber3268Bx4::disableDrive()
 {
+	int chrono = 0;
 	EnterMutex();
     *m_faulhaberCommand = F_CMD_DI;
     *m_faulhaberCommandParameter = 0;
     LeaveMutex();
-    //TODO WLA a remplacer par un check du resultat precedent
-    usleep(1000*100);
-    return true;
+    while( outLastSentCommand.getLastWrittenValue() != F_CMD_DI && chrono < propNmtTimeout )
+    {
+    	usleep(100*1000);
+    	chrono+=100;
+    }
+    if( chrono >= propNmtTimeout )
+    {
+    	LOG(Error) << "timeout expired, failed to receive disableDrive return code" << endlog();
+        return false;
+    }
+
+
+    if( outLastSentCommand.getLastWrittenValue() == F_CMD_DI
+    		&& outLastSentCommandReturn.getLastWrittenValue() == F_RET_OK )
+    	return true;
+    else
+    {
+    	LOG(Error) << "failed to disable drive : return code " << outLastSentCommandReturn.getLastWrittenValue() << endlog();
+        return false;
+    }
 }
 
 bool Faulhaber3268Bx4::reset()

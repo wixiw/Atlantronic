@@ -1,10 +1,8 @@
 <launch>
-<param name="/Protokrot/base_line" value="0.4" />
-<param name="/Protokrot/wheel_diameter" value="0.07" /> 
-<include file="$(find arp_hml)/script/ros/launch/hml.launch"/>
-<node name="Localizator"  pkg="arp_master"  type="LocalizatorNode"  args="" output="screen"/>
-<node name="Command"    pkg="arp_master"  type="CommandNode"    args="" output="screen"/>
-<node name="MotionControl"  pkg="arp_master"  type="MotionControlNode"    args="" output="screen"/>
-<node name="StratA"   pkg="arp_master"  type="StratANode"     args="" output="screen"/>
-
+	<include file="$(find arp_master)/script/ros/launch/rosparam.launch"/>
+	<!-- <include file="$(find arp_hml)/script/ros/launch/hml.launch"/> -->
+	<node name="Localizator"  pkg="arp_master"  type="LocalizatorNode"  args="" output="screen"/>
+	<node name="Command"    pkg="arp_master"  type="CommandNode"    args="" output="screen"/>
+	<node name="MotionControl"  pkg="arp_master"  type="MotionControlNode"    args="" output="screen"/>
+	<node name="StratA"   pkg="arp_master"  type="StratANode"     args="" output="screen"/>
 </launch>

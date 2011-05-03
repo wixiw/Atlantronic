@@ -74,11 +74,11 @@ void ProtokrotItf::updateHook()
     double odoValue;
     if(NewData==inLeftDrivingPosition.read(odoValue))
     {
-    	attrOdometers.odo_left = odoValue*2*PI/24000;
+    	attrOdometers.odo_left = odoValue*2*PI/24000/1.785;
     }
     if(NewData==inRightDrivingPosition.read(odoValue))
     {
-    	attrOdometers.odo_right = odoValue*2*PI/24000;
+    	attrOdometers.odo_right = odoValue*2*PI/24000/1.785;
     }
     outOdometryMeasures.write(attrOdometers);
 
@@ -95,7 +95,7 @@ void ProtokrotItf::updateHook()
     Start start;
     io = false;
     inIoStart.readNewest(io);
-    start.go = io;
+    start.go = !io;
     outIoStart.write(start);
 
     //ecriture des consignes moteurs

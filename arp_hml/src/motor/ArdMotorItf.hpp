@@ -21,7 +21,8 @@ namespace arp_hml
             SPEED_CONTROL,
             TORQUE_CONTROL,
             POSITION_CONTROL,
-            HOMING
+            HOMING,
+            OTHER
         };
 
         /**
