@@ -37,6 +37,15 @@ Woodhead::Woodhead(const std::string& name) :
         .doc("Value of the output #7");
     addPort("outBit8",outBit8)
         .doc("Value of the output #8");
+
+    outBit1.write(false);
+    outBit2.write(false);
+    outBit3.write(false);
+    outBit4.write(false);
+    outBit5.write(false);
+    outBit6.write(false);
+    outBit7.write(false);
+    outBit8.write(false);
 }
 
 bool Woodhead::configureHook()

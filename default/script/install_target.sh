@@ -71,14 +71,18 @@ then
 	--exclude "build" \
 	--exclude ".svn" \
 	--exclude ".git" \
-	--exclude ".hg"
+	--exclude ".hg" \
+	--exclude ".tb_history"\
+	--exclude "*.log"
 else
 	rsync  -avzh `rospack find $package_name` root@$2:`rosstack find ard` \
 	--delete \
 	--exclude "build" \
 	--exclude ".svn"  \
 	--exclude ".git" \
-	--exclude ".hg"
+	--exclude ".hg"\
+	--exclude ".tb_history"\
+	--exclude "*.log"
 fi
 echo -e $NORMAL 
 

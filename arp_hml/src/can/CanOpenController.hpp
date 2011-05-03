@@ -93,25 +93,11 @@ namespace arp_hml
          */
         void ooResetSdoBuffers();
 
-
-
         /**
-         * Send an NMT state command to a Node. This is a blocking call if timeout != 0.
-         * @param nodeId : node ID of the node to which you want to request a new NMT state (or 0 for all nodes on Can)
-         * @param nmtStateCmd : the requested NMT state
-         * @param timeout : the maximal blocking time, put 0 not to wait the answer of the node
-         * @return : true when the request has been successfully sended. Please check NMT State feedback to see when the result is done
+         * define a new period for SYNC object
+         * param : periode in µs.
          */
-        enum_nodeState coMasterSetNmtNodeState (nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd, int timeout);
-
-        /**
-         * Send a node guard request : ask to a node what is its current NMT state. This is a blocking call if timeout != 0.
-         * @param nodeId : the node ID of the node of which we want to receive the NMT state, Must not be equal to 0
-         * @param timeout : the maximal blocking time, put 0 not to wait the answer of the node
-         * @return : true when the request has been successfully sended. Please check NMT State feedback to see when the result is done
-         */
-        enum_nodeState coMasterAskNmtNodeState(nodeID_t nodeId, int timeout);
-
+        void ooSetSyncPeriod(UNS32 period);
 
     protected:
         /** This attribute contains the current NMT status of the Controller node */
@@ -136,6 +122,11 @@ namespace arp_hml
          * This port is connected to the CanFestival thread to dispatch the boot event to registred Device Components
          */
         InputPort<nodeID_t>     inBootUpReceived;
+
+        /**
+         * clock port, each node must listed this port to execute
+         */
+        OutputPort<bool>		outNodesClock;
 
         /**
          * The routing stuff is delegated to this class

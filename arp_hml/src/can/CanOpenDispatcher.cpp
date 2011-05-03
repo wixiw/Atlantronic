@@ -34,8 +34,11 @@ CanOpenDispatcher::~CanOpenDispatcher()
 
         registration->outBootUp.disconnect();
         registration->outNmtState.disconnect();
+        registration->inRequestNmt.disconnect();
 
         m_registeredNodes.erase(nodeId);
+
+        free(registration);
     }
 }
 
@@ -82,13 +85,12 @@ bool CanOpenDispatcher::ooRegisterNewNode(CanNodeIdCard node)
         goto failedInsert;
     }
 
-    //creation d'une activite slave
-    if( node.task == NULL )
+    //connect the NMT request port
+    if( !node.outRequestNmtState->connectTo(&(nodeRegistration->inRequestNmt)) )
     {
-        LOG(Error) << "ooRegisterNewNode failed to register : node.task is null" << endlog();
+        LOG(Error) << "ooRegisterNewNode failed to register : outRequestNmtState failed to connect to nodeRegistration->inRequestNmt node:0x" << std::hex << node.nodeId << endlog();
         goto failedInsert;
     }
-    node.task->setActivity(new SlaveActivity(m_parent.getActivity()));
 
     //if we reached this part of the code, the result is correct
     LOG(Info) << "ooRegisterNewNode registered node 0x" << std::hex << node.nodeId << endlog();
@@ -176,12 +178,15 @@ void CanOpenDispatcher::dispatchNmtState()
 {
     map< nodeID_t, nodeRegistration_t* >::iterator itPort;
     e_nodeState nodeState = Unknown_state;
+    nodeID_t foundNodeId;
+    enum_DS301_nmtStateRequest nmtStateCmd;
 
     //Traitement des états NMT
     //pour tous les nodes enregistrés
     for ( itPort = m_registeredNodes.begin(); itPort!=m_registeredNodes.end(); ++itPort)
     {
-        nodeID_t foundNodeId = (*itPort).first;
+        foundNodeId = (*itPort).first;
+
 
         if( foundNodeId < 0 || foundNodeId >= 0xFF )
         {
@@ -189,60 +194,45 @@ void CanOpenDispatcher::dispatchNmtState()
         }
         else
         {
+        	if( (*itPort).second->inRequestNmt.readNewest(nmtStateCmd) == NewData )
+        	{
+			   //vérification du paramètre de requete NMT
+				if( nmtStateCmd == UnknownRequest )
+				{
+					LOG(Error) << "coMasterSetNmtNodeState failed you can not ask for the UnknownRequest" << endlog();
+				}
+				else
+				{
+					//envoit de la demande d'état
+					EnterMutex();
+					int cmdResult = masterSendNMTstateChange(&CanARD_Data, (UNS8) foundNodeId, (UNS8) nmtStateCmd);
+					LeaveMutex();
+					if( cmdResult )
+					{
+						LOG(Error) << "dispatchNmtState : failed send NMT request 0x" << std::hex << foundNodeId << ";" << nmtStateCmd << ")" << endlog();
+					}
+				}
+        	}
+
+
             //on récupère leur état NMT dans la table
         	EnterMutex();
-            nodeState = CanARD_Data.NMTable[foundNodeId];
+        	nodeState = CanARD_Data.NMTable[foundNodeId];
+        	masterRequestNodeState (&CanARD_Data, (UNS8) foundNodeId);
             LeaveMutex();
             (*itPort).second->outNmtState.write(nodeState);
         }
     }
 }
 
-bool CanOpenDispatcher::dispatchNmtState(nodeID_t nodeId)
+void CanOpenDispatcher::unRegisterAll()
 {
-    map< nodeID_t, nodeRegistration_t* >::iterator itPort;
-    e_nodeState currentNodeState;
+	 LOG(Info) << "Unregistering all nodes" << endlog();
 
-    LOG(Info) << "dispatchNmtState node : 0x" << std::hex << nodeId << " state : " << CanARD_Data.NMTable[nodeId] << endlog();
-
-    //check inputs
-    if( nodeId < 0 || nodeId > 128 )
-    {
-        LOG(Error) << "dispatchNmtState has received a wrong node number 0x" << std::hex << nodeId << endlog();
-        goto failed;
-    }
-    else if( nodeId == 0x00 || nodeId == 0x01 || nodeId == 0xFF )
-    {
-        LOG(Warning) << "dispatchNmtState has received a reserved node 0x" << std::hex << nodeId << endlog();
-    }
-
-    //on recherche un noeud enregistré sous le nodeID reçu
-     itPort = m_registeredNodes.find(nodeId);
-     if( itPort == m_registeredNodes.end() )
-     {
-         LOG(Error) << "dispatchNmtState : attempt to dispatch a not existing node ! 0x" << std::hex << nodeId << endlog();
-         goto failed;
-     }
-
-     EnterMutex();
-     currentNodeState = CanARD_Data.NMTable[nodeId];
-     LeaveMutex();
-     (*itPort).second->outNmtState.write(currentNodeState);
-     goto success;
-
-     success:
-        return true;
-     failed:
-        return false;
-}
-
-void CanOpenDispatcher::wakeUpNodes()
-{
 	map< nodeID_t, nodeRegistration_t* >::iterator it;
 	for ( it = m_registeredNodes.begin(); it!=m_registeredNodes.end(); ++it)
 	{
-		TaskContext* slaveTask = (*it).second->task;
-		slaveTask->engine()->getActivity()->execute();
+		ooUnregisterNode((*it).first);
 	}
 }
 

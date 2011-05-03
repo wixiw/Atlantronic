@@ -75,6 +75,11 @@ namespace arp_hml
         string propCanOpenControllerName;
 
         /**
+         * Clock port which trigger our activity
+         */
+        InputPort<bool> inMasterClock;
+
+        /**
          * port from which we receive the nmt state of our node from a CanOpenController
          */
         InputPort<enum_nodeState> inNmtState;
@@ -83,6 +88,11 @@ namespace arp_hml
          * port from which we receive the bootUp frame of our node from a CanOpenController
          */
         InputPort<bool> inBootUpFrame;
+
+        /**
+         * port in which the component can ask a new nmt state for our node from a CanOpenController
+         */
+        OutputPort<enum_DS301_nmtStateRequest> outRequestNmtState;
 
         /**
          * handler on a CanOpenController operation to register
@@ -105,14 +115,9 @@ namespace arp_hml
         OperationCaller<bool(CanDicoEntry,int*)> m_coReadInRemoteDico;
 
         /**
-         * handler on a CanOpenController operation to change the NMT state of a node
+         * use this operation in deployment to register the node into the CanOpenController
          */
-        OperationCaller<enum_nodeState(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd, int timeout)> m_coMasterSetNmtNodeState;
-
-        /**
-         * handler on a CanOpenController operation to ges the NMT state of a node
-         */
-        OperationCaller<enum_nodeState(nodeID_t nodeId, int timeout)> m_coMasterAskNmtNodeState;
+        bool coRegister();
 
         /**
          * Check component properties values

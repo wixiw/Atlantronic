@@ -1,5 +1,7 @@
 <launch>
-<node name="PhysicsSimu"     pkg="arp_master"  type="PhysicsSimuNode"     args="" output="screen"/>
+<param name="/Protokrot/base_line" value="0.4" />
+<param name="/Protokrot/wheel_diameter" value="0.07" /> 
+<node name="PhysicsSimu"     pkg="arp_master"  type="PhysicsSimuNode"     args="" output="screen"/>     
 <node name="Localizator"  pkg="arp_master"  type="LocalizatorNode"  args="" output="screen"/>
 <node name="Command"    pkg="arp_master"  type="CommandNode"    args="" output="screen"/>
 <node name="MotionControl"  pkg="arp_master"  type="MotionControlNode"    args="" output="screen"/>

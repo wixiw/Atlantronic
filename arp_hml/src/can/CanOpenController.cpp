@@ -50,6 +50,8 @@ CanOpenController::CanOpenController(const std::string& name):
         .doc("This port is connected to the CanFestival thread to populate attrCurrentNMTState");
     addPort("inBootUpReceived",inBootUpReceived)
         .doc("his port is connected to the CanFestival thread to dispatch the boot event to registred Device Components");
+    addPort("outNodesClock",outNodesClock)
+    	.doc("");
 
     /**
      * Register/Unregister
@@ -82,18 +84,10 @@ CanOpenController::CanOpenController(const std::string& name):
         .doc("This operation allows to reset all the SDO emission lines. It should be use with care as it is a very intrusive behavior.");
 
     /**
-     * NMT management
+     * Others
      */
-    addOperation("coMasterSetNmtNodeState", &CanOpenController::coMasterSetNmtNodeState, this, ClientThread)
-        .doc("Send an NMT state command to a Node. return : true when the request has been successfully sended. This is a blocking call if timeout != 0.")
-        .arg("nodeId","node ID of the node to which you want to request a new NMT state (or 0 for all nodes on Can)")
-        .arg("nmtStateCmd","the requested NMT state")
-        .arg("timeout","maximal blocking time");
-    addOperation("coMasterAskNmtNodeState", &CanOpenController::coMasterAskNmtNodeState, this, ClientThread)
-        .doc("Send a node guard request : ask to a node what is its current NMT state. return : true when the request has been successfully sended. This is a blocking call if timeout != 0.")
-        .arg("nodeId", "the node ID of the node of which we want to receive the NMT state, Must not be equal to 0")
-        .arg("timeout","maximal blocking time");
-
+    addOperation("ooSetSyncPeriod", &CanOpenController::ooSetSyncPeriod, this, OwnThread)
+        .doc("define a new period for SYNC object");
 
     /**
      * Debug Operations
@@ -173,12 +167,14 @@ void CanOpenController::updateHook()
     m_dispatcher.dispatchNmtState();
 
     //wake up slave activities of all registered nodes
-    m_dispatcher.wakeUpNodes();
+    outNodesClock.write(true);
 }
 
 
 void CanOpenController::cleanupHook()
 {
+	m_dispatcher.unRegisterAll();
+
     StopTimerLoop(&exitTimerLoopCallback);
     TimerCleanup();
 
@@ -238,6 +234,8 @@ bool CanOpenController::initialiazeCanFestivalDatas()
     CanARD_Data.post_TPDO =         postTPDOCallback;
     CanARD_Data.post_emcy =         postEmcy;
     CanARD_Data.post_SlaveBootup=   postSlaveBootup;
+    //synchronization de la période can_festival et de la période du composant
+    ooSetSyncPeriod(getPeriod()*1E6);
 
     return res;
 }
@@ -296,8 +294,6 @@ bool CanOpenController::openCanBus()
 
     return res;
 }
-
-
 
 //TODO à implémenter
 bool CanOpenController::coWriteInLocalDico(CanDicoEntry dicoEntry)
@@ -434,84 +430,15 @@ void CanOpenController::ooResetSdoBuffers()
     LeaveMutex();
 }
 
-enum_nodeState CanOpenController::coMasterSetNmtNodeState(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd, int timeout )
+void CanOpenController::ooSetSyncPeriod(UNS32 period)
 {
-	int cmdResult;
-
-    //vérification du paramètre de requete NMT
-    if( nmtStateCmd == UnknownRequest )
+	EnterMutex();
+	UNS32 size = 4;
+	int writeResult;
+	writeResult = writeLocalDict( &CanARD_Data, 0X1006, 0X00, &period, &size,  0);
+	if( OD_SUCCESSFUL!= writeResult )
     {
-        LOG(Error) << "coMasterSetNmtNodeState failed you can not ask for the UnknownRequest" << endlog();
-        goto failed;
+        LOG(Error) << "Failed to modify period : writeResult=" << writeResult << endl;
     }
-
-    //vérification du paramètre node ID interdiction du broadcast
-    if( nodeId == 0x00 )
-    {
-        LOG(Error) << "coMasterSetNmtNodeState failed you can not ask for a broadcast request with this operation" << endlog();
-        goto failed;
-    }
-
-    //envoit de la requête NMT sur le CAN
-    EnterMutex();
-    cmdResult = masterSendNMTstateChange(&CanARD_Data, (UNS8) nodeId, (UNS8) nmtStateCmd);
-    LeaveMutex();
-    if( cmdResult )
-    {
-        LOG(Error) << "coMasterSetNmtNodeState failed (0x" << std::hex << nodeId << ";" << nmtStateCmd << ")" << endlog();
-        goto failed;
-    }
-
-    //vérification de l'état
-    return coMasterAskNmtNodeState(nodeId,timeout);
-
-    failed:
-        return Unknown_state;
-}
-
-enum_nodeState CanOpenController::coMasterAskNmtNodeState(nodeID_t nodeId, int timeout )
-{
-    int chrono = 0;
-    int cmdResult;
-
-    //vérification du paramètre node ID interdiction du broadcast
-    if( nodeId == 0x00 )
-    {
-        LOG(Error) << "coMasterAskNmtNodeState failed you can not ask for a broadcast request with this operation" << endlog();
-        goto failed;
-    }
-
-    //envoit de la demande d'état
-    EnterMutex();
-    cmdResult = masterRequestNodeState (&CanARD_Data, (UNS8) nodeId);
-    LeaveMutex();
-
-    if( cmdResult )
-    {
-        LOG(Error) << "coMasterAskNmtNodeState failed (0x" << std::hex << nodeId << ")" << endlog();
-        goto failed;
-    }
-
-    //si le timeout est définit on attend la réponse
-    if( timeout )
-    {
-        while( CanARD_Data.NMTable[nodeId] == Unknown_state && chrono < timeout )
-        {
-            LOG(Debug) << "coMasterAskNmtNodeState : Node " << propNodeId << " is waiting for a NMT start frame ..." << endlog();
-            chrono++;
-            usleep(1000);
-        }
-        //si le timeout est explosé c'est que ça a foiré
-        if( chrono >= timeout )
-        {
-            LOG(Error)  << "coMasterAskNmtNodeState : timeout has expired, no NMT frame received in time for node 0x"<< std::hex << propNodeId << endlog();
-            goto failed;
-        }
-    }
-
-    m_dispatcher.dispatchNmtState(nodeId);
-    return CanARD_Data.NMTable[nodeId];
-
-    failed:
-        return Unknown_state;
+	LeaveMutex();
 }

@@ -54,16 +54,9 @@ namespace arp_hml
         void dispatchNmtState();
 
         /**
-         * dispatch the NMT state for a particular node nodeId
-         * @param nodeId : the node for which to update NMT state port
+         * Unregister all registered nodes
          */
-        bool dispatchNmtState(nodeID_t nodeId);
-
-        /**
-         * Wakes up all slave activities of registered Nodes
-         */
-        void wakeUpNodes();
-
+        void unRegisterAll();
 
         /**
          * DEBUG Purposes : this operation prints in the console the registred nodes.
@@ -79,6 +72,7 @@ namespace arp_hml
                 //nodeID_t nodeId;
                 OutputPort<e_nodeState> outNmtState;
                 OutputPort<bool> outBootUp;
+                InputPort<enum_DS301_nmtStateRequest> inRequestNmt;
                 ARDTaskContext* task;
         };
 

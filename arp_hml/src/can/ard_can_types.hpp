@@ -17,6 +17,16 @@ using namespace arp_core;
 
 typedef int nodeID_t;
 
+enum enum_DS301_nmtStateRequest
+{
+    StartNode           = NMT_Start_Node,
+    StopNode            = NMT_Stop_Node,
+    EnterPreOp          = NMT_Enter_PreOperational,
+    ResetNode           = NMT_Reset_Node,
+    ResetComunication   = NMT_Reset_Comunication,
+    UnknownRequest      = -1
+};
+
 struct CanDicoEntry
 {
     CanDicoEntry():
@@ -50,20 +60,23 @@ struct CanNodeIdCard
         nodeId(0),
         task(NULL),
         inNmtState(NULL),
-        inBootUpFrame(NULL)
+        inBootUpFrame(NULL),
+        outRequestNmtState(NULL)
         {}
 
-    CanNodeIdCard(int nodeId, ARDTaskContext* task, InputPort<enum_nodeState>* inNmtState, InputPort<bool>* inBootUpFrame):
+    CanNodeIdCard(int nodeId, ARDTaskContext* task, InputPort<enum_nodeState>* inNmtState, InputPort<bool>* inBootUpFrame, OutputPort<enum_DS301_nmtStateRequest>* outRequestNmtState ):
         nodeId(nodeId),
         task(task),
         inNmtState(inNmtState),
-        inBootUpFrame(inBootUpFrame)
+        inBootUpFrame(inBootUpFrame),
+        outRequestNmtState(outRequestNmtState)
         {}
 
     nodeID_t nodeId;
     ARDTaskContext* task;
     InputPort<enum_nodeState>* inNmtState;
     InputPort<bool>* inBootUpFrame;
+    OutputPort<enum_DS301_nmtStateRequest>* outRequestNmtState;
 
     /**
      * Use this function to check the data validity of the current CanNodeIdCard
@@ -81,20 +94,12 @@ struct CanNodeIdCard
             res = false;
         if( inBootUpFrame == NULL )
             res = false;
+        if( outRequestNmtState == NULL)
+        	res = false;
 
         return res;
     }
 };
 
-
-enum enum_DS301_nmtStateRequest
-{
-    StartNode           = NMT_Start_Node,
-    StopNode            = NMT_Stop_Node,
-    EnterPreOp          = NMT_Enter_PreOperational,
-    ResetNode           = NMT_Reset_Node,
-    ResetComunication   = NMT_Reset_Comunication,
-    UnknownRequest      = -1
-};
 
 #endif /* ARD_CAN_TYPES_H_ */

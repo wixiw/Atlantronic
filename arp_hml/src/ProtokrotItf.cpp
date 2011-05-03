@@ -81,8 +81,9 @@ void ProtokrotItf::updateHook()
     	attrOdometers.odo_right = odoValue*2*PI/24000;
     }
     outOdometryMeasures.write(attrOdometers);
-    //lectures des IO
-    bool io;
+
+    //Lecture de la couleur
+    bool io = false;
     StartColor colorSwitch;
     inIoColorSwitch.readNewest(io);
     if(io)
@@ -90,7 +91,9 @@ void ProtokrotItf::updateHook()
     else
     	colorSwitch.color = "blue";
     outIoColorSwitch.write(colorSwitch);
+    //lecture du start
     Start start;
+    io = false;
     inIoStart.readNewest(io);
     start.go = io;
     outIoStart.write(start);

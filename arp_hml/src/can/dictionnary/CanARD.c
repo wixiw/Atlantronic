@@ -115,7 +115,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                      };
 
 /* index 0x1006 :   Communication / Cycle Period. */
-                    UNS32 CanARD_obj1006 = 0xC350;	/* 50000 */
+                    UNS32 CanARD_obj1006 = 0x27100000;	/* beaucoup */
                     ODCallback_t CanARD_Index1006_callbacks[] = 
                      {
                        NULL,
@@ -528,7 +528,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 /* index 0x1800 :   Transmit PDO 1 Parameter. */
                     UNS8 CanARD_highestSubIndex_obj1800 = 5; /* number of subindex - 1*/
                     UNS32 CanARD_obj1800_COB_ID_used_by_PDO = 0x321;	/* 801 */
-                    UNS8 CanARD_obj1800_Transmission_Type = 0x1;	/* 1 */
+                    UNS8 CanARD_obj1800_Transmission_Type = 0x0;	/* 0 */
                     UNS16 CanARD_obj1800_Inhibit_Time = 0x0;	/* 0 */
                     UNS8 CanARD_obj1800_Compatibility_Entry = 0x0;	/* 0 */
                     UNS16 CanARD_obj1800_Event_Timer = 0x0;	/* 0 */

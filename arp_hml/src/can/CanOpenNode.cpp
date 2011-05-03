@@ -19,8 +19,10 @@ CanOpenNode::CanOpenNode(const std::string& name):
     propNmtTimeout(1000),
     propConfigureNodeTimeout(3000),
     propCanOpenControllerName("Can1"),
+    inMasterClock(),
     inNmtState(),
-    inBootUpFrame()
+    inBootUpFrame(),
+    outRequestNmtState()
 {
     //TODO WLA : workaround en attendant de trouver dans quel dossier on est lancé dans ROS
     attrPropertyPath = "/opt/ros/ard/arp_hml/script/orocos/conf";
@@ -41,10 +43,17 @@ CanOpenNode::CanOpenNode(const std::string& name):
     addProperty("propCanOpenControllerName",propCanOpenControllerName)
         .doc("name of the CanOpenController this component will connect");
 
+    addEventPort("inMasterClock",inMasterClock)
+    		.doc("");
     addPort("inNmtState",inNmtState)
             .doc("port from which we receive the NMT state of our node from a CanOpenController");
     addPort("inBootUpFrame",inBootUpFrame)
             .doc("port from which we receive the BootUp Frame of our node from a CanOpenController");
+    addPort("outRequestNmtState",outRequestNmtState)
+    		.doc("port in which the component can ask a new nmt state for our node from a CanOpenController");
+
+    addOperation("coRegister", &CanOpenNode::coRegister, this, ClientThread)
+    		.doc("use this operation in deployment to register the node into the CanOpenController");
 }
 
 void CanOpenNode::updateNodeIdCard()
@@ -53,6 +62,16 @@ void CanOpenNode::updateNodeIdCard()
     m_nodeIdCard.task = this;
     m_nodeIdCard.inNmtState = &inNmtState;
     m_nodeIdCard.inBootUpFrame = &inBootUpFrame;
+    m_nodeIdCard.outRequestNmtState = &outRequestNmtState;
+}
+
+bool CanOpenNode::coRegister()
+{
+	bool res = true;
+
+
+
+    return res;
 }
 
 bool CanOpenNode::checkProperties()
@@ -93,56 +112,102 @@ bool CanOpenNode::checkProperties()
 
 bool CanOpenNode::configureHook()
 {
-    bool res = ARDTaskContext::configureHook();
+	TaskContext* tc = NULL;
+
+    if( !ARDTaskContext::configureHook())
+    	goto failed;
 
     //mise à jour de la nodeIdCard car la propriété a été lue dans le configureHook précédent
     updateNodeIdCard();
 
     //connexion aux opération de notre CanController favori
-    res &= connectOperations();
+    if( !connectOperations() )
+    	goto failed;
 
     //enregistrement du noeud dans le CanController associé
     if( m_ooRegister(m_nodeIdCard) == false )
     {
-        res = false;
-        LOG(Error)  << "failed to configure : could not register into a CanOpenController" << endlog();
+        LOG(Error)  << "coRegister failed : could not register into a CanOpenController" << endlog();
+        goto failed;
     }
 
+    //connect the NMT request port
+    tc = getPeer(propCanOpenControllerName);
+    if( tc == NULL )
+    {
+        LOG(Error) << "failed to configure : Controller TaskContext not found (is it a peer ?)" << endlog();
+        goto failedUnregister;
+    }
+    else if( !inMasterClock.connectTo(tc->getPort("outNodesClock")) )
+    {
+        LOG(Error) << "failed to configure : inMasterClock failed to connect to outNodesClock" << endlog();
+        goto failedUnregister;
+    }
+
+    //test des ports d'entrée
+    if( inNmtState.connected()==false )
+    {
+        LOG(Error)  << "failed to configure : input port not connected : inNmtState" << endlog();
+        goto failedUnregister;
+    }
+    if( inBootUpFrame.connected()==false )
+    {
+        LOG(Error)  << "failed to configure : input port not connected : inBootUpFrame" << endlog();
+        goto failedUnregister;
+    }
+
+
     //on envoie un reset au node pour être sure de partir sur de bonnes bases
-    res &= resetNode();
+    if( !resetNode() )
+    {
+        LOG(Error)  << "failed to configure : impossible to reset the node" << endlog();
+    	goto failedUnregister;
+    }
 
     //on envoie les SDO de configuration
-    res &= configureNode();
+    if( !configureNode() )
+    {
+        LOG(Error)  << "failed to configure : CAN configuration  failed" << endlog();
+    	goto failedUnregister;
+    }
 
-    if( res )
-        LOG(Info) << "CanOpenNode::configureHook : done" << endlog();
+    LOG(Info) << "CanOpenNode::configureHook : done" << endlog();
+    goto success;
 
-    return res;
+    success:
+    	return true;
+	failedUnregister:
+		m_ooUnregister(propNodeId);
+    	return false;
+	failed:
+    	return false;
 }
 
 bool CanOpenNode::startHook()
 {
     bool res = ARDTaskContext::startHook();
-    e_nodeState nmtState = Unknown_state;
+    int chrono = 0;
 
     //envoit de la requête de reset au noeud
-    nmtState = m_coMasterSetNmtNodeState(propNodeId, StartNode, propNmtTimeout );
+    outRequestNmtState.write(StartNode);
     //mise à jour de l'état NMT
     inNmtState.readNewest(attrCurrentNMTState);
-
-    //vérification du résultat
-    if( nmtState != Operational && attrCurrentNMTState!= Operational )
+    while( attrCurrentNMTState != Operational && chrono < propNmtTimeout )
     {
-       res = false;
-       LOG(Error)  << "startHook : Nmt StartNode request has not been processed by node 0x"<< std::hex << propNodeId << " stalled in state : " << nmtState << endlog();
-       goto failed;
+    	LOG(Debug) << "coMasterAskNmtNodeState : Node " << propNodeId << " is waiting for a NMT start frame ..." << endlog();
+        chrono++;
+        usleep(1000);
+        inNmtState.readNewest(attrCurrentNMTState);
+    }
+    //si le timeout est explosé c'est que ça a foiré
+    if( chrono >= propNmtTimeout )
+    {
+        LOG(Error)  << "startHook : timeout has expired, impossible to get into operational NMT state for node 0x"<< std::hex << propNodeId << endlog();
+        goto failed;
     }
 
-    //TODO WLA mettre un timeout
-    while ( attrCurrentNMTState != Operational )
-        inNmtState.readNewest(attrCurrentNMTState);
-
     LOG(Info) << "CanOpenNode::startHook : done" << endlog();
+    return true;
 
     failed:
     return res;
@@ -175,20 +240,31 @@ void CanOpenNode::updateHook()
 
 void CanOpenNode::stopHook()
 {
-    e_nodeState nmtState = Unknown_state;
+    int chrono = 0;
 
     //envoit de la requête de reset au noeud
-    nmtState = m_coMasterSetNmtNodeState(propNodeId, StopNode, propNmtTimeout );
+    outRequestNmtState.write(StopNode);
+    //mise à jour de l'état NMT
     inNmtState.readNewest(attrCurrentNMTState);
-
-    //vérification du résultat
-    if( nmtState != Stopped || attrCurrentNMTState != Stopped )
+    while( attrCurrentNMTState != Stopped && chrono < propNmtTimeout )
     {
-       LOG(Fatal)  << "stopHook : Nmt StopNode request has not been processed by node 0x"<< std::hex << propNodeId << " stalled in state : " << nmtState << endlog();
+    	LOG(Debug) << "stopHook : Node " << propNodeId << " is waiting for the StopNode request to be accepted ..." << endlog();
+        chrono++;
+        usleep(1000);
+        inNmtState.readNewest(attrCurrentNMTState);
+    }
+    //si le timeout est explosé c'est que ça a foiré
+    if( chrono >= propNmtTimeout )
+    {
+    	LOG(Fatal)  << "stopHook : Nmt StopNode request has not been processed by node 0x"<< std::hex << propNodeId << " stalled in state : " << attrCurrentNMTState << endlog();
+        goto failed;
     }
 
     ARDTaskContext::stopHook();
     LOG(Info) << "CanOpenNode::stopHook : done" << endlog();
+
+    failed:
+    return;
 }
 
 void CanOpenNode::cleanupHook()
@@ -206,8 +282,6 @@ bool CanOpenNode::connectOperations()
     res &= getOperation(propCanOpenControllerName, "ooUnregisterNode",       m_ooUnregister);
     res &= getOperation(propCanOpenControllerName, "coWriteInRemoteDico",     m_coWriteInRemoteDico);
     res &= getOperation(propCanOpenControllerName, "coReadInRemoteDico",      m_coReadInRemoteDico);
-    res &= getOperation(propCanOpenControllerName, "coMasterSetNmtNodeState", m_coMasterSetNmtNodeState);
-    res &= getOperation(propCanOpenControllerName, "coMasterAskNmtNodeState", m_coMasterAskNmtNodeState);
 
     return res;
 }
@@ -216,7 +290,6 @@ bool CanOpenNode::resetNode()
 {
     bool res = true;
     bool bootUp;
-    enum_nodeState nmtState = Unknown_state;
     int chrono = 0;
 
     LOG(Info) << "Sending a reset to node 0x" << std::hex << propNodeId << endlog();
@@ -228,18 +301,17 @@ bool CanOpenNode::resetNode()
     };
 
     //envoit de la requête de reset au noeud
-    nmtState = m_coMasterSetNmtNodeState(propNodeId, ResetNode, 0);
+    outRequestNmtState.write(ResetNode);
 
     //attente du bootup
     while ( inBootUpFrame.read(bootUp) != NewData && chrono < propNmtTimeout)
     {
         chrono += 50;
         usleep(1000*50);
-        m_coMasterAskNmtNodeState(propNodeId, 0);
     }
     if( chrono >= propNmtTimeout )
     {
-        LOG(Error) << "resetNode : Node " << propNodeId << " is waiting for a bootUp frame ..." << endlog();
+        LOG(Error) << "resetNode : Node 0x" << std::hex << propNodeId << " is waiting for a bootUp frame ..." << endlog();
         res &= false;
         goto failed;
     }
@@ -269,27 +341,24 @@ bool CanOpenNode::resetNode()
 
 bool CanOpenNode::configureNode()
 {
-    bool res = true;
-
     // start a program :
     if( scripting->hasProgram("configureNode") == false )
     {
         LOG(Error)  << "configureNode : did not found program configureNode ." << endlog();
-        res &= false;
-        goto result;
+        goto failed;
     }
 
     // start a program :
     if( scripting->startProgram("configureNode") == false )
     {
         LOG(Error)  << "configureNode : failed to start program configureNode." << endlog();
-        res &= false;
-        goto result;
+        goto failed;
     }
 
     //TODO WLA : tester si le programme est allé au bout
+    return true;
 
-    result:
-    return res;
+    failed:
+    return false;
 }
 

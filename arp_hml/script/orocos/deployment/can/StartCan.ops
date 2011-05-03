@@ -1,18 +1,13 @@
-Can1.configure(); 
+//starting the network controller
+Can1.configure();
 Can1.start();
 
-yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;
-yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;
-yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;
-yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;
-yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;
-yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;
-yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;yield;
-
+//configuring nodes
 LeftDriving.configure();
 RightDriving.configure();
 Io.configure();
 
+//starting nodes
 LeftDriving.start();
 RightDriving.start();
 Io.start();
