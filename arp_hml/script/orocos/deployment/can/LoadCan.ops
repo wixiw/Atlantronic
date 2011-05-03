@@ -1,0 +1,18 @@
+var double canPeriod = 0.050 //s
+
+loadComponent("Can1","arp_hml::CanOpenController");
+loadComponent("LeftDriving","arp_hml::Faulhaber3268Bx4");
+loadComponent("RightDriving","arp_hml::Faulhaber3268Bx4");
+loadComponent("Io","arp_hml::Woodhead");
+
+/*setActivity("Can1",canPeriod,0,ORO_SCHED_OTHER);
+setActivity("LeftDriving",2*canPeriod,0,ORO_SCHED_OTHER);
+setActivity("RightDriving",2*canPeriod,0,ORO_SCHED_OTHER);
+setActivity("Io",2*canPeriod,0,ORO_SCHED_OTHER);
+/*setMasterSlaveActivity("Can1","LeftDriving");
+setMasterSlaveActivity("Can1","RightDriving");
+setMasterSlaveActivity("Can1","Io");*/
+
+addPeer("LeftDriving", "Can1");
+addPeer("RightDriving", "Can1");
+addPeer("Io", "Can1");

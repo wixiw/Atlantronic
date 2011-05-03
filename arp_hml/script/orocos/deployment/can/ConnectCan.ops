@@ -1,0 +1,2 @@
+connect("LeftDriving.inSpeedCmd", "Protokrot.outLeftSpeedCmd",ConnPolicy());
+connect("RightDriving.inSpeedCmd", "Protokrot.outRightSpeedCmd",ConnPolicy());
