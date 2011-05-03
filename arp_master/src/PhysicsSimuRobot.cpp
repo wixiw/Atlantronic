@@ -19,10 +19,26 @@ PhysicsSimuRobot::PhysicsSimuRobot(const ros::NodeHandle& nh, const Vector2& pos
 {
 
   // Parameters
-  base_line      = 0.4;
-  wheel_diameter = 0.07;
-  nh_.setParam("/Protokrot/base_line", base_line);
-  nh_.setParam("/Protokrot/wheel_diameter", wheel_diameter);
+  if( nh.getParam("/Protokrot/base_line", base_line))
+  {
+    ROS_INFO("Got param named '/Protokrot/base_line' : %f", base_line);
+  }
+  else
+  {
+    ROS_ERROR("Failed to get param '/Protokrot/base_line'. Take default value (0.4)");
+    base_line = 0.4;
+  }
+
+  if( nh.getParam("/Protokrot/wheel_diameter", wheel_diameter))
+  {
+    ROS_INFO("Got param named '/Protokrot/wheel_diameter' : %f", wheel_diameter);
+  }
+  else
+  {
+    ROS_ERROR("Failed to get param '/Protokrot/wheel_diameter'. Take default value (0.07)");
+    wheel_diameter = 0.07;
+  }
+
 
   // Suscribers
   differential_command_sub_ = nh_.subscribe("differential_command", 1, &PhysicsSimuRobot::commandCallback, this);

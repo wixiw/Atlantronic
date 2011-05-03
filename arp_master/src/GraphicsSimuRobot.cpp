@@ -7,7 +7,7 @@ using namespace arp_core;
 using namespace arp_master;
 
 
-GraphicsSimuRobot::GraphicsSimuRobot(const ros::NodeHandle& nh, const wxImage& robot_image, const Vector2& pos, double orient, double one_meter_in_pixel)
+GraphicsSimuRobot::GraphicsSimuRobot(const ros::NodeHandle& nh, const wxImage& robot_image, const Vector2& pos, double orient, double one_meter_in_pixel, std::string topicName)
 : nh_(nh)
 , pos_(pos)
 , orient_(orient)
@@ -26,7 +26,7 @@ GraphicsSimuRobot::GraphicsSimuRobot(const ros::NodeHandle& nh, const wxImage& r
   robot_ = wxBitmap(robot_image_);
 
   // Suscribers
-  pose_sub_ = nh_.subscribe("pose", 1, &GraphicsSimuRobot::poseCallback, this);
+  pose_sub_ = ros::NodeHandle("Localizator").subscribe("pose", 1, &GraphicsSimuRobot::poseCallback, this);
 
   // Services
   set_pen_srv_ = nh_.advertiseService("set_pen", &GraphicsSimuRobot::setPenCallback, this);

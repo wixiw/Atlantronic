@@ -16,6 +16,7 @@
 #include <arp_core/Obstacle.h>
 #include <arp_core/StartColor.h>
 #include <arp_core/Start.h>
+#include <arp_core/Velocity.h>
 
 #include <arp_master/Spawn.h>
 #include <std_srvs/Empty.h>
@@ -135,6 +136,11 @@ private:
   ros::Subscriber start_sub_;
 
   /**
+   * Used to publish on "Command/velocity"
+   */
+  ros::Publisher vel_pub_;
+
+  /**
    * used to call spawn (reset) service of Localizator
    */
   ros::ServiceClient loc_spawn_;
@@ -175,6 +181,17 @@ private:
    * instanciated by default in constructor
    */
   ros::NodeHandle nh_;
+
+  /**
+   * current color
+   */
+  Color color_;
+
+  /**
+     * color already selected once
+     */
+    bool color_selected_;
+
 
 };
 

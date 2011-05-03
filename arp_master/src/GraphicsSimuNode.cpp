@@ -34,9 +34,17 @@ public:
     ros::init(argc, local_argv_, "GraphicsSimulator");
     nh_.reset(new ros::NodeHandle);
 
+    std::string topicName = "/Protokrot/pose";
+    if( argc > 1)
+    {
+        char filename[30];
+        strcpy(filename, local_argv_[1]);
+        topicName = filename;
+    }
+
     wxInitAllImageHandlers();
 
-    arp_master::GraphicsSimuFrame* frame = new arp_master::GraphicsSimuFrame();
+    arp_master::GraphicsSimuFrame* frame = new arp_master::GraphicsSimuFrame(topicName);
 
     SetTopWindow(frame);
     frame->Show();

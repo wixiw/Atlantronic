@@ -62,7 +62,7 @@ public:
    * A timer is set width default_dt_ms time step
    * onUpdate is then called every default_dt_ms
    */
-  GraphicsSimuFrame();
+  GraphicsSimuFrame(std::string topicName);
   ~GraphicsSimuFrame();
 
 

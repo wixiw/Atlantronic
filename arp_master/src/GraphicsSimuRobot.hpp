@@ -50,7 +50,7 @@ public:
      * \param orient Robot initial orientation (in radian)
      * \param one_meter_in_pixel number of pixel corresponding to 1 meter in robot_image
      */
-    GraphicsSimuRobot(const ros::NodeHandle& nh, const wxImage& robot_image, const Vector2& pos, double orient, double one_meter_in_pixel);
+    GraphicsSimuRobot(const ros::NodeHandle& nh, const wxImage& robot_image, const Vector2& pos, double orient, double one_meter_in_pixel, std::string topicName);
 
   /**
    * update one time step and plot trace

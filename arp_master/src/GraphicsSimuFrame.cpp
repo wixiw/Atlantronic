@@ -7,7 +7,7 @@
 
 using namespace arp_master;
 
-GraphicsSimuFrame::GraphicsSimuFrame()
+GraphicsSimuFrame::GraphicsSimuFrame(std::string topicName)
 : wxFrame(NULL,
           wxID_ANY,
           wxT("GraphicsSimu"),
@@ -45,7 +45,7 @@ GraphicsSimuFrame::GraphicsSimuFrame()
 
   ROS_INFO("Starting GraphicsSimulator with node name %s", ros::this_node::getName().c_str()) ;
 
-  GraphicsSimuRobotPtr t(new GraphicsSimuRobot(ros::NodeHandle("Protokrot"), robot_image_, Vector2(0., 0.), 0., one_meter_in_pixel));
+  GraphicsSimuRobotPtr t(new GraphicsSimuRobot(ros::NodeHandle(), robot_image_, Vector2(0., 0.), 0., one_meter_in_pixel, topicName));
   mRobot = t;
 
 }

@@ -118,6 +118,11 @@ void StratA::shutDown()
   {
     ac_.cancelAllGoals();
     ac_.stopTrackingGoal();
+
+    Velocity vel;
+    vel.linear = 0.0;
+    vel.angular = 0.0;
+    vel_pub_.publish(vel);
   }
 }
 
@@ -137,6 +142,11 @@ void StratA::colorCallback(const StartColorConstPtr& o)
   {
     if( o->color.compare("red") == 0 )
     {
+      if( color_ == COLOR_RED && color_selected_)
+      {
+        ROS_INFO("Color already red");
+        return;
+      }
       ct_.setColor(COLOR_RED);
       ROS_INFO("Color is red");        
       arp_master::Spawn srv;
@@ -153,9 +163,16 @@ void StratA::colorCallback(const StartColorConstPtr& o)
       else
         ROS_INFO("Strat failed to send respawn call to Localizator");
 
+      color_ = COLOR_RED;
+      color_selected_ = true;
     }
     else if( o->color.compare("blue") == 0 )
     {
+      if( color_ == COLOR_BLUE && color_selected_)
+      {
+        ROS_INFO("Color already blue");
+        return;
+      }
       ct_.setColor(COLOR_BLUE);
       ROS_INFO("Color is blue");
       arp_master::Spawn srv;
@@ -171,6 +188,8 @@ void StratA::colorCallback(const StartColorConstPtr& o)
       else
         ROS_INFO("Strat failed to send respawn call to Localizator");
 
+      color_ = COLOR_BLUE;
+      color_selected_ = true;
     }
     else
     {
