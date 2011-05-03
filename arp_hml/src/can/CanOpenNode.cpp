@@ -22,6 +22,11 @@ CanOpenNode::CanOpenNode(const std::string& name):
     inNmtState(),
     inBootUpFrame()
 {
+    //TODO WLA : workaround en attendant de trouver dans quel dossier on est lancé dans ROS
+    attrPropertyPath = "/opt/ros/ard/arp_hml/script/orocos/conf";
+    attrScriptPath = "/opt/ros/ard/arp_hml/script/orocos/ops";
+    attrStateMachinePath = "/opt/ros/ard/arp_hml/script/orocos/osd";
+
     updateNodeIdCard();
 
     addAttribute("attrCurrentNMTState",attrCurrentNMTState);

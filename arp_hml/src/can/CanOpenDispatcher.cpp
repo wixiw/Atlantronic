@@ -7,13 +7,16 @@
 
 #include "CanOpenDispatcher.hpp"
 #include "can/dictionnary/CanARD.h"
+#include <rtt/extras/SlaveActivity.hpp>
 
 //TODO WLA workaround : impossible de logguer en dehors d'un composant ?
 #define LOG(truc) cout
 
 using namespace arp_hml;
+using namespace RTT;
+using namespace extras;
 
-CanOpenDispatcher::CanOpenDispatcher(TaskContext* tc):
+CanOpenDispatcher::CanOpenDispatcher(TaskContext& tc):
     m_registeredNodes(),
     m_parent(tc)
 {
@@ -78,6 +81,14 @@ bool CanOpenDispatcher::ooRegisterNewNode(CanNodeIdCard node)
         LOG(Error) << "ooRegisterNewNode failed to register : inBootUpFrame failed to connect to nodeRegistration->outBootUp node:0x" << std::hex << node.nodeId << endlog();
         goto failedInsert;
     }
+
+    //creation d'une activite slave
+    if( node.task == NULL )
+    {
+        LOG(Error) << "ooRegisterNewNode failed to register : node.task is null" << endlog();
+        goto failedInsert;
+    }
+    node.task->setActivity(new SlaveActivity(m_parent.getActivity()));
 
     //if we reached this part of the code, the result is correct
     LOG(Info) << "ooRegisterNewNode registered node 0x" << std::hex << node.nodeId << endlog();
@@ -223,6 +234,16 @@ bool CanOpenDispatcher::dispatchNmtState(nodeID_t nodeId)
         return true;
      failed:
         return false;
+}
+
+void CanOpenDispatcher::wakeUpNodes()
+{
+	map< nodeID_t, nodeRegistration_t* >::iterator it;
+	for ( it = m_registeredNodes.begin(); it!=m_registeredNodes.end(); ++it)
+	{
+		TaskContext* slaveTask = (*it).second->task;
+		slaveTask->engine()->getActivity()->execute();
+	}
 }
 
 void CanOpenDispatcher::ooPrintRegisteredNodes()

@@ -24,7 +24,7 @@ namespace arp_hml
     class CanOpenDispatcher
     {
     public:
-        CanOpenDispatcher(TaskContext* tc);
+        CanOpenDispatcher(TaskContext& tc);
         virtual ~CanOpenDispatcher();
 
         /**
@@ -60,6 +60,12 @@ namespace arp_hml
         bool dispatchNmtState(nodeID_t nodeId);
 
         /**
+         * Wakes up all slave activities of registered Nodes
+         */
+        void wakeUpNodes();
+
+
+        /**
          * DEBUG Purposes : this operation prints in the console the registred nodes.
          */
         void ooPrintRegisteredNodes();
@@ -85,7 +91,7 @@ namespace arp_hml
         /**
          * Component into we are operating
          */
-        TaskContext* m_parent;
+        TaskContext& m_parent;
     };
 
 }

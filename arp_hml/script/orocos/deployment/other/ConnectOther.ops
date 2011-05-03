@@ -1,0 +1,26 @@
+/* Connection de l'interface externe de Protokrot */
+var ConnPolicy differential_command;
+differential_command.transport = 3; // ROS == 3
+differential_command.name_id = "/Protokrot/differential_command"; // ros topic
+stream("Protokrot.inDifferentialCmd", differential_command);
+var ConnPolicy odo;
+odo.transport = 3; // ROS == 3
+odo.name_id = "/Protokrot/odo"; // ros topic
+stream("Protokrot.outOdometryMeasures", odo);
+var ConnPolicy emergency_stop;
+emergency_stop.transport = 3; // ROS == 3
+emergency_stop.name_id = "/Protokrot/emergency_stop"; // ros topic
+stream("Protokrot.outEmergencyStop", emergency_stop);
+var ConnPolicy start;
+start.transport = 3; // ROS == 3
+start.name_id = "/Protokrot/start"; // ros topic
+stream("Protokrot.outIoStart", start);
+var ConnPolicy color;
+color.transport = 3; // ROS == 3
+color.name_id = "/Protokrot/color"; // ros topic
+stream("Protokrot.outIoColorSwitch", color);
+/*Connexion de l'interface interne de ProtoKrot*/
+connect("Protokrot.inIoStart", "Io.outBit2",ConnPolicy());
+connect("Protokrot.inIoColorSwitch", "Io.outBit6",ConnPolicy());
+connect("Protokrot.inLeftDrivingPosition", "LeftDriving.outMeasuredPosition",ConnPolicy());
+connect("Protokrot.inRightDrivingPosition", "RightDriving.outMeasuredPosition",ConnPolicy());

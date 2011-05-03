@@ -7,9 +7,12 @@
 
 #include "ProtokrotItf.hpp"
 #include <ocl/Component.hpp>
+#include <math/math.hpp>
 
 using namespace arp_hml;
 using namespace arp_core;
+using namespace arp_math;
+using namespace std_msgs;
 
 ORO_LIST_COMPONENT_TYPE( arp_hml::ProtokrotItf )
 
@@ -26,17 +29,9 @@ ProtokrotItf::ProtokrotItf(const std::string& name):
     addAttribute("attrCurrentCmd", attrCurrentCmd);
     addAttribute("attrOdometers", attrOdometers);
 
+    /** Interface with OUTSIDE (master, ODS, RLU) **/
     addPort("inDifferentialCmd",inDifferentialCmd)
             .doc("");
-    addPort("inIoStart",inIoStart)
-            .doc("");
-    addPort("inIoColorSwitch",inIoColorSwitch)
-            .doc("");
-    addPort("inLeftDrivingPosition",inLeftDrivingPosition)
-            .doc("");
-    addPort("inRightDrivingPosition",inRightDrivingPosition)
-            .doc("");
-
     addPort("outOdometryMeasures",outOdometryMeasures)
         .doc("");
     addPort("outIoStart",outIoStart)
@@ -45,6 +40,20 @@ ProtokrotItf::ProtokrotItf(const std::string& name):
         .doc("");
     addPort("outEmergencyStop",outEmergencyStop)
         .doc("");
+
+    /** Interface with INSIDE (hml !) **/
+    addPort("inIoStart",inIoStart)
+            .doc("");
+    addPort("inIoColorSwitch",inIoColorSwitch)
+            .doc("");
+    addPort("inLeftDrivingPosition",inLeftDrivingPosition)
+            .doc("");
+    addPort("inRightDrivingPosition",inRightDrivingPosition)
+            .doc("");
+    addPort("outLeftSpeedCmd",outLeftSpeedCmd)
+            .doc("");
+    addPort("outRightSpeedCmd",outRightSpeedCmd)
+            .doc("");
 }
 
 void ProtokrotItf::updateHook()
@@ -65,13 +74,30 @@ void ProtokrotItf::updateHook()
     double odoValue;
     if(NewData==inLeftDrivingPosition.read(odoValue))
     {
-    	attrOdometers.odo_left = odoValue;
+    	attrOdometers.odo_left = odoValue*2*PI/24000;
     }
     if(NewData==inRightDrivingPosition.read(odoValue))
     {
-    	attrOdometers.odo_right = odoValue;
+    	attrOdometers.odo_right = odoValue*2*PI/24000;
     }
     outOdometryMeasures.write(attrOdometers);
+    //lectures des IO
+    bool io;
+    StartColor colorSwitch;
+    inIoColorSwitch.readNewest(io);
+    if(io)
+    	colorSwitch.color = "red";
+    else
+    	colorSwitch.color = "blue";
+    outIoColorSwitch.write(colorSwitch);
+    Start start;
+    inIoStart.readNewest(io);
+    start.go = io;
+    outIoStart.write(start);
+
+    //ecriture des consignes moteurs
+    outLeftSpeedCmd.write(attrCurrentCmd.v_left*30/PI*14);
+    outRightSpeedCmd.write(attrCurrentCmd.v_right*30/PI*14);
 
 
 }

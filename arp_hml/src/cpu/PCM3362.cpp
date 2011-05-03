@@ -28,6 +28,11 @@ PCM3362::PCM3362(const std::string& name) :
     attrBoardTemperature(-1),
     propWatchdogTimer(0*1000)
 {
+    //TODO WLA : workaround en attendant de trouver dans quel dossier on est lancé dans ROS
+    attrPropertyPath = "/opt/ros/ard/arp_hml/script/orocos/conf";
+    attrScriptPath = "/opt/ros/ard/arp_hml/script/orocos/ops";
+    attrStateMachinePath = "/opt/ros/ard/arp_hml/script/orocos/osd";
+
     addAttribute("attrSusiInitOK",attrSusiInitOK);
     addAttribute("attrSusiVersion",attrSusiVersion);
     addAttribute("attrPlatformName",attrPCBoardName);

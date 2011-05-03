@@ -140,7 +140,15 @@ void Faulhaber3268Bx4::updateHook()
     }
 
     //lecture de la vitesse
-    outMeasuredPosition.write( *m_measuredPosition );
+	if( propInvertDriveDirection )
+	{
+		outMeasuredPosition.write( - (*m_measuredPosition) );
+	}
+	else
+	{
+		outMeasuredPosition.write( *m_measuredPosition );
+	}
+
     //lecture du courant
     outMeasuredCurrent.write( *m_measuredCurrent );
 

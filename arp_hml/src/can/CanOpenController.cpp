@@ -24,10 +24,15 @@ CanOpenController::CanOpenController(const std::string& name):
     propBaudRate("250K"),
     propNodeId(0),
     propMasterMaxBootDelay(50),
-    m_dispatcher(this),
+    m_dispatcher(*this),
     m_canPort(NULL)
 
 {
+    //TODO WLA : workaround en attendant de trouver dans quel dossier on est lancé dans ROS
+    attrPropertyPath = "/opt/ros/ard/arp_hml/script/orocos/conf";
+    attrScriptPath = "/opt/ros/ard/arp_hml/script/orocos/ops";
+    attrStateMachinePath = "/opt/ros/ard/arp_hml/script/orocos/osd";
+
     addAttribute("attrCurrentNMTState",attrCurrentNMTState);
 
     addProperty("propCanFestivalDriverName",propCanFestivalDriverName)
@@ -166,6 +171,9 @@ void CanOpenController::updateHook()
 
     //dispatch bootup frame to the rigth output port
     m_dispatcher.dispatchNmtState();
+
+    //wake up slave activities of all registered nodes
+    m_dispatcher.wakeUpNodes();
 }
 
 

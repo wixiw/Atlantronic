@@ -13,8 +13,8 @@ StratA::StratA():
   nh_()
 {
   obstacle_sub_ = nh_.subscribe("obstacle", 1, &StratA::obstacleCallback, this);
-  color_sub_ = nh_.subscribe("color", 1, &StratA::colorCallback, this);
-  start_sub_ = nh_.subscribe("start", 1, &StratA::startCallback, this);
+  color_sub_ = ros::NodeHandle("Protokrot").subscribe("color", 1, &StratA::colorCallback, this);
+  start_sub_ = ros::NodeHandle("Protokrot").subscribe("start", 1, &StratA::startCallback, this);
   loc_spawn_ = nh_.serviceClient<arp_master::Spawn>("Localizator/respawn");
   simu_spawn_ = nh_.serviceClient<arp_master::Spawn>("PhysicsSimu/respawn");
   robot_setpen_ = nh_.serviceClient<arp_master::SetPen>("Protokrot/set_pen");
@@ -58,14 +58,17 @@ void StratA::go()
   ROS_INFO("Waiting for start");
   ROS_INFO("TIPS (open a new terminal) :");
   ROS_INFO("* Choose color with :");
-  ROS_INFO("\trostopic pub -1 /color arp_core/StartColor -- \"red\"");
-  ROS_INFO("\tor rostopic pub -1 /color arp_core/StartColor -- \"blue\"");
+  ROS_INFO("\trostopic pub -1 /Protokrot/color arp_core/StartColor -- \"red\"");
+  ROS_INFO("\tor rostopic pub -1 /Protokrot/color arp_core/StartColor -- \"blue\"");
   ROS_INFO("* Start with : rostopic pub -1 /start arp_core/Start -- 1");
   ROS_INFO("* Simule obstacle with : rostopic pub -1 /obstacle arp_core/Obstacle -- 1");
+
+  ros::Rate r(10);
 
   while(!start_)
   {
     ros::spinOnce();
+    r.sleep();
   }
 
   start_time_ = ros::WallTime::now();
@@ -101,6 +104,7 @@ void StratA::go()
     }
     
     ros::spinOnce();
+    r.sleep();
   }
 
   ROS_INFO("Time out !!");
