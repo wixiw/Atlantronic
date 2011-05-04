@@ -17,7 +17,7 @@ using namespace arp_core;
 ORO_LIST_COMPONENT_TYPE( arp_hml::CanOpenController )
 
 CanOpenController::CanOpenController(const std::string& name):
-    ARDTaskContext(name),
+	HmlTaskContext(name),
     attrCurrentNMTState(Unknown_state),
     propCanFestivalDriverName("/opt/ros/ard/can_festival/lib/libcanfestival_can_socket.so"),
     propBusName("can1"),
@@ -28,12 +28,8 @@ CanOpenController::CanOpenController(const std::string& name):
     m_canPort(NULL)
 
 {
-    //TODO WLA : workaround en attendant de trouver dans quel dossier on est lancé dans ROS
-    attrPropertyPath = "/opt/ros/ard/arp_hml/script/orocos/conf";
-    attrScriptPath = "/opt/ros/ard/arp_hml/script/orocos/ops";
-    attrStateMachinePath = "/opt/ros/ard/arp_hml/script/orocos/osd";
-
     addAttribute("attrCurrentNMTState",attrCurrentNMTState);
+    addAttribute("sdo",attrTestingSdo);
 
     addProperty("propCanFestivalDriverName",propCanFestivalDriverName)
         .doc("contains the name of the can driver library that will be loaded dynamically");
@@ -235,7 +231,7 @@ bool CanOpenController::initialiazeCanFestivalDatas()
     CanARD_Data.post_emcy =         postEmcy;
     CanARD_Data.post_SlaveBootup=   postSlaveBootup;
     //synchronization de la période can_festival et de la période du composant
-    ooSetSyncPeriod(getPeriod()*1E6);
+    ooSetSyncPeriod(getPeriod()*1E3);
 
     return res;
 }
@@ -295,26 +291,58 @@ bool CanOpenController::openCanBus()
     return res;
 }
 
-//TODO à implémenter
+
 bool CanOpenController::coWriteInLocalDico(CanDicoEntry dicoEntry)
 {
-    bool res = true;
+	int writeResult;
+	UNS32 size = dicoEntry.size;
+	EnterMutex();
+	writeResult = writeLocalDict( &CanARD_Data, dicoEntry.index, dicoEntry.subindex, &dicoEntry.value, &size,  0);
+	LeaveMutex();
+	if( OD_SUCCESSFUL!= writeResult )
+    {
+		LOG(Error) << "Write failed in 0x" << std::hex << dicoEntry.index << ":0x" << std::hex << dicoEntry.subindex
+				<< " with errorcode " << std::hex << writeResult << endl;
+        goto failed;
+    }
 
-    res = false;
-    cerr << "coWriteInRemoteDico not implemented !" << endl;
+    LOG(Info) << "Write success in 0x" << std::hex << dicoEntry.index << ":0x" << std::hex << dicoEntry.subindex  << endl;
+    goto success;
 
-    return res;
+
+	failed:
+		return false;
+	success:
+		return true;
 }
 
-//TODO à implémenter
 bool CanOpenController::coReadInLocalDico(CanDicoEntry& dicoEntry)
 {
-    bool res = true;
+	int readResult;
+	UNS32 size;
+	UNS8 dataType;
+	EnterMutex();
+	readResult = readLocalDict( &CanARD_Data, dicoEntry.index, dicoEntry.subindex, &dicoEntry.value, &size, &dataType,  0);
+	LeaveMutex();
 
-    res = false;
-    cerr << "coWriteInRemoteDico not implemented !" << endl;
+	dicoEntry.size = size;
+	dicoEntry.dataType = dataType;
 
-    return res;
+	if( OD_SUCCESSFUL!= readResult )
+    {
+		LOG(Error) << "Read failed in 0x" << std::hex << dicoEntry.index << ":0x" << std::hex << dicoEntry.subindex
+				<< " with errorcode " << std::hex << readResult << endl;
+        goto failed;
+    }
+
+    LOG(Info) << "Read success in 0x" << std::hex << dicoEntry.index << ":0x" << std::hex << dicoEntry.subindex  << endl;
+    goto success;
+
+
+	failed:
+		return false;
+	success:
+		return true;
 }
 
 bool CanOpenController::coWriteInRemoteDico(CanDicoEntry dicoEntry)
@@ -430,15 +458,8 @@ void CanOpenController::ooResetSdoBuffers()
     LeaveMutex();
 }
 
-void CanOpenController::ooSetSyncPeriod(UNS32 period)
+bool CanOpenController::ooSetSyncPeriod(int period)
 {
-	EnterMutex();
-	UNS32 size = 4;
-	int writeResult;
-	writeResult = writeLocalDict( &CanARD_Data, 0X1006, 0X00, &period, &size,  0);
-	if( OD_SUCCESSFUL!= writeResult )
-    {
-        LOG(Error) << "Failed to modify period : writeResult=" << writeResult << endl;
-    }
-	LeaveMutex();
+	CanDicoEntry dicoEntry(0xFF,0x1006,0x00,period*1000,0,4);
+	return coWriteInLocalDico(dicoEntry);
 }

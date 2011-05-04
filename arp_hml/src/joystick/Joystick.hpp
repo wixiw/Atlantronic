@@ -9,7 +9,7 @@
 #define JOYSTICK_HPP_
 
 //include orocos
-#include <taskcontexts/ARDTaskContext.hpp>
+#include "taskcontexts/HmlTaskContext.hpp"
 
 //includes pour le joystick
 #include <linux/input.h>
@@ -23,7 +23,7 @@ using namespace arp_core;
 
 namespace arp_hml
 {
-    class Joystick: public ARDTaskContext
+    class Joystick: public HmlTaskContext
     {
     public:
         Joystick(const std::string& name);

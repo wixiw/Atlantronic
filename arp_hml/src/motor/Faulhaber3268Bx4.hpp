@@ -52,6 +52,10 @@ namespace arp_hml
         ArdDs402::enum_DS402_state attrState;
 
         bool propInvertDriveDirection;
+        /** Reductor's value **/
+        double propReductorValue;
+        /** Encoder resolution in point by rev**/
+        int propEncoderResolution;
 
         InputPort<int> inSpeedCmd;
 

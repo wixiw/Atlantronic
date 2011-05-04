@@ -9,7 +9,7 @@
 #define SimplePCM3362_HPP
 
 //include orocos
-#include <taskcontexts/ARDTaskContext.hpp>
+#include "taskcontexts/HmlTaskContext.hpp"
 
 using namespace arp_core;
 
@@ -17,7 +17,7 @@ using namespace arp_core;
 namespace arp_hml
 {
 
-    class SimplePCM3362 : public ARDTaskContext
+    class SimplePCM3362 : public HmlTaskContext
     {
     public:
     	SimplePCM3362(const std::string& name);

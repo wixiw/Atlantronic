@@ -35,8 +35,8 @@ namespace arp_core
     {
     public:
 
-        /** Constructeur principal */
-        ARDTaskContext(const std::string& name);
+        /** Constructeur pour définir le chemin vers le projet. Utile pour ROS*/
+        ARDTaskContext(const std::string& name, const std::string projectRootPath=".");
         /** Destructeur par défaut */
         virtual ~ARDTaskContext();
 
@@ -58,11 +58,13 @@ namespace arp_core
         /** Defini si le composant est autorisé à logger */
         bool propEnableLog;
 
-        /** Chemin vers le dossier des propriétés */
+        /**Chemin vers le project */
+        string attrProjectRootPath;
+        /** Chemin vers le dossier des propriétés depuis attrProjectRootPath  */
         string attrPropertyPath;
-        /** Chemin vers le dossier des scripts */
+        /** Chemin vers le dossier des scripts depuis attrProjectRootPath */
         string attrScriptPath;
-        /** Chemin vers le dossier des fsm */
+        /** Chemin vers le dossier des fsm depuis attrProjectRootPath */
         string attrStateMachinePath;
 
         /** Interface de scripting Orocos (ods,ops) */

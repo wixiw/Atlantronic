@@ -8,7 +8,7 @@
 #ifndef CANOPEN_CONTROLLER_HPP_
 #define CANOPEN_CONTROLLER_HPP_
 
-#include <taskcontexts/ARDTaskContext.hpp>
+#include "taskcontexts/HmlTaskContext.hpp"
 #include "can/ard_can_types.hpp"
 #include "can/CanOpenDispatcher.hpp"
 
@@ -23,7 +23,7 @@ namespace arp_hml
      * The choice went in favor of CanFestival because it is a high level driver. It interfaces many can drivers
      * underneath.
      */
-    class CanOpenController : public ARDTaskContext
+    class CanOpenController : public HmlTaskContext
     {
     public:
         /**
@@ -66,7 +66,7 @@ namespace arp_hml
         /**
          * This operation allows anyone in the application to read the value of the local dictionnary entry
          * @param dicoEntry : a structure containing the information to read from the local dictionnary.
-         * @return : true when the read succeed
+         * @return : true when the read succeed, the return value is in dicoEntry.value
          */
         bool coReadInLocalDico(CanDicoEntry& dicoEntry);
 
@@ -95,13 +95,15 @@ namespace arp_hml
 
         /**
          * define a new period for SYNC object
-         * param : periode in µs.
+         * param : periode in ms.
          */
-        void ooSetSyncPeriod(UNS32 period);
+        bool ooSetSyncPeriod(int period);
 
     protected:
         /** This attribute contains the current NMT status of the Controller node */
         e_nodeState             attrCurrentNMTState;
+        /** This is for test purposes only, when sending request to the can via the taskBrowser */
+        CanDicoEntry 			attrTestingSdo;
 
         /** This property contains the name of the can driver library that will be loaded dynamically */
         string                  propCanFestivalDriverName;

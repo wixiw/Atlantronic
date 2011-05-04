@@ -9,4 +9,6 @@
   <simple name="propNmtTimeout" type="long"><description>Timeout before considering a node is not responding to a NMT request (in ms)</description><value>2000</value></simple>
   <simple name="propConfigureNodeTimeout" type="long"><description>Timeout before considering configureNode has failed (in ms)</description><value>9000</value></simple>
   <simple name="propInvertDriveDirection" type="boolean"><value>1</value></simple>
+  <simple name="propReductorValue" type="double"><value>14</value></simple>
+  <simple name="propEncoderResolution" type="long"><value>3000</value></simple>
 </properties>

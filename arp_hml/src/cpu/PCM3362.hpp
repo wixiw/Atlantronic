@@ -25,7 +25,7 @@
 #define PCM3362_HPP_
 
 //include orocos
-#include <taskcontexts/ARDTaskContext.hpp>
+#include "taskcontexts/HmlTaskContext.hpp"
 
 using namespace arp_core;
 
@@ -33,7 +33,7 @@ using namespace arp_core;
 namespace arp_hml
 {
 
-    class PCM3362 : public ARDTaskContext
+    class PCM3362 : public HmlTaskContext
     {
     public:
         PCM3362(const std::string& name);

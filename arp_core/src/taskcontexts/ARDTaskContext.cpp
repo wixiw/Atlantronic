@@ -11,11 +11,12 @@
 using namespace arp_core;
 using namespace RTT;
 
-ARDTaskContext::ARDTaskContext(const std::string& name) :
+ARDTaskContext::ARDTaskContext(const std::string& name, const std::string projectRootPath) :
     TaskContext(name, PreOperational),
     propAutoLoadScript(""),
     propAutoLoadStateMachines(""),
     propEnableLog(true),
+    attrProjectRootPath(projectRootPath),
     attrPropertyPath("script/orocos/conf"),
     attrScriptPath("script/orocos/ops"),
     attrStateMachinePath("script/orocos/osd"),
@@ -92,7 +93,7 @@ void ARDTaskContext::cleanupHook()
 
 //   if( marshalling != NULL )
 //   {
-//       fileName =attrPropertyPath  + "/" + getName() + ".xml";
+//       fileName = attrRootProjectPath + "/" + attrPropertyPath  + "/" + getName() + ".xml";
 //       marshalling->writeProperties(fileName);
 //   }
 
@@ -140,7 +141,7 @@ bool ARDTaskContext::loadProperties()
 {
     bool res = true;
     //nom du fichier à rechercher
-    string fileName = attrPropertyPath  + "/" + getName() + ".xml";
+    string fileName = attrProjectRootPath + "/" + attrPropertyPath  + "/" + getName() + ".xml";
 
     if( marshalling != NULL)
     {
@@ -183,7 +184,7 @@ bool ARDTaskContext::loadPrograms()
     }
     else
     {
-        path = attrScriptPath + "/" +propAutoLoadScript + ".ops";
+        path = attrProjectRootPath + "/" + attrScriptPath + "/" +propAutoLoadScript + ".ops";
 
         //on tente de charger le programme, on renvoit une erreur si on ne le trouve pas
         res &= scripting->loadPrograms(path);
@@ -205,7 +206,7 @@ bool ARDTaskContext::loadStateMachines()
     }
     else
     {
-        path = attrStateMachinePath + "/" + propAutoLoadStateMachines + ".osd";
+        path = attrProjectRootPath + "/" + attrStateMachinePath + "/" + propAutoLoadStateMachines + ".osd";
 
         //on tente de charger la state machine, on renvoit une erreur si on ne le trouve pas
         res &= scripting->loadStateMachines(path);
@@ -302,7 +303,7 @@ bool ARDTaskContext::ooWriteProperties()
     }
 
     //nom du fichier à rechercher
-    string fileName = attrPropertyPath  + "/" + getName() + ".xml";
+    string fileName = attrProjectRootPath + "/" + attrPropertyPath  + "/" + getName() + ".xml";
 
     if( marshalling != NULL)
     {

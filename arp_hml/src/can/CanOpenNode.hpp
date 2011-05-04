@@ -8,7 +8,7 @@
 #ifndef CANOPENNODE_HPP_
 #define CANOPENNODE_HPP_
 
-#include <taskcontexts/ARDTaskContext.hpp>
+#include "taskcontexts/HmlTaskContext.hpp"
 #include <canfestival/canfestival.h>
 #include "can/ard_can_types.hpp"
 
@@ -17,7 +17,7 @@ using namespace arp_core;
 namespace arp_hml
 {
 
-    class CanOpenNode: public ARDTaskContext
+    class CanOpenNode: public HmlTaskContext
     {
     public:
         CanOpenNode(const std::string& name);

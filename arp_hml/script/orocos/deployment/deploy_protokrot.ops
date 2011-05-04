@@ -22,3 +22,5 @@ runScript("/opt/ros/ard/arp_hml/script/orocos/deployment/can/StartCan.ops")
 
 print.log(Warning, "Fin déploiment arp_hml");
 print.log(Warning, "====================");
+print.log(Warning, "HML in version : " + Protokrot.coGetHmlVersion);
+print.log(Warning, "====================");

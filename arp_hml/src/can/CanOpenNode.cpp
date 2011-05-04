@@ -14,7 +14,7 @@ using namespace arp_core;
 
 
 CanOpenNode::CanOpenNode(const std::string& name):
-    ARDTaskContext(name),
+	HmlTaskContext(name),
     propNodeId(int(0xFF)),
     propNmtTimeout(1000),
     propConfigureNodeTimeout(3000),
@@ -24,11 +24,6 @@ CanOpenNode::CanOpenNode(const std::string& name):
     inBootUpFrame(),
     outRequestNmtState()
 {
-    //TODO WLA : workaround en attendant de trouver dans quel dossier on est lancé dans ROS
-    attrPropertyPath = "/opt/ros/ard/arp_hml/script/orocos/conf";
-    attrScriptPath = "/opt/ros/ard/arp_hml/script/orocos/ops";
-    attrStateMachinePath = "/opt/ros/ard/arp_hml/script/orocos/osd";
-
     updateNodeIdCard();
 
     addAttribute("attrCurrentNMTState",attrCurrentNMTState);

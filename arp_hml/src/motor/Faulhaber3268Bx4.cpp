@@ -20,7 +20,10 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         ArdMotorItf(),
         attrState(ArdDs402::UnknownDs402State),
         propInvertDriveDirection(false),
-        inSpeedCmd()
+        propReductorValue(14),
+        propEncoderResolution(3000),
+        inSpeedCmd(),
+        m_mode(SPEED_CONTROL)
 {
     outMeasuredPosition.write(0.0);
     outMeasuredCurrent.write(0.0);
@@ -37,6 +40,8 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
     addAttribute("attrState",attrState);
 
     addProperty("propInvertDriveDirection",propInvertDriveDirection);
+    addProperty("propReductorValue",propReductorValue);
+    addProperty("propEncoderResolution",propEncoderResolution);
 
     addPort("inSpeedCmd",inSpeedCmd)
             .doc("");
@@ -140,11 +145,11 @@ void Faulhaber3268Bx4::updateHook()
     //lecture de la vitesse
 	if( propInvertDriveDirection )
 	{
-		outMeasuredPosition.write( - (*m_measuredPosition) );
+		outMeasuredPosition.write( - (*m_measuredPosition)/(propReductorValue*propEncoderResolution) );
 	}
 	else
 	{
-		outMeasuredPosition.write( *m_measuredPosition );
+		outMeasuredPosition.write( (*m_measuredPosition)/(propReductorValue*propEncoderResolution) );
 	}
     //lecture du courant
     outMeasuredCurrent.write( *m_measuredCurrent );
@@ -170,7 +175,7 @@ void Faulhaber3268Bx4::speedMode()
     		speed = -speed;
     	}
         *m_faulhaberCommand = F_CMD_V;
-        *m_faulhaberCommandParameter = (UNS32)(speed);
+        *m_faulhaberCommandParameter = (UNS32)(speed*propReductorValue);
         outCommandedSpeed.write((int)(*m_faulhaberCommandParameter));
     }
 

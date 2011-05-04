@@ -10,7 +10,7 @@
 #include <rtt/extras/SlaveActivity.hpp>
 
 //TODO WLA workaround : impossible de logguer en dehors d'un composant ?
-#define LOG(truc) cout
+#define LOG(truc) cout << "[" << truc << "][CanOpenDispatcher] "
 
 using namespace arp_hml;
 using namespace RTT;
@@ -48,9 +48,6 @@ bool CanOpenDispatcher::ooRegisterNewNode(CanNodeIdCard node)
     nodeRegistration_t* nodeRegistration = new nodeRegistration_t();
     nodeRegistration->task = node.task;
 
-
-    LOG(Info) << "ooRegisterNewNode node : "
-            << "(id=" << node.nodeId << ",task=" << node.task << ",inNmtState" << node.inNmtState << ",inBootUpFrame=" << node.inBootUpFrame << ")" << endlog();
 
     if( node.check() == false )
     {
@@ -93,7 +90,9 @@ bool CanOpenDispatcher::ooRegisterNewNode(CanNodeIdCard node)
     }
 
     //if we reached this part of the code, the result is correct
-    LOG(Info) << "ooRegisterNewNode registered node 0x" << std::hex << node.nodeId << endlog();
+    LOG(Info) << "ooRegisterNewNode has registered a new node : "
+            << "(id=0x" << std::hex << node.nodeId << ",task=" << node.task->getName() << ")" << endlog();
+
     goto success;
 
 

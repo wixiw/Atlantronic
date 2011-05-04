@@ -16,18 +16,13 @@ using namespace RTT;
 *  @param name nom du composant Orocos
 */
 Joystick::Joystick(const std::string& name) :
-        ARDTaskContext(name),
+		HmlTaskContext(name),
         propDevName("/dev/input/js1"),
         propMinimalDriverVersion(0x020000),
         attrIsConnected(false),
         attrIsIdentityOk(false),
         m_fd(-666)
 {
-    //TODO WLA : workaround en attendant de trouver dans quel dossier on est lancé dans ROS
-    attrPropertyPath = "/opt/ros/ard/arp_hml/script/orocos/conf";
-    attrScriptPath = "/opt/ros/ard/arp_hml/script/orocos/ops";
-    attrStateMachinePath = "/opt/ros/ard/arp_hml/script/orocos/osd";
-
     addProperty("propDevName",propDevName).doc("linux /dev file which represents the joystick");
     addProperty("propMinimalDriverVersion",propMinimalDriverVersion).doc("minimal linux joystick driver");
 
