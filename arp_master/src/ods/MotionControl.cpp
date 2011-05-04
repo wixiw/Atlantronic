@@ -14,7 +14,7 @@ MotionControl::MotionControl(std::string name) :
     // Suscribers
     pose_sub_ = nh_.subscribe("Localizator/pose", 1,
             &MotionControl::poseCallback, this);
-    vel_pub_ = nh_.advertise<Velocity> ("Command/velocity", 1);
+    vel_pub_ = nh_.advertise<arp_core::Velocity> ("Command/velocity", 1);
 
     as_.start();
 }

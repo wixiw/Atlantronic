@@ -8,6 +8,7 @@ using namespace arp_master;
 StratA::StratA():
   ac_("MotionControl", true),
   start_(false),
+  pre_start_(true),
   obstacleDetected_(false),
   actionFinished_(true),
   nh_()
@@ -18,6 +19,7 @@ StratA::StratA():
   loc_spawn_ = nh_.serviceClient<arp_master::Spawn>("Localizator/respawn");
   simu_spawn_ = nh_.serviceClient<arp_master::Spawn>("PhysicsSimu/respawn");
   robot_setpen_ = nh_.serviceClient<arp_master::SetPen>("Protokrot/set_pen");
+  vel_pub_ = nh_.advertise<arp_core::Velocity> ("Command/velocity", 1);
 }
 
 StratA::~StratA()
@@ -58,19 +60,36 @@ void StratA::go()
   ROS_INFO("");
   ROS_INFO("***************************************************");
   ROS_INFO("TIPS (open a new terminal) :");
+  ROS_INFO("* Plug Start with :");
+  ROS_INFO("\trostopic pub -1 /start arp_core/Start -- 0");
   ROS_INFO("* Choose color with :");
   ROS_INFO("\trostopic pub -1 /Protokrot/color arp_core/StartColor -- \"red\"");
   ROS_INFO("\tor");
   ROS_INFO("\trostopic pub -1 /Protokrot/color arp_core/StartColor -- \"blue\"");
-  ROS_INFO("* Start with :");
+  ROS_INFO("* Unplug Start with :");
   ROS_INFO("\trostopic pub -1 /start arp_core/Start -- 1");
   ROS_INFO("* Simule obstacle with :");
   ROS_INFO("\trostopic pub -1 /obstacle arp_core/Obstacle -- 1");
   ROS_INFO("***************************************************");
   ROS_INFO("");
-  ROS_INFO("Waiting for start");
+  ROS_INFO("Waiting for start (plug it)");
 
   ros::Rate r(10);
+
+  while(pre_start_)
+  {
+    ros::spinOnce();
+    r.sleep();
+  }
+
+  pre_start_ = true;
+  ROS_INFO("Do some actuator tests...");
+  {
+      // preliminar actuators tests here
+  }
+
+  ROS_INFO("Waiting for start (unplug it to begin match !)");
+  pre_start_ = false;
 
   while(!start_)
   {
@@ -79,8 +98,18 @@ void StratA::go()
   }
 
   start_time_ = ros::WallTime::now();
+  ROS_INFO("Go go go !!!");
 
-  ROS_INFO("Go !!");
+  // call pen on GraphicsSimulator
+  arp_master::SetPen srv_setpen;
+  srv_setpen.request.r = 0xb3;
+  srv_setpen.request.g = 0xb8;
+  srv_setpen.request.b = 0xff;
+  srv_setpen.request.width = 3;
+  srv_setpen.request.off = false;
+  robot_setpen_.call(srv_setpen);
+
+
   while( ros::WallTime::now() - start_time_ < ros::WallDuration(90) )
   {
     if( obstacleDetected_ )
@@ -115,22 +144,25 @@ void StratA::go()
   }
 
   ROS_INFO("Time out !! End of Game");
-  ac_.cancelAllGoals();
+  shutDown();
 
 }
 
 void StratA::shutDown()
 {
-  if(!actionFinished_)
+  if( !actionFinished_ )
   {
-    ac_.cancelAllGoals();
     ac_.stopTrackingGoal();
-
-    Velocity vel;
-    vel.linear = 0.0;
-    vel.angular = 0.0;
-    vel_pub_.publish(vel);
+    ac_.cancelAllGoals();
+    ROS_INFO("Goals cancelled");
   }
+
+  Velocity vel;
+  vel.linear = 0.0;
+  vel.angular = 0.0;
+  vel_pub_.publish(vel);
+  ROS_INFO("Null velocity published");
+
 }
 
 void StratA::obstacleCallback(const ObstacleConstPtr& c)
@@ -138,7 +170,6 @@ void StratA::obstacleCallback(const ObstacleConstPtr& c)
   if( c->detected > 0.5 )
   {
     obstacleDetected_ = true;
-#define PI 3.14159265
     ROS_INFO("Obstacle in sight !");
   }
 }
@@ -207,25 +238,16 @@ void StratA::colorCallback(const StartColorConstPtr& o)
 
 void StratA::startCallback(const StartConstPtr& s)
 {
-  if( !start_ )
+  if( s->go < 0.5 )
   {
-    if( s->go > 0 )
+    pre_start_ = false;
+  }
+  if(!pre_start_)
+  {
+    if( s->go > 0.5 )
     {
       start_ = true;
-      ROS_INFO("Start !");
-
-      arp_master::SetPen srv_setpen;
-      srv_setpen.request.r = 0xb3;
-      srv_setpen.request.g = 0xb8;
-      srv_setpen.request.b = 0xff;
-      srv_setpen.request.width = 3;
-      srv_setpen.request.off = false;
-      if(robot_setpen_.call(srv_setpen))
-        ROS_INFO("Strat sent set_pen call to Protokrot");
-      else
-        ROS_INFO("Strat failed to send set_pen off call to Protokrot");
     }
-
   }
 }
 

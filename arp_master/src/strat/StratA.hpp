@@ -156,9 +156,15 @@ private:
   ros::ServiceClient robot_setpen_;
 
   /**
-   * is match begin ?
+   * true at the early beginning, false when the start is plugged, true when match begins
    */
   bool start_;
+
+  /**
+     * true during preliminary tests,
+     */
+    bool pre_start_;
+
 
   /**
    * is obstacle detected ?
