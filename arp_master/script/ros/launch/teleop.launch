@@ -5,7 +5,6 @@
 	<node name="Localizator" 	pkg="arp_master" 	type="LocalizatorNode" 	args="" output="screen"/>
 	<node name="Command" 		pkg="arp_master" 	type="CommandNode" 		args="" output="screen"/>
 	<node name="Teleop" 	pkg="arp_master" 	type="TeleopNode" 		args="" output="screen"/>
-	<node name="MotionControl" 	pkg="arp_master" 	type="MotionControlNode" 		args="" output="screen"/>
 	<node name="TinyStrat" 	pkg="arp_master" 	type="TinyStratNode" 		args="" output="screen"/>
 	<include file="$(find arp_hml)/script/ros/launch/hml_simul.launch"/>
 </launch>

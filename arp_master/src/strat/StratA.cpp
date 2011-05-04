@@ -55,13 +55,20 @@ void StratA::initTraj()
 void StratA::go()
 {
 
-  ROS_INFO("Waiting for start");
+  ROS_INFO("");
+  ROS_INFO("***************************************************");
   ROS_INFO("TIPS (open a new terminal) :");
   ROS_INFO("* Choose color with :");
   ROS_INFO("\trostopic pub -1 /Protokrot/color arp_core/StartColor -- \"red\"");
-  ROS_INFO("\tor rostopic pub -1 /Protokrot/color arp_core/StartColor -- \"blue\"");
-  ROS_INFO("* Start with : rostopic pub -1 /start arp_core/Start -- 1");
-  ROS_INFO("* Simule obstacle with : rostopic pub -1 /obstacle arp_core/Obstacle -- 1");
+  ROS_INFO("\tor");
+  ROS_INFO("\trostopic pub -1 /Protokrot/color arp_core/StartColor -- \"blue\"");
+  ROS_INFO("* Start with :");
+  ROS_INFO("\trostopic pub -1 /start arp_core/Start -- 1");
+  ROS_INFO("* Simule obstacle with :");
+  ROS_INFO("\trostopic pub -1 /obstacle arp_core/Obstacle -- 1");
+  ROS_INFO("***************************************************");
+  ROS_INFO("");
+  ROS_INFO("Waiting for start");
 
   ros::Rate r(10);
 
@@ -107,7 +114,7 @@ void StratA::go()
     r.sleep();
   }
 
-  ROS_INFO("Time out !!");
+  ROS_INFO("Time out !! End of Game");
   ac_.cancelAllGoals();
 
 }
@@ -144,7 +151,7 @@ void StratA::colorCallback(const StartColorConstPtr& o)
     {
       if( color_ == COLOR_RED && color_selected_)
       {
-        ROS_INFO("Color already red");
+        ROS_DEBUG("Color already red");
         return;
       }
       ct_.setColor(COLOR_RED);
@@ -170,7 +177,7 @@ void StratA::colorCallback(const StartColorConstPtr& o)
     {
       if( color_ == COLOR_BLUE && color_selected_)
       {
-        ROS_INFO("Color already blue");
+        ROS_DEBUG("Color already blue");
         return;
       }
       ct_.setColor(COLOR_BLUE);
