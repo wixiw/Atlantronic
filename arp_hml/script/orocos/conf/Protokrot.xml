@@ -8,4 +8,5 @@
   <simple name="propRightOdometerGain" type="double"><description>Gain on the right odometer to provide a measure in rad on the wheel axe.</description><value>6.283185307179586231995927</value></simple>
   <simple name="propLeftSpeedGain" type="double"><description>Gain on the left motor's speed to provide a command in RPM (from rad/s on the wheel axe) on the motor axe.</description><value>9.549296585513721069560233</value></simple>
   <simple name="propRightSpeedGain" type="double"><description>Gain on the right motor's speed to provide a command in RPM (from rad/s on the wheel axe) on the motor axe.</description><value>9.549296585513721069560233</value></simple>
+  <simple name="propSpeedCmdMaxDelay" type="double"><description>Maximal delay beetween 2 received Differential commands. If this delay is overrun, a speed of 0 is sent on each motor. In s </description><value>1</value></simple>
 </properties>

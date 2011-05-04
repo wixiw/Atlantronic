@@ -25,7 +25,7 @@
 #include <arp_core/Start.h>
 #include <arp_core/StartColor.h>
 #include <std_msgs/Bool.h>
-
+#include <sys/time.h>
 
 using namespace arp_core;
 using namespace std_msgs;
@@ -56,6 +56,8 @@ namespace arp_hml
         double propLeftSpeedGain;
         /** Gain on the right motor's speed to provide a command in RPM (from rad/s on the wheel's axe) on the motor's axe.**/
         double propRightSpeedGain;
+        /** Maximal delay beetween 2 received Differential commands. If this delay is overrun, a speed of 0 is sent on each motor. In s **/
+        double propSpeedCmdMaxDelay;
 
         /**
          * Returns a string containing Core version
@@ -129,6 +131,9 @@ public:
         static const double MOTOR_TO_WHEEL = 1.0/14.0;
 
 protected:
+        /** This holds the time of the last received differential command **/
+        struct timespec m_lastCmdTimestamp;
+
         /**
          * Get the differential command speed for both motor and dispatch it to them
          */
@@ -148,6 +153,12 @@ protected:
          * Read the start switch value and publish a go to the outside.
          */
         void readStart();
+
+        /**
+         * Elapsed time between begin and now, using data type timespec.
+         * Return values simply to indicate return point
+         */
+        void delta_t(struct timespec *interval, struct timespec *begin, struct timespec *now);
     };
 
 }

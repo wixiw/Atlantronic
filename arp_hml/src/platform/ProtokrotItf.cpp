@@ -6,9 +6,10 @@
  */
 
 #include "ProtokrotItf.hpp"
+#include "arp_hml_version.h";
+
 #include <ocl/Component.hpp>
 #include <math/math.hpp>
-#include "arp_hml_version.h";
 
 using namespace arp_hml;
 using namespace arp_core;
@@ -24,7 +25,8 @@ ProtokrotItf::ProtokrotItf(const std::string& name):
     propLeftOdometerGain(TURN_TO_RAD),
     propRightOdometerGain(TURN_TO_RAD),
     propLeftSpeedGain(RAD_S_TO_RPM),
-    propRightSpeedGain(RAD_S_TO_RPM)
+    propRightSpeedGain(RAD_S_TO_RPM),
+    propSpeedCmdMaxDelay(1.000)
 {
     addAttribute("attrCurrentCmd", attrCurrentCmd);
     addAttribute("attrOdometers", attrOdometers);
@@ -37,7 +39,8 @@ ProtokrotItf::ProtokrotItf(const std::string& name):
     	.doc("Gain on the left motor's speed to provide a command in RPM (from rad/s on the wheel axe) on the motor axe.");
     addProperty("propRightSpeedGain",propRightSpeedGain)
     	.doc("Gain on the right motor's speed to provide a command in RPM (from rad/s on the wheel axe) on the motor axe.");
-
+    addProperty("propSpeedCmdMaxDelay", propSpeedCmdMaxDelay)
+    	.doc("Maximal delay beetween 2 received Differential commands. If this delay is overrun, a speed of 0 is sent on each motor. In s ");
 
     /** Interface with OUTSIDE (master, ODS, RLU) **/
     addEventPort("inDifferentialCmd",inDifferentialCmd)
@@ -99,19 +102,32 @@ void ProtokrotItf::updateHook()
 void ProtokrotItf::writeDifferentialCmd()
 {
     DifferentialCommand cmd;
+	struct timespec now;
+	struct timespec delay;
+	double delayInS;
+
     if(NewData==inDifferentialCmd.read(cmd))
     {
-        attrCurrentCmd = cmd;
+    	clock_gettime(CLOCK_MONOTONIC, &m_lastCmdTimestamp);
+    	attrCurrentCmd = cmd;
         //ecriture des consignes moteurs
-        outLeftSpeedCmd.write(attrCurrentCmd.v_left*propLeftSpeedGain);
-        outRightSpeedCmd.write(attrCurrentCmd.v_right*propRightSpeedGain);
     }
     else
     {
-        //TODO WLA on fait quoi dans ce cas ? rien ? on continue comme avant ?
-        //attrCurrentCmd.v_left = 0;
-        //attrCurrentCmd.v_right = 0;
+    	//si on n'a pas reçu de commande, au bout d'une seconde on "met les freins"
+    	clock_gettime(CLOCK_MONOTONIC, &now);
+    	delta_t(&delay, &m_lastCmdTimestamp, &now);
+    	delayInS = delay.tv_sec+(double)(delay.tv_nsec)/1E9;
+    	if( delayInS >= propSpeedCmdMaxDelay )
+        {
+            attrCurrentCmd.v_left = 0;
+            attrCurrentCmd.v_right = 0;
+
+        }
     }
+
+    outLeftSpeedCmd.write(attrCurrentCmd.v_left*propLeftSpeedGain);
+    outRightSpeedCmd.write(attrCurrentCmd.v_right*propRightSpeedGain);
 }
 
 void ProtokrotItf::readOdometers()
@@ -155,3 +171,16 @@ void ProtokrotItf::readStart()
 	}
 }
 
+void ProtokrotItf::delta_t(struct timespec *interval, struct timespec *begin, struct timespec *now)
+{
+	interval->tv_nsec = now->tv_nsec - begin->tv_nsec; /* Subtract 'decimal fraction' first */
+	if(interval->tv_nsec < 0 )
+	{
+		interval->tv_nsec += 1000000000; /* Borrow 1sec from 'tv_sec' if subtraction -ve */
+		interval->tv_sec = now->tv_sec - begin->tv_sec - 1; /* Subtract whole number of seconds and return 1 */
+	}
+	else
+	{
+		interval->tv_sec = now->tv_sec - begin->tv_sec; /* Subtract whole number of seconds and return 0 */
+	}
+}
