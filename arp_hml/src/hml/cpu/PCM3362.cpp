@@ -2,7 +2,7 @@
  * PCM3362.cpp
  *
  *  Created on: 2 nov. 2010
- *      Author: ard
+ *      Author: wla
  */
 
 #include "PCM3362.hpp"

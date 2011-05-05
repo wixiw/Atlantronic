@@ -1,6 +1,6 @@
 ###################################################################################################################
 #    EDIT BELOW THIS LINE AND UNTIL NEXT LINE FOR A NEW PROJECT
 
-orocos_library(arp_core-math Pose.cpp  Twist2.cpp)
+orocos_library(arp_core-math Pose.cpp  Twist2.cpp math.cpp)
 
 ###################################################################################################################

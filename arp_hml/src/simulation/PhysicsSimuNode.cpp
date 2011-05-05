@@ -1,3 +1,10 @@
+/*
+ * PhysicsSimuNode
+ *
+ *  Created on: may 2011
+ *      Author: bmo
+ */
+
 #include <ros/ros.h>
 #include <signal.h>
 #include "PhysicsSimu.hpp"
