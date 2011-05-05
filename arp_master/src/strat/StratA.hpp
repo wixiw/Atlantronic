@@ -18,7 +18,7 @@
 #include <arp_core/Start.h>
 #include <arp_core/Velocity.h>
 
-#include <arp_master/Spawn.h>
+#include <arp_core/Spawn.h>
 #include <std_srvs/Empty.h>
 #include <arp_master/SetPen.h>
 

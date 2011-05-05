@@ -15,8 +15,8 @@
 #include <ros/ros.h>
 
 #include <std_srvs/Empty.h>
-#include <arp_master/Spawn.h>
-#include <arp_master/Kill.h>
+#include <arp_core/Spawn.h>
+#include <arp_core/Kill.h>
 #include <map>
 
 #include "GraphicsSimuRobot.hpp"

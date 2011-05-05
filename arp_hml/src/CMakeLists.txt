@@ -13,10 +13,10 @@ configure_file(
     	source_files
     	*.c* 
     )  
-orocos_component(arp_hml ${source_files})
-target_link_libraries(arp_hml SUSI-3.02)
-target_link_libraries(arp_hml canfestival_unix)
-target_link_libraries(arp_hml canfestival)
+
+add_subdirectory(hml)
+add_subdirectory(simulation)
+add_subdirectory(types)
 
 ###################################################################################################################
 

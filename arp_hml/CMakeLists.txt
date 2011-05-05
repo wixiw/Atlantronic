@@ -29,8 +29,6 @@ rosbuild_init()
 rosbuild_include(arp_core ARP_common_functions)
 configure_ard_project()
 
-add_subdirectory(types)
-
 ###
 # end of ARD specific
 ###

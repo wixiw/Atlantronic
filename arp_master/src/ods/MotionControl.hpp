@@ -108,37 +108,37 @@ namespace arp_master
         /**
          * maximum forward velocity (m/s)
          */
-        static const double LIN_VEL_MAX = 0.1;
+        static const double LIN_VEL_MAX = 1.000;
 
         /**
          * maximum rotation velocity (rad/s)
          */
-        static const double ANG_VEL_MAX = 0.5;
+        static const double ANG_VEL_MAX = 4.000;
 
         /**
          * maximum forward acceleration (m/s^02)
          */
-        static const double LIN_ACC_MAX = 0.05;
+        static const double LIN_ACC_MAX = 0.150;
 
         /**
          * maximum rotation acceleration (rad/s^2)
          */
-        static const double ANG_ACC_MAX = 0.05;
+        static const double ANG_ACC_MAX = 10.000;
 
         /**
          *  velocity at final point (m/s)
          */
-        static const double VEL_FINAL = 0.05;
+        static const double VEL_FINAL = 0.050;
 
         /**
          *  distance where you are in mode "approaching point" (mm) //TODO RMO : units ?
          */
-        static const double RADIUS_APPROACH_ZONE = 0.02;
+        static const double RADIUS_APPROACH_ZONE = 0.020;
 
         /**
          * distance where you are in mode "fantom point" (mm) //TODO RMO : units ?
          */
-        static const double RADIUS_FANTOM_ZONE = 0.05;
+        static const double RADIUS_FANTOM_ZONE = 0.050;
 
         /**
          * The fantom coefficient. means the distance of the fantom point to the final point. set it to 0, it will be as if you always try to go directly to final point. set it to 0.9, your robot will make big curve to reach the final point with the right angle.

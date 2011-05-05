@@ -1,0 +1,3 @@
+<launch>
+	<node name="PhysicsSimu"     pkg="arp_hml"  type="PhysicsSimuNode"     args="" output="screen"/>
+</launch>

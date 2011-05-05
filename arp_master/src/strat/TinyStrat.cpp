@@ -15,8 +15,8 @@ TinyStrat::TinyStrat():
   obstacle_sub_ = nh_.subscribe("obstacle", 1, &TinyStrat::obstacleCallback, this);
   color_sub_ = nh_.subscribe("color", 1, &TinyStrat::colorCallback, this);
   start_sub_ = nh_.subscribe("start", 1, &TinyStrat::startCallback, this);
-  loc_spawn_ = nh_.serviceClient<arp_master::Spawn>("Localizator/respawn");
-  simu_spawn_ = nh_.serviceClient<arp_master::Spawn>("ARDSimu/respawn");
+  loc_spawn_ = nh_.serviceClient<arp_core::Spawn>("Localizator/respawn");
+  simu_spawn_ = nh_.serviceClient<arp_core::Spawn>("ARDSimu/respawn");
 }
 
 TinyStrat::~TinyStrat()
@@ -67,7 +67,7 @@ void TinyStrat::colorCallback(const StartColorConstPtr& o)
     if( o->color.compare("red") == 0 )
     {
       ROS_INFO("Color is red");        
-      arp_master::Spawn srv;
+      arp_core::Spawn srv;
       srv.request.x = START_POSITION_RED_X;
       srv.request.y = START_POSITION_RED_Y;
       srv.request.theta = START_POSITION_RED_THETA;
@@ -83,7 +83,7 @@ void TinyStrat::colorCallback(const StartColorConstPtr& o)
     else if( o->color.compare("blue") == 0 )
     {
       ROS_INFO("Color is blue");
-      arp_master::Spawn srv;
+      arp_core::Spawn srv;
       srv.request.x = -START_POSITION_RED_X;
       srv.request.y = START_POSITION_RED_Y;
       srv.request.theta = fmod(START_POSITION_RED_THETA + PI, 2*PI);

@@ -1,6 +1,6 @@
 <launch>
 	<include file="$(find arp_master)/script/ros/launch/rosparam.launch"/>
-	<!-- <include file="$(find arp_hml)/script/ros/launch/hml.launch"/> -->
+	<include file="$(find arp_hml)/script/ros/launch/protokrot.launch"/>
 	<node name="Localizator"  pkg="arp_master"  type="LocalizatorNode"  args="" output="screen"/>
 	<node name="Command"    pkg="arp_master"  type="CommandNode"    args="" output="screen"/>
 	<node name="MotionControl"  pkg="arp_master"  type="MotionControlNode"    args="" output="screen"/>

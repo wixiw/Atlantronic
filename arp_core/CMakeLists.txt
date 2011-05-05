@@ -22,7 +22,7 @@ rosbuild_init()
 #uncomment if you have defined messages
 rosbuild_genmsg()
 #uncomment if you have defined services
-#rosbuild_gensrv()
+rosbuild_gensrv()
 
 #ARD generic configuration
 rosbuild_include(arp_core ARP_common_functions)

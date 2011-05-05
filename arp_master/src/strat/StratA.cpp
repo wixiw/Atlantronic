@@ -16,8 +16,8 @@ StratA::StratA():
   obstacle_sub_ = nh_.subscribe("obstacle", 1, &StratA::obstacleCallback, this);
   color_sub_ = ros::NodeHandle("Protokrot").subscribe("color", 1, &StratA::colorCallback, this);
   start_sub_ = ros::NodeHandle("Protokrot").subscribe("start", 1, &StratA::startCallback, this);
-  loc_spawn_ = nh_.serviceClient<arp_master::Spawn>("Localizator/respawn");
-  simu_spawn_ = nh_.serviceClient<arp_master::Spawn>("PhysicsSimu/respawn");
+  loc_spawn_ = nh_.serviceClient<arp_core::Spawn>("Localizator/respawn");
+  simu_spawn_ = nh_.serviceClient<arp_core::Spawn>("PhysicsSimu/respawn");
   robot_setpen_ = nh_.serviceClient<arp_master::SetPen>("Protokrot/set_pen");
   vel_pub_ = nh_.advertise<arp_core::Velocity> ("Command/velocity", 1);
 }
@@ -57,21 +57,21 @@ void StratA::initTraj()
 void StratA::go()
 {
 
-  ROS_INFO("");
+  ROS_INFO(" ");
   ROS_INFO("***************************************************");
   ROS_INFO("TIPS (open a new terminal) :");
   ROS_INFO("* Plug Start with :");
-  ROS_INFO("\trostopic pub -1 /start arp_core/Start -- 0");
+  ROS_INFO("\trostopic pub -1 /Protokrot/start arp_core/Start -- 0");
   ROS_INFO("* Choose color with :");
   ROS_INFO("\trostopic pub -1 /Protokrot/color arp_core/StartColor -- \"red\"");
   ROS_INFO("\tor");
   ROS_INFO("\trostopic pub -1 /Protokrot/color arp_core/StartColor -- \"blue\"");
   ROS_INFO("* Unplug Start with :");
-  ROS_INFO("\trostopic pub -1 /start arp_core/Start -- 1");
+  ROS_INFO("\trostopic pub -1 /Protokrot/start arp_core/Start -- 1");
   ROS_INFO("* Simule obstacle with :");
   ROS_INFO("\trostopic pub -1 /obstacle arp_core/Obstacle -- 1");
   ROS_INFO("***************************************************");
-  ROS_INFO("");
+  ROS_INFO(" ");
   ROS_INFO("Waiting for start (plug it)");
 
   ros::Rate r(10);
@@ -187,7 +187,7 @@ void StratA::colorCallback(const StartColorConstPtr& o)
       }
       ct_.setColor(COLOR_RED);
       ROS_INFO("Color is red");        
-      arp_master::Spawn srv;
+      arp_core::Spawn srv;
       srv.request.x = START_POSITION_RED_X;
       srv.request.y = START_POSITION_RED_Y;
       srv.request.theta = START_POSITION_RED_THETA;
@@ -213,7 +213,7 @@ void StratA::colorCallback(const StartColorConstPtr& o)
       }
       ct_.setColor(COLOR_BLUE);
       ROS_INFO("Color is blue");
-      arp_master::Spawn srv;
+      arp_core::Spawn srv;
       srv.request.x = -START_POSITION_RED_X;
       srv.request.y = START_POSITION_RED_Y;
       srv.request.theta = fmod(START_POSITION_RED_THETA + PI, 2*PI);

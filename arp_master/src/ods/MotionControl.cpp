@@ -32,7 +32,7 @@ void MotionControl::poseCallback(const PoseConstPtr& c)
 void MotionControl::executeCB(const OrderGoalConstPtr &goal)
 {
     // helper variables
-    ros::Rate r(10);
+    ros::Rate r(100);
     bool success = true;
     bool loop = true;
 

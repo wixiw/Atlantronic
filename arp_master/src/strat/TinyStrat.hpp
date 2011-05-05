@@ -17,7 +17,7 @@
 #include <arp_core/StartColor.h>
 #include <arp_core/Start.h>
 
-#include <arp_master/Spawn.h>
+#include <arp_core/Spawn.h>
 
 #include "math/math.hpp"
 

@@ -12,11 +12,13 @@
 
 #include <arp_core/Odo.h>
 #include <arp_core/Pose.h>
-#include <arp_master/Spawn.h>
+#include <arp_core/Spawn.h>
 
 #include <sstream>
 
 #include "math/Geometry.hpp"
+
+using namespace arp_core;
 
 namespace arp_master
 {
