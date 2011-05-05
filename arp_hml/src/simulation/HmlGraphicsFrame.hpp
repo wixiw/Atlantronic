@@ -81,7 +81,7 @@ class HmlGraphicsFrame : public wxFrame
 	   */
 	  wxButton* m_obstacleButton;
 
-	  //TODO
+	  //TODO WLA
 	  StartColor m_color;
 	  Start m_start;
 	  Obstacle m_obstacle;
@@ -118,7 +118,7 @@ class HmlGraphicsFrame : public wxFrame
 	   */
 	  void onPaint(wxPaintEvent& evt);
 
-	  //TODO
+	  //TODO WLA
 	  void onStart(wxCommandEvent& event);
 	  void onColor(wxCommandEvent& event);
 	  void onObstacle(wxCommandEvent& event);
