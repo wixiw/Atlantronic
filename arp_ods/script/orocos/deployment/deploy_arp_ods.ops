@@ -1,0 +1,10 @@
+/* ARD arp_ods main deployment file */
+runScript("/opt/ros/ard/arp_core/script/orocos/deployment/deploy_arp_core.ops");
+print.log(Warning, "Début déploiment arp_ods");
+import("arp_ods");
+require("ros_integration");
+loadComponent("Component1","Arp_ods");
+loadService ("Component1","myservice");
+Component1.start()
+print.log(Warning, "Fin déploiment arp_hml");
+print.log(Warning, "====================");

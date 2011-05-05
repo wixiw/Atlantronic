@@ -1,0 +1,12 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: orocos-arp_ods
+Description: Orocos @PkgName@ Component
+Requires: rtt
+Version: @project_version_major@.@project_version_minor@.@project_version_patch@
+
+Libs: -L${libdir} -L${libdir}/orocos -l${libdir}/orocos/libarp_ods-@OROCOS_TARGET@.so
+Libs.private:
+Cflags: -I${includedir}

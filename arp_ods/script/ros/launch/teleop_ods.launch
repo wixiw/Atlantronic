@@ -1,0 +1,5 @@
+<!-- ARD arp_ods main launch file -->
+<launch>
+	<node name="Command" 	pkg="arp_ods" 	type="CommandNode" 		args="" output="screen"/>
+	<node name="Teleop" 	pkg="arp_ods" 	type="TeleopNode" 		args="" output="screen"/>
+</launch>

@@ -1,0 +1,14 @@
+<package>
+    <description brief="ARD Omnidirectionnal Drive System package">
+        This package contains the components of the arp_ods package
+    </description>
+    <author>ARD, http://team-ard.com</author>
+    <license>BSD</license>
+    <url>http://team-ard.com</url>
+    
+    <depend package="actionlib" />
+  	<depend package="actionlib_msgs" />
+    <depend package="arp_core" />
+    <depend package="arp_hml" />
+</package>
+
