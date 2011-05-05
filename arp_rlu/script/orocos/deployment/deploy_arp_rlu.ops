@@ -1,0 +1,10 @@
+/* ARD arp_rlu main deployment file */
+runScript("/opt/ros/ard/arp_core/script/orocos/deployment/deploy_arp_core.ops");
+print.log(Warning, "Début déploiment arp_rlu");
+import("arp_rlu");
+require("ros_integration");
+loadComponent("Component1","Arp_rlu");
+loadService ("Component1","myservice");
+Component1.start()
+print.log(Warning, "Fin déploiment arp_hml");
+print.log(Warning, "====================");
