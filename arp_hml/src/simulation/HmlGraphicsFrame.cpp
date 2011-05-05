@@ -111,7 +111,6 @@ void HmlGraphicsFrame::onPaint(wxPaintEvent& evt)
 	//publication
 	start_pub.publish(m_start);
 	color_pub.publish(m_color);
-	obstacle_pub.publish(m_obstacle);
 }
 
 void HmlGraphicsFrame::onStart(wxCommandEvent& event)
@@ -133,4 +132,5 @@ void HmlGraphicsFrame::onObstacle(wxCommandEvent& event)
 {
 	//inversion du bouton
 	m_obstacle.detected = !m_obstacle.detected;
+	obstacle_pub.publish(m_obstacle);
 }
