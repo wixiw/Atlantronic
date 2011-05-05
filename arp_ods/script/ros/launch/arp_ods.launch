@@ -1,5 +1,5 @@
 <!-- ARD arp_ods main launch file -->
 <launch>
 	<node name="Command" 	pkg="arp_ods" 	type="CommandNode" 		args="" output="screen"/>
-	<node name="MotionControl"  pkg="arp_master"  type="MotionControlNode"    args="" output="screen"/>
+	<node name="MotionControl"  pkg="arp_ods"  type="MotionControlNode"    args="" output="screen"/>
 </launch>

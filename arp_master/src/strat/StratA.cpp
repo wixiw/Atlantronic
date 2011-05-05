@@ -60,12 +60,12 @@ void StratA::go()
   ROS_INFO(" ");
   ROS_INFO("***************************************************");
   ROS_INFO("TIPS (open a new terminal) :");
-  ROS_INFO("* Plug Start with :");
-  ROS_INFO("\trostopic pub -1 /Protokrot/start arp_core/Start -- 0");
   ROS_INFO("* Choose color with :");
   ROS_INFO("\trostopic pub -1 /Protokrot/color arp_core/StartColor -- \"red\"");
   ROS_INFO("\tor");
   ROS_INFO("\trostopic pub -1 /Protokrot/color arp_core/StartColor -- \"blue\"");
+  ROS_INFO("* Plug Start with :");
+  ROS_INFO("\trostopic pub -1 /Protokrot/start arp_core/Start -- 0");
   ROS_INFO("* Unplug Start with :");
   ROS_INFO("\trostopic pub -1 /Protokrot/start arp_core/Start -- 1");
   ROS_INFO("* Simule obstacle with :");

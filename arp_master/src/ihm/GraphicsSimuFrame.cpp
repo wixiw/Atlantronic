@@ -1,3 +1,10 @@
+/*
+ * GraphicsSimuFrame.cpp
+ *
+ *  Created on: april 2011
+ *      Author: bmo
+ */
+
 #include "GraphicsSimuFrame.hpp"
 
 #include <ros/package.h>
