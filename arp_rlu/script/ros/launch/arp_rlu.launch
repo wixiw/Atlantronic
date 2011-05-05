@@ -1,0 +1,4 @@
+<!-- ARD arp_rlu main launch file -->
+<launch>
+	<node name="Localizator"  pkg="arp_rlu"  type="LocalizatorNode"  args="" output="screen"/>
+</launch>

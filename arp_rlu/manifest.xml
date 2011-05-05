@@ -1,0 +1,12 @@
+<package>
+    <description brief="Orocos arp_rlu Component package">
+        This package contains the components of the arp_rlu package
+    </description>
+    <author>ARD, http://team-ard.com</author>
+    <license>BSD</license>
+    <url>http://88.191.124.77/redmine/projects/positionnnement/wiki</url>
+    <depend package="rtt" />
+    <depend package="arp_core" />
+    <depend package="arp_hml" />
+</package>
+
