@@ -1,19 +1,20 @@
 /*
  * Logitech3DTeleop.cpp
  *
- *  Created on: 2 nov. 2010
- *      Author: ard
+ *  Created on: 01 may 2011
+ *      Author: wla
  */
+
 
 #include "Logitech3DTeleop.hpp"
 #include <ocl/Component.hpp>
 #include <susi.h>
 
-using namespace arp_master;
+using namespace arp_ods;
 using namespace arp_core;
 
 
-ORO_LIST_COMPONENT_TYPE( arp_master::Logitech3DTeleop )
+ORO_LIST_COMPONENT_TYPE( arp_ods::Logitech3DTeleop )
 
 Logitech3DTeleop::Logitech3DTeleop(const std::string& name) :
     ARDTaskContext(name),

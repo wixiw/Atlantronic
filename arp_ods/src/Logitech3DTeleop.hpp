@@ -1,8 +1,8 @@
 /*
  * Logitech3DTeleop.hpp
  *
- *  Created on: 2 nov. 2010
- *      Author: ard
+ *  Created on: 01 may 2011
+ *      Author: wla
  */
 
 #ifndef Logitech3DTeleop_HPP
@@ -14,7 +14,7 @@
 using namespace arp_core;
 
 
-namespace arp_master
+namespace arp_ods
 {
 
     class Logitech3DTeleop : public ARDTaskContext

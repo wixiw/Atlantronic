@@ -14,8 +14,4 @@ configure_file(
     )  
 
 add_subdirectory(ihm)
-add_subdirectory(ods)
-add_subdirectory(orocos)
-add_subdirectory(rlu)
-add_subdirectory(simulation)
 add_subdirectory(strat)
