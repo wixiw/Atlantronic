@@ -63,6 +63,8 @@ private:
 */
   static const double START_POSITION_RED_THETA = 0.0;
 
+  bool currentsens;
+
 public:
   StratA();
   ~StratA();

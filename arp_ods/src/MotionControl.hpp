@@ -16,6 +16,7 @@
 #include <arp_core/Pose.h>
 
 #include <math/Geometry.hpp>
+#include <math/math.hpp>
 
 using namespace arp_core;
 
@@ -76,6 +77,11 @@ namespace arp_ods
         arp_math::Rotation2 orient_;
 
         /**
+         *  possibly reversed orientation (to go backward) used by the motion control
+         */
+        arp_math::Rotation2 orientLocal_;
+
+        /**
          * published linear velocity
          */
         double lin_vel_;
@@ -88,22 +94,22 @@ namespace arp_ods
         /**
          * Order is succed if (and only if) the current position is near the goal with distance_accuracy_ precision.
          */
-        double distance_accuracy_;
+        static const double DISTANCE_ACCURACY=0.010;
 
         /**
          * Order is succed if (and only if) the current orientation is near the goal with angle_accuracy_ precision.
          */
-        double angle_accuracy_;
+        static const double ANGLE_ACCURACY=0.05;
 
         /**
          * Gain on rotation (without unity)
          */
-        double rotation_gain_;
+        static const double ROTATION_GAIN=15.0;
 
         /**
          * Gain on rotation (without unity)
          */
-        double translation_gain_;
+        static const double TRANSLATION_GAIN=1.0;
 
         /**
          * maximum forward velocity (m/s)
@@ -116,27 +122,17 @@ namespace arp_ods
         static const double ANG_VEL_MAX = 4.000;
 
         /**
-         * maximum forward acceleration (m/s^02)
-         */
-        static const double LIN_ACC_MAX = 0.150;
-
-        /**
-         * maximum rotation acceleration (rad/s^2)
-         */
-        static const double ANG_ACC_MAX = 10.000;
-
-        /**
          *  velocity at final point (m/s)
          */
-        static const double VEL_FINAL = 0.050;
+        static const double VEL_FINAL = 0.100;
 
         /**
-         *  distance where you are in mode "approaching point" (mm) //TODO RMO : units ?
+         *  distance where you are in mode "approaching point" (m)
          */
         static const double RADIUS_APPROACH_ZONE = 0.020;
 
         /**
-         * distance where you are in mode "fantom point" (mm) //TODO RMO : units ?
+         * distance where you are in mode "fantom point" (m)
          */
         static const double RADIUS_FANTOM_ZONE = 0.050;
 
@@ -167,37 +163,7 @@ namespace arp_ods
          */
         void executeCB(const OrderGoalConstPtr &goal);
 
-        /**
-         * Return any angle in -pi +pi
-         */
-        double normalizeAngle(double angle);
 
-        /**
-         * Return "value" saturated to min or max
-         */
-        double saturate(double value, double min, double max);
-
-        /**
-         *  Return sqrt(value), but if value is negative return negative sqrt(value)
-         */
-        double sqrt2(double value);
-
-        /**
-         * Return f(x) = extrapolated value between startValue and endValue, but with respect to the position of "x" between startLimit and endLimit
-         *
-         * f(x)=
-         *
-         * end value       |            ______________
-         *                 |          /
-         * ----------------|---------/---------------------
-         *                 |        /
-         * startValue _____|_______/
-         *                 |
-         *                  startlimit endlimit
-         *
-         */
-        double smoothStep(double x, double startValue, double startLimit,
-                double endValue, double endLimit);
 
     };
 }

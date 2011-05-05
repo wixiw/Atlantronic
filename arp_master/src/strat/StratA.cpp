@@ -143,6 +143,8 @@ void StratA::go()
       ROS_INFO("toggle Direction");
       ct_.toggleDirection();
       actionFinished_ = true;
+      //change sens of going
+      currentsens=!currentsens;
     }
 
     if( actionFinished_ )
@@ -158,6 +160,8 @@ void StratA::go()
       goal.x_des = pt.x();
       goal.y_des = pt.y();
       goal.theta_des = pt.angle();
+      goal.move_type="POINTCAP";
+      goal.reverse=currentsens;
       ac_.sendGoal(goal, boost::bind(&StratA::doneCb, this, _1, _2));
 
       actionFinished_ = false;
