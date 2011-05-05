@@ -16,17 +16,16 @@ using namespace arp_core;
 
 
 HmlGraphicsFrame::HmlGraphicsFrame():
+	m_nodeHandle(ros::NodeHandle("HmlGraphics")),
 	color_pub(),
 	start_pub(),
 	obstacle_pub(),
-	nh(),
 	wxFrame(NULL,
           wxID_ANY,
           wxT("Hml Simulation"),
           wxDefaultPosition, 
           wxSize(length_in_pixel, width_in_pixel),
-          wxDEFAULT_FRAME_STYLE),
-    m_nodeHandle(ros::NodeHandle("HmlGraphics"))
+          wxDEFAULT_FRAME_STYLE)
 {
 	m_color.color = "red";
 	m_start.go = true;
@@ -42,9 +41,9 @@ HmlGraphicsFrame::HmlGraphicsFrame():
 	Connect(update_timer_->GetId(), wxEVT_TIMER, wxTimerEventHandler(HmlGraphicsFrame::onUpdate), NULL, this);
 	Connect(wxEVT_PAINT, wxPaintEventHandler(HmlGraphicsFrame::onPaint), NULL, this);
 
-	start_pub = nh.advertise<Start>("Protokrot/start", 1);
-	color_pub = nh.advertise<StartColor>("Protokrot/color", 1);
-	obstacle_pub = nh.advertise<Obstacle>("/obstacle", 1);
+	start_pub = m_nodeHandle.advertise<Start>("Protokrot/start", 1);
+	color_pub = m_nodeHandle.advertise<StartColor>("Protokrot/color", 1);
+	obstacle_pub = m_nodeHandle.advertise<Obstacle>("/obstacle", 1);
 
 	ROS_INFO("Starting HmlGraphics with node name %s", ros::this_node::getName().c_str()) ;
 }

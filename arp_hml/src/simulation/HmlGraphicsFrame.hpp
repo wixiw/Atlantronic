@@ -101,11 +101,6 @@ class HmlGraphicsFrame : public wxFrame
 	   */
 	  ros::Publisher     obstacle_pub;
 
-	/**
-	* NodeHandle on associated node
-	*/
-	ros::NodeHandle nh;
-
 	  /**
 	   * used to call onUpdate
 	   * Attention, pretty inaccurate
