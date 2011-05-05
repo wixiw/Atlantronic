@@ -16,7 +16,7 @@ using namespace arp_core;
 
 
 HmlGraphicsFrame::HmlGraphicsFrame():
-	m_nodeHandle(ros::NodeHandle("HmlGraphics")),
+	m_nodeHandle(),
 	color_pub(),
 	start_pub(),
 	obstacle_pub(),
