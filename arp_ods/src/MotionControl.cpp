@@ -164,6 +164,7 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal)
 
         // this sleep is not necessary, the sequence is computed at 1 Hz for demonstration purposes
         r.sleep();
+        ros::spinOnce();
     }
 
     if (success)
