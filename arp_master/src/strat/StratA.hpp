@@ -185,6 +185,11 @@ private:
   ros::WallTime start_time_;
 
   /**
+     * time of last detected obstacle
+     */
+    ros::WallTime last_obstacle_time_;
+
+  /**
    * instanciated by default in constructor
    */
   ros::NodeHandle nh_;
@@ -198,6 +203,17 @@ private:
      * color already selected once
      */
     bool color_selected_;
+
+    /**
+     * match duration in seconds
+     */
+    double match_duration_;
+
+    /**
+     * Blinding duration after obstacle (default 2.0 sec).
+     * Period after obstacle detection during which we ignore obstacle
+     */
+    double blinding_period_;
 
 
 };

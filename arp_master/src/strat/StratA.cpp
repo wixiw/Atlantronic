@@ -21,6 +21,29 @@ StratA::StratA():
   simu_spawn_ = nh_.serviceClient<arp_core::Spawn>("PhysicsSimu/respawn");
   robot_setpen_ = nh_.serviceClient<arp_master::SetPen>("Protokrot/set_pen");
   vel_pub_ = nh_.advertise<arp_core::Velocity> ("Command/velocity", 1);
+
+  last_obstacle_time_ = ros::WallTime::now();
+
+  if( nh_.getParam("/match_duration", match_duration_))
+  {
+    ROS_INFO("Got param named '/match_duration' : %f", match_duration_);
+  }
+  else
+  {
+    ROS_ERROR("Failed to get param '/match_duration'. Take default value (90.0)");
+    match_duration_ = 90.;
+  }
+
+  if( nh_.getParam("/blinding_period", blinding_period_))
+    {
+      ROS_INFO("Got param named '/blinding_period' : %f", blinding_period_);
+    }
+    else
+    {
+      ROS_ERROR("Failed to get param '/blinding_period'. Take default value (2.0)");
+      blinding_period_ = 90.;
+    }
+
 }
 
 StratA::~StratA()
@@ -111,7 +134,7 @@ void StratA::go()
   robot_setpen_.call(srv_setpen);
 
 
-  while( ros::WallTime::now() - start_time_ < ros::WallDuration(90) )
+  while( ros::WallTime::now() - start_time_ < ros::WallDuration(match_duration_) )
   {
     if( obstacleDetected_ )
     {
@@ -170,8 +193,12 @@ void StratA::obstacleCallback(const ObstacleConstPtr& c)
 {
   if( c->detected > 0.5 )
   {
-    obstacleDetected_ = true;
-    ROS_INFO("Obstacle in sight !");
+    if(ros::WallTime::now() - last_obstacle_time_ > ros::WallDuration(blinding_period_))
+    {
+        last_obstacle_time_ = ros::WallTime::now();
+        obstacleDetected_ = true;
+        ROS_INFO("Obstacle in sight !");
+    }
   }
 }
 

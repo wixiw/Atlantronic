@@ -1,4 +1,6 @@
 <launch>
 	<param name="/Protokrot/base_line" value="0.305" />
 	<param name="/Protokrot/wheel_diameter" value="0.068" /> 
+  <param name="/match_duration" value="90." /> 
+  <param name="/blinding_period" value="2." /> 
 </launch>
