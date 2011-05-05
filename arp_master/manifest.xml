@@ -13,8 +13,8 @@
   <depend package="actionlib" />
   <depend package="actionlib_msgs" />
   <depend package="arp_core" />
-  <depend package="arp_hml" />
-  
+  <depend package="arp_ods" />
+  <depend package="arp_rlu" />
   <rosdep name="wxwidgets"/>
     
 </package>

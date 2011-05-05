@@ -1,9 +1,8 @@
 <launch>
 	<include file="$(find arp_master)/script/ros/launch/rosparam.launch"/>
 	<include file="$(find arp_hml)/script/ros/launch/simul_protokrot.launch"/>
-	<node name="Localizator" 	pkg="arp_master" 	type="LocalizatorNode" 	args="" output="screen"/>
-	<node name="Command" 		pkg="arp_master" 	type="CommandNode" 		args="" output="screen"/>
-	<node name="Teleop" 	pkg="arp_master" 	type="TeleopNode" 		args="" output="screen"/>
+	<include file="$(find arp_rlu)/script/ros/launch/arp_rlu.launch"/>
+	<include file="$(find arp_ods)/script/ros/launch/teleop_ods.launch"/>
 	<node name="TinyStrat" 	pkg="arp_master" 	type="TinyStratNode" 		args="" output="screen"/>
 	<node name="GraphicsSimu"     pkg="arp_master"  type="GraphicsSimuNode"     args="/Protokrot/pose" output="screen"/>
 </launch>

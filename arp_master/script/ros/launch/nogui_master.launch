@@ -1,8 +1,7 @@
 <launch>
 	<include file="$(find arp_master)/script/ros/launch/rosparam.launch"/>
 	<include file="$(find arp_hml)/script/ros/launch/simul_protokrot.launch"/> 
-	<node name="Localizator"  pkg="arp_master"  type="LocalizatorNode"  args="" output="screen"/>
-	<node name="Command"    pkg="arp_master"  type="CommandNode"    args="" output="screen"/>
-	<node name="MotionControl"  pkg="arp_master"  type="MotionControlNode"    args="" output="screen"/>
+	<include file="$(find arp_rlu)/script/ros/launch/arp_rlu.launch"/>
+	<include file="$(find arp_ods)/script/ros/launch/arp_ods.launch"/>
 	<node name="StratA"   pkg="arp_master"  type="StratANode"     args="" output="screen"/>
 </launch>

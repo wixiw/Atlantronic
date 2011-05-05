@@ -61,6 +61,8 @@ create_folder_structure()
 	mkdir $package_name/script/ros/launch $package_name/srv $package_name/script/msg
 	echo "[*] Moving default sources into src folder ..."
 	mv $package_name/*.?pp $package_name/src
+
+	cp default/version.h.in $package_name/src
 }
 
 ###
@@ -87,12 +89,11 @@ edit_cmakelists()
 	touch $package_name/test/CMakeLists.txt
 
 	#creation des CMakeFiles de script
-	cp script/* $package_name/script
-	touch $package_name/script/conf/CMakeLists.txt
-	touch $package_name/script/deployment/CMakeLists.txt
+	touch $package_name/script/orocos/conf/CMakeLists.txt
+	touch $package_name/script/orocos/deployment/CMakeLists.txt
 	touch $package_name/script/linux/CMakeLists.txt
-	touch $package_name/script/osd/CMakeLists.txt
-	touch $package_name/script/ops/CMakeLists.txt
+	touch $package_name/script/orocos/osd/CMakeLists.txt
+	touch $package_name/script/orocos/ops/CMakeLists.txt
 }
 
 ###
@@ -104,7 +105,8 @@ configure_ros()
 	echo "ROS_PACKAGE_PATH=\$ROS_PACKAGE_PATH:\`rosstack find ard\`/$package_name" >> env.sh
 
 	echo "[*] Editing manifest.xml ..."
-	sed -i "s/<\/description>/<\/description>\n    <author>ARD<\/author>\n    <license>BSD<\/license>/\n    <url>http://team-ard.com</url>"  $package_name/manifest.xml
+	cp default/manifest.xml $package_name
+	sed -i "/^PACKAGE_NAME /s/=/= $package_name/" $package_name/manifest.xml
 }
 
 ###
@@ -143,12 +145,32 @@ create_default_deployment()
 	package_upper_case=`echo "$package_name" | python -c "print raw_input().capitalize()"`
 	
 	echo "[*] Generating default deployment ..."
-	echo "/* ARD $package_name main deployment file */" > $package_name/script/deployment/deploy_$package_name.ops
-	echo "path(\"`rospack find $package_name`/lib/orocos\");" >> $package_name/script/deployment/deploy_$package_name.ops
-	echo 'require("print");' >> $package_name/script/deployment/deploy_$package_name.ops  
-	echo "loadComponent(\"Component1\",\"$package_upper_case\");" >> $package_name/script/deployment/deploy_$package_name.ops 
-	echo "loadService (\"Component1\",\"myservice\");" >> $package_name/script/deployment/deploy_$package_name.ops 
-	echo "Component1.start()" >> $package_name/script/deployment/deploy_$package_name.ops  
+	echo "/* ARD $package_name main deployment file */" > $package_name/script/orocos/deployment/deploy_$package_name.ops
+	echo "runScript(\"/opt/ros/ard/arp_core/script/orocos/deployment/deploy_arp_core.ops\");" >> $package_name/script/orocos/deployment/deploy_$package_name.ops
+	echo "print.log(Warning, \"Début déploiment $package_name\");" >> $package_name/script/orocos/deployment/deploy_$package_name.ops
+	echo "import(\"$package_name\");" >> $package_name/script/orocos/deployment/deploy_$package_name.ops
+	echo "require(\"ros_integration\");" >> $package_name/script/orocos/deployment/deploy_$package_name.ops
+	echo "loadComponent(\"Component1\",\"$package_upper_case\");" >> $package_name/script/orocos/deployment/deploy_$package_name.ops 
+	echo "loadService (\"Component1\",\"myservice\");" >> $package_name/script/orocos/deployment/deploy_$package_name.ops 
+	echo "Component1.start()" >> $package_name/script/orocos/deployment/deploy_$package_name.ops  
+	echo "print.log(Warning, \"Fin déploiment arp_hml\");" >> $package_name/script/orocos/deployment/deploy_$package_name.ops  
+	echo "print.log(Warning, \"====================\");" >> $package_name/script/orocos/deployment/deploy_$package_name.ops  
+
+
+}
+
+###
+# "create_default_launch" : create a launch script in order to launch with roslaunch
+###
+create_default_launch()
+{
+	package_upper_case=`echo "$package_name" | python -c "print raw_input().capitalize()"`
+	
+	echo "[*] Generating default launch ..."
+	echo "<!-- ARD $package_name main launch file -->" > $package_name/script/ros/launch/$package_name.launch
+	echo "<launch>" >> $package_name/script/ros/launch/$package_name.launch
+	echo "\t<node name=\"$package\" pkg=\"ocl\" type=\"deployer-gnulinux\" args=\"-s \$(find $package)/script/orocos/deployment/deploy_$package_name.ops --\" output=\"screen\"/>" >> $package_name/script/ros/launch/$package_name.launch
+	echo "</launch>" >> $package_name/script/ros/launch/$package_name.launch
 }
 
 ###
@@ -193,6 +215,7 @@ then
 		configure_ros
 		generate_documentation_system
 		create_default_deployment
+		create_default_launch
 		create_scripts
 
 		echo -e $VERT "[Done] check success and relaunch your terminal !!" $NORMAL
