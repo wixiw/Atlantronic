@@ -11,7 +11,7 @@
 #include <ros/ros.h>
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
-#include <arp_master/OrderAction.h>
+#include <arp_ods/OrderAction.h>
 
 #include <arp_core/Obstacle.h>
 #include <arp_core/StartColor.h>
@@ -26,11 +26,12 @@
 #include "WayPoint.hpp"
 #include "CircularTraj.hpp"
      
+using namespace arp_ods;
 
 namespace arp_master
 {
 
-typedef actionlib::SimpleActionClient<arp_master::OrderAction> Client;
+typedef actionlib::SimpleActionClient<OrderAction> Client;
 
 /**
  * \ingroup arp_master

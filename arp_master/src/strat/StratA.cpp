@@ -2,6 +2,7 @@
 
 using namespace arp_math;
 using namespace arp_core;
+using namespace arp_ods;
 using namespace arp_master;
 
 
@@ -130,7 +131,7 @@ void StratA::go()
       //ROS_INFO("%s", ss.str().c_str() );
 
       // send a goal to the action
-      arp_master::OrderGoal goal;
+      OrderGoal goal;
       goal.x_des = pt.x();
       goal.y_des = pt.y();
       goal.theta_des = pt.angle();
