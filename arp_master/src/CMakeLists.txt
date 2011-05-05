@@ -7,11 +7,5 @@ configure_file(
   )
   message("[+] configure version.h")
 
-    file(
-    	GLOB_RECURSE
-    	source_files
-    	*.c* 
-    )  
-
 add_subdirectory(ihm)
 add_subdirectory(strat)

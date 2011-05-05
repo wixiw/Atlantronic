@@ -5,11 +5,6 @@ configure_file(
   )
   message("[+] configure version.h")
 
-    file(
-    	GLOB_RECURSE
-    	source_files
-    	*.c* 
-    )  
     
 ###################################################################################################################
 #    EDIT BELOW THIS LINE AND UNTIL NEXT LINE FOR A NEW PROJECT
