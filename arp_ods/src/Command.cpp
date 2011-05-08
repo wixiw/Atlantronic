@@ -14,6 +14,13 @@ Command::Command() :
     command_pub = nh.advertise<DifferentialCommand> (
             "Protokrot/differential_command", 1);
 
+
+    nh.getParam("/ard_ods/LIN_ACC_MAX", LIN_ACC_MAX);
+    nh.getParam("/ard_ods/LIN_DEC_MAX", LIN_DEC_MAX);
+    nh.getParam("/ard_ods/ANG_ACC_MAX", ANG_ACC_MAX);
+    nh.getParam("/ard_ods/BASE_LINE", BASE_LINE);
+    nh.getParam("/ard_ods/WHEEL_DIAMETER", WHEEL_DIAMETER);
+
 }
 
 Command::~Command()
@@ -23,32 +30,6 @@ Command::~Command()
 
 void Command::velocityCallback(const VelocityConstPtr& v)
 {
-
-    if (base_line < 0. && wheel_diameter < 0.)
-    {
-        if (nh.getParam("/Protokrot/base_line", base_line))
-        {
-            ROS_INFO("Got param named '/Protokrot/base_line' : %f", base_line);
-        }
-        else
-        {
-            ROS_ERROR(
-                    "Failed to get param '/Protokrot/base_line'. Take default value (0.4)");
-            base_line = 0.4;
-        }
-
-        if (nh.getParam("/Protokrot/wheel_diameter", wheel_diameter))
-        {
-            ROS_INFO("Got param named '/Protokrot/wheel_diameter' : %f",
-                    wheel_diameter);
-        }
-        else
-        {
-            ROS_ERROR(
-                    "Failed to get param '/Protokrot/wheel_diameter'. Take default value (0.07)");
-            wheel_diameter = 0.07;
-        }
-    }
 
     double lin_vel_cons_full = v->linear;
     double ang_vel_cons_full = v->angular;
@@ -71,8 +52,9 @@ void Command::velocityCallback(const VelocityConstPtr& v)
     ang_vel_ = old_ang_vel + delta_ang_vel*delta_date;
 
     ////////////////creation consigne droite et consigne gauche
-    double v_right = (2.0 * lin_vel_ + base_line * ang_vel_) / wheel_diameter;
-    double v_left = (2.0 * lin_vel_ - base_line * ang_vel_) / wheel_diameter;
+    // l'expression usuelle serait:    ( linvel + ang_vel*baseline/2  )  / wheel_radius
+    double v_right = (2.0 * lin_vel_ + BASE_LINE * ang_vel_) / WHEEL_DIAMETER;
+    double v_left = (2.0 * lin_vel_ - BASE_LINE * ang_vel_) / WHEEL_DIAMETER;
 
     DifferentialCommand c;
     c.v_left = v_left;
