@@ -48,13 +48,13 @@ namespace arp_hml
         /** Buffered value of the odometers values for displaying purposes **/
         Odo attrOdometers;
 
-        /** Gain on the left odometer to provide a measure in rad on the wheel's axe.**/
+        /** Gain on the left odometer to alter the position measure in rad on the wheel's axe.**/
         double propLeftOdometerGain;
-        /** Gain on the right odometer to provide a measure in rad on the wheel's axe.**/
+        /** Gain on the right odometer to alter the position measure in rad on the wheel's axe.**/
         double propRightOdometerGain;
-        /** Gain on the left motor's speed to provide a command in RPM (from rad/s on the wheel's axe) on the motor's axe.**/
+        /** Gain on the left motor's speed to alter the input command in rad/s on the wheel's axe.**/
         double propLeftSpeedGain;
-        /** Gain on the right motor's speed to provide a command in RPM (from rad/s on the wheel's axe) on the motor's axe.**/
+        /** Gain on the right motor's speed to alter the input command in rad/s on the wheel's axe.**/
         double propRightSpeedGain;
         /** Maximal delay beetween 2 received Differential commands. If this delay is overrun, a speed of 0 is sent on each motor. In s **/
         double propSpeedCmdMaxDelay;
@@ -108,16 +108,16 @@ namespace arp_hml
         /** HW value of the color switch. It is true when the color switch is on 1 **/
         InputPort<bool> inIoColorSwitch;
 
-        /** Value of the left odometer in pulses **/
+        /** Value of the left odometer in rad on the wheel axe **/
         InputPort<double> inLeftDrivingPosition;
 
-        /** Value of the right odometer in pulses **/
+        /** Value of the right odometer in rad on the wheel axe **/
         InputPort<double> inRightDrivingPosition;
 
-        /** Speed command for the left motor in RPM **/
+        /** Speed command for the left motor in rad/s on the wheel axe **/
         OutputPort<int> outLeftSpeedCmd;
 
-        /** Speed command for the right motor in RPM **/
+        /** Speed command for the right motor in rad/s on the wheel axe **/
         OutputPort<int> outRightSpeedCmd;
 
 

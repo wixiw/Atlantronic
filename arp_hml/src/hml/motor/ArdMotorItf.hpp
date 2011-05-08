@@ -2,7 +2,7 @@
  * ArdMotor.hpp
  *
  *  Created on: 21 mars 2011
- *      Author: ard
+ *      Author: wla
  */
 
 #ifndef ARDMOTORITF_HPP_
@@ -16,7 +16,7 @@ namespace arp_hml
         /**
         * Motion type of the controller.
         */
-        enum operationMode
+        enum operationMode_t
         {
             SPEED_CONTROL,
             TORQUE_CONTROL,
@@ -27,10 +27,14 @@ namespace arp_hml
 
         /**
         * Sets the motion type drive.
-        * The function is not implemented for Harmonica.
-        * The harmonica drive is configured just for velocity mode.
         */
-        virtual bool setOperationMode(int operationMode) = 0;
+        virtual bool setOperationMode(operationMode_t operationMode);
+
+        /**
+        * Gets the motion type drive.
+        * returns an
+        */
+        virtual operationMode_t getOperationMode();
 
         /**
         * Initializes the drive.
@@ -38,22 +42,53 @@ namespace arp_hml
         virtual bool init() = 0;
 
         /**
+        * Resets the drive.
+        * The drive changes into the state after initializaton.
+        */
+        virtual bool reset() = 0;
+
+        /**
+         * Run the drive. Call this every cycle
+         * You should not derivate this normally
+         */
+        virtual void run();
+
+        /**
+         * This function is called by the run function when the motor is in the SPEED_CONTROL mode
+         */
+        virtual void runSpeed() = 0;
+
+        /**
+         * This function is called by the run function when the motor is in the TORQUE_CONTROL mode
+         */
+        virtual void runTorque() = 0;
+
+        /**
+         * This function is called by the run function when the motor is in the POSITION_CONTROL mode
+         */
+        virtual void runPosition() = 0;
+
+        /**
+         * This function is called by the run function when the motor is in the HOMING mode
+         */
+        virtual void runHoming() = 0;
+
+        /**
+         * This function is called by the run function when the motor is in the OTHER mode
+         */
+        virtual void runOther() = 0;
+
+        /**
         * Enables the motor.
         * After calling the drive accepts velocity and position commands.
         */
-        virtual bool enableDrive() = 0;
+        virtual void enableDrive() = 0;
 
         /**
         * Disables the motor.
         * After calling the drive won't accepts velocity and position commands.
         */
-        virtual bool disableDrive() = 0;
-
-        /**
-        * Resets the drive.
-        * The drive changes into the state after initializaton.
-        */
-        virtual bool reset() = 0;
+        virtual void disableDrive() = 0;
 
         /**
         * Returns the status of the limit switch needed for homing.
@@ -86,36 +121,36 @@ namespace arp_hml
         /**
         * Returns the torque value in Nm
         */
-        virtual double getTorque(){ return m_torqueMeasure;};
+        virtual double getTorqueMeasure();
 
         /**
         * Sends command for motor Torque (in Nm)
         */
-        virtual void setTorque(double torqueCmdNm ){ m_torqueCommand=torqueCmdNm;};
+        virtual void setTorqueCmd(double torqueCmdNm );
 
         /**
         * Returns the speed value in rad/s
         */
-        virtual double getSpeed(){ return m_speedMeasure;};
+        virtual double getSpeedMeasure();
 
         /**
         * Sends speed command in rad/s
         */
-        virtual void setSpeed(double speedCmdRadS ){ m_speedCommand=speedCmdRadS;};
+        virtual void setSpeedCmd(double speedCmdRadS );
 
         /**
         * Returns the position of the motor in rad/s
         */
-        virtual double getPosition(){ return m_positionMeasure;};
+        virtual double getPositionMeasure();
 
         /**
         * Sends position command in rad/s
         */
-        virtual void setPosition(double positionCmdRadS ){ m_positionCommand=positionCmdRadS;};
+        virtual void setPositionCmd(double positionCmdRadS );
 
 
     protected:
-        operationMode m_operationMode;
+        operationMode_t m_operationMode;
 
         /** Contains the last torque measure in Nm */
         double m_torqueMeasure;
