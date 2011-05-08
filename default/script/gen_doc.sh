@@ -27,7 +27,11 @@ if [ $1 == "" ]
 then
 	echo -e $ROUGE "[!] you did not provide correct arguments. Please add a package_name" $NORMAL
 	echo -e $ROUGE "[!] example : sh gen_doc.sh arp_core" $NORMAL
+	exit 0
 fi
+
+cd $1
+
 
 echo -e $BLEU "[+] deleting old documention in $ARP_PROJECT_NAME package..." $NORMAL
 rm -rf doc/html
@@ -38,6 +42,7 @@ doxygen doc/Doxyfile.sh
 if [ $? != 0 ]
 then
 	echo -e $ROUGE "[!] Doxygen fail to generate the documentation" $NORMAL
+	exit 0
 fi
 
 echo -e $BLEU "[+] integration into Eclipse Help Contents ..." $NORMAL

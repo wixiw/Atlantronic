@@ -1,2 +1,2 @@
-`rosstack find ard`/default/script/gen_doc.sh arp_core
+`rosstack find ard`/default/script/gen_doc.sh `rosstack find ard`/arp_core
 

@@ -13,7 +13,7 @@
 #include "hml/can/ard_can_types.hpp"
 
 using namespace arp_core;
-
+//TODO WLA mettre la doc
 namespace arp_hml
 {
 
@@ -25,16 +25,20 @@ namespace arp_hml
         bool configureHook();
         void stopHook();
 
-        bool setOperationMode(int operationMode);
         bool init();
-        bool enableDrive();
-        bool disableDrive();
+        void enableDrive();
+        void disableDrive();
         bool reset();
         bool getLimitSwitchStatus();
         bool startWatchdog();
         bool stopWatchdog();
         bool isInError();
         unsigned int getError();
+        void runSpeed();
+        void runTorque();
+        void runPosition();
+        void runHoming();
+        void runOther();
 
         static const int F_CMD_DI = 0x08;
         static const int F_CMD_EN = 0x0F;
@@ -50,6 +54,7 @@ namespace arp_hml
 
     protected:
         ArdDs402::enum_DS402_state attrState;
+        int attrCommandedSpeed;
 
         bool propInvertDriveDirection;
         /** Reductor's value **/
@@ -57,11 +62,13 @@ namespace arp_hml
         /** Encoder resolution in point by rev**/
         int propEncoderResolution;
 
-        InputPort<int> inSpeedCmd;
+        InputPort<double> inSpeedCmd;
+        InputPort<double> inPositionCmd;
+        InputPort<double> inTorqueCmd;
 
-        OutputPort<int> outCommandedSpeed;
         OutputPort<double> outMeasuredPosition;
-        OutputPort<double> outMeasuredCurrent;
+        OutputPort<double> outMeasuredTorque;
+        OutputPort<double> outComputedSpeed;
 
         OutputPort<int> outLastSentCommand;
         OutputPort<double> outLastSentCommandParam;
@@ -76,14 +83,20 @@ namespace arp_hml
         UNS32* m_faulhaberCommandReturnParameter;
         UNS16* m_ds402State;
 
-        /** current mode of operation */
-        operationMode m_mode;
         /** last command line faulhaber request */
         UNS8 m_faulhaberScriptCommand;
         UNS32 m_faulhaberScriptCommandParam;
 
-        void ooSendSpeed( int speed);
-        void ooReadSpeed();
+        bool m_faulhaberCommandTodo;
+
+
+        void getInputs();
+        void setOutputs();
+        void readCaptors();
+
+/*************************************************************************/
+        /* INTERFACE OROCOS */
+/*************************************************************************/
 
         /**
          * Enable motors to move
@@ -103,14 +116,10 @@ namespace arp_hml
         void ooFaulhaberCmd(int cmd, int param);
 
         /**
-         * In this mode the motor is driven by speed commands
+         * Choose the operation mode of the motor.
+         * param mode : "speed","position","torque","homing","faulhaber"
          */
-        void speedMode();
-
-        /**
-         * In this mode the motor is driven by command line in faulhaber mode of operation
-         */
-        void faulhaberCommandMode();
+        void ooSetOperationMode(string mode);
 
     };
 

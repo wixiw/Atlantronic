@@ -1,4 +1,5 @@
 <!-- ARD arp_rlu main launch file -->
 <launch>
+	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
 	<node name="Localizator"  pkg="arp_rlu"  type="LocalizatorNode"  args="" output="screen"/>
 </launch>

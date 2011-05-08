@@ -6,7 +6,7 @@
  */
 
 #include "ProtokrotItf.hpp"
-#include "arp_hml_version.h";
+#include "arp_hml_version.h"
 
 #include <ocl/Component.hpp>
 #include <math/math.hpp>
@@ -22,10 +22,10 @@ ProtokrotItf::ProtokrotItf(const std::string& name):
 	HmlTaskContext(name),
     attrCurrentCmd(),
     attrOdometers(),
-    propLeftOdometerGain(TURN_TO_RAD),
-    propRightOdometerGain(TURN_TO_RAD),
-    propLeftSpeedGain(RAD_S_TO_RPM),
-    propRightSpeedGain(RAD_S_TO_RPM),
+    propLeftOdometerGain(1),
+    propRightOdometerGain(1),
+    propLeftSpeedGain(1),
+    propRightSpeedGain(1),
     propSpeedCmdMaxDelay(1.000)
 {
     addAttribute("attrCurrentCmd", attrCurrentCmd);

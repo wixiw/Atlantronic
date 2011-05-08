@@ -1,0 +1,9 @@
+<!--  use this launch file to monitor a running robot -->
+<launch>
+	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
+	<node 	name="GraphicsSimu"     
+			pkg="arp_master"  
+			type="GraphicsSimuNode"     
+			args="/Localizator/pose" 
+			output="screen" />
+</launch>
