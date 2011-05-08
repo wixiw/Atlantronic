@@ -1,0 +1,4 @@
+<launch>
+	<include file="$(find arp_master)/script/ros/launch/master.launch"/>
+	<node name="StratNode"   pkg="arp_master"  type="StratNode.py"     args="" output="screen"/>
+</launch>
