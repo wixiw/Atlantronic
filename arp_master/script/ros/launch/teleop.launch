@@ -1,4 +1,6 @@
+<!--  Use this file if you whant to operate the robot with the keyboard in a manual mode -->
 <launch>
+	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
 	<include file="$(find arp_master)/script/ros/launch/rosparam.launch"/>
 	<include file="$(find arp_hml)/script/ros/launch/simul_protokrot.launch"/>
 	<include file="$(find arp_rlu)/script/ros/launch/arp_rlu.launch"/>

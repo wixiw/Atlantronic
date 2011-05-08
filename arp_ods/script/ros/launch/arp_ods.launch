@@ -1,5 +1,6 @@
-<!-- ARD arp_ods main launch file -->
+<!-- Use this to deploy the motion control nodes for autonomous modes -->
 <launch>
+	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
 	<node name="Command" 	pkg="arp_ods" 	type="CommandNode" 		args="" output="screen"/>
 	<node name="MotionControl"  pkg="arp_ods"  type="MotionControlNode"    args="" output="screen"/>
 </launch>
