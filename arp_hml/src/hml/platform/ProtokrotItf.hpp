@@ -82,7 +82,7 @@ namespace arp_hml
  *  Interface with OUTSIDE (master, ODS, RLU)
  *****************************************************************/
 
-        /** speed command for left and right motor **/
+        /** Speed command for left and right motor **/
         InputPort<DifferentialCommand> inDifferentialCmd;
 
         /** Odometers value from left and right wheel assembled in an "Odo" Ros message **/
@@ -97,6 +97,9 @@ namespace arp_hml
 
         /** Is true when HML thinks the emergency stop button is active **/
         OutputPort<Bool> outEmergencyStop;
+
+        /** Is true when the 2 drives are enabled. Since this port is false, drive speed are forced to 0**/
+        OutputPort<bool> outDriveEnable;
 
 /*****************************************************************
  *  Interface with the INSIDE (hml !)
@@ -114,11 +117,17 @@ namespace arp_hml
         /** Value of the right odometer in rad on the wheel axe **/
         InputPort<double> inRightDrivingPosition;
 
+        /** Left drive soft enable state **/
+        InputPort<bool> inLeftDriveEnable;
+
+        /** Right drive soft enable state **/
+        InputPort<bool> inRightDriveEnable;
+
         /** Speed command for the left motor in rad/s on the wheel axe **/
-        OutputPort<int> outLeftSpeedCmd;
+        OutputPort<double> outLeftSpeedCmd;
 
         /** Speed command for the right motor in rad/s on the wheel axe **/
-        OutputPort<int> outRightSpeedCmd;
+        OutputPort<double> outRightSpeedCmd;
 
 
 /**************************************************************
@@ -136,6 +145,7 @@ protected:
 
         /**
          * Get the differential command speed for both motor and dispatch it to them
+         * If the 2 motors are not enabled, a null speed is forced
          */
         void writeDifferentialCmd();
 
@@ -153,6 +163,11 @@ protected:
          * Read the start switch value and publish a go to the outside.
          */
         void readStart();
+
+        /**
+         * Read the drive enable value and merge the information for outside
+         */
+        void readDriveEnable();
 
         /**
          * Elapsed time between begin and now, using data type timespec.

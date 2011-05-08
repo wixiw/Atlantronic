@@ -48,6 +48,11 @@ Woodhead::Woodhead(const std::string& name) :
     outBit8.write(false);
 }
 
+bool Woodhead::checkInputsPorts()
+{
+	return true;
+}
+
 bool Woodhead::configureHook()
 {
 	bool res = CanOpenNode::configureHook();

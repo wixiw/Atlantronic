@@ -68,6 +68,8 @@ bool ARDTaskContext::configureHook()
         res &= loadStateMachines();
     }
 
+    res &= checkInputsPorts();
+
     return res;
 }
 
@@ -258,10 +260,13 @@ bool ARDTaskContext::checkInputsPorts()
     bool res = true;
     DataFlowInterface::Ports portsVector = ports()->getPorts();
     DataFlowInterface::Ports::iterator it;
+    string name;
 
     for(it = portsVector.begin(); it != portsVector.end(); it++)
     {
-        if( (*it)->connected() == false )
+    	name = (*it)->getName();
+
+        if( (*it)->connected() == false && name.compare(0,2,"in")==0 )
         {
             LOG(Error)  << "checkInputsPorts : " << (*it)->getName() << " is not connected !" << endlog();
             res &= false;

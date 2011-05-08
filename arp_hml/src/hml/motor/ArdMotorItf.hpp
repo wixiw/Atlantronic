@@ -8,6 +8,8 @@
 #ifndef ARDMOTORITF_HPP_
 #define ARDMOTORITF_HPP_
 
+#include <string>
+
 namespace arp_hml
 {
     class ArdMotorItf
@@ -146,8 +148,29 @@ namespace arp_hml
         /**
         * Sends position command in rad/s
         */
-        virtual void setPositionCmd(double positionCmdRadS );
+        virtual void setPositionCmd( double positionCmdRadS );
 
+        /**
+         * Convert an operationMode_t variable into a string
+         * SPEED_CONTROL="speed"
+         * TORQUE_CONTROL="torque"
+         * POSITION_CONTROL="position"
+         * HOMING="homing"
+         * OTHER="other"
+         * returns "unknown" if switch case error
+         */
+        std::string getStringFromMode( operationMode_t mode );
+
+        /**
+         * Convert a string variable into a operationMode_t
+         * SPEED_CONTROL="speed"
+         * TORQUE_CONTROL="torque"
+         * POSITION_CONTROL="position"
+         * HOMING="homing"
+         * OTHER="other"
+         * returns OTHER if the string doesn't match anything
+         */
+        operationMode_t getModeFromString( std::string mode );
 
     protected:
         operationMode_t m_operationMode;

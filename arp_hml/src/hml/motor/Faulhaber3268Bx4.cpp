@@ -2,7 +2,7 @@
  * Faulhaber3268Bx4.cpp
  *
  *  Created on: 10 mars 2011
- *      Author: ard
+ *      Author: wla
  */
 
 #include "Faulhaber3268Bx4.hpp"
@@ -24,10 +24,12 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         propInvertDriveDirection(false),
         propReductorValue(14),
         propEncoderResolution(3000),
-        m_faulhaberCommandTodo(false)
+        m_faulhaberCommandTodo(false),
+        m_oldPositionMeasure(0)
 {
     addAttribute("attrState",attrState);
     addAttribute("attrCommandedSpeed",attrCommandedSpeed);
+    addAttribute("attrPeriod",attrPeriod);
 
     addProperty("propInvertDriveDirection",propInvertDriveDirection);
     addProperty("propReductorValue",propReductorValue);
@@ -52,6 +54,10 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         .doc("");
     addPort("outLastSentCommandReturn",outLastSentCommandReturn)
         .doc("");
+    addPort("outDriveEnable",outDriveEnable)
+        .doc("");
+    addPort("outCurrentOperationMode",outCurrentOperationMode)
+    	.doc("");
 
     addOperation("ooEnableDrive", &Faulhaber3268Bx4::enableDrive,this, OwnThread )
         .doc("");
@@ -60,7 +66,11 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
     addOperation("ooFaulhaberCmd", &Faulhaber3268Bx4::ooFaulhaberCmd,this, OwnThread )
         .doc("");
     addOperation("ooSetOperationMode", &Faulhaber3268Bx4::ooSetOperationMode,this, OwnThread )
-    	.doc("");
+    	.doc("")
+    	.arg("mode"," string = speed,position,torque,homing,faulhaber");
+    addOperation("coWaitEnable", &Faulhaber3268Bx4::coWaitEnable,this, ClientThread )
+    	.doc("")
+    	.arg("timeout","in s");
 
     m_measuredPosition = CanARDDictionnaryAccessor::getINTEGER32Pointer(name,"MeasuredPosition");
     m_measuredCurrent = CanARDDictionnaryAccessor::getINTEGER16Pointer(name,"MeasuredCurrent");
@@ -72,6 +82,21 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
     m_ds402State = CanARDDictionnaryAccessor::getUNS16Pointer(name,"Ds402State");
 
     ArdMotorItf::setOperationMode(ArdMotorItf::SPEED_CONTROL);
+    outDriveEnable.write(false);
+    clock_gettime(CLOCK_MONOTONIC, &m_oldPositionMeasureTime);
+}
+
+bool Faulhaber3268Bx4::checkInputsPorts()
+{
+	bool res = true;
+
+    if( inSpeedCmd.connected() == false )
+    {
+    	res = false;
+    	LOG(Error) << "failed to configure : inSpeedCommand is not connected" << endlog();
+    }
+
+    return res;
 }
 
 bool Faulhaber3268Bx4::configureHook()
@@ -99,17 +124,23 @@ void Faulhaber3268Bx4::updateHook()
 
 void Faulhaber3268Bx4::getInputs()
 {
-    double speedCmd;
-    inSpeedCmd.readNewest(speedCmd);
-    ArdMotorItf::setSpeedCmd(speedCmd);
+    double speedCmd = 0;
+    if( inSpeedCmd.readNewest(speedCmd) != NoData )
+    {
+    	ArdMotorItf::setSpeedCmd(speedCmd);
+    }
 
-    double positionCmd;
-    inPositionCmd.readNewest(positionCmd);
-    ArdMotorItf::setPositionCmd(positionCmd);
+    double positionCmd = 0;
+    if( inPositionCmd.readNewest(positionCmd) != NoData )
+    {
+    	ArdMotorItf::setPositionCmd(positionCmd);
+    }
 
-    double torqueCmd;
-    inTorqueCmd.readNewest(torqueCmd);
-    ArdMotorItf::setTorqueCmd(torqueCmd);
+    double torqueCmd = 0;
+    if( inTorqueCmd.readNewest(torqueCmd) != NoData )
+    {
+    	ArdMotorItf::setTorqueCmd(torqueCmd);
+    }
 }
 
 void Faulhaber3268Bx4::setOutputs()
@@ -121,6 +152,15 @@ void Faulhaber3268Bx4::setOutputs()
     //lecture du courant
     outMeasuredTorque.write( ArdMotorItf::getTorqueMeasure() );
 
+    //publication du mode d'operation
+    outCurrentOperationMode.write( getStringFromMode(getOperationMode()) );
+
+    //publication de l'état enable
+    if( attrState == ArdDs402::OperationEnable )
+    	outDriveEnable.write(true);
+    else
+    	outDriveEnable.write(false);
+
     EnterMutex();
     //lecture de la dernière commande envoyée :
     outLastSentCommand.write( *m_faulhaberCommandReturn );
@@ -131,7 +171,7 @@ void Faulhaber3268Bx4::setOutputs()
 
 void Faulhaber3268Bx4::runSpeed()
 {
-	attrCommandedSpeed = ArdMotorItf::getSpeedMeasure();
+	attrCommandedSpeed = m_speedCommand;
 	//conversion de rad/s sur la roue, vers RPM sur l'axe moteur
 	UNS32 speed = attrCommandedSpeed*propReductorValue*RAD_S_TO_RPM;
 	//inversion de polarité soft
@@ -176,11 +216,11 @@ void Faulhaber3268Bx4::runOther()
 
 		if( outLastSentCommandReturn.getLastWrittenValue() != F_RET_OK )
 		{
-			LOG(Error) << "faulhaber command " << m_faulhaberScriptCommand << " failed : return code " << outLastSentCommandReturn.getLastWrittenValue() << endlog();
+			LOG(Error) << "faulhaber command " << (int) m_faulhaberScriptCommand << " failed : return code " << outLastSentCommandReturn.getLastWrittenValue() << endlog();
 		}
 		else
 		{
-			LOG(Info) << "faulhaber " << m_faulhaberScriptCommand << " command succeed" << endlog();
+			LOG(Info) << "faulhaber " << (int) m_faulhaberScriptCommand << " command succeed" << endlog();
 			m_faulhaberCommandTodo = false;
 		}
 	}
@@ -190,7 +230,7 @@ void Faulhaber3268Bx4::readCaptors()
 {
     EnterMutex();
     //lecture de la position
-    double position = RPM_TO_RAD_S*(*m_measuredPosition)/(propReductorValue*propEncoderResolution);
+    double position = TURN_TO_RAD*(*m_measuredPosition)/(propReductorValue*propEncoderResolution);
 	if( propInvertDriveDirection )
 	{
 		position = -position;
@@ -199,17 +239,28 @@ void Faulhaber3268Bx4::readCaptors()
 
     //lecture de l'état DS402s
     attrState = ArdDs402::getStateFromCanStatusWord( *m_ds402State );
-    LeaveMutex();
 
     //lecture du courant
     //TODO WLA mettre dans la bonne unité
 	double current = *m_measuredCurrent;
 	m_torqueMeasure = current;
+	LeaveMutex();
+
+	//calcul de la vitesse
+	struct timespec now;
+	struct timespec delay;
+	clock_gettime(CLOCK_MONOTONIC, &now);
+	delta_t(&delay, &m_oldPositionMeasureTime, &now);
+	attrPeriod = delay.tv_sec+(double)(delay.tv_nsec)/1E9;
+	m_speedMeasure = (m_positionMeasure - m_oldPositionMeasure)/attrPeriod;
+	m_oldPositionMeasure = m_positionMeasure;
+	m_oldPositionMeasureTime = now;
 }
 
 void Faulhaber3268Bx4::stopHook()
 {
     disableDrive();
+    updateHook();
     CanOpenNode::stopHook();
 }
 
@@ -225,40 +276,65 @@ void Faulhaber3268Bx4::ooFaulhaberCmd(int cmd, int param)
 	m_faulhaberCommandTodo = true;
 }
 
-void Faulhaber3268Bx4::ooSetOperationMode(string mode)
+bool Faulhaber3268Bx4::ooSetOperationMode(std::string mode)
 {
-	if( mode == "speed" )
+	bool res = false;
+
+	if( setOperationMode(getModeFromString(mode)) )
 	{
-		LOG(Info) << "switch to Speed Control mode" << endl;
-		ArdMotorItf::setOperationMode(ArdMotorItf::SPEED_CONTROL);
+		LOG(Info) << "switch to " << mode <<" mode" << endl;
+		res = true;
 	}
-	else if( mode == "position" )
+	else
 	{
-		LOG(Info) << "switch to Position Control mode" << endl;
-		ArdMotorItf::setOperationMode(ArdMotorItf::POSITION_CONTROL);
-	}
-	else if( mode == "torque" )
-	{
-		LOG(Info) << "switch to torque Control mode" << endl;
-		ArdMotorItf::setOperationMode(ArdMotorItf::TORQUE_CONTROL);
-	}
-	else if( mode == "homing" )
-	{
-		LOG(Info) << "switch to Homing mode" << endl;
-		ArdMotorItf::setOperationMode(ArdMotorItf::HOMING);
-	}
-	else if( mode == "faulhaber" )
-	{
-		LOG(Info) << "switch to Faulhaber Command mode" << endl;
-		ArdMotorItf::setOperationMode(ArdMotorItf::OTHER);
+		LOG(Error) << "Failed to switch to " << mode << " operation mode. Checks syntax or required mode is not available" << endlog();
+		res = false;
 	}
 
+	return res;
+}
+
+bool Faulhaber3268Bx4::coWaitEnable(double timeout)
+{
+	double chrono = 0;
+	bool res = false;
+
+    while( outDriveEnable.getLastWrittenValue()==false && chrono < timeout )
+    {
+    	LOG(Debug) << "coWaitEnable : is waiting for enable to come" << endlog();
+        chrono+=0.050;
+        usleep(50*1000);
+    }
+    //si le timeout est explosé c'est que ça a foiré
+    if( chrono >= timeout )
+    {
+        LOG(Error)  << "coWaitEnable : timeout has expired, Drive is not enabled !"<< endlog();
+        res = false;
+    }
+    else
+    	res = true;
+
+    return res;
 }
 
 
 /**********************************************************************/
 /*              Interface moteur générique                            */
 /**********************************************************************/
+
+bool Faulhaber3268Bx4::setOperationMode(ArdMotorItf::operationMode_t operationMode)
+{
+	bool res = true;
+
+	//pour le moment les seuls modes accessibles sont speed et other=faulhaber command
+	if( ArdMotorItf::SPEED_CONTROL == operationMode || ArdMotorItf::OTHER == operationMode)
+		ArdMotorItf::setOperationMode(operationMode);
+	else
+		res = false;
+
+	return res;
+}
+
 
 
 bool Faulhaber3268Bx4::init()
@@ -360,4 +436,18 @@ bool Faulhaber3268Bx4::isInError()
 unsigned int Faulhaber3268Bx4::getError()
 {
     return 0;
+}
+
+void Faulhaber3268Bx4::delta_t(struct timespec *interval, struct timespec *begin, struct timespec *now)
+{
+	interval->tv_nsec = now->tv_nsec - begin->tv_nsec; /* Subtract 'decimal fraction' first */
+	if(interval->tv_nsec < 0 )
+	{
+		interval->tv_nsec += 1000000000; /* Borrow 1sec from 'tv_sec' if subtraction -ve */
+		interval->tv_sec = now->tv_sec - begin->tv_sec - 1; /* Subtract whole number of seconds and return 1 */
+	}
+	else
+	{
+		interval->tv_sec = now->tv_sec - begin->tv_sec; /* Subtract whole number of seconds and return 0 */
+	}
 }

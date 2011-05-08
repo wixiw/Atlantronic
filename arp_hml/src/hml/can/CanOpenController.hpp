@@ -158,6 +158,10 @@ namespace arp_hml
          */
         bool                    openCanBus();
 
+        /**
+         * Is derivated to disable the autocheck
+         */
+        virtual bool			checkInputsPorts();
 
     private:
         /** This is a temporary buffer to pass the propBusName string to the CanFestival process */

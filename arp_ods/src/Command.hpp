@@ -90,17 +90,17 @@ namespace arp_ods
         /**
          * maximum forward acceleration (m/s^02)
          */
-        static const double LIN_ACC_MAX = 2.000;
+        static const double LIN_ACC_MAX = 0.300;
 
         /**
          * maximum forward deceleration (m/s^02)
          */
-        static const double LIN_DEC_MAX = -2.000;
+        static const double LIN_DEC_MAX = -0.300;
 
         /**
          * maximum rotation acceleration (rad/s^2)
          */
-        static const double ANG_ACC_MAX = 30.000;
+        static const double ANG_ACC_MAX = 10.000;
     };
 
 }

@@ -37,6 +37,8 @@ namespace arp_hml
 
     	UNS8* m_outputs;
 
+    	virtual bool checkInputsPorts();
+
     };
 
 }
