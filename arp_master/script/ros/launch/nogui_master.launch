@@ -4,4 +4,5 @@
 	<include file="$(find arp_rlu)/script/ros/launch/arp_rlu.launch"/>
 	<include file="$(find arp_ods)/script/ros/launch/arp_ods.launch"/>
 	<node name="StratA"   pkg="arp_master"  type="StratANode"     args="" output="screen"/>
+	<node name="StratNode"   pkg="arp_master"  type="StratNode.py"     args="" output="screen"/>
 </launch>

@@ -6,6 +6,7 @@
     <author>ARD, http://team-ard.com</author>
     <url>http://88.191.124.77/redmine/projects/master/wiki/Wiki</url>
   <depend package="roscpp"/>
+  <depend package="rospy"/>
   <depend package="roslib"/>
   <depend package="rosconsole"/>
   <depend package="std_srvs"/>
