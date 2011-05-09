@@ -8,28 +8,49 @@ import smach_msgs
 import CyclicState
 
 
-
 class Initialisation(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['endInitialisation'])
         with self:
-            smach.StateMachine.add('InitState', InitState(),
-                                   transitions={'outcome1':'ProviState'})
-            smach.StateMachine.add('ProviState', ProviState(),
-                                   transitions={'outcome2':'endInitialisation'})
+            smach.StateMachine.add('Init', Init(),
+                                   transitions={'red':'Red','blue':'Blue'})
+            smach.StateMachine.add('Red', Red(),
+                                   transitions={'blue':'Blue','start':'endInitialisation'})
+            smach.StateMachine.add('Blue', Blue(),
+                                   transitions={'red':'Red','start':'endInitialisation'})
  
-class InitState(smach.State):
+class Init(CyclicState.CyclicState):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['outcome1'])
+        CyclicState.CyclicState.__init__(self, outcomes=['red','blue'])
 
-    def execute(self, userdata):
-        rospy.loginfo('Executing state InitState')
-        return 'outcome1'
+    def executeTransition(self):
+       global color
+       rospy.loginfo("eb beh je suis dans la transition de init")
+       if color=='red' and start==0:
+           return 'red'
+       if color=='blue'and start==0:
+           return 'blue'
 
-class ProviState(smach.State):
+class Red(CyclicState.CyclicState):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['outcome2'])
+        CyclicState.CyclicState.__init__(self, outcomes=['blue','start'])
 
-    def execute(self, userdata):
-        rospy.loginfo('Executing state ProviState')
-        return 'outcome2'
+    def executeTransition(self):
+       global color
+       rospy.loginfo("eb beh je suis dans la transition de red")
+       if color=='blue':
+           return 'blue'
+       if start==1:
+           return 'start'
+       
+class Blue(CyclicState.CyclicState):
+    def __init__(self):
+        CyclicState.CyclicState.__init__(self, outcomes=['red','start'])
+
+    def executeTransition(self):
+       global color
+       rospy.loginfo("eb beh je suis dans la transition de blue")
+       if color=='red':
+           return 'red'
+       if start==1:
+           return 'start'

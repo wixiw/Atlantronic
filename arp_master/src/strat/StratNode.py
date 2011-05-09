@@ -35,9 +35,12 @@ def init():
     #creation and linking of inputs
     global inputList,obstacle,color,start    
     inputList=[]
-    obstacle= Input("obstacle", Obstacle)
-    color=Input("color", StartColor)
-    start=Input("start", Start)
+    obstacleInput= Input("obstacle", Obstacle)
+    obstacle=obstacleInput.data.detected
+    colorInput=Input("color", StartColor)
+    color=colorInput.data.color
+    startInput=Input("start", Start)
+    start=startInput.data.go
     #x = Input()
     #y = Input()
     #theta = Input()
@@ -73,6 +76,7 @@ class MainStateMachine(smach.StateMachine):
         with self:
             smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
                                    transitions={'endInitialisation':'end'})
+
 
 ########################### INPUT CLASS
 # this is used to have a buffer on inputs, so that they are not changing during the mainloop

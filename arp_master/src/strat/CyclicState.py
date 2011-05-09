@@ -9,18 +9,26 @@ import smach_msgs
 
 
 class CyclicState(smach.StateMachine):
-    def __init__(self):
-        smach.StateMachine.__init__(self)
+    def __init__(self,outcomes):
+        smach.StateMachine.__init__(self,outcomes)
         
-    def execute(self):
+    def execute(self,userdata):
         global stateMachineRate
-        executeIn()
-        while(1):
-            executeWhile()
-            trans=executeTransitions()
+        rospy.loginfo("executeIn")
+        self.executeIn()
+        while(not rospy.is_shutdown()):
+            rospy.loginfo("executeWhile")
+            self.executeWhile()
+            rospy.loginfo("executeTransition")
+            trans=self.executeTransitions()
             if trans!=None:
+                rospy.loginfo("executeOut")
+                self.executeOut()
                 return trans
-            stateMachineRate.sleep()
+            rospy.loginfo("Sleep")
+            #stateMachineRate.sleep()
+        rospy.logerr("boucle d'etat cassee par le shutdown")
+        
     
     def executeIn(self):
         return
@@ -29,4 +37,7 @@ class CyclicState(smach.StateMachine):
         return
     
     def executeTransitions(self):
+        return
+    
+    def executeOut(self):
         return
