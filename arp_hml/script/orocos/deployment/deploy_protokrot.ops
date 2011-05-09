@@ -2,7 +2,6 @@ runScript("/opt/ros/ard/arp_core/script/orocos/deployment/deploy_arp_core.ops");
 print.log(Warning, "Début déploiment arp_hml");
 
 import("arp_hml");
-require("ros_integration");
 
 /** LOAD COMPONENTS **/
 print.log(Warning, " == Loading HML components == ");
@@ -24,3 +23,8 @@ print.log(Warning, "Fin déploiment arp_hml");
 print.log(Warning, "====================");
 print.log(Warning, "HML in version : " + Protokrot.coGetHmlVersion);
 print.log(Warning, "====================");
+
+Reporting.reportPort ("Protokrot","outLeftSpeedCmd");
+Reporting.reportPort ("Protokrot","outRightSpeedCmd");
+Reporting.reportPort ("LeftDriving","outComputedSpeed");
+Reporting.reportPort ("RightDriving","outComputedSpeed");

@@ -1,9 +1,8 @@
-loadComponent("Joystick","arp_hml::LogitechExtreme3D");
-setActivity("Joystick",0.050,0,ORO_SCHED_OTHER);
-
 loadComponent("PcBoard","arp_hml::SimplePCM3362");
 setActivity("PcBoard",0.050,0,ORO_SCHED_OTHER);
+addPeer("Reporting", "PcBoard");
 
 loadComponent("Protokrot","arp_hml::ProtokrotItf");
 setActivity("Protokrot",0.000,0,ORO_SCHED_OTHER);
+addPeer("Reporting", "Protokrot");
 

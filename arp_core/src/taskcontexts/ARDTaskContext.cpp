@@ -7,9 +7,11 @@
 
 #include "ARDTaskContext.hpp"
 #include <iostream>
+#include <rtt/base/InputPortInterface.hpp>
 
 using namespace arp_core;
 using namespace RTT;
+using namespace base;
 
 ARDTaskContext::ARDTaskContext(const std::string& name, const std::string projectRootPath) :
     TaskContext(name, PreOperational),
@@ -30,6 +32,7 @@ ARDTaskContext::ARDTaskContext(const std::string& name, const std::string projec
     addProperty("propEnableLog", propEnableLog)
         .doc("If set to true the composant is allowed to write in the log file, if set to false it will not log anything. Use it when a component is spamming log and this annoys you");
 
+    addAttribute("attrProjectRootPath",attrProjectRootPath);
     addAttribute("attrPropertyPath",attrPropertyPath);
     addAttribute("attrScriptPath",attrScriptPath);
     addAttribute("attrStateMachinePath",attrStateMachinePath);
@@ -67,6 +70,8 @@ bool ARDTaskContext::configureHook()
         res &= loadPrograms();
         res &= loadStateMachines();
     }
+
+    res &= checkInputsPorts();
 
     return res;
 }
@@ -258,10 +263,11 @@ bool ARDTaskContext::checkInputsPorts()
     bool res = true;
     DataFlowInterface::Ports portsVector = ports()->getPorts();
     DataFlowInterface::Ports::iterator it;
+    string name;
 
     for(it = portsVector.begin(); it != portsVector.end(); it++)
     {
-        if( (*it)->connected() == false )
+        if( dynamic_cast<InputPortInterface*>(*it) != 0 && (*it)->connected() == false )
         {
             LOG(Error)  << "checkInputsPorts : " << (*it)->getName() << " is not connected !" << endlog();
             res &= false;

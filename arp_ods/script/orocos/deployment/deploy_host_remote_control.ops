@@ -1,0 +1,34 @@
+/* ARD arp_ods main deployment file 
+ * 
+ * use this deployment file to teleop the robot from the host machine
+ * 
+ * */
+require("print");
+print.log(Warning, "Début déploiment arp_ods remote control");
+import("arp_hml");
+import("arp_ods");
+
+//loadComponent("Joystick","arp_hml::LogitechExtreme3D");
+//setActivity("Joystick",0.050,0,ORO_SCHED_OTHER);
+loadComponent("ManualMode", "arp_ods::Logitech3DTeleop");
+setActivity("ManualMode",0.050,0,ORO_SCHED_OTHER);
+
+
+//connect("ManualMode.inY", "Joystick.outY",ConnPolicy());
+//connect("ManualMode.inZ", "Joystick.outZ",ConnPolicy());
+//connect("ManualMode.inDeadMan", "Joystick.outButton5",ConnPolicy());
+var ConnPolicy manualSpeed;
+manualSpeed.transport = 3; // ROS == 3
+manualSpeed.name_id = "/Command/velocity"; // ros topic
+stream("ManualMode.outVelocityCmd", manualSpeed);
+
+
+//Joystick.configure();
+//Joystick.start();
+ManualMode.configure();
+ManualMode.start();
+
+
+
+print.log(Warning, "Fin déploiment arp_pds remote control");
+print.log(Warning, "====================");

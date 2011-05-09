@@ -10,6 +10,7 @@
 
 //include orocos
 #include <taskcontexts/ARDTaskContext.hpp>
+#include <arp_core/Velocity.h>
 
 using namespace arp_core;
 
@@ -26,13 +27,14 @@ namespace arp_ods
         void updateHook();
 
     protected:
+        Velocity attrVelocityCommand;
+
         /** Axe X du manche : dirigé de haut en bas sur la manette entre [-1;1] */
         InputPort<double> inY;
         /** Axe z du manche : rotation horaire entre [-1;1] */
         InputPort<double> inZ;
         InputPort<bool> inDeadMan;
-        OutputPort<int> outLeftSpeed;
-        OutputPort<int> outRightSpeed;
+        OutputPort<Velocity> outVelocityCmd;
 
         double propLongGain;
         double propRotGain;

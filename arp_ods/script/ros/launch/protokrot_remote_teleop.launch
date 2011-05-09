@@ -1,0 +1,8 @@
+<!-- Use this to deploy the motion control nodes on the robot for manual modes controlled via the host machine-->
+<launch>
+	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
+	<include file="$(find arp_master)/script/ros/launch/rosparam.launch"/>
+	<include file="$(find arp_rlu)/script/ros/launch/arp_rlu.launch"/>
+	<include file="$(find arp_hml)/script/ros/launch/protokrot.launch"/>
+	<node 	name="Command" 	pkg="arp_ods" 	type="CommandNode" 		args="" output="screen"/>
+</launch>

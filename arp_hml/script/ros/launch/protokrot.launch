@@ -1,5 +1,6 @@
 <!--  Use this file de deploy the real platform "Protokrot" hardware -->
 <launch>
+<<<<<<< .working
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
 	<node 	name="ARP_HML" 
 			pkg="ocl" 
@@ -7,4 +8,13 @@
 			args="-s $(find arp_hml)/script/orocos/deployment/deploy_protokrot.ops --" 
 			output="screen"
 			/>
+=======
+	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
+	<node 	name="ArpHml" 
+			pkg="ocl" 
+			type="deployer-gnulinux" 
+			args="-s $(find arp_hml)/script/orocos/deployment/deploy_protokrot.ops --" 
+			output="screen"
+			/>
+>>>>>>> .merge-right.r435
 </launch>

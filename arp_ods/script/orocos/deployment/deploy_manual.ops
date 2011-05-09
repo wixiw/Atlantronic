@@ -1,0 +1,39 @@
+/* ARD arp_ods main deployment file 
+ * 
+ * use this deployment file to deploy HML and the joystick teleop stuff
+ * */
+runScript("/opt/ros/ard/arp_hml/script/orocos/deployment/deploy_protokrot.ops");
+print.log(Warning, "Début déploiment arp_ods remote control");
+
+//TODO WLA : comprendre pourquoi il ne faut surtout pas le loader après
+loadComponent("Joystick","arp_hml::LogitechExtreme3D");
+setActivity("Joystick",0.050,0,ORO_SCHED_OTHER);
+addPeer("Reporting", "Joystick");
+Joystick.configure();
+Joystick.start();
+
+
+import("arp_ods");
+
+
+loadComponent("ManualMode", "arp_ods::Logitech3DTeleop");
+setActivity("ManualMode",0.050,0,ORO_SCHED_OTHER);
+addPeer("Reporting", "ManualMode");
+
+connect("ManualMode.inY", "Joystick.outY",ConnPolicy());
+connect("ManualMode.inZ", "Joystick.outZ",ConnPolicy());
+connect("ManualMode.inDeadMan", "Joystick.outButton5",ConnPolicy());
+var ConnPolicy manualSpeed;
+manualSpeed.transport = 3; // ROS == 3
+manualSpeed.name_id = "/Command/velocity"; // ros topic
+stream("ManualMode.outVelocityCmd", manualSpeed);
+
+
+
+ManualMode.configure();
+ManualMode.start();
+
+
+
+print.log(Warning, "Fin déploiment arp_ods remote control");
+print.log(Warning, "====================");

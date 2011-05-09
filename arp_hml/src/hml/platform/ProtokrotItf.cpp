@@ -44,29 +44,43 @@ ProtokrotItf::ProtokrotItf(const std::string& name):
 
     /** Interface with OUTSIDE (master, ODS, RLU) **/
     addEventPort("inDifferentialCmd",inDifferentialCmd)
-            .doc("");
+            .doc("Speed command for left and right motor");
     addPort("outOdometryMeasures",outOdometryMeasures)
-        .doc("");
+        .doc("Odometers value from left and right wheel assembled in an 'Odo' Ros message");
+    addPort("outDifferentialMeasure",outDifferentialMeasure)
+    	.doc("Speed measures for left and right motor");
     addPort("outIoStart",outIoStart)
-        .doc("");
+        .doc("Value of the start. GO is true when it is not in, go is false when the start is in");
     addPort("outIoColorSwitch",outIoColorSwitch)
-        .doc("");
+        .doc("Value of the color switch. It is 'blue' when the switch button is on the front side of the robot)"
+          "'red' when the button is on the rear side of the robot");
     addPort("outEmergencyStop",outEmergencyStop)
-        .doc("");
+        .doc("Is true when HML thinks the emergency stop button is active");
+    addPort("outDriveEnable",outDriveEnable)
+    	.doc("");
 
     /** Interface with INSIDE (hml !) **/
     addEventPort("inIoStart",inIoStart)
-            .doc("");
+            .doc("HW value of the start switch. It is true when the start is in");
     addPort("inIoColorSwitch",inIoColorSwitch)
-            .doc("");//on n'est pas pressé pour connaitre la couleur
+            .doc("HW value of the color switch. It is true when the color switch is on 1");//on n'est pas pressé pour connaitre la couleur
     addEventPort("inLeftDrivingPosition",inLeftDrivingPosition)
-            .doc("");
+            .doc("Value of the left odometer in rad on the wheel axe");
     addEventPort("inRightDrivingPosition",inRightDrivingPosition)
-            .doc("");
+            .doc("Value of the right odometer in rad on the wheel axe");
+    addPort("inLeftSpeedMeasure",inLeftSpeedMeasure)
+            .doc("Value of the left speed in rad/s on the wheel axe");
+    addPort("inRightSpeedMeasure",inRightSpeedMeasure)
+            .doc("Value of the right speed in rad/s on the wheel axe");
+
+    addPort("inLeftDriveEnable",inLeftDriveEnable)
+    		.doc("Left drive soft enable state");
+    addPort("inRightDriveEnable",inRightDriveEnable)
+    		.doc("Right drive soft enable state");
     addPort("outLeftSpeedCmd",outLeftSpeedCmd)
-            .doc("");
+            .doc("Speed command for the left motor in rad/s on the wheel axe");
     addPort("outRightSpeedCmd",outRightSpeedCmd)
-            .doc("");
+            .doc("Speed command for the right motor in rad/s on the wheel axe");
 
     addOperation("coGetCoreVersion",&ProtokrotItf::coGetCoreVersion, this, ClientThread)
     		.doc("Returns a string containing Core version");
@@ -99,6 +113,12 @@ void ProtokrotItf::updateHook()
 
     //lecture du start
     readStart();
+
+    //lecture de enable
+    readDriveEnable();
+
+    //lecture des vitesses
+    readSpeed();
 }
 
 void ProtokrotItf::writeDifferentialCmd()
@@ -110,9 +130,18 @@ void ProtokrotItf::writeDifferentialCmd()
 
     if(NewData==inDifferentialCmd.read(cmd))
     {
-    	clock_gettime(CLOCK_MONOTONIC, &m_lastCmdTimestamp);
-    	attrCurrentCmd = cmd;
-        //ecriture des consignes moteurs
+    	//ecriture des consignes moteurs
+    	if( outDriveEnable.getLastWrittenValue() )
+    	{
+			clock_gettime(CLOCK_MONOTONIC, &m_lastCmdTimestamp);
+			attrCurrentCmd = cmd;
+    	}
+    	//si les moteurs sont disable on n'envoit pas de consigne
+    	else
+    	{
+            attrCurrentCmd.v_left = 0;
+            attrCurrentCmd.v_right = 0;
+    	}
     }
     else
     {
@@ -135,11 +164,11 @@ void ProtokrotItf::writeDifferentialCmd()
 void ProtokrotItf::readOdometers()
 {
     double odoValue;
-    if(NewData==inLeftDrivingPosition.read(odoValue))
+    if(NewData==inLeftDrivingPosition.readNewest(odoValue))
     {
     	attrOdometers.odo_left = odoValue*propLeftOdometerGain;
     }
-    if(NewData==inRightDrivingPosition.read(odoValue))
+    if(NewData==inRightDrivingPosition.readNewest(odoValue))
     {
     	attrOdometers.odo_right = odoValue*propRightOdometerGain;
     }
@@ -150,7 +179,7 @@ void ProtokrotItf::readColorSwitch()
 {
     bool io = false;
     StartColor colorSwitch;
-    if(NewData==inIoColorSwitch.read(io))
+    if(NewData==inIoColorSwitch.readNewest(io))
     {
     	if(io)
     	    	colorSwitch.color = "red";
@@ -166,10 +195,36 @@ void ProtokrotItf::readStart()
 {
 	bool io = false;
 	Start start;
-	if(NewData==inIoStart.read(io))
+	if(NewData==inIoStart.readNewest(io))
 	{
 	    start.go = !io;
 	    outIoStart.write(start);
+	}
+}
+
+void ProtokrotItf::readDriveEnable()
+{
+	bool leftDriveEnable = false;
+	bool rightDriveEnable = false;
+	inLeftDriveEnable.readNewest(leftDriveEnable);
+	inRightDriveEnable.readNewest(rightDriveEnable);
+
+	if( leftDriveEnable && rightDriveEnable )
+		outDriveEnable.write( true );
+	else
+		outDriveEnable.write( false );
+}
+
+void ProtokrotItf::readSpeed()
+{
+	double leftSpeed = 0.0;
+	double rightSpeed = 0.0;
+	DifferentialCommand speedMeasure;
+	if( NoData != inLeftSpeedMeasure.readNewest(leftSpeed) && NoData != inRightSpeedMeasure.readNewest(rightSpeed) )
+	{
+		speedMeasure.v_left = leftSpeed;
+		speedMeasure.v_right = rightSpeed;
+		outDifferentialMeasure.write(speedMeasure);
 	}
 }
 

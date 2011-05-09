@@ -98,6 +98,11 @@ CanOpenController::~CanOpenController()
     TimerCleanup();
 }
 
+bool CanOpenController::checkInputsPorts()
+{
+	return true;
+}
+
 bool CanOpenController::configureHook()
 {
     bool res = HmlTaskContext::configureHook();

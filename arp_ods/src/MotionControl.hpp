@@ -104,7 +104,7 @@ namespace arp_ods
         /**
          * Gain on rotation (without unity)
          */
-        static const double ROTATION_GAIN=15.0;
+        static const double ROTATION_GAIN=10.0;
 
         /**
          * Gain on rotation (without unity)
@@ -114,12 +114,12 @@ namespace arp_ods
         /**
          * maximum forward velocity (m/s)
          */
-        static const double LIN_VEL_MAX = 1.000;
+        static const double LIN_VEL_MAX = 0.500;
 
         /**
          * maximum rotation velocity (rad/s)
          */
-        static const double ANG_VEL_MAX = 4.000;
+        static const double ANG_VEL_MAX = 6.000;
 
         /**
          *  velocity at final point (m/s)
