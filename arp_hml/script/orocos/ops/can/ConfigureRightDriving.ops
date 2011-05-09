@@ -37,12 +37,12 @@ program configureNode
     
     //set motor 0x33 acceleration (FrontSteering) 
     coLog(Info,"set 0x33 acceleration");
-    sdo = CanDicoEntry(0x33,0x6083,0, 125,0,4);
+    sdo = CanDicoEntry(0x33,0x6083,0, 500,0,4);
     Can1.coWriteInRemoteDico(sdo);
     
     //set motor 0x33 deceleration (FrontSteering) 
     coLog(Info,"set 0x33 deceleration");
-    sdo = CanDicoEntry(0x33,0x6084,0, 125,0,4);
+    sdo = CanDicoEntry(0x33,0x6084,0, 500,0,4);
     Can1.coWriteInRemoteDico(sdo);
     
     //set trace configuration for 0x33 (FrontSteering)

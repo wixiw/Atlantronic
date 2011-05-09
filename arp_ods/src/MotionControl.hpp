@@ -92,46 +92,7 @@ namespace arp_ods
         double ang_vel_;
 
         /**
-<<<<<<< .working
-         * Order is succed if (and only if) the current position is near the goal with distance_accuracy_ precision.
-         */
-        static const double DISTANCE_ACCURACY=0.010;
-
-        /**
-         * Order is succed if (and only if) the current orientation is near the goal with angle_accuracy_ precision.
-         */
-        static const double ANGLE_ACCURACY=0.05;
-
-        /**
-         * Gain on rotation (without unity)
-         */
-        static const double ROTATION_GAIN=10.0;
-
-        /**
-         * Gain on rotation (without unity)
-         */
-        static const double TRANSLATION_GAIN=1.0;
-
-        /**
-         * maximum forward velocity (m/s)
-         */
-        static const double LIN_VEL_MAX = 0.500;
-
-        /**
-         * maximum rotation velocity (rad/s)
-         */
-        static const double ANG_VEL_MAX = 6.000;
-
-        /**
-         *  velocity at final point (m/s)
-         */
-        static const double VEL_FINAL = 0.100;
-
-        /**
-         *  distance where you are in mode "approaching point" (m)
-=======
          * this are coefficient that are defined by rosparam. see .launch files.
->>>>>>> .merge-right.r427
          */
         double DISTANCE_ACCURACY;
         double ANGLE_ACCURACY;

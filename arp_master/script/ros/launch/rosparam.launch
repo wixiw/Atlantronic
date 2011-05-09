@@ -4,19 +4,49 @@
   	<param name="/match_duration" value="90." /> 
   	<param name="/blinding_period" value="2." /> 
 
-    <param name="/arp_ods/DISTANCE_ACCURACY" value="0.010" help=" Order is succed if (and only if) the current position is near the goal with distance_accuracy_ precision." />
-    <param name="/arp_ods/ANGLE_ACCURACY" value="0.05" help="Order is succed if (and only if) the current orientation is near the goal with angle_accuracy_ precision" />
-    <param name="/arp_ods/ROTATION_GAIN" value="15.0" help="Gain on rotation (without unity)" />
-    <param name="/arp_ods/TRANSLATION_GAIN" value="1.0" help="Gain on translation (without unity)" />
-    <param name="/arp_ods/LIN_VEL_MAX"  value="1.000" help="maximum forward velocity (m/s)" />
-    <param name="/arp_ods/ANG_VEL_MAX"  value="4.000" help="maximum rotation velocity (rad/s)" />
-    <param name="/arp_ods/VEL_FINAL"  value="0.100" help="velocity at final point (m/s)" />
-    <param name="/arp_ods/RADIUS_APPROACH_ZONE"  value="0.020" help="distance where you are in mode "approaching point" (m)" />
-    <param name="/arp_ods/RADIUS_FANTOM_ZONE"  value="0.050" help="distance where you are in mode "fantom point" (m)" />
-    <param name="/arp_ods/FANTOM_COEF"  value="0.5" help="The fantom coefficient. means the distance of the fantom point to the final point. set it to 0, it will be as if you always try to go directly to final point. set it to 0.9, your robot will make big curve to reach the final point with the right angle." />
-    <param name="/arp_ods/LIN_ACC_MAX"  value="2.000" help="maximum forward acceleration (m/s^02)" />
-    <param name="/arp_ods/LIN_DEC_MAX"  value="-2.000" help="maximum forward deceleration (m/s^02)" />
-    <param name="/arp_ods/ANG_ACC_MAX"  value="30.000" help="maximum rotation acceleration (rad/s^2)" />
-    <param name="/arp_ods/BASE_LINE" value="0.305" help="Distance in meters between wheels" />
-	<param name="/arp_ods/WHEEL_DIAMETER" value="0.068" help="Diameter in meters" /> 
+	<!--Order is succed if (and only if) the current position is near the goal with distance_accuracy_ precision.-->
+    <param name="/arp_ods/DISTANCE_ACCURACY" value="0.010"  />
+	
+	<!-- Order is succed if (and only if) the current orientation is near the goal with angle_accuracy_ precision-->
+    <param name="/arp_ods/ANGLE_ACCURACY" value="0.05"  />
+    
+    <!--Gain on rotation (without unity) -->
+    <param name="/arp_ods/ROTATION_GAIN" value="15.0"/> 
+	
+	<!--Gain on translation (without unity) -->
+    <param name="/arp_ods/TRANSLATION_GAIN" value="1.0" /> 
+	
+	<!--maximum forward velocity (m/s) -->
+    <param name="/arp_ods/LIN_VEL_MAX"  value="1.000" /> 
+	
+	<!--maximum rotation velocity (rad/s) -->
+    <param name="/arp_ods/ANG_VEL_MAX"  value="7.000" /> 
+	
+	<!--velocity at final point (m/s) -->
+    <param name="/arp_ods/VEL_FINAL"  value="0.100" /> 
+	
+	<!--distance where you are in mode approaching point (m) -->
+    <param name="/arp_ods/RADIUS_APPROACH_ZONE"  value="0.020" /> 
+	
+	<!--distance where you are in mode fantom point (m) -->
+    <param name="/arp_ods/RADIUS_FANTOM_ZONE"  value="0.050" /> 
+	
+	<!--The fantom coefficient. means the distance of the fantom point to the final point. set it to 0, it will be as if you always try to go directly to final point. set it to 0.9, your robot will make big curve to reach the final point with the right angle.--> 
+    <param name="/arp_ods/FANTOM_COEF"  value="0.5" /> 
+	
+	<!--maximum forward acceleration (m/s^02) -->
+    <param name="/arp_ods/LIN_ACC_MAX"  value="4.000" /> 
+
+	<!--maximum forward deceleration (m/s^02) -->
+    <param name="/arp_ods/LIN_DEC_MAX"  value="-8.000" /> 
+
+	<!--maximum rotation acceleration (rad/s^2) -->
+    <param name="/arp_ods/ANG_ACC_MAX"  value="30.000" /> 
+
+	<!--Distance in meters between wheels -->
+    <param name="/Protokrot/BASE_LINE" value="0.305"/>  
+
+	<!--Diameter in meters -->
+	<param name="/Protokrot/WHEEL_DIAMETER" value="0.068" /> 
+
 </launch>

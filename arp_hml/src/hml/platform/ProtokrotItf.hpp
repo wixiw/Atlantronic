@@ -117,9 +117,6 @@ namespace arp_hml
         /** Value of the left odometer in rad on the wheel axe **/
         InputPort<double> inLeftDrivingPosition;
 
-<<<<<<< .working
-        /** Value of the right odometer in rad on the wheel axe **/
-=======
         /** Value of the right odometer in rad on the wheel axe **/
         InputPort<double> inLeftSpeedMeasure;
 
@@ -127,13 +124,8 @@ namespace arp_hml
         InputPort<double> inRightSpeedMeasure;
 
         /** Value of the right speed in rad/s on the wheel axe **/
->>>>>>> .merge-right.r435
         InputPort<double> inRightDrivingPosition;
 
-<<<<<<< .working
-        /** Speed command for the left motor in rad/s on the wheel axe **/
-        OutputPort<int> outLeftSpeedCmd;
-=======
         /** Left drive soft enable state **/
         InputPort<bool> inLeftDriveEnable;
 
@@ -142,15 +134,9 @@ namespace arp_hml
 
         /** Speed command for the left motor in rad/s on the wheel axe **/
         OutputPort<double> outLeftSpeedCmd;
->>>>>>> .merge-right.r435
 
-<<<<<<< .working
-        /** Speed command for the right motor in rad/s on the wheel axe **/
-        OutputPort<int> outRightSpeedCmd;
-=======
         /** Speed command for the right motor in rad/s on the wheel axe **/
         OutputPort<double> outRightSpeedCmd;
->>>>>>> .merge-right.r435
 
 
 /**************************************************************

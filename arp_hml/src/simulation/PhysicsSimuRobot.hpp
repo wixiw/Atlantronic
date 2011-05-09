@@ -63,14 +63,10 @@ public:
 private:
 
   /**
-   * distance between wheels in meter
+   * these are rosparam. see .launch for more info
    */
-  double base_line;
-
-  /**
-   * wheel diameter in meter
-   */
-  double wheel_diameter;
+  double BASE_LINE;
+  double WHEEL_DIAMETER;
 
 
   // Callbacks

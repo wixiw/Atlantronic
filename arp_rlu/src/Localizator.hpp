@@ -100,14 +100,10 @@ namespace arp_rlu
     arp_math::Rotation2 orient;
 
     /**
-    * Distance in meters between wheels.
+    * these are ros param. see .launch for more info
     */
-    double base_line;
-
-    /**
-    * Diameter in meters.
-    */
-    double wheel_diameter;
+    double BASE_LINE;
+    double WHEEL_DIAMETER;
 
     /**
     * Called when resetting service is called

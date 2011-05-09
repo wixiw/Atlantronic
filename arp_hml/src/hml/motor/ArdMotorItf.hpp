@@ -148,11 +148,7 @@ namespace arp_hml
         /**
         * Sends position command in rad/s
         */
-<<<<<<< .working
-        virtual void setPositionCmd(double positionCmdRadS );
-=======
         virtual void setPositionCmd( double positionCmdRadS );
->>>>>>> .merge-right.r435
 
         /**
          * Convert an operationMode_t variable into a string

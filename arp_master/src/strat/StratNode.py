@@ -10,22 +10,24 @@ from arp_core.msg import Obstacle
 from arp_core.msg import StartColor
 from arp_core.msg import Start
 #import the other strat modules    
+import CyclicState
 import Strat_Initialisation
 
 ###########################  TEMPORAL BEHAVIOR
 
 def StratNode():
-    global inputList
+    global inputList,stateMachineRate
     
     rospy.init_node('StratNode')
+    stateMachineRate =rospy.Rate(1)
+    
     init()
-    rate =rospy.Rate(1)
     
     while not rospy.is_shutdown():
         for input in inputList:
             input.update()
         mainloop()
-        rate.sleep()
+        stateMachineRate.sleep()
         
 ############################# INITIALISATION
 def init():
@@ -54,7 +56,7 @@ def init():
     rospy.loginfo("And unplug start")
     rospy.loginfo("******************************************************")
 
-    #sm.execute()
+    sm.execute()
     
     
 ############################# MAIN LOOP

@@ -9,13 +9,6 @@ MotionControl::MotionControl(std::string name) :
             ang_vel_(0.0)
 
 {
-    // Suscribers
-    pose_sub_ = nh_.subscribe("Localizator/pose", 1,
-            &MotionControl::poseCallback, this);
-    vel_pub_ = nh_.advertise<arp_core::Velocity> ("Command/velocity", 1);
-
-    as_.start();
-
     nh_.getParam("/arp_ods/DISTANCE_ACCURACY", DISTANCE_ACCURACY);
     nh_.getParam("/arp_ods/ANGLE_ACCURACY", ANGLE_ACCURACY);
     nh_.getParam("/arp_ods/ROTATION_GAIN", ROTATION_GAIN);
@@ -26,6 +19,16 @@ MotionControl::MotionControl(std::string name) :
     nh_.getParam("/arp_ods/RADIUS_APPROACH_ZONE", RADIUS_APPROACH_ZONE);
     nh_.getParam("/arp_ods/RADIUS_FANTOM_ZONE", RADIUS_FANTOM_ZONE);
     nh_.getParam("/arp_ods/FANTOM_COEF", FANTOM_COEF);
+
+
+    // Suscribers
+    pose_sub_ = nh_.subscribe("Localizator/pose", 1,
+            &MotionControl::poseCallback, this);
+    vel_pub_ = nh_.advertise<arp_core::Velocity> ("Command/velocity", 1);
+
+    as_.start();
+
+
 
 }
 
@@ -118,7 +121,7 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal)
                 distance_to_despoint, RADIUS_FANTOM_ZONE);
 
         //ROS_INFO(
-        //        "distance_to_despoint=%.3f, distance_to_desline=%.3f, distance_error=%.3f",
+        //       "distance_to_despoint=%.3f, distance_to_desline=%.3f, distance_error=%.3f",
         //        distance_to_despoint, distance_to_desline, distance_error);
 
         ///////////////////////////////////////////////// ANGLES
@@ -161,6 +164,7 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal)
 
         //ROS_INFO("distance_error=%.3f angle_error=%.3f", distance_error,
         //        angle_error);
+
         //ROS_INFO("lin_vel=%f, ang_vel=%f", lin_vel_, ang_vel_);
 
         ////////////////////////////////////////ATTEINTE DU BUT
@@ -169,10 +173,6 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal)
         {
             ROS_INFO(">>>>>>>>>>>>>>>>> %s: Position Reached",
                     action_name_.c_str());
-            //Velocity vel;
-            //vel.angular = 0.0;
-            //vel.linear = 0.0;
-            //vel_pub_.publish(vel);
             success = true;
             break;
         }

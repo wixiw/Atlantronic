@@ -54,8 +54,6 @@ namespace arp_hml
          */
         void stopHook();
 
-<<<<<<< .working
-=======
 
     protected:
 
@@ -126,12 +124,7 @@ namespace arp_hml
         /**
          * check if all pointers to CanOpen Dictionnary are non null
          */
->>>>>>> .merge-right.r435
         bool init();
-<<<<<<< .working
-        void enableDrive();
-        void disableDrive();
-=======
 
         /**
          * Switch the motor to OTHER mode of operation, and ask a faulhaber EN command to be send
@@ -145,20 +138,12 @@ namespace arp_hml
          */
         void disableDrive();
 
->>>>>>> .merge-right.r435
         bool reset();
         bool getLimitSwitchStatus();
         bool startWatchdog();
         bool stopWatchdog();
         bool isInError();
         unsigned int getError();
-<<<<<<< .working
-        void runSpeed();
-        void runTorque();
-        void runPosition();
-        void runHoming();
-        void runOther();
-=======
         void runSpeed();
         void runTorque();
         void runPosition();
@@ -170,7 +155,6 @@ namespace arp_hml
  ****************************************************************************/
 
     public:
->>>>>>> .merge-right.r435
 
         static const int F_CMD_DI = 0x08;
         static const int F_CMD_EN = 0x0F;
@@ -184,34 +168,8 @@ namespace arp_hml
         static const int F_RET_CMD_UNAVAILABLE = -8;
         static const int F_RET_FLASH_DEFECT = -13;
 
-<<<<<<< .working
+
     protected:
-        ArdDs402::enum_DS402_state attrState;
-        int attrCommandedSpeed;
-
-        bool propInvertDriveDirection;
-        /** Reductor's value **/
-        double propReductorValue;
-        /** Encoder resolution in point by rev**/
-        int propEncoderResolution;
-
-        InputPort<double> inSpeedCmd;
-        InputPort<double> inPositionCmd;
-        InputPort<double> inTorqueCmd;
-=======
->>>>>>> .merge-right.r435
-
-<<<<<<< .working
-        OutputPort<double> outMeasuredPosition;
-        OutputPort<double> outMeasuredTorque;
-        OutputPort<double> outComputedSpeed;
-
-        OutputPort<int> outLastSentCommand;
-        OutputPort<double> outLastSentCommandParam;
-        OutputPort<int> outLastSentCommandReturn;
-=======
-    protected:
->>>>>>> .merge-right.r435
 
         INTEGER32* m_measuredPosition;
         INTEGER16* m_measuredCurrent;
@@ -226,25 +184,7 @@ namespace arp_hml
         UNS8 m_faulhaberScriptCommand;
         UNS32 m_faulhaberScriptCommandParam;
 
-<<<<<<< .working
         bool m_faulhaberCommandTodo;
-
-
-        void getInputs();
-        void setOutputs();
-        void readCaptors();
-
-/*************************************************************************/
-        /* INTERFACE OROCOS */
-/*************************************************************************/
-
-        /**
-         * Enable motors to move
-         */
-        void ooEnableDrive();
-=======
-        bool m_faulhaberCommandTodo;
->>>>>>> .merge-right.r435
 
         //memoire de la derniere valeur de position pour un calcul de vitesse
         double m_oldPositionMeasure;
@@ -254,13 +194,6 @@ namespace arp_hml
         void setOutputs();
         void readCaptors();
 
-<<<<<<< .working
-        /**
-         * Choose the operation mode of the motor.
-         * param mode : "speed","position","torque","homing","faulhaber"
-         */
-        void ooSetOperationMode(string mode);
-=======
         virtual bool checkInputsPorts();
 
         /**
@@ -268,7 +201,6 @@ namespace arp_hml
          * Return values simply to indicate return point
          */
         void delta_t(struct timespec *interval, struct timespec *begin, struct timespec *now);
->>>>>>> .merge-right.r435
 
     };
 

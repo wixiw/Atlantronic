@@ -5,7 +5,7 @@ import rospy
 import smach
 import smach_ros
 import smach_msgs
-
+import CyclicState
 
 
 
@@ -32,3 +32,4 @@ class ProviState(smach.State):
 
     def execute(self, userdata):
         rospy.loginfo('Executing state ProviState')
+        return 'outcome2'

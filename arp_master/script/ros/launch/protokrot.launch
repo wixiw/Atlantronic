@@ -1,6 +1,5 @@
-<!--  Use this file to deploy the complete robot software on the real robot -->
 <launch>
-	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
+<!--  Use this file to deploy the complete robot software on the real robot -->
 	<include file="$(find arp_master)/script/ros/launch/rosparam.launch"/>
 	<include file="$(find arp_hml)/script/ros/launch/protokrot.launch"/>
 	<include file="$(find arp_rlu)/script/ros/launch/arp_rlu.launch"/>

@@ -28,6 +28,10 @@ Localizator::Localizator():
 	last_time = ros::WallTime::now();
 	last_odo_left = 0.0;
 	last_odo_right = 0.0;
+
+    // Parameters
+    nh.getParam("/Protokrot/BASE_LINE", BASE_LINE);
+    nh.getParam("/Protokrot/WHEEL_DIAMETER", WHEEL_DIAMETER);
 }
 
 Localizator::~Localizator()
@@ -45,25 +49,8 @@ bool Localizator::respawnCallback(Spawn::Request& req, Spawn::Response& res)
 	last_odo_left = 0.0;
 	last_odo_right = 0.0;
 
-	if( nh.getParam("/Protokrot/base_line", base_line))
-	{
-	  ROS_INFO("Got param named '/Protokrot/base_line' : %f", base_line);
-	}
-	else
-	{
-	  ROS_ERROR("Failed to get param '/Protokrot/base_line'. Take default value (0.4)");
-	  base_line = 0.4;
-	}
 
-	if( nh.getParam("/Protokrot/wheel_diameter", wheel_diameter))
-	{
-	  ROS_INFO("Got param named '/Protokrot/wheel_diameter' : %f", wheel_diameter);
-	}
-	else
-	{
-	  ROS_ERROR("Failed to get param '/Protokrot/wheel_diameter'. Take default value (0.07)");
-	  wheel_diameter = 0.07;
-	}
+
 	return true;
 }
 
@@ -79,8 +66,8 @@ void Localizator::odoCallback(const OdoConstPtr& o)
 	// Calcul des vitesses odo
 	double v_left  = (odo_left  - last_odo_left ) / dt;
 	double v_right = (odo_right - last_odo_right) / dt;
-	double lin_vel = 0.25 * ( v_right + v_left ) * wheel_diameter;
-	double ang_vel = 0.50 * ( v_right - v_left ) * wheel_diameter / base_line;
+	double lin_vel = 0.25 * ( v_right + v_left ) * WHEEL_DIAMETER;
+	double ang_vel = 0.50 * ( v_right - v_left ) * WHEEL_DIAMETER / BASE_LINE;
 
 	// Calcul de la position réelle
 	orient = orient * arp_math::Rotation2(ang_vel * dt);
