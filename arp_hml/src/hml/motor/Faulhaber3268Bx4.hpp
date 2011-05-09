@@ -58,7 +58,7 @@ namespace arp_hml
     protected:
 
         ArdDs402::enum_DS402_state attrState;
-        int attrCommandedSpeed;
+        double attrCommandedSpeed;
         double attrPeriod;
 
         bool propInvertDriveDirection;
