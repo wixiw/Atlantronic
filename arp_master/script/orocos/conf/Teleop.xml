@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE properties SYSTEM "cpf.dtd">
-<properties>
-  <simple name="propAutoLoadScript" type="string"><description>If non empty, the component will automatically load this script during configure() (le dossier ops est automatiquement ajouté, l'extension est mise par le soft)</description><value></value></simple>
-  <simple name="propAutoLoadStateMachines" type="string"><description>If non empty, the component will automatically load this state machine during configure() (le dossier fsm-osd est automatiquement ajouté, l'extension est mise par le soft)</description><value></value></simple>
-  <simple name="propEnableLog" type="boolean"><description>If set to true the composant is allowed to write in the log file, if set to false it will not log anything. Use it when a component is spamming log and this annoys you</description><value>1</value></simple>
-  <simple name="propLongGain" type="double"><value>1000</value></simple>
-  <simple name="propRotGain" type="double"><value>1000</value></simple>
-</properties>

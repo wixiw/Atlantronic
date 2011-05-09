@@ -1,0 +1,13 @@
+<!-- Use this to deploy the motion control nodes for manual modes embedded on the robot -->
+<launch>
+	<include file="$(find arp_master)/script/ros/launch/rosparam.launch"/>
+	<!--  ArpOds Orocos contains HML Protokrot platform deployment -->
+	<node 	name="ArpOds" 
+			pkg="ocl" 
+			type="deployer-gnulinux" 
+			args="-s $(find arp_ods)/script/orocos/deployment/deploy_manual.ops --" 
+			output="screen"
+	/>
+	<node 	name="Command" 	pkg="arp_ods" 	type="CommandNode" 		args="" output="screen"/>
+	<include file="$(find arp_rlu)/script/ros/launch/arp_rlu.launch"/>
+</launch>

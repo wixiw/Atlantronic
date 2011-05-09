@@ -32,6 +32,7 @@ ARDTaskContext::ARDTaskContext(const std::string& name, const std::string projec
     addProperty("propEnableLog", propEnableLog)
         .doc("If set to true the composant is allowed to write in the log file, if set to false it will not log anything. Use it when a component is spamming log and this annoys you");
 
+    addAttribute("attrProjectRootPath",attrProjectRootPath);
     addAttribute("attrPropertyPath",attrPropertyPath);
     addAttribute("attrScriptPath",attrScriptPath);
     addAttribute("attrStateMachinePath",attrStateMachinePath);

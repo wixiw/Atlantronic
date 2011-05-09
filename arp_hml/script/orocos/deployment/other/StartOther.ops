@@ -1,6 +1,3 @@
-Joystick.configure();
-Joystick.start();
-
 PcBoard.configure();
 PcBoard.start();
 

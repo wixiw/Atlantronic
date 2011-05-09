@@ -1,6 +1,0 @@
-<!-- Use this to deploy the motion control nodes for manual modes -->
-<launch>
-	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
-	<node name="Command" 	pkg="arp_ods" 	type="CommandNode" 		args="" output="screen"/>
-	<node name="Teleop" 	pkg="arp_ods" 	type="TeleopNode" 		args="" output="screen"/>
-</launch>

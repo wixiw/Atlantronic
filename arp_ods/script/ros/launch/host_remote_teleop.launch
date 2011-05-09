@@ -1,0 +1,10 @@
+<!-- Use this to deploy the joystick components nodes on the host for manual modes remotely controlled on the host -->
+<launch>
+	<!-- <env name="ROS_MASTER_URI" value="http://beta:11311"></env> -->
+	<node 	name="ArpOdsRemote" 
+			pkg="ocl" 
+			type="deployer-gnulinux" 
+			args="-s $(find arp_ods)/script/orocos/deployment/deploy_host_remote_control.ops --" 
+			output="screen"
+	/>
+</launch>
