@@ -47,6 +47,8 @@ ProtokrotItf::ProtokrotItf(const std::string& name):
             .doc("Speed command for left and right motor");
     addPort("outOdometryMeasures",outOdometryMeasures)
         .doc("Odometers value from left and right wheel assembled in an 'Odo' Ros message");
+    addPort("outDifferentialMeasure",outDifferentialMeasure)
+    	.doc("Speed measures for left and right motor");
     addPort("outIoStart",outIoStart)
         .doc("Value of the start. GO is true when it is not in, go is false when the start is in");
     addPort("outIoColorSwitch",outIoColorSwitch)
@@ -66,6 +68,11 @@ ProtokrotItf::ProtokrotItf(const std::string& name):
             .doc("Value of the left odometer in rad on the wheel axe");
     addEventPort("inRightDrivingPosition",inRightDrivingPosition)
             .doc("Value of the right odometer in rad on the wheel axe");
+    addPort("inLeftSpeedMeasure",inLeftSpeedMeasure)
+            .doc("Value of the left speed in rad/s on the wheel axe");
+    addPort("inRightSpeedMeasure",inRightSpeedMeasure)
+            .doc("Value of the right speed in rad/s on the wheel axe");
+
     addPort("inLeftDriveEnable",inLeftDriveEnable)
     		.doc("Left drive soft enable state");
     addPort("inRightDriveEnable",inRightDriveEnable)
@@ -109,6 +116,9 @@ void ProtokrotItf::updateHook()
 
     //lecture de enable
     readDriveEnable();
+
+    //lecture des vitesses
+    readSpeed();
 }
 
 void ProtokrotItf::writeDifferentialCmd()
@@ -154,11 +164,11 @@ void ProtokrotItf::writeDifferentialCmd()
 void ProtokrotItf::readOdometers()
 {
     double odoValue;
-    if(NewData==inLeftDrivingPosition.read(odoValue))
+    if(NewData==inLeftDrivingPosition.readNewest(odoValue))
     {
     	attrOdometers.odo_left = odoValue*propLeftOdometerGain;
     }
-    if(NewData==inRightDrivingPosition.read(odoValue))
+    if(NewData==inRightDrivingPosition.readNewest(odoValue))
     {
     	attrOdometers.odo_right = odoValue*propRightOdometerGain;
     }
@@ -169,7 +179,7 @@ void ProtokrotItf::readColorSwitch()
 {
     bool io = false;
     StartColor colorSwitch;
-    if(NewData==inIoColorSwitch.read(io))
+    if(NewData==inIoColorSwitch.readNewest(io))
     {
     	if(io)
     	    	colorSwitch.color = "red";
@@ -185,7 +195,7 @@ void ProtokrotItf::readStart()
 {
 	bool io = false;
 	Start start;
-	if(NewData==inIoStart.read(io))
+	if(NewData==inIoStart.readNewest(io))
 	{
 	    start.go = !io;
 	    outIoStart.write(start);
@@ -203,6 +213,19 @@ void ProtokrotItf::readDriveEnable()
 		outDriveEnable.write( true );
 	else
 		outDriveEnable.write( false );
+}
+
+void ProtokrotItf::readSpeed()
+{
+	double leftSpeed = 0.0;
+	double rightSpeed = 0.0;
+	DifferentialCommand speedMeasure;
+	if( NoData != inLeftSpeedMeasure.readNewest(leftSpeed) && NoData != inRightSpeedMeasure.readNewest(rightSpeed) )
+	{
+		speedMeasure.v_left = leftSpeed;
+		speedMeasure.v_right = rightSpeed;
+		outDifferentialMeasure.write(speedMeasure);
+	}
 }
 
 void ProtokrotItf::delta_t(struct timespec *interval, struct timespec *begin, struct timespec *now)

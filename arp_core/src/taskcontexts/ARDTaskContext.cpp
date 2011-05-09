@@ -7,9 +7,11 @@
 
 #include "ARDTaskContext.hpp"
 #include <iostream>
+#include <rtt/base/InputPortInterface.hpp>
 
 using namespace arp_core;
 using namespace RTT;
+using namespace base;
 
 ARDTaskContext::ARDTaskContext(const std::string& name, const std::string projectRootPath) :
     TaskContext(name, PreOperational),
@@ -264,9 +266,7 @@ bool ARDTaskContext::checkInputsPorts()
 
     for(it = portsVector.begin(); it != portsVector.end(); it++)
     {
-    	name = (*it)->getName();
-
-        if( (*it)->connected() == false && name.compare(0,2,"in")==0 )
+        if( dynamic_cast<InputPortInterface*>(*it) != 0 && (*it)->connected() == false )
         {
             LOG(Error)  << "checkInputsPorts : " << (*it)->getName() << " is not connected !" << endlog();
             res &= false;

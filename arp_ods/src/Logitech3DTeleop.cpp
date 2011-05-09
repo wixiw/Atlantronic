@@ -9,6 +9,7 @@
 #include "Logitech3DTeleop.hpp"
 #include <ocl/Component.hpp>
 #include <susi.h>
+#include <ros/package.h>
 
 using namespace arp_ods;
 using namespace arp_core;
@@ -17,7 +18,7 @@ using namespace arp_core;
 ORO_LIST_COMPONENT_TYPE( arp_ods::Logitech3DTeleop )
 
 Logitech3DTeleop::Logitech3DTeleop(const std::string& name) :
-    ARDTaskContext(name),
+    ARDTaskContext(name,ros::package::getPath("arp_ods")),
     propLongGain(1),
     propRotGain(1)
 {

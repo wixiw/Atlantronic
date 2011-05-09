@@ -88,6 +88,9 @@ namespace arp_hml
         /** Odometers value from left and right wheel assembled in an "Odo" Ros message **/
         OutputPort<Odo> outOdometryMeasures;
 
+        /** Speed measures for left and right motor **/
+        OutputPort<DifferentialCommand> outDifferentialMeasure;
+
         /** Value of the start. GO is true when it is not in, go is false when the start is in **/
         OutputPort<Start> outIoStart;
 
@@ -115,6 +118,12 @@ namespace arp_hml
         InputPort<double> inLeftDrivingPosition;
 
         /** Value of the right odometer in rad on the wheel axe **/
+        InputPort<double> inLeftSpeedMeasure;
+
+        /** Value of the left speed in rad/s on the wheel axe **/
+        InputPort<double> inRightSpeedMeasure;
+
+        /** Value of the right speed in rad/s on the wheel axe **/
         InputPort<double> inRightDrivingPosition;
 
         /** Left drive soft enable state **/
@@ -168,6 +177,11 @@ protected:
          * Read the drive enable value and merge the information for outside
          */
         void readDriveEnable();
+
+        /**
+         * Read the value of left and rigth motor and publish them together
+         */
+        void readSpeed();
 
         /**
          * Elapsed time between begin and now, using data type timespec.

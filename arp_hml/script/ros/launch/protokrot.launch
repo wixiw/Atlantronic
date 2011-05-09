@@ -1,7 +1,7 @@
 <!--  Use this file de deploy the real platform "Protokrot" hardware -->
 <launch>
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
-	<node 	name="ARP_HML" 
+	<node 	name="ArpHml" 
 			pkg="ocl" 
 			type="deployer-gnulinux" 
 			args="-s $(find arp_hml)/script/orocos/deployment/deploy_protokrot.ops --" 
