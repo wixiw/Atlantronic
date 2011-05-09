@@ -42,6 +42,8 @@ def init():
 
     #creation of statemachine
     sm=MainStateMachine()
+    #sis = smach_ros.IntrospectionServer('server_name', sm, '/SM_ROOT')
+    #sis.start()
 
     #welcome message
     rospy.loginfo("******************************************************")
@@ -52,6 +54,7 @@ def init():
     rospy.loginfo("And unplug start")
     rospy.loginfo("******************************************************")
 
+    #sm.execute()
     
     
 ############################# MAIN LOOP

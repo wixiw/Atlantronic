@@ -15,6 +15,18 @@ MotionControl::MotionControl(std::string name) :
     vel_pub_ = nh_.advertise<arp_core::Velocity> ("Command/velocity", 1);
 
     as_.start();
+
+    nh_.getParam("/arp_ods/DISTANCE_ACCURACY", DISTANCE_ACCURACY);
+    nh_.getParam("/arp_ods/ANGLE_ACCURACY", ANGLE_ACCURACY);
+    nh_.getParam("/arp_ods/ROTATION_GAIN", ROTATION_GAIN);
+    nh_.getParam("/arp_ods/TRANSLATION_GAIN", TRANSLATION_GAIN);
+    nh_.getParam("/arp_ods/LIN_VEL_MAX", LIN_VEL_MAX);
+    nh_.getParam("/arp_ods/ANG_VEL_MAX", ANG_VEL_MAX);
+    nh_.getParam("/arp_ods/VEL_FINAL", VEL_FINAL);
+    nh_.getParam("/arp_ods/RADIUS_APPROACH_ZONE", RADIUS_APPROACH_ZONE);
+    nh_.getParam("/arp_ods/RADIUS_FANTOM_ZONE", RADIUS_FANTOM_ZONE);
+    nh_.getParam("/arp_ods/FANTOM_COEF", FANTOM_COEF);
+
 }
 
 MotionControl::~MotionControl(void)

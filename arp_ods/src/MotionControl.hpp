@@ -92,6 +92,7 @@ namespace arp_ods
         double ang_vel_;
 
         /**
+<<<<<<< .working
          * Order is succed if (and only if) the current position is near the goal with distance_accuracy_ precision.
          */
         static const double DISTANCE_ACCURACY=0.010;
@@ -128,19 +129,20 @@ namespace arp_ods
 
         /**
          *  distance where you are in mode "approaching point" (m)
+=======
+         * this are coefficient that are defined by rosparam. see .launch files.
+>>>>>>> .merge-right.r427
          */
-        static const double RADIUS_APPROACH_ZONE = 0.020;
-
-        /**
-         * distance where you are in mode "fantom point" (m)
-         */
-        static const double RADIUS_FANTOM_ZONE = 0.050;
-
-        /**
-         * The fantom coefficient. means the distance of the fantom point to the final point. set it to 0, it will be as if you always try to go directly to final point. set it to 0.9, your robot will make big curve to reach the final point with the right angle.
-         */
-        static const double FANTOM_COEF = 0.5;
-
+        double DISTANCE_ACCURACY;
+        double ANGLE_ACCURACY;
+        double ROTATION_GAIN;
+        double TRANSLATION_GAIN;
+        double LIN_VEL_MAX;
+        double ANG_VEL_MAX;
+        double VEL_FINAL;
+        double RADIUS_APPROACH_ZONE;
+        double RADIUS_FANTOM_ZONE;
+        double FANTOM_COEF;
 
     public:
 
@@ -162,8 +164,6 @@ namespace arp_ods
          * Called when a new order is received
          */
         void executeCB(const OrderGoalConstPtr &goal);
-
-
 
     };
 }

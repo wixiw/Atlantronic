@@ -61,15 +61,7 @@ namespace arp_ods
          */
         void velocityCallback(const arp_core::VelocityConstPtr& v);
 
-        /**
-         * Distance in meters between wheels.
-         */
-        double base_line;
 
-        /**
-         * Diameter in meters.
-         */
-        double wheel_diameter;
 
         /**
          * linear velocity
@@ -88,19 +80,31 @@ namespace arp_ods
         double loop_date;
 
         /**
+<<<<<<< .working
          * maximum forward acceleration (m/s^02)
          */
         static const double LIN_ACC_MAX = 0.300;
 
         /**
          * maximum forward deceleration (m/s^02)
+=======
+         * these constants are initialized by ros parameters. see .launch for explananations
+>>>>>>> .merge-right.r427
          */
+<<<<<<< .working
         static const double LIN_DEC_MAX = -0.300;
 
         /**
          * maximum rotation acceleration (rad/s^2)
          */
         static const double ANG_ACC_MAX = 10.000;
+=======
+        double LIN_ACC_MAX;
+        double LIN_DEC_MAX;
+        double ANG_ACC_MAX;
+        double BASE_LINE;
+        double WHEEL_DIAMETER;
+>>>>>>> .merge-right.r427
     };
 
 }
