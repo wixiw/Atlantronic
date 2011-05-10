@@ -6,6 +6,7 @@ import smach
 import smach_ros
 import smach_msgs
 
+from Inputs import Inputs
 
 
 class CyclicState(smach.StateMachine):
@@ -14,19 +15,14 @@ class CyclicState(smach.StateMachine):
         
     def execute(self,userdata):
         stateMachineRate=rospy.Rate(1)
-        rospy.loginfo("executeIn")
         self.executeIn()
         while(not rospy.is_shutdown()):
-            rospy.loginfo("executeWhile")
+            Inputs.update()
             self.executeWhile()
-            rospy.loginfo("executeTransition")
             trans=self.executeTransitions()
             if trans!=None:
-                rospy.loginfo("executeOut")
                 self.executeOut()
                 return trans
-            rospy.loginfo("Sleep")
-            # TODO celle la est degueu car mon cyclic state n'a rien a faire de stratnode
             stateMachineRate.sleep()
         rospy.logerr("boucle d'etat cassee par le shutdown")
         
@@ -41,3 +37,4 @@ class CyclicState(smach.StateMachine):
     
     def executeOut(self):
         return
+    

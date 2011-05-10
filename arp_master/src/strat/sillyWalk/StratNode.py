@@ -24,7 +24,7 @@ class StratNode():
         rospy.init_node('StratNode')
         stateMachineRate =rospy.Rate(1)
         
-        Inputs().link()
+        Inputs.link()
         #creation of statemachine
         sm=MainStateMachine()
         #sis = smach_ros.IntrospectionServer('server_name', sm, '/SM_ROOT')

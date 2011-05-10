@@ -29,27 +29,29 @@ class Input():
 class Inputs:
     
     inputList=[]
-    obstacle=0
-    color=0
-    start=0
+#    obstacle=0
+#    color=0
+#    start=0
     
-    def link(self):
-        obstacleInput= self.createInput("obstacle", Obstacle)
+    @staticmethod
+    def link():
+        obstacleInput= Inputs.createInput("obstacle", Obstacle)
         Inputs.obstacle=obstacleInput.data.detected
-        colorInput=Input("color", StartColor)
+        colorInput=Input("/Protokrot/color", StartColor)
         Inputs.color=colorInput.data.color
-        startInput=Input("start", Start)
+        startInput=Input("/Protokrot/start", Start)
         Inputs.start=startInput.data.go
     
-    def createInput(self,name,type):
+    @staticmethod
+    def createInput(name,type):
         inputcreated=Input(name,type)
         Inputs.inputList.append(inputcreated)
         return inputcreated
-        
-    def update(self):
+    
+    @staticmethod    
+    def update():
         for input in Inputs.inputList:
                 input.update()
-    
     
     
   
