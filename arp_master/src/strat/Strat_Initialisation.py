@@ -5,7 +5,9 @@ import rospy
 import smach
 import smach_ros
 import smach_msgs
-import CyclicState
+
+from CyclicState import CyclicState
+from Inputs import Inputs
 
 
 class Initialisation(smach.StateMachine):
@@ -19,38 +21,35 @@ class Initialisation(smach.StateMachine):
             smach.StateMachine.add('Blue', Blue(),
                                    transitions={'red':'Red','start':'endInitialisation'})
  
-class Init(CyclicState.CyclicState):
+class Init(CyclicState):
     def __init__(self):
-        CyclicState.CyclicState.__init__(self, outcomes=['red','blue'])
+        CyclicState.__init__(self, outcomes=['red','blue'])
 
-    def executeTransition(self):
-       global color
+    def executeTransitions(self):
        rospy.loginfo("eb beh je suis dans la transition de init")
-       if color=='red' and start==0:
+       if Inputs.color=='red' and Inputs.start==0:
            return 'red'
-       if color=='blue'and start==0:
+       if Inputs.color=='blue'and Inputs.start==0:
            return 'blue'
 
-class Red(CyclicState.CyclicState):
+class Red(CyclicState):
     def __init__(self):
-        CyclicState.CyclicState.__init__(self, outcomes=['blue','start'])
+        CyclicState.__init__(self, outcomes=['blue','start'])
 
-    def executeTransition(self):
-       global color
+    def executeTransitions(self):
        rospy.loginfo("eb beh je suis dans la transition de red")
-       if color=='blue':
+       if Inputs.color=='blue':
            return 'blue'
-       if start==1:
+       if Inputs.start==1:
            return 'start'
        
-class Blue(CyclicState.CyclicState):
+class Blue(CyclicState):
     def __init__(self):
-        CyclicState.CyclicState.__init__(self, outcomes=['red','start'])
+        CyclicState.__init__(self, outcomes=['red','start'])
 
-    def executeTransition(self):
-       global color
+    def executeTransitions(self):
        rospy.loginfo("eb beh je suis dans la transition de blue")
-       if color=='red':
+       if Inputs.color=='red':
            return 'red'
-       if start==1:
+       if Inputs.start==1:
            return 'start'

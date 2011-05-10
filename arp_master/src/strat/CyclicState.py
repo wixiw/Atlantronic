@@ -13,7 +13,7 @@ class CyclicState(smach.StateMachine):
         smach.StateMachine.__init__(self,outcomes)
         
     def execute(self,userdata):
-        global stateMachineRate
+        stateMachineRate=rospy.Rate(1)
         rospy.loginfo("executeIn")
         self.executeIn()
         while(not rospy.is_shutdown()):
@@ -26,17 +26,17 @@ class CyclicState(smach.StateMachine):
                 self.executeOut()
                 return trans
             rospy.loginfo("Sleep")
-            #stateMachineRate.sleep()
+            # TODO celle la est degueu car mon cyclic state n'a rien a faire de stratnode
+            stateMachineRate.sleep()
         rospy.logerr("boucle d'etat cassee par le shutdown")
         
+    #si In, Out et While ne sont pas declarees par l'etat derive alors elles ne feront rien
+    #par contre je ne decris pas transitions qui elle doit toujours etre declaree
     
     def executeIn(self):
         return
     
     def executeWhile(self):
-        return
-    
-    def executeTransitions(self):
         return
     
     def executeOut(self):

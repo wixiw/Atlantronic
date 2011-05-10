@@ -13,53 +13,33 @@ from arp_core.msg import Start
 import CyclicState
 import Strat_Initialisation
 
+from Inputs import Inputs
+
 ###########################  TEMPORAL BEHAVIOR
 
-def StratNode():
-    global inputList,stateMachineRate
+class StratNode():
     
-    rospy.init_node('StratNode')
-    stateMachineRate =rospy.Rate(1)
-    
-    init()
-    
-    while not rospy.is_shutdown():
-        for input in inputList:
-            input.update()
-        mainloop()
-        stateMachineRate.sleep()
+    def __init__(self):
         
-############################# INITIALISATION
-def init():
+        rospy.init_node('StratNode')
+        stateMachineRate =rospy.Rate(1)
+        
+        Inputs().link()
+        #creation of statemachine
+        sm=MainStateMachine()
+        #sis = smach_ros.IntrospectionServer('server_name', sm, '/SM_ROOT')
+        #sis.start()
     
-    #creation and linking of inputs
-    global inputList,obstacle,color,start    
-    inputList=[]
-    obstacleInput= Input("obstacle", Obstacle)
-    obstacle=obstacleInput.data.detected
-    colorInput=Input("color", StartColor)
-    color=colorInput.data.color
-    startInput=Input("start", Start)
-    start=startInput.data.go
-    #x = Input()
-    #y = Input()
-    #theta = Input()
-
-    #creation of statemachine
-    sm=MainStateMachine()
-    #sis = smach_ros.IntrospectionServer('server_name', sm, '/SM_ROOT')
-    #sis.start()
-
-    #welcome message
-    rospy.loginfo("******************************************************")
-    rospy.loginfo("Welcome to Advanced Robotics Platform. I am StratNode.")
-    rospy.loginfo("Choose color with button")
-    rospy.loginfo("Then plug start")
-    rospy.loginfo("Wait for initialisation sequence")
-    rospy.loginfo("And unplug start")
-    rospy.loginfo("******************************************************")
-
-    sm.execute()
+        #welcome message
+        rospy.loginfo("******************************************************")
+        rospy.loginfo("Welcome to Advanced Robotics Platform. I am StratNode.")
+        rospy.loginfo("Choose color with button")
+        rospy.loginfo("Then plug start")
+        rospy.loginfo("Wait for initialisation sequence")
+        rospy.loginfo("And unplug start")
+        rospy.loginfo("******************************************************")
+    
+        sm.execute()
     
     
 ############################# MAIN LOOP
@@ -78,24 +58,7 @@ class MainStateMachine(smach.StateMachine):
                                    transitions={'endInitialisation':'end'})
 
 
-########################### INPUT CLASS
-# this is used to have a buffer on inputs, so that they are not changing during the mainloop
-class Input():
-    def __init__(self,topicName,msgType):
-        global inputList
-        self.data=msgType()
-        self.data_lastvalue=msgType()
-        self.ncall=0
-        self.ncall_lastvalue=0
-        inputList.append(self)
-        rospy.Subscriber(topicName,msgType,self.updateCallBack)
-    def update(self):
-        self.data=self.data_lastvalue
-        self.ncall=self.ncall_lastvalue
-        self.ncall_lastvalue=0
-    def updateCallBack(self, data):
-        self.data_lastvalue=data
-        self.ncall_lastvalue+=1    
+
    
 ########################## EXECUTABLE 
 #shall be always at the end ! so that every function is defined before
