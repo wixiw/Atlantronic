@@ -6,5 +6,14 @@
 			pkg="arp_master"  
 			type="GraphicsSimuNode"     
 			args="/Localizator/pose" 
-			output="screen" />
+			output="screen" 
+	/>
+	<node 	name="rviz" 
+			pkg="rviz" 
+			type="rviz" 
+			respawn="false" 
+			output="screen" 
+			args="-d $(find hokuyo_node)/hokuyo_test.vcg"
+	/>
+			
 </launch>
