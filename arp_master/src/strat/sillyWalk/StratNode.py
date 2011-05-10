@@ -39,7 +39,13 @@ class StratNode():
         rospy.loginfo("And unplug start")
         rospy.loginfo("******************************************************")
     
+        # initialise the smach introspection server to view the state machine with :
+        #  rosrun smach_viewer smach_viewer.py
+        sis = smach_ros.IntrospectionServer('strat_server', sm, '/SratNode')
+        sis.start()
         sm.execute()
+        
+        sis.stop()
     
     
 ############################# MAIN LOOP
