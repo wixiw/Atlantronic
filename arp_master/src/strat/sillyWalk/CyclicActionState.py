@@ -21,7 +21,8 @@ class CyclicActionState(CyclicState):
         
     def execute(self,userdata):
         self.actionCreated = False
-        self.createOrder()
+        #this should always be overrided !
+        self.createAction()
         if self.actionCreated==False:
             rospy.logerr("aucune Action creee dans un etat qui etait fait pour ca !")
             return
@@ -36,19 +37,22 @@ class CyclicActionState(CyclicState):
             if trans!=None:
                 self.executeOut()
                 return trans
+            
             Data.stateMachineRate.sleep()
         rospy.logerr("boucle d'etat cassee par le shutdown")
 
     def executeClientTransition(self):
-        if self.client.get_result()==GoalStatus.SUCCEEDED:
+        state=self.client.get_state()
+        if state==actionlib.GoalStatus.SUCCEEDED:
             return 'succeeded'
         
-        if self.client.get_result()==GoalStatus.ABORTED or self.client.get_result()==GoalStatus.REJECTED or self.client.get_result()==GoalStatus.LOST or self.client.get_result()==GoalStatus.PREEMPTED :
+        #condition non testee <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< !!!!!!!!!
+        if state==actionlib.GoalStatus.ABORTED or state==actionlib.GoalStatus.REJECTED or state==actionlib.GoalStatus.LOST or state==actionlib.GoalStatus.PREEMPTED :
             return 'aborted'  
         
         #all others are considered "waiting"
         #Possible States Are: PENDING, ACTIVE, RECALLED, REJECTED, PREEMPTED, ABORTED, SUCCEEDED, LOST
-        return
+        
              
     # generic motioncontrol action creator.
     def createMotionControlAction(self,x,y,theta,move_type,reverse):
@@ -60,16 +64,16 @@ class CyclicActionState(CyclicState):
         goal.move_type='POINTCAP'
         goal.reverse=True
         
-        # THIS IS BLOCKING ! <<<<<<<<<<<<<<<<<<<<<<<
+        # THIS IS BLOCKING ! <<<<<<<<<<<<<<<<<<<<<<< !!!!!!!!!!!!!!
         self.client.wait_for_server()
         self.client.cancel_all_goals
         self.client.send_goal(goal)
         
-        actionCreated=True
+        self.actionCreated=True
         
     # these are useful function that allow not to give all parameters
     def pointcap(self,x,y,theta):
-        createMotionControlAction(x,y,theta,'POINTCAP',False)
+        self.createMotionControlAction(x,y,theta,'POINTCAP',False)
         
     def pointcap_reverse(self,x,y,theta):
         createMotionControlAction(x,y,theta,'POINTCAP',True)

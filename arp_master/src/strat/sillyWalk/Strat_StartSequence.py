@@ -8,6 +8,7 @@ from smach_ros import SimpleActionState
 import smach_msgs
 
 from CyclicState import CyclicState
+from CyclicActionState import CyclicActionState
 from Inputs import Inputs
 from Data import Data
 from arp_ods.msg import OrderGoal
@@ -25,10 +26,8 @@ class StartSequence(smach.StateMachine):
                       transitions={'succeeded':'Retour_petit_bord','preempted':'problem','aborted':'problem'})
             
             smach.StateMachine.add('Retour_petit_bord',
-                      SimpleActionState('MotionControl',
-                                        OrderAction,
-                                        goal_cb=Retour_petit_bord_goalcb),
-                      transitions={'succeeded':'WaitForMatch','preempted':'problem','aborted':'problem'})
+                      Retour_petit_bord(),
+                      transitions={'succeeded':'WaitForMatch','aborted':'problem'})
 
             smach.StateMachine.add('WaitForMatch', WaitForMatch(),
                                    transitions={'start':'gogogo'})
@@ -43,14 +42,10 @@ def Recal_petit_bord_goalcb(userdata, goal):
     goal.reverse=True
     return goal
         
-def Retour_petit_bord_goalcb(userdata, goal):
-    goal=OrderGoal()
-    goal.x_des=0.000
-    goal.y_des=1.000
-    goal.theta_des=0.000
-    goal.move_type='POINTCAP'
-    goal.reverse=False
-    return goal
+
+class Retour_petit_bord(CyclicActionState):
+    def createAction(self):
+       self.pointcap(0.5,1,0)
         
         
 class WaitForMatch(CyclicState):
