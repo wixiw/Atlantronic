@@ -35,10 +35,10 @@
     <param name="/arp_ods/FANTOM_COEF"  value="0.5" /> 
 	
 	<!--maximum forward acceleration (m/s^02) -->
-    <param name="/arp_ods/LIN_ACC_MAX"  value="2.500" /> 
+    <param name="/arp_ods/LIN_ACC_MAX"  value="1.500" /> 
 
 	<!--maximum forward deceleration (m/s^02) -->
-    <param name="/arp_ods/LIN_DEC_MAX"  value="-5.000" /> 
+    <param name="/arp_ods/LIN_DEC_MAX"  value="-4.000" /> 
 
 	<!--maximum rotation acceleration (rad/s^2) -->
     <param name="/arp_ods/ANG_ACC_MAX"  value="30.000" /> 
