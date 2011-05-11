@@ -8,5 +8,7 @@
     <depend package="rtt" />
     <depend package="arp_core" />
     <depend package="arp_hml" />
+    <depend package="tf" />
+    <depend package="nav_msgs" />
 </package>
 

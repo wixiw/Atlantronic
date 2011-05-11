@@ -1,5 +1,15 @@
 <!-- ARD arp_rlu main launch file -->
 <launch>
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
-	<node name="Localizator"  pkg="arp_rlu"  type="LocalizatorNode"  args="" output="screen"/>
+	<node name="OldLocalizator"  pkg="arp_rlu"  type="OldLocalizatorNode"  args="" output="screen"/>
+  	<node name="Laserator" pkg="canonical_scan_matcher" type="csm_node" output="log">
+  		<param name="world_frame" type="string" value="world"/>
+  		<param name="base_frame" type="string" value="base_link"/>
+  		<param name="scan_frame" type="string" value="scan"/>
+  		<param name="publish_tf" type="bool" value="false"/>
+  		<param name="odometry_type" type="string" value="tf"/>
+ 	</node> 
+ 	<node name="ObstacleDetector"  pkg="arp_rlu"  type="ObstacleDetectorNode"  args="" output="screen">
+ 		<param name="DETECTION_THRESHOLD" type="double" value="0.250"/> 
+ 	</node>
 </launch>

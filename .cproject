@@ -29,6 +29,8 @@
 									<listOptionValue builtIn="false" value="/opt/ros/orocos_toolchain_ros/ocl/install/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/messages/std_msgs/include/std_msgs"/>
 									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/clients/cpp/roscpp/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/geometry_msgs/msg_gen/cpp/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/sensor_msgs/msg_gen/cpp/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1393136034" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -39,6 +41,8 @@
 									<listOptionValue builtIn="false" value="/opt/ros/orocos_toolchain_ros/ocl/install/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/messages/std_msgs/include/std_msgs"/>
 									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/clients/cpp/roscpp/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/geometry_msgs/msg_gen/cpp/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/sensor_msgs/msg_gen/cpp/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.399882191" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -55,6 +59,8 @@
 									<listOptionValue builtIn="false" value="/opt/ros/orocos_toolchain_ros/ocl/install/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/messages/std_msgs/include/std_msgs"/>
 									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/clients/cpp/roscpp/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/geometry_msgs/msg_gen/cpp/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/sensor_msgs/msg_gen/cpp/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.2146203453" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -62,9 +68,10 @@
 					</folderInfo>
 					<folderInfo id="cdt.managedbuild.toolchain.gnu.base.281472934.1014738129" name="/" resourcePath="arp_master">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.base.2147084263" name="cdt.managedbuild.toolchain.gnu.base" superClass="cdt.managedbuild.toolchain.gnu.base" unusedChildren="">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.target.gnu.platform.base" name="Debug Platform" osList="linux,hpux,aix,qnx" superClass="cdt.managedbuild.target.gnu.platform.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1890612784" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.130284372"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.93061302" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base.640232574">
-								<option id="gnu.cpp.compiler.option.include.paths.885354458" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.cpp.compiler.option.include.paths.885354458" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/media/DD_data/home/ard/ros/orocos_toolchain_ros/rtt/install/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros/orocos_toolchain_ros/rtt/install/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros/orocos_toolchain_ros/ocl/install/include"/>
@@ -75,7 +82,7 @@
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.410649785" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.674158016" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base.1829666111">
-								<option id="gnu.c.compiler.option.include.paths.1045007552" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.c.compiler.option.include.paths.1045007552" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/media/DD_data/home/ard/ros/orocos_toolchain_ros/rtt/install/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros/orocos_toolchain_ros/rtt/install/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros/orocos_toolchain_ros/ocl/install/include"/>
@@ -88,7 +95,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.1126645525" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base.854010566"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.base.2119675270" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base.767283542"/>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.base.1752115949" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base.491831498">
-								<option id="gnu.both.asm.option.include.paths.1129059318" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+								<option id="gnu.both.asm.option.include.paths.1129059318" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/opt/ros/orocos_toolchain_ros/rtt/install/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros/orocos_toolchain_ros/ocl/install/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/messages/std_msgs/include/std_msgs"/>
@@ -142,62 +149,6 @@
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
 			<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
-			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
-				<buildTargets>
-					<target name="clean" path="arp_core" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-						<buildCommand>make</buildCommand>
-						<buildTarget>clean</buildTarget>
-						<stopOnError>true</stopOnError>
-						<useDefaultCommand>true</useDefaultCommand>
-						<runAllBuilders>true</runAllBuilders>
-					</target>
-					<target name="clean" path="arp_hml" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-						<buildCommand>make</buildCommand>
-						<buildTarget>clean</buildTarget>
-						<stopOnError>true</stopOnError>
-						<useDefaultCommand>true</useDefaultCommand>
-						<runAllBuilders>true</runAllBuilders>
-					</target>
-					<target name="make" path="arp_hml" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-						<buildCommand>make</buildCommand>
-						<buildArguments/>
-						<buildTarget>make</buildTarget>
-						<stopOnError>true</stopOnError>
-						<useDefaultCommand>true</useDefaultCommand>
-						<runAllBuilders>true</runAllBuilders>
-					</target>
-					<target name="arp_core" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-						<buildCommand>rosmake</buildCommand>
-						<buildArguments>arp_core</buildArguments>
-						<stopOnError>true</stopOnError>
-						<useDefaultCommand>false</useDefaultCommand>
-						<runAllBuilders>true</runAllBuilders>
-					</target>
-					<target name="arp_hml" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-						<buildCommand>rosmake</buildCommand>
-						<buildArguments>arp_hml</buildArguments>
-						<stopOnError>true</stopOnError>
-						<useDefaultCommand>false</useDefaultCommand>
-						<runAllBuilders>true</runAllBuilders>
-					</target>
-					<target name="arp_master" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-						<buildCommand>rosmake</buildCommand>
-						<buildArguments>arp_master</buildArguments>
-						<buildTarget>arp_master</buildTarget>
-						<stopOnError>true</stopOnError>
-						<useDefaultCommand>false</useDefaultCommand>
-						<runAllBuilders>true</runAllBuilders>
-					</target>
-					<target name="ard" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-						<buildCommand>rosmake</buildCommand>
-						<buildArguments>ard</buildArguments>
-						<buildTarget/>
-						<stopOnError>true</stopOnError>
-						<useDefaultCommand>false</useDefaultCommand>
-						<runAllBuilders>true</runAllBuilders>
-					</target>
-				</buildTargets>
-			</storageModule>
 			<storageModule moduleId="scannerConfiguration">
 				<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 				<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile">
@@ -778,6 +729,89 @@
 						</scannerInfoProvider>
 					</profile>
 				</scannerConfigBuildInfo>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
+				<buildTargets>
+					<target name="make arp_core" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+						<buildCommand>rosmake</buildCommand>
+						<buildArguments>arp_core</buildArguments>
+						<buildTarget/>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+						<runAllBuilders>true</runAllBuilders>
+					</target>
+					<target name="make arp_hml" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+						<buildCommand>rosmake</buildCommand>
+						<buildArguments>arp_hml</buildArguments>
+						<buildTarget/>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+						<runAllBuilders>true</runAllBuilders>
+					</target>
+					<target name="make arp_master" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+						<buildCommand>rosmake</buildCommand>
+						<buildArguments>arp_master</buildArguments>
+						<buildTarget>make arp_master</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+						<runAllBuilders>true</runAllBuilders>
+					</target>
+					<target name="make all" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+						<buildCommand>rosmake</buildCommand>
+						<buildArguments>ard</buildArguments>
+						<buildTarget/>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+						<runAllBuilders>true</runAllBuilders>
+					</target>
+					<target name="make arp_rlu" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+						<buildCommand>rosmake</buildCommand>
+						<buildArguments>arp_rlu</buildArguments>
+						<buildTarget/>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+						<runAllBuilders>true</runAllBuilders>
+					</target>
+					<target name="make arp_ods" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+						<buildCommand>rosmake</buildCommand>
+						<buildArguments>arp_ods</buildArguments>
+						<buildTarget/>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+						<runAllBuilders>true</runAllBuilders>
+					</target>
+					<target name="install all on beta" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+						<buildCommand>/opt/ros/ard/default/script/install_target.sh</buildCommand>
+						<buildArguments>ard beta</buildArguments>
+						<buildTarget/>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>false</useDefaultCommand>
+						<runAllBuilders>true</runAllBuilders>
+					</target>
+					<target name="clean" path="arp_hml" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+						<buildCommand>make</buildCommand>
+						<buildArguments/>
+						<buildTarget>clean</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>true</useDefaultCommand>
+						<runAllBuilders>true</runAllBuilders>
+					</target>
+					<target name="make" path="arp_hml" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+						<buildCommand>make</buildCommand>
+						<buildTarget>make</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>true</useDefaultCommand>
+						<runAllBuilders>true</runAllBuilders>
+					</target>
+					<target name="clean" path="arp_core" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+						<buildCommand>make</buildCommand>
+						<buildArguments/>
+						<buildTarget>clean</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>true</useDefaultCommand>
+						<runAllBuilders>true</runAllBuilders>
+					</target>
+				</buildTargets>
 			</storageModule>
 		</cconfiguration>
 	</storageModule>

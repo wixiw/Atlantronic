@@ -1,4 +1,6 @@
 #include "Localizator.hpp"
+#include <ros/ros.h>
+#include <tf/transform_broadcaster.h>
 
 using namespace arp_math;
 using namespace arp_core;
@@ -8,26 +10,20 @@ Localizator::Localizator():
 	nh(),
 	odo_sub(),
 	pose_pub(),
+	odom_pub(),
+	odom_tf_pub(),
 	respawn_srv(),
 	init_srv(),
 	last_odo_left(0.0),
 	last_odo_right(0.0),
-	last_time(),
-	duration(),
-	trans(),
-	orient(0.0)
+	last_time(0.0),//initialized at a non valid valid on purposes
+	trans(Vector2(0.0, 0.0)),
+	orient(Rotation2(0.0))
 {
 	odo_sub = nh.subscribe("Protokrot/odo", 1, &Localizator::odoCallback, this);
 	pose_pub = nh.advertise<Pose>("Localizator/pose", 1);
+	odom_pub = nh.advertise<nav_msgs::Odometry>("Localizator/odomRos", 1);
 	respawn_srv = nh.advertiseService("Localizator/respawn", &Localizator::respawnCallback, this);
-
-
-	// Initialize
-	trans = Vector2(0.0, 0.0);
-	orient = Rotation2(0.0);
-	last_time = ros::WallTime::now();
-	last_odo_left = 0.0;
-	last_odo_right = 0.0;
 
     // Parameters
     nh.getParam("/Protokrot/BASE_LINE", BASE_LINE);
@@ -45,43 +41,61 @@ bool Localizator::respawnCallback(Spawn::Request& req, Spawn::Response& res)
 	trans.x() = req.x;
 	trans.y() = req.y;
 	orient = arp_math::Rotation2(req.theta);
-	last_time = ros::WallTime::now();
-	last_odo_left = 0.0;
-	last_odo_right = 0.0;
-
-
+	//set time to be unvalid so the odoCallback will reinitiliaze
+	last_time = ros::Time(0.0);
 
 	return true;
 }
 
 void Localizator::odoCallback(const OdoConstPtr& o)
 {
-	ros::WallTime t = ros::WallTime::now();
-	double dt = (t - last_time).toSec();
+	double dt;
+	double odo_left, odo_right;
+	double lin_vel,ang_vel;
+	double vx,vy;
 
 	// Récupération des données odo
-	double odo_left  = o->odo_left;
-	double odo_right = o->odo_right;
+	ros::Time t = ros::Time::now();
+	odo_left  = o->odo_left;
+	odo_right = o->odo_right;
 
-	// Calcul des vitesses odo
-	double v_left  = (odo_left  - last_odo_left ) / dt;
-	double v_right = (odo_right - last_odo_right) / dt;
-	double lin_vel = 0.25 * ( v_right + v_left ) * WHEEL_DIAMETER;
-	double ang_vel = 0.50 * ( v_right - v_left ) * WHEEL_DIAMETER / BASE_LINE;
+	dt = (t - last_time).toSec();
 
-	// Calcul de la position réelle
-	orient = orient * arp_math::Rotation2(ang_vel * dt);
-	arp_math::Vector2 delta_trans = lin_vel * dt * arp_math::Vector2(1.0, 0.0);
-	trans += orient * delta_trans;
+	if( !last_time.isZero() && dt >0)
+	{
+		
 
-	// Publication de la position estimée
-	Pose pose;
-	pose.theta = orient.angle();
-	pose.x = trans.x();
-	pose.y = trans.y();
-	pose.linear_velocity = lin_vel;
-	pose.angular_velocity = ang_vel;
-	pose_pub.publish(pose);
+		// Calcul des vitesses odo
+		double dleft  = odo_left  - last_odo_left ;
+		double dright = odo_right - last_odo_right;
+		double dl = 0.25 * ( dright + dleft ) * WHEEL_DIAMETER;
+		double dth = 0.50 * ( dright - dleft ) * WHEEL_DIAMETER / BASE_LINE;
+		lin_vel = dl/dt;
+		ang_vel = dth/dt;
+
+		// Calcul de la position réelle
+		orient = orient * arp_math::Rotation2(dth);
+		arp_math::Vector2 delta_trans = dl * arp_math::Vector2(1.0, 0.0);
+		vx = (orient * delta_trans).x()/dt;
+		vy = (orient * delta_trans).y()/dt;
+		trans += orient * delta_trans;
+	}
+	else
+	{
+		ROS_INFO("Initialiaze odometry");
+		//Last time is going to be initiliaze under to now
+		//Last odo values will have current values
+		//position is unchanged
+		//speed are considered as null
+		lin_vel = 0;
+		ang_vel = 0;
+		vx = 0;
+		vy = 0;
+	}
+
+	publishTransform(t);
+	publishOdomTopic(t,vx,vy,ang_vel);
+	publishPoseTopic(t,lin_vel,ang_vel);
 
 	// Buffer
 	last_time = t;
@@ -89,3 +103,54 @@ void Localizator::odoCallback(const OdoConstPtr& o)
 	last_odo_left  = odo_left;
 }
 
+void Localizator::publishTransform( const ros::Time t)
+{
+	//first, we'll publish the transform over tf
+	geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(orient.angle());
+    geometry_msgs::TransformStamped odom_trans;
+    odom_trans.header.stamp = t;
+    odom_trans.header.frame_id = "world";
+    odom_trans.child_frame_id = "base_link";
+
+    odom_trans.transform.translation.x = trans.x();
+    odom_trans.transform.translation.y = trans.y();
+    odom_trans.transform.translation.z = 0.0;
+    odom_trans.transform.rotation = odom_quat;
+    //send the transform
+    odom_tf_pub.sendTransform(odom_trans);
+}
+
+void Localizator::publishOdomTopic( const ros::Time t, const double vx, const double vy, const double vth)
+{
+	nav_msgs::Odometry odom;
+    odom.header.stamp = t;
+    odom.header.frame_id = "Localizator/pose";
+	geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(orient.angle());
+
+    //set the position
+    odom.pose.pose.position.x = trans.x();
+    odom.pose.pose.position.y = trans.y();
+    odom.pose.pose.position.z = 0.0;
+    odom.pose.pose.orientation = odom_quat;
+
+    //set the velocity
+    odom.child_frame_id = "base_link";
+    odom.twist.twist.linear.x = vx;
+    odom.twist.twist.linear.y = vy;
+    odom.twist.twist.angular.z = vth;
+
+    //publish the message
+    pose_pub.publish(odom);
+}
+
+void Localizator::publishPoseTopic( const ros::Time t, const double vl, const double vth)
+{
+	// Publication de la position estimée
+	Pose pose;
+	pose.theta = orient.angle();
+	pose.x = trans.x();
+	pose.y = trans.y();
+	pose.linear_velocity = vl;
+	pose.angular_velocity = vth;
+	pose_pub.publish(pose);
+}

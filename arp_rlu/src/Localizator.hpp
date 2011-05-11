@@ -8,14 +8,13 @@
 #ifndef ARP_MASTER_LOCALIZATOR_HPP
 #define ARP_MASTER_LOCALIZATOR_HPP
 
-#include "ros/ros.h"
+#include <ros/ros.h>
+#include <tf/transform_broadcaster.h>
+#include <nav_msgs/Odometry.h>
 
 #include <arp_core/Odo.h>
 #include <arp_core/Pose.h>
 #include <arp_core/Spawn.h>
-
-#include <sstream>
-
 #include "math/Geometry.hpp"
 
 using namespace arp_core;
@@ -23,7 +22,7 @@ using namespace arp_core;
 namespace arp_rlu
 {
   /**
-  * \ingroup arp_master
+  * \ingroup arp_rlu
   *
   * \class Localizator
   *
@@ -60,6 +59,16 @@ namespace arp_rlu
     ros::Publisher     pose_pub;
 
     /**
+    * Used to publish on "Localizator/odomRos"
+    */
+    ros::Publisher     odom_pub;
+
+    /**
+    * Used to publish Localizator's transforms
+    */
+    tf::TransformBroadcaster odom_tf_pub;
+
+    /**
     * Used to provide a reset service
     */
     ros::ServiceServer respawn_srv;
@@ -82,12 +91,7 @@ namespace arp_rlu
     /**
     * time of last update
     */
-    ros::WallTime last_time;
-
-    /**
-    * duration since last update (for integration)
-    */
-    ros::WallDuration duration;
+    ros::Time last_time;
 
     /**
     * estimated translation
@@ -100,7 +104,7 @@ namespace arp_rlu
     arp_math::Rotation2 orient;
 
     /**
-    * these are ros param. see .launch for more info
+    * these are ros param. see arp_master/script/launch/rosparam.launch for more info
     */
     double BASE_LINE;
     double WHEEL_DIAMETER;
@@ -116,6 +120,30 @@ namespace arp_rlu
     * \returns succes boolean
     */
     void odoCallback(const arp_core::OdoConstPtr& o);
+
+    /**
+     * Publish the computed transformation into the odometry tf frame
+     * param t : time of the measure
+     */
+    void publishTransform( const ros::Time t);
+
+    /**
+     * Publish the computed pose into the odometry topic
+     * param t : time of the measure
+     * param vx : speed along x axis
+     * param vy : speed along y axis
+     * param vth : angular speed
+     */
+    void publishOdomTopic( const ros::Time t, const double vx, const double vy, const double vth);
+
+    /**
+     * Publish the computed pose into the pose topic
+     * param t : time of the measure
+     * param vx : speed along robot x axis
+     * param vth : angular speed
+     */
+    void publishPoseTopic( const ros::Time t, const double vl, const double vth);
+
 
   };
 }

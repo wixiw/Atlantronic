@@ -195,7 +195,7 @@ void StratA::shutDown()
 
 void StratA::obstacleCallback(const ObstacleConstPtr& c)
 {
-  if( c->detected > 0.5 )
+  if( c->detected > 0.0 )
   {
     if(ros::WallTime::now() - last_obstacle_time_ > ros::WallDuration(blinding_period_))
     {
