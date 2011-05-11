@@ -15,18 +15,29 @@ class Initialisation(smach.StateMachine):
         smach.StateMachine.__init__(self,outcomes=['endInitialisation'])
         with self:
             smach.StateMachine.add('Init', Init(),
+                                   transitions={'initstateok':'WaitForStart'})
+            smach.StateMachine.add('WaitForStart', WaitForStart(),
                                    transitions={'start':'endInitialisation'})
-
+    
  
 class Init(CyclicState):
     def __init__(self):
-        CyclicState.__init__(self, outcomes=['start'])
+        CyclicState.__init__(self, outcomes=['initstateok'])
 
     def executeTransitions(self):
-       rospy.loginfo("eb beh je suis dans la transition de init")
-       rospy.loginfo("color="+Inputs.color)
-       if Inputs.start==1:
-           return 'start'
-
+       # the only condition verified to go on is that the start is not put
+       if Inputs.getstart()==1:
+           return 'initstateok'
+        
+class WaitForStart(CyclicState):
+    def __init__(self):
+        CyclicState.__init__(self, outcomes=['start'])
+    
+    def executeTransitions(self):
+       # the only condition verified to go on is that the start is not put
+       if Inputs.getstart()==0:
+            return 'start'
+        
     def executeOut(self):
-        rospy.loginfo("color="+Inputs.color)
+        Data.color=Inputs.getcolor()
+    

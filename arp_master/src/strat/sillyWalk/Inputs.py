@@ -35,12 +35,9 @@ class Inputs:
     
     @staticmethod
     def link():
-        obstacleInput= Inputs.createInput("obstacle", Obstacle)
-        Inputs.obstacle=obstacleInput.data.detected
-        colorInput=Input("/Protokrot/color", StartColor)
-        Inputs.color=colorInput.data.color
-        startInput=Input("/Protokrot/start", Start)
-        Inputs.start=startInput.data.go
+        Inputs.obstacleInput= Inputs.createInput("obstacle", Obstacle)
+        Inputs.colorInput=Inputs.createInput("Protokrot/color", StartColor)
+        Inputs.startInput=Inputs.createInput("Protokrot/start", Start)
     
     @staticmethod
     def createInput(name,type):
@@ -52,6 +49,15 @@ class Inputs:
     def update():
         for input in Inputs.inputList:
                 input.update()
+    @staticmethod
+    def getcolor():
+        return Inputs.colorInput.data.color
     
+    @staticmethod
+    def getstart():
+        return Inputs.startInput.data.go
     
+    @staticmethod
+    def getobstacle():
+        return Inputs.obstacleInput.data.detected
   
