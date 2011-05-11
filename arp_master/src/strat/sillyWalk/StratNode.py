@@ -12,6 +12,11 @@ from arp_core.msg import Start
 #import the other strat modules    
 import CyclicState
 import Strat_Initialisation
+import Strat_StartSequence
+import Strat_Opening
+import Strat_Middlegame
+import Strat_Endgame
+import Strat_Unitialisation
 
 from Inputs import Inputs
 
@@ -61,8 +66,9 @@ class MainStateMachine(smach.StateMachine):
         smach.StateMachine.__init__(self,outcomes=['end'])
         with self:
             smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
-                                   transitions={'endInitialisation':'end'})
-
+                                   transitions={'endInitialisation':'StartSequence'})
+            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(),
+                                   transitions={'gogogo':'end'})
 
 
    

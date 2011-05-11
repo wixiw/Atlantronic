@@ -8,6 +8,7 @@ import smach_msgs
 
 from CyclicState import CyclicState
 from Inputs import Inputs
+from Data import Data
 
 
 class Initialisation(smach.StateMachine):
@@ -34,7 +35,6 @@ class WaitForStart(CyclicState):
         CyclicState.__init__(self, outcomes=['start'])
     
     def executeTransitions(self):
-       # the only condition verified to go on is that the start is not put
        if Inputs.getstart()==0:
             return 'start'
         
