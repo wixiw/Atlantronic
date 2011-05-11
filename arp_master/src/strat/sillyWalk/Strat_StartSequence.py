@@ -20,10 +20,8 @@ class StartSequence(smach.StateMachine):
         smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
         with self:
             smach.StateMachine.add('Recal_petit_bord',
-                      SimpleActionState('MotionControl',
-                                        OrderAction,
-                                        goal_cb=Recal_petit_bord_goalcb),
-                      transitions={'succeeded':'Retour_petit_bord','preempted':'problem','aborted':'problem'})
+                      Recal_petit_bord(),
+                      transitions={'succeeded':'Retour_petit_bord','aborted':'problem'})
             
             smach.StateMachine.add('Retour_petit_bord',
                       Retour_petit_bord(),
@@ -33,20 +31,14 @@ class StartSequence(smach.StateMachine):
                                    transitions={'start':'gogogo'})
     
             
-def Recal_petit_bord_goalcb(userdata, goal):
-    goal=OrderGoal()
-    goal.x_des=0.000
-    goal.y_des=0.000
-    goal.theta_des=0.000
-    goal.move_type='POINTCAP'
-    goal.reverse=True
-    return goal
-        
+
+class Recal_petit_bord(CyclicActionState):
+    def createAction(self):
+       self.pointcap_reverse(0,0,0)
 
 class Retour_petit_bord(CyclicActionState):
     def createAction(self):
-       self.pointcap(0.5,1,0)
-        
+       self.cap(3.14/2)
         
 class WaitForMatch(CyclicState):
     def __init__(self):
