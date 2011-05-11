@@ -34,11 +34,11 @@ class StartSequence(smach.StateMachine):
 
 class Recal_petit_bord(CyclicActionState):
     def createAction(self):
-       self.pointcap_reverse(0,0,0)
+       self.forward(1.0)
 
 class Retour_petit_bord(CyclicActionState):
     def createAction(self):
-       self.cap(3.14/2)
+       self.cap(3.14/2.0)
         
 class WaitForMatch(CyclicState):
     def __init__(self):

@@ -6,6 +6,8 @@ import rospy
 from arp_core.msg import Obstacle
 from arp_core.msg import StartColor
 from arp_core.msg import Start
+from arp_core.msg import Pose
+
 
 ########################### INPUT CLASS
 # this is used to have a buffer on inputs, so that they are not changing during the mainloop
@@ -38,6 +40,7 @@ class Inputs:
         Inputs.obstacleInput= Inputs.createInput("obstacle", Obstacle)
         Inputs.colorInput=Inputs.createInput("Protokrot/color", StartColor)
         Inputs.startInput=Inputs.createInput("Protokrot/start", Start)
+        Inputs.poseInput=Inputs.createInput("Localizator/pose", Pose)
     
     @staticmethod
     def createInput(name,type):
@@ -60,4 +63,18 @@ class Inputs:
     @staticmethod
     def getobstacle():
         return Inputs.obstacleInput.data.detected
+    
+    @staticmethod
+    def getx():
+        return Inputs.poseInput.data.x
+    
+    @staticmethod
+    def gety():
+        return Inputs.poseInput.data.y
+    
+    @staticmethod
+    def gettheta():
+        return Inputs.poseInput.data.theta
+    
+    
   

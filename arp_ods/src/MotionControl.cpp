@@ -171,8 +171,8 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal)
         if (distance_error < DISTANCE_ACCURACY && abs(angle_error)
                 < ANGLE_ACCURACY)
         {
-            ROS_INFO(">>>>>>>>>>>>>>>>> %s: Position Reached",
-                    action_name_.c_str());
+            ROS_INFO(">>>>>>>>>>>>>>>>> %s: Position Reached :  x_des=%.3f, y_des=%.3f, theta_des=%.3f",
+                    action_name_.c_str(),trans_.x(), trans_.y(), orient_.angle());
             success = true;
             break;
         }
