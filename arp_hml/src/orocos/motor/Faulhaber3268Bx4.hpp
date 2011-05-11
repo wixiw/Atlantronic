@@ -13,9 +13,9 @@
 #ifndef FAULHABER3268BX4_HPP_
 #define FAULHABER3268BX4_HPP_
 
-#include "hml/can/CanOpenNode.hpp"
-#include "hml/motor/ArdMotorItf.hpp"
-#include "hml/can/ard_can_types.hpp"
+#include "orocos/can/CanOpenNode.hpp"
+#include "orocos/motor/ArdMotorItf.hpp"
+#include "orocos/can/ard_can_types.hpp"
 #include <sys/time.h>
 
 using namespace arp_core;

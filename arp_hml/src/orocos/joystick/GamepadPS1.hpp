@@ -8,7 +8,7 @@
 #ifndef GAMEPAD_PS1_HPP_
 #define GAMEPAD_PS1_HPP_
 
-#include "hml/joystick/Joystick.hpp"
+#include "orocos/joystick/Joystick.hpp"
 
 namespace arp_hml
 {

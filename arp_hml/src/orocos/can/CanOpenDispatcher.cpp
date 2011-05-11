@@ -6,7 +6,7 @@
  */
 
 #include "CanOpenDispatcher.hpp"
-#include "hml/can/dictionnary/CanARD.h"
+#include "orocos/can/dictionnary/CanARD.h"
 #include <rtt/extras/SlaveActivity.hpp>
 
 //TODO WLA workaround : impossible de logguer en dehors d'un composant ?

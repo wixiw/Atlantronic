@@ -7,8 +7,8 @@
 
 #include "Faulhaber3268Bx4.hpp"
 #include <ocl/Component.hpp>
-#include "hml/can/dictionnary/CanARD.h"
-#include "hml/can/wrappers/CanARDDictionnaryAccessor.hpp"
+#include "orocos/can/dictionnary/CanARD.h"
+#include "orocos/can/wrappers/CanARDDictionnaryAccessor.hpp"
 #include <math/math.hpp>
 
 using namespace arp_hml;

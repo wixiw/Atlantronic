@@ -8,8 +8,8 @@
 #ifndef CANOPENNODE_HPP_
 #define CANOPENNODE_HPP_
 
-#include "hml/taskcontexts/HmlTaskContext.hpp"
-#include "hml/can/ard_can_types.hpp"
+#include "orocos/taskcontexts/HmlTaskContext.hpp"
+#include "orocos/can/ard_can_types.hpp"
 #include <canfestival/canfestival.h>
 
 using namespace arp_core;

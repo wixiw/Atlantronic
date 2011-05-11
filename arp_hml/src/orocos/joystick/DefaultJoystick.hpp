@@ -8,7 +8,7 @@
 #ifndef DEFAULT_JOYSTICK_HPP_
 #define DEFAULT_JOYSTICK_HPP_
 
-#include "hml/joystick/Joystick.hpp"
+#include "orocos/joystick/Joystick.hpp"
 
 #include <rtt/TaskContext.hpp>
 #include <rtt/Port.hpp>

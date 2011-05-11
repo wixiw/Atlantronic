@@ -10,7 +10,7 @@
 #define WOODHEAD_HPP_
 
 //include orocos
-#include "hml/can/CanOpenNode.hpp"
+#include "orocos/can/CanOpenNode.hpp"
 
 using namespace arp_core;
 

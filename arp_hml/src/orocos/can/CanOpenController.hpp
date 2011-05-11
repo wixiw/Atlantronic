@@ -8,9 +8,9 @@
 #ifndef CANOPEN_CONTROLLER_HPP_
 #define CANOPEN_CONTROLLER_HPP_
 
-#include "hml/taskcontexts/HmlTaskContext.hpp"
-#include "hml/can/ard_can_types.hpp"
-#include "hml/can/CanOpenDispatcher.hpp"
+#include "orocos/taskcontexts/HmlTaskContext.hpp"
+#include "orocos/can/ard_can_types.hpp"
+#include "orocos/can/CanOpenDispatcher.hpp"
 
 using namespace arp_core;
 

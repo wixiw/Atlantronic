@@ -10,7 +10,7 @@
 
 #include <taskcontexts/ARDTaskContext.hpp>
 #include <canfestival/canfestival.h>
-#include "hml/can/ard_DS402.hpp"
+#include "orocos/can/ard_DS402.hpp"
 
 
 using namespace arp_core;

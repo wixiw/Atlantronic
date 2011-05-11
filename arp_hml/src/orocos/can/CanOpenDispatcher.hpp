@@ -15,7 +15,7 @@
 
 #include <rtt/Port.hpp>
 #include <rtt/TaskContext.hpp>
-#include "hml/can/ard_can_types.hpp"
+#include "orocos/can/ard_can_types.hpp"
 
 
 namespace arp_hml

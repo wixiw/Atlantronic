@@ -7,7 +7,7 @@
 
 #include <ocl/Component.hpp>
 
-#include "hml/can/CanOpenNode.hpp"
+#include "orocos/can/CanOpenNode.hpp"
 #include <rtt/scripting/ProgramInterface.hpp>
 
 using namespace arp_hml;

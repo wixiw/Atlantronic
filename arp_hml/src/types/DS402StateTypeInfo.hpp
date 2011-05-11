@@ -1,5 +1,5 @@
 #include <rtt/types/StructTypeInfo.hpp>
-#include "hml/can/ard_DS402.hpp"
+#include "orocos/can/ard_DS402.hpp"
 
   namespace boost {
     namespace serialization {

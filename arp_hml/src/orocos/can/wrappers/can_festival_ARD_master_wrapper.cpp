@@ -4,7 +4,7 @@
  *  in C++, we need this wrapper
  **********************************************************************/
 
-#include "hml/can/wrappers/can_festival_ARD_master_wrapper.hpp"
+#include "orocos/can/wrappers/can_festival_ARD_master_wrapper.hpp"
 
 //#define DEBUG_ON
 

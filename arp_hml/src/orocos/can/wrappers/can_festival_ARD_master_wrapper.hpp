@@ -8,8 +8,8 @@
 #define CAN_FESTIVAL_ARD_MASTER_WRAPPER_HPP_
 
 #include <rtt/Port.hpp>
-#include "hml/can/dictionnary/CanARD.h"
-#include "hml/can/ard_can_types.hpp"
+#include "orocos/can/dictionnary/CanARD.h"
+#include "orocos/can/ard_can_types.hpp"
 
 extern string                          canFestivalWrapperName;
 extern RTT::OutputPort<e_nodeState>    canFestival_outNMTState;

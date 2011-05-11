@@ -25,7 +25,7 @@
 #define PCM3362_HPP_
 
 //include orocos
-#include "hml/taskcontexts/HmlTaskContext.hpp"
+#include "orocos/taskcontexts/HmlTaskContext.hpp"
 
 using namespace arp_core;
 

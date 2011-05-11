@@ -9,7 +9,7 @@
 #define JOYSTICK_HPP_
 
 //include orocos
-#include "hml/taskcontexts/HmlTaskContext.hpp"
+#include "orocos/taskcontexts/HmlTaskContext.hpp"
 
 //includes pour le joystick
 #include <linux/input.h>

@@ -10,7 +10,8 @@ configure_file(
 #    EDIT BELOW THIS LINE AND UNTIL NEXT LINE FOR A NEW PROJECT
 
 
-add_subdirectory(hml)
+add_subdirectory(orocos)
+add_subdirectory(ros)
 add_subdirectory(simulation)
 add_subdirectory(types)
 

@@ -19,7 +19,7 @@
 #ifndef PROTOKROTITF_HPP_
 #define PROTOKROTITF_HPP_
 
-#include "hml/taskcontexts/HmlTaskContext.hpp"
+#include "orocos/taskcontexts/HmlTaskContext.hpp"
 #include <arp_core/DifferentialCommand.h>
 #include <arp_core/Odo.h>
 #include <arp_core/Start.h>

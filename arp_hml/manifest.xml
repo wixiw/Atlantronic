@@ -14,5 +14,6 @@
 	<depend package="std_msgs" />
 	<rosdep name="wxwidgets"/>
 	<depend package="roscpp"/>
+	<depend package="tf" />
 </package>
 

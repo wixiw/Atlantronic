@@ -6,7 +6,7 @@
  */
 
 #include "CanARDDictionnaryAccessor.hpp"
-#include "hml/can/dictionnary/CanARD.h"
+#include "orocos/can/dictionnary/CanARD.h"
 #include <iostream>
 
 using namespace std;

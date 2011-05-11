@@ -9,7 +9,7 @@
 #include <ocl/Component.hpp>
 
 #include "CanOpenController.hpp"
-#include "hml/can/wrappers/can_festival_ARD_master_wrapper.hpp"
+#include "orocos/can/wrappers/can_festival_ARD_master_wrapper.hpp"
 
 using namespace arp_hml;
 using namespace arp_core;

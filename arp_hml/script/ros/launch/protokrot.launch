@@ -2,12 +2,15 @@
 <launch>
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
 	
-	<node name="hokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="false" output="screen">
-    	<param name="calibrate_time" type="bool" value="false"/> <!-- Starts up faster, but timestamps will be inaccurate. --> 
-    	<param name="port" type="string" value="/dev/ttyACM0"/>  <!-- Set the port to connect to here -->
-  		<param name="intensity" type="bool" value="false"/> <!-- ?? -->
+	<node name="Hokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="false" output="screen">
+    	<param name="calibrate_time" type="bool" value="false"/> 
+    	<param name="port" type="string" value="/dev/ttyACM0"/> 
+  		<param name="intensity" type="bool" value="false"/> 
   	</node>
-  	
+	<node 	name="HokuyoTfBroadcaster"
+			pkg="tf" 
+			type="static_transform_publisher" 
+			args="0.240 0.080 0 0 0 0 base_link laser 100" />
 	<node 	name="ArpHml" 
 			pkg="ocl" 
 			type="deployer-gnulinux" 
