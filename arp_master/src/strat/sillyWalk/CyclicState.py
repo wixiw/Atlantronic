@@ -7,6 +7,7 @@ import smach_ros
 import smach_msgs
 
 from Inputs import Inputs
+from Data import Data
 
 
 class CyclicState(smach.StateMachine):
@@ -14,7 +15,6 @@ class CyclicState(smach.StateMachine):
         smach.StateMachine.__init__(self,outcomes)
         
     def execute(self,userdata):
-        stateMachineRate=rospy.Rate(1)
         self.executeIn()
         while(not rospy.is_shutdown()):
             Inputs.update()
@@ -23,7 +23,7 @@ class CyclicState(smach.StateMachine):
             if trans!=None:
                 self.executeOut()
                 return trans
-            stateMachineRate.sleep()
+            Data.stateMachineRate.sleep()
         rospy.logerr("boucle d'etat cassee par le shutdown")
         
     #si In, Out et While ne sont pas declarees par l'etat derive alors elles ne feront rien

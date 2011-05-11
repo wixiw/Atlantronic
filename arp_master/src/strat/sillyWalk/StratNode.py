@@ -19,6 +19,7 @@ import Strat_Endgame
 import Strat_Uninitialisation
 
 from Inputs import Inputs
+from Data import Data
 
 ###########################  TEMPORAL BEHAVIOR
 
@@ -26,14 +27,14 @@ class StratNode():
     
     def __init__(self):
         
+        #creation of the node
         rospy.init_node('StratNode')
-        stateMachineRate =rospy.Rate(1)
-        
+        #creation of the cadencer for all states
+        Data.stateMachineRate =rospy.Rate(1)
+        #linking of the input in Inputs to the topics
         Inputs.link()
         #creation of statemachine
         sm=MainStateMachine()
-        #sis = smach_ros.IntrospectionServer('server_name', sm, '/SM_ROOT')
-        #sis.start()
     
         #welcome message
         rospy.loginfo("******************************************************")
@@ -53,11 +54,6 @@ class StratNode():
         sis.stop()
     
     
-############################# MAIN LOOP
-def mainloop():
-    global obstacle
-    rospy.loginfo("obstacle: %i"%obstacle.data.detected)
-    rospy.loginfo("callback appelee: %i fois"%obstacle.ncall)
     
     
 ############################## STATE MACHINE
