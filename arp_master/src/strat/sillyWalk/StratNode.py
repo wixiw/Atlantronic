@@ -16,7 +16,7 @@ import Strat_StartSequence
 import Strat_Opening
 import Strat_Middlegame
 import Strat_Endgame
-import Strat_Unitialisation
+import Strat_Uninitialisation
 
 from Inputs import Inputs
 
@@ -68,7 +68,7 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
                                    transitions={'endInitialisation':'StartSequence'})
             smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(),
-                                   transitions={'gogogo':'end'})
+                                   transitions={'gogogo':'end','problem':'end'})
 
 
    
