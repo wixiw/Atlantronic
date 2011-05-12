@@ -125,7 +125,6 @@ void ProtokrotItf::writeDifferentialCmd()
 {
     DifferentialCommand cmd;
 	struct timespec now;
-	struct timespec delay;
 	double delayInS;
 
     if(NewData==inDifferentialCmd.read(cmd))
@@ -147,8 +146,7 @@ void ProtokrotItf::writeDifferentialCmd()
     {
     	//si on n'a pas reçu de commande, au bout d'une seconde on "met les freins"
     	clock_gettime(CLOCK_MONOTONIC, &now);
-    	delta_t(&delay, &m_lastCmdTimestamp, &now);
-    	delayInS = delay.tv_sec+(double)(delay.tv_nsec)/1E9;
+    	delayInS = delta_t(m_lastCmdTimestamp, now);
     	if( delayInS >= propSpeedCmdMaxDelay )
         {
             attrCurrentCmd.v_left = 0;
@@ -228,16 +226,3 @@ void ProtokrotItf::readSpeed()
 	}
 }
 
-void ProtokrotItf::delta_t(struct timespec *interval, struct timespec *begin, struct timespec *now)
-{
-	interval->tv_nsec = now->tv_nsec - begin->tv_nsec; /* Subtract 'decimal fraction' first */
-	if(interval->tv_nsec < 0 )
-	{
-		interval->tv_nsec += 1000000000; /* Borrow 1sec from 'tv_sec' if subtraction -ve */
-		interval->tv_sec = now->tv_sec - begin->tv_sec - 1; /* Subtract whole number of seconds and return 1 */
-	}
-	else
-	{
-		interval->tv_sec = now->tv_sec - begin->tv_sec; /* Subtract whole number of seconds and return 0 */
-	}
-}

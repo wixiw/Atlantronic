@@ -40,6 +40,12 @@ namespace arp_hml
 class PhysicsSimuRobot
 {
 public:
+	/**
+	 * Nécessaire pour éviter ;
+	 * http://eigen.tuxfamily.org/dox/TopicStructHavingEigenMembers.html
+	 */
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
     /**
      * Constructor
      * \param nh NodeHandle of Physical simulator

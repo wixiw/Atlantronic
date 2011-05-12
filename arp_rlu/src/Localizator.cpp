@@ -43,6 +43,11 @@ bool Localizator::respawnCallback(Spawn::Request& req, Spawn::Response& res)
 	orient = arp_math::Rotation2(req.theta);
 	//set time to be unvalid so the odoCallback will reinitiliaze
 	last_time = ros::Time(0.0);
+	ros::Time t = ros::Time::now();
+
+	publishTransform(t);
+	publishOdomTopic(t,0,0,0);
+	publishPoseTopic(t,0,0);
 
 	return true;
 }
@@ -74,8 +79,8 @@ void Localizator::odoCallback(const OdoConstPtr& o)
 		ang_vel = dth/dt;
 
 		// Calcul de la position réelle
-		orient = orient * arp_math::Rotation2(dth);
-		arp_math::Vector2 delta_trans = dl * arp_math::Vector2(1.0, 0.0);
+		orient = normalizeAngle(orient * Rotation2(dth));
+		Vector2 delta_trans = dl * Vector2(1.0, 0.0);
 		vx = (orient * delta_trans).x()/dt;
 		vy = (orient * delta_trans).y()/dt;
 		trans += orient * delta_trans;
@@ -124,7 +129,7 @@ void Localizator::publishOdomTopic( const ros::Time t, const double vx, const do
 {
 	nav_msgs::Odometry odom;
     odom.header.stamp = t;
-    odom.header.frame_id = "Localizator/pose";
+    odom.header.frame_id = "Localizator/odomRos";
 	geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(orient.angle());
 
     //set the position
@@ -140,7 +145,7 @@ void Localizator::publishOdomTopic( const ros::Time t, const double vx, const do
     odom.twist.twist.angular.z = vth;
 
     //publish the message
-    pose_pub.publish(odom);
+    odom_pub.publish(odom);
 }
 
 void Localizator::publishPoseTopic( const ros::Time t, const double vl, const double vth)

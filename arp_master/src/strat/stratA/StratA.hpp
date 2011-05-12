@@ -147,6 +147,11 @@ namespace arp_master
         ros::ServiceClient loc_spawn_;
 
         /**
+         * used to call spawn (reset) service of Laserator
+         */
+        ros::ServiceClient loclaser_spawn_;
+
+        /**
          * used to call spawn service of Simulator
          */
         ros::ServiceClient simu_spawn_;

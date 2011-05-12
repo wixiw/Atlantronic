@@ -15,7 +15,7 @@
 #include <arp_core/Odo.h>
 #include <arp_core/Pose.h>
 #include <arp_core/Spawn.h>
-#include "math/Geometry.hpp"
+#include "math/math.hpp"
 
 using namespace arp_core;
 

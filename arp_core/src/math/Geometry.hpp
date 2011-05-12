@@ -8,7 +8,6 @@
 #ifndef _ARPMATH_GEOMETRY_HPP_
 #define _ARPMATH_GEOMETRY_HPP_
 
-#include "math/math.hpp"
 #include <Eigen/Geometry>
 
 namespace arp_math

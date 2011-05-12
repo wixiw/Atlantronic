@@ -6,6 +6,7 @@
  */
 
 #include "Joystick.hpp"
+#include "math/math.hpp"
 #include <iostream>
 
 using namespace arp_hml;
@@ -21,10 +22,12 @@ Joystick::Joystick(const std::string& name) :
         propMinimalDriverVersion(0x020000),
         attrIsConnected(false),
         attrIsIdentityOk(false),
-        m_fd(-666)
+        m_fd(-666),
+        lastEventTime()
 {
     addProperty("propDevName",propDevName).doc("linux /dev file which represents the joystick");
     addProperty("propMinimalDriverVersion",propMinimalDriverVersion).doc("minimal linux joystick driver");
+    addProperty("propMaxNoEventDelay",propMaxNoEventDelay).doc("Maximal duration beetween 2 event to consider the joystick inactive");
 
     addOperation("ooGetJoystickName", &Joystick::getJoystickName, this, OwnThread );
     addOperation("ooIsJoystickConnected", &Joystick::isJoystickConnected, this, OwnThread );
@@ -32,6 +35,8 @@ Joystick::Joystick(const std::string& name) :
     addAttribute("attrIsConnected" , attrIsConnected);
     addAttribute("attrIsIdentityOk" , attrIsIdentityOk);
     addAttribute("attrFileDescriptor", m_fd);
+
+    clock_gettime(CLOCK_MONOTONIC, &lastEventTime);
 }
 
 Joystick::~Joystick()
@@ -80,6 +85,7 @@ void Joystick::updateHook()
         struct js_event js;
         while (read(m_fd, &js, sizeof(struct js_event)) == sizeof(struct js_event))
         {
+        	clock_gettime(CLOCK_MONOTONIC, &lastEventTime);
             switch ( js.type )
             {
                 case JS_EVENT_INIT:
@@ -258,3 +264,22 @@ void Joystick::initEvent( struct js_event js )
 {
     return;
 }
+
+
+bool Joystick::isJoystickAlive()
+{
+	bool res = false;
+	timespec now;
+	double duration;
+
+	clock_gettime(CLOCK_MONOTONIC, &now);
+	duration = arp_math::delta_t(lastEventTime,now);
+
+	if( duration > propMaxNoEventDelay )
+		res = false;
+	else
+		res = true;
+
+    return res;
+}
+

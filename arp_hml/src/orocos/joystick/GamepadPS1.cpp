@@ -33,11 +33,16 @@ Joystick(name)
     addPort("outButton9", outButton9).doc("Is true when \"select\" bouton 9 is pushed");
     addPort("outButton10", outButton10).doc("Is true when \"start\" bouton 10 is pushed");
 
-    addPort("outX",outX).doc("Value between [-1;1] proportionnal to X-axis direcitonnal pad");
-    addPort("outY",outY).doc("Value between [-1;1] proportionnal to Y-axis direcitonnal pad");
+    addPort("outPadX",outPadX).doc("Value between [-1;1] proportionnal to X-axis direcitonnal pad");
+    addPort("outPadY",outPadY).doc("Value between [-1;1] proportionnal to Y-axis direcitonnal pad");
 
-    addPort("outXYDistance",outXYDistance).doc("Distance of joystick from neutral position in [0;1.42]");
-    addPort("outXYAngle",outXYAngle).doc("Angle of joystick from X axis, positive to y in rad");
+    addPort("outPadXYDistance",outPadXYDistance).doc("Distance of joystick from neutral position in [0;1.42]");
+    addPort("outPadXYAngle",outPadXYAngle).doc("Angle of joystick from X axis, positive to y in rad");
+
+    addPort("outX1",outX1).doc("");
+    addPort("outY1",outY1).doc("");
+    addPort("outX2",outX2).doc("");
+    addPort("outY2",outY2).doc("");
 
     outButton1.write(false);
     outButton2.write(false);
@@ -49,10 +54,15 @@ Joystick(name)
     outTrigger8.write(false);
     outButton9.write(false);
     outButton10.write(false);
-    outX.write(0.0);
-    outY.write(0.0);
-    outXYDistance.write(0.0);
-    outXYAngle.write(0.0);
+    outPadX.write(0.0);
+    outPadY.write(0.0);
+    outPadXYDistance.write(0.0);
+    outPadXYAngle.write(0.0);
+    outX1.write(0.0);
+    outY1.write(0.0);
+    outX2.write(0.0);
+    outY2.write(0.0);
+
 }
 
 
@@ -61,13 +71,15 @@ bool GamepadPS1::checkIdentity()
 {
     bool res = false;
 
-    if( getJoystickName() != "Logitech Logitech(R) Precision(TM) Gamepad")
+    if( getJoystickName() == "Logitech Logitech(R) Precision(TM) Gamepad"
+    		||
+    	getJoystickName() == "Logitech Logitech Cordless RumblePad 2"	)
     {
-        res = false;
+        res = true;
     }
     else
     {
-        res = true;
+        res = false;
     }
 
     return res;
@@ -119,11 +131,23 @@ void GamepadPS1::axisEvent( struct js_event js )
 {
     switch (js.number)
     {
+        case 4:
+            outPadX.write( js.value>0 ? 1: js.value==0 ? 0 : -1);
+            break;
+        case 5:
+            outPadY.write( js.value>0 ? -1: js.value==0 ? 0 : 1 );
+            break;
         case 0:
-            outX.write( js.value>0 ? 1: js.value==0 ? 0 : -1);
+            outX1.write( double(js.value)/(2<<14) );
             break;
         case 1:
-            outY.write( js.value>0 ? -1: js.value==0 ? 0 : 1 );
+            outY1.write( double(js.value)/(2<<14) );
+            break;
+        case 2:
+            outX2.write( double(js.value)/(2<<14) );
+            break;
+        case 3:
+            outY2.write( double(js.value)/(2<<14) );
             break;
 
         default:
@@ -147,10 +171,14 @@ void GamepadPS1::initEvent( struct js_event js )
     outTrigger8.write(false);
     outButton9.write(false);
     outButton10.write(false);
-    outX.write(0.0);
-    outY.write(0.0);
-    outXYDistance.write(0.0);
-    outXYAngle.write(0.0);
+    outPadX.write(0.0);
+    outPadY.write(0.0);
+    outPadXYDistance.write(0.0);
+    outPadXYAngle.write(0.0);
+    outX1.write(0.0);
+    outY1.write(0.0);
+    outX2.write(0.0);
+    outY2.write(0.0);
 
     return;
 }
@@ -160,10 +188,18 @@ void GamepadPS1::updateHook()
 {
     Joystick::updateHook();
 
-    double lastX = outX.getLastWrittenValue();
-    double lastY = outY.getLastWrittenValue();
+    if( isJoystickAlive() )
+    {
+		double lastX = outPadX.getLastWrittenValue();
+		double lastY = outPadY.getLastWrittenValue();
 
-    outXYDistance.write(sqrt(lastX*lastX + lastY*lastY));
-    outXYAngle.write(atan2(lastY,lastX));
+		outPadXYDistance.write(sqrt(lastX*lastX + lastY*lastY));
+		outPadXYAngle.write(atan2(lastY,lastX));
+    }
+    else
+    {
+    	js_event js;
+    	initEvent(js);
+    }
 }
 

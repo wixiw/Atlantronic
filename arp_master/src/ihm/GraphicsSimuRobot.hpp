@@ -11,8 +11,6 @@
 #include <ros/ros.h>
 #include <boost/shared_ptr.hpp>
 
-#include "math/Geometry.hpp"
-
 #include <arp_core/Pose.h>
 #include <arp_master/SetPen.h>
 

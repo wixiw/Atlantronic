@@ -1,12 +1,23 @@
+#include <tf/transform_datatypes.h>
 #include "MotionControl.hpp"
+
+
 
 using namespace arp_math;
 using namespace arp_ods;
+using namespace nav_msgs;
+using namespace geometry_msgs;
 
 MotionControl::MotionControl(std::string name) :
     as_(nh_, name, boost::bind(&MotionControl::executeCB, this, _1), false),
-            action_name_(name), trans_(0.0, 0.0), orient_(0.0), orientLocal_(0.0), lin_vel_(0.0),
-            ang_vel_(0.0)
+            action_name_(name),
+            m_position(0.0,0.0),
+            m_transCallback(0.0,0.0),
+            m_cap(0.0),
+            m_orientCallback(0.0),
+            orientLocal_(0.0),
+            m_linearSpeedCmd(0.0),
+            m_angularSpeedCmd(0.0)
 
 {
     nh_.getParam("/arp_ods/DISTANCE_ACCURACY", DISTANCE_ACCURACY);
@@ -20,10 +31,13 @@ MotionControl::MotionControl(std::string name) :
     nh_.getParam("/arp_ods/RADIUS_FANTOM_ZONE", RADIUS_FANTOM_ZONE);
     nh_.getParam("/arp_ods/FANTOM_COEF", FANTOM_COEF);
 
-
     // Suscribers
-    pose_sub_ = nh_.subscribe("Localizator/pose", 1,
+    pose_sub_ = nh_.subscribe("Localizator/odomRos", 1,
             &MotionControl::poseCallback, this);
+    //TODO WLA test laserator
+    //pose_sub_WLA = nh_.subscribe("pose2D", 1,
+    //        &MotionControl::pose2DCallback, this);
+
     vel_pub_ = nh_.advertise<arp_core::Velocity> ("Command/velocity", 1);
 
     as_.start();
@@ -36,10 +50,20 @@ MotionControl::~MotionControl(void)
 {
 }
 
-void MotionControl::poseCallback(const PoseConstPtr& c)
+void MotionControl::poseCallback(OdometryConstPtr c)
 {
-    trans_ = Vector2(c->x, c->y);
-    orient_ = Rotation2(c->theta);
+	double x = c->pose.pose.position.x;
+	double y = c->pose.pose.position.y;
+	geometry_msgs::Quaternion thetaQuaternion = c->pose.pose.orientation;
+	m_transCallback= Vector2(x, y);
+    m_orientCallback = Rotation2(tf::getYaw(thetaQuaternion));
+}
+
+void MotionControl::pose2DCallback(Pose2DConstPtr c)
+{
+	ROS_WARN("Pose 2D ???");
+	m_transCallback= Vector2(c->x, c->y);
+    m_orientCallback = Rotation2(c->theta);
 }
 
 void MotionControl::executeCB(const OrderGoalConstPtr &goal)
@@ -65,8 +89,8 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal)
     else if (goal->move_type == "CAP")
     {
         // only cap move
-        x_des = trans_.x();
-        y_des = trans_.y();
+        x_des = m_position.x();
+        y_des = m_position.y();
         theta_des = goal->theta_des;
     }
     else
@@ -89,30 +113,34 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal)
     while (loop)
     {
         double sens_lin;
+        //bufferisation des données reçues dans la callback pour la thread-safety
+        m_position = m_transCallback;
+        m_cap = m_orientCallback;
+        //ROS_WARN("pos : %f %f cap : %f ", m_position.x(),m_position.y(),m_cap.angle());
 
         //permet de retourner le repere du robot pour le faire partir en marche arriere
         if (goal->reverse == false)
         {
-            orientLocal_= orient_;
+            orientLocal_= m_cap;
             sens_lin = 1;
         }
         else
         {
-            orientLocal_ = Rotation2(normalizeAngle(orient_.angle()+PI));
+            orientLocal_ = Rotation2(normalizeAngle(m_cap.angle()+PI));
             sens_lin = -1;
         }
 
         //ROS_INFO("*************************************************************");
-        //ROS_INFO("position : x=%.3f, y=%.3f, theta=%.3f", trans_.x(), trans_.y(), orient_.angle());
+        //ROS_INFO("m_position : x=%.3f, y=%.3f, theta=%.3f", m_position.x(), m_position.y(), m_cap.angle());
 
         ///////////////////////////////////////////////// DISTANCES
         // calcul de la distance au point desire
-        double distance_to_despoint = (trans_des - trans_).norm();
+        double distance_to_despoint = (trans_des - m_position).norm();
 
         //calcul de la distance à la droite passant par le point desire et perpendiculaire à l'angle desire
         //la distance à la ligne d'arrivée en quelque sorte
         double distance_to_desline = (orient_des.inverse() * (trans_des
-                - trans_)).x();
+                - m_position)).x();
 
         //utilisation du barycentre entre les 2: quand on est loin, on regarde la distance au point
         //et quand on est pret on regarde la distance à la ligne
@@ -131,7 +159,7 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal)
         Vector2 phantompoint = trans_des - FANTOM_COEF * distance_error
                 * Vector2(cos(theta_des), sin(theta_des));
         //calcul de l'angle au point fantome
-        Vector2 phantom = phantompoint - trans_;
+        Vector2 phantom = phantompoint - m_position;
         Vector2 direction_in_current = orientLocal_.inverse() * phantom;
         double angle_error_fant = atan2(direction_in_current.y(),
                 direction_in_current.x());
@@ -159,20 +187,20 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal)
         double ang_vel_cons_full = ROTATION_GAIN * angle_error;
 
         //saturation des consignes
-        lin_vel_ = saturate(lin_vel_cons_full, -LIN_VEL_MAX, LIN_VEL_MAX);
-        ang_vel_ = saturate(ang_vel_cons_full, -ANG_VEL_MAX, ANG_VEL_MAX);
+        m_linearSpeedCmd = saturate(lin_vel_cons_full, -LIN_VEL_MAX, LIN_VEL_MAX);
+        m_angularSpeedCmd = saturate(ang_vel_cons_full, -ANG_VEL_MAX, ANG_VEL_MAX);
 
         //ROS_INFO("distance_error=%.3f angle_error=%.3f", distance_error,
         //        angle_error);
 
-        //ROS_INFO("lin_vel=%f, ang_vel=%f", lin_vel_, ang_vel_);
+        //ROS_INFO("lin_vel=%f, ang_vel=%f", m_linearSpeedCmd, m_angularSpeedCmd);
 
         ////////////////////////////////////////ATTEINTE DU BUT
         if (distance_error < DISTANCE_ACCURACY && abs(angle_error)
                 < ANGLE_ACCURACY)
         {
             ROS_INFO(">>>>>>>>>>>>>>>>> %s: Position Reached :  x_des=%.3f, y_des=%.3f, theta_des=%.3f",
-                    action_name_.c_str(),trans_.x(), trans_.y(), orient_.angle());
+                    action_name_.c_str(),m_position.x(), m_position.y(), m_cap.angle());
             success = true;
             break;
         }
@@ -190,16 +218,16 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal)
         /////////////////////// PUBLICATIONS
         // On publie la consigne
         Velocity vel;
-        vel.linear = lin_vel_;
-        vel.angular = ang_vel_;
+        vel.linear = m_linearSpeedCmd;
+        vel.angular = m_angularSpeedCmd;
         vel_pub_.publish(vel);
 
         // On publie le feedback
-        feedback_.x_current = trans_.x();
-        feedback_.y_current = trans_.y();
-        feedback_.theta_current = orient_.angle();
-        feedback_.lin_vel = lin_vel_;
-        feedback_.ang_vel = ang_vel_;
+        feedback_.x_current = m_position.x();
+        feedback_.y_current = m_position.y();
+        feedback_.theta_current = m_cap.angle();
+        feedback_.lin_vel = m_linearSpeedCmd;
+        feedback_.ang_vel = m_angularSpeedCmd;
         as_.publishFeedback(feedback_);
 
         r.sleep();

@@ -6,7 +6,8 @@ runScript("/opt/ros/ard/arp_hml/script/orocos/deployment/deploy_protokrot.ops");
 print.log(Warning, "Début déploiment arp_ods remote control");
 
 //TODO WLA : comprendre pourquoi il ne faut surtout pas le loader après
-loadComponent("Joystick","arp_hml::LogitechExtreme3D");
+loadComponent("Joystick","arp_hml::GamepadPS1");
+//loadComponent("Joystick","arp_hml::DefaultJoystick");
 setActivity("Joystick",0.050,0,ORO_SCHED_OTHER);
 addPeer("Reporting", "Joystick");
 Joystick.configure();
@@ -20,9 +21,9 @@ loadComponent("ManualMode", "arp_ods::Logitech3DTeleop");
 setActivity("ManualMode",0.050,0,ORO_SCHED_OTHER);
 addPeer("Reporting", "ManualMode");
 
-connect("ManualMode.inY", "Joystick.outY",ConnPolicy());
-connect("ManualMode.inZ", "Joystick.outZ",ConnPolicy());
-connect("ManualMode.inDeadMan", "Joystick.outButton5",ConnPolicy());
+connect("ManualMode.inY", "Joystick.outY1",ConnPolicy());
+connect("ManualMode.inZ", "Joystick.outX2",ConnPolicy());
+connect("ManualMode.inDeadMan", "Joystick.outTrigger5",ConnPolicy());
 var ConnPolicy manualSpeed;
 manualSpeed.transport = 3; // ROS == 3
 manualSpeed.name_id = "/Command/velocity"; // ros topic

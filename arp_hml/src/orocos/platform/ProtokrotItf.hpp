@@ -183,11 +183,6 @@ protected:
          */
         void readSpeed();
 
-        /**
-         * Elapsed time between begin and now, using data type timespec.
-         * Return values simply to indicate return point
-         */
-        void delta_t(struct timespec *interval, struct timespec *begin, struct timespec *now);
     };
 
 }

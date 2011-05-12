@@ -10,15 +10,18 @@
 
 #include <ros/ros.h>
 #include <actionlib/server/simple_action_server.h>
-#include <arp_ods/OrderAction.h>
+#include <nav_msgs/Odometry.h>
+#include <geometry_msgs/Pose2D.h>
 
+#include <arp_ods/OrderAction.h>
 #include <arp_core/Velocity.h>
 #include <arp_core/Pose.h>
-
 #include <math/Geometry.hpp>
 #include <math/math.hpp>
 
 using namespace arp_core;
+using namespace nav_msgs;
+using namespace geometry_msgs;
 
 namespace arp_ods
 {
@@ -60,21 +63,29 @@ namespace arp_ods
          * Used to subscribe to "Localizator/pose"
          */
         ros::Subscriber pose_sub_;
+        /**
+         * TODO WLA à virer, utile pour tester Laserator
+         */
+        ros::Subscriber pose_sub_WLA;
 
         /**
          * Used to publish on "Command/velocity"
          */
         ros::Publisher vel_pub_;
 
-        /**
-         * current translation (direct from Localizator)
-         */
-        arp_math::Vector2 trans_;
+        /** buffered translation (will be use during the main loop)
+         * It is copied from m_transCallback at the begin of the loop */
+        arp_math::Vector2 m_position;
 
-        /**
-         * current orientation (direct from Localizator)
-         */
-        arp_math::Rotation2 orient_;
+        /** current translation (direct from the subscribe callback) */
+        arp_math::Vector2 m_transCallback;
+
+        /** buffered orientation (will be use during the main loop)
+         * It is copied from m_orientCallback at the begin of the loop */
+        arp_math::Rotation2 m_cap;
+
+        /** current orientation (direct from the subscribe callback) */
+        arp_math::Rotation2 m_orientCallback;
 
         /**
          *  possibly reversed orientation (to go backward) used by the motion control
@@ -84,12 +95,12 @@ namespace arp_ods
         /**
          * published linear velocity
          */
-        double lin_vel_;
+        double m_linearSpeedCmd;
 
         /**
          * published angular velocity
          */
-        double ang_vel_;
+        double m_angularSpeedCmd;
 
         /**
          * this are coefficient that are defined by rosparam. see .launch files.
@@ -119,7 +130,12 @@ namespace arp_ods
         /**
          * Called when a new pose message is received
          */
-        void poseCallback(const PoseConstPtr& c);
+        void poseCallback(OdometryConstPtr c);
+
+        /**
+         * TODO WLA a virer test laserator
+         */
+        void pose2DCallback(Pose2DConstPtr c);
 
         /**
          * Called when a new order is received

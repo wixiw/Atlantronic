@@ -1,6 +1,6 @@
 <package>
     <description brief="ARD Omnidirectionnal Drive System package">
-        This package contains the components of the arp_ods package
+        This package contains the components for the motion control of the robot.
     </description>
     <author>ARD, http://team-ard.com</author>
     <license>BSD</license>
@@ -10,5 +10,7 @@
   	<depend package="actionlib_msgs" />
     <depend package="arp_core" />
     <depend package="arp_hml" />
+    <depend package="nav_msgs" />
+    <depend package="tf" />
 </package>
 

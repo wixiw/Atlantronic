@@ -10,5 +10,6 @@
     <depend package="arp_hml" />
     <depend package="tf" />
     <depend package="nav_msgs" />
+    <depend package="canonical_scan_matcher" />
 </package>
 

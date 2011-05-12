@@ -10,9 +10,14 @@
 
 #define EIGEN_DONT_ALIGN
 #include <Eigen/Core>
+#include "Geometry.hpp"
 
 namespace arp_math
 {
+	typedef Eigen::Matrix<double, 2, 1> Vector2;
+	typedef Eigen::Matrix<double, 3, 1> Vector3;
+	typedef Eigen::Rotation2D<double>	Rotation2;
+
     const double PI = std::acos(-1.0);
 
     /** Use this to multiply a value in rad/s to get a value in RPM */
@@ -29,6 +34,7 @@ namespace arp_math
      * Return any angle in -pi +pi
      */
     double normalizeAngle(double angle);
+    Rotation2 normalizeAngle(Rotation2 rot);
 
     /**
      * Return "value" saturated to min or max
@@ -56,6 +62,13 @@ namespace arp_math
      */
     double smoothStep(double x, double startValue, double startLimit,
             double endValue, double endLimit);
+
+    /**
+     * Elapsed time between begin and now, using data type timespec.
+     * Return values simply to indicate return point
+     */
+    void delta_t(struct timespec *interval, struct timespec begin, struct timespec now);
+    double delta_t(struct timespec begin, struct timespec now);
 }
 
 #endif /* _ARPMATH_MATH_HPP_ */

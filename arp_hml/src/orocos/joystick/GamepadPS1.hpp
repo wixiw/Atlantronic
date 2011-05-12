@@ -43,13 +43,18 @@ namespace arp_hml
         OutputPort<bool> outButton10;
 
         /** Axe X de la croix directionnelle : dirigé de gauche à droite sur la manette entre [-1;1] */
-        OutputPort<double> outX;
+        OutputPort<double> outPadX;
         /** Axe y de la croix directionnelle : dirigé de bas en haut sur la manette entre [-1;1] */
-        OutputPort<double> outY;
+        OutputPort<double> outPadY;
         /** Distance du joystick par rapport au neutre [0;sqrt(2)] */
-        OutputPort<double> outXYDistance;
+        OutputPort<double> outPadXYDistance;
         /** Angle du joystick par rapport à x, compté positif vers y en radians */
-        OutputPort<double> outXYAngle;
+        OutputPort<double> outPadXYAngle;
+
+        OutputPort<double> outX1;
+        OutputPort<double> outY1;
+        OutputPort<double> outX2;
+        OutputPort<double> outY2;
 
         /**
          * Surchargée pour calculer les distance et angles du joystick par rapport au neutre

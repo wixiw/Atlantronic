@@ -33,9 +33,11 @@ namespace arp_hml
         void updateHook();
         void errorHook();
         void stopHook();
+        bool isJoystickAlive();
 
         string propDevName;
         int propMinimalDriverVersion;
+        double propMaxNoEventDelay;
 
         string getJoystickName();
 
@@ -56,7 +58,7 @@ namespace arp_hml
         bool takeJoystick();
         bool isJoystickConnected();
         bool checkDriverVersion();
-
+        timespec lastEventTime;
 
 
     };

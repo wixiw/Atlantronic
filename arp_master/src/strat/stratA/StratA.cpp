@@ -1,4 +1,5 @@
 #include "StratA.hpp"
+#include <canonical_scan_matcher/Init.h>
 
 using namespace arp_math;
 using namespace arp_core;
@@ -18,6 +19,7 @@ StratA::StratA():
   color_sub_ = ros::NodeHandle("Protokrot").subscribe("color", 1, &StratA::colorCallback, this);
   start_sub_ = ros::NodeHandle("Protokrot").subscribe("start", 1, &StratA::startCallback, this);
   loc_spawn_ = nh_.serviceClient<arp_core::Spawn>("Localizator/respawn");
+  loclaser_spawn_ = nh_.serviceClient<canonical_scan_matcher::Init>("CSM/respawn");
   simu_spawn_ = nh_.serviceClient<arp_core::Spawn>("PhysicsSimu/respawn");
   robot_setpen_ = nh_.serviceClient<arp_master::SetPen>("Protokrot/set_pen");
   vel_pub_ = nh_.advertise<arp_core::Velocity> ("Command/velocity", 1);
@@ -228,10 +230,16 @@ void StratA::colorCallback(const StartColorConstPtr& o)
         ROS_INFO("Strat sent respawn call to PhysicsSimulator");
       else
         ROS_INFO("Strat failed to send respawn call to PhysicsSimulator");
+
       if(loc_spawn_.call(srv))
         ROS_INFO("Strat sent respawn call to Localizator");
       else
         ROS_INFO("Strat failed to send respawn call to Localizator");
+
+      if(loclaser_spawn_.call(srv))
+        ROS_INFO("Strat sent respawn call to Laserator");
+      else
+        ROS_INFO("Strat failed to send respawn call to Laserator");
 
       color_ = COLOR_RED;
       color_selected_ = true;
@@ -253,10 +261,16 @@ void StratA::colorCallback(const StartColorConstPtr& o)
         ROS_INFO("Strat sent respawn call to PhysicsSimulator");
       else
         ROS_INFO("Strat failed to send respawn call to PhysicsSimulator");
+
       if(loc_spawn_.call(srv))
         ROS_INFO("Strat sent respawn call to Localizator");
       else
         ROS_INFO("Strat failed to send respawn call to Localizator");
+
+      if(loclaser_spawn_.call(srv))
+        ROS_INFO("Strat sent respawn call to Laserator");
+      else
+        ROS_INFO("Strat failed to send respawn call to Laserator");
 
       color_ = COLOR_BLUE;
       color_selected_ = true;

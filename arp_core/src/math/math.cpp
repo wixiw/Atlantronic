@@ -20,6 +20,12 @@ namespace arp_math
         return angle;
     }
 
+    Rotation2 normalizeAngle(Rotation2 rot)
+    {
+    	double angle = normalizeAngle(rot.angle());
+        return Rotation2(angle);
+    }
+
     double saturate(double value, double min, double max)
     {
         if (value < min)
@@ -60,6 +66,27 @@ namespace arp_math
 
         return 0;
 
+    }
+
+    void delta_t(struct timespec *interval, struct timespec begin, struct timespec now)
+    {
+    	interval->tv_nsec = now.tv_nsec - begin.tv_nsec; /* Subtract 'decimal fraction' first */
+    	if(interval->tv_nsec < 0 )
+    	{
+    		interval->tv_nsec += 1000000000; /* Borrow 1sec from 'tv_sec' if subtraction -ve */
+    		interval->tv_sec = now.tv_sec - begin.tv_sec - 1; /* Subtract whole number of seconds and return 1 */
+    	}
+    	else
+    	{
+    		interval->tv_sec = now.tv_sec - begin.tv_sec; /* Subtract whole number of seconds and return 0 */
+    	}
+    }
+
+    double delta_t(struct timespec begin, struct timespec now)
+    {
+    	timespec delay;
+    	delta_t(&delay,begin,now);
+    	return delay.tv_sec+(double)(delay.tv_nsec)/1E9;
     }
 
 }
