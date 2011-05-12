@@ -12,8 +12,15 @@ class Case:
         self.xCenter=self.i*125
         self.yCenter=self.j*125
         
-    def coord_PiontMilieu(self,theta):
+    def coord_WhenPionMilieu(self,theta):
         x=xCenter-(Robot.xPion*cos(theta)-Robot.yPion*sin(theta))
         y=xCenter-(Robot.xPion*sin(theta)+Robot.yPion*cos(theta))
         return (x,y) 
     
+
+class AmbiCaseRed:
+    def __init__(self,i_hor,j_vert,color):
+        if color=='red':
+            super.__init__(self,i_hor,j_vert)
+        if color=='blue':
+            super.__init__(-self,i_hor,j_vert)
