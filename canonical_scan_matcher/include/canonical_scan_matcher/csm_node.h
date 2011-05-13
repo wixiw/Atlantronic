@@ -39,14 +39,7 @@
 #include <canonical_scan_matcher/Init.h>
 #include <csm/csm_all.h>
 
-#ifdef USE_PROJECTED_SCANS
-  #include <laser_ortho_projector/LaserScanWithAngles.h>
-  typedef laser_ortho_projector::LaserScanWithAngles Scan;
-#else
-  #include <sensor_msgs/LaserScan.h>
-  typedef sensor_msgs::LaserScan Scan;
-#endif
-
+#include <sensor_msgs/LaserScan.h>
 
 const std::string imuTopic_  = "imu";
 const std::string scanTopic_ = "scan";
@@ -93,22 +86,22 @@ class CSMNode
     std::string laserFrame_;
 
     void getParams();
-    bool initialize(const Scan& scan);
+    bool initialize(const sensor_msgs::LaserScan& scan);
 
     void imuCallback (const sensor_msgs::Imu& imuMsg);
-    void scanCallback (const Scan& scan);
+    void scanCallback (const sensor_msgs::LaserScan& scan);
 
     void publishTf(const btTransform& transform, 
                    const ros::Time& time);
     void publishPose(const btTransform& transform);
 
-    LDP rosToLDPScan(const Scan& scan,
+    LDP rosToLDPScan(const sensor_msgs::LaserScan& scan,
                      const geometry_msgs::Pose2D& laserPose);
 
     void tfToPose2D(const btTransform& t, geometry_msgs::Pose2D& pose);
     void pose2DToTf(const geometry_msgs::Pose2D& pose, btTransform& t);
     void getCurrentEstimatedPose(btTransform& worldToBase, 
-                                 const Scan& scanMsg);
+                                 const sensor_msgs::LaserScan& scanMsg);
     bool respawnCallback(Init::Request& req, Init::Response& res);
   public:
 

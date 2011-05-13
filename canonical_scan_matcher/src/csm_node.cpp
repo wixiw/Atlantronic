@@ -27,6 +27,7 @@
 */
 
 #include "canonical_scan_matcher/csm_node.h"
+#include <sensor_msgs/LaserScan.h>
 using namespace canonical_scan_matcher;
 
 int main (int argc, char** argv)
@@ -39,11 +40,7 @@ int main (int argc, char** argv)
 
 CSMNode::CSMNode()
 {
-#ifdef USE_PROJECTED_SCANS
-  ROS_INFO("Creating CanonicalScanMatcher node [Projected scans]");
-#else
   ROS_INFO("Creating CanonicalScanMatcher node");
-#endif
 
   ros::NodeHandle nh;
 
@@ -240,7 +237,7 @@ void CSMNode::imuCallback (const sensor_msgs::Imu& imuMsg)
   imuMutex_.unlock();
 }
 
-void CSMNode::scanCallback (const Scan& scan)
+void CSMNode::scanCallback (const sensor_msgs::LaserScan& scan)
 {
   ROS_DEBUG("Received scan");
   scansCount_++;
@@ -356,7 +353,7 @@ void CSMNode::scanCallback (const Scan& scan)
   ROS_INFO("dur:\t %.3f ms \t ave:\t %.3f ms,\t%d", dur, ave, output_.iterations);
 }
 
-LDP CSMNode::rosToLDPScan(const Scan& scan, 
+LDP CSMNode::rosToLDPScan(const sensor_msgs::LaserScan& scan,
                           const geometry_msgs::Pose2D& basePose)
 {
   unsigned int n = scan.ranges.size();
@@ -367,13 +364,9 @@ LDP CSMNode::rosToLDPScan(const Scan& scan,
   {
     ld->readings[i] = scan.ranges[i];
 
-#ifdef USE_PROJECTED_SCANS
-    ld->theta[i]    = scan.angles[i];
-#else
     ld->theta[i]    = scan.angle_min + (double)i * scan.angle_increment;
-#endif
     
-    if (scan.ranges[i] == 0 || scan.ranges[i] > scan.range_max)  
+    if (scan.ranges[i] <= scan.range_min || scan.ranges[i] > scan.range_max)
       ld->valid[i] = 0;
     else
       ld->valid[i] = 1;
@@ -391,7 +384,7 @@ LDP CSMNode::rosToLDPScan(const Scan& scan,
 	return ld;
 }
 
-bool CSMNode::initialize(const Scan& scan)
+bool CSMNode::initialize(const sensor_msgs::LaserScan& scan)
 {
   laserFrame_ = scan.header.frame_id;
 
@@ -454,7 +447,7 @@ void CSMNode::publishPose(const btTransform& transform)
 }
 
 void CSMNode::getCurrentEstimatedPose(btTransform& worldToBase, 
-                                      const Scan& scanMsg)
+                                      const sensor_msgs::LaserScan& scanMsg)
 {
   tf::StampedTransform worldToBaseTf;
   try
