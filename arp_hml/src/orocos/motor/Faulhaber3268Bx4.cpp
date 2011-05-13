@@ -28,36 +28,39 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         m_oldPositionMeasure(0)
 {
     addAttribute("attrState",attrState);
-    addAttribute("attrCommandedSpeed",attrCommandedSpeed);
+    addAttribute("attrCommandedSpeed",m_speedCommand);
     addAttribute("attrPeriod",attrPeriod);
 
-    addProperty("propInvertDriveDirection",propInvertDriveDirection);
-    addProperty("propReductorValue",propReductorValue);
-    addProperty("propEncoderResolution",propEncoderResolution);
+    addProperty("propInvertDriveDirection",propInvertDriveDirection)
+    	.doc("Is true when you when to invert the speed command and feedback of the motor softly");
+    addProperty("propReductorValue",propReductorValue)
+    	.doc("Reductor's value from the motor's axe to the reductor's output's axe. So it should be greather than 1");
+    addProperty("propEncoderResolution",propEncoderResolution)
+    	.doc("Encoder resolution in point by rev");
 
     addPort("inSpeedCmd",inSpeedCmd)
-            .doc("");
+            .doc("Command to be used in position mode. It must be provided in rad on the reductor's output. It is not available yet.");
     addPort("inPositionCmd",inPositionCmd)
-            .doc("");
+            .doc("Command to be used in speed mode. It must be provided in rad/s on the reductor's output");
     addPort("inTorqueCmd",inTorqueCmd)
-            .doc("");
+            .doc("Command to be used in torque mode. This mode is not available yes");
 
     addPort("outMeasuredPosition",outMeasuredPosition)
-        .doc("");
+        .doc("Provides the measured position of the encoder from CAN. It is converted in rad on the reductor's output's axe.");
     addPort("outMeasuredTorque",outMeasuredTorque)
-        .doc("");
+        .doc("Provides the torque measured from CAN. Not available yet");
     addPort("outComputedSpeed",outComputedSpeed)
-        .doc("");
+        .doc(" Provides a computed speed from the encoder position. In rad/s on the reductor's output's axe.");
     addPort("outLastSentCommand",outLastSentCommand)
-        .doc("");
+        .doc("Prints the last Faulhaber command sent on CAN in OTHER mode of operation");
     addPort("outLastSentCommandParam",outLastSentCommandParam)
-        .doc("");
+        .doc("Prints the last Faulhaber params sent on CAN in OTHER mode of operation");
     addPort("outLastSentCommandReturn",outLastSentCommandReturn)
-        .doc("");
+        .doc("Prints the last Faulhaber command return received from CAN in OTHER mode of operation");
     addPort("outDriveEnable",outDriveEnable)
-        .doc("");
+        .doc("Is true when the drive is ready to be operated (axe blocked). If it is false, the axe is free of any mouvement");
     addPort("outCurrentOperationMode",outCurrentOperationMode)
-    	.doc("");
+    	.doc("Provides the current mode of operation of the motor (speed,position,torque,homing,other=faulhaber)");
 
     addOperation("ooEnableDrive", &Faulhaber3268Bx4::enableDrive,this, OwnThread )
         .doc("");
@@ -99,9 +102,38 @@ bool Faulhaber3268Bx4::checkInputsPorts()
     return res;
 }
 
+bool Faulhaber3268Bx4::checkProperties()
+{
+	bool res = CanOpenNode::checkProperties();
+
+	if( propReductorValue <= 1 || propReductorValue > 1000 )
+	{
+    	res = false;
+    	LOG(Error) << "checkProperties : propReductorValue has an incorrect value should be in ]1;1000]" << endlog();
+	}
+
+	if( propEncoderResolution <= 1 || propEncoderResolution > 10000 )
+	{
+    	res = false;
+    	LOG(Error) << "checkProperties : propEncoderResolution has an incorrect value should be in ]1;10000]" << endlog();
+	}
+
+	res = false;
+	LOG(Error) << "checkProperties : test WLA" << endlog();
+
+
+	return res;
+}
+
 bool Faulhaber3268Bx4::configureHook()
 {
-	return init();
+    bool res = init();
+    if( res == true )
+    {
+        res = CanOpenNode::configureHook();
+
+    }
+	return res;
 }
 
 void Faulhaber3268Bx4::updateHook()
@@ -124,18 +156,21 @@ void Faulhaber3268Bx4::updateHook()
 
 void Faulhaber3268Bx4::getInputs()
 {
+	//read last speed command
     double speedCmd = 0;
     if( inSpeedCmd.readNewest(speedCmd) != NoData )
     {
     	ArdMotorItf::setSpeedCmd(speedCmd);
     }
 
+    //read last position command
     double positionCmd = 0;
     if( inPositionCmd.readNewest(positionCmd) != NoData )
     {
     	ArdMotorItf::setPositionCmd(positionCmd);
     }
 
+    //read last torque command
     double torqueCmd = 0;
     if( inTorqueCmd.readNewest(torqueCmd) != NoData )
     {
@@ -171,9 +206,8 @@ void Faulhaber3268Bx4::setOutputs()
 
 void Faulhaber3268Bx4::runSpeed()
 {
-	attrCommandedSpeed = m_speedCommand;
 	//conversion de rad/s sur la roue, vers RPM sur l'axe moteur
-	UNS32 speed = attrCommandedSpeed*propReductorValue*RAD_S_TO_RPM;
+	UNS32 speed = m_speedCommand*propReductorValue*RAD_S_TO_RPM;
 	//inversion de polarité soft
 	if( propInvertDriveDirection )
 	{
@@ -248,10 +282,8 @@ void Faulhaber3268Bx4::readCaptors()
 
 	//calcul de la vitesse
 	struct timespec now;
-	struct timespec delay;
 	clock_gettime(CLOCK_MONOTONIC, &now);
-	delta_t(&delay, &m_oldPositionMeasureTime, &now);
-	attrPeriod = delay.tv_sec+(double)(delay.tv_nsec)/1E9;
+	attrPeriod = delta_t(m_oldPositionMeasureTime, now);
 	m_speedMeasure = (m_positionMeasure - m_oldPositionMeasure)/attrPeriod;
 	m_oldPositionMeasure = m_positionMeasure;
 	m_oldPositionMeasureTime = now;
@@ -377,12 +409,6 @@ bool Faulhaber3268Bx4::init()
     	LOG(Error) << "failed to configure : did not get CAN pointer m_faulhaberCommandReturnParameter" << endlog();
     }
 
-    if( res == true )
-    {
-        res = CanOpenNode::configureHook();
-
-    }
-
     return res;
 }
 
@@ -436,18 +462,4 @@ bool Faulhaber3268Bx4::isInError()
 unsigned int Faulhaber3268Bx4::getError()
 {
     return 0;
-}
-
-void Faulhaber3268Bx4::delta_t(struct timespec *interval, struct timespec *begin, struct timespec *now)
-{
-	interval->tv_nsec = now->tv_nsec - begin->tv_nsec; /* Subtract 'decimal fraction' first */
-	if(interval->tv_nsec < 0 )
-	{
-		interval->tv_nsec += 1000000000; /* Borrow 1sec from 'tv_sec' if subtraction -ve */
-		interval->tv_sec = now->tv_sec - begin->tv_sec - 1; /* Subtract whole number of seconds and return 1 */
-	}
-	else
-	{
-		interval->tv_sec = now->tv_sec - begin->tv_sec; /* Subtract whole number of seconds and return 0 */
-	}
 }

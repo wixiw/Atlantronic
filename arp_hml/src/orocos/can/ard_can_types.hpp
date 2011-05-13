@@ -80,7 +80,6 @@ struct CanNodeIdCard
 
     /**
      * Use this function to check the data validity of the current CanNodeIdCard
-     * TODO WLA trouver comment logger ou retourner un code d'erreur
      */
     bool check()
     {

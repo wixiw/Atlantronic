@@ -19,7 +19,7 @@
 #include <sys/time.h>
 
 using namespace arp_core;
-//TODO WLA mettre la doc
+
 namespace arp_hml
 {
 
@@ -57,27 +57,49 @@ namespace arp_hml
 
     protected:
 
+        /**
+         * DS402 state of the motor. Whatever Faulhaber command ask, this state is always up to
+         * date. It provides accurate information on what's happening inside. Moreover, this state could
+         * provide automation feedback like "target reached".
+         */
         ArdDs402::enum_DS402_state attrState;
-        double attrCommandedSpeed;
+
+        /**
+         * This attributre is used by the readCaptors loop to compute the speed with position of motor.
+         * In a way, it is close to the period of the component.
+         */
         double attrPeriod;
 
+        /** Is true when you when to invert the speed command and feedback of the motor softly **/
         bool propInvertDriveDirection;
-        /** Reductor's value **/
+        /** Reductor's value from the motor's axe to the reductor's output's axe. So it should be greather than 1**/
         double propReductorValue;
-        /** Encoder resolution in point by rev**/
+        /** Encoder resolution in point by rev **/
         int propEncoderResolution;
 
-        InputPort<double> inSpeedCmd;
+        /** Command to be used in position mode. It must be provided in rad on the reductor's output.
+         * It is not available yet. */
         InputPort<double> inPositionCmd;
+        /** Command to be used in speed mode. It must be provided in rad/s on the reductor's output **/
+        InputPort<double> inSpeedCmd;
+        /** Command to be used in torque mode. This mode is not available yes **/
         InputPort<double> inTorqueCmd;
 
+        /** Provides the measured position of the encoder from CAN. It is converted in rad on the reductor's output's axe. **/
         OutputPort<double> outMeasuredPosition;
+        /** Provides the torque measured from CAN. Not available yet **/
         OutputPort<double> outMeasuredTorque;
+        /** Provides a computed speed from the encoder position. In rad/s on the reductor's output's axe. */
         OutputPort<double> outComputedSpeed;
+        /** Prints the last Faulhaber command sent on CAN in OTHER mode of operation **/
         OutputPort<int> outLastSentCommand;
+        /** Prints the last Faulhaber params sent on CAN in OTHER mode of operation **/
         OutputPort<double> outLastSentCommandParam;
+        /** Prints the last Faulhaber command return received from CAN in OTHER mode of operation **/
         OutputPort<int> outLastSentCommandReturn;
+        /** Is true when the drive is ready to be operated (axe blocked). If it is false, the axe is free of any mouvement **/
         OutputPort<bool> outDriveEnable;
+        /** Provides the current mode of operation of the motor (speed,position,torque,homing,other=faulhaber) **/
         OutputPort<string> outCurrentOperationMode;
 
         /**
@@ -138,6 +160,7 @@ namespace arp_hml
          */
         void disableDrive();
 
+        /** See ArdMotorItf for details **/
         bool reset();
         bool getLimitSwitchStatus();
         bool startWatchdog();
@@ -156,10 +179,19 @@ namespace arp_hml
 
     public:
 
+        /**
+         * Faulhaber command codes
+         */
+        ///disable drive
         static const int F_CMD_DI = 0x08;
+        ///enable drive
         static const int F_CMD_EN = 0x0F;
+        ///send a speed command
         static const int F_CMD_V = 0x93;
 
+        /*
+         * Faulhaber return codes should be clear
+         */
         static const int F_RET_OK = 1;
         static const int F_RET_EEPROM_WRITTEN = -2;
         static const int F_RET_OVER_TEMP = -4;
@@ -171,6 +203,9 @@ namespace arp_hml
 
     protected:
 
+        /*
+         * Pointers to CanFestival Dictionnary values. they are the direct values read from CAN
+         */
         INTEGER32* m_measuredPosition;
         INTEGER16* m_measuredCurrent;
         UNS8* m_faulhaberCommand;
@@ -180,27 +215,30 @@ namespace arp_hml
         UNS32* m_faulhaberCommandReturnParameter;
         UNS16* m_ds402State;
 
-        /** last command line faulhaber request */
+        /** Last command line faulhaber request  */
         UNS8 m_faulhaberScriptCommand;
         UNS32 m_faulhaberScriptCommandParam;
 
+        /** Is set to true when a new command has arrived and has to be executed */
         bool m_faulhaberCommandTodo;
 
-        //memoire de la derniere valeur de position pour un calcul de vitesse
+        /** Last used position for speed computation */
         double m_oldPositionMeasure;
+        /** Time of last speed computation */
         struct timespec m_oldPositionMeasureTime;
 
+        /** Read the input ports and prepare internal variables. It allows to do a snapshot of inputs to work with coherent datas */
         void getInputs();
+        /** Write tghe output ports when all internal datas are computed. It allows to provide coherent datas to the outside */
         void setOutputs();
+        /** Read informations from the motor captors (position and current) */
         void readCaptors();
 
+        /** Derivated to disabled checking on some unused ports */
         virtual bool checkInputsPorts();
 
-        /**
-         * Elapsed time between begin and now, using data type timespec.
-         * Return values simply to indicate return point
-         */
-        void delta_t(struct timespec *interval, struct timespec *begin, struct timespec *now);
+        /** Derivated to check personnal properties */
+        virtual bool checkProperties();
 
     };
 

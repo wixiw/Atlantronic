@@ -13,12 +13,9 @@ using namespace arp_hml;
 using namespace arp_core;
 using namespace RTT;
 
-/** Constructeur de la classe Joystick
-*  @param name nom du composant Orocos
-*/
 Joystick::Joystick(const std::string& name) :
 		HmlTaskContext(name),
-        propDevName("/dev/input/js1"),
+        propDevName("/dev/input/js0"),
         propMinimalDriverVersion(0x020000),
         attrIsConnected(false),
         attrIsIdentityOk(false),
