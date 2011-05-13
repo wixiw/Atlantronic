@@ -4,10 +4,7 @@
  *  Created on: 28 mars 2011
  *      Author: wla
  *
- * This class is handling the routing work of the CanOpenController.
- * It has the responsability to drive incoming data to the rigth component.
- *
- * Components has to register before having a chance to receive routed datas !
+
  */
 
 #ifndef CANOPENDISPATCHER_HPP_
@@ -20,7 +17,18 @@
 
 namespace arp_hml
 {
-
+	/**
+	 * \ingroup arp_hml
+	 *
+	 * \class CanOpenDispatcher
+	 *
+	 * \brief Do the routing work of the CanController
+	 *
+	 * This class is handling the routing work of the CanOpenController.
+	 * It has the responsability to drive incoming data to the rigth component.
+	 *
+	 * Components has to register before having a chance to receive routed datas !
+	 */
     class CanOpenDispatcher
     {
     public:
@@ -45,6 +53,9 @@ namespace arp_hml
 
         /**
          * read the inBootUpReceived and send the information to registered nodes
+         * @param propNodeId : adresse du noeud master qu'il ne faut pas dispatcher
+         * @param inBootUpReceived : port du CanOpenController connecté à la CanFestival pour recevoir
+         * les bootup
          */
         void dispatchBootUp(nodeID_t propNodeId, InputPort<nodeID_t>& inBootUpReceived);
 
