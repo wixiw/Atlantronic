@@ -15,7 +15,7 @@
 #include <pthread.h>
 #include <unistd.h>
 
-#include "REL_Linux_SUSI.H"
+#include "susi.h"
 
 
 // Return 0 if platform infomation is correctly obtained.

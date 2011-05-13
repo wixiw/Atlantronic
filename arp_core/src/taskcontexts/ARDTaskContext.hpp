@@ -29,7 +29,7 @@ namespace arp_core
      */
 
     /** surcharge du log */
-    #define LOG(level) log(propEnableLog?level:Never)<<"["<<getName()<<"] "
+    #define LOG(level) RTT::log(propEnableLog?level:Never)<<"["<<getName()<<"] "
 
     class ARDTaskContext : public TaskContext
     {

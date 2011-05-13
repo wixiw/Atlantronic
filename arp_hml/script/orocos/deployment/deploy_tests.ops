@@ -1,0 +1,21 @@
+require("print")
+print.log(Warning, "Début déploiment arp_hml-test");
+
+import("arp_hml");
+
+/** LOAD COMPONENTS **/
+print.log(Warning, " == Loading HML-Test components == ");
+loadComponent("TestJoystick","arp_hml::TestJoystick")
+
+print.log(Warning, "Fin déploiment arp_hml-test");
+print.log(Warning, "====================");
+
+print.log(Warning, "Testing the joystick...");
+loadComponent("Joystick","arp_hml::GamepadPS1");
+addPeer("TestJoystick", "Joystick");
+setActivity("Joystick",0.050,0,ORO_SCHED_OTHER);
+Joystick.configure();
+Joystick.start();
+TestJoystick.configure();
+
+print.log(Warning, "====================");
