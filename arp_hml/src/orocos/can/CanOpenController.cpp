@@ -26,7 +26,6 @@ CanOpenController::CanOpenController(const std::string& name):
     propMasterMaxBootDelay(50),
     m_dispatcher(*this),
     m_canPort(NULL)
-
 {
     addAttribute("attrCurrentNMTState",attrCurrentNMTState);
     addAttribute("sdo",attrTestingSdo);

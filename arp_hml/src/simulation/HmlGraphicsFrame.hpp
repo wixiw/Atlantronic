@@ -81,9 +81,19 @@ class HmlGraphicsFrame : public wxFrame
 	   */
 	  wxButton* m_obstacleButton;
 
-	  //TODO WLA
+	  /**
+	   * Représente l'état du switch de la couleur
+	   */
 	  StartColor m_color;
+
+	  /**
+	   * Représente l'état du switch du start
+	   */
 	  Start m_start;
+
+	  /**
+	   * Représente la présence ou non d'obstacle
+	   */
 	  Obstacle m_obstacle;
 
 	  /**
@@ -118,9 +128,19 @@ class HmlGraphicsFrame : public wxFrame
 	   */
 	  void onPaint(wxPaintEvent& evt);
 
-	  //TODO WLA
+	  /**
+	   * Called when the start button is trigerred
+	   */
 	  void onStart(wxCommandEvent& event);
+
+	  /**
+	   * Called when the color button is trigerred
+	   */
 	  void onColor(wxCommandEvent& event);
+
+	  /**
+	   * Called when the obstacle button is trigerred
+	   */
 	  void onObstacle(wxCommandEvent& event);
 
 	private:

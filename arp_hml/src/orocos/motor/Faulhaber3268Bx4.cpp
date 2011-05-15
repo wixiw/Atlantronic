@@ -118,10 +118,6 @@ bool Faulhaber3268Bx4::checkProperties()
     	LOG(Error) << "checkProperties : propEncoderResolution has an incorrect value should be in ]1;10000]" << endlog();
 	}
 
-	res = false;
-	LOG(Error) << "checkProperties : test WLA" << endlog();
-
-
 	return res;
 }
 
@@ -312,14 +308,23 @@ bool Faulhaber3268Bx4::ooSetOperationMode(std::string mode)
 {
 	bool res = false;
 
-	if( setOperationMode(getModeFromString(mode)) )
+	//This operation is only accessible when the component is running
+	if( isRunning() )
 	{
-		LOG(Info) << "switch to " << mode <<" mode" << endl;
-		res = true;
+		if( setOperationMode(getModeFromString(mode)) )
+		{
+			LOG(Info) << "switch to " << mode <<" mode" << endl;
+			res = true;
+		}
+		else
+		{
+			LOG(Error) << "Failed to switch to " << mode << " operation mode. Checks syntax or required mode is not available" << endlog();
+			res = false;
+		}
 	}
 	else
 	{
-		LOG(Error) << "Failed to switch to " << mode << " operation mode. Checks syntax or required mode is not available" << endlog();
+		LOG(Error) << "Failed to switch to " << mode << " operation mode. The motor is not in running orocos state" << endlog();
 		res = false;
 	}
 
@@ -331,20 +336,29 @@ bool Faulhaber3268Bx4::coWaitEnable(double timeout)
 	double chrono = 0;
 	bool res = false;
 
-    while( outDriveEnable.getLastWrittenValue()==false && chrono < timeout )
-    {
-    	LOG(Debug) << "coWaitEnable : is waiting for enable to come" << endlog();
-        chrono+=0.050;
-        usleep(50*1000);
-    }
-    //si le timeout est explosé c'est que ça a foiré
-    if( chrono >= timeout )
-    {
-        LOG(Error)  << "coWaitEnable : timeout has expired, Drive is not enabled !"<< endlog();
-        res = false;
-    }
-    else
-    	res = true;
+	//This operation is only accessible when the component is running
+	if( isRunning() )
+	{
+	    while( outDriveEnable.getLastWrittenValue()==false && chrono < timeout )
+	    {
+	    	LOG(Debug) << "coWaitEnable : is waiting for enable to come" << endlog();
+	        chrono+=0.050;
+	        usleep(50*1000);
+	    }
+	    //si le timeout est explosé c'est que ça a foiré
+	    if( chrono >= timeout )
+	    {
+	        LOG(Error)  << "coWaitEnable : timeout has expired, Drive is not enabled !"<< endlog();
+	        res = false;
+	    }
+	    else
+	    	res = true;
+	}
+	else
+	{
+		LOG(Error) << "Can not wait Enable mode. The motor is not in running orocos state" << endlog();
+		res = false;
+	}
 
     return res;
 }
@@ -358,11 +372,20 @@ bool Faulhaber3268Bx4::setOperationMode(ArdMotorItf::operationMode_t operationMo
 {
 	bool res = true;
 
-	//pour le moment les seuls modes accessibles sont speed et other=faulhaber command
-	if( ArdMotorItf::SPEED_CONTROL == operationMode || ArdMotorItf::OTHER == operationMode)
-		ArdMotorItf::setOperationMode(operationMode);
+	//This operation is only accessible when the component is running
+	if( isRunning() )
+	{
+		//pour le moment les seuls modes accessibles sont speed et other=faulhaber command
+		if( ArdMotorItf::SPEED_CONTROL == operationMode || ArdMotorItf::OTHER == operationMode)
+			ArdMotorItf::setOperationMode(operationMode);
+		else
+			res = false;
+	}
 	else
+	{
+		LOG(Error) << "Failed to setOperationMode mode. The motor is not in running orocos state" << endlog();
 		res = false;
+	}
 
 	return res;
 }

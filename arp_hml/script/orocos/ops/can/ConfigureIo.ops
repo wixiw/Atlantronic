@@ -3,11 +3,5 @@ program configureNode
     var CanDicoEntry sdo;
     var int Info = 2;
     
-    //set motor 0x32 current (FrontSteering) in mA
-    //coLog(Info,"configure 0x32 max current");
-    //sdo = CanDicoEntry(0x32,0x2301,1,81,0,1);
-    //coWriteInRemoteDico(sdo);
-    //sdo = CanDicoEntry(0x32,0x2301,2,200,0,4);
-    //coWriteInRemoteDico(sdo);
     
 }

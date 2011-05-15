@@ -32,8 +32,16 @@ namespace arp_hml
     class CanOpenDispatcher
     {
     public:
+    	/**
+    	 * @param tc : pointer to the parent task context (A CanOpenController)
+    	 */
         CanOpenDispatcher(TaskContext& tc);
         virtual ~CanOpenDispatcher();
+
+        /**
+         * Define the m_colog attribute
+         */
+        void setColog(OperationCaller<bool(LoggerLevel,string)> colog);
 
         /**
          * This operation allows a Device Component to register in the CanController
@@ -97,6 +105,11 @@ namespace arp_hml
          * Component into we are operating
          */
         TaskContext& m_parent;
+
+        /**
+         * Handle on the logger
+         */
+        OperationCaller<bool(LoggerLevel,string)> m_coLog;
     };
 
 }

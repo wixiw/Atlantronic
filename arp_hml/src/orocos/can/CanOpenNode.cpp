@@ -12,7 +12,7 @@
 
 using namespace arp_hml;
 using namespace arp_core;
-
+using namespace scripting;
 
 CanOpenNode::CanOpenNode(const std::string& name):
 	HmlTaskContext(name),
@@ -28,7 +28,6 @@ CanOpenNode::CanOpenNode(const std::string& name):
     updateNodeIdCard();
 
     addAttribute("attrCurrentNMTState",attrCurrentNMTState);
-
 
     addProperty("propNodeId",propNodeId)
         .doc("CAN adress of the node");
@@ -257,7 +256,7 @@ void CanOpenNode::stopHook()
     }
 
     HmlTaskContext::stopHook();
-    LOG(Info) << "CanOpenNode::stopHook : done" << endlog();
+    LOG(Debug) << "CanOpenNode::stopHook : done" << endlog();
 
     failed:
     return;
@@ -337,6 +336,9 @@ bool CanOpenNode::resetNode()
 
 bool CanOpenNode::configureNode()
 {
+	//initialisation of success flag
+	attrScriptRes = true;
+
     // start a program :
     if( scripting->hasProgram("configureNode") == false )
     {
@@ -351,10 +353,28 @@ bool CanOpenNode::configureNode()
         goto failed;
     }
 
-    //TODO WLA : tester si le programme est allé au bout
-    return true;
+    //wait the end of the program
+    while( scripting->getProgramStatus("configureNode") == ProgramInterface::Status::running )
+    {
+    	usleep(10*1000);
+    }
+    // check the result :
+    if( scripting->getProgramStatus("configureNode") == ProgramInterface::Status::stopped && attrScriptRes == true )
+    {
+        LOG(Info)  << "configureNode : program finished properly." << endlog();
+        goto success;
+    }
+    else
+    {
+        LOG(Error)  << "configureNode : failed to reached program end." << endlog();
+        goto failed;
+    }
+
+
 
     failed:
-    return false;
+    	return false;
+    success:
+    	return true;
 }
 

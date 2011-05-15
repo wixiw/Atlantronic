@@ -36,6 +36,7 @@ ARDTaskContext::ARDTaskContext(const std::string& name, const std::string projec
     addAttribute("attrPropertyPath",attrPropertyPath);
     addAttribute("attrScriptPath",attrScriptPath);
     addAttribute("attrStateMachinePath",attrStateMachinePath);
+    addAttribute("attrScriptRes",attrScriptRes);
 
     addOperation("coLog", &ARDTaskContext::coLog, this, ClientThread )
         .doc("This Client Operation allows to log from script. It's non real time. Level are NONE=-1,ERROR=0,WARNING=1,INFO=2,DEBUG=3")
@@ -220,36 +221,9 @@ bool ARDTaskContext::loadStateMachines()
     return res;
 }
 
-bool ARDTaskContext::coLog(int level, string s)
+bool ARDTaskContext::coLog(LoggerLevel level, string s)
 {
-    LoggerLevel logLevel;
-
-    switch(level)
-    {
-    case 0:
-        logLevel = Error;
-        break;
-    case 1:
-        logLevel = Warning;
-        break;
-    case 2:
-        logLevel = Info;
-        break;
-    case 3:
-        logLevel = Debug;
-        break;
-
-    default:
-        //par defaut on met Error parce que ça apparait tout le temps, sauf pour
-        logLevel = Error;
-        break;
-    }
-
-    //si le level est -1 on ne veut plus logger
-    if( level != -1 )
-    {
-        LOG(logLevel) << s << endlog();
-    }
+	LOG(level) << s << endlog();
 }
 
 

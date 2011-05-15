@@ -66,6 +66,8 @@ namespace arp_core
         string attrScriptPath;
         /** Chemin vers le dossier des fsm depuis attrProjectRootPath */
         string attrStateMachinePath;
+        /** Used by configuration programs to set a success flag */
+        bool attrScriptRes;
 
         /** Interface de scripting Orocos (ods,ops) */
         boost::shared_ptr<Scripting> scripting;
@@ -139,7 +141,7 @@ namespace arp_core
         bool loadStateMachines();
 
         /** Permet de logger en script */
-        bool coLog(int level, string s);
+        bool coLog(LoggerLevel level, string s);
 
 
     };
