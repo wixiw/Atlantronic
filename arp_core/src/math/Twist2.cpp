@@ -7,46 +7,45 @@
 
 #include "Twist2.hpp"
 
-namespace arp_math {
-
-Twist2::Twist2(Twist2 & _ref) :
-						vitesseTranslation(Vector2(0,0)),
-						vitesseRotation(0)
+namespace arp_math
 {
-	vitesseTranslation = _ref.VTrans();
-	vitesseRotation    = _ref.VRot();
-}
 
-Twist2::Twist2(Vector2 _vitesseTranslation, double _vitesseRotation ) :
-						vitesseTranslation(_vitesseTranslation),
-						vitesseRotation(_vitesseRotation)
-{
-	;
-}
+    Twist2::Twist2(Twist2 & _ref) :
+        vitesseTranslation(Vector2(0, 0)), vitesseRotation(0)
+    {
+        vitesseTranslation = _ref.VTrans();
+        vitesseRotation = _ref.VRot();
+    }
 
-Twist2::~Twist2()
-{
-	// TODO Auto-generated destructor stub
-}
+    Twist2::Twist2(Vector2 _vitesseTranslation, double _vitesseRotation) :
+        vitesseTranslation(_vitesseTranslation),
+                vitesseRotation(_vitesseRotation)
+    {
+        ;
+    }
 
-Vector2 Twist2::VTrans()
-{
-	return vitesseTranslation;
-}
+    Twist2::~Twist2()
+    {
+    }
 
-double  Twist2::VRot()
-{
-	return vitesseRotation;
-}
+    Vector2 Twist2::VTrans()
+    {
+        return vitesseTranslation;
+    }
 
-void Twist2::VTrans(Vector2 _vitesseTranslation)
-{
-	vitesseTranslation = _vitesseTranslation;
-}
+    double Twist2::VRot()
+    {
+        return vitesseRotation;
+    }
 
-void  Twist2::VRot(double _vitesseRotation)
-{
-	vitesseRotation = _vitesseRotation;
-}
+    void Twist2::VTrans(Vector2 _vitesseTranslation)
+    {
+        vitesseTranslation = _vitesseTranslation;
+    }
+
+    void Twist2::VRot(double _vitesseRotation)
+    {
+        vitesseRotation = _vitesseRotation;
+    }
 
 }

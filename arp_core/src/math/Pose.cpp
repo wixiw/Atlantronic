@@ -7,118 +7,120 @@
 
 #include "Pose.hpp"
 
-namespace arp_math {
-
-Pose::Pose(Pose & _pose) :
-						positionTranslation(Vector2(0.0, 0.0)),
-						positionRotation(Rotation2(0.0))
+namespace arp_math
 {
-	positionTranslation = _pose.translation();
-	positionRotation = _pose.rotation2();
-}
 
-Pose::Pose(Vector2 _positionTranslation, Rotation2 _positionRotation ) :
-						positionTranslation(Vector2(0.0, 0.0)),
-						positionRotation(Rotation2(0.0))
-{
-	positionTranslation = _positionTranslation;
-	positionRotation = _positionRotation;
-}
+    Pose::Pose(Pose & _pose) :
+        positionTranslation(Vector2(0.0, 0.0)),
+                positionRotation(Rotation2(0.0))
+    {
+        positionTranslation = _pose.translation();
+        positionRotation = _pose.rotation2();
+    }
 
-Pose::~Pose()
-{
-}
+    Pose::Pose(Vector2 _positionTranslation, Rotation2 _positionRotation) :
+        positionTranslation(Vector2(0.0, 0.0)),
+                positionRotation(Rotation2(0.0))
+    {
+        positionTranslation = _positionTranslation;
+        positionRotation = _positionRotation;
+    }
 
-Vector2 Pose::translation()
-{
-	return positionTranslation;
-}
+    Pose::~Pose()
+    {
+    }
 
-Rotation2 Pose::rotation2()
-{
-	return positionRotation;
-}
+    Vector2 Pose::translation()
+    {
+        return positionTranslation;
+    }
 
-double Pose::x()
-{
-	return positionTranslation(0);
-}
+    Rotation2 Pose::rotation2()
+    {
+        return positionRotation;
+    }
 
-double Pose::y()
-{
-	return positionTranslation(1);
-}
+    double Pose::x()
+    {
+        return positionTranslation(0);
+    }
 
-double Pose::angle()
-{
-	return positionRotation.angle();
-}
+    double Pose::y()
+    {
+        return positionTranslation(1);
+    }
 
-/*Displacement Pose::displacement()
-{
-	return Displacement(this->getMatrix4());
-}*/
+    double Pose::angle()
+    {
+        return positionRotation.angle();
+    }
 
-/* TODO eigen 3 compilation problem */
-//Eigen::Matrix<double,3,3> Pose::matrix3()
-//{
-//	Eigen::Matrix<double,3,3> mat = Eigen::Matrix<double,3,3>::Identity();
-//	mat.corner(Eigen::TopLeft,2,2) = this->rotation2().toRotationMatrix();
-//	mat.corner(Eigen::TopRight,2,1) = this->translation();
-//	return mat;
-//}
-//Eigen::Matrix<double,4,4> Pose::matrix4()
-//{
-//	Eigen::Matrix<double,4,4> mat = Eigen::Matrix<double,4,4>::Identity();
-//	mat.corner(Eigen::TopLeft,2,2) = this->rotation2().toRotationMatrix();
-//	mat.corner(Eigen::TopRight,2,1) = this->translation();
-//	return mat;
-//}
+    /*Displacement Pose::displacement()
+     {
+     return Displacement(this->getMatrix4());
+     }*/
 
-void Pose::translation(Vector2 _positionTranslation)
-{
-	positionTranslation = _positionTranslation;
-}
+    /* TODO BMO eigen 3 compilation problem */
+    //Eigen::Matrix<double,3,3> Pose::matrix3()
+    //{
+    //	Eigen::Matrix<double,3,3> mat = Eigen::Matrix<double,3,3>::Identity();
+    //	mat.corner(Eigen::TopLeft,2,2) = this->rotation2().toRotationMatrix();
+    //	mat.corner(Eigen::TopRight,2,1) = this->translation();
+    //	return mat;
+    //}
+    //Eigen::Matrix<double,4,4> Pose::matrix4()
+    //{
+    //	Eigen::Matrix<double,4,4> mat = Eigen::Matrix<double,4,4>::Identity();
+    //	mat.corner(Eigen::TopLeft,2,2) = this->rotation2().toRotationMatrix();
+    //	mat.corner(Eigen::TopRight,2,1) = this->translation();
+    //	return mat;
+    //}
 
-void Pose::rotation2(Rotation2 _positionRotation)
-{
-	positionRotation = _positionRotation;
-}
+    void Pose::translation(Vector2 _positionTranslation)
+    {
+        positionTranslation = _positionTranslation;
+    }
 
-void Pose::x(double _x)
-{
-	positionTranslation(0) = _x;
-}
+    void Pose::rotation2(Rotation2 _positionRotation)
+    {
+        positionRotation = _positionRotation;
+    }
 
-void Pose::y(double _y)
-{
-	positionTranslation(1) = _y;
-}
+    void Pose::x(double _x)
+    {
+        positionTranslation(0) = _x;
+    }
 
-void Pose::angle(double _heading)
-{
-	positionRotation = Rotation2(_heading);
-}
+    void Pose::y(double _y)
+    {
+        positionTranslation(1) = _y;
+    }
 
-Pose Pose::inverse()
-{
-	Pose p;
-	p.translation(- this->translation());
-	p.rotation2(this->rotation2().inverse());
-	return p;
-}
+    void Pose::angle(double _heading)
+    {
+        positionRotation = Rotation2(_heading);
+    }
 
-Pose Pose::operator =(Pose other)
-{
-	this->translation(other.translation());
-	this->rotation2(other.rotation2());
-	return *this;
-}
+    Pose Pose::inverse()
+    {
+        Pose p;
+        p.translation(-this->translation());
+        p.rotation2(this->rotation2().inverse());
+        return p;
+    }
 
-bool Pose::operator ==(Pose other)
-{
-	return (this->angle() == other.angle()) && (this->translation() == other.translation());
-}
+    Pose Pose::operator =(Pose other)
+    {
+        this->translation(other.translation());
+        this->rotation2(other.rotation2());
+        return *this;
+    }
+
+    bool Pose::operator ==(Pose other)
+    {
+        return (this->angle() == other.angle()) && (this->translation()
+                == other.translation());
+    }
 
 //inline friend Pose operator+(const Pose& lhs, const Pose& rhs)
 //{

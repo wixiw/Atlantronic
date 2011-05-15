@@ -14,7 +14,7 @@ namespace arp_math
 {
     typedef Eigen::Matrix<double, 2, 1> Vector2;
     typedef Eigen::Matrix<double, 3, 1> Vector3;
-    typedef Eigen::Rotation2D<double>	Rotation2;
+    typedef Eigen::Rotation2D<double> Rotation2;
 }
 
 #endif /* _ARPMATH_GEOMETRY_HPP_ */

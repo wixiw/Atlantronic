@@ -61,8 +61,6 @@ namespace arp_ods
          */
         void velocityCallback(const arp_core::VelocityConstPtr& v);
 
-
-
         /**
          * linear velocity
          */

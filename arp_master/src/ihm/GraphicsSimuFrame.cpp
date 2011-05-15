@@ -11,94 +11,98 @@
 #include <cstdlib>
 #include <ctime>
 
-
 using namespace arp_master;
 
-GraphicsSimuFrame::GraphicsSimuFrame(std::string topicName)
-: wxFrame(NULL,
-          wxID_ANY,
-          wxT("GraphicsSimu"),
-          wxDefaultPosition, 
-          wxSize(table_length_in_pixel, table_width_in_pixel),
-          wxDEFAULT_FRAME_STYLE)
-, nh_(ros::NodeHandle("GraphicsSimu"))
+GraphicsSimuFrame::GraphicsSimuFrame(std::string topicName) :
+            wxFrame(NULL, wxID_ANY, wxT("GraphicsSimu"), wxDefaultPosition,
+                    wxSize(table_length_in_pixel, table_width_in_pixel),
+                    wxDEFAULT_FRAME_STYLE),
+            nh_(ros::NodeHandle("GraphicsSimu"))
 {
 
-  update_timer_ = new wxTimer(this);
-  update_timer_->Start(100.);
+    update_timer_ = new wxTimer(this);
+    update_timer_->Start(100.);
 
-  Connect(update_timer_->GetId(), wxEVT_TIMER, wxTimerEventHandler(GraphicsSimuFrame::onUpdate), NULL, this);
-  Connect(wxEVT_PAINT, wxPaintEventHandler(GraphicsSimuFrame::onPaint), NULL, this);
+    Connect(update_timer_->GetId(), wxEVT_TIMER,
+            wxTimerEventHandler(GraphicsSimuFrame::onUpdate), NULL, this);
+    Connect(wxEVT_PAINT, wxPaintEventHandler(GraphicsSimuFrame::onPaint), NULL,
+            this);
 
+    std::string images_path = ros::package::getPath("arp_master")
+            + "/ressource/images/";
 
-  std::string images_path = ros::package::getPath("arp_master") + "/ressource/images/";
+    std::string robot_image_file = "robot.png"; // hauteur de robot.png : 200px = 1m
+    robot_image_.LoadFile(
+            wxString::FromAscii((images_path + robot_image_file).c_str()));
+    robot_image_.SetMask(true);
+    robot_image_.SetMaskColour(255, 255, 255);
 
-  std::string robot_image_file = "robot.png";  // hauteur de robot.png : 200px = 1m
-  robot_image_.LoadFile(wxString::FromAscii((images_path + robot_image_file).c_str()));
-  robot_image_.SetMask(true);
-  robot_image_.SetMaskColour(255, 255, 255);
+    std::string table_image_file = "table.png"; // 609 x 429 px
+    table_image_.LoadFile(
+            wxString::FromAscii((images_path + table_image_file).c_str()));
+    table_image_.SetMask(true);
+    table_image_.SetMask(false);
 
-  std::string table_image_file = "table.png";  // 609 x 429 px
-  table_image_.LoadFile(wxString::FromAscii((images_path + table_image_file).c_str()));
-  table_image_.SetMask(true);
-  table_image_.SetMask(false);
+    table_bitmap_ = wxBitmap(table_image_);
+    ROS_INFO("table image : %d x %d", table_image_.GetHeight(),
+            table_image_.GetWidth());
+    path_dc_.SelectObject(table_bitmap_);
+    clear();
 
-  table_bitmap_ = wxBitmap(table_image_);
-  ROS_INFO("table image : %d x %d", table_image_.GetHeight(), table_image_.GetWidth()) ;
-  path_dc_.SelectObject(table_bitmap_);
-  clear();
+    clear_srv_ = nh_.advertiseService("clear",
+            &GraphicsSimuFrame::clearCallback, this);
 
-  clear_srv_ = nh_.advertiseService("clear", &GraphicsSimuFrame::clearCallback, this);
+    ROS_INFO("Starting GraphicsSimulator with node name %s",
+            ros::this_node::getName().c_str());
 
-  ROS_INFO("Starting GraphicsSimulator with node name %s", ros::this_node::getName().c_str()) ;
-
-  GraphicsSimuRobotPtr t(new GraphicsSimuRobot(ros::NodeHandle(), robot_image_, Vector2(0., 0.), 0., one_meter_in_pixel, topicName));
-  mRobot = t;
+    GraphicsSimuRobotPtr t(
+            new GraphicsSimuRobot(ros::NodeHandle(), robot_image_,
+                    Vector2(0., 0.), 0., one_meter_in_pixel, topicName));
+    mRobot = t;
 
 }
 
 GraphicsSimuFrame::~GraphicsSimuFrame()
 {
-  delete update_timer_;
+    delete update_timer_;
 }
-
 
 void GraphicsSimuFrame::clear()
 {
-  path_dc_.SetBackground(wxBrush( table_image_ ));
-  path_dc_.Clear();
+    path_dc_.SetBackground(wxBrush(table_image_));
+    path_dc_.Clear();
 }
 
 void GraphicsSimuFrame::onUpdate(wxTimerEvent& evt)
 {
-  ros::spinOnce();
+    ros::spinOnce();
 
-  mRobot->update(path_dc_,
-                 table_length_in_pixel/one_meter_in_pixel,
-                 table_width_in_pixel/one_meter_in_pixel );
+    mRobot->update(path_dc_, table_length_in_pixel / one_meter_in_pixel,
+            table_width_in_pixel / one_meter_in_pixel);
 
-  Refresh();
+    Refresh();
 
-  if (!ros::ok())
-  {
-    Close();
-  }
+    if (!ros::ok())
+    {
+        Close();
+    }
 }
 
 void GraphicsSimuFrame::onPaint(wxPaintEvent& evt)
 {
-  wxPaintDC dc(this);
+    wxPaintDC dc(this);
 
-  dc.DrawBitmap(table_bitmap_, 0, 0, true);
+    dc.DrawBitmap(table_bitmap_, 0, 0, true);
 
-  mRobot->paint(dc);
+    mRobot->paint(dc);
 
 }
 
-bool GraphicsSimuFrame::clearCallback(std_srvs::Empty::Request&, std_srvs::Empty::Response&)
+bool GraphicsSimuFrame::clearCallback(std_srvs::Empty::Request&,
+        std_srvs::Empty::Response&)
 {
-  ROS_INFO("Clearing GraphicsSimulator.");
-  clear();
-  return true;
+    ROS_INFO("Clearing GraphicsSimulator.");
+    clear();
+    return true;
 }
 

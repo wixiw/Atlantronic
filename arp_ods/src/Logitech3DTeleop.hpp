@@ -14,14 +14,13 @@
 
 using namespace arp_core;
 
-
 namespace arp_ods
 {
 
-    class Logitech3DTeleop : public ARDTaskContext
+    class Logitech3DTeleop: public ARDTaskContext
     {
     public:
-    	Logitech3DTeleop(const std::string& name);
+        Logitech3DTeleop(const std::string& name);
         ~Logitech3DTeleop();
 
         void updateHook();

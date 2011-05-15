@@ -7,15 +7,13 @@ using namespace arp_ods;
 int main(int argc, char **argv)
 {
 
-  ros::init(argc, argv, "Command");
+    ros::init(argc, argv, "Command");
 
-  Command com;
+    Command com;
 
-  ros::spin();
+    ros::spin();
 
-  return 0;
+    return 0;
 
 }
-
-
 

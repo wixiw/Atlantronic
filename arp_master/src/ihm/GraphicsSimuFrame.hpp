@@ -21,113 +21,116 @@
 
 #include "GraphicsSimuRobot.hpp"
 
-namespace arp_master {
-/** \ingroup arp_master
- * \nonstableyet
- *
- * \class GraphicsSimuFrame
- *
- * \brief Table Simulation
- *
- * Manage physical and graphical simulation of table and robot
- * Should be divided in two parts
- *
- */
+namespace arp_master
+{
+    /** \ingroup arp_master
+     * \nonstableyet
+     *
+     * \class GraphicsSimuFrame
+     *
+     * \brief Table Simulation
+     *
+     * Manage physical and graphical simulation of table and robot
+     * Should be divided in two parts
+     *
+     */
 
-class GraphicsSimuFrame: public wxFrame {
+    class GraphicsSimuFrame: public wxFrame
+    {
 
-private:
+    private:
 
-	/**
-	 * one meter in pixel
-	 */
-	static const double one_meter_in_pixel = 200.0;
+        /**
+         * one meter in pixel
+         */
+        static const double one_meter_in_pixel = 200.0;
 
-	/**
-	 * table length in pixel. Should be the width of table image
-	 */
-	static const double table_length_in_pixel = 609.0;
+        /**
+         * table length in pixel. Should be the width of table image
+         */
+        static const double table_length_in_pixel = 609.0;
 
-	/**
-	 * table width in pixel. Should be the height of table image
-	 */
-	static const double table_width_in_pixel = 429.0;
-public:
+        /**
+         * table width in pixel. Should be the height of table image
+         */
+        static const double table_width_in_pixel = 429.0;
+    public:
 
-	/**
-	 * Default constructor
-	 * A timer is set width default_dt_ms time step
-	 * onUpdate is then called every default_dt_ms
-	 */
-	GraphicsSimuFrame(std::string topicName);
-	~GraphicsSimuFrame();
+        /**
+         * Default constructor
+         * A timer is set width default_dt_ms time step
+         * onUpdate is then called every default_dt_ms
+         */
+        GraphicsSimuFrame(std::string topicName);
+        ~GraphicsSimuFrame();
 
-private:
+    private:
 
-	/**
-	 * called by timer. Manage ros::spinOnce
-	 */
-	void onUpdate(wxTimerEvent& evt);
+        /**
+         * called by timer. Manage ros::spinOnce
+         */
+        void onUpdate(wxTimerEvent& evt);
 
-	/**
-	 * called by PaintEvent.
-	 * Paint table then robot
-	 */
-	void onPaint(wxPaintEvent& evt);
+        /**
+         * called by PaintEvent.
+         * Paint table then robot
+         */
+        void onPaint(wxPaintEvent& evt);
 
-	/**
-	 * clear the table of all trace
-	 */
-	void clear();
+        /**
+         * clear the table of all trace
+         */
+        void clear();
 
-	/**
-	 * used by clear service
-	 */
-	bool clearCallback(std_srvs::Empty::Request&, std_srvs::Empty::Response&);
+        /**
+         * used by clear service
+         */
+        bool clearCallback(std_srvs::Empty::Request&,
+                std_srvs::Empty::Response&);
 
-	/**
-	 * Simulator Nodehandle
-	 * Instanciated by GraphicsSimuFrame constructor
-	 */
-	ros::NodeHandle nh_;
+        /**
+         * Simulator Nodehandle
+         * Instanciated by GraphicsSimuFrame constructor
+         */
+        ros::NodeHandle nh_;
 
-	/**
-	 * ServiceServer used to clear table of all trace
-	 */
-	ros::ServiceServer clear_srv_;
+        /**
+         * ServiceServer used to clear table of all trace
+         */
+        ros::ServiceServer clear_srv_;
 
-	/**
-	 * used to call onUpdate
-	 * Attention, pretty inaccurate
-	 */
-	wxTimer* update_timer_;
+        /**
+         * used to call onUpdate
+         * Attention, pretty inaccurate
+         */
+        wxTimer* update_timer_;
 
-	/**
-	 * DeviceController used to trace route with pen
-	 */
-	wxMemoryDC path_dc_;
+        /**
+         * DeviceController used to trace route with pen
+         */
+        wxMemoryDC path_dc_;
 
-	/**
-	 * table image
-	 */
-	wxImage table_image_;
+        /**
+         * table image
+         */
+        wxImage table_image_;
 
-	/**
-	 * table associated bitmap
-	 */
-	wxBitmap table_bitmap_;
+        /**
+         * table associated bitmap
+         */
+        wxBitmap table_bitmap_;
 
-	/**
-	 * robot
-	 */
-	GraphicsSimuRobotPtr mRobot;
+        /**
+         * robot
+         */
+        GraphicsSimuRobotPtr mRobot;
 
-	/**
-	 * robot associated image
-	 */
-	wxImage robot_image_;
+        /**
+         * robot associated image
+         */
+        wxImage robot_image_;
 
-};
+    };
 
 }
 

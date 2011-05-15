@@ -14,9 +14,9 @@
 
 namespace arp_math
 {
-	typedef Eigen::Matrix<double, 2, 1> Vector2;
-	typedef Eigen::Matrix<double, 3, 1> Vector3;
-	typedef Eigen::Rotation2D<double>	Rotation2;
+    typedef Eigen::Matrix<double, 2, 1> Vector2;
+    typedef Eigen::Matrix<double, 3, 1> Vector3;
+    typedef Eigen::Rotation2D<double> Rotation2;
 
     const double PI = std::acos(-1.0);
 
@@ -72,7 +72,8 @@ namespace arp_math
      * Elapsed time between begin and now, using data type timespec.
      * Return values simply to indicate return point
      */
-    void delta_t(struct timespec *interval, struct timespec begin, struct timespec now);
+    void delta_t(struct timespec *interval, struct timespec begin,
+            struct timespec now);
     double delta_t(struct timespec begin, struct timespec now);
 }
 
