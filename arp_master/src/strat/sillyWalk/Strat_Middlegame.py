@@ -47,6 +47,11 @@ class CreateWalk(CyclicState):
     def executeTransitions(self):
         #mon role est de creer les ordres de mouvements pour un cycle de silly walk
         #je vais creer 3 cases de silly walk et envoyer dessus le robot
+        
+        #dirRobot=getDirection(Inputs.gettheta())
+        #caseres=getClosestCaseInDir(dirRobot,Data.color)
+        
+        #
         Data.case1=Case(-1,-3)
         Data.case2=Case(5,3)
         Data.case3=Case(5,5)
@@ -63,7 +68,7 @@ class Step2(CyclicActionState):
 
 class Step3(CyclicActionState):
     def createAction(self):
-        angleobj=Data.angleParcours+pi/4
+        angleobj=Data.angleParcours+pi/4+pi/8
         (xobj,yobj)=Data.case3.coord_WhenPionMilieu(angleobj)
         self.pointcap(xobj,yobj,angleobj)
 

@@ -30,7 +30,7 @@ class StratNode():
         #creation of the node
         rospy.init_node('StratNode')
         #creation of the cadencer for all states
-        Data.stateMachineRate =rospy.Rate(1)
+        Data.stateMachineRate =rospy.Rate(10)
         #linking of the input in Inputs to the topics
         Inputs.link()
         #creation of statemachine

@@ -7,6 +7,17 @@ from math import sin
 from math import pi
 from UtilARD import *
 
+def getDirection(anglerobot):
+    if -pi/4<anglerobot<=pi/4:
+        return (1,0)
+    if pi/4<anglerobot<=3*pi/4:
+        return (0,1)
+    if 3*pi/4<anglerobot or anglerobot<=-3*pi/4 :
+        return (-1,0)
+    if -3*pi/4<anglerobot<=-pi/4:
+        return (0,-1)
+
+    
 class Robot:
     xPion=0.142 
     yPion=-0.087
@@ -26,6 +37,12 @@ class Case:
         y=self.yCenter-(Robot.xPion*sin(theta)+Robot.yPion*cos(theta))
         return (x,y) 
     
+    def returnColor(self):
+        if (self.i/2+self.j/2)%2==1:
+            return 'red'
+        else:
+            return 'blue'
+        
 
 class AmbiCaseRed(Case):
     def __init__(self,i_hor,j_vert,color):
