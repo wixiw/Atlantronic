@@ -25,7 +25,7 @@ GraphicsSimuFrame::GraphicsSimuFrame(std::string topicName)
 {
 
   update_timer_ = new wxTimer(this);
-  update_timer_->Start(20.);
+  update_timer_->Start(100.);
 
   Connect(update_timer_->GetId(), wxEVT_TIMER, wxTimerEventHandler(GraphicsSimuFrame::onUpdate), NULL, this);
   Connect(wxEVT_PAINT, wxPaintEventHandler(GraphicsSimuFrame::onPaint), NULL, this);

@@ -64,6 +64,11 @@ namespace arp_math
             double endValue, double endLimit);
 
     /**
+     * absolute value for floats
+     */
+    double d_abs(double x);
+
+    /**
      * Elapsed time between begin and now, using data type timespec.
      * Return values simply to indicate return point
      */

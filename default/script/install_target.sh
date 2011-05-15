@@ -73,7 +73,8 @@ then
 	--exclude ".git" \
 	--exclude ".hg" \
 	--exclude ".tb_history"\
-	--exclude "*.log"
+	--exclude "*.log"\
+	--exclude "doc"
 else
 	rsync  -avzh `rospack find $package_name` root@$2:`rosstack find ard` \
 	--delete \
@@ -82,7 +83,8 @@ else
 	--exclude ".git" \
 	--exclude ".hg"\
 	--exclude ".tb_history"\
-	--exclude "*.log"
+	--exclude "*.log" \
+	--exclude "doc"
 fi
 echo -e $NORMAL 
 
