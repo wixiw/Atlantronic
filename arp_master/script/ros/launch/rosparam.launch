@@ -8,7 +8,7 @@
     <param name="/arp_ods/DISTANCE_ACCURACY" value="0.010"  />
 	
 	<!-- Order is succed if (and only if) the current orientation is near the goal with angle_accuracy_ precision-->
-    <param name="/arp_ods/ANGLE_ACCURACY" value="0.05"  />
+    <param name="/arp_ods/ANGLE_ACCURACY" value="0.02"  />
     
     <!--Proportional Gain on angle error (without unity) -->
     <param name="/arp_ods/ROTATION_GAIN" value="10.0"/> 
@@ -29,9 +29,9 @@
     <param name="/arp_ods/VEL_FINAL"  value="0.000" /> 
 	
 	<!--distance where you are in mode approaching point (m) -->
-    <param name="/arp_ods/RADIUS_APPROACH_ZONE"  value="0.020" /> 
+    <param name="/arp_ods/RADIUS_APPROACH_ZONE"  value="0.015" /> 
 	
-	<!--distance where you are in mode fantom point (m) -->
+	<!--NOT USED !!! distance where you are in mode fantom point (m) -->
     <param name="/arp_ods/RADIUS_FANTOM_ZONE"  value="0.050" /> 
 	
 	<!--The fantom coefficient. means the distance of the fantom point to the final point. set it to 0, it will be as if you always try to go directly to final point. set it to 0.9, your robot will make big curve to reach the final point with the right angle.--> 

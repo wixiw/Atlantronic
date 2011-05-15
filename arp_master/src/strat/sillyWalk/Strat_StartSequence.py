@@ -14,6 +14,7 @@ from Data import Data
 from arp_ods.msg import OrderGoal
 from arp_ods.msg import OrderAction
 
+from math import pi
 
 class StartSequence(smach.StateMachine):
     def __init__(self):
@@ -25,7 +26,26 @@ class StartSequence(smach.StateMachine):
             
             smach.StateMachine.add('Retour_petit_bord',
                       Retour_petit_bord(),
+                      transitions={'succeeded':'Petit_to_Grand','aborted':'problem'})
+
+            smach.StateMachine.add('Petit_to_Grand',
+                      Petit_to_Grand(),
+                      transitions={'succeeded':'Recal_grand_bord','aborted':'problem'})
+
+
+            smach.StateMachine.add('Recal_grand_bord',
+                      Recal_grand_bord(),
+                      transitions={'succeeded':'Retour_grand_bord','aborted':'problem'})
+
+
+            smach.StateMachine.add('Retour_grand_bord',
+                      Retour_grand_bord(),
+                      transitions={'succeeded':'Turn_for_match','aborted':'problem'})
+
+            smach.StateMachine.add('Turn_for_match',
+                      Turn_for_match(),
                       transitions={'succeeded':'WaitForMatch','aborted':'problem'})
+
 
             smach.StateMachine.add('WaitForMatch', WaitForMatch(),
                                    transitions={'start':'gogogo'})
@@ -34,11 +54,32 @@ class StartSequence(smach.StateMachine):
 
 class Recal_petit_bord(CyclicActionState):
     def createAction(self):
-       self.forward(1.0)
+       self.backward(0.05)
 
 class Retour_petit_bord(CyclicActionState):
     def createAction(self):
-       self.cap(3.14/2.0)
+       self.forward(0.05)
+
+class Petit_to_Grand(CyclicActionState):
+    def createAction(self):
+       self.pointcap_reverse(0,0,-pi)
+
+class Recal_grand_bord(CyclicActionState):
+    def createAction(self):
+       self.backward(0.05)
+
+class Retour_grand_bord(CyclicActionState):
+    def createAction(self):
+       self.forward(0.05)
+       
+class Turn_for_match(CyclicActionState):
+    def createAction(self):
+       if Data.color=='red':
+           self.cap(0)
+       else:
+           self.cap(-pi)
+       
+       
         
 class WaitForMatch(CyclicState):
     def __init__(self):

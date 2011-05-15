@@ -6,8 +6,10 @@ import smach
 import smach_ros
 import smach_msgs
 import actionlib
+
 from math import cos
 from math import sin
+from math import pi
 
 from CyclicState import CyclicState
 from Inputs import Inputs
@@ -15,6 +17,7 @@ from Data import Data
 
 from arp_ods.msg import OrderGoal
 from arp_ods.msg import OrderAction
+
 
 class CyclicActionState(CyclicState):
     
@@ -80,20 +83,16 @@ class CyclicActionState(CyclicState):
     def pointcap_reverse(self,x,y,theta):
         self.createMotionControlAction(x,y,theta,'POINTCAP',True)
     
-    # non fonctionnel <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     def cap(self,theta):
         self.createMotionControlAction(0,0,theta,'CAP',False)
   
-    # pas teste avec angles <<<<<<<<<<<<<<<<<<<<<<<
     def forward(self,dist):
         self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()),Inputs.gety()+dist*sin(Inputs.gettheta()),Inputs.gettheta(),'POINTCAP',False)
    
-#    def backward(self,dist):
-# il faut rajouter 180
-# il faut donc le modulo magique
-#       self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()),Inputs.gety()+dist*sin(Inputs.gettheta()),Inputs.gettheta(),'POINTCAP',False)
+    def backward(self,dist):
+        self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()+pi),Inputs.gety()+dist*sin(Inputs.gettheta()+pi),Inputs.gettheta(),'POINTCAP',True)
 
-#    def turn(self,angle):
+
 
 
     

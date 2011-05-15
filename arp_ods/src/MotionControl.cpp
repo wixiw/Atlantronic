@@ -10,8 +10,8 @@ MotionControl::MotionControl(std::string name) :
 	as_(nh_, name, boost::bind(&MotionControl::executeCB, this, _1), false),
 			action_name_(name), m_position(0.0, 0.0),
 			m_transCallback(0.0, 0.0), m_cap(0.0), m_orientCallback(0.0),
-			orientLocal_(0.0), m_linearSpeedCmd(0.0), m_angularSpeedCmd(0.0),
-			loop_date(0.0)
+			orientLocal_(0.0), orient_desLocal_(0.0), m_linearSpeedCmd(0.0),
+			m_angularSpeedCmd(0.0), loop_date(0.0), mode(MODE_FANTOM)
 
 {
 	if (nh_.getParam("/arp_ods/DISTANCE_ACCURACY", DISTANCE_ACCURACY) == 0)
@@ -85,11 +85,13 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal) {
 		x_des = goal->x_des;
 		y_des = goal->y_des;
 		theta_des = goal->theta_des;
+		mode = MODE_FANTOM;
 	} else if (goal->move_type == "CAP") {
 		// only cap move
 		x_des = m_position.x();
 		y_des = m_position.y();
 		theta_des = goal->theta_des;
+		mode = MODE_APPROACH;
 	} else {
 		ROS_INFO("%s: not possible", action_name_.c_str());
 		// reject action
@@ -97,11 +99,15 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal) {
 		return;
 	}
 
-	Vector2 trans_des(x_des,y_des);
+	Vector2 trans_des(x_des, y_des);
 	Rotation2 orient_des(theta_des);
 
 	ROS_INFO("%s: Receiving order :  x_des=%.3f, y_des=%.3f, theta_des=%.3f",
 			action_name_.c_str(), trans_des.x(), trans_des.y(), theta_des);
+	if (goal->reverse == false)
+		ROS_INFO("en normal");
+	else
+		ROS_INFO("en reverse");
 
 	////////////////////////// CONTROL LOOP
 	// NB: the control loop has been made so that every "move type" (normal, only cap, reverse) and every step of the trajectory (far, approaching) is done by the same algorithm
@@ -115,9 +121,12 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal) {
 		//permet de retourner le repere du robot pour le faire partir en marche arriere
 		if (goal->reverse == false) {
 			orientLocal_ = m_cap;
+			orient_desLocal_ = orient_des;
 			sens_lin = 1;
 		} else {
 			orientLocal_ = Rotation2(normalizeAngle(m_cap.angle() + PI));
+			orient_desLocal_ = Rotation2(
+					normalizeAngle(orient_des.angle() + PI));
 			sens_lin = -1;
 		}
 
@@ -128,16 +137,28 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal) {
 		// calcul de la distance au point desire
 		double distance_to_despoint = (trans_des - m_position).norm();
 
+		if (distance_to_despoint < RADIUS_APPROACH_ZONE)
+			mode = MODE_APPROACH;
+
 		//calcul de la distance à la droite passant par le point desire et perpendiculaire à l'angle desire
 		//la distance à la ligne d'arrivée en quelque sorte
-		double distance_to_desline = (orient_des.inverse() * (trans_des
+		double distance_to_desline = (orient_desLocal_.inverse() * (trans_des
 				- m_position)).x();
 
-		//utilisation du barycentre entre les 2: quand on est loin, on regarde la distance au point
-		//et quand on est pret on regarde la distance à la ligne
-		double distance_error = smoothStep(distance_to_despoint,
-				distance_to_desline, RADIUS_APPROACH_ZONE,
-				distance_to_despoint, RADIUS_FANTOM_ZONE);
+		/* ca partait d'un bonne intention mais je reviens a la vieille methode...
+		 //utilisation du barycentre entre les 2: quand on est loin, on regarde la distance au point
+		 //et quand on est pret on regarde la distance à la ligne
+		 double distance_error = smoothStep(distance_to_despoint,
+		 distance_to_desline, RADIUS_APPROACH_ZONE,
+		 distance_to_despoint, RADIUS_FANTOM_ZONE);
+		 */
+		double distance_error;
+		if (mode == MODE_FANTOM)
+			distance_error = distance_to_despoint;
+		if (mode == MODE_APPROACH)
+			distance_error = distance_to_desline;
+
+		//ROS_INFO("mode:%i",mode);
 
 		//ROS_INFO(
 		//       "distance_to_despoint=%.3f, distance_to_desline=%.3f, distance_error=%.3f",
@@ -148,7 +169,7 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal) {
 		//il s'agit d'un point qui se situe devant le point final, et suivant l'angle final.
 		//c'est lui qu'on va viser en cap
 		Vector2 phantompoint = trans_des - FANTOM_COEF * distance_error
-				* Vector2(cos(theta_des), sin(theta_des));
+				* Vector2(cos(orient_desLocal_.angle()), sin(orient_desLocal_.angle()));
 		//calcul de l'angle au point fantome
 		Vector2 phantom = phantompoint - m_position;
 		Vector2 direction_in_current = orientLocal_.inverse() * phantom;
@@ -159,12 +180,20 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal) {
 
 		//calcul de l'erreur d'angle par rapport a l'objectif
 		double angle_error_des = normalizeAngle(
-				orient_des.angle() - orientLocal_.angle());
+				orient_desLocal_.angle() - orientLocal_.angle());
 
-		//utilisation du barycentre entre les 2: quand on est loin, on regarde l'erreur d'angle avec le point fantome
-		//et quand on est pres, on regarde l'erreur avec l'angle final
-		double angle_error = smoothStep(distance_to_despoint, angle_error_des,
-				RADIUS_APPROACH_ZONE, angle_error_fant, RADIUS_FANTOM_ZONE);
+		/* j'ai retire le smoothstep
+		 *
+		 //utilisation du barycentre entre les 2: quand on est loin, on regarde l'erreur d'angle avec le point fantome
+		 //et quand on est pres, on regarde l'erreur avec l'angle final
+		 double angle_error = smoothStep(distance_to_despoint, angle_error_des,
+		 RADIUS_APPROACH_ZONE, angle_error_fant, RADIUS_FANTOM_ZONE);
+		 */
+		double angle_error;
+		if (mode == MODE_FANTOM)
+			angle_error = angle_error_fant;
+		if (mode == MODE_APPROACH)
+			angle_error = angle_error_des;
 
 		//ROS_INFO(
 		//        "angle_error_fant=%.3f, angle_error_des=%.3f, angle_error=%.3f",
@@ -211,8 +240,26 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal) {
 					">>>>>>>>>>>>>>>>> %s: Position Reached :  x=%.3f, y=%.3f, theta=%.3f",
 					action_name_.c_str(), m_position.x(), m_position.y(),
 					m_cap.angle());
-			ROS_INFO("erreur dist: %.3f   erreur angle: %.3f",distance_error,angle_error);
-			ROS_INFO("angle_error_fant: %.3f   angle_error_des: %.3f",angle_error_fant,angle_error_des);
+			ROS_INFO("erreur dist: %.3f   erreur angle: %.3f", distance_error,
+					angle_error);
+			ROS_INFO("angle_error_fant: %.3f   angle_error_des: %.3f",
+					angle_error_fant, angle_error_des);
+			ROS_INFO("orient_des : %.3f    orient  : %.3f", orient_des.angle(),
+					m_cap.angle());
+			ROS_INFO(
+					"orient_desLocal_.angle() : %.3f    orientLocal_.angle()  : %.3f ==> angle_error_des: %.3f",
+					orient_desLocal_.angle(), orientLocal_.angle(),
+					angle_error_des);
+			/*ROS_INFO("----");
+			ROS_INFO(
+					"double angle_error = smoothStep(distance_to_despoint, angle_error_des,RADIUS_APPROACH_ZONE, angle_error_fant, RADIUS_FANTOM_ZONE)");
+			ROS_INFO("distance_to_despoint %.3f", distance_to_despoint);
+			ROS_INFO("angle_error_des %.3f", angle_error_des);
+			ROS_INFO("RADIUS_APPROACH_ZONE %.3f", RADIUS_APPROACH_ZONE);
+			ROS_INFO("angle_error_fant %.3f", angle_error_fant);
+			ROS_INFO("RADIUS_FANTOM_ZONE %.3f", RADIUS_FANTOM_ZONE);
+			ROS_INFO(">>angle_error %.3f", angle_error);
+			 */
 			success = true;
 			break;
 		}
@@ -258,7 +305,7 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal) {
 
 double MotionControl::linearReductionCoef(double angle_error) {
 	//le coefficient est 1 si angle est =0, il est 0 si angle=PI/8 au +, avec un smoothstep entre 2
-	double result = smoothStep(d_abs(angle_error), 1, 0, 0, PI/8.0);
+	double result = smoothStep(d_abs(angle_error), 1, 0, 0, PI / 8.0);
 	//ROS_INFO("smoothStep  error %.3f  =>> abs %.3f ",angle_error,d_abs(angle_error));
 	//ROS_INFO("smoothStep abs error %.3f  =>> coef %.3f ",d_abs(angle_error), result);
 	return result;

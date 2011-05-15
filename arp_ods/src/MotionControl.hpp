@@ -91,6 +91,12 @@ protected:
 	arp_math::Rotation2 orientLocal_;
 
 	/**
+	*  possibly reversed objective
+	*/
+	arp_math::Rotation2 orient_desLocal_;
+
+
+	/**
 	 * published linear velocity
 	 */
 	double m_linearSpeedCmd;
@@ -110,6 +116,14 @@ protected:
 	 *  keep track of the former loop value of angle_error, to compute derivative
 	 */
 	double old_angle_error;
+
+	/**
+	 * mode of operation
+	 */
+	int mode;
+	static const int MODE_APPROACH=1;
+	static const int MODE_FANTOM=2;
+
 
 	/**
 	 * this are coefficient that are defined by rosparam. see .launch files.
