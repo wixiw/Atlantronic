@@ -9,7 +9,8 @@ import smach_msgs
 from CyclicState import CyclicState
 from Inputs import Inputs
 from Data import Data
-
+from Table2011 import *
+from UtilARD import *
 
 class Initialisation(smach.StateMachine):
     def __init__(self):
@@ -40,4 +41,6 @@ class WaitForStart(CyclicState):
         
     def executeOut(self):
         Data.color=Inputs.getcolor()
+        poseDepart=AmbiPoseRed(-1.45,0.84,0,Data.color)
+        self.setPosition(poseDepart.x,poseDepart.y,poseDepart.theta)
     

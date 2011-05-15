@@ -16,6 +16,9 @@ from arp_ods.msg import OrderAction
 
 from math import pi
 
+from Table2011 import *
+from UtilARD import *
+
 class StartSequence(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
@@ -62,7 +65,7 @@ class Retour_petit_bord(CyclicActionState):
 
 class Petit_to_Grand(CyclicActionState):
     def createAction(self):
-       self.pointcap_reverse(0,0,-pi)
+       self.cap(-pi/2)
 
 class Recal_grand_bord(CyclicActionState):
     def createAction(self):

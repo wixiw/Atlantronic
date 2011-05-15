@@ -25,6 +25,7 @@ class CyclicActionState(CyclicState):
         smach.StateMachine.__init__(self,outcomes=['succeeded','aborted'])
         
     def execute(self,userdata):
+        Inputs.update()
         self.actionCreated = False
         #this should always be overrided !
         self.createAction()
@@ -33,7 +34,7 @@ class CyclicActionState(CyclicState):
             return
         
         while(not rospy.is_shutdown()):
-            Inputs.update()
+            
             self.executeWhile()
             
             #is the order terminated ?
@@ -44,6 +45,7 @@ class CyclicActionState(CyclicState):
                 return trans
             
             Data.stateMachineRate.sleep()
+            Inputs.update()
         rospy.logerr("boucle d'etat cassee par le shutdown")
 
     def executeClientTransition(self):
@@ -82,6 +84,7 @@ class CyclicActionState(CyclicState):
         
     def pointcap_reverse(self,x,y,theta):
         self.createMotionControlAction(x,y,theta,'POINTCAP',True)
+    
     
     def cap(self,theta):
         self.createMotionControlAction(0,0,theta,'CAP',False)
