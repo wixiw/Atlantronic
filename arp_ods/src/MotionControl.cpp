@@ -97,7 +97,7 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal) {
 		return;
 	}
 
-	Vector2 trans_des(goal->x_des, goal->y_des);
+	Vector2 trans_des(x_des,y_des);
 	Rotation2 orient_des(theta_des);
 
 	ROS_INFO("%s: Receiving order :  x_des=%.3f, y_des=%.3f, theta_des=%.3f",
