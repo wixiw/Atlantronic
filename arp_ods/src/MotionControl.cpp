@@ -240,7 +240,7 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal) {
 					">>>>>>>>>>>>>>>>> %s: Position Reached :  x=%.3f, y=%.3f, theta=%.3f",
 					action_name_.c_str(), m_position.x(), m_position.y(),
 					m_cap.angle());
-			ROS_INFO("erreur dist: %.3f   erreur angle: %.3f", distance_error,
+			/*ROS_INFO("erreur dist: %.3f   erreur angle: %.3f", distance_error,
 					angle_error);
 			ROS_INFO("angle_error_fant: %.3f   angle_error_des: %.3f",
 					angle_error_fant, angle_error_des);
@@ -249,7 +249,7 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal) {
 			ROS_INFO(
 					"orient_desLocal_.angle() : %.3f    orientLocal_.angle()  : %.3f ==> angle_error_des: %.3f",
 					orient_desLocal_.angle(), orientLocal_.angle(),
-					angle_error_des);
+					angle_error_des);*/
 			/*ROS_INFO("----");
 			ROS_INFO(
 					"double angle_error = smoothStep(distance_to_despoint, angle_error_des,RADIUS_APPROACH_ZONE, angle_error_fant, RADIUS_FANTOM_ZONE)");
