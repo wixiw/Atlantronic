@@ -12,6 +12,9 @@ class Robot:
     yPion=-0.087
 
 class Case:
+    #attention a cette numerotation tres intelligente !
+    #la premiere case c'est 1, la suivante 3, la suivante 5
+    #ca permet d'avoir une symetrie sur les numeros de cases ET le repere
     def __init__(self,i_hor,j_vert):
         self.i=i_hor
         self.j=j_vert

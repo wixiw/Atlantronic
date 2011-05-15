@@ -85,7 +85,6 @@ class CyclicActionState(CyclicState):
     def pointcap_reverse(self,x,y,theta):
         self.createMotionControlAction(x,y,theta,'POINTCAP',True)
     
-    
     def cap(self,theta):
         self.createMotionControlAction(0,0,theta,'CAP',False)
   

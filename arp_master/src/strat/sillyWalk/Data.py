@@ -8,3 +8,4 @@ class Data:
     
     #variables de la machine d'etat
     color='NONE'
+
