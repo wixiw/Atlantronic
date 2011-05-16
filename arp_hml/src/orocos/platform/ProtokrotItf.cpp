@@ -92,6 +92,9 @@ ProtokrotItf::ProtokrotItf(const std::string& name):
     		.doc("Returns a string containing Core version");
     addOperation("coGetHmlVersion",&ProtokrotItf::coGetHmlVersion, this, ClientThread)
     		.doc("Returns a string containing HML version");
+    addOperation("ooSetMotorPower",&ProtokrotItf::ooSetMotorPower, this, OwnThread)
+            .doc("Defines if motor are powered or not.")
+            .arg("powerOn","when set to true motor is powered and ready to move. If a null speed is provided, the motor is locked as if brakes where enabled. When set to false there is no power in the motor which means that the motor is free to any move.");
 }
 
 string ProtokrotItf::coGetCoreVersion()
@@ -102,6 +105,23 @@ string ProtokrotItf::coGetCoreVersion()
 string ProtokrotItf::coGetHmlVersion()
 {
 	return ARP_HML_VERSION;
+}
+
+bool ProtokrotItf::configureHook()
+{
+    bool res = true;
+    HmlTaskContext::configureHook();
+    res &= getOperation("LeftDriving",  "ooEnableDrive",       m_ooEnableLeftDrive);
+    res &= getOperation("RightDriving", "ooEnableDrive",       m_ooEnableRigthtDrive);
+    res &= getOperation("LeftDriving",  "ooDisableDrive",      m_ooDisableLeftDrive);
+    res &= getOperation("RightDriving", "ooDisableDrive",      m_ooDisableRigthtDrive);
+
+    if( res == false )
+    {
+        LOG(Error) << "failed to configure : did not get operations" << endlog();
+    }
+
+    return res;
 }
 
 void ProtokrotItf::updateHook()
@@ -250,3 +270,30 @@ void ProtokrotItf::readSpeed()
 	}
 }
 
+bool ProtokrotItf::ooSetMotorPower(bool powerOn)
+{
+    if( powerOn )
+    {
+        if( outDriveEnable.getLastWrittenValue() )
+        {
+            LOG(Info) << "ooMotorPower : you are trying to power the drive but they are already powered !" << endlog();
+        }
+        else
+        {
+            m_ooEnableLeftDrive();
+            m_ooEnableRigthtDrive();
+        }
+    }
+    else
+    {
+        if( outDriveEnable.getLastWrittenValue() )
+        {
+            m_ooDisableLeftDrive();
+            m_ooDisableRigthtDrive();
+        }
+        else
+        {
+            LOG(Info) << "ooMotorPower : you are tryin to unpower the drive but they are already unpowered !" << endlog();
+        }
+    }
+}

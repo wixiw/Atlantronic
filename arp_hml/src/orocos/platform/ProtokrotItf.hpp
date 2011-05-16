@@ -68,6 +68,18 @@ namespace arp_hml
          */
         string coGetHmlVersion();
 
+        /**
+         * Defines if motor are powered or not.
+         * @param poserOn : when set to true motor is powered and ready to move. If a null speed is provided, the motor is locked
+         * as if brakes where enabled. When set to false there is no power in the motor which means that the motor is free to any move.
+         */
+        bool ooSetMotorPower(bool powerOn);
+
+        /**
+         * Get enableDrive and disableDrive operation on motors
+         */
+        bool configureHook();
+
     	/**
     	 * Publish data from outside to HML, read HML data and present them in a formated way to outside.
     	 * In order :
@@ -160,6 +172,15 @@ public:
 protected:
         /** This holds the time of the last received differential command **/
         struct timespec m_lastCmdTimestamp;
+
+        /** Pointer on the LeftDrive ooEnableDrive Operation**/
+        OperationCaller<void(void)> m_ooEnableLeftDrive;
+        /** Pointer on the Rigth ooEnableDrive Operation**/
+        OperationCaller<void(void)> m_ooEnableRigthtDrive;
+        /** Pointer on the LeftDrive ooDisableDrive Operation**/
+        OperationCaller<void(void)> m_ooDisableLeftDrive;
+        /** Pointer on the Rigth ooDisableDrive Operation**/
+        OperationCaller<void(void)> m_ooDisableRigthtDrive;
 
         /**
          * Get the differential command speed for both motor and dispatch it to them

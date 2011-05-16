@@ -1,5 +1,8 @@
 PcBoard.configure();
 PcBoard.start();
 
+//ça doit être fait ici parce que dans le Load Left et Right n'existent pas
+addPeer("Protokrot", "LeftDriving");
+addPeer("Protokrot", "RightDriving");
 Protokrot.configure();
 Protokrot.start();

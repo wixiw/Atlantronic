@@ -5,4 +5,3 @@ addPeer("Reporting", "PcBoard");
 loadComponent("Protokrot","arp_hml::ProtokrotItf");
 setActivity("Protokrot",0.000,0,ORO_SCHED_OTHER);
 addPeer("Reporting", "Protokrot");
-
