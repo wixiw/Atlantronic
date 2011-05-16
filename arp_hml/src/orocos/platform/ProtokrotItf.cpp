@@ -70,6 +70,12 @@ ProtokrotItf::ProtokrotItf(const std::string& name):
             .doc("Value of the right odometer in rad on the wheel axe");
     addPort("inLeftSpeedMeasure",inLeftSpeedMeasure)
             .doc("Value of the left speed in rad/s on the wheel axe");
+    addPort("inLeftDriveConnected",inLeftDriveConnected)
+            .doc("Left drive connectivity");
+    addPort("inRightDriveConnected",inRightDriveConnected)
+              .doc("Right drive connectivity");
+    addPort("inWoodheadConnected",inWoodheadConnected)
+              .doc("Woodhead connectivity");
     addPort("inRightSpeedMeasure",inRightSpeedMeasure)
             .doc("Value of the right speed in rad/s on the wheel axe");
 
@@ -116,6 +122,9 @@ void ProtokrotItf::updateHook()
 
     //lecture de enable
     readDriveEnable();
+
+    //lecture de la conenctivité
+    readConnectivity();
 
     //lecture des vitesses
     readSpeed();
@@ -211,6 +220,21 @@ void ProtokrotItf::readDriveEnable()
 		outDriveEnable.write( true );
 	else
 		outDriveEnable.write( false );
+}
+
+void ProtokrotItf::readConnectivity()
+{
+    bool leftDriveConnectivity = false;
+    bool rightDriveConnectivity = false;
+    bool woodheadConnectivity = false;
+    Bool emergency;
+
+    inLeftDriveConnected.readNewest(leftDriveConnectivity);
+    inRightDriveConnected.readNewest(rightDriveConnectivity);
+    inWoodheadConnected.readNewest(woodheadConnectivity);
+
+    emergency.data = !leftDriveConnectivity && !rightDriveConnectivity && !woodheadConnectivity;
+    outEmergencyStop.write(emergency);
 }
 
 void ProtokrotItf::readSpeed()

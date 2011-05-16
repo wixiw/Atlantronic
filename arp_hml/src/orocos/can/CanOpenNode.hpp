@@ -65,14 +65,14 @@ namespace arp_hml
         int propNmtTimeout;
 
         /**
-         * Timeout before considering configureNode has failed (in ms)
-         */
-        int propConfigureNodeTimeout;
-
-        /**
          * name of the CanOpenController this component will connect
          */
         string propCanOpenControllerName;
+
+        /**
+         * this script is executed in the configureHook to set up CAN config values
+         */
+        string propCanConfigurationScript;
 
         /**
          * Clock port which trigger our activity
@@ -93,6 +93,11 @@ namespace arp_hml
          * port in which the component can ask a new nmt state for our node from a CanOpenController
          */
         OutputPort<enum_DS301_nmtStateRequest> outRequestNmtState;
+
+        /**
+         * This port is true when the component thinks the device is disconnected of the network
+         */
+        OutputPort<bool> outConnected;
 
         /**
          * handler on a CanOpenController operation to register

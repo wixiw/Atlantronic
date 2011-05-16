@@ -132,6 +132,15 @@ namespace arp_hml
         /** Right drive soft enable state **/
         InputPort<bool> inRightDriveEnable;
 
+        /** Left drive connectivity **/
+        InputPort<bool> inLeftDriveConnected;
+
+        /** Right drive connectivity **/
+        InputPort<bool> inRightDriveConnected;
+
+        /** Woodhead connectivity **/
+        InputPort<bool> inWoodheadConnected;
+
         /** Speed command for the left motor in rad/s on the wheel axe **/
         OutputPort<double> outLeftSpeedCmd;
 
@@ -177,6 +186,11 @@ protected:
          * Read the drive enable value and merge the information for outside
          */
         void readDriveEnable();
+
+        /**
+         * Read the connectivity input and try to guess if the emergency stop is active
+         */
+        void readConnectivity();
 
         /**
          * Read the value of left and rigth motor and publish them together

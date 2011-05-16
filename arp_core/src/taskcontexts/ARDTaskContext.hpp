@@ -20,6 +20,40 @@ using namespace RTT;
 
 namespace arp_core
 {
+    /** surcharge du log */
+    #define LOG(level) RTT::log(propEnableLog?level:Never)<<"["<<getName()<<"] "
+
+    /**
+     * Create a while loop to wait a function to answer true until a timeout explodes
+     * YOU MUST provide in your code a "double chrono=0.0;" variable !
+     * @param function : a boolean function that returns true when the loop must continue
+     * @param timeout : a maximal time in s
+     * @param sleep : sleeping delay each time function is true in s
+     */
+    #define whileTimeout(function, timeout, sleep ) \
+    while( function && chrono < timeout )       \
+    {                                           \
+        chrono += sleep;                        \
+        usleep(sleep*1E6);                      \
+    }
+
+    /**
+     * Use this define after a whileTimeout to check
+     * if the timeout has expired
+     * use it like a if else case :
+     * IfWhileTimeoutExpired
+     * {
+     *    LOG(Error) << "Timeout over !" << endlog();
+     * }
+     * else
+     * {
+     *    LOG(Info) << "Great ! it worked." << endlog();
+     * }
+     */
+    #define IfWhileTimeoutExpired(timeout)  if( chrono >= timeout )
+
+
+
     /** \ingroup ARP-arp_core
      *
      * \class ARDTaskContext
@@ -27,10 +61,6 @@ namespace arp_core
      * Cette classe contient l'instrumentation de base utile
      * pour tous les composants qui seron développés avec Orocos
      */
-
-    /** surcharge du log */
-    #define LOG(level) RTT::log(propEnableLog?level:Never)<<"["<<getName()<<"] "
-
     class ARDTaskContext : public TaskContext
     {
     public:
@@ -121,7 +151,7 @@ namespace arp_core
          * Reset the component in doing in chain : stop();cleanup();configure();start()
          * @return true if the component is back to a running state
          */
-        bool ooReset();
+        bool coReset();
 
         /**
          * Write current Component properties to disk

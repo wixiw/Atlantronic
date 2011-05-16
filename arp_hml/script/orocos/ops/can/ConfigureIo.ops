@@ -1,7 +1,3 @@
-program configureNode
-{
-    var CanDicoEntry sdo;
-    var int Info = 2;
-    
-    
-}
+var CanDicoEntry sdo;
+var int Info = 2;
+attrScriptRes=true;

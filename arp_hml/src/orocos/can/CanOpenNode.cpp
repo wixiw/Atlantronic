@@ -17,9 +17,9 @@ using namespace scripting;
 CanOpenNode::CanOpenNode(const std::string& name):
 	HmlTaskContext(name),
     propNodeId(int(0xFF)),
-    propNmtTimeout(1000),
-    propConfigureNodeTimeout(3000),
+    propNmtTimeout(1.000),
     propCanOpenControllerName("Can1"),
+    propCanConfigurationScript(""),
     inMasterClock(),
     inNmtState(),
     inBootUpFrame(),
@@ -33,10 +33,10 @@ CanOpenNode::CanOpenNode(const std::string& name):
         .doc("CAN adress of the node");
     addProperty("propNmtTimeout",propNmtTimeout)
         .doc("Timeout before considering a node is not responding to a NMT request (in ms)");
-    addProperty("propConfigureNodeTimeout",propConfigureNodeTimeout)
-        .doc("Timeout before considering configureNode has failed (in ms)");
     addProperty("propCanOpenControllerName",propCanOpenControllerName)
         .doc("name of the CanOpenController this component will connect");
+    addProperty("propCanConfigurationScript",propCanConfigurationScript)
+        .doc("this script is executed in the configureHook to set up CAN config values");
 
     addEventPort("inMasterClock",inMasterClock)
     		.doc("");
@@ -46,9 +46,13 @@ CanOpenNode::CanOpenNode(const std::string& name):
             .doc("port from which we receive the BootUp Frame of our node from a CanOpenController");
     addPort("outRequestNmtState",outRequestNmtState)
     		.doc("port in which the component can ask a new nmt state for our node from a CanOpenController");
+    addPort("outConnected",outConnected)
+            .doc("This port is true when the component thinks the device is disconnected of the network");
 
     addOperation("coRegister", &CanOpenNode::coRegister, this, ClientThread)
     		.doc("use this operation in deployment to register the node into the CanOpenController");
+
+    outConnected.write(false);
 }
 
 void CanOpenNode::updateNodeIdCard()
@@ -84,15 +88,9 @@ bool CanOpenNode::checkProperties()
         LOG(Warning)  << "propNodeId is a reserved value, it should not be used in operationnal : 0x" << std::hex << propNodeId << endlog();
     }
 
-    if( propNmtTimeout <= 0 || propNmtTimeout > 2000 )
+    if( propNmtTimeout <= 0 || propNmtTimeout > 20 )
     {
-        LOG(Error)  << "failed to check Properties : propNmtTimeout is out of bounds ]0;2000]: " << propNmtTimeout << endlog();
-        res = false;
-    }
-
-    if( propConfigureNodeTimeout <= 0 || propConfigureNodeTimeout > 10000 )
-    {
-        LOG(Error)  << "failed to check Properties : propConfigureNodeTimeout is out of bounds ]0;10000]: " << propConfigureNodeTimeout << endlog();
+        LOG(Error)  << "failed to check Properties : propNmtTimeout is out of bounds ]0;20]: " << propNmtTimeout << endlog();
         res = false;
     }
 
@@ -158,6 +156,10 @@ bool CanOpenNode::configureHook()
         LOG(Error)  << "failed to configure : impossible to reset the node" << endlog();
     	goto failedUnregister;
     }
+    else
+    {
+        outConnected.write(true);
+    }
 
     //on envoie les SDO de configuration
     if( !configureNode() )
@@ -181,21 +183,13 @@ bool CanOpenNode::configureHook()
 bool CanOpenNode::startHook()
 {
     bool res = HmlTaskContext::startHook();
-    int chrono = 0;
-
+    double chrono = 0.0;
     //envoit de la requête de reset au noeud
     outRequestNmtState.write(StartNode);
     //mise à jour de l'état NMT
-    inNmtState.readNewest(attrCurrentNMTState);
-    while( attrCurrentNMTState != Operational && chrono < propNmtTimeout )
-    {
-    	LOG(Debug) << "coMasterAskNmtNodeState : Node " << propNodeId << " is waiting for a NMT start frame ..." << endlog();
-        chrono++;
-        usleep(1000);
-        inNmtState.readNewest(attrCurrentNMTState);
-    }
+    whileTimeout( inNmtState.readNewest(attrCurrentNMTState) != NoData && attrCurrentNMTState != Operational, propNmtTimeout, 0.001 );
     //si le timeout est explosé c'est que ça a foiré
-    if( chrono >= propNmtTimeout )
+    IfWhileTimeoutExpired(propNmtTimeout )
     {
         LOG(Error)  << "startHook : timeout has expired, impossible to get into operational NMT state for node 0x"<< std::hex << propNodeId << endlog();
         goto failed;
@@ -219,9 +213,9 @@ void CanOpenNode::updateHook()
 
     //lecture des bootup
     bool dummy;
-    while( inBootUpFrame.read(dummy) == NewData )
+    if( inBootUpFrame.read(dummy) == NewData )
     {
-        ooReset();
+        stop();
         LOG(Info) << "Node " << propNodeId << " has send a boot up frame." << endlog();
     }
 
@@ -235,30 +229,34 @@ void CanOpenNode::updateHook()
 
 void CanOpenNode::stopHook()
 {
-    int chrono = 0;
-
+    double chrono = 0.0;
     //envoit de la requête de reset au noeud
     outRequestNmtState.write(StopNode);
     //mise à jour de l'état NMT
-    inNmtState.readNewest(attrCurrentNMTState);
-    while( attrCurrentNMTState != Stopped && chrono < propNmtTimeout )
-    {
-    	LOG(Debug) << "stopHook : Node " << propNodeId << " is waiting for the StopNode request to be accepted ..." << endlog();
-        chrono++;
-        usleep(1000);
-        inNmtState.readNewest(attrCurrentNMTState);
-    }
+    whileTimeout( inNmtState.readNewest(attrCurrentNMTState)!= NoData && attrCurrentNMTState != Stopped, propNmtTimeout, 0.001 )
     //si le timeout est explosé c'est que ça a foiré
-    if( chrono >= propNmtTimeout )
+    IfWhileTimeoutExpired(propNmtTimeout)
     {
-    	LOG(Fatal)  << "stopHook : Nmt StopNode request has not been processed by node 0x"<< std::hex << propNodeId << " stalled in state : " << attrCurrentNMTState << endlog();
-        goto failed;
+    	if(attrCurrentNMTState == Unknown_state )
+    	{
+    	    LOG(Error) << "stopHook : Device disconnected" << endlog();
+    	    outConnected.write(false);
+    	    goto success;
+    	}
+    	else
+    	{
+    	    LOG(Fatal)  << "stopHook : Nmt StopNode request has not been processed by node 0x"<< std::hex << propNodeId << " stalled in state : " << attrCurrentNMTState << endlog();
+    	    goto failed;
+    	}
     }
 
     HmlTaskContext::stopHook();
-    LOG(Debug) << "CanOpenNode::stopHook : done" << endlog();
+    LOG(Info) << "CanOpenNode::stopHook : done" << endlog();
+    goto success;
 
     failed:
+    return;
+    success:
     return;
 }
 
@@ -285,9 +283,9 @@ bool CanOpenNode::resetNode()
 {
     bool res = true;
     bool bootUp;
-    int chrono = 0;
+    double chrono = 0.0;
 
-    LOG(Info) << "Sending a reset to node 0x" << std::hex << propNodeId << endlog();
+    LOG(Info) << "Sending a CAN reset to node 0x" << std::hex << propNodeId << endlog();
 
     //vidange de la pile de bootUp
     while( inBootUpFrame.read(bootUp) == NewData )
@@ -299,12 +297,8 @@ bool CanOpenNode::resetNode()
     outRequestNmtState.write(ResetNode);
 
     //attente du bootup
-    while ( inBootUpFrame.read(bootUp) != NewData && chrono < propNmtTimeout)
-    {
-        chrono += 50;
-        usleep(1000*50);
-    }
-    if( chrono >= propNmtTimeout )
+    whileTimeout ( inBootUpFrame.read(bootUp) != NewData , propNmtTimeout, 0.050);
+    IfWhileTimeoutExpired(propNmtTimeout)
     {
         LOG(Error) << "resetNode : Node 0x" << std::hex << propNodeId << " is waiting for a bootUp frame ..." << endlog();
         res &= false;
@@ -312,13 +306,9 @@ bool CanOpenNode::resetNode()
     }
 
     //mise à jour de l'état NMT
-    while ( attrCurrentNMTState != Pre_operational && chrono < propNmtTimeout)
-    {
-        chrono += 50;
-        inNmtState.readNewest(attrCurrentNMTState);
-        usleep(1000*50);
-    }
-    if( chrono >= propNmtTimeout )
+    chrono = 0;
+    whileTimeout ( inNmtState.readNewest(attrCurrentNMTState) != NoData && attrCurrentNMTState != Pre_operational, propNmtTimeout, 0.050)
+    IfWhileTimeoutExpired(propNmtTimeout)
     {
         LOG(Error)  << "resetNode : timeout has expired, NMT state dispatch don't seem to be ok." << endlog();
         res &= false;
@@ -340,26 +330,22 @@ bool CanOpenNode::configureNode()
 	attrScriptRes = true;
 
     // start a program :
-    if( scripting->hasProgram("configureNode") == false )
-    {
-        LOG(Error)  << "configureNode : did not found program configureNode ." << endlog();
-        goto failed;
-    }
+	if( propCanConfigurationScript == "" )
+	{
+	    LOG(Warning)  << "configureNode : no script is define for CAN configuration" << endlog();
+	    goto success;
+	}
+	else
+	{
+        if( scripting->runScript( attrProjectRootPath + "/" + attrScriptPath + "/can/" + propCanConfigurationScript) == false )
+        {
+            LOG(Error)  << "configureNode : failed to execute CAN script : " << propCanConfigurationScript << endlog();
+            goto failed;
+        }
+	}
 
-    // start a program :
-    if( scripting->startProgram("configureNode") == false )
-    {
-        LOG(Error)  << "configureNode : failed to start program configureNode." << endlog();
-        goto failed;
-    }
-
-    //wait the end of the program
-    while( scripting->getProgramStatus("configureNode") == ProgramInterface::Status::running )
-    {
-    	usleep(10*1000);
-    }
     // check the result :
-    if( scripting->getProgramStatus("configureNode") == ProgramInterface::Status::stopped && attrScriptRes == true )
+    if( attrScriptRes == true )
     {
         LOG(Info)  << "configureNode : program finished properly." << endlog();
         goto success;

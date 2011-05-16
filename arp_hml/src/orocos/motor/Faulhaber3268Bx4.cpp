@@ -287,8 +287,10 @@ void Faulhaber3268Bx4::readCaptors()
 
 void Faulhaber3268Bx4::stopHook()
 {
-    disableDrive();
-    updateHook();
+    EnterMutex();
+    *m_faulhaberCommand = m_faulhaberScriptCommand;
+    *m_faulhaberCommandParameter = m_faulhaberScriptCommandParam;
+    LeaveMutex();
     CanOpenNode::stopHook();
 }
 

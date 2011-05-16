@@ -42,7 +42,7 @@ ARDTaskContext::ARDTaskContext(const std::string& name, const std::string projec
         .doc("This Client Operation allows to log from script. It's non real time. Level are NONE=-1,ERROR=0,WARNING=1,INFO=2,DEBUG=3")
         .arg("level","The log level")
         .arg("string","The string to log");
-    addOperation("ooReset", &ARDTaskContext::ooReset, this, OwnThread )
+    addOperation("coReset", &ARDTaskContext::coReset, this, ClientThread )
         .doc("This Client Operation allows reset the component");
     addOperation("ooWriteProperties", &ARDTaskContext::ooWriteProperties, this, OwnThread )
           .doc("Write current Component properties to disk");
@@ -252,7 +252,7 @@ bool ARDTaskContext::checkInputsPorts()
     return res;
 }
 
-bool ARDTaskContext::ooReset()
+bool ARDTaskContext::coReset()
 {
     bool res = true;
 
@@ -309,3 +309,4 @@ bool ARDTaskContext::ooWriteProperties()
 
     return res;
 }
+

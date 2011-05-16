@@ -18,11 +18,26 @@ print.log(Warning, " == Starting HML components == ");
 runScript("/opt/ros/ard/arp_hml/script/orocos/deployment/other/StartOther.ops")
 runScript("/opt/ros/ard/arp_hml/script/orocos/deployment/can/StartCan.ops")
 
+var bool deployed_successfully = true;
 
-print.log(Warning, "Fin déploiment arp_hml");
-print.log(Warning, "====================");
-print.log(Warning, "HML in version : " + Protokrot.coGetHmlVersion);
-print.log(Warning, "====================");
+if( !Can1.isRunning() || !Io.isRunning() || !LeftDriving.isRunning() || !RightDriving.isRunning() 
+		|| !Protokrot.isRunning() ) then
+{
+	print.log(Warning, "====================");
+	print.log(Fatal, "!*%$#@&!*%$#@&!*%$#@&!*%$#@&!*%$#@&!*%$#@&");
+	print.log(Fatal, "       Fail to deploy HML !");
+	print.log(Fatal, "!*%$#@&!*%$#@&!*%$#@&!*%$#@&!*%$#@&!*%$#@&");
+	print.log(Warning, "====================");
+	deployed_successfully = false;
+}
+else
+{
+	print.log(Warning, "====================");
+	print.log(Warning, "Fin déploiment arp_hml OK");
+	print.log(Warning, "HML in version : " + Protokrot.coGetHmlVersion);
+	print.log(Warning, "====================");
+	deployed_successfully = true;
+}
 
 Reporting.reportPort ("Protokrot","outLeftSpeedCmd");
 Reporting.reportPort ("Protokrot","outRightSpeedCmd");

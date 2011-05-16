@@ -39,3 +39,6 @@ connect("Protokrot.inLeftDriveEnable", "LeftDriving.outDriveEnable",ConnPolicy()
 connect("Protokrot.inRightDriveEnable", "RightDriving.outDriveEnable",ConnPolicy());
 connect("Protokrot.inLeftSpeedMeasure", "LeftDriving.outComputedSpeed",ConnPolicy());
 connect("Protokrot.inRightSpeedMeasure", "RightDriving.outComputedSpeed",ConnPolicy());
+connect("Protokrot.inLeftDriveConnected", "LeftDriving.outConnected",ConnPolicy());
+connect("Protokrot.inRightDriveConnected", "RightDriving.outConnected",ConnPolicy());
+connect("Protokrot.inWoodheadConnected", "Io.outConnected",ConnPolicy());

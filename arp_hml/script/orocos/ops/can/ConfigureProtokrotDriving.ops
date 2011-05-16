@@ -1,56 +1,54 @@
-program configureNode
-{
-    var CanDicoEntry sdo;
-    require("print");
-    //set motor 0x32 current (FrontSteering) in mA
-    //print.log(Info,"configure 0x32 max current");
-    //sdo = CanDicoEntry(0x32,0x2301,1,81,0,1);
-    //coWriteInRemoteDico(sdo);
-    //sdo = CanDicoEntry(0x32,0x2301,2,200,0,4);
-    //coWriteInRemoteDico(sdo);
-    
-    //configure PDO1 of motor 0x32 (FrontSteering) to be send every sync
-    print.log(Info, "configure PDO1 to be send every sync");
-    sdo = CanDicoEntry(propNodeId,0x1800,2,1,0,1);
-    attrScriptRes = Can1.coWriteInRemoteDico(sdo);
-    if (attrScriptRes==false) then return;
-    
-    //configure PDO2 of motor 0x32 (FrontSteering) to be send every sync
-    print.log(Info, "configure PDO2 to be send every sync");
-    sdo = CanDicoEntry(propNodeId,0x1801,2,1,0,1);
-    attrScriptRes = Can1.coWriteInRemoteDico(sdo);
-    if (attrScriptRes==false) then return;
-    
-    //configure PDO3 of motor 0x32 (FrontSteering) to be send every sync
-    print.log(Info, "configure PDO3 to be send every sync");
-    sdo = CanDicoEntry(propNodeId,0x1802,2,1,0,1);
-    attrScriptRes = Can1.coWriteInRemoteDico(sdo);
-    if (attrScriptRes==false) then return;
-    
-    //set mode of operatio of motor 0x32 (FrontSteering) to speed
-    print.log(Info,"put in speed mode");
-    sdo = CanDicoEntry(propNodeId,0x6060,0,-1,0,1);
-    attrScriptRes = Can1.coWriteInRemoteDico(sdo);
-    if (attrScriptRes==false) then return;
-    
-    //set motor 0x32 acceleration (FrontSteering) 
-    print.log(Info,"set acceleration");
-    sdo = CanDicoEntry(propNodeId,0x6083,0, 500,0,4);
-    attrScriptRes = Can1.coWriteInRemoteDico(sdo);
-    if (attrScriptRes==false) then return;
-    
-    //set motor 0x32 deceleration (FrontSteering) 
-    print.log(Info,"set deceleration");
-    sdo = CanDicoEntry(propNodeId,0x6084,0, 500,0,4);
-    attrScriptRes = Can1.coWriteInRemoteDico(sdo);
-    if (attrScriptRes==false) then return;
-    
-    //set trace configuration for 0x32 (FrontSteering)
-    print.log(Info,"set trace configuration");
-    sdo = CanDicoEntry(propNodeId,0x2303,1, 200,0,1);
-    attrScriptRes = Can1.coWriteInRemoteDico(sdo);
-    if (attrScriptRes==false) then return;
-    sdo = CanDicoEntry(propNodeId,0x2303,2, 4,0,1);
-    attrScriptRes = Can1.coWriteInRemoteDico(sdo);
-    if (attrScriptRes==false) then return;
-}
+var CanDicoEntry sdo;
+require("print");
+attrScriptRes=true;
+//set motor 0x32 current (FrontSteering) in mA
+//print.log(Info,"configure 0x32 max current");
+//sdo = CanDicoEntry(0x32,0x2301,1,81,0,1);
+//coWriteInRemoteDico(sdo);
+//sdo = CanDicoEntry(0x32,0x2301,2,200,0,4);
+//coWriteInRemoteDico(sdo);
+
+//configure PDO1 of motor 0x32 (FrontSteering) to be send every sync
+print.log(Info, "configure PDO1 to be send every sync");
+sdo = CanDicoEntry(propNodeId,0x1800,2,1,0,1);
+attrScriptRes = Can1.coWriteInRemoteDico(sdo);
+if (attrScriptRes==false) then return;
+
+//configure PDO2 of motor 0x32 (FrontSteering) to be send every sync
+print.log(Info, "configure PDO2 to be send every sync");
+sdo = CanDicoEntry(propNodeId,0x1801,2,1,0,1);
+attrScriptRes = Can1.coWriteInRemoteDico(sdo);
+if (attrScriptRes==false) then return;
+
+//configure PDO3 of motor 0x32 (FrontSteering) to be send every sync
+print.log(Info, "configure PDO3 to be send every sync");
+sdo = CanDicoEntry(propNodeId,0x1802,2,1,0,1);
+attrScriptRes = Can1.coWriteInRemoteDico(sdo);
+if (attrScriptRes==false) then return;
+
+//set mode of operatio of motor 0x32 (FrontSteering) to speed
+print.log(Info,"put in speed mode");
+sdo = CanDicoEntry(propNodeId,0x6060,0,-1,0,1);
+attrScriptRes = Can1.coWriteInRemoteDico(sdo);
+if (attrScriptRes==false) then return;
+
+//set motor 0x32 acceleration (FrontSteering) 
+print.log(Info,"set acceleration");
+sdo = CanDicoEntry(propNodeId,0x6083,0, 500,0,4);
+attrScriptRes = Can1.coWriteInRemoteDico(sdo);
+if (attrScriptRes==false) then return;
+
+//set motor 0x32 deceleration (FrontSteering) 
+print.log(Info,"set deceleration");
+sdo = CanDicoEntry(propNodeId,0x6084,0, 500,0,4);
+attrScriptRes = Can1.coWriteInRemoteDico(sdo);
+if (attrScriptRes==false) then return;
+
+//set trace configuration for 0x32 (FrontSteering)
+print.log(Info,"set trace configuration");
+sdo = CanDicoEntry(propNodeId,0x2303,1, 200,0,1);
+attrScriptRes = Can1.coWriteInRemoteDico(sdo);
+if (attrScriptRes==false) then return;
+sdo = CanDicoEntry(propNodeId,0x2303,2, 4,0,1);
+attrScriptRes = Can1.coWriteInRemoteDico(sdo);
+if (attrScriptRes==false) then return;
