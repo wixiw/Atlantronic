@@ -72,8 +72,10 @@ namespace arp_hml
          * Defines if motor are powered or not.
          * @param poserOn : when set to true motor is powered and ready to move. If a null speed is provided, the motor is locked
          * as if brakes where enabled. When set to false there is no power in the motor which means that the motor is free to any move.
+         * @param timeout : maximal time to wait for completion
+         * @return : true if succeed on both motor. Failed if one or both have failed.
          */
-        bool ooSetMotorPower(bool powerOn);
+        bool ooSetMotorPower(bool powerOn, double timeout);
 
         /**
          * Get enableDrive and disableDrive operation on motors
@@ -114,7 +116,7 @@ namespace arp_hml
         OutputPort<Bool> outEmergencyStop;
 
         /** Is true when the 2 drives are enabled. Since this port is false, drive speed are forced to 0**/
-        OutputPort<bool> outDriveEnable;
+        OutputPort<Bool> outDriveEnable;
 
 /*****************************************************************
  *  Interface with the INSIDE (hml !)
@@ -175,12 +177,16 @@ protected:
 
         /** Pointer on the LeftDrive ooEnableDrive Operation**/
         OperationCaller<void(void)> m_ooEnableLeftDrive;
-        /** Pointer on the Rigth ooEnableDrive Operation**/
+        /** Pointer on the Right ooEnableDrive Operation**/
         OperationCaller<void(void)> m_ooEnableRigthtDrive;
         /** Pointer on the LeftDrive ooDisableDrive Operation**/
         OperationCaller<void(void)> m_ooDisableLeftDrive;
-        /** Pointer on the Rigth ooDisableDrive Operation**/
-        OperationCaller<void(void)> m_ooDisableRigthtDrive;
+        /** Pointer on the Right ooDisableDrive Operation**/
+        OperationCaller<void(void)> m_ooDisableRightDrive;
+        /** Pointer in the Left ooSetOperationMode Operation **/
+        OperationCaller<bool(string)> m_ooSetLeftOperationMode;
+        /** Pointer in the Rigth ooSetOperationMode Operation **/
+        OperationCaller<bool(string)> m_ooSetRightOperationMode;
 
         /**
          * Get the differential command speed for both motor and dispatch it to them

@@ -14,6 +14,11 @@ emergency_stop.transport = 3; // ROS == 3
 emergency_stop.name_id = "/Protokrot/emergency_stop"; // ros topic
 stream("Protokrot.outEmergencyStop", emergency_stop);
 
+var ConnPolicy drive_power;
+drive_power.transport = 3; // ROS == 3
+drive_power.name_id = "/Protokrot/drive_power"; // ros topic
+stream("Protokrot.outDriveEnable", drive_power);
+
 var ConnPolicy start;
 start.transport = 3; // ROS == 3
 start.name_id = "/Protokrot/start"; // ros topic

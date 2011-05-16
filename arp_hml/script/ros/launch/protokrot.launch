@@ -18,5 +18,6 @@
 			args="-s $(find arp_hml)/script/orocos/deployment/deploy_protokrot.ops --" 
 			output="screen"
 			respawn="false"
+			required="true"
 			/>
 </launch>

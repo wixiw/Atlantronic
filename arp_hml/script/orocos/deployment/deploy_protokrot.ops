@@ -18,10 +18,12 @@ print.log(Warning, " == Starting HML components == ");
 runScript("/opt/ros/ard/arp_hml/script/orocos/deployment/other/StartOther.ops")
 runScript("/opt/ros/ard/arp_hml/script/orocos/deployment/can/StartCan.ops")
 
-var bool deployed_successfully = true;
+//enabling drive
+//en attendant que quelqu'un d'autre le fasse
+var bool deployed_successfully = Protokrot.ooSetMotorPower(true, 1.000);
 
 if( !Can1.isRunning() || !Io.isRunning() || !LeftDriving.isRunning() || !RightDriving.isRunning() 
-		|| !Protokrot.isRunning() ) then
+		|| !Protokrot.isRunning() || !deployed_successfully) then
 {
 	print.log(Warning, "====================");
 	print.log(Fatal, "!*%$#@&!*%$#@&!*%$#@&!*%$#@&!*%$#@&!*%$#@&");

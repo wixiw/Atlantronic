@@ -93,8 +93,9 @@ ProtokrotItf::ProtokrotItf(const std::string& name):
     addOperation("coGetHmlVersion",&ProtokrotItf::coGetHmlVersion, this, ClientThread)
     		.doc("Returns a string containing HML version");
     addOperation("ooSetMotorPower",&ProtokrotItf::ooSetMotorPower, this, OwnThread)
-            .doc("Defines if motor are powered or not.")
-            .arg("powerOn","when set to true motor is powered and ready to move. If a null speed is provided, the motor is locked as if brakes where enabled. When set to false there is no power in the motor which means that the motor is free to any move.");
+            .doc("Defines if motor are powered or not. Returns true if succeed")
+            .arg("powerOn","when set to true motor is powered and ready to move. If a null speed is provided, the motor is locked as if brakes where enabled. When set to false there is no power in the motor which means that the motor is free to any move.")
+            .arg("timeout","maximal time to wait for completion");
 }
 
 string ProtokrotItf::coGetCoreVersion()
@@ -114,7 +115,9 @@ bool ProtokrotItf::configureHook()
     res &= getOperation("LeftDriving",  "ooEnableDrive",       m_ooEnableLeftDrive);
     res &= getOperation("RightDriving", "ooEnableDrive",       m_ooEnableRigthtDrive);
     res &= getOperation("LeftDriving",  "ooDisableDrive",      m_ooDisableLeftDrive);
-    res &= getOperation("RightDriving", "ooDisableDrive",      m_ooDisableRigthtDrive);
+    res &= getOperation("RightDriving", "ooDisableDrive",      m_ooDisableRightDrive);
+    res &= getOperation("LeftDriving",  "ooSetOperationMode",  m_ooSetLeftOperationMode);
+    res &= getOperation("RightDriving", "ooSetOperationMode",  m_ooSetRightOperationMode);
 
     if( res == false )
     {
@@ -159,7 +162,8 @@ void ProtokrotItf::writeDifferentialCmd()
     if(NewData==inDifferentialCmd.read(cmd))
     {
     	//ecriture des consignes moteurs
-    	if( outDriveEnable.getLastWrittenValue() )
+        Bool enable = outDriveEnable.getLastWrittenValue();
+    	if( enable.data )
     	{
 			clock_gettime(CLOCK_MONOTONIC, &m_lastCmdTimestamp);
 			attrCurrentCmd = cmd;
@@ -236,10 +240,9 @@ void ProtokrotItf::readDriveEnable()
 	inLeftDriveEnable.readNewest(leftDriveEnable);
 	inRightDriveEnable.readNewest(rightDriveEnable);
 
-	if( leftDriveEnable && rightDriveEnable )
-		outDriveEnable.write( true );
-	else
-		outDriveEnable.write( false );
+	Bool enable;
+	enable.data = leftDriveEnable && rightDriveEnable;
+    outDriveEnable.write( enable );
 }
 
 void ProtokrotItf::readConnectivity()
@@ -270,11 +273,17 @@ void ProtokrotItf::readSpeed()
 	}
 }
 
-bool ProtokrotItf::ooSetMotorPower(bool powerOn)
+bool ProtokrotItf::ooSetMotorPower(bool powerOn, double timeout)
 {
+    double chrono = 0.0;
+    bool leftEnableTmp;
+    bool rightEnableTmp;
+    Bool enable = outDriveEnable.getLastWrittenValue();
+
+    //Envoit de la commande d'enable
     if( powerOn )
     {
-        if( outDriveEnable.getLastWrittenValue() )
+        if( enable.data )
         {
             LOG(Info) << "ooMotorPower : you are trying to power the drive but they are already powered !" << endlog();
         }
@@ -286,14 +295,38 @@ bool ProtokrotItf::ooSetMotorPower(bool powerOn)
     }
     else
     {
-        if( outDriveEnable.getLastWrittenValue() )
+        if( enable.data )
         {
             m_ooDisableLeftDrive();
-            m_ooDisableRigthtDrive();
+            m_ooDisableRightDrive();
         }
         else
         {
             LOG(Info) << "ooMotorPower : you are tryin to unpower the drive but they are already unpowered !" << endlog();
         }
     }
+
+    //Attente de confirmation de l'action :
+    whileTimeout(inLeftDriveEnable.readNewest(leftEnableTmp) != NoData && leftEnableTmp!=powerOn
+            && inRightDriveEnable.readNewest(rightEnableTmp) != NoData && rightEnableTmp!=powerOn, timeout, 0.050);
+    IfWhileTimeoutExpired(timeout)
+    {
+        LOG(Error) << "ooMotorPower : motor didn't switch power as required, timeout is over." << endlog();
+        goto failed;
+    }
+
+    //remise ne mode vitesse des moteurs
+    if( m_ooSetLeftOperationMode("speed")== false || m_ooSetRightOperationMode("speed") == false )
+    {
+        LOG(Error) << "ooMotorPower : could not switch back to speed mode." << endlog();
+        goto failed;
+    }
+
+    LOG(Info) << "ooMotorPower : Motors power switched to " << powerOn << " properly." << endlog();
+    goto success;
+
+    failed:
+        return false;
+    success:
+        return true;
 }

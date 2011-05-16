@@ -12,18 +12,4 @@ LeftDriving.start();
 RightDriving.start();
 Io.start();
 
-//enabling drive
-LeftDriving.ooEnableDrive();
-RightDriving.ooEnableDrive();
-LeftDriving.coWaitEnable(5.0);
-RightDriving.coWaitEnable(1.0);
-
-if( LeftDriving.ooSetOperationMode("speed") == false )
-then
-	print.log(Error, " LeftDriving.ooSetOperationMode(speed) failed");
-
-if( RightDriving.ooSetOperationMode("speed") == false )
-then
-	print.log(Error, " RightDriving.ooSetOperationMode(speed) failed");
-	
 
