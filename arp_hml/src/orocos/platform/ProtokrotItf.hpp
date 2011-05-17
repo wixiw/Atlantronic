@@ -24,8 +24,12 @@
 #include <arp_core/Odo.h>
 #include <arp_core/Start.h>
 #include <arp_core/StartColor.h>
+#include <arp_hml/SetMotorPower.h>
+#include <arp_hml/ResetHml.h>
 #include <std_msgs/Bool.h>
+#include <std_msgs/Float64.h>
 #include <sys/time.h>
+#include "ros/ros.h"
 
 using namespace arp_core;
 using namespace std_msgs;
@@ -78,6 +82,11 @@ namespace arp_hml
         bool ooSetMotorPower(bool powerOn, double timeout);
 
         /**
+         * Reset Can Nodes
+         */
+        bool ooResetHml();
+
+        /**
          * Get enableDrive and disableDrive operation on motors
          */
         bool configureHook();
@@ -91,6 +100,26 @@ namespace arp_hml
     	 *  _ read start
     	 */
         void updateHook();
+
+/****************************************************************
+ * Interface ROS
+ ****************************************************************/
+
+        /** node handle to store the service advertiser srvSetMotorPower**/
+        ros::ServiceServer m_srvSetMotorPower;
+
+        /** node handle to store the service advertiser srvResetHml**/
+        ros::ServiceServer m_srvResetHml;
+
+        /**
+         * ROS wrapper on the ooSetPowerMotor operation
+         */
+        bool srvSetMotorPower(SetMotorPower::Request& req, SetMotorPower::Response& res);
+
+        /**
+         * ROS wrapper on the ooResetHml operation
+         */
+        bool srvResetHml(ResetHml::Request& req, ResetHml::Response& res);
 
 /*****************************************************************
  *  Interface with OUTSIDE (master, ODS, RLU)
@@ -185,8 +214,14 @@ protected:
         OperationCaller<void(void)> m_ooDisableRightDrive;
         /** Pointer in the Left ooSetOperationMode Operation **/
         OperationCaller<bool(string)> m_ooSetLeftOperationMode;
-        /** Pointer in the Rigth ooSetOperationMode Operation **/
+        /** Pointer in the Right ooSetOperationMode Operation **/
         OperationCaller<bool(string)> m_ooSetRightOperationMode;
+        /** Pointer in the Woodhead coReset Operation**/
+        OperationCaller<bool(void)> m_coResetIo;
+        /** Pointer in the LeftDriving coReset Operation **/
+        OperationCaller<bool(void)> m_coResetLeftDriving;
+        /** Pointer in the RightDriving coReset Operation **/
+        OperationCaller<bool(void)> m_coResetRightDriving;
 
         /**
          * Get the differential command speed for both motor and dispatch it to them

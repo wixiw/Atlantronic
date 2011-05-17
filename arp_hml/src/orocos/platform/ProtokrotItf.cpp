@@ -96,6 +96,12 @@ ProtokrotItf::ProtokrotItf(const std::string& name):
             .doc("Defines if motor are powered or not. Returns true if succeed")
             .arg("powerOn","when set to true motor is powered and ready to move. If a null speed is provided, the motor is locked as if brakes where enabled. When set to false there is no power in the motor which means that the motor is free to any move.")
             .arg("timeout","maximal time to wait for completion");
+    addOperation("ooResetHml",&ProtokrotItf::ooResetHml, this, OwnThread)
+    	.doc("Ask all cane node to reset. Could be usefull after an emergency stop");
+
+    ros::NodeHandle nh;
+    m_srvSetMotorPower = nh.advertiseService("/Protokrot/setMotorPower", &ProtokrotItf::srvSetMotorPower, this);
+    m_srvResetHml = nh.advertiseService("/Protokrot/resetHml", &ProtokrotItf::srvResetHml, this);
 }
 
 string ProtokrotItf::coGetCoreVersion()
@@ -112,12 +118,16 @@ bool ProtokrotItf::configureHook()
 {
     bool res = true;
     HmlTaskContext::configureHook();
-    res &= getOperation("LeftDriving",  "ooEnableDrive",       m_ooEnableLeftDrive);
+    res &= getOperation("LeftDriving" ,  "ooEnableDrive",       m_ooEnableLeftDrive);
     res &= getOperation("RightDriving", "ooEnableDrive",       m_ooEnableRigthtDrive);
-    res &= getOperation("LeftDriving",  "ooDisableDrive",      m_ooDisableLeftDrive);
+    res &= getOperation("LeftDriving" ,  "ooDisableDrive",      m_ooDisableLeftDrive);
     res &= getOperation("RightDriving", "ooDisableDrive",      m_ooDisableRightDrive);
-    res &= getOperation("LeftDriving",  "ooSetOperationMode",  m_ooSetLeftOperationMode);
+    res &= getOperation("LeftDriving" ,  "ooSetOperationMode",  m_ooSetLeftOperationMode);
     res &= getOperation("RightDriving", "ooSetOperationMode",  m_ooSetRightOperationMode);
+
+    res &= getOperation("Io"           , "coReset",  m_coResetIo);
+    res &= getOperation("LeftDriving"  , "coReset",  m_coResetLeftDriving);
+    res &= getOperation("RightDriving" , "coReset",  m_coResetRightDriving);
 
     if( res == false )
     {
@@ -330,3 +340,25 @@ bool ProtokrotItf::ooSetMotorPower(bool powerOn, double timeout)
     success:
         return true;
 }
+
+bool ProtokrotItf::srvSetMotorPower(SetMotorPower::Request& req, SetMotorPower::Response& res)
+{
+    res.success = ooSetMotorPower(req.powerOn, req.timeout);
+    return true;
+}
+
+bool ProtokrotItf::ooResetHml()
+{
+    bool res = true;
+    res &= m_coResetIo();
+    res &= m_coResetLeftDriving();
+    res &= m_coResetRightDriving();
+    return false;
+}
+
+bool ProtokrotItf::srvResetHml(ResetHml::Request& req, ResetHml::Response& res)
+{
+    res.success = ooResetHml();
+    return true;
+}
+
