@@ -13,7 +13,7 @@
 
 using namespace arp_hml;
 using namespace arp_core;
-
+using namespace std_msgs;
 
 HmlGraphicsFrame::HmlGraphicsFrame():
 	m_nodeHandle(),
@@ -30,6 +30,7 @@ HmlGraphicsFrame::HmlGraphicsFrame():
 	m_color.color = "red";
 	m_start.go = true;
 	m_obstacle.detected = false;
+	m_emergency.data = false;
 
 	update_timer_ = new wxTimer(this);
 	update_timer_->Start(20.);
@@ -37,6 +38,7 @@ HmlGraphicsFrame::HmlGraphicsFrame():
 	m_startButton = new wxButton(this, ID_START_HANDLER, wxT("Start"), wxPoint(20,60),wxDefaultSize);
 	m_colorButton = new wxButton(this, ID_COLOR_HANDLER, wxT("Color"), wxPoint(20,20),wxDefaultSize);
 	m_obstacleButton = new wxButton(this, ID_OBSTACLE_HANDLER, wxT("Obstacle"), wxPoint(20,100),wxDefaultSize);
+	m_emergencyButton = new wxButton(this, ID_EMERGENCY_HANDLER, wxT("AU"), wxPoint(20,140),wxDefaultSize);
 
 	Connect(update_timer_->GetId(), wxEVT_TIMER, wxTimerEventHandler(HmlGraphicsFrame::onUpdate), NULL, this);
 	Connect(wxEVT_PAINT, wxPaintEventHandler(HmlGraphicsFrame::onPaint), NULL, this);
@@ -44,6 +46,7 @@ HmlGraphicsFrame::HmlGraphicsFrame():
 	start_pub = m_nodeHandle.advertise<Start>("Protokrot/start", 1);
 	color_pub = m_nodeHandle.advertise<StartColor>("Protokrot/color", 1);
 	obstacle_pub = m_nodeHandle.advertise<Obstacle>("/obstacle", 1);
+	emergency_pub = m_nodeHandle.advertise<Bool>("Protokrot/emergency_stop", 1);
 
 	ROS_INFO("Starting HmlGraphics with node name %s", ros::this_node::getName().c_str()) ;
 }
@@ -53,6 +56,7 @@ HmlGraphicsFrame::~HmlGraphicsFrame()
 	  delete m_startButton ;
 	  delete m_colorButton ;
 	  delete m_obstacleButton ;
+	  delete m_emergencyButton;
 	  delete update_timer_ ;
 }
 
@@ -108,10 +112,24 @@ void HmlGraphicsFrame::onPaint(wxPaintEvent& evt)
     	dc.DrawLine(280,100,220,130);
     }
 
+    //dessin de l'AU
+    if( m_emergency.data )
+    {
+        dc.SetBrush(*wxRED_BRUSH);
+    }
+    else
+    {
+        dc.SetBrush(*wxGREEN_BRUSH);
+    }
+    dc.DrawCircle(180,155,15);
+    dc.SetBrush(*wxBLACK_BRUSH);
+
+
 	//publication
 	start_pub.publish(m_start);
 	color_pub.publish(m_color);
 	obstacle_pub.publish(m_obstacle);
+	emergency_pub.publish(m_emergency);
 }
 
 void HmlGraphicsFrame::onStart(wxCommandEvent& event)
@@ -133,4 +151,10 @@ void HmlGraphicsFrame::onObstacle(wxCommandEvent& event)
 {
 	//inversion du bouton
 	m_obstacle.detected = !m_obstacle.detected;
+}
+
+void HmlGraphicsFrame::onEmergency(wxCommandEvent& event)
+{
+    //inversion du bouton
+    m_emergency.data = !m_emergency.data;
 }

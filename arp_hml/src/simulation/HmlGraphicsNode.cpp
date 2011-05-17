@@ -63,6 +63,7 @@ BEGIN_EVENT_TABLE(arp_hml::HmlGraphicsFrame,wxFrame)
 	EVT_BUTTON(ID_START_HANDLER, arp_hml::HmlGraphicsFrame::onStart)
 	EVT_BUTTON(ID_COLOR_HANDLER, arp_hml::HmlGraphicsFrame::onColor)
 	EVT_BUTTON(ID_OBSTACLE_HANDLER, arp_hml::HmlGraphicsFrame::onObstacle)
+	EVT_BUTTON(ID_EMERGENCY_HANDLER, arp_hml::HmlGraphicsFrame::onEmergency)
 END_EVENT_TABLE()
 
 IMPLEMENT_APP(arp_hml::HmlGraphicsNode);

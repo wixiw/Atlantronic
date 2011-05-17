@@ -7,17 +7,12 @@
 using namespace arp_core;
 using namespace arp_hml;
 
-PhysicsSimu::PhysicsSimu()
-: nh_(ros::NodeHandle("PhysicsSimu"))
+PhysicsSimu::PhysicsSimu():
+        nh_(ros::NodeHandle("PhysicsSimu"))
 {
-  /*update_timer_ = new wxTimer(this);
-  update_timer_->Start(default_dt_ms);
-  Connect(update_timer_->GetId(), wxEVT_TIMER, wxTimerEventHandler(PhysicsSimu::onUpdate), NULL, this);*/
-
   respawn_srv_ = nh_.advertiseService("respawn", &PhysicsSimu::respawnCallback, this);
 
   ROS_INFO("Starting PhysicsSimu with node name %s", ros::this_node::getName().c_str()) ;
-
 }
 
 PhysicsSimu::~PhysicsSimu()
@@ -33,7 +28,6 @@ bool PhysicsSimu::respawnCallback(Spawn::Request& req, Spawn::Response& res)
   this->updateRobot();
   return true;
 }
-
 
 void PhysicsSimu::spawnRobot(double x, double y, double angle)
 {

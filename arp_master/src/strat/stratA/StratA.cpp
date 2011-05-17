@@ -22,6 +22,7 @@ StratA::StratA():
   loclaser_spawn_ = nh_.serviceClient<canonical_scan_matcher::Init>("CSM/respawn");
   simu_spawn_ = nh_.serviceClient<arp_core::Spawn>("PhysicsSimu/respawn");
   robot_setpen_ = nh_.serviceClient<arp_master::SetPen>("Protokrot/set_pen");
+  enable_drive_ = nh_.serviceClient<arp_hml::SetMotorPower>("Protokrot/setMotorPower");
   vel_pub_ = nh_.advertise<arp_core::Velocity> ("Command/velocity", 1);
 
   last_obstacle_time_ = ros::WallTime::now();
@@ -135,6 +136,13 @@ void StratA::go()
   srv_setpen.request.off = false;
   robot_setpen_.call(srv_setpen);
 
+  //enable drive
+  arp_hml::SetMotorPower srv_enableDrive;
+  srv_enableDrive.request.powerOn = true;
+  srv_enableDrive.request.timeout = 2.000;
+  enable_drive_.call(srv_enableDrive);
+  if( srv_enableDrive.response.success == false )
+      ROS_FATAL("Can't enable drive, Hml is ill !");
 
   while( ros::WallTime::now() - start_time_ < ros::WallDuration(match_duration_) )
   {

@@ -20,6 +20,7 @@
 
 #include <arp_core/Spawn.h>
 #include <std_srvs/Empty.h>
+#include <arp_hml/SetMotorPower.h>
 #include <arp_master/SetPen.h>
 
 #include "math/math.hpp"
@@ -160,6 +161,11 @@ namespace arp_master
          * used to call setpen service of GraphicsSimuRobot
          */
         ros::ServiceClient robot_setpen_;
+
+        /**
+         * used to call setpen service of GraphicsSimuRobot
+         */
+        ros::ServiceClient enable_drive_;
 
         /**
          * true at the early beginning, false when the start is plugged, true when match begins

@@ -6,21 +6,47 @@ using namespace arp_hml;
 PhysicsSimuRobot::PhysicsSimuRobot(const ros::NodeHandle& nh,
         const Vector2& pos, double orient) :
     nh_(nh), pos_(pos), orient_(orient), v_left_(0.0), v_right_(0.0),
-            lin_vel_(0.0), ang_vel_(0.0), odo_left_(0.0), odo_right_(0.0)
+            lin_vel_(0.0), ang_vel_(0.0), odo_left_(0.0), odo_right_(0.0),
+            m_powerEnabled(false)
 {
 
     // Parameters
-    nh.getParam("/Protokrot/BASE_LINE", BASE_LINE);
-    nh.getParam("/Protokrot/WHEEL_DIAMETER", WHEEL_DIAMETER);
+    nh_.getParam("/Protokrot/BASE_LINE", BASE_LINE);
+    nh_.getParam("/Protokrot/WHEEL_DIAMETER", WHEEL_DIAMETER);
 
     // Suscribers
     differential_command_sub_ = nh_.subscribe("differential_command", 1,
             &PhysicsSimuRobot::commandCallback, this);
+    emergency_sub_ = nh_.subscribe("emergency_stop", 1,
+            &PhysicsSimuRobot::emergencyCallback, this);
 
     // Publishers
     pose_pub_ = nh_.advertise<arp_core::Pose> ("pose", 1);
     odo_pub_ = nh_.advertise<arp_core::Odo> ("odo", 1);
+    enable_pub_ = nh_.advertise<std_msgs::Bool> ("drive_power", 1);
 
+    //Services provided
+    m_srvSetMotorPower = nh_.advertiseService("/Protokrot/setMotorPower",
+            &PhysicsSimuRobot::srvSetMotorPower, this);
+    m_srvResetHml = nh_.advertiseService("/Protokrot/resetHml",
+            &PhysicsSimuRobot::srvResetHml, this);
+
+}
+
+bool PhysicsSimuRobot::srvSetMotorPower(SetMotorPower::Request& req,
+        SetMotorPower::Response& res)
+{
+    m_powerEnabled = req.powerOn;
+    res.success = true;
+    return true;
+}
+
+bool PhysicsSimuRobot::srvResetHml(ResetHml::Request& req,
+        ResetHml::Response& res)
+{
+    m_powerEnabled = false;
+    res.success = true;
+    return true;
 }
 
 void PhysicsSimuRobot::commandCallback(
@@ -31,11 +57,29 @@ void PhysicsSimuRobot::commandCallback(
     v_right_ = c->v_right;
 }
 
+void PhysicsSimuRobot::emergencyCallback(const std_msgs::BoolConstPtr& c)
+{
+    //si on reçoit un emergency stop alors on disable le power.
+    //ce n'est pas exactement le comportement réel mais ça fait ce
+    //qu'on veut pour la simul
+    if( c->data )
+    {
+        m_powerEnabled = false;
+    }
+}
+
 void PhysicsSimuRobot::update(double dt, double canvas_width,
         double canvas_height)
 {
-    // Maintient de la commande pendant 0.2 seconde
-    if (ros::WallTime::now() - last_command_time_ > ros::WallDuration(0.2))
+    // Au bout de 2000ms la commande n'est plus appliquée
+    if (ros::WallTime::now() - last_command_time_ > ros::WallDuration(2.000))
+    {
+        v_right_ = 0.0f;
+        v_left_ = 0.0f;
+    }
+
+    //si le power est disable on fait comme si le robot avait une commande nulle.
+    if (m_powerEnabled == false)
     {
         v_right_ = 0.0f;
         v_left_ = 0.0f;
@@ -92,6 +136,10 @@ void PhysicsSimuRobot::update(double dt, double canvas_width,
 
     ROS_DEBUG("[%s]: pos_x: %f pos_y: %f theta: %f",
             nh_.getNamespace().c_str(), pos_.x(), pos_.y(), orient_.angle());
+
+    std_msgs::Bool drive_power;
+    drive_power.data = m_powerEnabled;
+    enable_pub_.publish(drive_power);
 
 }
 
