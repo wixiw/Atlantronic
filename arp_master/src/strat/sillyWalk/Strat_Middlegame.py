@@ -8,6 +8,8 @@ import smach_msgs
 
 from CyclicState import CyclicState
 from CyclicActionState import CyclicActionState
+from PreemptiveStateMachine import PreemptiveStateMachine
+from PreemptiveCyclicState import PreemptiveCyclicState
 from Inputs import Inputs
 from Data import Data
 from arp_ods.msg import OrderGoal
@@ -18,20 +20,31 @@ from math import pi
 from Table2011 import *
 from UtilARD import *
 
-class Middlegame(smach.StateMachine):
+class Middlegame(PreemptiveStateMachine):
     def __init__(self):
-        smach.StateMachine.__init__(self,outcomes=['endMiddlegame'])
+        PreemptiveStateMachine.__init__(self,outcomes=['endMiddlegame'])
         with self:
-            smach.StateMachine.add('CreateWalk',
+            #preemptive states
+            PreemptiveStateMachine.addPreemptive('ObstaclePreemption',
+                                             ObstaclePreemption(),
+                                             transitions={'sortie':'CreateWalk'})
+            PreemptiveStateMachine.addPreemptive('EndMatchPreemtion',
+                                             EndMatchPreemtion(),
+                                             transitions={'sortie':'endMiddlegame'})
+            # other states
+            PreemptiveStateMachine.add('CreateWalk',
                       CreateWalk(),
                       transitions={'toStep1':'Step1','toStep2':'Step2','toStep3':'Step3'})
-            smach.StateMachine.add('Step1',
+            #as initial state is not the preemptive one, it is necessary to add the information here !
+            self.setInitialState('CreateWalk')
+            
+            PreemptiveStateMachine.add('Step1',
                       Step1(),
                       transitions={'succeeded':'Step2','aborted':'CreateWalk'})
-            smach.StateMachine.add('Step2',
+            PreemptiveStateMachine.add('Step2',
                       Step2(),
                       transitions={'succeeded':'Step3','aborted':'CreateWalk'})
-            smach.StateMachine.add('Step3',
+            PreemptiveStateMachine.add('Step3',
                       Step3(),
                       transitions={'succeeded':'CreateWalk','aborted':'CreateWalk'})
 
@@ -72,4 +85,29 @@ class Step3(CyclicActionState):
         (xobj,yobj)=Data.case3.coord_WhenPionMilieu(angleobj)
         self.pointcap(xobj,yobj,angleobj)
 
+class ObstaclePreemption(PreemptiveCyclicState):
+    def __init__(self):
+        PreemptiveCyclicState.__init__(self, outcomes=['sortie'])
+
+    def preemptionCondition(self):
+        if Inputs.getobstacle()==1:
+            return True
+        else:
+            return False
        
+    def executeTransitions(self):
+        return 'sortie'
+    
+class EndMatchPreemtion(PreemptiveCyclicState):
+    def __init__(self):
+        PreemptiveCyclicState.__init__(self, outcomes=['sortie'])
+        self.match_duration=rospy.get_param("/match_duration")
+
+    def preemptionCondition(self):
+        if (rospy.get_rostime()-Data.start_time).to_sec()>self.match_duration:
+            return True
+        else:
+            return False
+       
+    def executeTransitions(self):
+        return 'sortie'

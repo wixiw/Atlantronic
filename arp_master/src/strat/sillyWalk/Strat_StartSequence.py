@@ -94,3 +94,6 @@ class WaitForMatch(CyclicState):
        if Inputs.getstart()==1:
             return 'start'
         
+    def executeOut(self):
+        Data.start_time=rospy.get_rostime()
+        

@@ -22,6 +22,16 @@ class CyclicState(smach.StateMachine):
         self.executeIn()
         while(not rospy.is_shutdown()):
             self.executeWhile()
+            
+            #check if preemption transitions
+            for p in self.preemptiveStates:
+                label=p[0]
+                state=p[1]
+                preempted=state.preemptionCondition()
+                if preempted:
+                    return label
+            
+            #normal transitions
             trans=self.executeTransitions()
             if trans!=None:
                 self.executeOut()

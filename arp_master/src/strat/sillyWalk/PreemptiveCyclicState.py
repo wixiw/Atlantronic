@@ -9,8 +9,10 @@ import smach_msgs
 from Inputs import Inputs
 from Data import Data
 
+from CyclicState import CyclicState
+
 #you should derivate this class when you want to creat a preemptive state
-class PreemptiveCycliState(CyclicState):
+class PreemptiveCyclicState(CyclicState):
     #this function shall be overloaded, and return true when preemption is requested
     def preemptionCondition(self):
         return false

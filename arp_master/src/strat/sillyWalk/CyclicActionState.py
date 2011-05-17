@@ -23,6 +23,7 @@ class CyclicActionState(CyclicState):
     
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['succeeded','aborted'])
+        self.preemptiveStates=[]
         
     def execute(self,userdata):
         Inputs.update()
@@ -37,6 +38,14 @@ class CyclicActionState(CyclicState):
             
             self.executeWhile()
             
+             #check if preemption transitions
+            for p in self.preemptiveStates:
+                label=p[0]
+                state=p[1]
+                preempted=state.preemptionCondition()
+                if preempted:
+                    return label
+                
             #is the order terminated ?
             trans=self.executeClientTransition()  
                      
