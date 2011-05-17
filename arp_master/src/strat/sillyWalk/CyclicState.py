@@ -14,6 +14,7 @@ from arp_core.srv import Spawn
 class CyclicState(smach.StateMachine):
     def __init__(self,outcomes):
         smach.StateMachine.__init__(self,outcomes)
+        self.preemptiveStates=[]
         self.initSetPositionClient()
         
     def execute(self,userdata):
