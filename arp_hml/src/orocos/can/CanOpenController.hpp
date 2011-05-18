@@ -23,7 +23,7 @@ namespace arp_hml
      * The choice went in favor of CanFestival because it is a high level driver. It interfaces many can drivers
      * underneath.
      */
-    class CanOpenController : public HmlTaskContext
+    class CanOpenController: public HmlTaskContext
     {
     public:
         /**
@@ -52,9 +52,6 @@ namespace arp_hml
          * Stop CanFestival related stuff.
          */
         void cleanupHook();
-
-
-
 
         /**
          * This operation allows anyone in the application to write in the local dictionnary
@@ -95,81 +92,91 @@ namespace arp_hml
 
         /**
          * define a new period for SYNC object
-         * param : periode in ms.
+         * param : periode in s.
          */
-        bool ooSetSyncPeriod(int period);
+        bool ooSetSyncPeriod(double period);
 
     protected:
         /** This attribute contains the current NMT status of the Controller node */
-        e_nodeState             attrCurrentNMTState;
+        e_nodeState attrCurrentNMTState;
+        /** Last sync time received **/
+        double attrSyncTime;
         /** This is for test purposes only, when sending request to the can via the taskBrowser */
-        CanDicoEntry 			attrTestingSdo;
+        CanDicoEntry attrTestingSdo;
 
         /** This property contains the name of the can driver library that will be loaded dynamically */
-        string                  propCanFestivalDriverName;
+        string propCanFestivalDriverName;
         /** This property contains the name of the bus attached to the CanController */
-        string                  propBusName;
+        string propBusName;
         /** This propertu contains the baudrate of the attached bus (10K,250K,500K,1000K, ...)*/
-        string                  propBaudRate;
+        string propBaudRate;
         /** This property contains the nodeID of the Controller node on the attached bus (in decimal)*/
-        int                     propNodeId;
-        /** This property defines the maximal allowed duration of slaves nodes before considering they are not on the bus (in ms)*/
-        int                     propMasterMaxBootDelay;
+        int propNodeId;
+        /** This property defines the maximal allowed duration of slaves nodes before considering they are not on the bus (in s)*/
+        double propMasterMaxBootDelay;
+        /** Delay between 2 SYNC messgaes in s */
+        double propSyncPeriod;
+        /** Delay max beetween the sync order and the time we consider all PDO to be received*/
+        double propPdoMaxAwaitedDelay;
 
         /**
          * This port is connected to the CanFestival thread to populate attrCurrentNMTState
          */
-        InputPort<e_nodeState>  inControllerNmtState;
+        InputPort<e_nodeState> inControllerNmtState;
         /**
          * This port is connected to the CanFestival thread to dispatch the boot event to registred Device Components
          */
-        InputPort<nodeID_t>     inBootUpReceived;
+        InputPort<nodeID_t> inBootUpReceived;
+        /**
+         * In Sync. Contains the date of the sync object
+         */
+        InputPort<timespec> inSync;
 
         /**
          * clock port, each node must listed this port to execute
          */
-        OutputPort<bool>		outNodesClock;
+        OutputPort<timespec> outNodesClock;
 
         /**
          * The routing stuff is delegated to this class
          * */
-        CanOpenDispatcher       m_dispatcher;
+        CanOpenDispatcher m_dispatcher;
 
         /**
          * Call this to initialize all the CanFestival related stuff (shared datas, wrappers, timers loop, loading drivers,...)
          * @return true if initialization succeed;
          */
-        bool                    initializeCanFestival();
+        bool initializeCanFestival();
 
         /**
          * Initialiaze datas and callbacks shared with CanFestival
          * @return true if initialization succeed
          */
-        bool                    initialiazeCanFestivalDatas();
+        bool initialiazeCanFestivalDatas();
 
         /**
          * Initialiaze wrappers that interfaces CanFestival with Orocos
          * @return true if initialization succeed
          */
-        bool                    initialiazeCanFestivalWrappers();
+        bool initialiazeCanFestivalWrappers();
 
         /**
          * Open the propBusName bus from the CAN driver.
          */
-        bool                    openCanBus();
+        bool openCanBus();
 
         /**
          * Is derivated to disable the autocheck
          */
-        virtual bool			checkInputsPorts();
+        virtual bool checkInputsPorts();
 
     private:
         /** This is a temporary buffer to pass the propBusName string to the CanFestival process */
-        char                    m_busNameLocalCopy[100];
+        char m_busNameLocalCopy[100];
         /** This is a temporary buffer to pass the propBaudRate string to the CanFestival process */
-        char                    m_baurateLocalCopy[6];
+        char m_baurateLocalCopy[6];
         /** This is the handler on the attached can bus. It is populated by a call to the CanFestival "canOpen" function */
-        CAN_PORT                m_canPort;
+        CAN_PORT m_canPort;
     };
 
 }

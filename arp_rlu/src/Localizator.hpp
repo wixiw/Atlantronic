@@ -91,7 +91,7 @@ namespace arp_rlu
         /**
          * time of last update
          */
-        ros::Time last_time;
+        double last_time;
 
         /**
          * estimated translation

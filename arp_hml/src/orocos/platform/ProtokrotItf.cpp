@@ -204,16 +204,33 @@ void ProtokrotItf::writeDifferentialCmd()
 
 void ProtokrotItf::readOdometers()
 {
-    double odoValue;
-    if(NewData==inLeftDrivingPosition.readNewest(odoValue))
+    double odoValueLeft;
+    double odoValueRight;
+    double odoTimeLeft;
+    double odoTimeRight;
+    if(NoData != inLeftDrivingPositionTime.readNewest(odoTimeLeft) && NoData != inRightDrivingPositionTime.readNewest(odoTimeRight) )
     {
-    	attrOdometers.odo_left = odoValue*propLeftOdometerGain;
+    	if( odoTimeLeft != odoTimeRight )
+    	{
+    	    if( m_receivedPartialPosition == true )
+    	    {
+    	        LOG(Error) << "should not received twice a partial odometer command" << endlog();
+    	    }
+    	    else
+    	    {
+    	        m_receivedPartialPosition = true;
+    	    }
+    	}
+    	else
+    	{
+    	    m_receivedPartialPosition = false;
+    	    inLeftDrivingPosition.readNewest(odoValueLeft);
+    	    inRightDrivingPosition.readNewest(odoValueRight);
+    	    attrOdometers.odo_left = odoValueLeft*propLeftOdometerGain;
+    	    attrOdometers.odo_right = odoValueRight*propRightOdometerGain;
+    	    attrOdometers.time = odoTimeLeft;
+    	}
     }
-    if(NewData==inRightDrivingPosition.readNewest(odoValue))
-    {
-    	attrOdometers.odo_right = odoValue*propRightOdometerGain;
-    }
-    outOdometryMeasures.write(attrOdometers);
 }
 
 void ProtokrotItf::readColorSwitch()

@@ -1,8 +1,8 @@
-var double canPeriod = 0.010 //s
+var double canPeriod = 0.010//s
 
 //Network controller
 loadComponent("Can1","arp_hml::CanOpenController");
-setActivity("Can1",canPeriod,0,ORO_SCHED_OTHER);
+setActivity("Can1",0,0,ORO_SCHED_OTHER);
 addPeer("Reporting", "Can1");
 
 //Motors

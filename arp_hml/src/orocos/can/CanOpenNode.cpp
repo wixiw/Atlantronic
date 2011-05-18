@@ -28,6 +28,7 @@ CanOpenNode::CanOpenNode(const std::string& name):
     updateNodeIdCard();
 
     addAttribute("attrCurrentNMTState",attrCurrentNMTState);
+    addAttribute("attrSyncTime", attrSyncTime);
 
     addProperty("propNodeId",propNodeId)
         .doc("CAN adress of the node");
@@ -206,6 +207,11 @@ bool CanOpenNode::startHook()
 
 void CanOpenNode::updateHook()
 {
+    //Récupération de la date du cycle CAN
+    timespec syncTime;
+    inMasterClock.readNewest(syncTime);
+    attrSyncTime = syncTime.tv_sec + (double)(syncTime.tv_nsec)/1E9;
+
     HmlTaskContext::updateHook();
 
     //mise à jour de l'état NMT
