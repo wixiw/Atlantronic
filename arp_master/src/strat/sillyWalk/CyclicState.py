@@ -10,12 +10,14 @@ from Inputs import Inputs
 from Data import Data
 
 from arp_core.srv import Spawn
+from arp_hml.srv import SetMotorPower
 
 class CyclicState(smach.StateMachine):
     def __init__(self,outcomes):
         smach.StateMachine.__init__(self,outcomes)
         self.preemptiveStates=[]
         self.initSetPositionClient()
+        self.initSetMotorPower()
         
     def execute(self,userdata):
         Inputs.update()
@@ -61,5 +63,13 @@ class CyclicState(smach.StateMachine):
         self.setPosition_loc(x,y,theta)
         #self.setPosition_loclaser(x,y,theta)
         self.setPosition_simu(x,y,theta)
+    
+    def initSetMotorPower(self):
+        self.setMotorPower_srv=rospy.ServiceProxy("Protokrot/setMotorPower",SetMotorPower)
+    
+    def enableDrive(self):
+        self.setMotorPower_srv(True,2.0)
         
+    def disableDrive(self):
+        self.setMotorPower_srv(False,2.0)
         

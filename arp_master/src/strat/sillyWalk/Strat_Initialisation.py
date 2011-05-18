@@ -43,4 +43,5 @@ class WaitForStart(CyclicState):
         Data.color=Inputs.getcolor()
         poseDepart=AmbiPoseRed(-1.45,0.84,0,Data.color)
         self.setPosition(poseDepart.x,poseDepart.y,poseDepart.theta)
+        self.enableDrive()
     

@@ -30,5 +30,8 @@ class EndgameState(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['ok'])
 
+    def executeOut(self):
+        self.disableDrive()
+        
     def executeTransitions(self):
         return 'ok'      

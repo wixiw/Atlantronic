@@ -8,4 +8,5 @@ class Data:
     
     #variables de la machine d'etat
     color='NONE'
+    adv_color='NONE'
 
