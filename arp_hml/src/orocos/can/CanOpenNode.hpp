@@ -49,35 +49,28 @@ namespace arp_hml
 
 
     protected:
-        /**
-         * This attribute contains the current NMT status of the node
-         */
+        /** This attribute contains the current NMT status of the node  */
         e_nodeState attrCurrentNMTState;
 
-        /**
-         * CAN adress of the node
-         */
+        /** Last sync time received **/
+        double attrSyncTime;
+
+        /** CAN adress of the node */
         nodeID_t propNodeId;
 
-        /**
-         * Timeout before considering a node is not responding to a NMT request (in ms)
-         */
+        /** Timeout before considering a node is not responding to a NMT request (in ms) */
         int propNmtTimeout;
 
-        /**
-         * name of the CanOpenController this component will connect
-         */
+        /** name of the CanOpenController this component will connect*/
         string propCanOpenControllerName;
 
-        /**
-         * this script is executed in the configureHook to set up CAN config values
-         */
+        /** this script is executed in the configureHook to set up CAN config values*/
         string propCanConfigurationScript;
 
         /**
          * Clock port which trigger our activity
          */
-        InputPort<bool> inMasterClock;
+        InputPort<timespec> inMasterClock;
 
         /**
          * port from which we receive the nmt state of our node from a CanOpenController

@@ -8,5 +8,7 @@
   <simple name="propBusName" type="string"><description>contains the name of the bus attached to the CanController</description><value>can1</value></simple>
   <simple name="propBaudRate" type="string"><description>contains the baudrate of the attached bus (10K,250K,500K,1000K, ...)</description><value>250K</value></simple>
   <simple name="propNodeId" type="long"><description>in decimal</description><value>2</value></simple>
-  <simple name="propMasterMaxBootDelay" type="long"><description>defines the maximal allowed duration of slaves nodes before considering they are not on the bus (in ms)</description><value>50</value></simple>
+  <simple name="propMasterMaxBootDelay" type="double"><description>defines the maximal allowed duration of slaves nodes before considering they are not on the bus (in s)</description><value>0.050</value></simple>
+  <simple name="propSyncPeriod" type="double"><description>delay between 2 SYNC messgaes in s </description><value>0.010</value></simple>
+  <simple name="propPdoMaxAwaitedDelay" type="double"><description> in s </description><value>0.004</value></simple>
 </properties>

@@ -87,6 +87,8 @@ namespace arp_hml
 
         /** Provides the measured position of the encoder from CAN. It is converted in rad on the reductor's output's axe. **/
         OutputPort<double> outMeasuredPosition;
+        /** */
+        OutputPort<double> outMeasuredPositionTime;
         /** Provides the torque measured from CAN. Not available yet **/
         OutputPort<double> outMeasuredTorque;
         /** Provides a computed speed from the encoder position. In rad/s on the reductor's output's axe. */
@@ -225,7 +227,7 @@ namespace arp_hml
         /** Last used position for speed computation */
         double m_oldPositionMeasure;
         /** Time of last speed computation */
-        struct timespec m_oldPositionMeasureTime;
+        double m_oldPositionMeasureTime;
 
         /** Read the input ports and prepare internal variables. It allows to do a snapshot of inputs to work with coherent datas */
         void getInputs();

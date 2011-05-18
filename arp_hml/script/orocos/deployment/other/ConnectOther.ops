@@ -40,6 +40,8 @@ connect("Protokrot.inIoStart", "Io.outBit2",ConnPolicy());
 connect("Protokrot.inIoColorSwitch", "Io.outBit6",ConnPolicy());
 connect("Protokrot.inLeftDrivingPosition", "LeftDriving.outMeasuredPosition",ConnPolicy());
 connect("Protokrot.inRightDrivingPosition", "RightDriving.outMeasuredPosition",ConnPolicy());
+connect("Protokrot.inLeftDrivingPositionTime", "LeftDriving.outMeasuredPositionTime",ConnPolicy());
+connect("Protokrot.inRightDrivingPositionTime", "RightDriving.outMeasuredPositionTime",ConnPolicy());
 connect("Protokrot.inLeftDriveEnable", "LeftDriving.outDriveEnable",ConnPolicy());
 connect("Protokrot.inRightDriveEnable", "RightDriving.outDriveEnable",ConnPolicy());
 connect("Protokrot.inLeftSpeedMeasure", "LeftDriving.outComputedSpeed",ConnPolicy());

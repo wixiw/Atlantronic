@@ -47,6 +47,8 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
 
     addPort("outMeasuredPosition",outMeasuredPosition)
         .doc("Provides the measured position of the encoder from CAN. It is converted in rad on the reductor's output's axe.");
+    addPort("outMeasuredPositionTime",outMeasuredPositionTime)
+        .doc("");
     addPort("outMeasuredTorque",outMeasuredTorque)
         .doc("Provides the torque measured from CAN. Not available yet");
     addPort("outComputedSpeed",outComputedSpeed)
@@ -86,7 +88,9 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
 
     ArdMotorItf::setOperationMode(ArdMotorItf::SPEED_CONTROL);
     outDriveEnable.write(false);
-    clock_gettime(CLOCK_MONOTONIC, &m_oldPositionMeasureTime);
+    timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    m_oldPositionMeasureTime = now.tv_sec + (double)(now.tv_nsec)/1E9;
 }
 
 bool Faulhaber3268Bx4::checkInputsPorts()
@@ -178,6 +182,7 @@ void Faulhaber3268Bx4::setOutputs()
 {
 	//publication de la position
 	outMeasuredPosition.write( ArdMotorItf::getPositionMeasure() );
+	outMeasuredPositionTime.write( attrSyncTime );
     //publication de la vitesse
 	outComputedSpeed.write( ArdMotorItf::getSpeedMeasure() );
     //lecture du courant
@@ -277,12 +282,17 @@ void Faulhaber3268Bx4::readCaptors()
 	LeaveMutex();
 
 	//calcul de la vitesse
-	struct timespec now;
-	clock_gettime(CLOCK_MONOTONIC, &now);
-	attrPeriod = delta_t(m_oldPositionMeasureTime, now);
-	m_speedMeasure = (m_positionMeasure - m_oldPositionMeasure)/attrPeriod;
+	attrPeriod = attrSyncTime - m_oldPositionMeasureTime;
+	if( attrPeriod > 0 )
+	{
+	    m_speedMeasure = (m_positionMeasure - m_oldPositionMeasure)/attrPeriod;
+	}
+	else
+	{
+	    m_speedMeasure = 0;
+	}
 	m_oldPositionMeasure = m_positionMeasure;
-	m_oldPositionMeasureTime = now;
+	m_oldPositionMeasureTime = attrSyncTime;
 }
 
 void Faulhaber3268Bx4::stopHook()

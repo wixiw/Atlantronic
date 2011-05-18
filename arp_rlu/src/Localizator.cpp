@@ -35,7 +35,7 @@ bool Localizator::respawnCallback(Spawn::Request& req, Spawn::Response& res)
     trans.y() = req.y;
     orient = arp_math::Rotation2(req.theta);
     //set time to be unvalid so the odoCallback will reinitiliaze
-    last_time = ros::Time(0.0);
+    last_time = 0;
     ros::Time t = ros::Time::now();
 
     publishTransform(t);
@@ -53,13 +53,13 @@ void Localizator::odoCallback(const OdoConstPtr& o)
     double vx, vy;
 
     // Récupération des données odo
-    ros::Time t = ros::Time::now();
     odo_left = o->odo_left;
     odo_right = o->odo_right;
+    double t = o->time;
 
-    dt = (t - last_time).toSec();
+    dt = t - last_time;
 
-    if (!last_time.isZero() && dt > 0)
+    if (last_time != 0 && dt > 0)
     {
 
         // Calcul des vitesses odo
@@ -79,7 +79,7 @@ void Localizator::odoCallback(const OdoConstPtr& o)
     }
     else
     {
-        ROS_INFO("Initialiaze odometry");
+        ROS_INFO("Initialiaze odometry t=%f last_t=%f dt=%f",t,last_time,dt);
         //Last time is going to be initiliaze under to now
         //Last odo values will have current values
         //position is unchanged
@@ -90,12 +90,15 @@ void Localizator::odoCallback(const OdoConstPtr& o)
         vy = 0;
     }
 
-    publishTransform(t);
-    publishOdomTopic(t, vx, vy, ang_vel);
-    publishPoseTopic(t, lin_vel, ang_vel);
+    publishTransform(ros::Time(t));
+    publishOdomTopic(ros::Time(t), vx, vy, ang_vel);
+    publishPoseTopic(ros::Time(t), lin_vel, ang_vel);
 
     // Buffer
-    last_time = t;
+    if( dt > 0 )
+    {
+        last_time = t;
+    }
     last_odo_right = odo_right;
     last_odo_left = odo_left;
 }

@@ -159,6 +159,7 @@ namespace arp_hml
 
         /** Value of the left odometer in rad on the wheel axe **/
         InputPort<double> inLeftDrivingPosition;
+        InputPort<double> inLeftDrivingPositionTime;
 
         /** Value of the right odometer in rad on the wheel axe **/
         InputPort<double> inLeftSpeedMeasure;
@@ -168,6 +169,7 @@ namespace arp_hml
 
         /** Value of the right speed in rad/s on the wheel axe **/
         InputPort<double> inRightDrivingPosition;
+        InputPort<double> inRightDrivingPositionTime;
 
         /** Left drive soft enable state **/
         InputPort<bool> inLeftDriveEnable;
@@ -203,6 +205,8 @@ public:
 protected:
         /** This holds the time of the last received differential command **/
         struct timespec m_lastCmdTimestamp;
+        /** Is true when only one of the 2 speed has been received */
+        bool m_receivedPartialPosition;
 
         /** Pointer on the LeftDrive ooEnableDrive Operation**/
         OperationCaller<void(void)> m_ooEnableLeftDrive;

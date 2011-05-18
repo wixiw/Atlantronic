@@ -19,18 +19,14 @@ runScript("/opt/ros/ard/arp_hml/script/orocos/deployment/other/StartOther.ops")
 runScript("/opt/ros/ard/arp_hml/script/orocos/deployment/can/StartCan.ops")
 
 //enabling drive
-//en attendant que quelqu'un d'autre le fasse
-var bool deployed_successfully = Protokrot.ooSetMotorPower(true, 1.000);
-
 if( !Can1.isRunning() || !Io.isRunning() || !LeftDriving.isRunning() || !RightDriving.isRunning() 
-		|| !Protokrot.isRunning() || !deployed_successfully) then
+		|| !Protokrot.isRunning()) then
 {
 	print.log(Warning, "====================");
 	print.log(Fatal, "!*%$#@&!*%$#@&!*%$#@&!*%$#@&!*%$#@&!*%$#@&");
 	print.log(Fatal, "       Fail to deploy HML !");
 	print.log(Fatal, "!*%$#@&!*%$#@&!*%$#@&!*%$#@&!*%$#@&!*%$#@&");
 	print.log(Warning, "====================");
-	deployed_successfully = false;
 }
 else
 {
@@ -38,7 +34,6 @@ else
 	print.log(Warning, "Fin déploiment arp_hml OK");
 	print.log(Warning, "HML in version : " + Protokrot.coGetHmlVersion);
 	print.log(Warning, "====================");
-	deployed_successfully = true;
 }
 
 Reporting.reportPort ("Protokrot","outLeftSpeedCmd");
