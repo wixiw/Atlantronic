@@ -2,21 +2,21 @@ var double canPeriod = 0.010//s
 
 //Network controller
 loadComponent("Can1","arp_hml::CanOpenController");
-setActivity("Can1",0,0,ORO_SCHED_OTHER);
+setActivity("Can1",0,50,ORO_SCHED_RT);
 addPeer("Reporting", "Can1");
 
 //Motors
 loadComponent("LeftDriving","arp_hml::Faulhaber3268Bx4");
-setActivity("LeftDriving",0,0,ORO_SCHED_OTHER);
+setActivity("LeftDriving",0,40,ORO_SCHED_RT);
 addPeer("LeftDriving", "Can1");
 addPeer("Reporting", "LeftDriving");
 loadComponent("RightDriving","arp_hml::Faulhaber3268Bx4");
-setActivity("RightDriving",0,0,ORO_SCHED_OTHER);
+setActivity("RightDriving",0,40,ORO_SCHED_RT);
 addPeer("RightDriving", "Can1");
 addPeer("Reporting", "RightDriving");
 
 //Woodhead
 loadComponent("Io","arp_hml::Woodhead");
-setActivity("Io",0,0,ORO_SCHED_OTHER);
+setActivity("Io",0,40,ORO_SCHED_RT);
 addPeer("Io", "Can1");
 addPeer("Reporting", "Io");

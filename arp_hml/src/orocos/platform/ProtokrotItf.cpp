@@ -26,7 +26,8 @@ ProtokrotItf::ProtokrotItf(const std::string& name):
     propRightOdometerGain(1),
     propLeftSpeedGain(1),
     propRightSpeedGain(1),
-    propSpeedCmdMaxDelay(1.000)
+    propSpeedCmdMaxDelay(1.000),
+    m_receivedPartialPosition(false)
 {
     addAttribute("attrCurrentCmd", attrCurrentCmd);
     addAttribute("attrOdometers", attrOdometers);
@@ -66,8 +67,12 @@ ProtokrotItf::ProtokrotItf(const std::string& name):
             .doc("HW value of the color switch. It is true when the color switch is on 1");//on n'est pas pressé pour connaitre la couleur
     addEventPort("inLeftDrivingPosition",inLeftDrivingPosition)
             .doc("Value of the left odometer in rad on the wheel axe");
+    addPort("inLeftDrivingPositionTime",inLeftDrivingPositionTime)
+            .doc("");
     addEventPort("inRightDrivingPosition",inRightDrivingPosition)
             .doc("Value of the right odometer in rad on the wheel axe");
+    addPort("inRightDrivingPositionTime",inRightDrivingPositionTime)
+            .doc("inRightDrivingPositionTime");
     addPort("inLeftSpeedMeasure",inLeftSpeedMeasure)
             .doc("Value of the left speed in rad/s on the wheel axe");
     addPort("inLeftDriveConnected",inLeftDriveConnected)
@@ -223,12 +228,17 @@ void ProtokrotItf::readOdometers()
     	}
     	else
     	{
-    	    m_receivedPartialPosition = false;
-    	    inLeftDrivingPosition.readNewest(odoValueLeft);
-    	    inRightDrivingPosition.readNewest(odoValueRight);
-    	    attrOdometers.odo_left = odoValueLeft*propLeftOdometerGain;
-    	    attrOdometers.odo_right = odoValueRight*propRightOdometerGain;
-    	    attrOdometers.time = odoTimeLeft;
+    	    //on ne reproduit pas le message si c'est le dernier qui a été publié
+    	    if( attrOdometers.time != odoTimeLeft )
+    	    {
+                m_receivedPartialPosition = false;
+                inLeftDrivingPosition.readNewest(odoValueLeft);
+                inRightDrivingPosition.readNewest(odoValueRight);
+                attrOdometers.odo_left = odoValueLeft*propLeftOdometerGain;
+                attrOdometers.odo_right = odoValueRight*propRightOdometerGain;
+                attrOdometers.time = odoTimeLeft;
+                outOdometryMeasures.write(attrOdometers);
+    	    }
     	}
     }
 }

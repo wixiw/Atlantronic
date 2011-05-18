@@ -79,7 +79,7 @@ void Localizator::odoCallback(const OdoConstPtr& o)
     }
     else
     {
-        ROS_INFO("Initialiaze odometry");
+        ROS_INFO("Initialiaze odometry t=%f last_t=%f dt=%f",t,last_time,dt);
         //Last time is going to be initiliaze under to now
         //Last odo values will have current values
         //position is unchanged
@@ -95,7 +95,10 @@ void Localizator::odoCallback(const OdoConstPtr& o)
     publishPoseTopic(ros::Time(t), lin_vel, ang_vel);
 
     // Buffer
-    last_time = t;
+    if( dt > 0 )
+    {
+        last_time = t;
+    }
     last_odo_right = odo_right;
     last_odo_left = odo_left;
 }
