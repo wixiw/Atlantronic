@@ -38,13 +38,13 @@
     <param name="/arp_ods/FANTOM_COEF"  value="0.5" /> 
 	
 	<!--maximum forward acceleration (m/s^02) -->
-    <param name="/arp_ods/LIN_ACC_MAX"  value="0.800" /> 
+    <param name="/arp_ods/LIN_ACC_MAX"  value="1.500" /> 
 
 	<!--maximum forward deceleration (m/s^02) -->
-    <param name="/arp_ods/LIN_DEC_MAX"  value="-3.000" /> 
+    <param name="/arp_ods/LIN_DEC_MAX"  value="-4.000" /> 
 
 	<!--maximum rotation acceleration (rad/s^2) -->
-    <param name="/arp_ods/ANG_ACC_MAX"  value="3.000" /> 
+    <param name="/arp_ods/ANG_ACC_MAX"  value="15.000" /> 
 
 	<!--Distance in meters between wheels -->
     <param name="/Protokrot/BASE_LINE" value="0.310"/>  
