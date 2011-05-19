@@ -437,8 +437,8 @@ bool CanOpenController::coWriteInRemoteDico(CanDicoEntry dicoEntry)
         }
         else
         {
-            LOG(Error) << "Failed to send SDO : writeResult="
-                    << writeResult << " abortCode=" << (unsigned int) abortCode
+            LOG(Error) << "Failed to send SDO "<< std::hex << dicoEntry.index<< ":" << std::hex << dicoEntry.subindex << " to node " << std::hex << dicoEntry.nodeId << ": writeResult="
+                    << writeResult << " abortCode=" << std::hex << (unsigned int) abortCode
                     << endl;
             res = false;
         }
