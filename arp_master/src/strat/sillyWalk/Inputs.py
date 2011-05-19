@@ -31,9 +31,6 @@ class Input():
 class Inputs:
     
     inputList=[]
-#    obstacle=0
-#    color=0
-#    start=0
     
     @staticmethod
     def link():

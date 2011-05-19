@@ -65,23 +65,52 @@ class CreateWalk(CyclicState):
         #caseres=getClosestCaseInDir(dirRobot,Data.color)
         
         #
-        Data.case1=Case(-1,-3)
-        Data.case2=Case(5,3)
-        Data.case3=Case(5,5)
-        Data.angleParcours=pi/4
+        
+        print "x,y :%.3f , %.3f"%(Inputs.getx(),Inputs.gety())
+        current_case=getCase(Inputs.getx(),Inputs.gety())
+        print "cur case:"
+        current_case.toText()
+        
+        direction=getDirection4Q(Inputs.gettheta())
+        dirParcours=direction.getRotated(pi/4)
+        
+        if current_case.color()==Data.adv_color:
+            case1=current_case
+        else:
+            case1=current_case.getClosestInDirection(direction.getInverse(),Data.adv_color)
+        
+        case2=case1.getFurthestInDirection(dirParcours,Data.adv_color)
+        # des fois cases 3 n'existe pas ! ca serait en dehors de la table !!!!
+        case3=case2.getClosestInDirection(dirParcours.getRotated(pi/4),Data.color)
+        Data.case1=case1
+        Data.case2=case2
+        Data.case3=case3
+        Data.dirParcours=dirParcours
+        
+        print "direction robot :"
+        direction.toText()
+        print "direction parcours:"
+        dirParcours.toText()
+
+        print "case1,2,3:"
+        case1.toText()
+        case2.toText()
+        case3.toText()
+
+        
         return 'toStep1'
  
 class Step1(CyclicActionState):
     def createAction(self):
-        self.pointcap_reverse(Data.case1.xCenter,Data.case1.yCenter,Data.angleParcours)
+        self.pointcap_reverse(Data.case1.xCenter,Data.case1.yCenter,Data.dirParcours.angle())
 
 class Step2(CyclicActionState):
     def createAction(self):
-        self.pointcap(Data.case2.xCenter,Data.case2.yCenter,Data.angleParcours)
+        self.pointcap(Data.case2.xCenter,Data.case2.yCenter,Data.dirParcours.angle())
 
 class Step3(CyclicActionState):
     def createAction(self):
-        angleobj=Data.angleParcours+pi/4+pi/8
+        angleobj=Data.dirParcours.angle()+pi/4+pi/8
         (xobj,yobj)=Data.case3.coord_WhenPionMilieu(angleobj)
         self.pointcap(xobj,yobj,angleobj)
 

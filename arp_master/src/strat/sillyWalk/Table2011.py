@@ -5,21 +5,41 @@ import rospy
 from math import cos
 from math import sin
 from math import pi
+from math import floor
+from math import atan2
 from UtilARD import *
 
-def getDirection(anglerobot):
+class Direction:
+    def __init__(self,di,dj):
+        self.di=di
+        self.dj=dj
+        
+    def getInverse(self):
+        return self.getRotated(pi)
+    
+    def getRotated(self,angle):
+        return Direction(int(round(cos(self.angle()+angle))),int(round(sin(self.angle()+angle))))
+    
+    def angle(self):
+        return atan2(self.dj,self.di)    
+    
+    def toText(self):
+        print "direction: (%i,%i)"%(self.di,self.dj)
+        
+# give him an angle, it will tell you what "direction" you have on the chess board
+def getDirection4Q(anglerobot):
     if -pi/4<anglerobot<=pi/4:
-        return (1,0)
+        return Direction(1,0)
     if pi/4<anglerobot<=3*pi/4:
-        return (0,1)
+        return Direction(0,1)
     if 3*pi/4<anglerobot or anglerobot<=-3*pi/4 :
-        return (-1,0)
+        return Direction(-1,0)
     if -3*pi/4<anglerobot<=-pi/4:
-        return (0,-1)
+        return Direction(0,-1)
 
 #give him a position, it will return the case on which you are
 def getCase(x,y):
-    return Case(1+2*floor(x/350),1+2*floor(y/350))
+    return Case(int(1+2*floor(x/0.350)),int(1+2*floor(y/0.350)))
 
 #represent the robot dimensions    
 class Robot:
@@ -30,9 +50,12 @@ class Case:
     #attention a cette numerotation tres intelligente !
     #la premiere case c'est 1, la suivante 3, la suivante 5
     #ca permet d'avoir une symetrie sur les numeros de cases ET le repere
+    
+    #c'est un immutable, tout comme direction
+    # ca ne fait que renvoyer une nouvelle instance de case si on lui demande, par exemple, la plus proche 
     def __init__(self,i_hor,j_vert):
-        self.i=i_hor
-        self.j=j_vert
+        self.i=int(i_hor)
+        self.j=int(j_vert)
         self.xCenter=self.i*(0.350/2)
         self.yCenter=self.j*(0.350/2)
         
@@ -43,38 +66,39 @@ class Case:
     
     def color(self):
         if (self.i/2+self.j/2)%2==1:
-            return 'red'
-        else:
             return 'blue'
+        else:
+            return 'red'
     
-    def getClosestInDirection(dir,color):
+    def getClosestInDirection(self,dir,color):
         # dir could be (1,1)(-1,0)... etc, meaning "-1 in X and 0 in y"
         i_test=self.i
         j_test=self.j
-        inc_i=dir(0)*2
-        inc_j=dir(1)*2
+        inc_i=dir.di*2
+        inc_j=dir.dj*2
         while(True):
             i_test+=inc_i
             j_test+=inc_j
             case=Case(i_test,j_test)
-            if case.inTable==False:
+            if case.inTable()==False:
                 break
             if color=='any':
                 return case
             if case.color()==color:
                 return case
+            
          
-    def getFurthestInDirection(dir,color):
+    def getFurthestInDirection(self,dir,color):
         i_test=self.i
         j_test=self.j
-        inc_i=dir(0)*2
-        inc_j=dir(1)*2
+        inc_i=dir.di*2
+        inc_j=dir.dj*2
         last_good_case=None
         while(True):
             i_test+=inc_i
             j_test+=inc_j
             case=Case(i_test,j_test)
-            if case.inTable==False:
+            if case.inTable()==False:
                 break
             if color=='any':
                 last_good_case= case
@@ -83,13 +107,17 @@ class Case:
                 
         return last_good_case   
                 
-
     #will tell if the considered case in within the table            
     def inTable(self):
         if self.i>5 or self.j>5 or self.i<-5 or self.j<-5:
             return False
         else:
             return True
+        
+    def toText(self):
+        print "je suis une case: i=%i j=%i"%(self.i,self.j)
+        print "je suis de couleur %s"%self.color()
+        
 
 class AmbiCaseRed(Case):
     def __init__(self,i_hor,j_vert,color):

@@ -41,6 +41,10 @@ class WaitForStart(CyclicState):
         
     def executeOut(self):
         Data.color=Inputs.getcolor()
+        if Data.color=='red':
+            Data.adv_color='blue'
+        else:
+            Data.adv_color='red'
         poseDepart=AmbiPoseRed(-1.45,0.84,0,Data.color)
         self.setPosition(poseDepart.x,poseDepart.y,poseDepart.theta)
         self.enableDrive()
