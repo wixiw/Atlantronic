@@ -62,6 +62,7 @@ void MotionControl::poseCallback(OdometryConstPtr c)
     geometry_msgs::Quaternion thetaQuaternion = c->pose.pose.orientation;
     m_transCallback = Vector2(x, y);
     m_orientCallback = Rotation2(tf::getYaw(thetaQuaternion));
+
 }
 
 void MotionControl::pose2DCallback(Pose2DConstPtr c)
@@ -77,6 +78,7 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal)
     ros::Rate r(100);
     bool success = true;
     bool loop = true;
+    Velocity vel;
 
     /////////////////////// Receiving goal
 
@@ -117,6 +119,12 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal)
         ROS_INFO("en normal");
     else
         ROS_INFO("en reverse");
+
+    vel.linear = 0;
+    vel.angular = 0;
+    vel_pub_.publish(vel);
+    r.sleep();
+    ros::spinOnce();
 
     ////////////////////////// CONTROL LOOP
     // NB: the control loop has been made so that every "move type" (normal, only cap, reverse) and every step of the trajectory (far, approaching) is done by the same algorithm
@@ -252,7 +260,7 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal)
 
         ////////////////////////////////////////ATTEINTE DU BUT
         if (distance_error < DISTANCE_ACCURACY && d_abs(angle_error)
-                < ANGLE_ACCURACY)
+                < ANGLE_ACCURACY )
         {
             ROS_INFO(
                     ">>>>>>>>>>>>>>>>> %s: Position Reached :  x=%.3f, y=%.3f, theta=%.3f",
@@ -279,6 +287,8 @@ void MotionControl::executeCB(const OrderGoalConstPtr &goal)
              ROS_INFO(">>angle_error %.3f", angle_error);
              */
             success = true;
+            m_linearSpeedCmd = 0;
+            m_angularSpeedCmd = 0;
             break;
         }
 

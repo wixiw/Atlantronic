@@ -84,7 +84,8 @@ namespace arp_ods
         double LIN_DEC_MAX;
         double ANG_ACC_MAX;
         double BASE_LINE;
-        double WHEEL_DIAMETER;
+        double LEFT_WHEEL_DIAMETER;
+        double RIGHT_WHEEL_DIAMETER;
     };
 
 }

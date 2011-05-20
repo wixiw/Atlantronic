@@ -11,8 +11,13 @@ PhysicsSimuRobot::PhysicsSimuRobot(const ros::NodeHandle& nh,
 {
 
     // Parameters
-    nh_.getParam("/Protokrot/BASE_LINE", BASE_LINE);
-    nh_.getParam("/Protokrot/WHEEL_DIAMETER", WHEEL_DIAMETER);
+    // Parameters
+    if (nh.getParam("/Protokrot/BASE_LINE", BASE_LINE) == 0)
+        ROS_FATAL("PhysicsSimuRobot pas reussi a recuperer le parametre BASE_LINE");
+    if (nh.getParam("/Protokrot/LEFT_WHEEL_DIAMETER", LEFT_WHEEL_DIAMETER) == 0)
+        ROS_FATAL("PhysicsSimuRobot pas reussi a recuperer le parametre LEFT_WHEEL_DIAMETER");
+    if (nh.getParam("/Protokrot/RIGHT_WHEEL_DIAMETER", RIGHT_WHEEL_DIAMETER) == 0)
+        ROS_FATAL("PhysicsSimuRobot pas reussi a recuperer le parametre RIGHT_WHEEL_DIAMETER");
 
     // Suscribers
     differential_command_sub_ = nh_.subscribe("differential_command", 1,
@@ -72,7 +77,7 @@ void PhysicsSimuRobot::update(double dt, double canvas_width,
         double canvas_height)
 {
     // Au bout de 2000ms la commande n'est plus appliquée
-    if (ros::Time::now() - last_command_time_ > ros::Duration(2.000))
+    if (ros::Time::now() - last_command_time_ > ros::Duration(0.100))
     {
         v_right_ = 0.0f;
         v_left_ = 0.0f;
@@ -86,8 +91,8 @@ void PhysicsSimuRobot::update(double dt, double canvas_width,
     }
 
     // Calcul du Twist
-    lin_vel_ = 0.25 * (v_right_ + v_left_) * WHEEL_DIAMETER;
-    ang_vel_ = 0.50 * (v_right_ - v_left_) * WHEEL_DIAMETER / BASE_LINE;
+    lin_vel_ = 0.25 * (v_right_*RIGHT_WHEEL_DIAMETER + v_left_*LEFT_WHEEL_DIAMETER);
+    ang_vel_ = 0.50 * (v_right_*RIGHT_WHEEL_DIAMETER - v_left_*LEFT_WHEEL_DIAMETER)/ BASE_LINE;
 
     // Calcul de la position réelle (integration)
     orient_ = orient_ * Rotation2(ang_vel_ * dt);
@@ -100,9 +105,9 @@ void PhysicsSimuRobot::update(double dt, double canvas_width,
 
     // On simule des odo (ils sont suposés parfaits)
     double v_left_odo = (2.0 * lin_vel_odo + BASE_LINE * ang_vel_odo)
-            / WHEEL_DIAMETER;
+            / LEFT_WHEEL_DIAMETER;
     double v_right_odo = (2.0 * lin_vel_odo - BASE_LINE * ang_vel_odo)
-            / WHEEL_DIAMETER;
+            / RIGHT_WHEEL_DIAMETER;
     odo_right_ += v_left_odo * dt;
     odo_left_ += v_right_odo * dt;
 

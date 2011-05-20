@@ -14,15 +14,17 @@ Command::Command() :
     command_pub = nh.advertise<DifferentialCommand> ("Protokrot/differential_command", 1);
 
     if (nh.getParam("/arp_ods/LIN_ACC_MAX", LIN_ACC_MAX) == 0)
-        ROS_FATAL("pas reussi a recuperer le parametre LIN_ACC_MAX");
+        ROS_FATAL("Command pas reussi a recuperer le parametre LIN_ACC_MAX");
     if (nh.getParam("/arp_ods/LIN_DEC_MAX", LIN_DEC_MAX) == 0)
-        ROS_FATAL("pas reussi a recuperer le parametre LIN_DEC_MAX");
+        ROS_FATAL("Command pas reussi a recuperer le parametre LIN_DEC_MAX");
     if (nh.getParam("/arp_ods/ANG_ACC_MAX", ANG_ACC_MAX) == 0)
-        ROS_FATAL("pas reussi a recuperer le parametre ANG_ACC_MAX");
+        ROS_FATAL("Command pas reussi a recuperer le parametre ANG_ACC_MAX");
     if (nh.getParam("/Protokrot/BASE_LINE", BASE_LINE) == 0)
-        ROS_FATAL("pas reussi a recuperer le parametre BASE_LINE");
-    if (nh.getParam("/Protokrot/WHEEL_DIAMETER", WHEEL_DIAMETER) == 0)
-        ROS_FATAL("pas reussi a recuperer le parametre WHEEL_DIAMETER");
+        ROS_FATAL("Command pas reussi a recuperer le parametre BASE_LINE");
+    if (nh.getParam("/Protokrot/LEFT_WHEEL_DIAMETER", LEFT_WHEEL_DIAMETER) == 0)
+        ROS_FATAL("Command pas reussi a recuperer le parametre LEFT_WHEEL_DIAMETER");
+    if (nh.getParam("/Protokrot/RIGHT_WHEEL_DIAMETER", RIGHT_WHEEL_DIAMETER) == 0)
+        ROS_FATAL("Command pas reussi a recuperer le parametre RIGHT_WHEEL_DIAMETER");
 }
 
 Command::~Command()
@@ -60,8 +62,8 @@ void Command::velocityCallback(const VelocityConstPtr& v)
 
         ////////////////creation consigne droite et consigne gauche
         // l'expression usuelle serait:    ( linvel + ang_vel*baseline/2  )  / wheel_radius
-        v_right = (2.0 * lin_vel_ + BASE_LINE * ang_vel_) / WHEEL_DIAMETER;
-        v_left = (2.0 * lin_vel_ - BASE_LINE * ang_vel_) / WHEEL_DIAMETER;
+        v_right = (2.0 * lin_vel_ + BASE_LINE * ang_vel_) / RIGHT_WHEEL_DIAMETER;
+        v_left = (2.0 * lin_vel_ - BASE_LINE * ang_vel_) / LEFT_WHEEL_DIAMETER;
 
     }
     //c'est la première fois qu'on commande une vitesse

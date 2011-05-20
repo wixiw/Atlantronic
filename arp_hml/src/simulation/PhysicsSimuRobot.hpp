@@ -71,7 +71,8 @@ namespace arp_hml
          * these are rosparam. see .launch for more info
          */
         double BASE_LINE;
-        double WHEEL_DIAMETER;
+        double LEFT_WHEEL_DIAMETER;
+        double RIGHT_WHEEL_DIAMETER;
 
         // Callbacks
         /**

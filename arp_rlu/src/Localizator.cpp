@@ -19,8 +19,12 @@ Localizator::Localizator() :
             &Localizator::respawnCallback, this);
 
     // Parameters
-    nh.getParam("/Protokrot/BASE_LINE", BASE_LINE);
-    nh.getParam("/Protokrot/WHEEL_DIAMETER", WHEEL_DIAMETER);
+    if (nh.getParam("/Protokrot/BASE_LINE", BASE_LINE) == 0)
+        ROS_FATAL("pas reussi a recuperer le parametre BASE_LINE");
+    if (nh.getParam("/Protokrot/LEFT_WHEEL_DIAMETER", LEFT_WHEEL_DIAMETER) == 0)
+        ROS_FATAL("pas reussi a recuperer le parametre LEFT_WHEEL_DIAMETER");
+    if (nh.getParam("/Protokrot/RIGHT_WHEEL_DIAMETER", RIGHT_WHEEL_DIAMETER) == 0)
+        ROS_FATAL("pas reussi a recuperer le parametre RIGHT_WHEEL_DIAMETER");
 }
 
 Localizator::~Localizator()
@@ -65,8 +69,8 @@ void Localizator::odoCallback(const OdoConstPtr& o)
         // Calcul des vitesses odo
         double dleft = odo_left - last_odo_left;
         double dright = odo_right - last_odo_right;
-        double dl = 0.25 * (dright + dleft) * WHEEL_DIAMETER;
-        double dth = 0.50 * (dright - dleft) * WHEEL_DIAMETER / BASE_LINE;
+        double dl = (dright*RIGHT_WHEEL_DIAMETER + dleft*LEFT_WHEEL_DIAMETER) /4;
+        double dth = 0.50 * (dright*RIGHT_WHEEL_DIAMETER - dleft*LEFT_WHEEL_DIAMETER) / BASE_LINE;
         lin_vel = dl / dt;
         ang_vel = dth / dt;
 
