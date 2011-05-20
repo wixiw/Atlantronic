@@ -95,7 +95,7 @@ class CreateWalk(CyclicState):
         print "case1,2,3:"
         case1.toText()
         case2.toText()
-        case3.toText()
+        #case3.toText()
 
         
         return 'toStep1'

@@ -20,29 +20,39 @@ from UtilARD import *
 
 class Opening(smach.StateMachine):
     def __init__(self):
-        smach.StateMachine.__init__(self,outcomes=['endOpening','problem'])
+        smach.StateMachine.__init__(self, outcomes=['endOpening', 'problem'])
         with self:
             smach.StateMachine.add('EscapeStartpoint',
                       EscapeStartpoint(),
-                      transitions={'succeeded':'Depose','aborted':'problem'})
+                      transitions={'succeeded':'Depose', 'aborted':'problem'})
             smach.StateMachine.add('Depose',
                       Depose(),
-                      transitions={'succeeded':'PrepareSillyWalk','aborted':'problem'})
+                      transitions={'succeeded':'PrepareSillyWalk', 'aborted':'problem'})
             smach.StateMachine.add('PrepareSillyWalk',
                       PrepareSillyWalk(),
-                      transitions={'succeeded':'endOpening','aborted':'problem'})
+                      transitions={'succeeded':'endOpening', 'aborted':'problem'})
  
 class EscapeStartpoint(CyclicActionState):
     def createAction(self):
-       self.forward(0.700)
+       if Data.color == 'red':
+           self.pointcap(-0.800, 0.840, 0)
+       else:
+           self.pointcap(0.800, 0.840, -pi)
+           
         
 class Depose(CyclicActionState):
     def createAction(self):
-        casedepose=AmbiCaseRed(-1,-5,Data.color)
-        (xobj,yobj)=casedepose.coord_WhenPionMilieu(-pi/2)
-        self.pointcap(xobj,yobj,-pi/2)
+        if Data.color == 'red':
+            casedepose = AmbiCaseRed(-1, -5, Data.color)
+            (xobj, yobj) = casedepose.coord_WhenPionMilieu(-pi / 2)
+            self.pointcap(xobj, yobj, -pi / 2)
+        else:
+           casedepose = AmbiCaseRed(3, -1, Data.color)
+           (xobj, yobj) = casedepose.coord_WhenPionMilieu(-pi)
+           self.pointcap(xobj, yobj, -pi)
+
         
 class PrepareSillyWalk(CyclicActionState):
     def createAction(self):
-        case=AmbiCaseRed(-1,-3,Data.color)
-        self.pointcap_reverse(case.xCenter,case.yCenter,0)
+        case = AmbiCaseRed(-1, -3, Data.color)
+        self.pointcap_reverse(case.xCenter, case.yCenter, 0)

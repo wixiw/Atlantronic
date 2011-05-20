@@ -67,16 +67,18 @@ class Retour_petit_bord(CyclicActionState):
 
 class Petit_to_Grand(CyclicActionState):
     def createAction(self):
-       self.cap(0)
+       if Data.color=='red':
+           self.cap(0)
+       else:
+           self.cap(-pi)
 
 class Recal_grand_bord(CyclicActionState):
     def createAction(self):
-       self.backward(0.500)
+       self.backward(0.600)
 
 class Retour_grand_bord(CyclicActionState):
     def createAction(self):
-       self.forward(0.100)
-       
+       self.forward(0.070)
 class Turn_for_match(CyclicActionState):
     def createAction(self):
        if Data.color=='red':
