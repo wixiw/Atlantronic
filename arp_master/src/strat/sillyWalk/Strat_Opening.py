@@ -22,6 +22,9 @@ class Opening(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['endOpening','problem'])
         with self:
+            smach.StateMachine.add('EscapeStartpoint',
+                      EscapeStartpoint(),
+                      transitions={'succeeded':'Depose','aborted':'problem'})
             smach.StateMachine.add('Depose',
                       Depose(),
                       transitions={'succeeded':'PrepareSillyWalk','aborted':'problem'})
@@ -29,6 +32,10 @@ class Opening(smach.StateMachine):
                       PrepareSillyWalk(),
                       transitions={'succeeded':'endOpening','aborted':'problem'})
  
+class EscapeStartpoint(CyclicActionState):
+    def createAction(self):
+       self.forward(0.700)
+        
 class Depose(CyclicActionState):
     def createAction(self):
         casedepose=AmbiCaseRed(-1,-5,Data.color)

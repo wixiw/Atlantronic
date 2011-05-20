@@ -57,12 +57,12 @@ class StartSequence(smach.StateMachine):
 
 class Recal_petit_bord(CyclicActionState):
     def createAction(self):
-       self.backward(0.30)
+       self.backward(0.300)
       
 
 class Retour_petit_bord(CyclicActionState):
     def createAction(self):
-       self.forward(0.30)
+       self.forward(0.300)
      
 
 class Petit_to_Grand(CyclicActionState):
@@ -71,11 +71,11 @@ class Petit_to_Grand(CyclicActionState):
 
 class Recal_grand_bord(CyclicActionState):
     def createAction(self):
-       self.backward(0.50)
+       self.backward(0.500)
 
 class Retour_grand_bord(CyclicActionState):
     def createAction(self):
-       self.forward(0.10)
+       self.forward(0.100)
        
 class Turn_for_match(CyclicActionState):
     def createAction(self):
