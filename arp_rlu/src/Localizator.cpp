@@ -160,5 +160,7 @@ void Localizator::publishPoseTopic(const ros::Time t, const double vl,
     pose.y = trans.y();
     pose.linear_velocity = vl;
     pose.angular_velocity = vth;
+    pose.date=ros::Time::now().toSec();
+
     pose_pub.publish(pose);
 }

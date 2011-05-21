@@ -91,13 +91,5 @@ namespace arp_math
         return delay.tv_sec + (double) (delay.tv_nsec) / 1E9;
     }
 
-    // "abs" prend un int et renvoie un int !! <<<<<<<<<<
-    double d_abs(double x)
-    {
-        if (x < 0)
-            return -x;
-        else
-            return x;
-    }
 }
 
