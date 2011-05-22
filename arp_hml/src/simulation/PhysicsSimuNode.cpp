@@ -22,7 +22,6 @@ int main (int argc, char **argv)
   ROS_INFO("Physics_Simu_Node is started");
   while (ros::ok())
   {
-
     s.updateRobot();
     ros::spinOnce();
     r.sleep();

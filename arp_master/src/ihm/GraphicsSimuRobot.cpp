@@ -19,7 +19,7 @@ GraphicsSimuRobot::GraphicsSimuRobot(const ros::NodeHandle& nh,
     robot_ = wxBitmap(robot_image_);
 
     // Suscribers
-    pose_sub_ = ros::NodeHandle("Localizator").subscribe("pose", 1,
+    pose_sub_ = ros::NodeHandle().subscribe(topicName, 1,
             &GraphicsSimuRobot::poseCallback, this);
 
     // Services
