@@ -10,7 +10,7 @@ GraphicsSimuRobot::GraphicsSimuRobot(const ros::NodeHandle& nh,
         const wxImage& robot_image, const Vector2& pos, double orient,
         double one_meter_in_pixel, std::string topicName) :
     nh_(nh), pos_(pos), orient_(orient), old_pos_(pos), old_orient_(orient),
-            robot_image_(robot_image), pen_on_(false),
+            robot_image_(robot_image), pen_on_(true),
             pen_(wxColour(DEFAULT_PEN_R, DEFAULT_PEN_G, DEFAULT_PEN_B)),
             canvas_x_(0.0), canvas_y_(0.0), old_canvas_x_(0.0),
             old_canvas_y_(0.0), meter_(one_meter_in_pixel)
