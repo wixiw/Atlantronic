@@ -44,7 +44,6 @@ namespace arp_ods
         double theta_des;
         bool success;
         bool loop;
-        Velocity vel;
         double sens_lin;
         double distance_to_despoint;
         bool reverse;
