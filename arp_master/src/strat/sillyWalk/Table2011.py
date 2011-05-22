@@ -125,6 +125,13 @@ class AmbiCaseRed(Case):
             Case.__init__(self,i_hor,j_vert)
         if color=='blue':
             Case.__init__(self,-i_hor,j_vert)
+    
+class AmbiCapRed:
+    def __init__(self,angle,color):
+        if color=='red':
+            self.angle=angle
+        if color=='blue':
+            self.angle=normalizeAngle(pi-angle)   
             
 class AmbiPoseRed:
     def __init__(self,x,y,theta,color):

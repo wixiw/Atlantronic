@@ -139,6 +139,8 @@ void PhysicsSimuRobot::update(double dt, double canvas_width,
     o.odo_right = odo_right_;
     o.time = (ros::Time::now()).toSec();
     odo_pub_.publish(o);
+    ////////////////////////////////////////////////////
+    //ROS_INFO("physic publie");
 
     ROS_DEBUG("[%s]: pos_x: %f pos_y: %f theta: %f",
             nh_.getNamespace().c_str(), pos_.x(), pos_.y(), orient_.angle());

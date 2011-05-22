@@ -51,6 +51,8 @@ namespace arp_ods
         double distance_error;
         double angle_error;
         bool endOrder;
+        bool passe;
+        double passe_time;
 
         /**
          * NodeHandle on associated node
@@ -134,6 +136,7 @@ namespace arp_ods
         static const int MODE_APPROACH = 1;
         static const int MODE_FANTOM = 2;
         static const int MODE_DONE = 3;
+        static const int MODE_PASS = 4;
 
         /**
          * this are coefficient that are defined by rosparam. see .launch files.

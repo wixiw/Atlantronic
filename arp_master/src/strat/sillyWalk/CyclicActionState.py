@@ -71,7 +71,7 @@ class CyclicActionState(CyclicState):
         
              
     # generic motioncontrol action creator.
-    def createMotionControlAction(self,x,y,theta,move_type,reverse):
+    def createMotionControlAction(self,x,y,theta,move_type,reverse,passe):
         self.client = actionlib.SimpleActionClient('MotionControl', OrderAction)
         goal=OrderGoal()
         goal.x_des=x
@@ -79,6 +79,7 @@ class CyclicActionState(CyclicState):
         goal.theta_des=theta
         goal.move_type=move_type
         goal.reverse=reverse
+        goal.passe=passe
         
         # THIS IS BLOCKING ! <<<<<<<<<<<<<<<<<<<<<<< !!!!!!!!!!!!!!
         self.client.wait_for_server()
@@ -89,19 +90,23 @@ class CyclicActionState(CyclicState):
         
     # these are useful function that allow not to give all parameters
     def pointcap(self,x,y,theta):
-        self.createMotionControlAction(x,y,theta,'POINTCAP',False)
+        self.createMotionControlAction(x,y,theta,'POINTCAP',False,False)
+      
+    def pointcap_pass(self,x,y,theta):
+        self.createMotionControlAction(x,y,theta,'POINTCAP',False,True)
+   
         
     def pointcap_reverse(self,x,y,theta):
-        self.createMotionControlAction(x,y,theta,'POINTCAP',True)
+        self.createMotionControlAction(x,y,theta,'POINTCAP',True,False)
     
     def cap(self,theta):
-        self.createMotionControlAction(0,0,theta,'CAP',False)
+        self.createMotionControlAction(0,0,theta,'CAP',False,False)
   
     def forward(self,dist):
-        self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()),Inputs.gety()+dist*sin(Inputs.gettheta()),Inputs.gettheta(),'POINTCAP',False)
+        self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()),Inputs.gety()+dist*sin(Inputs.gettheta()),Inputs.gettheta(),'POINTCAP',False,False)
    
     def backward(self,dist):
-        self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()+pi),Inputs.gety()+dist*sin(Inputs.gettheta()+pi),Inputs.gettheta(),'POINTCAP',True)
+        self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()+pi),Inputs.gety()+dist*sin(Inputs.gettheta()+pi),Inputs.gettheta(),'POINTCAP',True,False)
 
 
 

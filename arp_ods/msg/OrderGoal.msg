@@ -5,3 +5,4 @@ float64 x_des
 float64 y_des
 float64 theta_des
 bool reverse
+bool passe

@@ -13,7 +13,7 @@ MotionControl::MotionControl(std::string name) :
             m_angularSpeedCmd(0.0), loop_date(0.0), mode(MODE_DONE),
             trans_des(0, 0), orient_des(0), x_des(0), y_des(0), theta_des(0),
             success(false), loop(true), sens_lin(1), distance_to_despoint(0),
-            reverse(false), distance_error(0), angle_error(0), endOrder(true)
+            reverse(false), distance_error(0), angle_error(0), endOrder(true),passe(false),passe_time(0)
 
 {
     if (nh_.getParam("/arp_ods/DISTANCE_ACCURACY", DISTANCE_ACCURACY) == 0)
@@ -66,6 +66,7 @@ void MotionControl::poseCallback(OdometryConstPtr c)
     m_position = Vector2(x, y);
     m_cap = Rotation2(tf::getYaw(thetaQuaternion));
 
+
 }
 
 // TODO WLA nettoie ca ! je sais pas ce que c'est
@@ -78,11 +79,11 @@ void MotionControl::poseCallback(OdometryConstPtr c)
  }
  */
 
-/////////////////////////// MAIN LOOP
+/////////////////////////// MAIN LOOP//////////////////////
 //this is the main loop of the motion control.
 void MotionControl::execute()
 {
-    ros::Rate r(100);
+    ros::Rate r(50);
     while (ros::ok())
     {
         // depile les callback. la queue n'est qu'un d'1, donc chaque callback ne doit etre executée qu'une fois (la plus recente)
@@ -90,17 +91,28 @@ void MotionControl::execute()
         // newOrderCB() va etre potentiellement appelée si nouvel ordre
         // poseCallback() va etre appelée une fois si la position a été mise a jour
         ros::spinOnce();
-        processMotion();
-        switchState();
-        publish();
 
+        //ROS_INFO("m_position : x=%.3f, y=%.3f, theta=%.3f", m_position.x(), m_position.y(), m_cap.angle());
+
+        /*
+        double old_t;
+        double t = ros::Time::now().toSec() * 1000;
+        ROS_INFO("MOTION: %.1f", t - old_t);
+        old_t = t;
+        */
+
+        // calcule les consignes
+        processMotion();
+        //change d'etat si necessaire
+        switchState();
+        // publie les consignes
+        publish();
 
         //dort le temps necessaire pour que l'execution de la boucle soit cyclique
         r.sleep();
     }
 }
-////////////////////////////
-
+/////////////////////////////////////////////////////////
 
 double MotionControl::linearReductionCoef(double angle_error)
 {
@@ -113,24 +125,24 @@ double MotionControl::linearReductionCoef(double angle_error)
 
 void MotionControl::newOrderCB(const OrderGoalConstPtr &goal)
 {
-    /////////////////////// Receiving goal
+    //Receiving goal
+
+    theta_des = goal->theta_des;
+    reverse = goal -> reverse;
+    passe= goal->passe;
 
     if (goal->move_type == "POINTCAP")
     {
         // Standard move: go to a point, with a cap
         x_des = goal->x_des;
         y_des = goal->y_des;
-        theta_des = goal->theta_des;
-        reverse = goal -> reverse;
         mode = MODE_FANTOM;
     }
-    else if (goal->move_type == "CAP")
+    else if (goal->move_type == "CAP" and goal->passe==false)
     {
         // only cap move
         x_des = m_position.x();
         y_des = m_position.y();
-        theta_des = goal->theta_des;
-        reverse = goal -> reverse;
         mode = MODE_APPROACH;
     }
     else
@@ -159,6 +171,11 @@ void MotionControl::newOrderCB(const OrderGoalConstPtr &goal)
 
 void MotionControl::processMotion()
 {
+
+    if (mode == MODE_PASS)
+    {
+        return;
+    }
 
     if (mode == MODE_DONE)
     {
@@ -254,9 +271,32 @@ void MotionControl::switchState()
     //approaching ??
     if (mode == MODE_FANTOM)
     {
-        if (distance_to_despoint < RADIUS_APPROACH_ZONE)
+        if (distance_to_despoint < RADIUS_APPROACH_ZONE and passe==false)
             mode = MODE_APPROACH;
-    }
+
+        if (distance_to_despoint < RADIUS_APPROACH_ZONE and passe==true)
+                    {
+                    mode = MODE_PASS;
+                    passe_time=ros::Time::now().toSec();
+                    ROS_INFO(
+                                        ">>>>>>>>>>>>>>>>> %s: Position Reached :  x=%.3f, y=%.3f, theta=%.3f",
+                                        action_name_.c_str(), m_position.x(), m_position.y(),
+                                        m_cap.angle());
+                    as_.setSucceeded(result_);
+                                endOrder = true;
+                                success = true;
+                    }
+
+        }
+
+    if (mode==MODE_PASS)
+        {
+        if (ros::Time::now().toSec()-passe_time>1.0)
+            {
+            mode = MODE_DONE;
+            }
+
+        }
 
     if (mode == MODE_APPROACH or mode == MODE_FANTOM)
     {
@@ -297,14 +337,4 @@ void MotionControl::publish()
     vel.angular = m_angularSpeedCmd;
     vel_pub_.publish(vel);
 
-    if (mode == MODE_APPROACH or mode == MODE_FANTOM)
-    {
-        // On publie le feedback
-        feedback_.x_current = m_position.x();
-        feedback_.y_current = m_position.y();
-        feedback_.theta_current = m_cap.angle();
-        feedback_.lin_vel = m_linearSpeedCmd;
-        feedback_.ang_vel = m_angularSpeedCmd;
-        as_.publishFeedback(feedback_);
-    }
 }
