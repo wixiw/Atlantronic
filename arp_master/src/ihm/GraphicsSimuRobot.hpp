@@ -38,6 +38,13 @@ namespace arp_master
     class GraphicsSimuRobot
     {
     public:
+
+        /**
+         * Nécessaire pour éviter ;
+         * http://eigen.tuxfamily.org/dox/TopicStructHavingEigenMembers.html
+         */
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
         /**
          * Constructor
          * \param nh NodeHandle of Graphical simulator
@@ -77,7 +84,12 @@ namespace arp_master
         /**
          * called every time SimuRobot receives a Pose message
          */
-        void poseCallback(const arp_core::PoseConstPtr& c);
+        void realPoseCallback(const arp_core::PoseConstPtr& c);
+
+        /**
+         * called every time SimuRobot receives a Pose message
+         */
+        void computedPoseCallback(const arp_core::PoseConstPtr& c);
 
         /**
          * called every time SimuRobot receives a SetPen service call
@@ -92,12 +104,23 @@ namespace arp_master
         /**
          * current position (translation)
          */
-        Vector2 pos_;
+        Vector2 m_realPosition;
 
         /**
          * current orientation
          */
-        Rotation2 orient_;
+        Rotation2 m_realHeading;
+
+        /**
+         *
+         */
+        Vector2 m_computedPosition;
+
+        /**
+         *
+         */
+        Rotation2 m_computedHeading;
+
 
         /**
          * last position (translation)
@@ -120,6 +143,17 @@ namespace arp_master
         wxBitmap robot_;
 
         /**
+         * wx Image of Robot.
+         */
+        wxImage m_robotLightImage;
+
+        /**
+         * associated bitmap
+         */
+        wxBitmap m_robotLight;
+
+
+        /**
          * boolean used to (des-)activate pen
          */
         bool pen_on_;
@@ -132,12 +166,22 @@ namespace arp_master
         /**
          * current position in pixel along longest axis
          */
-        int canvas_x_;
+        int m_realCanvasX;
 
         /**
          * current position in pixel along short axis
          */
-        int canvas_y_;
+        int m_realCanvasY;
+
+        /**
+         * current position in pixel along longest axis
+         */
+        int m_computedCanvasX;
+
+        /**
+         * current position in pixel along short axis
+         */
+        int m_computedCanvasY;
 
         /**
          * last position in pixel along longest axis
@@ -152,7 +196,12 @@ namespace arp_master
         /**
          * Subscriber used to receive DifferentialCommand
          */
-        ros::Subscriber pose_sub_;
+        ros::Subscriber m_realPosSub;
+
+        /**
+         * Subscriber used to receive DifferentialCommand
+         */
+        ros::Subscriber m_computedPosSub;
 
         /**
          * ServiceServer used to (des-)activate pen

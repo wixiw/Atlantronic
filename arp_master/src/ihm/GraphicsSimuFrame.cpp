@@ -40,7 +40,6 @@ GraphicsSimuFrame::GraphicsSimuFrame(std::string topicName) :
     std::string table_image_file = "table.png"; // 609 x 429 px
     table_image_.LoadFile(
             wxString::FromAscii((images_path + table_image_file).c_str()));
-    table_image_.SetMask(true);
     table_image_.SetMask(false);
 
     table_bitmap_ = wxBitmap(table_image_);
