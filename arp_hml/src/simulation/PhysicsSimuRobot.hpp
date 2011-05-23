@@ -65,6 +65,11 @@ namespace arp_hml
          */
         void update(double dt, double canvas_width, double canvas_height);
 
+        /**
+         * change robot position
+         */
+        void setPosition(double x, double y, double theta);
+
     private:
 
         /**
@@ -74,7 +79,9 @@ namespace arp_hml
         double LEFT_ROTATION_FACTOR;
         double RIGHT_WHEEL_DIAMETER;
         double LEFT_WHEEL_DIAMETER;
-
+        double DIST_BACK;
+        double HWALL_Y;
+        double VWALL_X;
 
         // Callbacks
         /**

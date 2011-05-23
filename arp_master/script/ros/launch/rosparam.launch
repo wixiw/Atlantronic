@@ -48,4 +48,11 @@
 	<param name="/Protokrot/LEFT_WHEEL_DIAMETER" value="0.067679691" /> 
 
 
+	<!--Distance between center of robot and back -->
+    <param name="/Protokrot/DIST_BACK" value="0.043"/>  
+    <!--horizontal wall position -->
+    <param name="/Table/HWALL_Y" value="1.05"/>  
+    <!--vertical wall position -->
+    <param name="/Table/VWALL_X" value="1.5"/>   
+
 </launch>

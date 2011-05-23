@@ -171,7 +171,7 @@ void MotionControl::newOrderCB(const OrderGoalConstPtr &goal)
     ROS_INFO("%s: Receiving order :  x_des=%.3f, y_des=%.3f, theta_des=%.3f",
             action_name_.c_str(), trans_des.x(), trans_des.y(), theta_des);
 
-    // thansk to the magnificence of ORS, I shall not get out of this callback until the order is fullfilled
+    // thanks to the magnificence of ROS, I shall not get out of this callback until the order is fullfilled
     // in fact, its name is expected to be "execute CB" and not "new order CB"
     ros::Rate r(100);
     endOrder = false;
@@ -286,7 +286,7 @@ void MotionControl::switchState()
         if (distance_to_despoint < RADIUS_APPROACH_ZONE and passe == false)
         {
             //ROS_INFO("ligne %i : %i->MODE_APPROACH (%i)", __LINE__, mode,
-            //        MODE_APPROACH);
+            //       MODE_APPROACH);
             mode = MODE_APPROACH;
             return;
         }

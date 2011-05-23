@@ -45,6 +45,15 @@ def getCase(x,y):
 class Robot:
     xPion=0.142 
     yPion=-0.087
+    @staticmethod
+    def init():
+        Robot.DIST_BACK=rospy.get_param('/Protokrot/DIST_BACK')
+
+class Table:
+    @staticmethod
+    def init():
+        Table.HWALL_Y=rospy.get_param('/Table/HWALL_Y')
+        Table.VWALL_X=rospy.get_param('/Table/VWALL_X')
 
 class Case:
     #attention a cette numerotation tres intelligente !

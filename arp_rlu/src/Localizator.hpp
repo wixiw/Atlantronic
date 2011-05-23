@@ -15,6 +15,7 @@
 #include <arp_core/Odo.h>
 #include <arp_core/Pose.h>
 #include <arp_core/Spawn.h>
+#include <arp_core/SetPosition.h>
 #include "math/math.hpp"
 
 using namespace arp_core;
@@ -72,6 +73,7 @@ namespace arp_rlu
          * Used to provide a reset service
          */
         ros::ServiceServer respawn_srv;
+        ros::ServiceServer setPosition_srv;
 
         /**
          * Used to provide a init service
@@ -116,6 +118,7 @@ namespace arp_rlu
          * \returns success boolean
          */
         bool respawnCallback(Spawn::Request& req, Spawn::Response& res);
+        bool setPositionCallback(SetPosition::Request& req, SetPosition::Response& res);
 
         /**
          * Called when a new odo message is received

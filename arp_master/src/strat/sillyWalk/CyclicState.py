@@ -10,6 +10,7 @@ from Inputs import Inputs
 from Data import Data
 
 from arp_core.srv import Spawn
+from arp_core.srv import SetPosition
 from arp_hml.srv import SetMotorPower
 
 class CyclicState(smach.StateMachine):
@@ -55,14 +56,14 @@ class CyclicState(smach.StateMachine):
         return
     
     def initSetPositionClient(self):
-        self.setPosition_loc=rospy.ServiceProxy("Localizator/respawn",Spawn)
-        #self.setPosition_loclaser=rospy.ServiceProxy("CSM/respawn",Spawn)
-        self.setPosition_simu=rospy.ServiceProxy("PhysicsSimu/respawn",Spawn)
+        self.setPosition_loc=rospy.ServiceProxy("Localizator/setPosition",SetPosition)
+        self.setPosition_simu=rospy.ServiceProxy("PhysicsSimu/setPosition",SetPosition)
         
     def setPosition(self,x,y,theta):
         self.setPosition_loc(x,y,theta)
-        #self.setPosition_loclaser(x,y,theta)
         self.setPosition_simu(x,y,theta)
+        #self.setPosition_loclaser(x,y,theta)
+        
     
     def initSetMotorPower(self):
         self.setMotorPower_srv=rospy.ServiceProxy("Protokrot/setMotorPower",SetMotorPower)

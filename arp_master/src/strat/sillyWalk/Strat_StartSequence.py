@@ -23,26 +23,33 @@ class StartSequence(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
         with self:
-            smach.StateMachine.add('Recal_petit_bord',
-                      Recal_petit_bord(),
-                      transitions={'succeeded':'Retour_petit_bord','aborted':'problem'})
+            smach.StateMachine.add('Recal_hor_bord',
+                      Recal_hor_bord(),
+                      transitions={'succeeded':'SetPos_hor_bord','aborted':'problem'})
             
-            smach.StateMachine.add('Retour_petit_bord',
-                      Retour_petit_bord(),
-                      transitions={'succeeded':'Petit_to_Grand','aborted':'problem'})
+            smach.StateMachine.add('SetPos_hor_bord',
+                      SetPos_hor_bord(),
+                      transitions={'done':'Retour_hor_bord'})
+         
+            smach.StateMachine.add('Retour_hor_bord',
+                      Retour_hor_bord(),
+                      transitions={'succeeded':'hor_to_vert','aborted':'problem'})
 
-            smach.StateMachine.add('Petit_to_Grand',
-                      Petit_to_Grand(),
-                      transitions={'succeeded':'Recal_grand_bord','aborted':'problem'})
+            smach.StateMachine.add('hor_to_vert',
+                      hor_to_vert(),
+                      transitions={'succeeded':'Recal_vert_bord','aborted':'problem'})
 
 
-            smach.StateMachine.add('Recal_grand_bord',
-                      Recal_grand_bord(),
-                      transitions={'succeeded':'Retour_grand_bord','aborted':'problem'})
+            smach.StateMachine.add('Recal_vert_bord',
+                      Recal_vert_bord(),
+                      transitions={'succeeded':'SetPos_vert_bord','aborted':'problem'})
 
+            smach.StateMachine.add('SetPos_vert_bord',
+                      SetPos_vert_bord(),
+                      transitions={'done':'Retour_vert_bord'})
 
-            smach.StateMachine.add('Retour_grand_bord',
-                      Retour_grand_bord(),
+            smach.StateMachine.add('Retour_vert_bord',
+                      Retour_vert_bord(),
                       transitions={'succeeded':'Turn_for_match','aborted':'problem'})
 
             smach.StateMachine.add('Turn_for_match',
@@ -55,38 +62,64 @@ class StartSequence(smach.StateMachine):
     
             
 
-class Recal_petit_bord(CyclicActionState):
+class Recal_hor_bord(CyclicActionState):
     def createAction(self):
        self.backward(0.300)
-      
+ 
+ 
+class SetPos_hor_bord(CyclicState):
+    def __init__(self):
+        CyclicState.__init__(self, outcomes=['done'])
+    
+    def executeTransitions(self):
+        return 'done'
+        
+    def executeIn(self):
+        self.setPosition(Inputs.getx(),Table.HWALL_Y-Robot.DIST_BACK,-pi/2.0)
 
-class Retour_petit_bord(CyclicActionState):
+
+class Retour_hor_bord(CyclicActionState):
     def createAction(self):
-       self.forward(0.300)
+       self.pointcap(Inputs.getx(),Table.HWALL_Y-0.200,-pi/2)
      
 
-class Petit_to_Grand(CyclicActionState):
+class hor_to_vert(CyclicActionState):
     def createAction(self):
-       if Data.color=='red':
-           self.cap(0)
-       else:
-           self.cap(-pi)
+       capobj=AmbiCapRed(0,Data.color)
+       self.cap(capobj.angle)
 
-class Recal_grand_bord(CyclicActionState):
-    def createAction(self):
-       self.backward(0.600)
 
-class Retour_grand_bord(CyclicActionState):
+class Recal_vert_bord(CyclicActionState):
+    def createAction(self): 
+        poseRecalVert=AmbiPoseRed(-Table.VWALL_X,Table.HWALL_Y-0.200,0,Data.color)
+        self.pointcap_reverse(poseRecalVert.x,poseRecalVert.y,poseRecalVert.theta)
+
+
+class SetPos_vert_bord(CyclicState):
+    def __init__(self):
+        CyclicState.__init__(self, outcomes=['done'])
+    
+    def executeTransitions(self):
+        return 'done'
+        
+    def executeIn(self):
+        posRecal=AmbiPoseRed(-Table.VWALL_X+Robot.DIST_BACK,Inputs.gety(),0,Data.color)
+        self.setPosition(posRecal.x,Inputs.gety(),posRecal.theta)
+
+
+class Retour_vert_bord(CyclicActionState):
     def createAction(self):
-       self.forward(0.070)
+        poseStart=AmbiPoseRed(-Table.VWALL_X+Robot.DIST_BACK+0.030,Table.HWALL_Y-0.200,0,Data.color)
+        self.pointcap(poseStart.x,poseStart.y,poseStart.theta)
+       
+       
 class Turn_for_match(CyclicActionState):
     def createAction(self):
        if Data.color=='red':
            self.cap(0)
        else:
            self.cap(-pi)
-       
-       
+        
         
 class WaitForMatch(CyclicState):
     def __init__(self):

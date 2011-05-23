@@ -7,7 +7,7 @@ using namespace arp_core;
 using namespace arp_rlu;
 
 Localizator::Localizator() :
-    nh(), odo_sub(), pose_pub(), odom_pub(), odom_tf_pub(), respawn_srv(),
+    nh(), odo_sub(), pose_pub(), odom_pub(), odom_tf_pub(), respawn_srv(),setPosition_srv(),
             init_srv(), last_odo_left(0.0), last_odo_right(0.0),
             last_time(0.0),//initialized at a non valid valid on purposes
             trans(Vector2(0.0, 0.0)), orient(Rotation2(0.0))
@@ -17,6 +17,8 @@ Localizator::Localizator() :
     odom_pub = nh.advertise<nav_msgs::Odometry> ("Localizator/odomRos", 1);
     respawn_srv = nh.advertiseService("Localizator/respawn",
             &Localizator::respawnCallback, this);
+    setPosition_srv = nh.advertiseService("Localizator/setPosition",
+                &Localizator::setPositionCallback, this);
 
     // Parameters
     if (nh.getParam("/Protokrot/RIGHT_ROTATION_FACTOR", RIGHT_ROTATION_FACTOR) == 0)
@@ -36,6 +38,24 @@ Localizator::~Localizator()
 bool Localizator::respawnCallback(Spawn::Request& req, Spawn::Response& res)
 {
     ROS_INFO("Respawing ARDLocalizator to x=%f, y=%f and theta=%f", req.x,
+            req.y, req.theta);
+    trans.x() = req.x;
+    trans.y() = req.y;
+    orient = arp_math::Rotation2(req.theta);
+    //set time to be unvalid so the odoCallback will reinitiliaze
+    last_time = 0;
+    ros::Time t = ros::Time::now();
+
+    publishTransform(t);
+    publishOdomTopic(t, 0, 0, 0);
+    publishPoseTopic(t, 0, 0);
+
+    return true;
+}
+
+bool Localizator::setPositionCallback(SetPosition::Request& req, SetPosition::Response& res)
+{
+    ROS_INFO("setPosition ARDLocalizator to x=%f, y=%f and theta=%f", req.x,
             req.y, req.theta);
     trans.x() = req.x;
     trans.y() = req.y;

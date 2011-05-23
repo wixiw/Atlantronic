@@ -1,5 +1,6 @@
 #include "PhysicsSimuRobot.hpp"
 
+using namespace arp_math;
 using namespace arp_core;
 using namespace arp_hml;
 
@@ -24,6 +25,18 @@ PhysicsSimuRobot::PhysicsSimuRobot(const ros::NodeHandle& nh,
             == 0)
         ROS_FATAL(
                 "PhysicsSimuRobot pas reussi a recuperer le parametre RIGHT_WHEEL_DIAMETER");
+
+    if (nh.getParam("/Protokrot/DIST_BACK", DIST_BACK) == 0)
+        ROS_FATAL(
+                "PhysicsSimuRobot pas reussi a recuperer le parametre DIST_BACK");
+
+    if (nh.getParam("/Table/HWALL_Y", HWALL_Y) == 0)
+        ROS_FATAL(
+                "PhysicsSimuRobot pas reussi a recuperer le parametre HWALL_Y");
+
+    if (nh.getParam("/Table/VWALL_X", VWALL_X) == 0)
+        ROS_FATAL(
+                "PhysicsSimuRobot pas reussi a recuperer le parametre VWALL_X");
 
     // Suscribers
     differential_command_sub_ = nh_.subscribe("differential_command", 1,
@@ -124,12 +137,50 @@ void PhysicsSimuRobot::update(double dt, double canvas_width,
     {
         ROS_WARN("Oh no! I hit the wall! (Clamping from [x=%f, y=%f])",
                 pos_.x(), pos_.y());
+        pos_.x() = std::min(std::max(pos_.x(), -canvas_width / (double) 2.0),
+                canvas_width / (double) 2.0);
+        pos_.y() = std::min(std::max(pos_.y(), -canvas_height / (double) 2.0),
+                canvas_height / (double) 2.0);
+    }
+    // CLAMPING pour appui arrière contre les murs
+    if ((pos_.y() > HWALL_Y - DIST_BACK and orient_.angle() < -PI / 2.0 + 0.1
+            and orient_.angle() > -PI / 2.0 - 0.1))
+    {
+        //ROS_INFO("clamping, robot a plat sur le mur du haut: %.3f,%.3f",
+        //        pos_.x(), pos_.y());
+
+        pos_.y() = HWALL_Y - DIST_BACK;
+        orient_.angle() = -PI / 2.0;
+
     }
 
-    pos_.x() = std::min(std::max(pos_.x(), -canvas_width / (double) 2.0),
-            canvas_width / (double) 2.0);
-    pos_.y() = std::min(std::max(pos_.y(), -canvas_height / (double) 2.0),
-            canvas_height / (double) 2.0);
+    if ((pos_.y() < -HWALL_Y + DIST_BACK and orient_.angle() < PI / 2.0 + 0.1
+            and orient_.angle() > PI / 2.0 - 0.1))
+    {
+        //ROS_INFO("clamping, robot a plat sur le mur du bas: %.3f,%.3f",
+        //        pos_.x(), pos_.y());
+
+        pos_.y() = -HWALL_Y + DIST_BACK;
+        orient_.angle() = PI / 2.0;
+    }
+
+    if ((pos_.x() < -VWALL_X + DIST_BACK and orient_.angle() < 0.1
+            and orient_.angle() > -0.1))
+    {
+       // ROS_INFO("clamping, robot a plat sur le mur de gauche: %.3f,%.3f",
+        //        pos_.x(), pos_.y());
+        pos_.x() = -VWALL_X + DIST_BACK;
+        orient_.angle() = 0;
+    }
+
+    if ((pos_.x() > VWALL_X - DIST_BACK and orient_.angle() < -PI + 0.1
+            and orient_.angle() > PI - 0.1))
+    {
+       // ROS_INFO("clamping, robot a plat sur le mur de droite: %.3f,%.3f",
+        //        pos_.x(), pos_.y());
+        pos_.x() = VWALL_X - DIST_BACK;
+        orient_.angle() = -PI;
+    }
 
     // Publishing
     Pose p;
@@ -157,3 +208,8 @@ void PhysicsSimuRobot::update(double dt, double canvas_width,
 
 }
 
+void PhysicsSimuRobot::setPosition(double x, double y, double theta)
+{
+    pos_ = Vector2(x, y);
+    orient_ = Rotation2(theta);
+}

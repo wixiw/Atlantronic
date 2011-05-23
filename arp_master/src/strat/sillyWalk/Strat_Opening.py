@@ -34,7 +34,7 @@ class Opening(smach.StateMachine):
  
 class EscapeStartpoint(CyclicActionState):
     def createAction(self):
-        pose = AmbiPoseRed(-0.5, 0.875,0, Data.color)
+        pose = AmbiPoseRed(-0.5, Table.HWALL_Y-0.200,0, Data.color)
         self.pointcap_pass(pose.x, pose.y, pose.theta)
            
         

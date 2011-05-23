@@ -13,6 +13,7 @@
 
 //#include <std_srvs/Empty.h>
 #include <arp_core/Spawn.h>
+#include <arp_core/SetPosition.h>
 #include <arp_core/Kill.h>
 #include <map>
 
@@ -78,6 +79,7 @@ private:
    * used by respawn service
    */
   bool respawnCallback(Spawn::Request&, Spawn::Response&);
+  bool setPositionCallback(SetPosition::Request&, SetPosition::Response&);
 
   /**
    * Simulator Nodehandle
@@ -94,6 +96,7 @@ private:
    * ServiceServer used to respawn robot
    */
   ros::ServiceServer respawn_srv_;
+  ros::ServiceServer setPosition_srv_;
 
   /**
    * robot

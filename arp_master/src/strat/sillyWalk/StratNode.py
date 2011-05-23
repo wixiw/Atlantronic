@@ -20,6 +20,7 @@ import Strat_Uninitialisation
 
 from Inputs import Inputs
 from Data import Data
+from Table2011 import *
 
 ###########################  TEMPORAL BEHAVIOR
 
@@ -29,6 +30,9 @@ class StratNode():
         
         #creation of the node
         rospy.init_node('StratNode')
+        # recuperation des parametres
+        Table.init()
+        Robot.init()
         #creation of the cadencer for all states
         Data.stateMachineRate =rospy.Rate(10)
         #linking of the input in Inputs to the topics
@@ -47,11 +51,11 @@ class StratNode():
     
         # initialise the smach introspection server to view the state machine with :
         #  rosrun smach_viewer smach_viewer.py
-        sis = smach_ros.IntrospectionServer('strat_server', sm, '/SratNode')
-        sis.start()
+        #sis = smach_ros.IntrospectionServer('strat_server', sm, '/SratNode')
+        #sis.start()
         sm.execute()
         
-        sis.stop()
+        #sis.stop()
     
     
     
