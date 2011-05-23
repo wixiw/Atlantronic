@@ -6,52 +6,46 @@
 
 	<!--Order is succed if (and only if) the current position is near the goal with distance_accuracy_ precision.-->
     <param name="/arp_ods/DISTANCE_ACCURACY" value="0.005"  />
-	
 	<!-- Order is succed if (and only if) the current orientation is near the goal with angle_accuracy_ precision-->
     <param name="/arp_ods/ANGLE_ACCURACY" value="0.02"  />
     
     <!--Proportional Gain on angle error (without unity) -->
     <param name="/arp_ods/ROTATION_GAIN" value="10.0"/> 
-    
     <!--Derivative Gain on angle error derivative (without unity) -->
     <param name="/arp_ods/ROTATION_D_GAIN" value="1.0"/> 
-	
 	<!--Gain on translation (without unity) -->
     <param name="/arp_ods/TRANSLATION_GAIN" value="1.0" /> 
-	
-	<!--maximum forward velocity (m/s) (1 by willy)-->
-    <param name="/arp_ods/LIN_VEL_MAX"  value="0.3000" /> 
-	
-	<!--maximum rotation velocity (rad/s) (7 by willy)-->
-    <param name="/arp_ods/ANG_VEL_MAX"  value="1.000" /> 
-	
-	<!--velocity at final point (m/s) -->
-    <param name="/arp_ods/VEL_FINAL"  value="0.000" /> 
-	
+	<!--The fantom coefficient. means the distance of the fantom point to the final point. set it to 0, it will be as if you always try to go directly to final point. set it to 0.9, your robot will make big curve to reach the final point with the right angle.--> 
+    <param name="/arp_ods/FANTOM_COEF"  value="0.5" />
 	<!--distance where you are in mode approaching point (m) -->
     <param name="/arp_ods/RADIUS_APPROACH_ZONE"  value="0.015" /> 
-	
 	<!--NOT USED !!! distance where you are in mode fantom point (m) -->
     <param name="/arp_ods/RADIUS_FANTOM_ZONE"  value="0.050" /> 
 	
-	<!--The fantom coefficient. means the distance of the fantom point to the final point. set it to 0, it will be as if you always try to go directly to final point. set it to 0.9, your robot will make big curve to reach the final point with the right angle.--> 
-    <param name="/arp_ods/FANTOM_COEF"  value="0.5" /> 
+	<!--maximum forward velocity (m/s) (1 by willy)-->
+    <param name="/arp_ods/LIN_VEL_MAX"  value="0.3000" /> 
+	<!--maximum rotation velocity (rad/s) (7 by willy)-->
+    <param name="/arp_ods/ANG_VEL_MAX"  value="1.000" /> 
+	<!--velocity at final point (m/s) -->
+    <param name="/arp_ods/VEL_FINAL"  value="0.000" /> 
 	
 	<!--maximum forward acceleration (m/s^02) -->
-    <param name="/arp_ods/LIN_ACC_MAX"  value="1.500" /> 
-
+    <param name="/arp_ods/LIN_ACC_MAX"  value="0.500" /> 
 	<!--maximum forward deceleration (m/s^02) -->
-    <param name="/arp_ods/LIN_DEC_MAX"  value="-4.000" /> 
-
+    <param name="/arp_ods/LIN_DEC_MAX"  value="-1.000" /> 
 	<!--maximum rotation acceleration (rad/s^2) -->
-    <param name="/arp_ods/ANG_ACC_MAX"  value="15.000" /> 
+    <param name="/arp_ods/ANG_ACC_MAX"  value="4.000" /> 
 
 	<!--Distance in meters between wheels -->
-    <param name="/Protokrot/BASE_LINE" value="0.307039062"/>  
-
+    <param name="/Protokrot/BASE_LINE" value="0.307039062"/>
+    <!--Factor for cap odometry on the right wheel in rad -->
+    <param name="/Protokrot/RIGHT_ROTATION_FACTOR" value="0.21988826"/>   
+    <!--Factor for cap odometry on the left wheel in rad -->
+    <param name="/Protokrot/LEFT_ROTATION_FACTOR" value="0.22070264"/> 
+	<!--Diameter in meters -->
+	<param name="/Protokrot/RIGHT_WHEEL_DIAMETER" value="0.067598614" /> 
 	<!--Diameter in meters -->
 	<param name="/Protokrot/LEFT_WHEEL_DIAMETER" value="0.067679691" /> 
-		<!--Diameter in meters -->
-	<param name="/Protokrot/RIGHT_WHEEL_DIAMETER" value="0.067598614" /> 
+
 
 </launch>

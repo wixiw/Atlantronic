@@ -19,12 +19,14 @@ Localizator::Localizator() :
             &Localizator::respawnCallback, this);
 
     // Parameters
-    if (nh.getParam("/Protokrot/BASE_LINE", BASE_LINE) == 0)
-        ROS_FATAL("pas reussi a recuperer le parametre BASE_LINE");
-    if (nh.getParam("/Protokrot/LEFT_WHEEL_DIAMETER", LEFT_WHEEL_DIAMETER) == 0)
-        ROS_FATAL("pas reussi a recuperer le parametre LEFT_WHEEL_DIAMETER");
+    if (nh.getParam("/Protokrot/RIGHT_ROTATION_FACTOR", RIGHT_ROTATION_FACTOR) == 0)
+        ROS_FATAL("pas reussi a recuperer le parametre RIGHT_ROTATION_FACTOR");
+    if (nh.getParam("/Protokrot/LEFT_ROTATION_FACTOR", LEFT_ROTATION_FACTOR) == 0)
+        ROS_FATAL("pas reussi a recuperer le parametre LEFT_ROTATION_FACTOR");
     if (nh.getParam("/Protokrot/RIGHT_WHEEL_DIAMETER", RIGHT_WHEEL_DIAMETER) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre RIGHT_WHEEL_DIAMETER");
+    if (nh.getParam("/Protokrot/LEFT_WHEEL_DIAMETER", LEFT_WHEEL_DIAMETER) == 0)
+        ROS_FATAL("pas reussi a recuperer le parametre LEFT_WHEEL_DIAMETER");
 }
 
 Localizator::~Localizator()
@@ -69,8 +71,8 @@ void Localizator::odoCallback(const OdoConstPtr& o)
         // Calcul des vitesses odo
         double dleft = odo_left - last_odo_left;
         double dright = odo_right - last_odo_right;
-        double dl = (dright*RIGHT_WHEEL_DIAMETER + dleft*LEFT_WHEEL_DIAMETER) /4;
-        double dth = 0.50 * (dright*RIGHT_WHEEL_DIAMETER - dleft*LEFT_WHEEL_DIAMETER) / BASE_LINE;
+        double dl = (dright*RIGHT_WHEEL_DIAMETER/2.0 + dleft*LEFT_WHEEL_DIAMETER/2.0) / 2.0;
+        double dth = (dright*RIGHT_ROTATION_FACTOR - dleft*LEFT_ROTATION_FACTOR) / 2.0;
         lin_vel = dl / dt;
         ang_vel = dth / dt;
 

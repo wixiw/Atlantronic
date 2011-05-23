@@ -69,7 +69,7 @@ void MotionControl::poseCallback(OdometryConstPtr c)
 
 }
 
-// TODO WLA nettoie ca ! je sais pas ce que c'est
+// TODO WLA test laserator
 /*
  void MotionControl::pose2DCallback(Pose2DConstPtr c)
  {
@@ -83,7 +83,7 @@ void MotionControl::poseCallback(OdometryConstPtr c)
 //this is the main loop of the motion control.
 void MotionControl::execute()
 {
-    ros::Rate r(10);
+    ros::Rate r(100);
     while (ros::ok())
     {
         // depile les callback. la queue n'est qu'un d'1, donc chaque callback ne doit etre executée qu'une fois (la plus recente)

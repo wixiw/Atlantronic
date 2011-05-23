@@ -70,9 +70,11 @@ namespace arp_hml
         /**
          * these are rosparam. see .launch for more info
          */
-        double BASE_LINE;
-        double LEFT_WHEEL_DIAMETER;
+        double RIGHT_ROTATION_FACTOR;
+        double LEFT_ROTATION_FACTOR;
         double RIGHT_WHEEL_DIAMETER;
+        double LEFT_WHEEL_DIAMETER;
+
 
         // Callbacks
         /**

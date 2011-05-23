@@ -106,9 +106,10 @@ namespace arp_rlu
         /**
          * these are ros param. see arp_master/script/launch/rosparam.launch for more info
          */
-        double BASE_LINE;
-        double LEFT_WHEEL_DIAMETER;
+        double RIGHT_ROTATION_FACTOR;
+        double LEFT_ROTATION_FACTOR;
         double RIGHT_WHEEL_DIAMETER;
+        double LEFT_WHEEL_DIAMETER;
 
         /**
          * Called when resetting service is called
