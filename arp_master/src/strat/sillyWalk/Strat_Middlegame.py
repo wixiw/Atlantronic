@@ -6,6 +6,8 @@ import smach
 import smach_ros
 import smach_msgs
 
+from random import *
+
 from CyclicState import CyclicState
 from CyclicActionState import CyclicActionState
 from PreemptiveStateMachine import PreemptiveStateMachine
@@ -34,9 +36,14 @@ class Middlegame(PreemptiveStateMachine):
             # other states
             PreemptiveStateMachine.add('CreateWalk',
                       CreateWalk(),
-                      transitions={'toStep1':'Step1','toStep2':'Step2','toStep3':'Step3'})
+                      transitions={'toStep1':'Step1','toStep2':'Step2','toStep3':'Step3','impossible':'EscapePoint'})
             #as initial state is not the preemptive one, it is necessary to add the information here !
             self.setInitialState('CreateWalk')
+            
+            PreemptiveStateMachine.add('EscapePoint',
+                      EscapePoint(),
+                      transitions={'succeeded':'CreateWalk','aborted':'CreateWalk'})
+            
             
             PreemptiveStateMachine.add('Step1',
                       Step1(),
@@ -55,7 +62,7 @@ class Middlegame(PreemptiveStateMachine):
 
 class CreateWalk(CyclicState):
     def __init__(self):
-        CyclicState.__init__(self, outcomes=['toStep1','toStep2','toStep3'])
+        CyclicState.__init__(self, outcomes=['toStep1','toStep2','toStep3','impossible'])
     
     def executeTransitions(self):
         #mon role est de creer les ordres de mouvements pour un cycle de silly walk
@@ -63,9 +70,7 @@ class CreateWalk(CyclicState):
         
         #dirRobot=getDirection(Inputs.gettheta())
         #caseres=getClosestCaseInDir(dirRobot,Data.color)
-        
-        #
-        
+
         print "x,y :%.3f , %.3f"%(Inputs.getx(),Inputs.gety())
         current_case=getCase(Inputs.getx(),Inputs.gety())
         print "cur case:"
@@ -82,31 +87,37 @@ class CreateWalk(CyclicState):
         case2=case1.getFurthestInDirection(dirParcours,Data.adv_color)
         # des fois cases 3 n'existe pas ! ca serait en dehors de la table !!!!
         case3=case2.getClosestInDirection(dirParcours.getRotated(pi/4),Data.color)
+        
+        if case1==None or case2==None or case3==None:
+            return 'impossible'
+        
         Data.case1=case1
         Data.case2=case2
         Data.case3=case3
         Data.dirParcours=dirParcours
-        
-        print "direction robot :"
-        direction.toText()
-        print "direction parcours:"
-        dirParcours.toText()
 
-        print "case1,2,3:"
-        case1.toText()
-        case2.toText()
-        #case3.toText()
-
-        
         return 'toStep1'
+    
+class EscapePoint(CyclicActionState):
+    def createAction(self):
+        self.pointcap(random()*0.5,random()*0.5,random()*pi)
  
 class Step1(CyclicActionState):
     def createAction(self):
-        self.pointcap_reverse(Data.case1.xCenter,Data.case1.yCenter,Data.dirParcours.angle())
+        #j'y vais en droit ou reverse, suivant le chemin le plus court en fait
+        xobj=Data.case1.xCenter
+        yobj=Data.case1.yCenter
+        capdirect=atan2(yobj-Inputs.gety(),xobj-Inputs.getx())
+        if abs(normalizeAngle(capdirect-Inputs.gettheta()))<pi/2:
+            self.pointcap(xobj,yobj,Data.dirParcours.angle())
+        else:
+            self.pointcap_reverse(xobj,yobj,Data.dirParcours.angle())
 
 class Step2(CyclicActionState):
     def createAction(self):
-        self.pointcap(Data.case2.xCenter,Data.case2.yCenter,Data.dirParcours.angle())
+        dx=-0.100*cos(Data.dirParcours.angle())
+        dy=-0.100*sin(Data.dirParcours.angle())
+        self.pointcap(Data.case2.xCenter+dx,Data.case2.yCenter+dy,Data.dirParcours.angle())
 
 class Step3(CyclicActionState):
     def createAction(self):

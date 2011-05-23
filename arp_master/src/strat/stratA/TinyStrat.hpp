@@ -18,6 +18,7 @@
 #include <arp_core/Start.h>
 
 #include <arp_core/Spawn.h>
+#include <arp_core/SetPosition.h>
 
 #include "math/math.hpp"
 
@@ -101,12 +102,14 @@ private:
    * used to call spawn service of Localizator
    */
   ros::ServiceClient loc_spawn_;
+  ros::ServiceClient loc_setPosition_;
 
 
   /**
    * used to call spawn service of Simulator
    */
   ros::ServiceClient simu_spawn_;
+  ros::ServiceClient simu_setPosition_;
 
   /**
    * is started ?

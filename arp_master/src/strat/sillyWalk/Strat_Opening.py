@@ -24,6 +24,9 @@ class Opening(smach.StateMachine):
         with self:
             smach.StateMachine.add('EscapeStartpoint',
                       EscapeStartpoint(),
+                      transitions={'succeeded':'ChopePaletMilieu', 'aborted':'problem'})
+            smach.StateMachine.add('ChopePaletMilieu',
+                      ChopePaletMilieu(),
                       transitions={'succeeded':'Depose', 'aborted':'problem'})
             smach.StateMachine.add('Depose',
                       Depose(),
@@ -36,21 +39,33 @@ class EscapeStartpoint(CyclicActionState):
     def createAction(self):
         pose = AmbiPoseRed(-0.5, Table.HWALL_Y-0.200,0, Data.color)
         self.pointcap_pass(pose.x, pose.y, pose.theta)
-           
+
+class ChopePaletMilieu(CyclicActionState):
+    def createAction(self):
+        casedepose = AmbiCaseRed(0, 0, Data.color)
+        (xobj, yobj) = casedepose.coord_WhenPionMilieu(-pi / 2)
+        self.pointcap_pass(xobj, yobj, -pi / 2)           
         
 class Depose(CyclicActionState):
     def createAction(self):
-        if Data.color == 'red':
-            casedepose = AmbiCaseRed(-1, -5, Data.color)
+        casedepose = AmbiCaseRed(-1, -5, Data.color)
+        
+        if Data.color=='red':
             (xobj, yobj) = casedepose.coord_WhenPionMilieu(-pi / 2)
-            self.pointcap(xobj, yobj, -pi / 2)
+            yobj+=0.045
+            xobj-=0.080
+            capobj=-pi / 2
         else:
-           casedepose = AmbiCaseRed(3, -1, Data.color)
-           (xobj, yobj) = casedepose.coord_WhenPionMilieu(-pi)
-           self.pointcap(xobj, yobj, -pi)
+            (xobj, yobj) = casedepose.coord_WhenPionMilieu(-pi / 2+pi/8)
+            capobj=-pi / 2+pi/8
+            yobj+=0.045
+            xobj-=0.080
+
+        self.pointcap(xobj, yobj, capobj)
+      
 
         
 class PrepareSillyWalk(CyclicActionState):
     def createAction(self):
         case = AmbiCaseRed(-1, -3, Data.color)
-        self.pointcap_reverse(case.xCenter, case.yCenter, 0)
+        self.pointcap_reverse(case.xCenter-0.100, case.yCenter, pi/8)

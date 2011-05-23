@@ -21,6 +21,8 @@ StratA::StratA():
   loc_spawn_ = nh_.serviceClient<arp_core::Spawn>("Localizator/respawn");
   loclaser_spawn_ = nh_.serviceClient<canonical_scan_matcher::Init>("CSM/respawn");
   simu_spawn_ = nh_.serviceClient<arp_core::Spawn>("PhysicsSimu/respawn");
+  loc_setPosition_ = nh_.serviceClient<arp_core::SetPosition>("Localizator/setPosition");
+  simu_setPosition_ = nh_.serviceClient<arp_core::SetPosition>("PhysicsSimu/setPosition");
   robot_setpen_ = nh_.serviceClient<arp_master::SetPen>("Protokrot/set_pen");
   enable_drive_ = nh_.serviceClient<arp_hml::SetMotorPower>("Protokrot/setMotorPower");
   vel_pub_ = nh_.advertise<arp_core::Velocity> ("Command/velocity", 1);
@@ -229,26 +231,26 @@ void StratA::colorCallback(const StartColorConstPtr& o)
       }
       ct_.setColor(COLOR_RED);
       ROS_INFO("Color is red");        
-      arp_core::Spawn srv;
+      arp_core::SetPosition srv;
       srv.request.x = START_POSITION_RED_X;
       srv.request.y = START_POSITION_RED_Y;
       srv.request.theta = START_POSITION_RED_THETA;
 
-      if(simu_spawn_.call(srv))
-        ROS_INFO("Strat sent respawn call to PhysicsSimulator");
+      if(simu_setPosition_.call(srv))
+        ROS_INFO("Strat sent setPosition call to PhysicsSimulator");
       else
         ROS_INFO("Strat failed to send respawn call to PhysicsSimulator");
 
-      if(loc_spawn_.call(srv))
-        ROS_INFO("Strat sent respawn call to Localizator");
+      if(loc_setPosition_.call(srv))
+        ROS_INFO("Strat sent setPosition call to Localizator");
       else
         ROS_INFO("Strat failed to send respawn call to Localizator");
-
+/*//TODO gere le respawn du laserator
       if(loclaser_spawn_.call(srv))
         ROS_INFO("Strat sent respawn call to Laserator");
       else
         ROS_INFO("Strat failed to send respawn call to Laserator");
-
+*/
       color_ = COLOR_RED;
       color_selected_ = true;
     }
@@ -261,25 +263,25 @@ void StratA::colorCallback(const StartColorConstPtr& o)
       }
       ct_.setColor(COLOR_BLUE);
       ROS_INFO("Color is blue");
-      arp_core::Spawn srv;
+      arp_core::SetPosition srv;
       srv.request.x = -START_POSITION_RED_X;
       srv.request.y = START_POSITION_RED_Y;
       srv.request.theta = fmod(START_POSITION_RED_THETA + PI, 2*PI);
-      if(simu_spawn_.call(srv))
-        ROS_INFO("Strat sent respawn call to PhysicsSimulator");
+      if(simu_setPosition_.call(srv))
+        ROS_INFO("Strat sent setPosition call to PhysicsSimulator");
       else
-        ROS_INFO("Strat failed to send respawn call to PhysicsSimulator");
+        ROS_INFO("Strat failed to send setPosition call to PhysicsSimulator");
 
-      if(loc_spawn_.call(srv))
-        ROS_INFO("Strat sent respawn call to Localizator");
+      if(loc_setPosition_.call(srv))
+        ROS_INFO("Strat sent setPosition call to Localizator");
       else
-        ROS_INFO("Strat failed to send respawn call to Localizator");
-
+        ROS_INFO("Strat failed to send setPosition call to Localizator");
+/*//TODO gere le respawn du laserator
       if(loclaser_spawn_.call(srv))
         ROS_INFO("Strat sent respawn call to Laserator");
       else
         ROS_INFO("Strat failed to send respawn call to Laserator");
-
+*/
       color_ = COLOR_BLUE;
       color_selected_ = true;
     }

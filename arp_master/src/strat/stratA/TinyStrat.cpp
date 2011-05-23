@@ -17,6 +17,10 @@ TinyStrat::TinyStrat():
   start_sub_ = nh_.subscribe("start", 1, &TinyStrat::startCallback, this);
   loc_spawn_ = nh_.serviceClient<arp_core::Spawn>("Localizator/respawn");
   simu_spawn_ = nh_.serviceClient<arp_core::Spawn>("ARDSimu/respawn");
+  loc_setPosition_ = nh_.serviceClient<arp_core::SetPosition>("Localizator/setPosition");
+  simu_setPosition_ = nh_.serviceClient<arp_core::SetPosition>("ARDSimu/setPosition");
+
+
 }
 
 TinyStrat::~TinyStrat()
@@ -67,34 +71,34 @@ void TinyStrat::colorCallback(const StartColorConstPtr& o)
     if( o->color.compare("red") == 0 )
     {
       ROS_INFO("Color is red");        
-      arp_core::Spawn srv;
+      arp_core::SetPosition srv;
       srv.request.x = START_POSITION_RED_X;
       srv.request.y = START_POSITION_RED_Y;
       srv.request.theta = START_POSITION_RED_THETA;
-      if(loc_spawn_.call(srv))
-        ROS_INFO("Start sent respawn call to Localizator");
+      if(loc_setPosition_.call(srv))
+        ROS_INFO("Start sent setPosition call to Localizator");
       else
         ROS_INFO("Start failed to send respawn call to Localizator");
       if(simu_spawn_.call(srv))
-        ROS_INFO("Start sent respawn call to Simulator");
+        ROS_INFO("Start sent setPosition call to Simulator");
       else
-        ROS_INFO("Start failed to send respawn call to Simulator");
+        ROS_INFO("Start failed to send setPosition call to Simulator");
     }
     else if( o->color.compare("blue") == 0 )
     {
       ROS_INFO("Color is blue");
-      arp_core::Spawn srv;
+      arp_core::SetPosition srv;
       srv.request.x = -START_POSITION_RED_X;
       srv.request.y = START_POSITION_RED_Y;
       srv.request.theta = fmod(START_POSITION_RED_THETA + PI, 2*PI);
-      if(loc_spawn_.call(srv))
-        ROS_INFO("Start sent respawn call to Localizator");
+      if(loc_setPosition_.call(srv))
+        ROS_INFO("Start sent setPosition call to Localizator");
       else
-        ROS_INFO("Start failed to send respawn call to Localizator");
-      if(simu_spawn_.call(srv))
-        ROS_INFO("Start sent respawn call to Simulator");
+        ROS_INFO("Start failed to send setPosition call to Localizator");
+      if(simu_setPosition_.call(srv))
+        ROS_INFO("Start sent setPosition call to Simulator");
       else
-        ROS_INFO("Start failed to send respawn call to Simulator");
+        ROS_INFO("Start failed to send setPosition call to Simulator");
     }
     else
     {

@@ -19,6 +19,7 @@
 #include <arp_core/Velocity.h>
 
 #include <arp_core/Spawn.h>
+#include <arp_core/SetPosition.h>
 #include <std_srvs/Empty.h>
 #include <arp_hml/SetMotorPower.h>
 #include <arp_master/SetPen.h>
@@ -146,6 +147,7 @@ namespace arp_master
          * used to call spawn (reset) service of Localizator
          */
         ros::ServiceClient loc_spawn_;
+        ros::ServiceClient loc_setPosition_;
 
         /**
          * used to call spawn (reset) service of Laserator
@@ -156,6 +158,7 @@ namespace arp_master
          * used to call spawn service of Simulator
          */
         ros::ServiceClient simu_spawn_;
+        ros::ServiceClient simu_setPosition_;
 
         /**
          * used to call setpen service of GraphicsSimuRobot

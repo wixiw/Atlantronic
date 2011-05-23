@@ -118,7 +118,8 @@ class Case:
                 
     #will tell if the considered case in within the table            
     def inTable(self):
-        if self.i>5 or self.j>5 or self.i<-5 or self.j<-5:
+        # caution: the last row is not considered "in the table" for silly walk
+        if self.i>5 or self.j>5 or self.i<-5 or self.j<-3:
             return False
         else:
             return True
