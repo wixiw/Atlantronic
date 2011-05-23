@@ -47,11 +47,11 @@
     <param name="/arp_ods/ANG_ACC_MAX"  value="15.000" /> 
 
 	<!--Distance in meters between wheels -->
-    <param name="/Protokrot/BASE_LINE" value="0.30447"/>  
+    <param name="/Protokrot/BASE_LINE" value="0.307039062"/>  
 
 	<!--Diameter in meters -->
-	<param name="/Protokrot/LEFT_WHEEL_DIAMETER" value="0.06904" /> 
+	<param name="/Protokrot/LEFT_WHEEL_DIAMETER" value="0.067679691" /> 
 		<!--Diameter in meters -->
-	<param name="/Protokrot/RIGHT_WHEEL_DIAMETER" value="0.06883" /> 
+	<param name="/Protokrot/RIGHT_WHEEL_DIAMETER" value="0.067598614" /> 
 
 </launch>
