@@ -4,6 +4,6 @@
 	<include file="$(find arp_hml)/script/ros/launch/simul_protokrot.launch"/> 
 	<include file="$(find arp_rlu)/script/ros/launch/arp_rlu.launch"/>
 	<include file="$(find arp_ods)/script/ros/launch/arp_ods.launch"/>
-	<node name="GraphicsSimu"     pkg="arp_master"  type="GraphicsSimuNode"     args="/Protokrot/pose" output="screen"/>
+	<node name="GraphicsSimu"     pkg="arp_master"  type="GraphicsSimuNode"     args="/Protokrot/pose" output="screen" launch-prefix="nice"/>
 	<node name="StratNode"   pkg="arp_master"  type="StratNode.py"     args="" output="screen"/>
 </launch>
