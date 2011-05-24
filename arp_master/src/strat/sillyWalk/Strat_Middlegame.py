@@ -29,10 +29,10 @@ class Middlegame(PreemptiveStateMachine):
             #preemptive states
             PreemptiveStateMachine.addPreemptive('ObstaclePreemption',
                                              ObstaclePreemption(),
-                                             transitions={'sortie':'CreateWalk'})
+                                             transitions={'avoid':'EscapeObstacle','impossible':'EscapePoint'})
             PreemptiveStateMachine.addPreemptive('EndMatchPreemtion',
                                              EndMatchPreemtion(),
-                                             transitions={'sortie':'endMiddlegame'})
+                                             transitions={'endPreemption':'endMiddlegame'})
             # other states
             PreemptiveStateMachine.add('CreateWalk',
                       CreateWalk(),
@@ -40,6 +40,11 @@ class Middlegame(PreemptiveStateMachine):
             #as initial state is not the preemptive one, it is necessary to add the information here !
             self.setInitialState('CreateWalk')
             
+            PreemptiveStateMachine.add('EscapeObstacle',
+                      EscapeObstacle(),
+                      transitions={'succeeded':'CreateWalk','aborted':'CreateWalk'})
+           
+           
             PreemptiveStateMachine.add('EscapePoint',
                       EscapePoint(),
                       transitions={'succeeded':'CreateWalk','aborted':'CreateWalk'})
@@ -67,40 +72,61 @@ class CreateWalk(CyclicState):
     def executeTransitions(self):
         #mon role est de creer les ordres de mouvements pour un cycle de silly walk
         #je vais creer 3 cases de silly walk et envoyer dessus le robot
-        
-        #dirRobot=getDirection(Inputs.gettheta())
-        #caseres=getClosestCaseInDir(dirRobot,Data.color)
 
-        print "x,y :%.3f , %.3f"%(Inputs.getx(),Inputs.gety())
         current_case=getCase(Inputs.getx(),Inputs.gety())
-        print "cur case:"
-        current_case.toText()
+
+        direction=getDirection8Q(Inputs.gettheta())
         
-        direction=getDirection4Q(Inputs.gettheta())
-        dirParcours=direction.getRotated(pi/4)
+        if direction.isOrtho():
+            dirParcours=direction.getRotated(pi/4)
+        else:
+            dirParcours=direction
         
         if current_case.color()==Data.adv_color:
             case1=current_case
         else:
-            case1=current_case.getClosestInDirection(direction.getInverse(),Data.adv_color)
+            case1=current_case.getClosestInDirection(direction.getInverse(),Data.adv_color)     
         
-        case2=case1.getFurthestInDirection(dirParcours,Data.adv_color)
-        # des fois cases 3 n'existe pas ! ca serait en dehors de la table !!!!
-        case3=case2.getClosestInDirection(dirParcours.getRotated(pi/4),Data.color)
+        #case 2A: la plus loin en diagonale
+        if case1!=None:
+            case2A=case1.getFurthestInDirection(dirParcours,Data.adv_color)
+        #case 2B: juste une case avant la 2A dans la diagonale
+        if case2A!=None:
+            case2B=case2A.getClosestInDirection(dirParcours.getRotated(pi),Data.adv_color)
         
+        #des fois elle est en dehors de la table la case 3A. d'ou le 2B et 3B
+        if case2A!=None:
+            case3A=case2A.getClosestInDirection(dirParcours.getRotated(pi/4),Data.color)
+        if case2B!=None:
+            case3B=case2B.getClosestInDirection(dirParcours.getRotated(pi/4),Data.color)
+        
+        #c'est la que je regarde si je fais le cas "standard" ou "je m'arrete une case avant"
+        if case2A==None or case3A==None or ((case2A.i,case2A.j) in Data.liste_cases2_faites):
+            case2=case2B
+            case3=case3B
+        else:
+            case2=case2A
+            case3=case3A
+        
+        #des fois je trouve pas de solution !
         if case1==None or case2==None or case3==None:
             return 'impossible'
         
+        #je met ca dans Data car les etats suivant vont l'utiliser
         Data.case1=case1
         Data.case2=case2
         Data.case3=case3
         Data.dirParcours=dirParcours
 
+        # j'ajoute dans la liste des case2 que j'ai parcourues
+        Data.liste_cases2_faites.append((case2.i,case2.j))
+        
         return 'toStep1'
     
 class EscapePoint(CyclicActionState):
     def createAction(self):
-        self.pointcap(random()*0.5,random()*0.5,random()*pi)
+        #normalement on vient jamais ici, c'est la voiture balai... alors bon on sort un point au hasard, quoi
+        self.pointcap((random()*2.0-1.0)*0.6,random()*0.6,(random()*2.0-1.0)*pi)
  
 class Step1(CyclicActionState):
     def createAction(self):
@@ -127,20 +153,33 @@ class Step3(CyclicActionState):
 
 class ObstaclePreemption(PreemptiveCyclicState):
     def __init__(self):
-        PreemptiveCyclicState.__init__(self, outcomes=['sortie'])
+        PreemptiveCyclicState.__init__(self, outcomes=['avoid','impossible'])
+        self.blinding_period=rospy.get_param("/blinding_period")
 
     def preemptionCondition(self):
-        if Inputs.getobstacle()==1:
+        if Inputs.getobstacle()==1 and rospy.get_rostime().secs-Data.time_obstacle>self.blinding_period:
+            Data.time_obstacle=rospy.get_rostime().secs
             return True
         else:
             return False
        
     def executeTransitions(self):
-        return 'sortie'
+        direction=getDirection4Q(Inputs.gettheta())
+        current_case=getCase(Inputs.getx(),Inputs.gety())
+        Data.caseEscape=current_case.getFurthestInDirection(direction.getRotated(pi),Data.adv_color)
+        if Data.caseEscape==None:
+            return 'impossible'
+        return 'avoid'
+    
+    
+class EscapeObstacle(CyclicActionState):
+    def createAction(self):
+        self.pointcap_reverse(Data.caseEscape.xCenter,Data.caseEscape.yCenter,Data.caseEscape.dirForSillyWalk().angle())
+    
     
 class EndMatchPreemtion(PreemptiveCyclicState):
     def __init__(self):
-        PreemptiveCyclicState.__init__(self, outcomes=['sortie'])
+        PreemptiveCyclicState.__init__(self, outcomes=['endPreemption'])
         self.match_duration=rospy.get_param("/match_duration")
 
     def preemptionCondition(self):
@@ -150,4 +189,4 @@ class EndMatchPreemtion(PreemptiveCyclicState):
             return False
        
     def executeTransitions(self):
-        return 'sortie'
+        return 'endPreemption'

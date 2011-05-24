@@ -3,6 +3,7 @@ import roslib; roslib.load_manifest('arp_master')
 import rospy
 
 class Data:
+
     #proprietes
     stateMachineRate=None
     
@@ -10,3 +11,6 @@ class Data:
     color='NONE'
     adv_color='NONE'
 
+    liste_cases2_faites=[]
+    
+    time_obstacle=0

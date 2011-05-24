@@ -23,6 +23,13 @@ class Direction:
     def angle(self):
         return atan2(self.dj,self.di)    
     
+    #me dis si je suis dans une direction horizontale ou verticale
+    def isOrtho(self):
+        if abs(self.di)+abs(self.dj)==1:
+            return True
+        else:
+            return False
+    
     def toText(self):
         print "direction: (%i,%i)"%(self.di,self.dj)
         
@@ -37,10 +44,30 @@ def getDirection4Q(anglerobot):
     if -3*pi/4<anglerobot<=-pi/4:
         return Direction(0,-1)
 
+    
+def getDirection8Q(anglerobot):
+    if -pi/8<anglerobot<=pi/8:
+        return Direction(1,0)
+    if pi/8<anglerobot<=3*pi/8:
+        return Direction(1,1)
+    if 3*pi/8<anglerobot<=5*pi/8:
+        return Direction(0,1)
+    if 5*pi/8<anglerobot<=7*pi/8:
+        return Direction(-1,1)
+    if 7*pi/8<anglerobot or anglerobot<=-7*pi/8 :
+        return Direction(-1,0)
+    if -7*pi/8<anglerobot<=-5*pi/8:
+        return Direction(-1,-1)
+    if -5*pi/8<anglerobot<=-3*pi/8:
+        return Direction(0,-1)
+    if -3*pi/8<anglerobot<=-pi/8:
+        return Direction(1,-1)
+  
+
 #give him a position, it will return the case on which you are
 def getCase(x,y):
-    return Case(int(1+2*floor(x/0.350)),int(1+2*floor(y/0.350)))
-
+    return Case(int(1+2*floor(x/0.350)),int(1+2*floor(y/0.350)))    
+    
 #represent the robot dimensions    
 class Robot:
     xPion=0.142 
@@ -123,6 +150,18 @@ class Case:
             return False
         else:
             return True
+        
+    #return angle for silly walk, i.e. pointing center
+    def dirForSillyWalk(self):
+        if self.i>0 and self.j>0:
+            return Direction(-1,-1)
+        if self.i<0 and self.j>0:
+            return Direction(1,-1)
+        if self.i<0 and self.j<0:
+            return Direction(1,1)
+        if self.i>0 and self.j<0:
+            return Direction(-1,1)
+        
         
     def toText(self):
         print "je suis une case: i=%i j=%i"%(self.i,self.j)

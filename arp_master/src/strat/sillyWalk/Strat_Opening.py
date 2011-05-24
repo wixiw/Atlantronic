@@ -68,4 +68,4 @@ class Depose(CyclicActionState):
 class PrepareSillyWalk(CyclicActionState):
     def createAction(self):
         case = AmbiCaseRed(-1, -3, Data.color)
-        self.pointcap_reverse(case.xCenter-0.100, case.yCenter, pi/8)
+        self.pointcap_reverse(case.xCenter, case.yCenter, pi/4)
