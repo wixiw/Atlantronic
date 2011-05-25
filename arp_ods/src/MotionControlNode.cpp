@@ -7,8 +7,8 @@ int main(int argc, char** argv)
 {
     ros::init(argc, argv, "MotionControl");
 
-    MotionControl mc(ros::this_node::getName());
-    mc.execute();
+    MotionControl mc;
+    ros::spin();
 
     return 0;
 }

@@ -33,7 +33,7 @@ HmlGraphicsFrame::HmlGraphicsFrame():
 	m_emergency.data = false;
 
 	update_timer_ = new wxTimer(this);
-	update_timer_->Start(20.);
+	update_timer_->Start(100.);
 
 	m_startButton = new wxButton(this, ID_START_HANDLER, wxT("Start"), wxPoint(20,60),wxDefaultSize);
 	m_colorButton = new wxButton(this, ID_COLOR_HANDLER, wxT("Color"), wxPoint(20,20),wxDefaultSize);

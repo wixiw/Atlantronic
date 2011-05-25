@@ -223,17 +223,17 @@ void Faulhaber3268Bx4::runSpeed()
 
 void Faulhaber3268Bx4::runTorque()
 {
-	//TODO WLA
+	//TODO WLA Faulhaber3268Bx4 implémenter control en torque
 }
 
 void Faulhaber3268Bx4::runPosition()
 {
-	//TODO WLA
+	//TODO WLA Faulhaber3268Bx4 implémenter control en position
 }
 
 void Faulhaber3268Bx4::runHoming()
 {
-	//TODO WLA
+	//TODO WLA Faulhaber3268Bx4 implémenter control homing
 }
 
 void Faulhaber3268Bx4::runOther()
@@ -487,13 +487,11 @@ bool Faulhaber3268Bx4::stopWatchdog()
     return false;
 }
 
-//TODO WLA
 bool Faulhaber3268Bx4::isInError()
 {
     return false;
 }
 
-//TODO WLA
 unsigned int Faulhaber3268Bx4::getError()
 {
     return 0;

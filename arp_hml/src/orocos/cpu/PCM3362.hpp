@@ -6,7 +6,7 @@
  */
 
 
-/*TODO liste des fonctions non interfacées
+/*TODO WLA liste des fonctions non interfacées
 - SusiCoreGetCpuVendor (useless ?)
 - SusiCoreGetBIOSString (useless car identique à BiosVersion)
 - BOOL SusiCoreReadIO(DWORD addr, DWORD &value); (documentation inexistante)
@@ -74,7 +74,7 @@ namespace arp_hml
         bool configureHook();
 
         /**
-         * TODO WLA
+         * TODO WLA commenter
          */
         bool startHook();
 

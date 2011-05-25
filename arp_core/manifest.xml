@@ -9,7 +9,7 @@
     <depend package="ocl" />
     <depend package="eigen" />
     <depend package="rosbuild" />
-	
+	<depend package="roscpp"/>
 	<export>
 		<cpp cflags="-I${prefix}/src" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -larp_core-gnulinux -larp_core-math-gnulinux"/>
 		<rosbuild cmake_directory="${prefix}/cmake"/>

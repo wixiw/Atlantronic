@@ -22,7 +22,7 @@ ARDTaskContext::ARDTaskContext(const std::string& name, const std::string projec
     attrPropertyPath("script/orocos/conf"),
     attrScriptPath("script/orocos/ops"),
     attrStateMachinePath("script/orocos/osd"),
-    /* TODO logger(dynamic_cast<OCL::logging::Category*>(&log4cpp::Category::getInstance("ard")))*/
+    /* TODO WLA logger(dynamic_cast<OCL::logging::Category*>(&log4cpp::Category::getInstance("ard")))*/
     logger(name)
 {
     addProperty("propAutoLoadScript", propAutoLoadScript)

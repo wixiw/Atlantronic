@@ -37,7 +37,7 @@ void ObstacleDetector::scanCallback(LaserScanConstPtr scan)
 	float d = scan->range_max;
 
 	//ROS_WARN("min : %f max : %f",scan->range_min, scan->range_max);
-	for( int i=0 ; i!= scan->ranges.size() ; i++)
+	for( unsigned int i=0 ; i!= scan->ranges.size() ; i++)
 	{
 		if( scan->ranges[i] < d && scan->range_min < scan->ranges[i] )
 		{

@@ -9,9 +9,19 @@ configure_file(
 ###################################################################################################################
 #    EDIT BELOW THIS LINE AND UNTIL NEXT LINE FOR A NEW PROJECT
 
-rosbuild_add_executable(CommandNode CommandNode.cpp Command.cpp)
+add_subdirectory(command)
+add_subdirectory(manual)
+rosbuild_add_library(motionControl 
+            OrderSelector.cpp
+            orders/ModeSelector.cpp
+            orders/MotionOrder.cpp 
+            orders/StayInPosition.cpp
+            orders/FantomOrder.cpp
+            orders/RotationOrder.cpp)
+            
 rosbuild_add_executable(MotionControlNode MotionControlNode.cpp MotionControl.cpp)
-rosbuild_add_executable(TeleopNode TeleopNode.cpp)
-orocos_component(arp-master Ods.cpp Logitech3DTeleop.cpp)
+target_link_libraries(MotionControlNode motionControl)
+            
+
 
 ###################################################################################################################

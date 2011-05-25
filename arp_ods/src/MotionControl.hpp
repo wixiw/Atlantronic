@@ -19,65 +19,96 @@
 #include <math/Geometry.hpp>
 #include <math/math.hpp>
 
+#include "orders/orders.h"
+#include "OrderSelector.hpp"
+
 using namespace arp_core;
 using namespace nav_msgs;
 using namespace geometry_msgs;
 
 namespace arp_ods
 {
-    /**
-     * MotionControl allows you to drive a non-holonome robot to a specific Point (x, y, angle).
-     * MotionControl receives its order in actionlib standards.
-     */
-    class MotionControl
-    {
+class ModeSelector;
+
+/**
+ * MotionControl allows you to drive a non-holonome robot to a specific Point (x, y, angle).
+ * MotionControl receives its order in actionlib standards.
+ *
+ * An order is stored into a MotionOrder by the OrderSelector. The OrderSelector is responsible of
+ * linking orders and interupting gently when requested.
+ * The selection of modes into an MotionOrder is delegated to a ModeSelector that you can find
+ * within the MotionOrder
+ */
+class MotionControl
+{
+
+    public:
+
+        /**
+         * Nécessaire pour éviter ;
+         * http://eigen.tuxfamily.org/dox/TopicStructHavingEigenMembers.html
+         */
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+        /**
+         */
+        MotionControl();
+
+        //the mainloop that should be called by the node
+        void execute(void);
+
     protected:
 
+        /**************************************************************************************
+         *  Motion Control data
+         **************************************************************************************/
+
+        /** The current order to do. There is always one at a time since
+         * newOrderCB is blocking by design of the action lib
+         */
+        shared_ptr<MotionOrder> m_order;
+
+        /** buffered Pose (will be use during the main loop)
+         */
+        Odometry m_poseFromCallback;
+
+        /** current Pose
+         */
+        arp_core::Pose m_currentPose;
+
+        /** last processed Pose
+         */
+        arp_core::Pose m_lastPose;
 
         /**
-         * all data for motion process
+         * computed speed commands
          */
-        arp_math::Vector2 trans_des;
-        arp_math::Rotation2 orient_des;
-        double x_des;
-        double y_des;
-        double theta_des;
-        bool success;
-        bool loop;
-        double sens_lin;
-        double distance_to_despoint;
-        bool reverse;
-        double distance_error;
-        double angle_error;
-        bool endOrder;
-        bool passe;
-        double passe_time;
+        Velocity m_computedVelocityCmd;
 
         /**
-         * NodeHandle on associated node
+         * Read the inputs
          */
-        ros::NodeHandle nh_;
+        void getInputs();
+
+        /**
+         * Publish the processed datas
+         */
+        void setOutputs();
+
+        /**************************************************************************************
+         *  ROS specific data
+         **************************************************************************************/
+
+        /**
+         * Use this mutex to avoid corruption of the order data
+         */
+        boost::mutex m_orderMutex;
 
         /**
          * Actionlib server.
          * Simple version is perfect here.
          */
-        actionlib::SimpleActionServer<arp_ods::OrderAction> as_;
-
-        /**
-         * Actionlib stuff : action name which will be used to recognozied action server over ROS.
-         */
-        std::string action_name_;
-
-        /**
-         * Actionlib feedback (type define by actionlib script on Order.action file)
-         */
-        OrderFeedback feedback_;
-
-        /**
-         * Actionlib result (type define by actionlib script on Order.action file)
-         */
-        OrderResult result_;
+        actionlib::SimpleActionServer<arp_ods::OrderAction> m_actionServer;
 
         /**
          * Used to subscribe to "Localizator/pose"
@@ -89,82 +120,19 @@ namespace arp_ods
          */
         ros::Publisher vel_pub_;
 
-        /** buffered translation (will be use during the main loop)
-        */
-        arp_math::Vector2 m_position;
-
-        /** buffered orientation (will be use during the main loop)
-          */
-        arp_math::Rotation2 m_cap;
-
-        /**
-         *  possibly reversed orientation (to go backward) used by the motion control
-         */
-        arp_math::Rotation2 orientLocal_;
-
-        /**
-         *  possibly reversed objective
-         */
-        arp_math::Rotation2 orient_desLocal_;
-
-        /**
-         * published linear velocity
-         */
-        double m_linearSpeedCmd;
-
-        /**
-         * published angular velocity
-         */
-        double m_angularSpeedCmd;
-
-        /**
-         * time we went through the loop last time
-         * used for derivation
-         */
-        double loop_date;
-
-        /**
-         *  keep track of the former loop value of angle_error, to compute derivative
-         */
-        double old_angle_error;
-
-        /**
-         * mode of operation
-         */
-        int mode;
-        static const int MODE_APPROACH = 1;
-        static const int MODE_FANTOM = 2;
-        static const int MODE_DONE = 3;
-        static const int MODE_PASS = 4;
-
         /**
          * this are coefficient that are defined by rosparam. see .launch files.
          */
         double DISTANCE_ACCURACY;
         double ANGLE_ACCURACY;
+        double RADIUS_APPROACH_ZONE;
+        double FANTOM_COEF;
+        double LIN_VEL_MAX;
+        double ANG_VEL_MAX;
         double ROTATION_GAIN;
         double ROTATION_D_GAIN;
         double TRANSLATION_GAIN;
-        double LIN_VEL_MAX;
-        double ANG_VEL_MAX;
         double VEL_FINAL;
-        double RADIUS_APPROACH_ZONE;
-        double RADIUS_FANTOM_ZONE;
-        double FANTOM_COEF;
-
-    public:
-
-        /**
-         * Specify name of the Actionlib Server
-         * This name will be usefull for the Actionlib clienti
-         */
-        MotionControl(std::string name);
-        ~MotionControl(void);
-
-        //the mainloop that should be called by the node
-        void execute(void);
-
-    protected:
 
         /**
          * Called when a new pose message is received
@@ -178,17 +146,21 @@ namespace arp_ods
 
         /**
          * Called when a new order is received
+         * This *MUST* be a blocking function since ActionLib wants it.
+         * The caller is not blocked because a background thread is waiting
+         * the action result to call a callback.
+         * In a way this should be done independantly of the periodic job
+         * to publish velocity commands. For simplicity, this callback stay here
+         * but it is as if it was independant
          */
         void newOrderCB(const OrderGoalConstPtr &goal);
-        void processMotion(void);
-        void switchState(void);
-        void publish(void);
 
         /**
-         * this is the restriction of linear speed due to angle error. the coefficient is between -1 and 1
+         * Read ROS parameters from the ROS server
          */
-        double linearReductionCoef(double error);
-    };
+        void updateParams();
+
+};
 }
 
 #endif

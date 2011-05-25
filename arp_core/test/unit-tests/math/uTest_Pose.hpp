@@ -5,7 +5,7 @@
  *      Author: boris
  */
 
-// TODO : test unitaire pour l'opérateur <<
+// TODO BMO: test unitaire pour l'opérateur <<
 
 #include "math/Pose.hpp"
 using namespace ARPMath;

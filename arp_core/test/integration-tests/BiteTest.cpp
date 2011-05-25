@@ -21,7 +21,6 @@ ORO_LIST_COMPONENT_TYPE( CoreTest::BiteTest )
 BiteTest::BiteTest(const std::string& name) :
     ARDTest(name)
 {
-    // TODO Auto-generated constructor stub
 
 }
 

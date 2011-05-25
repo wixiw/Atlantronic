@@ -106,7 +106,7 @@ namespace arp_core
         boost::shared_ptr<Marshalling> marshalling;
 
         /** Logger */
-        // TODO OCL::logging::Category* logger;
+        // TODO WLA OCL::logging::Category* logger;
         Logger::In logger;
 
         /** Allows a component to connect easily to an other component's operation */

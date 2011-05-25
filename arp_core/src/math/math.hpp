@@ -9,6 +9,7 @@
 #define _ARPMATH_MATH_HPP_
 
 #define EIGEN_DONT_ALIGN
+#define EIGEN_DONT_VECTORIZE
 #include <Eigen/Core>
 #include "Geometry.hpp"
 
@@ -35,6 +36,9 @@ namespace arp_math
      */
     double normalizeAngle(double angle);
     Rotation2 normalizeAngle(Rotation2 rot);
+
+    double deg2rad(double deg);
+    double rad2deg(double rad);
 
     /**
      * Return "value" saturated to min or max

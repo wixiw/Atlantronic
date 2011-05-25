@@ -25,13 +25,11 @@ namespace CoreTest
 
     Sandbox::Sandbox()
     {
-        // TODO Auto-generated constructor stub
 
     }
 
     Sandbox::~Sandbox()
     {
-        // TODO Auto-generated destructor stub
     }
 
 }
