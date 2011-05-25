@@ -1,0 +1,1 @@
+rosbuild_add_executable(CommandNode CommandNode.cpp Command.cpp)
