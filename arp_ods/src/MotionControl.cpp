@@ -22,6 +22,9 @@ MotionControl::MotionControl() :
 
     vel_pub_ = nodeHandle.advertise<arp_core::Velocity> ("Command/velocity", 1);
 
+    timerreport_srv = nodeHandle.advertiseService( ros::this_node::getName() + "/timerReport",
+                &MotionControl::timerreportCallback, this);
+
     m_actionServer.start();
 
 }
@@ -43,6 +46,9 @@ void MotionControl::getInputs()
 //this is the main loop of the motion control.
 void MotionControl::execute()
 {
+    // timer to scope performances
+    timer_.Start();
+
     //read inputs from callbacks
     getInputs();
 
@@ -58,6 +64,9 @@ void MotionControl::execute()
 
     //publish computed value
     setOutputs();
+
+    // timer to scope performances
+    timer_.Stop();
 }
 
 void MotionControl::setOutputs()
@@ -401,4 +410,34 @@ void MotionControl::updateParams()
         ROS_FATAL("pas reussi a recuperer le parametre FANTOM_COEF");
 
 }
+
+ bool MotionControl::timerreportCallback(TimerReport::Request& req, TimerReport::Response& res)
+ {
+     std::stringstream info ;
+     info << "==============================================" << std::endl;
+     info << ros::this_node::getName() << " Performance Report (ms)" << std::endl;
+     info << "----------------------------------------------" << std::endl;
+     info << "  [*] Number of samples used : " << timer_.GetRawRefreshTime().size() << std::endl;
+     info << "  [*] Actual loop period   : mean=" << timer_.GetMeanRefreshTime() * 1000.0;
+     info << "  , stddev=" << timer_.GetStdDevRefreshTime() * 1000.0;
+     info << "  , min=" << timer_.GetMinRefreshTime() * 1000.0;
+     info << "  , max=" << timer_.GetMaxRefreshTime() * 1000.0;
+     info << "  , last=" << timer_.GetLastRefreshTime() * 1000.0 << std::endl;
+     /*info << "  [*] Raw actual loop periods :  ( ";
+     for(std::vector<double>::const_iterator it = timer_.GetRawRefreshTime().begin(); it != timer_.GetRawRefreshTime().end(); ++it)
+       info << (*it) * 1000.0 << " ";
+     info << " )" << std::endl;*/
+     info << "  [*] Loop duration    : mean=" << timer_.GetMeanElapsedTime() * 1000.0;
+     info << "  , stddev=" << timer_.GetStdDevElapsedTime() * 1000.0;
+     info << "  , min=" << timer_.GetMinElapsedTime() * 1000.0;
+     info << "  , max=" << timer_.GetMaxElapsedTime() * 1000.0;
+     info << "  , last=" << timer_.GetLastElapsedTime() * 1000.0 << std::endl;
+     /*info << "  [*] Raw loop durations :  ( ";
+     for(std::vector<double>::const_iterator it = timer_.GetRawElapsedTime().begin(); it != timer_.GetRawElapsedTime().end(); ++it)
+       info << (*it) * 1000.0 << " ";
+     info << " )" << std::endl; */
+
+     res.report = info.str();
+     return true;
+ }
 

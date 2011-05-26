@@ -13,6 +13,9 @@
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Pose2D.h>
 
+#include "timer/StatTimer.hpp"
+#include "arp_core/TimerReport.h"
+
 #include <arp_ods/OrderAction.h>
 #include <arp_core/Velocity.h>
 #include <arp_core/Pose.h>
@@ -159,6 +162,22 @@ class MotionControl
          * Read ROS parameters from the ROS server
          */
         void updateParams();
+
+        /**
+         * Timer to scope performance
+         */
+        StatTimer timer_;
+
+        /**
+         * Used to provide timer report
+         */
+        ros::ServiceServer timerreport_srv;
+
+        /**
+         * Called when timerreport service is called
+         * \returns success boolean
+         */
+        bool timerreportCallback(TimerReport::Request& req, TimerReport::Response& res);
 
 };
 }
