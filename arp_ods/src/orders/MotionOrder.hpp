@@ -10,8 +10,11 @@
 
 #include <arp_core/Velocity.h>
 #include "ModeSelector.hpp"
+#include <arp_ods/OrderAction.h>
+#include <boost/shared_ptr.hpp>
 
 using namespace arp_core;
+using namespace boost;
 
 namespace arp_ods
 {
@@ -35,10 +38,10 @@ enum OrderType
 class MotionOrder: public arp_ods::ModeSelector
 {
     public:
-//        /**
-//         * Copy constructor
-//         */
-//        MotionOrder(const MotionOrder& order);
+        /**
+         * Copy constructor
+         */
+        MotionOrder(const MotionOrder& order);
 
         /**
          * Default constructor
@@ -57,6 +60,11 @@ class MotionOrder: public arp_ods::ModeSelector
          * @param p : pose to convert
          */
         Pose reversePosition(Pose p);
+
+        /**
+         * Facotry to create an order with default parameters from the order
+         */
+        static shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, Pose currentPose );
 
         /**
          * Returns the type of the order

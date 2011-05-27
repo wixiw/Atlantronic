@@ -32,6 +32,11 @@ class ModeSelector
         ModeSelector();
 
         /**
+         * Define configurable attributes to their default values
+         */
+        void setDefaults();
+
+        /**
          * Call this function every cycle to check if a new mode is available.
          * If a mode is available, the new mode is automatically entered
          */

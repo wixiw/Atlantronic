@@ -10,6 +10,9 @@
 
 #include "MotionOrder.hpp"
 #include "math/math.hpp"
+#include <boost/shared_ptr.hpp>
+
+using namespace boost;
 
 namespace arp_ods
 {
@@ -25,6 +28,18 @@ class FantomOrder: public arp_ods::MotionOrder
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
         FantomOrder();
+        FantomOrder(MotionOrder);
+
+        /**
+         * Define configurable attributes to their default values
+         */
+        void setDefaults();
+
+        /**
+         * Override to define specific parameters
+         */
+        static shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, Pose currentPose );
+
         virtual Velocity computeSpeed(arp_core::Pose currentPosition);
 
         /**

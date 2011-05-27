@@ -20,13 +20,20 @@ namespace order
     shared_ptr < MotionOrder > defaultOrder(new MotionOrder());
 }
 
-//MotionOrder::MotionOrder(const MotionOrder& order) :
-//    ModeSelector(static_cast<ModeSelector&>(order) )
-//{
-//    m_type = order.m_type;
-//    m_reverse = order.m_reverse;
-//    //m_id != m_id !!
-//}
+MotionOrder::MotionOrder(const MotionOrder& order):
+        arp_ods::ModeSelector()
+{
+    m_type = order.m_type;
+    m_reverse = order.m_reverse;
+    m_pass = order.m_pass;
+    m_beginPose = order.m_beginPose;
+    m_endPose = order.m_endPose;
+    m_angleAccuracy = order.m_angleAccuracy;
+    m_distanceAccurancy = order.m_distanceAccurancy;
+    m_radiusApproachZone = order.m_radiusApproachZone;
+    m_radiusInitZone = order.m_radiusInitZone;
+    //m_id != m_id !!
+}
 
 MotionOrder::MotionOrder() :
     arp_ods::ModeSelector(), m_type(NO_ORDER), m_reverse(false)
@@ -56,6 +63,29 @@ Pose MotionOrder::reversePosition(Pose p)
         ret.theta = normalizeAngle(p.theta);
     }
     return ret;
+}
+
+shared_ptr<MotionOrder> MotionOrder::createOrder( const OrderGoalConstPtr &goal, Pose currentPose )
+{
+    shared_ptr<MotionOrder> order(new MotionOrder());
+
+    Pose begin;
+    Pose end;
+
+    begin.x = currentPose.x;
+    begin.y = currentPose.y;
+    begin.theta = currentPose.theta;
+    order->setBeginPose(begin);
+
+    end.x = goal->x_des;
+    end.y = goal->y_des;
+    end.theta = goal->theta_des;
+    order->setEndPose(end);
+
+    order->setReverse(goal->reverse);
+    order->setPass(goal->passe);
+
+    return order;
 }
 
 OrderType MotionOrder::getType() const

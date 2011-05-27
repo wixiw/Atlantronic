@@ -17,6 +17,34 @@ RotationOrder::RotationOrder()
     m_pass = false;
 }
 
+RotationOrder::RotationOrder(MotionOrder order):
+        FantomOrder(order)
+{
+}
+
+shared_ptr<MotionOrder>  RotationOrder::createOrder( const OrderGoalConstPtr &goal, Pose currentPose )
+{
+    shared_ptr<MotionOrder> order(new MotionOrder());
+
+    Pose begin;
+    Pose end;
+
+    begin.x = currentPose.x;
+    begin.y = currentPose.y;
+    begin.theta = currentPose.theta;
+    order->setBeginPose(begin);
+
+    end.x = currentPose.x;
+    end.y = currentPose.y;
+    end.theta = currentPose.theta;
+    order->setEndPose(end);
+
+    order->setReverse(false);
+    order->setPass(false);
+
+    return order;
+}
+
 void RotationOrder::switchInit(arp_core::Pose currentPosition)
 {
     m_beginPose = currentPosition;

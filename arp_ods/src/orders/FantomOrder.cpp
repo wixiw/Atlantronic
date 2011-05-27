@@ -20,12 +20,47 @@ FantomOrder::FantomOrder() :
     old_loop_date = 0;
     old_angle_error = 0;
 
-    FANTOM_COEF = 0.5;
-    VEL_FINAL = 0.0;
-    ROTATION_GAIN = 10.0;
-    ROTATION_D_GAIN = 0.0;
-    TRANSLATION_GAIN = 1.0;
+    setDefaults();
 
+}
+
+FantomOrder::FantomOrder(MotionOrder order) :
+    MotionOrder(order)
+{
+}
+
+void FantomOrder::setDefaults()
+{
+    setFANTOM_COEF(0.5);
+    setTRANSLATION_GAIN(1.0);
+    setROTATION_GAIN(10.0);
+    setROTATION_D_GAIN(0.0);
+    setVEL_FINAL(0.0);
+}
+
+shared_ptr<MotionOrder> FantomOrder::createOrder( const OrderGoalConstPtr &goal, Pose currentPose )
+{
+    shared_ptr<FantomOrder> order(new FantomOrder());
+
+    Pose begin;
+    Pose end;
+
+    begin.x = currentPose.x;
+    begin.y = currentPose.y;
+    begin.theta = currentPose.theta;
+    order->setBeginPose(begin);
+
+    end.x = goal->x_des;
+    end.y = goal->y_des;
+    end.theta = goal->theta_des;
+    order->setEndPose(end);
+
+    order->setReverse(goal->reverse);
+    order->setPass(goal->passe);
+
+    order->setDefaults();
+
+    return static_cast<shared_ptr<FantomOrder>  >(order);
 }
 
 double FantomOrder::linearReductionCoef(double angle_error)

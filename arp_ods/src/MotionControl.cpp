@@ -103,8 +103,6 @@ void MotionControl::newOrderCB(const OrderGoalConstPtr &goal)
     //TODO WLA : ajouter un log pour afficher l'ordre qu'on va executer en détail
 
     ROS_WARN("newOrderCB");
-    arp_core::Pose beginPose;
-    arp_core::Pose endPose;
     ros::Rate r(20);
     OrderResult result;
 
@@ -122,38 +120,24 @@ void MotionControl::newOrderCB(const OrderGoalConstPtr &goal)
 
     if (goal->move_type == "POINTCAP")
     {
-        endPose.x = goal->x_des;
-        endPose.y = goal->y_des;
-        endPose.theta = goal->theta_des;
-
-        shared_ptr<FantomOrder> order_tmp(new FantomOrder());
-        order_tmp->setFANTOM_COEF(FANTOM_COEF);
-        order_tmp->setTRANSLATION_GAIN(TRANSLATION_GAIN);
-        order_tmp->setROTATION_GAIN(ROTATION_GAIN);
-        order_tmp->setROTATION_D_GAIN(ROTATION_D_GAIN);
-        order_tmp->setVEL_FINAL(VEL_FINAL);
-        m_order = static_cast<shared_ptr<MotionOrder> > (order_tmp);
-
-        ROS_INFO("MotionControl : A new order (%s) is waiting", goal->move_type.c_str());
+        m_order = FantomOrder::createOrder(goal, m_currentPose);
+        ROS_INFO("MotionControl : new Fantom goal (%0.3f,%0.3f,%0.3f) reverse : %d pass %d", goal->x_des, goal->y_des,
+                goal->theta_des, goal->reverse, goal->passe);
+        ROS_INFO("MotionControl : new Fantom order (%0.3f,%0.3f,%0.3f)", m_order->getEndPose().x, m_order->getEndPose().y,
+                m_order->getEndPose().theta);
     }
-    else if (goal->move_type == "CAP" and goal->passe == false)
+    else if (goal->move_type == "CAP")
     {
-        endPose.theta = goal->theta_des;
-
-        m_order = static_cast<shared_ptr<MotionOrder> > (shared_ptr<RotationOrder> (new RotationOrder()));
-
-        ROS_INFO("MotionControl : A new order (%s) is waiting", goal->move_type.c_str());
+        m_order = RotationOrder::createOrder(goal, m_currentPose);
+        ROS_INFO("MotionControl : new Rotation goal (cap=%0.3f)", goal->theta_des);
     }
     else
     {
         ROS_ERROR("%s: not possible", goal->move_type.c_str());
         goto not_processed;
     }
-    m_order->setBeginPose(beginPose);
-    m_order->setEndPose(endPose);
-    m_order->setReverse(goal->reverse);
-    m_order->setPass(goal->passe);
-    m_order->resetMode();
+
+    //TODO mapper les coefs fantômes
     m_order->setAngleAccuracy(ANGLE_ACCURACY);
     m_order->setDistanceAccurancy(DISTANCE_ACCURACY);
     m_order->setRadiusApproachZone(RADIUS_APPROACH_ZONE);
@@ -161,8 +145,6 @@ void MotionControl::newOrderCB(const OrderGoalConstPtr &goal)
     //TODO WLA mettre des ros param
     //TODO WLA mettre ça dans order
     //m_orderSelector.setWorkTimeout(15);
-    //m_orderSelector.setHaltLinearVelocity(0.010);
-    //m_orderSelector.setHaltAngularVelocity(0.2);
 
 
     //restitution de la main
@@ -206,177 +188,6 @@ void MotionControl::newOrderCB(const OrderGoalConstPtr &goal)
     return;
 }
 
-/*
- void MotionControl::processMotion()
- {
- if (m_order.getModeSelector().getMode() == MODE_PASS)
- {
- return;
- }
-
- if (m_order.getModeSelector().getMode() == MODE_DONE)
- {
- m_linearSpeedCmd = 0;
- m_angularSpeedCmd = 0;
- return;
- }
-
- //permet de retourner le repere du robot pour le faire partir en marche arriere
- if (reverse == false)
- {
- orientLocal_ = m_cap;
- orient_desLocal_ = orient_des;
- sens_lin = 1;
- }
- else
- {
- orientLocal_ = Rotation2(normalizeAngle(m_cap.angle() + PI));
- orient_desLocal_ = Rotation2(normalizeAngle(orient_des.angle() + PI));
- sens_lin = -1;
- }
-
- //ROS_INFO("*************************************************************");
- //ROS_INFO("m_position : x=%.3f, y=%.3f, theta=%.3f", m_position.x(), m_position.y(), m_cap.angle());
-
- ///////////////////////////////////////////////// DISTANCES
- // calcul de la distance au point desire
- distance_to_despoint = (trans_des - m_position).norm();
-
- //calcul de la distance à la droite passant par le point desire et perpendiculaire à l'angle desire
- //la distance à la ligne d'arrivée en quelque sorte
- double distance_to_desline = (orient_desLocal_.inverse() * (trans_des - m_position)).x();
-
- // selon le mode, je regarde la distance au point ou a la droite
- if (m_order.getModeSelector().getMode() == MODE_RUN)
- distance_error = distance_to_despoint;
- if (m_order.getModeSelector().getMode() == MODE_APPROACH)
- distance_error = distance_to_desline;
-
- ///////////////////////////////////////////////// ANGLES
- //creation du point fantome
- //il s'agit d'un point qui se situe devant le point final, et suivant l'angle final.
- //c'est lui qu'on va viser en cap
- Vector2 phantompoint = trans_des - FANTOM_COEF * distance_error * Vector2(cos(orient_desLocal_.angle()),
- sin(orient_desLocal_.angle()));
- //calcul de l'angle au point fantome
- Vector2 phantom = phantompoint - m_position;
- Vector2 direction_in_current = orientLocal_.inverse() * phantom;
- double angle_error_fant = atan2(direction_in_current.y(), direction_in_current.x());
-
- //calcul de l'erreur d'angle par rapport a l'objectif
- double angle_error_des = normalizeAngle(orient_desLocal_.angle() - orientLocal_.angle());
-
- if (m_order.getModeSelector().getMode() == MODE_RUN)
- angle_error = angle_error_fant;
- if (m_order.getModeSelector().getMode() == MODE_APPROACH)
- angle_error = angle_error_des;
- //////////////////////////////////////CONSIGNES
-
- // calcul de la derivee de l'angle_error
- double old_loop_date = loop_date;
- loop_date = ros::Time::now().toSec();
- double delta_date = loop_date - old_loop_date;
-
- double d_angle_error;
- if (old_loop_date != 0 && delta_date > 0)
- {
- d_angle_error = (angle_error - old_angle_error) / delta_date;
- }
- else
- {
- d_angle_error = 0;
- }
- old_angle_error = angle_error;
-
- //creation des consignes full patates
- double lin_vel_cons_full =
- (TRANSLATION_GAIN * sqrt2(distance_error) * linearReductionCoef(angle_error) + VEL_FINAL) * sens_lin;
- double ang_vel_cons_full = ROTATION_GAIN * angle_error;
-
- //saturation des consignes
- m_linearSpeedCmd = saturate(lin_vel_cons_full, -LIN_VEL_MAX, LIN_VEL_MAX);
- m_angularSpeedCmd = saturate(ang_vel_cons_full, -ANG_VEL_MAX, ANG_VEL_MAX);
-
- }
- */
-
-/*
- void MotionControl::switchState()
- {
- //approaching ??
- if (mode == MODE_RUN)
- {
- if (distance_to_despoint < RADIUS_APPROACH_ZONE and passe == false)
- {
- //ROS_INFO("ligne %i : %i->MODE_APPROACH (%i)", __LINE__, mode,
- //        MODE_APPROACH);
- mode = MODE_INIT;
- return;
- }
-
- if (distance_to_despoint < RADIUS_APPROACH_ZONE and passe == true)
- {
- //ROS_INFO("ligne %i : %i->MODE_PASS (%i)", __LINE__, mode, MODE_PASS);
- mode = MODE_PASS;
- passe_time = ros::Time::now().toSec();
- ROS_INFO(">>>>>>>>>>>>>>>>> %s: Position Reached :  x=%.3f, y=%.3f, theta=%.3f", action_name_.c_str(),
- m_position.x(), m_position.y(), m_cap.angle());
- as_.setSucceeded(result_);
- endOrder = true;
- success = true;
- return;
- }
-
- }
-
- if (mode == MODE_PASS)
- {
- if (ros::Time::now().toSec() - passe_time > 1.0)
- {
- //ROS_INFO("ligne %i : %i->MODE_DONE (%i)", __LINE__, mode, MODE_DONE);
- mode = MODE_DONE;
- return;
- }
-
- }
-
- if (mode == MODE_INIT or mode == MODE_RUN)
- {
- //success ?
- if (distance_error < DISTANCE_ACCURACY && fabs(angle_error) < ANGLE_ACCURACY)
- {
-
- ROS_INFO(">>>>>>>>>>>>>>>>> %s: Position Reached :  x=%.3f, y=%.3f, theta=%.3f", action_name_.c_str(),
- m_position.x(), m_position.y(), m_cap.angle());
-
- //ROS_INFO("ligne %i : %i->MODE_DONE (%i)", __LINE__, mode, MODE_DONE);
-
- mode = MODE_DONE;
- // set the action state to succeeded
- as_.setSucceeded(result_);
- endOrder = true;
- success = true;
- return;
- }
-
- // check that preempt has not been requested by the clientcur_
- if (as_.isPreemptRequested() || !ros::ok())
- {
- ROS_INFO("%s: Preempted", action_name_.c_str());
- // set the action state to preempted
- as_.setPreempted();
- success = false;
- endOrder = true;
-
- //ROS_INFO("ligne %i : %i->MODE_DONE (%i)", __LINE__, mode, MODE_DONE);
-
- mode = MODE_DONE;
- return;
- }
- }
- }
- */
-
 void MotionControl::updateParams()
 {
     if (ros::param::get("/arp_ods/DISTANCE_ACCURACY", DISTANCE_ACCURACY) == 0)
@@ -404,7 +215,7 @@ void MotionControl::updateParams()
         ROS_FATAL("pas reussi a recuperer le parametre VEL_FINAL");
 
     if (ros::param::get("/arp_ods/RADIUS_APPROACH_ZONE", RADIUS_APPROACH_ZONE) == 0)
-    ROS_FATAL("pas reussi a recuperer le parametre RADIUS_APPROACH_ZONE");
+        ROS_FATAL("pas reussi a recuperer le parametre RADIUS_APPROACH_ZONE");
 
     if (ros::param::get("/arp_ods/FANTOM_COEF", FANTOM_COEF) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre FANTOM_COEF");

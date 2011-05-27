@@ -9,6 +9,9 @@
 #define ROTATIONORDER_HPP_
 
 #include "FantomOrder.hpp"
+#include <boost/shared_ptr.hpp>
+
+using namespace boost;
 
 namespace arp_ods
 {
@@ -20,6 +23,10 @@ class RotationOrder: public arp_ods::FantomOrder
 {
     public:
         RotationOrder();
+        RotationOrder(MotionOrder order);
+
+        /** Override to define specific parameters*/
+        static shared_ptr<MotionOrder>  createOrder( const OrderGoalConstPtr &goal, Pose currentPose );
 
         /** Override to go in approach mode directly */
         virtual void switchInit(arp_core::Pose currentPosition);
