@@ -36,8 +36,8 @@ stream("Protokrot.outDifferentialMeasure", speed);
 
 
 /*Connexion de l'interface interne de ProtoKrot*/
-connect("Protokrot.inIoStart", "Io.outBit2",ConnPolicy());
-connect("Protokrot.inIoColorSwitch", "Io.outBit6",ConnPolicy());
+connect("Protokrot.inIoStart", "Io.outBit1",ConnPolicy());
+connect("Protokrot.inIoColorSwitch", "Io.outBit3",ConnPolicy());
 connect("Protokrot.inLeftDrivingPosition", "LeftDriving.outMeasuredPosition",ConnPolicy());
 connect("Protokrot.inRightDrivingPosition", "RightDriving.outMeasuredPosition",ConnPolicy());
 connect("Protokrot.inLeftDrivingPositionTime", "LeftDriving.outMeasuredPositionTime",ConnPolicy());

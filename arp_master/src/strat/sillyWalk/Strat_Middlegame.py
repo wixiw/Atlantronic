@@ -73,6 +73,12 @@ class CreateWalk(CyclicState):
         #mon role est de creer les ordres de mouvements pour un cycle de silly walk
         #je vais creer 3 cases de silly walk et envoyer dessus le robot
 
+        case1=None
+        case2A=None
+        case2B=None
+        case3A=None
+        case3B=None
+
         current_case=getCase(Inputs.getx(),Inputs.gety())
 
         direction=getDirection8Q(Inputs.gettheta())
