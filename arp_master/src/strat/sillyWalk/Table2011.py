@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import roslib; roslib.load_manifest('arp_master')
 import rospy
+from rospy import loginfo
 
 from math import cos
 from math import sin
@@ -29,9 +30,10 @@ class Direction:
             return True
         else:
             return False
-    
-    def toText(self):
-        print "direction: (%i,%i)"%(self.di,self.dj)
+        
+    def __repr__(self):
+        return "Direction(%i,%i) "%(self.di,self.dj)
+
         
 # give him an angle, it will tell you what "direction" you have on the chess board
 def getDirection4Q(anglerobot):
@@ -151,7 +153,7 @@ class Case:
         else:
             return True
         
-    #return angle for silly walk, i.e. pointing center
+    #return angle for silly walk, i.e. direction pointing center of table, from this case
     def dirForSillyWalk(self):
         if self.i>0 and self.j>0:
             return Direction(-1,-1)
@@ -162,11 +164,17 @@ class Case:
         if self.i>0 and self.j<0:
             return Direction(-1,1)
         
-        
-    def toText(self):
-        print "je suis une case: i=%i j=%i"%(self.i,self.j)
-        print "je suis de couleur %s"%self.color()
-        
+    def __repr__(self):
+        return "Case(%i,%i) (%s)"%(self.i,self.j,self.color())
+    
+    def __eq__(self,other):
+        if other==None:
+            return False
+        if self.i==other.i and self.j==other.j:
+            return True
+        else:
+            return False
+
 
 class AmbiCaseRed(Case):
     def __init__(self,i_hor,j_vert,color):

@@ -2,6 +2,7 @@
 
 import roslib; roslib.load_manifest('arp_master')
 import rospy
+from rospy import loginfo
 import smach
 import smach_ros
 import smach_msgs
@@ -96,9 +97,12 @@ class CreateWalk(CyclicState):
         #case 2A: la plus loin en diagonale
         if case1!=None:
             case2A=case1.getFurthestInDirection(dirParcours,Data.adv_color)
+
         #case 2B: juste une case avant la 2A dans la diagonale
         if case2A!=None:
             case2B=case2A.getClosestInDirection(dirParcours.getRotated(pi),Data.adv_color)
+            if case2B==case1:
+                case2B=None
         
         #des fois elle est en dehors de la table la case 3A. d'ou le 2B et 3B
         if case2A!=None:
@@ -114,6 +118,23 @@ class CreateWalk(CyclicState):
             case2=case2A
             case3=case3A
         
+        loginfo("----- Calcul de SillyWalk ----")
+        loginfo(">> initialement: ")
+        loginfo("ma case: "+str(current_case))
+        loginfo("ma direction: "+str(direction))
+        loginfo(">> calculs: ")
+        loginfo("case1: "+str(case1))
+        loginfo("case2A: "+str(case2A))
+        loginfo("case2B: "+str(case2B))
+        loginfo("case3A: "+str(case3A))
+        loginfo("case3B: "+str(case3B))
+        loginfo(">> conclusion: ")
+        loginfo("case1: "+str(case1))
+        loginfo("case2: "+str(case2))
+        loginfo("case3: "+str(case3))
+        loginfo("dirParcours: "+str(dirParcours))
+        loginfo("----- Fin du calcul ----")
+        
         #des fois je trouve pas de solution !
         if case1==None or case2==None or case3==None:
             return 'impossible'
@@ -128,6 +149,7 @@ class CreateWalk(CyclicState):
         Data.liste_cases2_faites.append((case2.i,case2.j))
         
         return 'toStep1'
+        
     
 class EscapePoint(CyclicActionState):
     def createAction(self):

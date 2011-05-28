@@ -8,6 +8,8 @@ import smach_msgs
 
 from CyclicState import CyclicState
 from CyclicActionState import CyclicActionState
+from PreemptiveStateMachine import PreemptiveStateMachine
+from PreemptiveCyclicState import PreemptiveCyclicState
 from Inputs import Inputs
 from Data import Data
 from arp_ods.msg import OrderGoal
@@ -18,22 +20,34 @@ from math import pi
 from Table2011 import *
 from UtilARD import *
 
-class Opening(smach.StateMachine):
+class Opening(PreemptiveStateMachine):
     def __init__(self):
-        smach.StateMachine.__init__(self, outcomes=['endOpening', 'problem'])
+        PreemptiveStateMachine.__init__(self, outcomes=['endOpening', 'problem'])
         with self:
-            smach.StateMachine.add('EscapeStartpoint',
+            PreemptiveStateMachine.addPreemptive('ObstaclePreemption',
+                      ObstaclePreemption(),
+                      transitions={'avoid':'EscapeObstacle'})
+            
+            PreemptiveStateMachine.add('EscapeStartpoint',
                       EscapeStartpoint(),
                       transitions={'succeeded':'ChopePaletMilieu', 'aborted':'problem'})
-            smach.StateMachine.add('ChopePaletMilieu',
+            
+            self.setInitialState('EscapeStartpoint')
+            
+            PreemptiveStateMachine.add('ChopePaletMilieu',
                       ChopePaletMilieu(),
                       transitions={'succeeded':'Depose', 'aborted':'problem'})
-            smach.StateMachine.add('Depose',
+            
+            PreemptiveStateMachine.add('Depose',
                       Depose(),
                       transitions={'succeeded':'PrepareSillyWalk', 'aborted':'problem'})
-            smach.StateMachine.add('PrepareSillyWalk',
+            PreemptiveStateMachine.add('PrepareSillyWalk',
                       PrepareSillyWalk(),
                       transitions={'succeeded':'endOpening', 'aborted':'problem'})
+            
+            PreemptiveStateMachine.add('EscapeObstacle',
+                      EscapeObstacle(),
+                      transitions={'succeeded':'problem', 'aborted':'problem'})
  
 class EscapeStartpoint(CyclicActionState):
     def createAction(self):
@@ -69,3 +83,26 @@ class PrepareSillyWalk(CyclicActionState):
     def createAction(self):
         case = AmbiCaseRed(-1, -3, Data.color)
         self.pointcap_reverse(case.xCenter, case.yCenter, pi/4)
+        
+
+class ObstaclePreemption(PreemptiveCyclicState):
+    def __init__(self):
+        PreemptiveCyclicState.__init__(self, outcomes=['avoid'])
+        self.blinding_period=rospy.get_param("/blinding_period")
+
+    def preemptionCondition(self):
+        if Inputs.getobstacle()==1 and rospy.get_rostime().secs-Data.time_obstacle>self.blinding_period:
+            Data.time_obstacle=rospy.get_rostime().secs
+            return True
+        else:
+            return False
+       
+    def executeTransitions(self):
+        return 'avoid'
+
+        
+class EscapeObstacle(CyclicActionState):
+    def createAction(self):
+        case = AmbiCaseRed(-3, 3, Data.color)
+        cap = AmbiCapRed(0,Data.color)
+        self.pointcap_reverse(case.xCenter, case.yCenter, cap.angle)
