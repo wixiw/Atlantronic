@@ -7,6 +7,8 @@
 
 #include "GamepadPS1.hpp"
 #include <ocl/Component.hpp>
+#include <linux/input.h>
+#include <sys/ioctl.h>
 
 using namespace arp_hml;
 
@@ -18,8 +20,13 @@ ORO_LIST_COMPONENT_TYPE( arp_hml::GamepadPS1 )
 *  @param name nom du composant Orocos
 */
 GamepadPS1::GamepadPS1(const std::string& name) :
-Joystick(name)
+Joystick(name),
+propEventName("/dev/input/event0")
 {
+    addProperty("propEventName",propEventName).doc("linux /dev file which represents the joystick input");
+
+    addPort("inRumble", inRumble).doc("Makes the joypad rumbking when true");
+
     addPort("outButton1", outButton1).doc("Is true when rigth thumb bouton 1 is pushed");
     addPort("outButton2", outButton2).doc("Is true when rigth thumb bouton 2 is pushed");
     addPort("outButton3", outButton3).doc("Is true when rigth thumb bouton 3 is pushed");
@@ -62,6 +69,15 @@ Joystick(name)
     outY1.write(0.0);
     outX2.write(0.0);
     outY2.write(0.0);
+
+    retry: //goto pour l'appel systeme specifique systeme, c'est comme ça que ça se fait
+
+    if( (m_event_fd = open(propEventName.c_str(), O_WRONLY)) < 0 )
+        cerr << "fail to opend propEventName" << endl;
+
+    //gestion du eagain important pour le debugger et xenomai
+    if( errno == EAGAIN )
+        goto retry;
 
 }
 
@@ -201,5 +217,65 @@ void GamepadPS1::updateHook()
     	js_event js;
     	initEvent(js);
     }
+
+    bool rumble = false;
+    inRumble.readNewest(rumble);
+    if( true )
+    {
+        ff_envelope env;
+        env.attack_length = 0;
+        env.attack_level = 0;
+        env.fade_length = 0;
+        env.fade_level = 0;
+
+        ff_constant_effect effect;
+        effect.level = 0xFFFFFFFF;
+        effect.envelope = env;
+        ioctl(m_event_fd, EVIOCSFF, effect);
+    }
 }
 
+/**
+ * struct ff_effect - defines force feedback effect
+ * @type: type of the effect (FF_CONSTANT, FF_PERIODIC, FF_RAMP, FF_SPRING,
+ *  FF_FRICTION, FF_DAMPER, FF_RUMBLE, FF_INERTIA, or FF_CUSTOM)
+ * @id: an unique id assigned to an effect
+ * @direction: direction of the effect
+ * @trigger: trigger conditions (struct ff_trigger)
+ * @replay: scheduling of the effect (struct ff_replay)
+ * @u: effect-specific structure (one of ff_constant_effect, ff_ramp_effect,
+ *  ff_periodic_effect, ff_condition_effect, ff_rumble_effect) further
+ *  defining effect parameters
+ *
+ * This structure is sent through ioctl from the application to the driver.
+ * To create a new effect application should set its @id to -1; the kernel
+ * will return assigned @id which can later be used to update or delete
+ * this effect.
+ *
+ * Direction of the effect is encoded as follows:
+ *  0 deg -> 0x0000 (down)
+ *  90 deg -> 0x4000 (left)
+ *  180 deg -> 0x8000 (up)
+ *  270 deg -> 0xC000 (right)
+ */
+//struct ff_effect {
+//    __u16 type;
+//    __s16 id;
+//    __u16 direction;
+//    struct ff_trigger trigger;
+//    struct ff_replay replay;
+//
+//    union {
+//        struct ff_constant_effect constant;
+//        struct ff_ramp_effect ramp;
+//        struct ff_periodic_effect periodic;
+//        struct ff_condition_effect condition[2]; /* One for each axis */
+//        struct ff_rumble_effect rumble;
+//    } u;
+//};
+
+
+bool GamepadPS1::checkInputsPorts()
+{
+    return true;
+}

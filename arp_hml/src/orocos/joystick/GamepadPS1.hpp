@@ -19,6 +19,12 @@ namespace arp_hml
     public:
         GamepadPS1(const std::string& name);
 
+        /** Name of the joystick drive file usually /dev/input/event0 */
+        string propEventName;
+
+        /** Vibreur */
+        InputPort<bool> inRumble;
+
         /** Bouton 1 pouce droit */
         OutputPort<bool> outButton1;
         /** Bouton 2 pouce droit */
@@ -66,6 +72,16 @@ namespace arp_hml
         virtual void buttonEvent( struct js_event js );
         virtual void axisEvent( struct js_event js );
         virtual void initEvent( struct js_event js );
+
+        /**
+         * Override to no check
+         */
+        virtual bool checkInputsPorts();
+
+        /**
+         *
+         */
+        int m_event_fd;
     };
 }
 
