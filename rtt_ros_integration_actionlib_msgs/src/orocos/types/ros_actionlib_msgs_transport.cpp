@@ -1,7 +1,7 @@
 
+#include <actionlib_msgs/GoalStatus.h>
 #include <actionlib_msgs/GoalID.h>
 #include <actionlib_msgs/GoalStatusArray.h>
-#include <actionlib_msgs/GoalStatus.h>
 
 #include "ros_msg_transporter.hpp"
 #include "RosLib.hpp"
@@ -15,12 +15,12 @@ namespace ros_integration {
     {
       bool registerTransport(std::string name, types::TypeInfo* ti)
       {
-                   if(name == "/actionlib_msgs/GoalID")
+                   if(name == "/actionlib_msgs/GoalStatus")
+              return ti->addProtocol(ORO_ROS_PROTOCOL_ID,new RosMsgTransporter<actionlib_msgs::GoalStatus>());
+         if(name == "/actionlib_msgs/GoalID")
               return ti->addProtocol(ORO_ROS_PROTOCOL_ID,new RosMsgTransporter<actionlib_msgs::GoalID>());
          if(name == "/actionlib_msgs/GoalStatusArray")
               return ti->addProtocol(ORO_ROS_PROTOCOL_ID,new RosMsgTransporter<actionlib_msgs::GoalStatusArray>());
-         if(name == "/actionlib_msgs/GoalStatus")
-              return ti->addProtocol(ORO_ROS_PROTOCOL_ID,new RosMsgTransporter<actionlib_msgs::GoalStatus>());
 
           return false;
       }

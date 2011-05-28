@@ -12,7 +12,6 @@ configure_file(
 add_subdirectory(command)
 add_subdirectory(manual)
 rosbuild_add_library(motionControl 
-            OrderSelector.cpp
             orders/ModeSelector.cpp
             orders/MotionOrder.cpp 
             orders/StayInPosition.cpp

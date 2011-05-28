@@ -50,7 +50,11 @@ ModeSelector::ModeSelector()
     m_pass = false;
     m_currentMode = MODE_INIT;
     m_passTime = 0;
-    setDefaults();
+    m_angleAccuracy = 0.2;
+    m_distanceAccurancy = 0.010;
+    m_radiusInitZone = 0.0;
+    m_radiusApproachZone = 0.020;
+    m_passTimeout = 0.5;
 }
 
 void ModeSelector::resetMode()
@@ -58,14 +62,13 @@ void ModeSelector::resetMode()
     m_currentMode = MODE_INIT;
 }
 
-void ModeSelector::setDefaults()
+void ModeSelector::setDefaults(order::config conf)
 {
-    //definition de valeurs par defaut
-    m_angleAccuracy = 0.2;
-    m_distanceAccurancy = 0.020;
-    m_radiusApproachZone = 0.050;
-    m_radiusInitZone = 0.0;
-    m_passTimeout = 0.5;
+    m_angleAccuracy = conf.ANGLE_ACCURACY;
+    m_distanceAccurancy = conf.DISTANCE_ACCURACY;
+    m_radiusInitZone = conf.RADIUS_INIT_ZONE;
+    m_radiusApproachZone = conf.RADIUS_APPROACH_ZONE;
+    m_passTimeout = conf.PASS_TIMEOUT;
 }
 
 void ModeSelector::switchInit(arp_core::Pose currentPosition)

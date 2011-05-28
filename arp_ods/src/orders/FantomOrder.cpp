@@ -20,7 +20,11 @@ FantomOrder::FantomOrder() :
     old_loop_date = 0;
     old_angle_error = 0;
 
-    setDefaults();
+    setFANTOM_COEF(0.5);
+    setTRANSLATION_GAIN(1.0);
+    setROTATION_GAIN(10.0);
+    setROTATION_D_GAIN(0.0);
+    setVEL_FINAL(0.0);
 
 }
 
@@ -29,16 +33,17 @@ FantomOrder::FantomOrder(MotionOrder order) :
 {
 }
 
-void FantomOrder::setDefaults()
+void FantomOrder::setDefaults(order::config conf)
 {
-    setFANTOM_COEF(0.5);
-    setTRANSLATION_GAIN(1.0);
-    setROTATION_GAIN(10.0);
-    setROTATION_D_GAIN(0.0);
-    setVEL_FINAL(0.0);
+    MotionOrder::setDefaults(conf);
+    setFANTOM_COEF(conf.FANTOM_COEF);
+    setTRANSLATION_GAIN(conf.TRANSLATION_GAIN);
+    setROTATION_GAIN(conf.ROTATION_GAIN);
+    setROTATION_D_GAIN(conf.ROTATION_D_GAIN);
+    setVEL_FINAL(conf.VEL_FINAL);
 }
 
-shared_ptr<MotionOrder> FantomOrder::createOrder( const OrderGoalConstPtr &goal, Pose currentPose )
+shared_ptr<MotionOrder> FantomOrder::createOrder( const OrderGoalConstPtr &goal, Pose currentPose, order::config conf  )
 {
     shared_ptr<FantomOrder> order(new FantomOrder());
 
@@ -58,7 +63,7 @@ shared_ptr<MotionOrder> FantomOrder::createOrder( const OrderGoalConstPtr &goal,
     order->setReverse(goal->reverse);
     order->setPass(goal->passe);
 
-    order->setDefaults();
+    order->setDefaults(conf);
 
     return static_cast<shared_ptr<FantomOrder>  >(order);
 }

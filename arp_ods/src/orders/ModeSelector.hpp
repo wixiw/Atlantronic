@@ -20,6 +20,38 @@ enum mode
     MODE_INIT = 1, MODE_RUN = 2, MODE_APPROACH = 3, MODE_DONE = 4, MODE_ERROR = 5, MODE_PASS = 6
 };
 
+    namespace order
+    {
+    struct config
+    {
+        /** This default parameter defines the INIT mode area in m*/
+        double RADIUS_INIT_ZONE;
+
+        /** This default parameter defines the APPROACH mode area in m*/
+        double RADIUS_APPROACH_ZONE;
+
+        /** This default parameter defines the condtion in distance to end motion in m*/
+        double DISTANCE_ACCURACY;
+
+        /** This default parameter defines the condtion in angle to end motion in rad*/
+        double ANGLE_ACCURACY;
+
+        /** Pass default timeout */
+        double PASS_TIMEOUT;
+
+        /**Constantes issues des rosparam*/
+         double FANTOM_COEF;
+         double VEL_FINAL;
+         double ROTATION_GAIN;
+         double ROTATION_D_GAIN;
+         double TRANSLATION_GAIN;
+
+         double LIN_VEL_MAX;
+         double ANG_VEL_MAX;
+    };
+    }
+
+
 /**
  * This is a mode selector to handle several modes in a move : INIT/RUN/APPROACH/PASS/DONE
  * It contains datas which are more MotionOrder related, but this is the simplest implementation
@@ -34,7 +66,7 @@ class ModeSelector
         /**
          * Define configurable attributes to their default values
          */
-        void setDefaults();
+        virtual void setDefaults(order::config conf);
 
         /**
          * Call this function every cycle to check if a new mode is available.
@@ -104,6 +136,7 @@ class ModeSelector
         void setBeginPose(arp_core::Pose beginPose);
         void setEndPose(arp_core::Pose endPose);
         void setPassTimeout(double timeout);
+
     protected:
         /** Pose of the expected begin of the move */
         arp_core::Pose m_beginPose;

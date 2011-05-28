@@ -65,7 +65,7 @@ Pose MotionOrder::reversePosition(Pose p)
     return ret;
 }
 
-shared_ptr<MotionOrder> MotionOrder::createOrder( const OrderGoalConstPtr &goal, Pose currentPose )
+shared_ptr<MotionOrder> MotionOrder::createOrder( const OrderGoalConstPtr &goal, Pose currentPose, order::config conf )
 {
     shared_ptr<MotionOrder> order(new MotionOrder());
 
@@ -84,6 +84,8 @@ shared_ptr<MotionOrder> MotionOrder::createOrder( const OrderGoalConstPtr &goal,
 
     order->setReverse(goal->reverse);
     order->setPass(goal->passe);
+
+    order->setDefaults(conf);
 
     return order;
 }

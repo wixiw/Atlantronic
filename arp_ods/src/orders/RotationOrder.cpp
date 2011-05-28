@@ -22,7 +22,7 @@ RotationOrder::RotationOrder(MotionOrder order):
 {
 }
 
-shared_ptr<MotionOrder>  RotationOrder::createOrder( const OrderGoalConstPtr &goal, Pose currentPose )
+shared_ptr<MotionOrder>  RotationOrder::createOrder( const OrderGoalConstPtr &goal, Pose currentPose, order::config conf )
 {
     shared_ptr<MotionOrder> order(new MotionOrder());
 
@@ -41,6 +41,8 @@ shared_ptr<MotionOrder>  RotationOrder::createOrder( const OrderGoalConstPtr &go
 
     order->setReverse(false);
     order->setPass(false);
+
+    order->setDefaults(conf);
 
     return order;
 }

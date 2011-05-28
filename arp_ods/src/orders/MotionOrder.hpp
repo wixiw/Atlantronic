@@ -63,8 +63,12 @@ class MotionOrder: public arp_ods::ModeSelector
 
         /**
          * Facotry to create an order with default parameters from the order
+         * @param goal : action lib goal to process
+         * @param currentPose : current position of the robot
+         * @param conf : automation parameters (gains)
+         * @return : a MotionOrder to execute
          */
-        static shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, Pose currentPose );
+        static shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, Pose currentPose, order::config conf  );
 
         /**
          * Returns the type of the order

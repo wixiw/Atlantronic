@@ -33,12 +33,12 @@ class FantomOrder: public arp_ods::MotionOrder
         /**
          * Define configurable attributes to their default values
          */
-        void setDefaults();
+        virtual void setDefaults(order::config conf);
 
         /**
          * Override to define specific parameters
          */
-        static shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, Pose currentPose );
+        static shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, Pose currentPose, order::config conf  );
 
         virtual Velocity computeSpeed(arp_core::Pose currentPosition);
 

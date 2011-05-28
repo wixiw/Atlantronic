@@ -23,7 +23,6 @@
 #include <math/math.hpp>
 
 #include "orders/orders.h"
-#include "OrderSelector.hpp"
 
 using namespace arp_core;
 using namespace nav_msgs;
@@ -88,6 +87,9 @@ class MotionControl
          */
         Velocity m_computedVelocityCmd;
 
+        /** Motion control configuration. They are feeded with rosparam during init */
+        order::config m_orderConfig;
+
         /**
          * Read the inputs
          */
@@ -97,6 +99,12 @@ class MotionControl
          * Publish the processed datas
          */
         void setOutputs();
+
+        /**
+         * Tells if the current order is finished with success. It is finished when the robot is in PASS mode when the order
+         * is a "pass" type or When the mode is DONE.
+         */
+        bool isOrderFinished();
 
         /**************************************************************************************
          *  ROS specific data
@@ -122,20 +130,6 @@ class MotionControl
          * Used to publish on "Command/velocity"
          */
         ros::Publisher vel_pub_;
-
-        /**
-         * this are coefficient that are defined by rosparam. see .launch files.
-         */
-        double DISTANCE_ACCURACY;
-        double ANGLE_ACCURACY;
-        double RADIUS_APPROACH_ZONE;
-        double FANTOM_COEF;
-        double LIN_VEL_MAX;
-        double ANG_VEL_MAX;
-        double ROTATION_GAIN;
-        double ROTATION_D_GAIN;
-        double TRANSLATION_GAIN;
-        double VEL_FINAL;
 
         /**
          * Called when a new pose message is received

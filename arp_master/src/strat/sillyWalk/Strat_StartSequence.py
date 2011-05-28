@@ -91,7 +91,7 @@ class hor_to_vert(CyclicActionState):
 
 class Recal_vert_bord(CyclicActionState):
     def createAction(self): 
-        poseRecalVert=AmbiPoseRed(-Table.VWALL_X,Table.HWALL_Y-0.200,0,Data.color)
+        poseRecalVert=AmbiPoseRed(-Table.VWALL_X-0.250,Table.HWALL_Y-0.200,0,Data.color)
         self.pointcap_reverse(poseRecalVert.x,poseRecalVert.y,poseRecalVert.theta)
 
 

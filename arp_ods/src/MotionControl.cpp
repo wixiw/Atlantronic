@@ -26,7 +26,6 @@ MotionControl::MotionControl() :
                 &MotionControl::timerreportCallback, this);
 
     m_actionServer.start();
-
 }
 
 void MotionControl::getInputs()
@@ -72,8 +71,8 @@ void MotionControl::execute()
 void MotionControl::setOutputs()
 {
     //saturation des consignes
-    m_computedVelocityCmd.linear = saturate(m_computedVelocityCmd.linear, -LIN_VEL_MAX, LIN_VEL_MAX);
-    m_computedVelocityCmd.angular = saturate(m_computedVelocityCmd.angular, -ANG_VEL_MAX, ANG_VEL_MAX);
+    m_computedVelocityCmd.linear = saturate(m_computedVelocityCmd.linear, -m_orderConfig.LIN_VEL_MAX, m_orderConfig.LIN_VEL_MAX);
+    m_computedVelocityCmd.angular = saturate(m_computedVelocityCmd.angular, -m_orderConfig.ANG_VEL_MAX, m_orderConfig.ANG_VEL_MAX);
 
     //ROS_WARN("linear=%0.3f angular=%0.3f",m_computedVelocityCmd.linear,m_computedVelocityCmd.angular);
 
@@ -120,15 +119,13 @@ void MotionControl::newOrderCB(const OrderGoalConstPtr &goal)
 
     if (goal->move_type == "POINTCAP")
     {
-        m_order = FantomOrder::createOrder(goal, m_currentPose);
+        m_order = FantomOrder::createOrder(goal, m_currentPose, m_orderConfig);
         ROS_INFO("MotionControl : new Fantom goal (%0.3f,%0.3f,%0.3f) reverse : %d pass %d", goal->x_des, goal->y_des,
                 goal->theta_des, goal->reverse, goal->passe);
-        ROS_INFO("MotionControl : new Fantom order (%0.3f,%0.3f,%0.3f)", m_order->getEndPose().x, m_order->getEndPose().y,
-                m_order->getEndPose().theta);
     }
     else if (goal->move_type == "CAP")
     {
-        m_order = RotationOrder::createOrder(goal, m_currentPose);
+        m_order = RotationOrder::createOrder(goal, m_currentPose, m_orderConfig);
         ROS_INFO("MotionControl : new Rotation goal (cap=%0.3f)", goal->theta_des);
     }
     else
@@ -137,11 +134,6 @@ void MotionControl::newOrderCB(const OrderGoalConstPtr &goal)
         goto not_processed;
     }
 
-    //TODO mapper les coefs fantômes
-    m_order->setAngleAccuracy(ANGLE_ACCURACY);
-    m_order->setDistanceAccurancy(DISTANCE_ACCURACY);
-    m_order->setRadiusApproachZone(RADIUS_APPROACH_ZONE);
-    m_order->setRadiusInitZone(0.0);
     //TODO WLA mettre des ros param
     //TODO WLA mettre ça dans order
     //m_orderSelector.setWorkTimeout(15);
@@ -150,7 +142,7 @@ void MotionControl::newOrderCB(const OrderGoalConstPtr &goal)
     //restitution de la main
     m_orderMutex.unlock();
 
-    while (m_order->getMode() != MODE_DONE)
+    while (!isOrderFinished())
     {
         //An interrupt has been requested
         if (m_actionServer.isPreemptRequested() || !ros::ok())
@@ -188,38 +180,54 @@ void MotionControl::newOrderCB(const OrderGoalConstPtr &goal)
     return;
 }
 
+bool MotionControl::isOrderFinished()
+{
+    if ( m_order->getPass() && m_order->getMode() == MODE_PASS )
+        return true;
+
+    if( m_order->getMode() == MODE_DONE )
+        return true;
+
+    return false;
+}
+
 void MotionControl::updateParams()
 {
-    if (ros::param::get("/arp_ods/DISTANCE_ACCURACY", DISTANCE_ACCURACY) == 0)
-        ROS_FATAL("pas reussi a recuperer le parametre DISTANCE_ACCURACY");
-
-    if (ros::param::get("/arp_ods/ANGLE_ACCURACY", ANGLE_ACCURACY) == 0)
-        ROS_FATAL("pas reussi a recuperer le parametre ANGLE_ACCURACY");
-
-    if (ros::param::get("/arp_ods/ROTATION_GAIN", ROTATION_GAIN) == 0)
+    if (ros::param::get("/arp_ods/ROTATION_GAIN", m_orderConfig.ROTATION_GAIN) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre ROTATION_GAIN");
 
-    if (ros::param::get("/arp_ods/ROTATION_D_GAIN", ROTATION_D_GAIN) == 0)
+    if (ros::param::get("/arp_ods/ROTATION_D_GAIN", m_orderConfig.ROTATION_D_GAIN) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre ROTATION_D_GAIN");
 
-    if (ros::param::get("/arp_ods/TRANSLATION_GAIN", TRANSLATION_GAIN) == 0)
+    if (ros::param::get("/arp_ods/TRANSLATION_GAIN", m_orderConfig.TRANSLATION_GAIN) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre TRANSLATION_GAIN");
 
-    if (ros::param::get("/arp_ods/LIN_VEL_MAX", LIN_VEL_MAX) == 0)
+    if (ros::param::get("/arp_ods/LIN_VEL_MAX", m_orderConfig.LIN_VEL_MAX) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre LIN_VEL_MAX");
 
-    if (ros::param::get("/arp_ods/ANG_VEL_MAX", ANG_VEL_MAX) == 0)
+    if (ros::param::get("/arp_ods/ANG_VEL_MAX", m_orderConfig.ANG_VEL_MAX) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre ANG_VEL_MAX");
 
-    if (ros::param::get("/arp_ods/VEL_FINAL", VEL_FINAL) == 0)
+    if (ros::param::get("/arp_ods/VEL_FINAL", m_orderConfig.VEL_FINAL) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre VEL_FINAL");
 
-    if (ros::param::get("/arp_ods/RADIUS_APPROACH_ZONE", RADIUS_APPROACH_ZONE) == 0)
-        ROS_FATAL("pas reussi a recuperer le parametre RADIUS_APPROACH_ZONE");
-
-    if (ros::param::get("/arp_ods/FANTOM_COEF", FANTOM_COEF) == 0)
+    if (ros::param::get("/arp_ods/FANTOM_COEF", m_orderConfig.FANTOM_COEF) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre FANTOM_COEF");
 
+    if (ros::param::get("/arp_ods/RADIUS_INIT_ZONE", m_orderConfig.RADIUS_INIT_ZONE) == 0)
+        ROS_FATAL("pas reussi a recuperer le parametre RADIUS_INIT_ZONE");
+
+    if (ros::param::get("/arp_ods/RADIUS_APPROACH_ZONE", m_orderConfig.RADIUS_APPROACH_ZONE) == 0)
+        ROS_FATAL("pas reussi a recuperer le parametre RADIUS_APPROACH_ZONE");
+
+    if (ros::param::get("/arp_ods/DISTANCE_ACCURACY", m_orderConfig.DISTANCE_ACCURACY) == 0)
+        ROS_FATAL("pas reussi a recuperer le parametre DISTANCE_ACCURACY");
+
+    if (ros::param::get("/arp_ods/ANGLE_ACCURACY", m_orderConfig.ANGLE_ACCURACY) == 0)
+        ROS_FATAL("pas reussi a recuperer le parametre ANGLE_ACCURACY");
+
+    if (ros::param::get("/arp_ods/PASS_TIMEOUT", m_orderConfig.PASS_TIMEOUT) == 0)
+        ROS_FATAL("pas reussi a recuperer le parametre PASS_TIMEOUT");
 }
 
  bool MotionControl::timerreportCallback(TimerReport::Request& req, TimerReport::Response& res)

@@ -19,8 +19,12 @@
 	set it to 0, it will be as if you always try to go directly to final point. 
 	set it to 0.9, your robot will make big curve to reach the final point with the right angle. --> 
     <param name="/arp_ods/FANTOM_COEF"  value="0.5" />
+	<!--distance where you are in init mode -->
+	<param name="/arp_ods/RADIUS_INIT_ZONE"  value="0.0" />
 	<!--distance where you are in mode approaching point (m)  -->
 	<param name="/arp_ods/RADIUS_APPROACH_ZONE"  value="0.015" />
+	<!--timeout before exiting pass mode if no other order is received  -->
+	<param name="/arp_ods/PASS_TIMEOUT"  value="0.5" />
 	
 	<!--maximum forward velocity (m/s) (1 by willy) -->
     <param name="/arp_ods/LIN_VEL_MAX"  value="0.3000" /> 
