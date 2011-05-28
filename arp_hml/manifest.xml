@@ -12,8 +12,11 @@
     <depend package="rtt_ros_integration_std_msgs"/>
   	<depend package="rtt_ros_integration_arp_core_msgs"/>
 	<depend package="std_msgs" />
+	<depend package="std_srvs" />
 	<rosdep name="wxwidgets"/>
 	<depend package="roscpp"/>
 	<depend package="tf" />
+	<depend package="hokuyo_node" />
+	
 </package>
 

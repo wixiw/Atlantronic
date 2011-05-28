@@ -1,7 +1,7 @@
 ###################################################################################################################
 #    EDIT BELOW THIS LINE AND UNTIL NEXT LINE FOR A NEW PROJECT
 
-add_subdirectory(hokuyo)
+rosbuild_add_executable(HokuyoManager HokuyoManager.cpp )
 
 ###################################################################################################################
 
