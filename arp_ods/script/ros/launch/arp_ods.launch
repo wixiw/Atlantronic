@@ -1,6 +1,42 @@
 <!-- Use this to deploy the motion control nodes for autonomous modes  launch-prefix= xterm -e gdb args -->
 <launch>
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
+	
+	<!--maximum rotation acceleration (rad/s^2) -->
+    <param name="/arp_ods/ANG_ACC_MAX"  value="4.000" /> 
+	<!--maximum forward acceleration (m/s^02) -->
+    <param name="/arp_ods/LIN_ACC_MAX"  value="0.500" /> 
+	<!--maximum forward deceleration (m/s^02) -->
+    <param name="/arp_ods/LIN_DEC_MAX"  value="-1.000" /> 
+
+    
 	<node name="Command" 	pkg="arp_ods" 	type="CommandNode" 		args="" output="screen"/>
-	<node name="MotionControl"  pkg="arp_ods"  type="MotionControlNode"    args="" output="screen"/>
+	
+	<node name="MotionControl"  pkg="arp_ods"  type="MotionControlNode"    args="" output="screen">
+		<!--velocity at final point (m/s)  -->
+    	<param name="VEL_FINAL"  value="0.000" /> 
+    	
+    	<!--Proportional Gain on angle error (without unity)  -->
+	    <param name="ROTATION_GAIN" value="10.0"/> 
+	    <!--Derivative Gain on angle error derivative (without unity)  -->
+	    <param name="ROTATION_D_GAIN" value="0.0"/> 
+		<!--Gain on translation (without unity)  -->
+	    <param name="TRANSLATION_GAIN" value="1.0" /> 
+		<!--The fantom coefficient. means the distance of the fantom point to the final point. 
+		set it to 0, it will be as if you always try to go directly to final point. 
+		set it to 0.9, your robot will make big curve to reach the final point with the right angle. --> 
+	    <param name="FANTOM_COEF"  value="0.5" />
+	    
+		<!--distance where you are in init mode -->
+		<param name="RADIUS_INIT_ZONE"  value="0.0" />
+		<!--distance where you are in mode approaching point (m)  -->
+		<param name="RADIUS_APPROACH_ZONE"  value="0.015" />
+		<!--timeout before exiting pass mode if no other order is received  -->
+		<param name="PASS_TIMEOUT"  value="0.5" />
+		
+		<!--Order is succed if (and only if) the current position is near the goal with distance_accuracy_ precision.-->
+	    <param name="DISTANCE_ACCURACY" value="0.005"  />
+		<!-- Order is succed if (and only if) the current orientation is near the goal with angle_accuracy_ precision-->
+	    <param name="ANGLE_ACCURACY" value="0.02"  />
+	</node>
 </launch>

@@ -99,8 +99,6 @@ void MotionControl::poseCallback(OdometryConstPtr c)
 
 void MotionControl::newOrderCB(const OrderGoalConstPtr &goal)
 {
-    //TODO WLA : ajouter un log pour afficher l'ordre qu'on va executer en détail
-
     ROS_WARN("newOrderCB");
     ros::Rate r(20);
     OrderResult result;
@@ -134,7 +132,6 @@ void MotionControl::newOrderCB(const OrderGoalConstPtr &goal)
         goto not_processed;
     }
 
-    //TODO WLA mettre des ros param
     //TODO WLA mettre ça dans order
     //m_orderSelector.setWorkTimeout(15);
 
@@ -193,40 +190,42 @@ bool MotionControl::isOrderFinished()
 
 void MotionControl::updateParams()
 {
-    if (ros::param::get("/arp_ods/ROTATION_GAIN", m_orderConfig.ROTATION_GAIN) == 0)
-        ROS_FATAL("pas reussi a recuperer le parametre ROTATION_GAIN");
-
-    if (ros::param::get("/arp_ods/ROTATION_D_GAIN", m_orderConfig.ROTATION_D_GAIN) == 0)
-        ROS_FATAL("pas reussi a recuperer le parametre ROTATION_D_GAIN");
-
-    if (ros::param::get("/arp_ods/TRANSLATION_GAIN", m_orderConfig.TRANSLATION_GAIN) == 0)
-        ROS_FATAL("pas reussi a recuperer le parametre TRANSLATION_GAIN");
-
     if (ros::param::get("/arp_ods/LIN_VEL_MAX", m_orderConfig.LIN_VEL_MAX) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre LIN_VEL_MAX");
 
     if (ros::param::get("/arp_ods/ANG_VEL_MAX", m_orderConfig.ANG_VEL_MAX) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre ANG_VEL_MAX");
 
-    if (ros::param::get("/arp_ods/VEL_FINAL", m_orderConfig.VEL_FINAL) == 0)
+
+
+    if (ros::param::get("/MotionControl/ROTATION_GAIN", m_orderConfig.ROTATION_GAIN) == 0)
+        ROS_FATAL("pas reussi a recuperer le parametre ROTATION_GAIN");
+
+    if (ros::param::get("/MotionControl/ROTATION_D_GAIN", m_orderConfig.ROTATION_D_GAIN) == 0)
+        ROS_FATAL("pas reussi a recuperer le parametre ROTATION_D_GAIN");
+
+    if (ros::param::get("/MotionControl/TRANSLATION_GAIN", m_orderConfig.TRANSLATION_GAIN) == 0)
+        ROS_FATAL("pas reussi a recuperer le parametre TRANSLATION_GAIN");
+
+    if (ros::param::get("/MotionControl/VEL_FINAL", m_orderConfig.VEL_FINAL) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre VEL_FINAL");
 
-    if (ros::param::get("/arp_ods/FANTOM_COEF", m_orderConfig.FANTOM_COEF) == 0)
+    if (ros::param::get("/MotionControl/FANTOM_COEF", m_orderConfig.FANTOM_COEF) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre FANTOM_COEF");
 
-    if (ros::param::get("/arp_ods/RADIUS_INIT_ZONE", m_orderConfig.RADIUS_INIT_ZONE) == 0)
+    if (ros::param::get("/MotionControl/RADIUS_INIT_ZONE", m_orderConfig.RADIUS_INIT_ZONE) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre RADIUS_INIT_ZONE");
 
-    if (ros::param::get("/arp_ods/RADIUS_APPROACH_ZONE", m_orderConfig.RADIUS_APPROACH_ZONE) == 0)
+    if (ros::param::get("/MotionControl/RADIUS_APPROACH_ZONE", m_orderConfig.RADIUS_APPROACH_ZONE) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre RADIUS_APPROACH_ZONE");
 
-    if (ros::param::get("/arp_ods/DISTANCE_ACCURACY", m_orderConfig.DISTANCE_ACCURACY) == 0)
+    if (ros::param::get("/MotionControl/DISTANCE_ACCURACY", m_orderConfig.DISTANCE_ACCURACY) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre DISTANCE_ACCURACY");
 
-    if (ros::param::get("/arp_ods/ANGLE_ACCURACY", m_orderConfig.ANGLE_ACCURACY) == 0)
+    if (ros::param::get("/MotionControl/ANGLE_ACCURACY", m_orderConfig.ANGLE_ACCURACY) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre ANGLE_ACCURACY");
 
-    if (ros::param::get("/arp_ods/PASS_TIMEOUT", m_orderConfig.PASS_TIMEOUT) == 0)
+    if (ros::param::get("/MotionControl/PASS_TIMEOUT", m_orderConfig.PASS_TIMEOUT) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre PASS_TIMEOUT");
 }
 
