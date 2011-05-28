@@ -31,22 +31,8 @@ class HokuyoManager
 
         bool emergency;
         bool isRunning;
-        bool scanReceived;
-        ros::WallTime last_run_time_;
-        ros::WallTime last_kill_time_;
-
-        /**
-         * Used to subscribe to "scan"
-         */
-        ros::Subscriber scan_sub;
-
-        /**
-         * Callback to computed the received scan an d publish obstacle value
-         */
-        void scanCallback(LaserScanConstPtr scan);
 
         void spin();
-
         void shutDown();
 };
 }
