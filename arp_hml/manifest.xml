@@ -5,8 +5,11 @@
     <author>ARD, http://team-ard.com</author>
     <license>BSD</license>
     <url>http://88.191.124.77/redmine/projects/hardware/wiki</url>
+	<depend package="roscpp"/>
+	<depend package="rospy"/>
     <depend package="arp_core" />
     <depend package="advantech_susi" />
+  	<depend package="rosconsole"/>
     <depend package="socket_can" />
     <depend package="can_festival" />
     <depend package="rtt_ros_integration_std_msgs"/>
@@ -14,7 +17,6 @@
 	<depend package="std_msgs" />
 	<depend package="std_srvs" />
 	<rosdep name="wxwidgets"/>
-	<depend package="roscpp"/>
 	<depend package="tf" />
 	<depend package="hokuyo_node" />
 	
