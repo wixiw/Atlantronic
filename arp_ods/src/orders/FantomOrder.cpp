@@ -65,7 +65,7 @@ shared_ptr<MotionOrder> FantomOrder::createOrder( const OrderGoalConstPtr &goal,
 
     order->setDefaults(conf);
 
-    return static_cast<shared_ptr<FantomOrder>  >(order);
+    return static_cast<shared_ptr<MotionOrder>  >(order);
 }
 
 double FantomOrder::linearReductionCoef(double angle_error)

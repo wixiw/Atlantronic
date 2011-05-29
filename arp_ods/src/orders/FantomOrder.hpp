@@ -108,7 +108,7 @@ class FantomOrder: public arp_ods::MotionOrder
          * Redefined to keep trac of the speed when entering pass mode
          * TODO shouldn't this go into the MotionControl class ?
          */
-        void switchRun(arp_core::Pose currentPosition);
+        virtual void switchRun(arp_core::Pose currentPosition);
 
         /** keep track of the former loop value of angle_error, to compute derivative */
         double old_angle_error;

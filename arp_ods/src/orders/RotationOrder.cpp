@@ -24,7 +24,7 @@ RotationOrder::RotationOrder(MotionOrder order):
 
 shared_ptr<MotionOrder>  RotationOrder::createOrder( const OrderGoalConstPtr &goal, Pose currentPose, order::config conf )
 {
-    shared_ptr<MotionOrder> order(new MotionOrder());
+    shared_ptr<RotationOrder> order(new RotationOrder());
 
     Pose begin;
     Pose end;
@@ -36,7 +36,7 @@ shared_ptr<MotionOrder>  RotationOrder::createOrder( const OrderGoalConstPtr &go
 
     end.x = currentPose.x;
     end.y = currentPose.y;
-    end.theta = currentPose.theta;
+    end.theta = goal->theta_des;
     order->setEndPose(end);
 
     order->setReverse(false);
@@ -44,7 +44,7 @@ shared_ptr<MotionOrder>  RotationOrder::createOrder( const OrderGoalConstPtr &go
 
     order->setDefaults(conf);
 
-    return order;
+    return static_cast<shared_ptr<MotionOrder>  >(order);
 }
 
 void RotationOrder::switchInit(arp_core::Pose currentPosition)

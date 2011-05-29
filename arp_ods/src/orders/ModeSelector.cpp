@@ -178,7 +178,9 @@ double ModeSelector::getRemainingDistance(arp_core::Pose currentPosition)
 
 double ModeSelector::getRemainingAngle(arp_core::Pose currentPosition)
 {
-    return angle(currentPosition, m_endPose);
+    double e_theta = angle(currentPosition, m_endPose);
+    //ROS_WARN("e_theta %0.3f",e_theta);
+    return e_theta;
 }
 
 double ModeSelector::getCoveredDistance(arp_core::Pose currentPosition)
