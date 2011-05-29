@@ -7,6 +7,7 @@
 
 #include "FantomOrder.hpp"
 
+using namespace arp_core;
 using namespace arp_math;
 
 namespace arp_ods
@@ -20,11 +21,11 @@ FantomOrder::FantomOrder() :
     old_loop_date = 0;
     old_angle_error = 0;
 
-    setFANTOM_COEF(0.5);
-    setTRANSLATION_GAIN(1.0);
-    setROTATION_GAIN(10.0);
-    setROTATION_D_GAIN(0.0);
-    setVEL_FINAL(0.0);
+    setFANTOM_COEF(-1);
+    setTRANSLATION_GAIN(-1);
+    setROTATION_GAIN(-1);
+    setROTATION_D_GAIN(-1);
+    setVEL_FINAL(-1);
 
 }
 
@@ -229,9 +230,12 @@ Velocity FantomOrder::computeSpeed(arp_core::Pose currentPosition)
 
 void FantomOrder::switchInit(arp_core::Pose currentPosition)
 {
+    // as init is left as soon as it is entered, I allow to put the last init time into m_initTime
+    m_initTime = get_time();
+
     m_beginPose = currentPosition;
 
-    ROS_INFO("switched to mode MODE_RUN from MODE_INIT automatically");
+    ROS_INFO("switched MODE_INIT --> MODE_RUN automatically");
     m_currentMode = MODE_RUN;
     return;
 }

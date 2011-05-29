@@ -7,6 +7,9 @@
 
 #include "RotationOrder.hpp"
 
+using namespace arp_core;
+using namespace arp_math;
+
 namespace arp_ods
 {
 
@@ -49,13 +52,16 @@ shared_ptr<MotionOrder>  RotationOrder::createOrder( const OrderGoalConstPtr &go
 
 void RotationOrder::switchInit(arp_core::Pose currentPosition)
 {
+    // as init is left as soon as it is entered, I allow to put the last init time into m_initTime
+    m_initTime = get_time();
+
     m_beginPose = currentPosition;
     m_endPose.x = m_beginPose.x;
     m_endPose.y = m_endPose.y;
     m_reverse = false;
     m_pass = false;
 
-    ROS_INFO("switched to mode MODE_APPROACH from MODE_INIT because it's a RotationOrder");
+    ROS_INFO("switched MODE_INIT --> MODE_APPROACH because it's a RotationOrder");
     m_currentMode = MODE_APPROACH;
     return;
 }

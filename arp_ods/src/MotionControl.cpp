@@ -7,10 +7,12 @@ using namespace nav_msgs;
 using namespace geometry_msgs;
 
 MotionControl::MotionControl() :
-    m_order(order::defaultOrder), m_poseFromCallback(), m_currentPose(), m_lastPose(),
+    m_poseFromCallback(), m_currentPose(), m_lastPose(),
             m_actionServer(ros::this_node::getName(), boost::bind(&MotionControl::newOrderCB, this, _1), false)
 {
     updateParams();
+
+    m_order = order::defaultOrder;
 
     ros::NodeHandle nodeHandle = ros::NodeHandle();
 
@@ -227,6 +229,9 @@ void MotionControl::updateParams()
 
     if (ros::param::get("/MotionControl/PASS_TIMEOUT", m_orderConfig.PASS_TIMEOUT) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre PASS_TIMEOUT");
+
+    if (ros::param::get("/MotionControl/ORDER_TIMEOUT", m_orderConfig.ORDER_TIMEOUT) == 0)
+            ROS_FATAL("pas reussi a recuperer le parametre ORDER_TIMEOUT");
 }
 
  bool MotionControl::timerreportCallback(TimerReport::Request& req, TimerReport::Response& res)

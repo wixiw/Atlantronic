@@ -29,7 +29,7 @@ MotionOrder::MotionOrder(const MotionOrder& order):
     m_beginPose = order.m_beginPose;
     m_endPose = order.m_endPose;
     m_angleAccuracy = order.m_angleAccuracy;
-    m_distanceAccurancy = order.m_distanceAccurancy;
+    m_distanceAccuracy = order.m_distanceAccuracy;
     m_radiusApproachZone = order.m_radiusApproachZone;
     m_radiusInitZone = order.m_radiusInitZone;
     //m_id != m_id !!

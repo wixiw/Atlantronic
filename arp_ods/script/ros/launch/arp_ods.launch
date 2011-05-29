@@ -1,4 +1,4 @@
-<!-- Use this to deploy the motion control nodes for autonomous modes  launch-prefix= xterm -e gdb args -->
+<!-- Use this to deploy the motion control nodes for autonomous modes  launch-prefix="xterm -e gdb args" and put two "-" before args -->
 <launch>
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
 	
@@ -12,7 +12,7 @@
     
 	<node name="Command" 	pkg="arp_ods" 	type="CommandNode" 		args="" output="screen"/>
 	
-	<node name="MotionControl"  pkg="arp_ods"  type="MotionControlNode"    args="" output="screen">
+	<node name="MotionControl"  pkg="arp_ods"  type="MotionControlNode"    args="" output="screen" > 
 		<!--velocity at final point (m/s)  -->
     	<param name="VEL_FINAL"  value="0.000" /> 
     	
@@ -33,10 +33,12 @@
 		<param name="RADIUS_APPROACH_ZONE"  value="0.015" />
 		<!--timeout before exiting pass mode if no other order is received  -->
 		<param name="PASS_TIMEOUT"  value="0.5" />
+		<!--timeout before exiting to error  -->
+		<param name="ORDER_TIMEOUT"  value="10" />
 		
-		<!--Order is succed if (and only if) the current position is near the goal with distance_accuracy_ precision.-->
+		<!--Order is succeed if (and only if) the current position is near the goal with distance_accuracy_ precision.-->
 	    <param name="DISTANCE_ACCURACY" value="0.005"  />
-		<!-- Order is succed if (and only if) the current orientation is near the goal with angle_accuracy_ precision-->
+		<!-- Order is succeed if (and only if) the current orientation is near the goal with angle_accuracy_ precision-->
 	    <param name="ANGLE_ACCURACY" value="0.02"  />
-	</node>
+	 </node> 
 </launch>

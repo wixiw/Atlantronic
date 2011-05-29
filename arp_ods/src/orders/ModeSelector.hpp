@@ -30,14 +30,17 @@ enum mode
         /** This default parameter defines the APPROACH mode area in m*/
         double RADIUS_APPROACH_ZONE;
 
-        /** This default parameter defines the condtion in distance to end motion in m*/
+        /** This default parameter defines the condition in distance to end motion in m*/
         double DISTANCE_ACCURACY;
 
-        /** This default parameter defines the condtion in angle to end motion in rad*/
+        /** This default parameter defines the condition in angle to end motion in rad*/
         double ANGLE_ACCURACY;
 
         /** Pass default timeout */
         double PASS_TIMEOUT;
+
+        /** Order timeout*/
+        double ORDER_TIMEOUT;
 
         /**Constantes issues des rosparam*/
          double FANTOM_COEF;
@@ -79,6 +82,11 @@ class ModeSelector
          * be carefull when doing this.
          */
         void resetMode();
+
+        /**
+         *  will test for timeout and if true, set mode to ERROR
+         */
+        void testTimeout(std::string from_mode);
 
         /**
          * Returns the distance to the m_endPose
@@ -136,6 +144,7 @@ class ModeSelector
         void setBeginPose(arp_core::Pose beginPose);
         void setEndPose(arp_core::Pose endPose);
         void setPassTimeout(double timeout);
+        void setOrderTimeout(double timeout);
 
     protected:
         /** Pose of the expected begin of the move */
@@ -157,7 +166,7 @@ class ModeSelector
         double m_radiusApproachZone;
 
         /** This parameter defines the condtion in distance to end motion in m*/
-        double m_distanceAccurancy;
+        double m_distanceAccuracy;
 
         /** This parameter defines the condtion in angle to end motion in rad*/
         double m_angleAccuracy;
@@ -165,8 +174,14 @@ class ModeSelector
         /** Date at which we entered the PASS mode */
         double m_passTime;
 
+        /** Date at which we entered the INIT mode **/
+        double m_initTime;
+
         /** Pass timeout */
         double m_passTimeout;
+
+        /** order timeout */
+        double m_orderTimeout;
 
         /** Compute the distance between two Poses a and b
          * TODO WLA : je n'arrive pas à le mettre dans math*/

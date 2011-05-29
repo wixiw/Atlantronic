@@ -151,3 +151,39 @@ BOOST_AUTO_TEST_CASE( ModeSelectorModesPass )
 
 }
 
+BOOST_AUTO_TEST_CASE( ModeSelectorModesTimeout )
+{
+    ModeSelector ms;
+    Pose beginPose;
+    beginPose.x = 0.000;
+    beginPose.y = 0.000;
+    beginPose.theta = 0;
+    Pose endPose;
+    endPose.x = 1.000;
+    endPose.y = 0.500;
+    endPose.theta = 1.2;
+    Pose currentPose;
+    currentPose.x = 0.000;
+    currentPose.y = 0.000;
+    currentPose.theta = 0.3;
+
+
+    ms.setBeginPose(beginPose);
+    ms.setEndPose(endPose);
+    ms.setRadiusInitZone(0.010);
+    ms.setRadiusApproachZone(0.050);
+    ms.setAngleAccuracy(0.2);
+    ms.setDistanceAccurancy(0.010);
+    ms.setPass(true);
+    ms.setPassTimeout(0.5);
+    ms.setOrderTimeout(2.0);
+
+    ms.switchMode(currentPose);
+    BOOST_CHECK_EQUAL( ms.getMode() , MODE_INIT );
+
+    sleep(3);
+    ms.switchMode(currentPose);
+    BOOST_CHECK_EQUAL( ms.getMode() , MODE_ERROR );
+
+}
+

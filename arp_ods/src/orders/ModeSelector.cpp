@@ -50,11 +50,14 @@ ModeSelector::ModeSelector()
     m_pass = false;
     m_currentMode = MODE_INIT;
     m_passTime = 0;
-    m_angleAccuracy = 0.2;
-    m_distanceAccurancy = 0.010;
-    m_radiusInitZone = 0.0;
-    m_radiusApproachZone = 0.020;
-    m_passTimeout = 0.5;
+    // -1 is used to recognize non initialized time
+    m_initTime = -1;
+    m_angleAccuracy = -1;
+    m_distanceAccuracy = -1;
+    m_radiusInitZone = -1;
+    m_radiusApproachZone = -1;
+    m_passTimeout = -1;
+    m_orderTimeout = -1;
 }
 
 void ModeSelector::resetMode()
@@ -65,42 +68,46 @@ void ModeSelector::resetMode()
 void ModeSelector::setDefaults(order::config conf)
 {
     m_angleAccuracy = conf.ANGLE_ACCURACY;
-    m_distanceAccurancy = conf.DISTANCE_ACCURACY;
+    m_distanceAccuracy = conf.DISTANCE_ACCURACY;
     m_radiusInitZone = conf.RADIUS_INIT_ZONE;
     m_radiusApproachZone = conf.RADIUS_APPROACH_ZONE;
     m_passTimeout = conf.PASS_TIMEOUT;
+    m_orderTimeout = conf.ORDER_TIMEOUT;
 }
 
 void ModeSelector::switchInit(arp_core::Pose currentPosition)
 {
+    // as init is left as soon as it is entered, I allow to put the last init time into m_initTime
+    m_initTime = get_time();
+
     if (getCoveredDistance(currentPosition) >= getRadiusInitZone())
     {
-        ROS_INFO("switched to mode MODE_RUN from MODE_INIT");
+        ROS_INFO("switched MODE_INIT --> MODE_RUN ");
         m_currentMode = MODE_RUN;
         return;
     }
+    testTimeout("MODE_INIT");
 }
 
 void ModeSelector::switchRun(arp_core::Pose currentPosition)
 {
     if (getRemainingDistance(currentPosition) <= getRadiusApproachZone())
     {
-        if( getPass() )
+        if (getPass())
         {
-            ROS_INFO("switched to mode MODE_PASS from MODE_RUN");
+            ROS_INFO("switched MODE_RUN --> MODE_PASS");
             m_currentMode = MODE_PASS;
-            timespec now;
-            clock_gettime(CLOCK_MONOTONIC, &now);
-            m_passTime = now.tv_sec + (double)(now.tv_nsec)/1E9;
+            m_passTime = get_time();
             return;
         }
         else
         {
-            ROS_INFO("switched to mode MODE_APPROACH from MODE_RUN");
+            ROS_INFO("switched MODE_RUN --> MODE_APPROACH");
             m_currentMode = MODE_APPROACH;
             return;
         }
     }
+    testTimeout("MODE_RUN");
 }
 
 void ModeSelector::switchApproach(arp_core::Pose currentPosition)
@@ -108,15 +115,15 @@ void ModeSelector::switchApproach(arp_core::Pose currentPosition)
     double distance_error = getRemainingDistance(currentPosition);
     double angle_error = getRemainingAngle(currentPosition);
 
-    if (distance_error < m_distanceAccurancy && fabs(angle_error) < m_angleAccuracy)
+    if (distance_error < m_distanceAccuracy && fabs(angle_error) < m_angleAccuracy)
     {
-
-        ROS_INFO("switched to mode MODE_DONE from MODE_APPROACH :");
+        ROS_INFO("switched MODE_APPROACH --> MODE_DONE");
         ROS_INFO("(%.3fm,%.3fm,%.1fdeg) with e_d=%.1fmm e_cap=%.1fdeg", currentPosition.x, currentPosition.y,
                 rad2deg(currentPosition.theta), distance_error * 1000, rad2deg(angle_error));
         m_currentMode = MODE_DONE;
         return;
     }
+    testTimeout("MODE_APPROACH");
 
 }
 
@@ -132,13 +139,11 @@ void ModeSelector::switchError(arp_core::Pose currentPosition)
 
 void ModeSelector::switchPass(arp_core::Pose currentPosition)
 {
-    timespec now;
-    clock_gettime(CLOCK_MONOTONIC, &now);
-    double t = now.tv_sec + (double)(now.tv_nsec)/1E9;
+    double t = get_time();
     double dt = t - m_passTime;
-    if( dt < 0 || dt > m_passTimeout )
+    if (dt < 0 || dt > m_passTimeout)
     {
-        ROS_INFO("switched to mode MODE_DONE from MODE_PASS because of dt=%0.3f",dt);
+        ROS_INFO("switched MODE_PASS --> MODE_DONE because of dt=%0.3f", dt);
         m_currentMode = MODE_DONE;
         return;
     }
@@ -225,7 +230,7 @@ double ModeSelector::getAngleAccuracy() const
 
 double ModeSelector::getDistanceAccurancy() const
 {
-    return m_distanceAccurancy;
+    return m_distanceAccuracy;
 }
 
 void ModeSelector::setPass(bool pass)
@@ -236,6 +241,11 @@ void ModeSelector::setPass(bool pass)
 void ModeSelector::setPassTimeout(double timeout)
 {
     m_passTimeout = timeout;
+}
+
+void ModeSelector::setOrderTimeout(double timeout)
+{
+    m_orderTimeout = timeout;
 }
 
 void ModeSelector::setRadiusApproachZone(double m_radiusApproachZone)
@@ -255,7 +265,7 @@ void ModeSelector::setAngleAccuracy(double m_angleAccuracy)
 
 void ModeSelector::setDistanceAccurancy(double m_distanceAccurancy)
 {
-    this->m_distanceAccurancy = m_distanceAccurancy;
+    this->m_distanceAccuracy = m_distanceAccurancy;
 }
 
 void ModeSelector::setBeginPose(arp_core::Pose beginPose)
@@ -280,6 +290,19 @@ double ModeSelector::distance(arp_core::Pose a, arp_core::Pose b)
 double ModeSelector::angle(arp_core::Pose a, arp_core::Pose b)
 {
     return normalizeAngle(b.theta - a.theta);
+}
+
+void ModeSelector::testTimeout(std::string from_mode)
+{
+    double t = get_time();
+    double dt = t - m_initTime;
+
+    if (m_initTime != -1 and dt > m_orderTimeout)
+    {
+        ROS_INFO("switched %s --> MODE_ERROR because of dt=%0.3f", from_mode.c_str(), dt);
+        m_currentMode = MODE_ERROR;
+        return;
+    }
 }
 
 }

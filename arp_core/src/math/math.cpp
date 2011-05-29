@@ -98,5 +98,12 @@ double delta_t(struct timespec begin, struct timespec now)
     return delay.tv_sec + (double) (delay.tv_nsec) / 1E9;
 }
 
+double get_time(void)
+{
+    timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    return now.tv_sec + (double) (now.tv_nsec) / 1E9;
+}
+
 }
 

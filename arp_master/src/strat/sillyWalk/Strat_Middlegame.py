@@ -218,3 +218,19 @@ class EndMatchPreemtion(PreemptiveCyclicState):
        
     def executeTransitions(self):
         return 'endPreemption'
+    
+    
+class ObstacleARPreemption(PreemptiveCyclicState):
+    def __init__(self):
+        PreemptiveCyclicState.__init__(self, outcomes=['avoid'])
+        self.blinding_period=rospy.get_param("/blinding_period")
+
+    def preemptionCondition(self):
+        if Inputs.getobstacle()==1 and rospy.get_rostime().secs-Data.time_obstacle>self.blinding_period:
+            Data.time_obstacle=rospy.get_rostime().secs
+            return True
+        else:
+            return False
+       
+    def executeTransitions(self):
+        return 'avoid'

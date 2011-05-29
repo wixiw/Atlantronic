@@ -62,7 +62,7 @@ class MotionOrder: public arp_ods::ModeSelector
         Pose reversePosition(Pose p);
 
         /**
-         * Facotry to create an order with default parameters from the order
+         * Factory to create an order with default parameters from the order
          * @param goal : action lib goal to process
          * @param currentPose : current position of the robot
          * @param conf : automation parameters (gains)
