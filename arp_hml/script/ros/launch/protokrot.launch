@@ -7,11 +7,12 @@
     	<param name="calibrate_time" type="bool" value="false"/> 
     	<param name="port" type="string" value="/dev/hokuyo_H0902834"/> 
   		<param name="intensity" type="bool" value="false"/> 
+  		<param name="frame_id" type="string" value="front_laser" />
   	</node>
 	<node 	name="FrontHokuyoTfBroadcaster"
 			pkg="tf" 
 			type="static_transform_publisher" 
-			args="0.260 0.053 0.060 0 0 0 base_link front_laser 100"
+			args="0.260 0.053 0.060 0 0 -3.14159 base_link front_laser 100"
 			respawn="true" />
 			
 	<remap from="scan" to="top_scan" />
@@ -19,6 +20,7 @@
     	<param name="calibrate_time" type="bool" value="false"/> 
     	<param name="port" type="string" value="/dev/hokuyo_H0904768"/> 
   		<param name="intensity" type="bool" value="false"/> 
+  		<param name="frame_id" type="string" value="top_laser" />
   	</node>
 	<node 	name="TopHokuyoTfBroadcaster"
 			pkg="tf" 
