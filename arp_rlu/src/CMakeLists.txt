@@ -12,5 +12,6 @@ configure_file(
 rosbuild_add_executable(LocalizatorNode LocalizatorNode.cpp Localizator.cpp)
 rosbuild_add_executable(OldLocalizatorNode OldLocalizatorNode.cpp OldLocalizator.cpp)
 rosbuild_add_executable(ObstacleDetectorNode ObstacleDetectorNode.cpp ObstacleDetector.cpp)
+add_subdirectory(cornerdetector)
     
 ###################################################################################################################  
