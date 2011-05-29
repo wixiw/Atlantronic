@@ -157,5 +157,6 @@ void GraphicsSimuRobot::paint(wxDC& dc)
 
     dc.DrawBitmap(robot_, m_realCanvasX - (robot_.GetWidth() / 2),
             m_realCanvasY - (robot_.GetHeight() / 2), true);
+
 }
 

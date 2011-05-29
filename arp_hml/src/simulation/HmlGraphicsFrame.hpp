@@ -21,6 +21,7 @@
 #define ID_COLOR_HANDLER 2
 #define ID_OBSTACLE_HANDLER 3
 #define ID_EMERGENCY_HANDLER 4
+#define ID_REAR_OBSTACLE_HANDLER 5
 
 using namespace arp_core;
 using namespace std_msgs;
@@ -61,12 +62,12 @@ namespace arp_hml
         /**
          * table length in pixel. Should be the width of table image
          */
-        static const double length_in_pixel = 400.0;
+        static const double length_in_pixel = 350.0;
 
         /**
          * table width in pixel. Should be the height of table image
          */
-        static const double width_in_pixel = 200.0;
+        static const double width_in_pixel = 250.0;
 
         /**
          * Bouton représentant le start
@@ -82,6 +83,11 @@ namespace arp_hml
          * Button représentant les obstacles
          */
         wxButton* m_obstacleButton;
+
+        /**
+         * Button représentant les obstacles arrières
+         */
+        wxButton* m_rearObstacleButton;
 
         /**
          * Button représentant l'AU
@@ -104,6 +110,11 @@ namespace arp_hml
         Obstacle m_obstacle;
 
         /**
+         * Représente la présence d'osbtacle à l'arrière
+         */
+        Obstacle m_rearObstacle;
+
+        /**
          * Représente l'état de l'au
          */
         Bool m_emergency;
@@ -122,6 +133,11 @@ namespace arp_hml
          * Used to publish on "Protokrot/start"
          */
         ros::Publisher obstacle_pub;
+
+        /**
+         * Used to publish on "Protokrot/rear_obstacle"
+         */
+        ros::Publisher rear_obstacle_pub;
 
         /**
          * Used to publish on "Protokrot/start"
@@ -159,6 +175,11 @@ namespace arp_hml
          * Called when the obstacle button is trigerred
          */
         void onObstacle(wxCommandEvent& event);
+
+        /**
+         * Called when the rear obstacle button is trigerred
+         */
+        void onRearObstacle(wxCommandEvent& event);
 
         /**
          * Called when the obstacle button is trigerred

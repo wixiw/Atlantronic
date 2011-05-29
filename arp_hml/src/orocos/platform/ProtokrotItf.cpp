@@ -320,10 +320,10 @@ void ProtokrotItf::readSpeed()
 void ProtokrotItf::readRearObstacle()
 {
     bool io = false;
-    Bool obstacle;
+    Obstacle obstacle;
     if(NewData==inRearObstacle.readNewest(io))
     {
-        obstacle.data = io;
+        obstacle.detected = io;
         outRearObstacle.write(obstacle);
     }
 }

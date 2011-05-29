@@ -22,6 +22,7 @@
 #include "orocos/taskcontexts/HmlTaskContext.hpp"
 #include <arp_core/DifferentialCommand.h>
 #include <arp_core/Odo.h>
+#include <arp_core/Obstacle.h>
 #include <arp_core/Start.h>
 #include <arp_core/StartColor.h>
 #include <arp_hml/SetMotorPower.h>
@@ -148,7 +149,7 @@ namespace arp_hml
         OutputPort<Bool> outDriveEnable;
 
         /** Is true when an obstacle is present behind */
-        OutputPort<Bool> outRearObstacle;
+        OutputPort<Obstacle> outRearObstacle;
 
 /*****************************************************************
  *  Interface with the INSIDE (hml !)

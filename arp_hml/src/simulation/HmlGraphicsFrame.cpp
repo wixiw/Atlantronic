@@ -30,6 +30,7 @@ HmlGraphicsFrame::HmlGraphicsFrame():
 	m_color.color = "red";
 	m_start.go = true;
 	m_obstacle.detected = false;
+	m_rearObstacle.detected = false;
 	m_emergency.data = false;
 
 	update_timer_ = new wxTimer(this);
@@ -38,7 +39,8 @@ HmlGraphicsFrame::HmlGraphicsFrame():
 	m_startButton = new wxButton(this, ID_START_HANDLER, wxT("Start"), wxPoint(20,60),wxDefaultSize);
 	m_colorButton = new wxButton(this, ID_COLOR_HANDLER, wxT("Color"), wxPoint(20,20),wxDefaultSize);
 	m_obstacleButton = new wxButton(this, ID_OBSTACLE_HANDLER, wxT("Obstacle"), wxPoint(20,100),wxDefaultSize);
-	m_emergencyButton = new wxButton(this, ID_EMERGENCY_HANDLER, wxT("AU"), wxPoint(20,140),wxDefaultSize);
+	m_rearObstacleButton = new wxButton(this, ID_REAR_OBSTACLE_HANDLER, wxT("Rear Obstacle"), wxPoint(20,140),wxDefaultSize);
+	m_emergencyButton = new wxButton(this, ID_EMERGENCY_HANDLER, wxT("AU"), wxPoint(20,180),wxDefaultSize);
 
 	Connect(update_timer_->GetId(), wxEVT_TIMER, wxTimerEventHandler(HmlGraphicsFrame::onUpdate), NULL, this);
 	Connect(wxEVT_PAINT, wxPaintEventHandler(HmlGraphicsFrame::onPaint), NULL, this);
@@ -46,6 +48,7 @@ HmlGraphicsFrame::HmlGraphicsFrame():
 	start_pub = m_nodeHandle.advertise<Start>("Protokrot/start", 1);
 	color_pub = m_nodeHandle.advertise<StartColor>("Protokrot/color", 1);
 	obstacle_pub = m_nodeHandle.advertise<Obstacle>("/obstacle", 1);
+	rear_obstacle_pub = m_nodeHandle.advertise<Obstacle>("Protokrot/rear_obstacle", 1);
 	emergency_pub = m_nodeHandle.advertise<Bool>("Protokrot/emergency_stop", 1);
 
 	ROS_INFO("Starting HmlGraphics with node name %s", ros::this_node::getName().c_str()) ;
@@ -56,6 +59,7 @@ HmlGraphicsFrame::~HmlGraphicsFrame()
 	  delete m_startButton ;
 	  delete m_colorButton ;
 	  delete m_obstacleButton ;
+	  delete m_rearObstacleButton ;
 	  delete m_emergencyButton;
 	  delete update_timer_ ;
 }
@@ -112,6 +116,17 @@ void HmlGraphicsFrame::onPaint(wxPaintEvent& evt)
     	dc.DrawLine(280,100,220,130);
     }
 
+    //dessin de l'obstacle
+    if( m_rearObstacle.detected )
+    {
+        dc.DrawLine(140,140,200,170);
+        dc.DrawLine(200,140,140,170);
+        dc.DrawLine(180,140,240,170);
+        dc.DrawLine(240,140,180,170);
+        dc.DrawLine(220,140,280,170);
+        dc.DrawLine(280,140,220,170);
+    }
+
     //dessin de l'AU
     if( m_emergency.data )
     {
@@ -121,7 +136,7 @@ void HmlGraphicsFrame::onPaint(wxPaintEvent& evt)
     {
         dc.SetBrush(*wxGREEN_BRUSH);
     }
-    dc.DrawCircle(180,155,15);
+    dc.DrawCircle(180,195,15);
     dc.SetBrush(*wxBLACK_BRUSH);
 
 
@@ -129,6 +144,7 @@ void HmlGraphicsFrame::onPaint(wxPaintEvent& evt)
 	start_pub.publish(m_start);
 	color_pub.publish(m_color);
 	obstacle_pub.publish(m_obstacle);
+	rear_obstacle_pub.publish(m_rearObstacle);
 	emergency_pub.publish(m_emergency);
 }
 
@@ -151,6 +167,12 @@ void HmlGraphicsFrame::onObstacle(wxCommandEvent& event)
 {
 	//inversion du bouton
 	m_obstacle.detected = !m_obstacle.detected;
+}
+
+void HmlGraphicsFrame::onRearObstacle(wxCommandEvent& event)
+{
+    //inversion du bouton
+    m_rearObstacle.detected = !m_rearObstacle.detected;
 }
 
 void HmlGraphicsFrame::onEmergency(wxCommandEvent& event)
