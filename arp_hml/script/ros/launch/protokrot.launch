@@ -2,16 +2,30 @@
 <launch>
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
 	
-	<node name="Hokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="true" output="screen">
+	<remap from="scan" to="front_scan" />
+	<node name="FrontHokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="true" output="screen">
     	<param name="calibrate_time" type="bool" value="false"/> 
-    	<param name="port" type="string" value="/dev/ttyACM0"/> 
+    	<param name="port" type="string" value="/dev/hokuyo_H0902834"/> 
   		<param name="intensity" type="bool" value="false"/> 
   	</node>
-	<node 	name="HokuyoTfBroadcaster"
+	<node 	name="FrontHokuyoTfBroadcaster"
 			pkg="tf" 
 			type="static_transform_publisher" 
-			args="0.260 0.053 0 0 0 0 base_link laser 100"
+			args="0.260 0.053 0.060 0 0 0 base_link front_laser 100"
 			respawn="true" />
+			
+	<remap from="scan" to="top_scan" />
+	<node name="TopHokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="true" output="screen">
+    	<param name="calibrate_time" type="bool" value="false"/> 
+    	<param name="port" type="string" value="/dev/hokuyo_H0904768"/> 
+  		<param name="intensity" type="bool" value="false"/> 
+  	</node>
+	<node 	name="TopHokuyoTfBroadcaster"
+			pkg="tf" 
+			type="static_transform_publisher" 
+			args="0.070 0.083 0.270 0 0 0 base_link top_laser 100"
+			respawn="true" />
+			
 	<node 	name="ArpHml" 
 			pkg="ocl" 
 			type="deployer-gnulinux" 
