@@ -13,7 +13,8 @@ using namespace arp_rlu;
 using namespace std;
 using namespace Eigen;
 
-CornerDetector::CornerDetector()
+CornerDetector::CornerDetector() :
+    mSplitThreshDistance(0.05), mSplitThreshNumber(6), mMergeThreshDistance(0.2), mMergeThreshAngle(15 * PI / 180)
 {
 }
 
@@ -26,16 +27,52 @@ void CornerDetector::setScan(const Scan & scan)
     mScan = scan;
 }
 
-void CornerDetector::compute()
+Corner CornerDetector::compute()
 {
-    /*split();
-     merge();*/
-    // and then compute pose
+    std::vector<Segment> sgmts = split(mScan, mSplitThreshDistance, mSplitThreshNumber);
+    SegmentedScan sgmtScan = attributeSegment(mScan, sgmts);
+    std::pair<std::vector<Segment>, SegmentedScan> p;
+    p = merge(sgmts, sgmtScan, mMergeThreshDistance, mMergeThreshAngle);
+
+    //    std::cout << "Nb of Segments : " << sgmts.size() << std::endl;
+    //    std::cout << "***********************" << std::endl;
+    //    for(unsigned int i = 0; i < sgmts.size() ; i++)
+    //    {
+    //        std::cout << "Segment " << i << std::endl;
+    //        std::cout << "   d:" << sgmts[i].d << std::endl;
+    //        std::cout << "   alpha:" << sgmts[i].alpha << std::endl;
+    //        std::cout << "   angleBegin:" << sgmts[i].angleBegin << std::endl;
+    //        std::cout << "   angleEnd:" << sgmts[i].angleEnd << std::endl;
+    //        std::cout << "   " << std::endl;
+    //    }
+
+    return extractCorner(sgmts);
+
 }
 
 btTransform CornerDetector::getPose() const
 {
     return btTransform();
+}
+
+void CornerDetector::setSplitThresholdDistance(double val)
+{
+    this->mSplitThreshDistance = val;
+}
+
+void CornerDetector::setSplitThresholdNumber(unsigned int val)
+{
+    this->mSplitThreshNumber = val;
+}
+
+void CornerDetector::setMergeThresholdDistance(double val)
+{
+    this->mMergeThreshDistance = val;
+}
+
+void CornerDetector::setMergeThresholdAngle(double val)
+{
+    this->mMergeThreshAngle = val;
 }
 
 std::vector<Segment> CornerDetector::split(const Scan & scan, double threshDist, unsigned int threshNumber)
@@ -126,7 +163,7 @@ std::pair<std::vector<Segment>, SegmentedScan> CornerDetector::merge(std::vector
 
     unsigned int nbFusion = couples.col(4).sum();
 
-    if (n == 0)
+    if (nbFusion == 0)
     {
         return std::make_pair(sgmts, iSegmentedScan);
     }
@@ -142,10 +179,11 @@ std::pair<std::vector<Segment>, SegmentedScan> CornerDetector::merge(std::vector
         }
     }
 
-    std::pair<Segment, SegmentedScan> p =  improveSegment(iSegmentedScan, std::make_pair(couples(fuseIndex,0),couples(fuseIndex,1)));
+    std::pair<Segment, SegmentedScan> p = improveSegment(iSegmentedScan,
+            std::make_pair(couples(fuseIndex, 0), couples(fuseIndex, 1)));
 
     unsigned int maxSgmtIndex = p.second.row(2).maxCoeff();
-    if( maxSgmtIndex < sgmts.size() )
+    if (maxSgmtIndex < sgmts.size())
     {
         std::cerr << "CornerDetector merge : new sgmt index < vector<Segment> size => abnormal" << std::endl;
     }
@@ -239,3 +277,81 @@ std::pair<Segment, SegmentedScan> CornerDetector::improveSegment(SegmentedScan s
 
     return std::make_pair(fuseSegment, newSegScan);
 }
+
+SegmentedScan CornerDetector::attributeSegment(Scan scan, std::vector<Segment> sgmts)
+{
+    SegmentedScan sgmScan = -MatrixXd::Ones(3, scan.cols());
+    sgmScan.topRows(2) = scan;
+    for (unsigned int i = 0; i < sgmts.size(); i++)
+    {
+        for (unsigned int k = 0; k < scan.cols(); k++)
+        {
+            if (scan(0, k) > sgmts[i].angleBegin)
+            {
+                if (scan(0, k) > sgmts[i].angleEnd)
+                {
+                    break;
+                }
+                sgmScan(2, k) = i;
+            }
+        }
+    }
+    return sgmScan;
+}
+
+Corner CornerDetector::extractCorner(std::vector<Segment> sgmts)
+{
+    unsigned int n = sgmts.size();
+    ROS_INFO("*******************************");
+    ROS_INFO("Nb of segments : %d", n);
+    for (unsigned int i = 0; i < n; i++)
+    {
+        ROS_INFO("Segment %d:", i);
+        ROS_INFO("  d = %f", sgmts[i].d);
+        ROS_INFO("  alpha = %f", sgmts[i].alpha);
+        ROS_INFO("  angleBegin = %f", sgmts[i].angleBegin);
+        ROS_INFO("  angleEnd = %f", sgmts[i].angleEnd);
+    }
+
+    if (n < 2)
+    {
+        return Corner();
+    }
+
+    MatrixXi corners = MatrixXi::Zero(n * (n - 1) / 2, 3);
+    unsigned int k = 0;
+    for (unsigned int i = 0; i < n - 1; i++)
+    {
+        for (unsigned int j = i + 1; j < n; j++)
+        {
+            corners(k, 0) = i;
+            corners(k, 1) = j;
+            corners(k, 2) = abs(abs(normalizeAngle(sgmts[i].alpha - sgmts[j].alpha)) - PI / 2.);
+            k++;
+        }
+    }
+
+    int i_min;
+    double alphaMin = corners.col(2).minCoeff(&i_min);
+
+    Corner c;
+    c.d1 = sgmts[corners(i_min, 0)].d;
+    c.alpha1 = sgmts[corners(i_min, 0)].alpha;
+    c.d2 = sgmts[corners(i_min, 1)].d;
+    c.alpha2 = sgmts[corners(i_min, 1)].alpha;
+    c.diag = sqrt(c.d1 * c.d1 + c.d2 * c.d2);
+    c.theta = fmod(c.alpha1 + atan2(c.d2, c.d1) + 2. * PI, 2 * PI);
+    c.cornerAngle = PI - abs(normalizeAngle(sgmts[corners(i_min, 0)].alpha - sgmts[corners(i_min, 1)].alpha));
+
+    //    std::cout << "**************************" << std::endl;
+    //    std::cout << "Corner detection" << std::endl;
+    //    std::cout << "  d1:" << c.d1 << std::endl;
+    //    std::cout << "  alpha1  (deg):" << c.alpha1 * 180. / PI << std::endl;
+    //    std::cout << "  d2:" << c.d2 << std::endl;
+    //    std::cout << "  alpha2  (deg):" << c.alpha2 * 180. / PI << std::endl;
+    //    std::cout << "  theta  (deg):" << c.theta * 180. / PI << std::endl;
+    //    std::cout << "  corner angle (deg):" << c.cornerAngle * 180. / PI << std::endl;
+
+    return c;
+}
+
