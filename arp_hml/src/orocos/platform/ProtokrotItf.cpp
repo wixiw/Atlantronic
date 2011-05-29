@@ -58,13 +58,17 @@ ProtokrotItf::ProtokrotItf(const std::string& name):
     addPort("outEmergencyStop",outEmergencyStop)
         .doc("Is true when HML thinks the emergency stop button is active");
     addPort("outDriveEnable",outDriveEnable)
-    	.doc("");
+    	.doc("Is true when the 2 drives are enabled. Since this port is false, drive speed are forced to 0");
+    addPort("outRearObstacle",outRearObstacle)
+        .doc("Is true when an obstacle is present behind ");
 
     /** Interface with INSIDE (hml !) **/
     addEventPort("inIoStart",inIoStart)
             .doc("HW value of the start switch. It is true when the start is in");
     addPort("inIoColorSwitch",inIoColorSwitch)
             .doc("HW value of the color switch. It is true when the color switch is on 1");//on n'est pas pressé pour connaitre la couleur
+    addPort("inRearObstacle",inRearObstacle)
+            .doc("Hw value of the rear obstacle detector");
     addEventPort("inLeftDrivingPosition",inLeftDrivingPosition)
             .doc("Value of the left odometer in rad on the wheel axe");
     addPort("inLeftDrivingPositionTime",inLeftDrivingPositionTime)
@@ -166,6 +170,9 @@ void ProtokrotItf::updateHook()
 
     //lecture des vitesses
     readSpeed();
+
+    //lecture du capteur de détection d'osbtacles arrière
+    readRearObstacle();
 }
 
 void ProtokrotItf::writeDifferentialCmd()
@@ -309,6 +316,18 @@ void ProtokrotItf::readSpeed()
 		outDifferentialMeasure.write(speedMeasure);
 	}
 }
+
+void ProtokrotItf::readRearObstacle()
+{
+    bool io = false;
+    Bool obstacle;
+    if(NewData==inRearObstacle.readNewest(io))
+    {
+        obstacle.data = io;
+        outRearObstacle.write(obstacle);
+    }
+}
+
 
 bool ProtokrotItf::ooSetMotorPower(bool powerOn, double timeout)
 {

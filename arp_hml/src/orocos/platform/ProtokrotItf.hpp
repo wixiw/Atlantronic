@@ -147,6 +147,9 @@ namespace arp_hml
         /** Is true when the 2 drives are enabled. Since this port is false, drive speed are forced to 0**/
         OutputPort<Bool> outDriveEnable;
 
+        /** Is true when an obstacle is present behind */
+        OutputPort<Bool> outRearObstacle;
+
 /*****************************************************************
  *  Interface with the INSIDE (hml !)
  *****************************************************************/
@@ -156,6 +159,9 @@ namespace arp_hml
 
         /** HW value of the color switch. It is true when the color switch is on 1 **/
         InputPort<bool> inIoColorSwitch;
+
+        /** Hw value of the rear obstacle detector */
+        InputPort<bool> inRearObstacle;
 
         /** Value of the left odometer in rad on the wheel axe **/
         InputPort<double> inLeftDrivingPosition;
@@ -263,6 +269,10 @@ protected:
          */
         void readSpeed();
 
+        /**
+         * Read the value of the rear obstacle detector
+         */
+        void readRearObstacle();
     };
 
 }

@@ -34,9 +34,15 @@ speed.transport = 3; // ROS == 3
 speed.name_id = "/Protokrot/differential_measure"; // ros topic
 stream("Protokrot.outDifferentialMeasure", speed);
 
+var ConnPolicy rear_obstacle;
+rear_obstacle.transport = 3; // ROS == 3
+rear_obstacle.name_id = "/Protokrot/rear_obstacle"; // ros topic
+stream("Protokrot.outRearObstacle", rear_obstacle);
+
 
 /*Connexion de l'interface interne de ProtoKrot*/
 connect("Protokrot.inIoStart", "Io.outBit1",ConnPolicy());
+connect("Protokrot.inRearObstacle", "Io.outBit2",ConnPolicy());
 connect("Protokrot.inIoColorSwitch", "Io.outBit3",ConnPolicy());
 connect("Protokrot.inLeftDrivingPosition", "LeftDriving.outMeasuredPosition",ConnPolicy());
 connect("Protokrot.inRightDrivingPosition", "RightDriving.outMeasuredPosition",ConnPolicy());
