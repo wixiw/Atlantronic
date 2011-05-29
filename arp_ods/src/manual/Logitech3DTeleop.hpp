@@ -11,8 +11,10 @@
 //include orocos
 #include <taskcontexts/ARDTaskContext.hpp>
 #include <arp_core/Velocity.h>
+#include <std_msgs/Bool.h>
 
 using namespace arp_core;
+using namespace std_msgs;
 
 namespace arp_ods
 {
@@ -23,6 +25,7 @@ namespace arp_ods
         Logitech3DTeleop(const std::string& name);
         ~Logitech3DTeleop();
 
+        bool configureHook();
         void updateHook();
 
     protected:
@@ -33,7 +36,10 @@ namespace arp_ods
         /** Axe z du manche : rotation horaire entre [-1;1] */
         InputPort<double> inZ;
         InputPort<bool> inDeadMan;
+        InputPort<Bool> inPower;
         OutputPort<Velocity> outVelocityCmd;
+
+        OperationCaller<bool(bool, double)> m_ooSetPower;
 
         double propLongGain;
         double propRotGain;

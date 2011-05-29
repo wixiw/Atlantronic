@@ -13,6 +13,8 @@ addPeer("Reporting", "Joystick");
 Joystick.configure();
 Joystick.start();
 
+Joystick.propMaxNoEventDelay = 300;
+
 
 import("arp_ods");
 
@@ -24,6 +26,8 @@ addPeer("Reporting", "ManualMode");
 connect("ManualMode.inY", "Joystick.outY1",ConnPolicy());
 connect("ManualMode.inZ", "Joystick.outX2",ConnPolicy());
 connect("ManualMode.inDeadMan", "Joystick.outTrigger5",ConnPolicy());
+connect("ManualMode.inPower", "Protokrot.outDriveEnable",ConnPolicy());
+addPeer("ManualMode", "Protokrot");
 var ConnPolicy manualSpeed;
 manualSpeed.transport = 3; // ROS == 3
 manualSpeed.name_id = "/Command/velocity"; // ros topic
