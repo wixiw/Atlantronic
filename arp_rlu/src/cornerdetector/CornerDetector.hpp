@@ -17,6 +17,7 @@ namespace arp_rlu
 {
 
 typedef Eigen::MatrixXd Scan;
+typedef Eigen::MatrixXd SegmentedScan;
 
 struct Segment
 {
@@ -37,10 +38,11 @@ class CornerDetector
         void compute();
         btTransform getPose() const;
 
-        std::vector<Segment> split(const Scan & s, double threshDist, int threshNumber);
-        void merge();
-        Segment computeSegment( Eigen::MatrixXd );
-        Segment improveSegment( Eigen::MatrixXd );
+        std::vector<Segment> split(const Scan & s, double threshDist, unsigned int threshNumber);
+        std::pair<std::vector<Segment>, SegmentedScan> merge(std::vector<Segment> sgmts,
+                const SegmentedScan & iSegmentedScan, double threshDistance, double threshAngle);
+        Segment computeSegment(Eigen::MatrixXd);
+        std::pair<Segment, SegmentedScan> improveSegment(SegmentedScan scan, std::pair<unsigned int, unsigned int> fuseIndices);
 
     protected:
         Scan mScan;

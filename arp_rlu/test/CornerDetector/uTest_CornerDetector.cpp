@@ -11,5 +11,7 @@
 #include <boost/bind.hpp>
 
 #include "uTest_ComputeSegment.hpp"
+#include "uTest_ImproveSegment.hpp"
 #include "uTest_Split.hpp"
+#include "uTest_Merge.hpp"
 
