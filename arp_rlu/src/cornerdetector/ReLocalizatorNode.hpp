@@ -10,9 +10,18 @@
 
 #include <arp_rlu/DetectCorner.h>
 #include <arp_rlu/EstimatePosition.h>
+#include <string>
+#include <vector>
 
 namespace arp_rlu
 {
+
+struct TableCorner
+{
+        double x;
+        double y;
+        std::string type;
+};
 
 class ReLocalizatorNode
 {
@@ -21,6 +30,9 @@ class ReLocalizatorNode
         ~ReLocalizatorNode();
 
         void go();
+
+        void setTableCorners(std::vector<TableCorner>);
+        void printTableCorners();
 
     protected:
         /**
@@ -40,6 +52,7 @@ class ReLocalizatorNode
          */
         bool estimatePositionCallback(arp_rlu::EstimatePosition::Request& req, arp_rlu::EstimatePosition::Response& res);
 
+        std::vector<TableCorner> tableCorners;
 
 
 };

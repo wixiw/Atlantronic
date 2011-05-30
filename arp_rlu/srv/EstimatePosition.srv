@@ -1,5 +1,8 @@
+float64 previousX
+float64 previousY
+float64 previousTheta
 ---
-float64 x
-float64 y
-float64 theta
+float64 estimatedX
+float64 estimatedY
+float64 estimatedTheta
 float64 quality
