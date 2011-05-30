@@ -17,7 +17,7 @@ CornerDetectorNode::CornerDetectorNode() :
     nh()
 {
     scan_sub = nh.subscribe("/scan", 1, &CornerDetectorNode::scanCallback, this);
-    detectcorner_srv = nh.advertiseService("DetectCorner", &CornerDetectorNode::detectCornerCallback, this);
+    detectcorner_srv = nh.advertiseService("/CornerDetector/DetectCorner", &CornerDetectorNode::detectCornerCallback, this);
 }
 CornerDetectorNode::~CornerDetectorNode()
 {

@@ -46,6 +46,11 @@ class ReLocalizatorNode
          */
         bool estimatePositionCallback(arp_rlu::EstimatePosition::Request& req, arp_rlu::EstimatePosition::Response& res);
 
+        /**
+         * used to call spawn (reset) service of Laserator
+         */
+        ros::ServiceClient cornerdetection_client_;
+
         ReLocalizator rl;
 
 };

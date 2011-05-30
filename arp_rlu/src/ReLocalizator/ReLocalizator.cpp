@@ -26,7 +26,6 @@ bool TableCorner::isVisibleFrom(double xLaser, double yLaser, double minAngle, d
 {
     // D'abord, on regarde si le coin est compatible avec la ligne de vue
     double capSigth = betweenMinusPiAndPlusPi(atan2(yLaser - y, xLaser - x));
-    //    std::cout << "capSigth:" << rad2deg(capSigth) << std::endl;
 
     switch (type)
     {
@@ -61,12 +60,10 @@ bool TableCorner::isVisibleFrom(double xLaser, double yLaser, double minAngle, d
     {
         if (betweenMinusPiAndPlusPi(capSigth - minAngle) < 0)
         {
-            //        std::cout << "capSigth < minAngle" << std::endl;
             return false;
         }
         if (betweenMinusPiAndPlusPi(maxAngle - capSigth) < 0)
         {
-            //        std::cout << "capSigth > maxAngle" << std::endl;
             return false;
         }
     }
@@ -123,7 +120,7 @@ void ReLocalizator::setTableCorners(std::vector<TableCorner> tc)
 void ReLocalizator::printTableCorners()
 {
     std::cout << "*****************************" << std::endl;
-    std::cout << "Nb of TableCorners :" << tableCorners.size() << std::endl;
+    std::cout << "Nb of TableCorners referenced :" << tableCorners.size() << std::endl;
     for (unsigned int i = 0; i < tableCorners.size(); i++)
     {
         std::cout << "TableCorner " << i << std::endl;
@@ -150,10 +147,13 @@ void ReLocalizator::printTableCorners()
         }
 
     }
+    std::cout << "*****************************" << std::endl;
+    std::cout << " " << std::endl;
 }
 
 TableCorner ReLocalizator::selectTargetTableCorner()
 {
+    // On selectionne d'abord tout les TableCorner qui sont visibles
     std::vector<TableCorner> compatibleCorners;
     for (std::vector<TableCorner>::iterator it = tableCorners.begin(); it != tableCorners.end(); ++it)
     {
@@ -164,8 +164,12 @@ TableCorner ReLocalizator::selectTargetTableCorner()
         }
     }
     if (compatibleCorners.size() == 0)
+    {
+        std::cout << "ReLocalizator selectTargetTableCorner : No compatible TableCorner found" << std::endl;
         return TableCorner();
+    }
 
+    // On sélectionne celui qui est le plus près
     double min_distance = 666.;
     TableCorner target;
     for (std::vector<TableCorner>::iterator it = compatibleCorners.begin(); it != compatibleCorners.end(); ++it)
@@ -213,6 +217,7 @@ std::pair<double, double> ReLocalizator::chooseScanWindow(TableCorner target)
             yPtMax = target.y + length_sgmt;
             break;
         default:
+            std::cout << "ReLocalizator chooseScanWindow : TableCorner type is NONE" << std::endl;
             return std::make_pair(0.0, 0.0);
     }
 
@@ -234,6 +239,7 @@ void ReLocalizator::estimatePose(Corner detected, TableCorner target)
         estimatedY = previousY;
         estimatedTheta = previousTheta;
         quality = -1.;
+        std::cout << "ReLocalizator estimatePose : Detected Corner is invalid" << std::endl;
         return;
     }
 
@@ -268,6 +274,7 @@ void ReLocalizator::estimatePose(Corner detected, TableCorner target)
             estimatedY = previousY;
             estimatedTheta = previousTheta;
             quality = -1.;
+            std::cout << "ReLocalizator estimatePose : TargetCorner type is NONE" << std::endl;
             return;
     }
 

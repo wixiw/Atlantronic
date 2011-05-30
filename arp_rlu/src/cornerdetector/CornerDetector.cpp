@@ -31,6 +31,7 @@ Corner CornerDetector::compute()
 {
     if(mScan.cols() < 10)
     {
+        std::cout << "CornerDetector compute : Scan is empty" << std::endl;
         return Corner();
     }
 
@@ -75,6 +76,7 @@ std::vector<Segment> CornerDetector::split(const Scan & scan, double threshDist,
     if (n < threshNumber)
     {
         std::vector<Segment> result;
+        std::cout << "CornerDetector split : Not enough points in Scan" << std::endl;
         return result; // empty segments vector
     }
 
@@ -312,6 +314,7 @@ Corner CornerDetector::extractCorner(std::vector<Segment> sgmts)
 
     if (n < 2)
     {
+        std::cout << "CornerDetector extractCorner : No corner found because less than 2 segments detected" << std::endl;
         return Corner();
     }
 
