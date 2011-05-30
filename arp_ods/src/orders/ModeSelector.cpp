@@ -78,7 +78,7 @@ void ModeSelector::setDefaults(order::config conf)
 void ModeSelector::switchInit(arp_core::Pose currentPosition)
 {
     // as init is left as soon as it is entered, I allow to put the last init time into m_initTime
-    m_initTime = get_time();
+    m_initTime = getTime();
 
     if (getCoveredDistance(currentPosition) >= getRadiusInitZone())
     {
@@ -97,7 +97,7 @@ void ModeSelector::switchRun(arp_core::Pose currentPosition)
         {
             ROS_INFO("switched MODE_RUN --> MODE_PASS");
             m_currentMode = MODE_PASS;
-            m_passTime = get_time();
+            m_passTime = getTime();
             return;
         }
         else
@@ -139,7 +139,7 @@ void ModeSelector::switchError(arp_core::Pose currentPosition)
 
 void ModeSelector::switchPass(arp_core::Pose currentPosition)
 {
-    double t = get_time();
+    double t = getTime();
     double dt = t - m_passTime;
     if (dt < 0 || dt > m_passTimeout)
     {
@@ -294,7 +294,7 @@ double ModeSelector::angle(arp_core::Pose a, arp_core::Pose b)
 
 void ModeSelector::testTimeout(std::string from_mode)
 {
-    double t = get_time();
+    double t = getTime();
     double dt = t - m_initTime;
 
     if (m_initTime != -1 and dt > m_orderTimeout)

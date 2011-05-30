@@ -231,7 +231,7 @@ Velocity FantomOrder::computeSpeed(arp_core::Pose currentPosition)
 void FantomOrder::switchInit(arp_core::Pose currentPosition)
 {
     // as init is left as soon as it is entered, I allow to put the last init time into m_initTime
-    m_initTime = get_time();
+    m_initTime = getTime();
 
     m_beginPose = currentPosition;
 

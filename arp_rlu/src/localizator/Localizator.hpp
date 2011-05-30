@@ -106,6 +106,12 @@ namespace arp_rlu
         arp_math::Rotation2 orient;
 
         /**
+         * "Grace à la magnificience de ROS (oui, tout ça)"
+         * HML publie des temps datés depuis le boot du système alors que ROS utilise des timestamp
+         */
+        double m_monotonicTimeToRealTime;
+
+        /**
          * these are ros param. see arp_master/script/launch/rosparam.launch for more info
          */
         double RIGHT_ROTATION_FACTOR;

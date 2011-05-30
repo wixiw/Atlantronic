@@ -29,6 +29,8 @@ Localizator::Localizator() :
         ROS_FATAL("pas reussi a recuperer le parametre RIGHT_WHEEL_DIAMETER");
     if (nh.getParam("/Protokrot/LEFT_WHEEL_DIAMETER", LEFT_WHEEL_DIAMETER) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre LEFT_WHEEL_DIAMETER");
+
+    m_monotonicTimeToRealTime = ros::Time::now().toSec() - getTime();
 }
 
 Localizator::~Localizator()
@@ -81,7 +83,7 @@ void Localizator::odoCallback(const OdoConstPtr& o)
     // Récupération des données odo
     odo_left = o->odo_left;
     odo_right = o->odo_right;
-    double t = o->time;
+    double t = o->time + m_monotonicTimeToRealTime;
 
     dt = t - last_time;
 

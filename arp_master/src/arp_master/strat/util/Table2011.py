@@ -79,6 +79,11 @@ class Table:
     def init():
         Table.HWALL_Y=rospy.get_param('/Table/HWALL_Y')
         Table.VWALL_X=rospy.get_param('/Table/VWALL_X')
+    @staticmethod
+    def isOnTable(x,y):
+        #TODO WLA
+        return True
+        
 
 class PionBord:
     def __init__(self,rang,color):

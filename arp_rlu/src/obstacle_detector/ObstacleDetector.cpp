@@ -75,9 +75,9 @@ void ObstacleDetector::scanCallback(LaserScanConstPtr scan)
             fabs(lateral_detection_distance) < LATERAL_DETECTION_THRESHOLD   )
         {
             obs.detected = 1;
-            ROS_INFO("tf : (%0.3f,%0.3f)",obstacleTf.getOrigin().getX(), obstacleTf.getOrigin().getY());
-            ROS_INFO("relative tf : (%0.3f,%0.3f)",relativeObstacleTf.getOrigin().getX(), relativeObstacleTf.getOrigin().getY());
-            ROS_INFO("detected : d=%0.3f a=%0.3f",d,angle);
+            //ROS_INFO("tf : (%0.3f,%0.3f)",obstacleTf.getOrigin().getX(), obstacleTf.getOrigin().getY());
+            //ROS_INFO("relative tf : (%0.3f,%0.3f)",relativeObstacleTf.getOrigin().getX(), relativeObstacleTf.getOrigin().getY());
+            //ROS_INFO("detected : d=%0.3f a=%0.3f",d,angle);
             m_tfBroadcaster.sendTransform(tf::StampedTransform(obstacleTf, t , m_frontLaserFrameName, "front_obstacle"));
         }
     }

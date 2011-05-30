@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 import roslib; roslib.load_manifest('arp_master')
 import rospy
+import tf
 
 # import the definition of the messages
 from arp_core.msg import Obstacle
 from arp_core.msg import StartColor
 from arp_core.msg import Start
 from arp_core.msg import Pose
+from Table2011 import *
 
 
 ########################### INPUT CLASS
@@ -39,6 +41,7 @@ class Inputs:
         Inputs.startInput=Inputs.createInput("Protokrot/start", Start)
         Inputs.poseInput=Inputs.createInput("Localizator/pose", Pose)
         Inputs.rearObstacleInput=Inputs.createInput("ObstacleDetector/rear_obstacle", Obstacle)
+        Inputs.listener = tf.TransformListener()
     
     @staticmethod
     def createInput(name,type):
@@ -60,7 +63,18 @@ class Inputs:
     
     @staticmethod
     def getobstacle():
-        return Inputs.obstacleInput.data.detected
+        if Inputs.obstacleInput.data.detected:
+            now = rospy.Time.now()
+            
+            try:
+                Inputs.listener.waitForTransform("/base_link", "/front_obstacle", now, rospy.Duration(0.2))
+                (trans,rot) = Inputs.listener.lookupTransform("/base_link", "/front_obstacle", now)
+            except (tf.Exception, tf.LookupException, tf.ConnectivityException):
+                return False
+            
+            return Table.isOnTable(trans[0],trans[1])
+        else:
+            return False
 
     @staticmethod
     def getRearObstacle():
