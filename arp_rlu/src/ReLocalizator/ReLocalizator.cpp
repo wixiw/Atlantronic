@@ -97,12 +97,24 @@ ReLocalizator::ReLocalizator() :
 
     std::vector<TableCorner> vtc;
 
+    //coin A
+    TableCorner A = TableCorner(-1.500,1.050,NORTH_EAST);
+    vtc.push_back(A);
     //coin C
     TableCorner C = TableCorner(-1.500, 0.628, NORTH_EAST);
     vtc.push_back(C);
+    //coin D
+    TableCorner D = TableCorner(-1.500,-1050,NORTH_WEST);
+    vtc.push_back(D);
+    //coin M
+    TableCorner M = TableCorner(1.500,-1.050,SOUTH_WEST);
+    vtc.push_back(M);
     //coin N
     TableCorner N = TableCorner(1.500, 0.628, SOUTH_EAST);
     vtc.push_back(N);
+    //coin P
+    TableCorner P = TableCorner(1.500,1.050,SOUTH_EAST);
+    vtc.push_back(P);
 
     setTableCorners(vtc);
     printTableCorners();
