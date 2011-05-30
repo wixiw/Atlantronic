@@ -23,10 +23,9 @@ ReLocalizatorNode::~ReLocalizatorNode()
 
 bool ReLocalizatorNode::estimatePositionCallback(EstimatePosition::Request& req, EstimatePosition::Response& res)
 {
-    std::cout << " " << std::endl;
-        std::cout << "***************************" << std::endl;
-        std::cout << "Estimation asked" << std::endl;
-        std::cout << "================" << std::endl;
+    ROS_INFO("***************************");
+    ROS_INFO("Estimation asked");
+    ROS_INFO("================");
 
 
     rl.previousX = req.previousX;
@@ -34,11 +33,11 @@ bool ReLocalizatorNode::estimatePositionCallback(EstimatePosition::Request& req,
     rl.previousTheta = req.previousTheta;
 
     TableCorner target = rl.selectTargetTableCorner();
-    std::cout << "TableCorner targeted :" << std::endl;
+    ROS_INFO("TableCorner targeted :");
     target.print();
 
     std::pair<double, double> p = rl.chooseScanWindow(target);
-    std::cout << "Selected window in Hokuyo ref : from " << arp_math::rad2deg(p.first) << " to " << arp_math::rad2deg(p.second) << std::endl;
+    ROS_INFO("Selected window in Hokuyo ref : from %f to %f", arp_math::rad2deg(p.first), arp_math::rad2deg(p.second));
 
     arp_rlu::DetectCorner dc_srv;
     dc_srv.request.minAngle = p.first;
@@ -49,7 +48,7 @@ bool ReLocalizatorNode::estimatePositionCallback(EstimatePosition::Request& req,
         res.estimatedY = rl.previousY;
         res.estimatedTheta = rl.previousTheta;
         res.quality = -1;
-        std::cout << "EstimatePosition Service : calling CornerDetection service failed" << std::endl;
+        ROS_WARN("EstimatePosition Service : calling CornerDetection service failed");
         return true;
     }
 
@@ -77,11 +76,11 @@ bool ReLocalizatorNode::estimatePositionCallback(EstimatePosition::Request& req,
 
     if( rl.quality > 0 )
     {
-        std::cout << "SUCESS !!" << std::endl;
+        ROS_INFO("SUCESS !!");
     }
     else
     {
-        std::cout << "FAILED !!" << std::endl;
+        ROS_WARN("FAILED !!");
     }
 
     return true;

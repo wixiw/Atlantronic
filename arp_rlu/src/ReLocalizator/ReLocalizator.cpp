@@ -6,6 +6,7 @@
  */
 
 #include "ReLocalizator.hpp"
+#include <iostream>
 
 using namespace arp_rlu;
 using namespace arp_math;
@@ -73,25 +74,26 @@ bool TableCorner::isVisibleFrom(double xLaser, double yLaser, double minAngle, d
 
 void TableCorner::print()
 {
-    std::cout << "  x : " << this->x << std::endl;
-    std::cout << "  y : " << this->y << std::endl;
+    std::stringstream ss;
+    ROS_INFO("  x : %f",this->x);
+    ROS_INFO("  y : %f",this->y);
 
     switch (this->type)
     {
         case NORTH_WEST:
-            std::cout << "  type : NORTH_WEST" << std::endl;
+            ROS_INFO("  type : NORTH_WEST");
             break;
         case NORTH_EAST:
-            std::cout << "  type : NORTH_EAST" << std::endl;
+            ROS_INFO("  type : NORTH_EAST");
             break;
         case SOUTH_EAST:
-            std::cout << "  type : SOUTH_EAST" << std::endl;
+            ROS_INFO("  type : SOUTH_EAST");
             break;
         case SOUTH_WEST:
-            std::cout << "  type : SOUTH_WEST" << std::endl;
+            ROS_INFO("  type : SOUTH_WEST");
             break;
         default:
-            std::cout << "  type : NONE" << std::endl;
+            ROS_INFO("  type : NONE");
             break;
     }
 }
@@ -156,15 +158,16 @@ void ReLocalizator::setTableCorners(std::vector<TableCorner> tc)
 
 void ReLocalizator::printTableCorners()
 {
-    std::cout << "*****************************" << std::endl;
-    std::cout << "Nb of TableCorners referenced :" << tableCorners.size() << std::endl;
+    ROS_INFO("*****************************");
+    int n = tableCorners.size();
+    ROS_INFO("Nb of TableCorners referenced : %d", n);
     for (unsigned int i = 0; i < tableCorners.size(); i++)
     {
-        std::cout << "TableCorner " << i << std::endl;
+        ROS_INFO("TableCorner %d", i);
         tableCorners[i].print();
     }
-    std::cout << "*****************************" << std::endl;
-    std::cout << " " << std::endl;
+    ROS_INFO("*****************************");
+    ROS_INFO(" ");
 }
 
 TableCorner ReLocalizator::selectTargetTableCorner()
@@ -180,16 +183,16 @@ TableCorner ReLocalizator::selectTargetTableCorner()
         }
     }
 
-    std::cout << "Nb of compatible TableCorner : " << compatibleCorners.size() << std::endl;
+    ROS_INFO("Nb of compatible TableCorner : %d", compatibleCorners.size());
     for(unsigned int i = 0; i < compatibleCorners.size(); i++)
     {
-        std::cout << "Compatible TableCorner " << i << std::endl;
+        ROS_INFO("Compatible TableCorner %d", i);
         compatibleCorners[i].print();
     }
 
     if (compatibleCorners.size() == 0)
     {
-        std::cout << "ReLocalizator selectTargetTableCorner : No compatible TableCorner found" << std::endl;
+        ROS_WARN("ReLocalizator selectTargetTableCorner : No compatible TableCorner found");
         return TableCorner();
     }
 
@@ -206,9 +209,9 @@ TableCorner ReLocalizator::selectTargetTableCorner()
         }
     }
 
-    std::cout << "ReLocalizator selectTargetCorner : Selected TableCorner :" << std::endl;
+    ROS_INFO("ReLocalizator selectTargetCorner : Selected TableCorner :");
     target.print();
-    std::cout << " with min_distance " << min_distance << std::endl;
+    ROS_INFO(" with min_distance %f",min_distance);
 
     return target;
 }
@@ -245,15 +248,12 @@ std::pair<double, double> ReLocalizator::chooseScanWindow(TableCorner target)
             yPtMax = target.y + length_sgmt;
             break;
         default:
-            std::cout << "ReLocalizator chooseScanWindow : TableCorner type is NONE" << std::endl;
+            ROS_WARN("ReLocalizator chooseScanWindow : TableCorner type is NONE");
             return std::make_pair(0.0, 0.0);
     }
 
     angleMin = betweenMinusPiAndPlusPi(atan2(previousY - yPtMin, previousX - xPtMin) + PI);
     angleMax = betweenMinusPiAndPlusPi(atan2(previousY - yPtMax, previousX - xPtMax) + PI);
-
-//    std::cout << "chooseScanWindow angleMin: " << angleMin << std::endl;
-//    std::cout << "chooseScanWindow angleMax: " << angleMax << std::endl;
 
     return std::make_pair(betweenMinusPiAndPlusPi(angleMin - previousTheta),
             betweenMinusPiAndPlusPi(angleMax - previousTheta));
@@ -267,7 +267,7 @@ void ReLocalizator::estimatePose(Corner detected, TableCorner target)
         estimatedY = previousY;
         estimatedTheta = previousTheta;
         quality = -1.;
-        std::cout << "ReLocalizator estimatePose : Detected Corner is invalid" << std::endl;
+        ROS_WARN("ReLocalizator estimatePose : Detected Corner is invalid");
         return;
     }
 
@@ -302,7 +302,7 @@ void ReLocalizator::estimatePose(Corner detected, TableCorner target)
             estimatedY = previousY;
             estimatedTheta = previousTheta;
             quality = -1.;
-            std::cout << "ReLocalizator estimatePose : TargetCorner type is NONE" << std::endl;
+            ROS_WARN("ReLocalizator estimatePose : TargetCorner type is NONE");
             return;
     }
 

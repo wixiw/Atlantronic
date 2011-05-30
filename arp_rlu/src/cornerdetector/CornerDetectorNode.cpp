@@ -78,7 +78,7 @@ bool CornerDetectorNode::detectCornerCallback(DetectCorner::Request& req, Detect
 {
     if (scan.rows() < 2)
     {
-        std::cout << "CornerDetectorNode detectCornerCallback : scan is empty" << std::endl;
+        ROS_WARN("CornerDetectorNode detectCornerCallback : scan is empty");
         return false;
     }
 
@@ -107,14 +107,14 @@ Scan CornerDetectorNode::cropScan(double minAngle, double maxAngle)
 
     if (scan.rows() < 2)
     {
-        std::cout << "CornerDetectorNode cropScan : Scan is empty before croping" << std::endl;
+        ROS_WARN("CornerDetectorNode cropScan : Scan is empty before croping");
         return Eigen::MatrixXd::Zero(1, 1);
     }
 
-    std::cout << "Scan minAngle :" << scan.row(0).minCoeff() << std::endl;
-    std::cout << "Scan maxAngle :" << scan.row(0).maxCoeff() << std::endl;
-    std::cout << "asked minAngle :" << minAngle << std::endl;
-    std::cout << "asked maxAngle :" << maxAngle << std::endl;
+    ROS_INFO("Scan minAngle : %f", scan.row(0).minCoeff());
+    ROS_INFO("Scan maxAngle :", scan.row(0).maxCoeff());
+    ROS_INFO("asked minAngle :",minAngle);
+    ROS_INFO("asked maxAngle :", maxAngle);
 
     // Crop scan
     unsigned int n = 0;
@@ -128,7 +128,7 @@ Scan CornerDetectorNode::cropScan(double minAngle, double maxAngle)
     }
     if (n == 0)
     {
-        std::cout << "CornerDetectorNode cropScan : Scan is empty after croping" << std::endl;
+        ROS_WARN("CornerDetectorNode cropScan : Scan is empty after croping");
         return Eigen::MatrixXd::Zero(1, 1);
     }
     Scan cropedScan(2, n);

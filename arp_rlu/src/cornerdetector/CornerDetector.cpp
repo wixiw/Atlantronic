@@ -31,7 +31,7 @@ Corner CornerDetector::compute()
 {
     if(mScan.cols() < 10)
     {
-        std::cout << "CornerDetector compute : Scan is empty" << std::endl;
+        ROS_WARN("CornerDetector compute : Scan is empty");
         return Corner();
     }
 
@@ -76,7 +76,7 @@ std::vector<Segment> CornerDetector::split(const Scan & scan, double threshDist,
     if (n < threshNumber)
     {
         std::vector<Segment> result;
-        std::cout << "CornerDetector split : Not enough points in Scan" << std::endl;
+        ROS_WARN("CornerDetector split : Not enough points in Scan");
         return result; // empty segments vector
     }
 
@@ -180,7 +180,7 @@ std::pair<std::vector<Segment>, SegmentedScan> CornerDetector::merge(std::vector
     unsigned int maxSgmtIndex = p.second.row(2).maxCoeff();
     if (maxSgmtIndex < sgmts.size())
     {
-        std::cerr << "CornerDetector merge : new sgmt index < vector<Segment> size => abnormal" << std::endl;
+        ROS_WARN("CornerDetector merge : new sgmt index < vector<Segment> size => abnormal");
     }
     std::vector<Segment> newSgmts = sgmts;
     newSgmts.push_back(p.first);
@@ -246,7 +246,7 @@ std::pair<Segment, SegmentedScan> CornerDetector::improveSegment(SegmentedScan s
     }
     if (nbPoints == 0)
     {
-        std::cerr << "CornerDetector improveSegment : No corresponding indices in SegmentedScan" << std::endl;
+        ROS_WARN("CornerDetector improveSegment : No corresponding indices in SegmentedScan");
         return std::make_pair(Segment(), scan);
     }
 
@@ -314,7 +314,7 @@ Corner CornerDetector::extractCorner(std::vector<Segment> sgmts)
 
     if (n < 2)
     {
-        std::cout << "CornerDetector extractCorner : No corner found because less than 2 segments detected" << std::endl;
+        ROS_WARN("CornerDetector extractCorner : No corner found because less than 2 segments detected");
         return Corner();
     }
 
@@ -338,7 +338,7 @@ Corner CornerDetector::extractCorner(std::vector<Segment> sgmts)
 
     if( cornerAngle < PI/2. - 10. * PI/ 180. || cornerAngle > PI/2. + 10. * PI/ 180.)
     {
-        std::cout << "Detected corner is eliminated because its angle is not near 90 deg ("<< rad2deg(cornerAngle) << ")" << std::endl;
+        ROS_WARN("Detected corner is eliminated because its angle is not near 90 deg (%f)", rad2deg(cornerAngle));
         return Corner();
     }
 
