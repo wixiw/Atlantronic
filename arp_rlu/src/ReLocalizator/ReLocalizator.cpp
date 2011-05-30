@@ -71,6 +71,31 @@ bool TableCorner::isVisibleFrom(double xLaser, double yLaser, double minAngle, d
     return true;
 }
 
+void TableCorner::print()
+{
+    std::cout << "  x : " << this->x << std::endl;
+    std::cout << "  y : " << this->y << std::endl;
+
+    switch (this->type)
+    {
+        case NORTH_WEST:
+            std::cout << "  type : NORTH_WEST" << std::endl;
+            break;
+        case NORTH_EAST:
+            std::cout << "  type : NORTH_EAST" << std::endl;
+            break;
+        case SOUTH_EAST:
+            std::cout << "  type : SOUTH_EAST" << std::endl;
+            break;
+        case SOUTH_WEST:
+            std::cout << "  type : SOUTH_WEST" << std::endl;
+            break;
+        default:
+            std::cout << "  type : NONE" << std::endl;
+            break;
+    }
+}
+
 ReLocalizator::ReLocalizator() :
     estimatedX(0.0), estimatedY(0.0), estimatedTheta(0.0), quality(-1)
 {
@@ -104,7 +129,7 @@ ReLocalizator::ReLocalizator() :
     TableCorner C = TableCorner(-1.500, 0.628, NORTH_EAST);
     vtc.push_back(C);
     //coin D
-    TableCorner D = TableCorner(-1.500,-1050,NORTH_WEST);
+    TableCorner D = TableCorner(-1.500,-1.050,NORTH_WEST);
     vtc.push_back(D);
     //coin M
     TableCorner M = TableCorner(1.500,-1.050,SOUTH_WEST);
@@ -136,28 +161,7 @@ void ReLocalizator::printTableCorners()
     for (unsigned int i = 0; i < tableCorners.size(); i++)
     {
         std::cout << "TableCorner " << i << std::endl;
-        std::cout << "  x : " << tableCorners[i].x << std::endl;
-        std::cout << "  y : " << tableCorners[i].y << std::endl;
-
-        switch (tableCorners[i].type)
-        {
-            case NORTH_WEST:
-                std::cout << "  type : NORTH_WEST" << std::endl;
-                break;
-            case NORTH_EAST:
-                std::cout << "  type : NORTH_EAST" << std::endl;
-                break;
-            case SOUTH_EAST:
-                std::cout << "  type : SOUTH_EAST" << std::endl;
-                break;
-            case SOUTH_WEST:
-                std::cout << "  type : SOUTH_WEST" << std::endl;
-                break;
-            default:
-                std::cout << "  type : NONE" << std::endl;
-                break;
-        }
-
+        tableCorners[i].print();
     }
     std::cout << "*****************************" << std::endl;
     std::cout << " " << std::endl;
@@ -175,6 +179,14 @@ TableCorner ReLocalizator::selectTargetTableCorner()
             compatibleCorners.push_back(*it);
         }
     }
+
+    std::cout << "Nb of compatible TableCorner : " << compatibleCorners.size() << std::endl;
+    for(unsigned int i = 0; i < compatibleCorners.size(); i++)
+    {
+        std::cout << "Compatible TableCorner " << i << std::endl;
+        compatibleCorners[i].print();
+    }
+
     if (compatibleCorners.size() == 0)
     {
         std::cout << "ReLocalizator selectTargetTableCorner : No compatible TableCorner found" << std::endl;
@@ -193,6 +205,10 @@ TableCorner ReLocalizator::selectTargetTableCorner()
             target = *it;
         }
     }
+
+    std::cout << "ReLocalizator selectTargetCorner : Selected TableCorner :" << std::endl;
+    target.print();
+    std::cout << " with min_distance " << min_distance << std::endl;
 
     return target;
 }
@@ -236,8 +252,8 @@ std::pair<double, double> ReLocalizator::chooseScanWindow(TableCorner target)
     angleMin = betweenMinusPiAndPlusPi(atan2(previousY - yPtMin, previousX - xPtMin) + PI);
     angleMax = betweenMinusPiAndPlusPi(atan2(previousY - yPtMax, previousX - xPtMax) + PI);
 
-    std::cout << "chooseScanWindow angleMin: " << angleMin << std::endl;
-    std::cout << "chooseScanWindow angleMax: " << angleMax << std::endl;
+//    std::cout << "chooseScanWindow angleMin: " << angleMin << std::endl;
+//    std::cout << "chooseScanWindow angleMax: " << angleMax << std::endl;
 
     return std::make_pair(betweenMinusPiAndPlusPi(angleMin - previousTheta),
             betweenMinusPiAndPlusPi(angleMax - previousTheta));

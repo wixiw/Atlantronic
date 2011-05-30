@@ -23,12 +23,22 @@ ReLocalizatorNode::~ReLocalizatorNode()
 
 bool ReLocalizatorNode::estimatePositionCallback(EstimatePosition::Request& req, EstimatePosition::Response& res)
 {
+    std::cout << " " << std::endl;
+        std::cout << "***************************" << std::endl;
+        std::cout << "Estimation asked" << std::endl;
+        std::cout << "================" << std::endl;
+
+
     rl.previousX = req.previousX;
     rl.previousY = req.previousY;
     rl.previousTheta = req.previousTheta;
 
     TableCorner target = rl.selectTargetTableCorner();
+    std::cout << "TableCorner targeted :" << std::endl;
+    target.print();
+
     std::pair<double, double> p = rl.chooseScanWindow(target);
+    std::cout << "Selected window in Hokuyo ref : from " << arp_math::rad2deg(p.first) << " to " << arp_math::rad2deg(p.second) << std::endl;
 
     arp_rlu::DetectCorner dc_srv;
     dc_srv.request.minAngle = p.first;
@@ -64,6 +74,16 @@ bool ReLocalizatorNode::estimatePositionCallback(EstimatePosition::Request& req,
     res.estimatedY = rl.estimatedY;
     res.estimatedTheta = rl.estimatedTheta;
     res.quality = rl.quality;
+
+    if( rl.quality > 0 )
+    {
+        std::cout << "SUCESS !!" << std::endl;
+    }
+    else
+    {
+        std::cout << "FAILED !!" << std::endl;
+    }
+
     return true;
 }
 

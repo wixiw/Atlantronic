@@ -14,7 +14,8 @@ using namespace arp_math;
 using namespace sensor_msgs;
 
 CornerDetectorNode::CornerDetectorNode() :
-    nh()
+    nh(),
+    scan(Eigen::MatrixXd::Zero(1,1))
 {
     scan_sub = nh.subscribe("/scan", 1, &CornerDetectorNode::scanCallback, this);
     detectcorner_srv = nh.advertiseService("/CornerDetector/DetectCorner", &CornerDetectorNode::detectCornerCallback, this);
@@ -37,13 +38,15 @@ void CornerDetectorNode::scanCallback(LaserScanConstPtr s)
         scan(0, i) = s->angle_min + i * s->angle_increment;
         scan(1, i) = s->ranges[i];
     }
-
-    //    cd.setScan(scan);
-    //    cd.compute();
 }
 
 bool CornerDetectorNode::detectCornerCallback(DetectCorner::Request& req, DetectCorner::Response& res)
 {
+    if( scan.rows() < 2 )
+    {
+        std::cout << "CornerDetectorNode detectCornerCallback : scan is empty" << std::endl;
+        return false;
+    }
 
     cd.setScan(cropScan(req.minAngle, req.maxAngle));
 
@@ -68,6 +71,12 @@ bool CornerDetectorNode::detectCornerCallback(DetectCorner::Request& req, Detect
 Scan CornerDetectorNode::cropScan(double minAngle, double maxAngle)
 {
 
+    if( scan.rows() < 2)
+    {
+        std::cout << "CornerDetectorNode cropScan : Scan is empty before croping" << std::endl;
+        return Eigen::MatrixXd::Zero(1,1);
+    }
+
     std::cout << "Scan minAngle :" << scan.row(0).minCoeff() << std::endl;
     std::cout << "Scan maxAngle :" << scan.row(0).maxCoeff() << std::endl;
     std::cout << "asked minAngle :" << minAngle << std::endl;
@@ -85,7 +94,8 @@ Scan CornerDetectorNode::cropScan(double minAngle, double maxAngle)
     }
     if(n == 0)
     {
-        return Eigen::MatrixXd::Zero(2,2);
+        std::cout << "CornerDetectorNode cropScan : Scan is empty after croping" << std::endl;
+        return Eigen::MatrixXd::Zero(1,1);
     }
     Scan cropedScan(2, n);
     unsigned int index = 0;
@@ -99,9 +109,6 @@ Scan CornerDetectorNode::cropScan(double minAngle, double maxAngle)
             index++;
         }
     }
-
-    std::cout << "Croped Scan minAngle :" << cropedScan.row(0).minCoeff() << std::endl;
-    std::cout << "Croped Scan maxAngle :" << cropedScan.row(0).maxCoeff() << std::endl;
 
     return cropedScan;
 }

@@ -35,6 +35,7 @@ class TableCorner
 
     public:
         bool isVisibleFrom(double x, double y, double minAngle, double maxAngle);
+        void print();
 
 };
 
