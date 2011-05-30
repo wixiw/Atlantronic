@@ -10,8 +10,7 @@ configure_file(
 #    EDIT BELOW THIS LINE AND UNTIL NEXT LINE FOR A NEW PROJECT
 
 rosbuild_add_executable(LocalizatorNode LocalizatorNode.cpp Localizator.cpp)
-rosbuild_add_executable(OldLocalizatorNode OldLocalizatorNode.cpp OldLocalizator.cpp)
-rosbuild_add_executable(ObstacleDetectorNode ObstacleDetectorNode.cpp ObstacleDetector.cpp)
+add_subdirectory(obstacle_detector)
 add_subdirectory(cornerdetector)
 add_subdirectory(ReLocalizator)
 
