@@ -15,6 +15,14 @@ TableCorner::TableCorner() :
 
 }
 
+TableCorner::TableCorner(double x, double y, TableCornerType type):
+        x(x),
+        y(y),
+        type(type)
+{
+
+}
+
 bool TableCorner::isVisibleFrom(double xLaser, double yLaser, double minAngle, double maxAngle)
 {
     bool result = false;
@@ -31,7 +39,36 @@ bool TableCorner::isVisibleFrom(double xLaser, double yLaser, double minAngle, d
 ReLocalizator::ReLocalizator() :
     estimatedX(0.0), estimatedY(0.0), estimatedTheta(0.0), quality(-1)
 {
+    /*
+
+     _________________________________________________________
+    M|         L|----------|I          H|----------|E         |D
+     |          |K        J|            |G        F|          |
+     |                                                        |
+     |                                                        |
+     |                                                        |
+     |                                                        |
+     |                                                        |
+     |                                                        |
+     |                                                        |
+     |                                                        |
+     |                                                        |
+    N|_______                                         ________|C
+    O|                                                        |B
+     |                                                        |
+    P|________________________________________________________|A
+
+     */
+
     std::vector<TableCorner> vtc;
+
+    //coin C
+    TableCorner C = TableCorner(-1.500,0.628,NORTH_WEST);
+    vtc.push_back(C);
+    //coin N
+    TableCorner N = TableCorner(1.500,0.628,SOUTH_EAST);
+    vtc.push_back(N);
+
     setTableCorners(vtc);
     printTableCorners();
 }

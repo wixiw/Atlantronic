@@ -27,6 +27,7 @@ class TableCorner
 
     public:
         TableCorner();
+        TableCorner(double x, double y, TableCornerType type);
 
         double x;
         double y;
