@@ -7,8 +7,9 @@
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE uTest_Math
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
+#include <boost/bind.hpp>
 
-
-#include "uTest_Pose.hpp"
-#include "uTest_Twist2.hpp"
+//#include "uTest_Pose.hpp"
+//#include "uTest_Twist2.hpp"
+#include "uTest_Math.hpp"

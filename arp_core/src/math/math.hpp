@@ -37,6 +37,9 @@ namespace arp_math
     double normalizeAngle(double angle);
     Rotation2 normalizeAngle(Rotation2 rot);
 
+    double betweenMinusPiAndPlusPi( double angle);
+    double betweenZeroAndTwoPi( double angle);
+
     double deg2rad(double deg);
     double rad2deg(double rad);
 

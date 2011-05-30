@@ -3,7 +3,7 @@
 
 #ajout de la compilation des tests-unitaires
 #add_subdirectory(integration-tests)
-#add_subdirectory(unit-tests)
+add_subdirectory(unit-tests)
 
 rosbuild_add_executable(arp_core.arp arp_core_main.c)
 

@@ -26,6 +26,25 @@ Rotation2 normalizeAngle(Rotation2 rot)
     return Rotation2(angle);
 }
 
+double betweenMinusPiAndPlusPi(double angle)
+{
+    angle = betweenZeroAndTwoPi( angle );
+    if (angle > PI)
+    {
+        angle = angle - 2 * PI;
+    }
+    if (angle < -PI)
+    {
+        angle = angle + 2 * PI;
+    }
+    return angle;
+}
+
+double betweenZeroAndTwoPi(double angle)
+{
+    return fmod( fmod(angle, 2 * PI) + 4. * PI, 2 * PI);
+}
+
 double deg2rad(double deg)
 {
     return deg * (PI / 180);
