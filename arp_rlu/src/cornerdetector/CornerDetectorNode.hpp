@@ -58,6 +58,8 @@ class CornerDetectorNode
 
         arp_rlu::Scan cropScan( double minAngle, double maxAngle);
 
+        bool reverse_scan;
+
 };
 }
 

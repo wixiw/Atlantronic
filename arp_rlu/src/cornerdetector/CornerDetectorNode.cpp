@@ -14,18 +14,30 @@ using namespace arp_math;
 using namespace sensor_msgs;
 
 CornerDetectorNode::CornerDetectorNode() :
-    nh(), scan(Eigen::MatrixXd::Zero(1, 1))
+    nh(), scan(Eigen::MatrixXd::Zero(1, 1)), reverse_scan(false)
 {
     std::string front_scan_topic_name;
     if (nh.getParam("/front_scan_topic_name", front_scan_topic_name))
     {
-        ROS_INFO("Got param named '/front_scan_topic_name' : %f", front_scan_topic_name);
+        ROS_INFO("Got param named '/front_scan_topic_name' : %s", front_scan_topic_name);
     }
     else
     {
         ROS_WARN("Failed to get param '/front_scan_topic_name'. Take default value (/scan)");
         front_scan_topic_name = "/scan";
     }
+
+
+    if (nh.getParam("/reverse_scan", reverse_scan))
+    {
+        ROS_INFO("Got param named '/reverse_scan' : %i", reverse_scan);
+    }
+    else
+    {
+        ROS_WARN("Failed to get param '/reverse_scan'. Take default value (true)");
+        reverse_scan = true;
+    }
+
     scan_sub = nh.subscribe(front_scan_topic_name, 1, &CornerDetectorNode::scanCallback, this);
     detectcorner_srv = nh.advertiseService("/CornerDetector/DetectCorner", &CornerDetectorNode::detectCornerCallback,
             this);
@@ -43,11 +55,23 @@ void CornerDetectorNode::scanCallback(LaserScanConstPtr s)
 {
     unsigned int n = s->ranges.size();
     scan = Eigen::MatrixXd(2, n);
-    for (unsigned int i = 0; i != s->ranges.size(); i++)
+    if (!reverse_scan)
     {
-        scan(0, i) = s->angle_min + i * s->angle_increment;
-        scan(1, i) = s->ranges[i];
+        for (unsigned int i = 0; i != n; i++)
+        {
+            scan(0, i) = s->angle_min + i * s->angle_increment;
+            scan(1, i) = s->ranges[i];
+        }
     }
+    else
+    {
+        for (unsigned int i = 0; i != n; i++)
+        {
+            scan(0, n-1-i) = betweenMinusPiAndPlusPi( - s->angle_min - i * s->angle_increment );
+            scan(1, n-1-i) = s->ranges[i];
+        }
+    }
+
 }
 
 bool CornerDetectorNode::detectCornerCallback(DetectCorner::Request& req, DetectCorner::Response& res)
