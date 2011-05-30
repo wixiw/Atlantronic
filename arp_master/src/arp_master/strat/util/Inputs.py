@@ -38,7 +38,7 @@ class Inputs:
         Inputs.colorInput=Inputs.createInput("Protokrot/color", StartColor)
         Inputs.startInput=Inputs.createInput("Protokrot/start", Start)
         Inputs.poseInput=Inputs.createInput("Localizator/pose", Pose)
-	Inputs.rearObstacleInput=Inputs.createInput("Protokrot/rear_obstacle", Obstacle)
+        Inputs.rearObstacleInput=Inputs.createInput("Protokrot/rear_obstacle", Obstacle)
     
     @staticmethod
     def createInput(name,type):

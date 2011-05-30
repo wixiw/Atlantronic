@@ -6,21 +6,21 @@ import smach
 import smach_ros
 import smach_msgs
 
-from CyclicState import CyclicState
-from CyclicActionState import CyclicActionState
-from PreemptiveStateMachine import PreemptiveStateMachine
-from PreemptiveCyclicState import PreemptiveCyclicState
-from Inputs import Inputs
-from Data import Data
+from arp_master.strat.util.CyclicState import CyclicState
+from arp_master.strat.util.CyclicActionState import CyclicActionState
+from arp_master.strat.util.PreemptiveStateMachine import PreemptiveStateMachine
+from arp_master.strat.util.PreemptiveCyclicState import PreemptiveCyclicState
+from arp_master.strat.util.Inputs import Inputs
+from arp_master.strat.util.Data import Data
 from arp_ods.msg import OrderGoal
 from arp_ods.msg import OrderAction
 
 from math import pi
 
-from Table2011 import *
-from UtilARD import *
+from arp_master.strat.util.Table2011 import *
+from arp_master.strat.util.UtilARD import *
 
-class Opening_C(PreemptiveStateMachine):
+class Opening(PreemptiveStateMachine):
     def __init__(self):
         PreemptiveStateMachine.__init__(self, outcomes=['endOpening', 'problem'])
         with self:

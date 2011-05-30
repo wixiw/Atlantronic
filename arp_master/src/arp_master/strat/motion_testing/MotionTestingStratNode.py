@@ -10,12 +10,12 @@ from arp_core.msg import Obstacle
 from arp_core.msg import StartColor
 from arp_core.msg import Start
 #import the other strat modules    
-from CyclicState import CyclicState
-from CyclicActionState import CyclicActionState
+from arp_master.strat.util.CyclicState import CyclicState
+from arp_master.strat.util.CyclicActionState import CyclicActionState
 
-from Inputs import Inputs
-from Data import Data
-from Table2011 import *
+from arp_master.strat.util.Inputs import Inputs
+from arp_master.strat.util.Data import Data
+from arp_master.strat.util.Table2011 import *
 from math import pi
 
 ###########################  TEMPORAL BEHAVIOR

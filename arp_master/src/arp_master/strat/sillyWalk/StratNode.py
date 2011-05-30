@@ -10,17 +10,18 @@ from arp_core.msg import Obstacle
 from arp_core.msg import StartColor
 from arp_core.msg import Start
 #import the other strat modules    
-import CyclicState
+import arp_master.strat.util.CyclicState
+
 import Strat_Initialisation
 import Strat_StartSequence
-import Strat_Opening_C
-import Strat_Middlegame_C
+import Strat_Opening
+import Strat_Middlegame
 import Strat_Endgame
 import Strat_Uninitialisation
 
-from Inputs import Inputs
-from Data import Data
-from Table2011 import *
+from arp_master.strat.util.Inputs import Inputs
+from arp_master.strat.util.Data import Data
+from arp_master.strat.util.Table2011 import *
 
 ###########################  TEMPORAL BEHAVIOR
 
@@ -69,9 +70,9 @@ class MainStateMachine(smach.StateMachine):
                                    transitions={'endInitialisation':'StartSequence'})
             smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(),
                                    transitions={'gogogo':'Opening','problem':'end'})
-            smach.StateMachine.add('Opening', Strat_Opening_C.Opening_C(),
+            smach.StateMachine.add('Opening', Strat_Opening.Opening(),
                                     transitions={'endOpening':'Middlegame','problem':'Middlegame'})
-            smach.StateMachine.add('Middlegame', Strat_Middlegame_C.Middlegame_C(),
+            smach.StateMachine.add('Middlegame', Strat_Middlegame.Middlegame(),
                                     transitions={'endMiddlegame':'Endgame'})
             smach.StateMachine.add('Endgame', Strat_Endgame.Endgame(),
                                     transitions={'endEndgame':'Uninitialisation'})
@@ -85,5 +86,5 @@ class MainStateMachine(smach.StateMachine):
 # main function, called by ros
 if __name__ == '__main__':
     try:
-        StratNode_C()
+        StratNode()
     except rospy.ROSInterruptException: pass
