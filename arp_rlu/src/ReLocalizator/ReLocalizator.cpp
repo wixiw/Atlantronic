@@ -80,7 +80,7 @@ ReLocalizator::ReLocalizator() :
     /*
 
      _________________________________________________________
-     M|         L|----------|I          H|----------|E         |D
+     |M        L|----------|I          H|----------|E        D|
      |          |K        J|            |G        F|          |
      |                                                        |
      |                                                        |
@@ -91,10 +91,10 @@ ReLocalizator::ReLocalizator() :
      |                                                        |
      |                                                        |
      |                                                        |
-     N|_______                                         ________|C
-     O|                                                        |B
+     |N_______                                         ______C|
+     |O                                                      B|
      |                                                        |
-     P|________________________________________________________|A
+     |P______________________________________________________A|
 
      */
 
@@ -157,8 +157,8 @@ TableCorner ReLocalizator::selectTargetTableCorner()
     std::vector<TableCorner> compatibleCorners;
     for (std::vector<TableCorner>::iterator it = tableCorners.begin(); it != tableCorners.end(); ++it)
     {
-        if (it->isVisibleFrom(previousX, previousY, previousTheta, previousTheta + PI / 2.)
-         || it->isVisibleFrom(previousX, previousY, previousTheta - PI / 2., previousTheta))
+        if (it->isVisibleFrom(previousX, previousY, previousTheta, previousTheta + PI / 2.) || it->isVisibleFrom(
+                previousX, previousY, previousTheta - PI / 2., previousTheta))
         {
             compatibleCorners.push_back(*it);
         }
@@ -183,7 +183,46 @@ TableCorner ReLocalizator::selectTargetTableCorner()
 
 std::pair<double, double> ReLocalizator::chooseScanWindow(TableCorner target)
 {
-    return std::make_pair(0.0, 0.0);
+    if (target.type == NONE)
+        return std::make_pair(0.0, 0.0);
+
+    double angleMin;
+    double angleMax;
+    double xPtMin = target.x;
+    double yPtMin = target.y;
+    double xPtMax = target.x;
+    double yPtMax = target.y;
+    const double length_sgmt = 0.25;
+
+    switch (target.type)
+    {
+        case NORTH_WEST:
+            yPtMin = target.y + length_sgmt;
+            xPtMax = target.x + length_sgmt;
+            break;
+        case NORTH_EAST:
+            xPtMin = target.x + length_sgmt;
+            yPtMax = target.y - length_sgmt;
+            break;
+        case SOUTH_EAST:
+            yPtMin = target.y - length_sgmt;
+            xPtMax = target.x - length_sgmt;
+            break;
+        case SOUTH_WEST:
+            xPtMin = target.x - length_sgmt;
+            yPtMax = target.y + length_sgmt;
+            break;
+        default:
+            return std::make_pair(0.0, 0.0);
+    }
+
+    angleMin = betweenMinusPiAndPlusPi(atan2(previousY - yPtMin, previousX - xPtMin) + PI);
+    angleMax = betweenMinusPiAndPlusPi(atan2(previousY - yPtMax, previousX - xPtMax) + PI);
+
+    std::cout << "chooseScanWindow angleMin: " << angleMin << std::endl;
+    std::cout << "chooseScanWindow angleMax: " << angleMax << std::endl;
+
+    return std::make_pair(betweenMinusPiAndPlusPi(angleMin - previousTheta), betweenMinusPiAndPlusPi(angleMax - previousTheta));
 }
 
 void ReLocalizator::estimatePose(Corner detected, TableCorner target)
