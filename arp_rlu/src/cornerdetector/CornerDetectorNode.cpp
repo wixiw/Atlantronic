@@ -17,24 +17,24 @@ CornerDetectorNode::CornerDetectorNode() :
     nh(), scan(Eigen::MatrixXd::Zero(1, 1)), reverse_scan(false)
 {
     std::string front_scan_topic_name;
-    if (nh.getParam("/front_scan_topic_name", front_scan_topic_name))
+    if (nh.getParam("CornerDetector/front_scan_topic_name", front_scan_topic_name))
     {
-        ROS_INFO("Got param named '/front_scan_topic_name' : %s", front_scan_topic_name);
+        ROS_INFO("Got param named 'front_scan_topic_name' : %s", front_scan_topic_name);
     }
     else
     {
-        ROS_WARN("Failed to get param '/front_scan_topic_name'. Take default value (/scan)");
-        front_scan_topic_name = "/scan";
+        ROS_WARN("Failed to get param 'front_scan_topic_name'. Take default value (/front_scan)");
+        front_scan_topic_name = "/front_scan";
     }
 
 
-    if (nh.getParam("/reverse_scan", reverse_scan))
+    if (nh.getParam("CornerDetector/reverse_scan", reverse_scan))
     {
-        ROS_INFO("Got param named '/reverse_scan' : %i", reverse_scan);
+        ROS_INFO("Got param named 'reverse_scan' : %i", reverse_scan);
     }
     else
     {
-        ROS_WARN("Failed to get param '/reverse_scan'. Take default value (true)");
+        ROS_WARN("Failed to get param 'reverse_scan'. Take default value (true)");
         reverse_scan = true;
     }
 

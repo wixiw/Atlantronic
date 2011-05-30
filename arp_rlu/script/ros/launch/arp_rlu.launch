@@ -9,8 +9,15 @@
  		<param name="rear_ir_switch_frame" type="string" value="rear_ir_switch"/> 
  		<param name="front_laser_frame" type="string" value="top_laser"/> 
  	</node>
- 	<node name="CornerDetector"  pkg="arp_rlu"  type="CornerDetectorNode"  args="" output="screen"/>
- 	<node name="ReLocalizator"  pkg="arp_rlu"  type="ReLocalizatorNode"  args="" output="screen"/>
+ 	<node name="CornerDetector"  pkg="arp_rlu"  type="CornerDetectorNode"  args="" output="screen" >
+  		<!--<param name="front_scan_topic_name" type="string" value="/front_scan"/>
+  		<param name="reverse_scan" type="bool" value="true"/> -->
+ 	</node> 
+ 	<node name="ReLocalizator"  pkg="arp_rlu"  type="ReLocalizatorNode"  args="" output="screen">
+  		<!--<param name="base_frame" type="string" value="base_link"/>
+  		<param name="front_laser_frame" type="string" value="top_laser"/> -->
+ 	</node> 
+ 	
  	<!--
  	<node name="Laserator" pkg="canonical_scan_matcher" type="csm_node" output="log">
   		<param name="world_frame" type="string" value="world"/>

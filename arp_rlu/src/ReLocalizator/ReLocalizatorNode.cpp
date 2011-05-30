@@ -17,15 +17,15 @@ ReLocalizatorNode::ReLocalizatorNode() :
             &ReLocalizatorNode::estimatePositionCallback, this);
     cornerdetection_client_ = nh.serviceClient<arp_rlu::DetectCorner> ("/CornerDetector/DetectCorner");
 
-    if (!ros::param::get("ReLocalizatorNode/base_frame", m_baseFrameName))
+    if (!ros::param::get("ReLocalizator/base_frame", m_baseFrameName))
     {
-        ROS_WARN("did not found ReLocalizatorNode/base_frame, taking base_link");
+        ROS_WARN("did not found base_frame, taking base_link");
         m_baseFrameName = "base_link";
     }
 
-    if (!ros::param::get("ReLocalizatorNode/front_laser_frame", m_frontLaserFrameName))
+    if (!ros::param::get("ReLocalizator/front_laser_frame", m_frontLaserFrameName))
     {
-        ROS_WARN("did not found ReLocalizatorNode/front_laser_frame, taking top_laser");
+        ROS_WARN("did not found front_laser_frame, taking top_laser");
         m_frontLaserFrameName = "top_laser";
     }
 
