@@ -335,6 +335,7 @@ Corner CornerDetector::extractCorner(std::vector<Segment> sgmts)
 
     if( cornerAngle < PI/2. - 10. * PI/ 180. || cornerAngle > PI/2. + 10. * PI/ 180.)
     {
+        std::cout << "Detected corner is eliminated because its angle is not near 90 deg" << std::endl;
         return Corner();
     }
 
