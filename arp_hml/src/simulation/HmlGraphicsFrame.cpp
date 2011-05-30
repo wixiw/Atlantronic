@@ -30,7 +30,7 @@ HmlGraphicsFrame::HmlGraphicsFrame():
 	m_color.color = "red";
 	m_start.go = true;
 	m_obstacle.detected = false;
-	m_rearObstacle.detected = false;
+	m_rearObstacle.data = false;
 	m_emergency.data = false;
 
 	update_timer_ = new wxTimer(this);
@@ -47,8 +47,8 @@ HmlGraphicsFrame::HmlGraphicsFrame():
 
 	start_pub = m_nodeHandle.advertise<Start>("Protokrot/start", 1);
 	color_pub = m_nodeHandle.advertise<StartColor>("Protokrot/color", 1);
-	obstacle_pub = m_nodeHandle.advertise<Obstacle>("/obstacle", 1);
-	rear_obstacle_pub = m_nodeHandle.advertise<Obstacle>("Protokrot/rear_obstacle", 1);
+	obstacle_pub = m_nodeHandle.advertise<Obstacle>("ObstacleDetector/front_obstacle", 1);
+	rear_obstacle_pub = m_nodeHandle.advertise<Bool>("Protokrot/rear_obstacle", 1);
 	emergency_pub = m_nodeHandle.advertise<Bool>("Protokrot/emergency_stop", 1);
 
 	ROS_INFO("Starting HmlGraphics with node name %s", ros::this_node::getName().c_str()) ;
@@ -117,7 +117,7 @@ void HmlGraphicsFrame::onPaint(wxPaintEvent& evt)
     }
 
     //dessin de l'obstacle
-    if( m_rearObstacle.detected )
+    if( m_rearObstacle.data )
     {
         dc.DrawLine(140,140,200,170);
         dc.DrawLine(200,140,140,170);
@@ -172,7 +172,7 @@ void HmlGraphicsFrame::onObstacle(wxCommandEvent& event)
 void HmlGraphicsFrame::onRearObstacle(wxCommandEvent& event)
 {
     //inversion du bouton
-    m_rearObstacle.detected = !m_rearObstacle.detected;
+    m_rearObstacle.data = !m_rearObstacle.data;
 }
 
 void HmlGraphicsFrame::onEmergency(wxCommandEvent& event)

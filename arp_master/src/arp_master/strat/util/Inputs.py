@@ -34,11 +34,11 @@ class Inputs:
     
     @staticmethod
     def link():
-        Inputs.obstacleInput= Inputs.createInput("obstacle", Obstacle)
+        Inputs.obstacleInput= Inputs.createInput("ObstacleDetector/front_obstacle", Obstacle)
         Inputs.colorInput=Inputs.createInput("Protokrot/color", StartColor)
         Inputs.startInput=Inputs.createInput("Protokrot/start", Start)
         Inputs.poseInput=Inputs.createInput("Localizator/pose", Pose)
-        Inputs.rearObstacleInput=Inputs.createInput("Protokrot/rear_obstacle", Obstacle)
+        Inputs.rearObstacleInput=Inputs.createInput("ObstacleDetector/rear_obstacle", Obstacle)
     
     @staticmethod
     def createInput(name,type):
@@ -63,7 +63,7 @@ class Inputs:
         return Inputs.obstacleInput.data.detected
 
     @staticmethod
-    def getrearobstacle():
+    def getRearObstacle():
         return Inputs.rearObstacleInput.data.detected
     
     @staticmethod

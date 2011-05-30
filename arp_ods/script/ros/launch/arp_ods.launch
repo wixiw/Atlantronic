@@ -11,7 +11,7 @@
     	<!--Proportional Gain on angle error (without unity)  -->
 	    <param name="ROTATION_GAIN" value="5.0"/> 
 	    <!--Derivative Gain on angle error derivative (without unity)  -->
-	    <param name="ROTATION_D_GAIN" value="0.5"/> 
+	    <param name="ROTATION_D_GAIN" value="0.4"/> 
 		<!--Gain on translation (without unity)  -->
 	    <param name="TRANSLATION_GAIN" value="1.0" /> 
 		<!--The fantom coefficient. means the distance of the fantom point to the final point. 

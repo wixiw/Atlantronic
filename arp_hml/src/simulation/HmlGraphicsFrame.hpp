@@ -112,7 +112,7 @@ namespace arp_hml
         /**
          * Représente la présence d'osbtacle à l'arrière
          */
-        Obstacle m_rearObstacle;
+        Bool m_rearObstacle;
 
         /**
          * Représente l'état de l'au

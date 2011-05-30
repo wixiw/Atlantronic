@@ -1,1 +1,2 @@
-float32 detected
+uint8 detected
+Pose position
