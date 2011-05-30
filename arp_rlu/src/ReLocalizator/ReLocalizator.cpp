@@ -103,7 +103,7 @@ ReLocalizator::ReLocalizator() :
     std::vector<TableCorner> vtc;
 
     //coin C
-    TableCorner C = TableCorner(-1.500,0.628,NORTH_WEST);
+    TableCorner C = TableCorner(-1.500,0.628,NORTH_EAST);
     vtc.push_back(C);
     //coin N
     TableCorner N = TableCorner(1.500,0.628,SOUTH_EAST);
