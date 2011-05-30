@@ -10,6 +10,7 @@ class Data:
     #variables de la machine d'etat
     color='NONE'
     adv_color='NONE'
+    going_back=False
 
     liste_cases2_faites=[]
     

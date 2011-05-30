@@ -10,14 +10,11 @@ from arp_core.msg import Obstacle
 from arp_core.msg import StartColor
 from arp_core.msg import Start
 #import the other strat modules    
-from util import CyclicState
-
 import CyclicState
-
 import Strat_Initialisation
 import Strat_StartSequence
-import Strat_Opening
-import Strat_Middlegame
+import Strat_Opening_C
+import Strat_Middlegame_C
 import Strat_Endgame
 import Strat_Uninitialisation
 
@@ -72,9 +69,9 @@ class MainStateMachine(smach.StateMachine):
                                    transitions={'endInitialisation':'StartSequence'})
             smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(),
                                    transitions={'gogogo':'Opening','problem':'end'})
-            smach.StateMachine.add('Opening', Strat_Opening.Opening(),
+            smach.StateMachine.add('Opening', Strat_Opening_C.Opening_C(),
                                     transitions={'endOpening':'Middlegame','problem':'Middlegame'})
-            smach.StateMachine.add('Middlegame', Strat_Middlegame.Middlegame(),
+            smach.StateMachine.add('Middlegame', Strat_Middlegame_C.Middlegame_C(),
                                     transitions={'endMiddlegame':'Endgame'})
             smach.StateMachine.add('Endgame', Strat_Endgame.Endgame(),
                                     transitions={'endEndgame':'Uninitialisation'})
@@ -88,5 +85,5 @@ class MainStateMachine(smach.StateMachine):
 # main function, called by ros
 if __name__ == '__main__':
     try:
-        StratNode()
+        StratNode_C()
     except rospy.ROSInterruptException: pass

@@ -62,7 +62,6 @@ class CyclicActionState(CyclicState):
         if state==actionlib.GoalStatus.SUCCEEDED:
             return 'succeeded'
         
-        #condition non testee <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< !!!!!!!!!
         if state==actionlib.GoalStatus.ABORTED or state==actionlib.GoalStatus.REJECTED or state==actionlib.GoalStatus.LOST or state==actionlib.GoalStatus.PREEMPTED :
             return 'aborted'  
         
