@@ -10,13 +10,36 @@
 
 using namespace arp_rlu;
 
-
 ReLocalizatorNode::ReLocalizatorNode() :
     nh()
 {
-    estimatePosition_srv = nh.advertiseService("/ReLocalizator/EstimatePosition", &ReLocalizatorNode::estimatePositionCallback, this);
-    cornerdetection_client_ = nh.serviceClient<arp_rlu::DetectCorner>("/CornerDetector/DetectCorner");
+    estimatePosition_srv = nh.advertiseService("/ReLocalizator/EstimatePosition",
+            &ReLocalizatorNode::estimatePositionCallback, this);
+    cornerdetection_client_ = nh.serviceClient<arp_rlu::DetectCorner> ("/CornerDetector/DetectCorner");
+
+    if (!ros::param::get("ReLocalizatorNode/base_frame", m_baseFrameName))
+    {
+        ROS_WARN("did not found ReLocalizatorNode/base_frame, taking base_link");
+        m_baseFrameName = "base_link";
+    }
+
+    if (!ros::param::get("ReLocalizatorNode/front_laser_frame", m_frontLaserFrameName))
+    {
+        ROS_WARN("did not found ReLocalizatorNode/front_laser_frame, taking top_laser");
+        m_frontLaserFrameName = "top_laser";
+    }
+
+    try
+    {
+        ros::Time t = ros::Time::now();
+        m_tfListener.waitForTransform(m_baseFrameName, m_frontLaserFrameName, t, ros::Duration(1.0));
+        m_tfListener.lookupTransform(m_baseFrameName, m_frontLaserFrameName, t, m_baseToFrontLaser);
+    } catch (tf::TransformException ex)
+    {
+        ROS_WARN("ReLocalizatorNode: Could get initial front laser transform (%s)", ex.what());
+    }
 }
+
 ReLocalizatorNode::~ReLocalizatorNode()
 {
 }
@@ -27,9 +50,16 @@ bool ReLocalizatorNode::estimatePositionCallback(EstimatePosition::Request& req,
     ROS_INFO("Estimation asked");
     ROS_INFO("================");
 
+    double frontal_deport = 0.26; //m_baseToFrontLaser.getOrigin().getX();
+    double lateral_deport = 0.053; //m_baseToFrontLaser.getOrigin().getY();
 
-    rl.previousX = req.previousX;
-    rl.previousY = req.previousY;
+    //frontal_deport = 0.0;
+    //lateral_deport = 0.0;
+
+    double c = cos(req.previousTheta);
+    double s = sin(req.previousTheta);
+    rl.previousX = req.previousX + frontal_deport * c - lateral_deport * s;
+    rl.previousY = req.previousY + frontal_deport * s + lateral_deport * c;
     rl.previousTheta = req.previousTheta;
 
     TableCorner target = rl.selectTargetTableCorner();
@@ -42,7 +72,7 @@ bool ReLocalizatorNode::estimatePositionCallback(EstimatePosition::Request& req,
     arp_rlu::DetectCorner dc_srv;
     dc_srv.request.minAngle = p.first;
     dc_srv.request.maxAngle = p.second;
-    if ( !cornerdetection_client_.call(dc_srv))
+    if (!cornerdetection_client_.call(dc_srv))
     {
         res.estimatedX = rl.previousX;
         res.estimatedY = rl.previousY;
@@ -69,12 +99,14 @@ bool ReLocalizatorNode::estimatePositionCallback(EstimatePosition::Request& req,
 
     rl.estimatePose(detected, target);
 
-    res.estimatedX = rl.estimatedX;
-    res.estimatedY = rl.estimatedY;
+    c = cos(rl.estimatedTheta);
+    s = sin(rl.estimatedTheta);
+    res.estimatedX = rl.estimatedX - frontal_deport * c + lateral_deport * s;
+    res.estimatedY = rl.estimatedY - frontal_deport * s + lateral_deport * c;
     res.estimatedTheta = rl.estimatedTheta;
     res.quality = rl.quality;
 
-    if( rl.quality > 0 )
+    if (rl.quality > 0)
     {
         ROS_INFO("SUCESS !!");
     }
@@ -90,8 +122,6 @@ void ReLocalizatorNode::go()
 {
     ros::spin();
 }
-
-
 
 int main(int argc, char** argv)
 {
