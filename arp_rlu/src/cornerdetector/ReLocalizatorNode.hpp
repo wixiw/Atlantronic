@@ -8,6 +8,8 @@
 #ifndef _ARP_RLU_RELOCALIZATORNODE_HPP_
 #define _ARP_RLU_RELOCALIZATORNODE_HPP_
 
+#include "CornerDetector.hpp"
+
 #include <arp_rlu/DetectCorner.h>
 #include <arp_rlu/EstimatePosition.h>
 #include <string>
@@ -15,12 +17,28 @@
 
 namespace arp_rlu
 {
-
-struct TableCorner
+enum TableCornerType
 {
+    NONE,
+    NORTH_WEST,
+    NORTH_EAST,
+    SOUTH_EAST,
+    SOUTH_WEST
+};
+
+class TableCorner
+{
+
+    public:
+        TableCorner();
+
         double x;
         double y;
-        std::string type;
+        TableCornerType type;
+
+    public:
+        bool isVisibleFrom(double x, double y, double minAngle, double maxAngle);
+
 };
 
 class ReLocalizatorNode
@@ -54,6 +72,18 @@ class ReLocalizatorNode
 
         std::vector<TableCorner> tableCorners;
 
+        double previousX;
+        double previousY;
+        double previousTheta;
+
+        double estimatedX;
+        double estimatedY;
+        double estimatedTheta;
+        double quality;
+
+        TableCorner selectTargetTableCorner();
+        std::pair<double, double> chooseScanWindow(TableCorner);
+        void estimatePose(arp_rlu::Corner, TableCorner);
 
 };
 }
