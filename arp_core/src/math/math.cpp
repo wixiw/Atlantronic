@@ -10,19 +10,9 @@
 namespace arp_math
 {
 
-double normalizeAngle(double angle)
+Rotation2 betweenMinusPiAndPlusPi(Rotation2 rot)
 {
-    angle = fmod(angle, 2 * PI);
-    if (angle > PI)
-        angle = angle - 2 * PI;
-    if (angle < -PI)
-        angle = angle + 2 * PI;
-    return angle;
-}
-
-Rotation2 normalizeAngle(Rotation2 rot)
-{
-    double angle = normalizeAngle(rot.angle());
+    double angle = betweenMinusPiAndPlusPi(rot.angle());
     return Rotation2(angle);
 }
 

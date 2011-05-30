@@ -13,6 +13,9 @@
 #include <Eigen/Core>
 #include "Geometry.hpp"
 
+//a supprimer quand tout le mode aura switché a betweenMinusPiAndPlusPi
+#define normalizeAngle betweenMinusPiAndPlusPi
+
 namespace arp_math
 {
     typedef Eigen::Matrix<double, 2, 1> Vector2;
@@ -34,8 +37,10 @@ namespace arp_math
     /**
      * Return any angle in -pi +pi
      */
-    double normalizeAngle(double angle);
-    Rotation2 normalizeAngle(Rotation2 rot);
+
+    double betweenMinusPiAndPlusPi( double angle);
+    Rotation2 betweenMinusPiAndPlusPi(Rotation2 rot);
+    double betweenZeroAndTwoPi( double angle);
 
     double betweenMinusPiAndPlusPi( double angle);
     double betweenZeroAndTwoPi( double angle);
