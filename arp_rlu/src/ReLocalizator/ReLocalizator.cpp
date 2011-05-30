@@ -8,6 +8,7 @@
 #include "ReLocalizator.hpp"
 
 using namespace arp_rlu;
+using namespace arp_math;
 
 TableCorner::TableCorner() :
     x(0.0), y(0.0), type(NONE)
@@ -25,15 +26,54 @@ TableCorner::TableCorner(double x, double y, TableCornerType type):
 
 bool TableCorner::isVisibleFrom(double xLaser, double yLaser, double minAngle, double maxAngle)
 {
-    bool result = false;
+    // D'abord, on regarde si le coin est compatible avec la ligne de vue
+    double capSigth = betweenMinusPiAndPlusPi(atan2(yLaser - y, xLaser - x));
+    //    std::cout << "capSigth:" << rad2deg(capSigth) << std::endl;
 
-    // D'abord, on regarde si le coin est compatible
-    double capSigth = atan2(yLaser - y, xLaser - x);
+    switch (type)
+    {
+        case NORTH_WEST:
+            if (capSigth > PI / 2.)
+                return false;
+            if (capSigth < 0.)
+                return false;
+            break;
+        case NORTH_EAST:
+            if (capSigth > 0.)
+                return false;
+            if (capSigth < -PI / 2.)
+                return false;
+            break;
+        case SOUTH_EAST:
+            if (capSigth > -PI / 2.)
+                return false;
+            break;
+        case SOUTH_WEST:
+            if (capSigth < PI / 2.)
+                return false;
+            break;
+        default:
+            return false;
+    }
 
     // Ensuite on regarde si le coin est correctement visible dans la plage angulaire du Laser
+    capSigth = betweenMinusPiAndPlusPi(capSigth + PI);
 
+    if (betweenMinusPiAndPlusPi(maxAngle-minAngle) > 0)
+    {
+        if (betweenMinusPiAndPlusPi(capSigth - minAngle) < 0)
+        {
+            //        std::cout << "capSigth < minAngle" << std::endl;
+            return false;
+        }
+        if (betweenMinusPiAndPlusPi(maxAngle - capSigth) < 0)
+        {
+            //        std::cout << "capSigth > maxAngle" << std::endl;
+            return false;
+        }
+    }
 
-    return result;
+    return true;
 }
 
 ReLocalizator::ReLocalizator() :
