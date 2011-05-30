@@ -14,11 +14,21 @@ using namespace arp_math;
 using namespace sensor_msgs;
 
 CornerDetectorNode::CornerDetectorNode() :
-    nh(),
-    scan(Eigen::MatrixXd::Zero(1,1))
+    nh(), scan(Eigen::MatrixXd::Zero(1, 1))
 {
-    scan_sub = nh.subscribe("/scan", 1, &CornerDetectorNode::scanCallback, this);
-    detectcorner_srv = nh.advertiseService("/CornerDetector/DetectCorner", &CornerDetectorNode::detectCornerCallback, this);
+    std::string front_scan_topic_name;
+    if (nh.getParam("/front_scan_topic_name", front_scan_topic_name))
+    {
+        ROS_INFO("Got param named '/front_scan_topic_name' : %f", front_scan_topic_name);
+    }
+    else
+    {
+        ROS_WARN("Failed to get param '/front_scan_topic_name'. Take default value (/scan)");
+        front_scan_topic_name = "/scan";
+    }
+    scan_sub = nh.subscribe(front_scan_topic_name, 1, &CornerDetectorNode::scanCallback, this);
+    detectcorner_srv = nh.advertiseService("/CornerDetector/DetectCorner", &CornerDetectorNode::detectCornerCallback,
+            this);
 }
 CornerDetectorNode::~CornerDetectorNode()
 {
@@ -42,7 +52,7 @@ void CornerDetectorNode::scanCallback(LaserScanConstPtr s)
 
 bool CornerDetectorNode::detectCornerCallback(DetectCorner::Request& req, DetectCorner::Response& res)
 {
-    if( scan.rows() < 2 )
+    if (scan.rows() < 2)
     {
         std::cout << "CornerDetectorNode detectCornerCallback : scan is empty" << std::endl;
         return false;
@@ -71,10 +81,10 @@ bool CornerDetectorNode::detectCornerCallback(DetectCorner::Request& req, Detect
 Scan CornerDetectorNode::cropScan(double minAngle, double maxAngle)
 {
 
-    if( scan.rows() < 2)
+    if (scan.rows() < 2)
     {
         std::cout << "CornerDetectorNode cropScan : Scan is empty before croping" << std::endl;
-        return Eigen::MatrixXd::Zero(1,1);
+        return Eigen::MatrixXd::Zero(1, 1);
     }
 
     std::cout << "Scan minAngle :" << scan.row(0).minCoeff() << std::endl;
@@ -92,10 +102,10 @@ Scan CornerDetectorNode::cropScan(double minAngle, double maxAngle)
             n++;
         }
     }
-    if(n == 0)
+    if (n == 0)
     {
         std::cout << "CornerDetectorNode cropScan : Scan is empty after croping" << std::endl;
-        return Eigen::MatrixXd::Zero(1,1);
+        return Eigen::MatrixXd::Zero(1, 1);
     }
     Scan cropedScan(2, n);
     unsigned int index = 0;
