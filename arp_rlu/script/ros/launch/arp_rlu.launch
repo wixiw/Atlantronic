@@ -3,7 +3,11 @@
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
 	<node name="Localizator"  pkg="arp_rlu"  type="LocalizatorNode"  args="" output="screen"/>
  	<node name="ObstacleDetector"  pkg="arp_rlu"  type="ObstacleDetectorNode"  args="" output="screen">
- 		<param name="DETECTION_THRESHOLD" type="double" value="0.250"/> 
+ 		<param name="FRONT_DETECTION_THRESHOLD" type="double" value="0.500"/> 
+ 		<param name="LATERAL_DETECTION_THRESHOLD" type="double" value="0.250"/> 
+ 		<param name="base_frame" type="string" value="base_link"/> 
+ 		<param name="rear_ir_switch_frame" type="string" value="rear_ir_switch"/> 
+ 		<param name="front_laser_frame" type="string" value="top_laser"/> 
  	</node>
  	<!--
  	<node name="Laserator" pkg="canonical_scan_matcher" type="csm_node" output="log">
