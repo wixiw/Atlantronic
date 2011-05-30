@@ -22,8 +22,14 @@ struct Corner
 {
         double d1;
         double alpha1;
+        double length1;
+        double angleBegin1;
+        double angleEnd1;
         double d2;
         double alpha2;
+        double length2;
+        double angleBegin2;
+        double angleEnd2;
         double diag;
         double theta;
         double cornerAngle;
@@ -35,6 +41,7 @@ struct Segment
         double alpha;
         double angleBegin;
         double angleEnd;
+        double length;
         int nbMeas;
 };
 

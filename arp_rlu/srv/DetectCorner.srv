@@ -1,8 +1,16 @@
+float64 minAngle
+float64 maxAngle
 ---
 float64 d1
 float64 alpha1
+float64 length1
+float64 angleBegin1
+float64 angleEnd1
 float64 d2
 float64 alpha2
+float64 length2
+float64 angleBegin2
+float64 angleEnd2
 float64 diag
 float64 theta
 float64 cornerAngleInDeg

@@ -29,22 +29,15 @@ void CornerDetector::setScan(const Scan & scan)
 
 Corner CornerDetector::compute()
 {
+    if(mScan.cols() < 10)
+    {
+        return Corner();
+    }
+
     std::vector<Segment> sgmts = split(mScan, mSplitThreshDistance, mSplitThreshNumber);
     SegmentedScan sgmtScan = attributeSegment(mScan, sgmts);
     std::pair<std::vector<Segment>, SegmentedScan> p;
     p = merge(sgmts, sgmtScan, mMergeThreshDistance, mMergeThreshAngle);
-
-    //    std::cout << "Nb of Segments : " << sgmts.size() << std::endl;
-    //    std::cout << "***********************" << std::endl;
-    //    for(unsigned int i = 0; i < sgmts.size() ; i++)
-    //    {
-    //        std::cout << "Segment " << i << std::endl;
-    //        std::cout << "   d:" << sgmts[i].d << std::endl;
-    //        std::cout << "   alpha:" << sgmts[i].alpha << std::endl;
-    //        std::cout << "   angleBegin:" << sgmts[i].angleBegin << std::endl;
-    //        std::cout << "   angleEnd:" << sgmts[i].angleEnd << std::endl;
-    //        std::cout << "   " << std::endl;
-    //    }
 
     return extractCorner(sgmts);
 
@@ -225,12 +218,15 @@ Segment CornerDetector::computeSegment(Eigen::MatrixXd scan)
     alpha = fmod(alpha + 4. * PI, 2. * PI);
     double angleBegin = scan(0, 0);
     double angleEnd = scan(0, n - 1);
+    double length = sqrt( (cartesianScan(0, n-1) - cartesianScan(0, 0)) * (cartesianScan(0, n-1) - cartesianScan(0, 0))
+            + (cartesianScan(1, n-1) - cartesianScan(1, 0)) * (cartesianScan(1, n-1) - cartesianScan(1, 0)));
 
     Segment sgmt;
     sgmt.d = d;
     sgmt.alpha = alpha;
     sgmt.angleBegin = angleBegin;
     sgmt.angleEnd = angleEnd;
+    sgmt.length = length;
     sgmt.nbMeas = n;
     return sgmt;
 }
@@ -309,6 +305,7 @@ Corner CornerDetector::extractCorner(std::vector<Segment> sgmts)
         ROS_INFO("Segment %d:", i);
         ROS_INFO("  d = %f", sgmts[i].d);
         ROS_INFO("  alpha = %f", sgmts[i].alpha);
+        ROS_INFO("  length = %f", sgmts[i].length);
         ROS_INFO("  angleBegin = %f", sgmts[i].angleBegin);
         ROS_INFO("  angleEnd = %f", sgmts[i].angleEnd);
     }
@@ -334,23 +331,27 @@ Corner CornerDetector::extractCorner(std::vector<Segment> sgmts)
     int i_min;
     double alphaMin = corners.col(2).minCoeff(&i_min);
 
+    double cornerAngle = PI - abs(normalizeAngle(sgmts[corners(i_min, 0)].alpha - sgmts[corners(i_min, 1)].alpha));
+
+    if( cornerAngle < PI/2. - 10. * PI/ 180. || cornerAngle > PI/2. + 10. * PI/ 180.)
+    {
+        return Corner();
+    }
+
     Corner c;
     c.d1 = sgmts[corners(i_min, 0)].d;
     c.alpha1 = sgmts[corners(i_min, 0)].alpha;
+    c.length1 = sgmts[corners(i_min, 0)].length;
+    c.angleBegin1 = sgmts[corners(i_min, 0)].angleBegin;
+    c.angleEnd1 = sgmts[corners(i_min, 0)].angleEnd;
     c.d2 = sgmts[corners(i_min, 1)].d;
     c.alpha2 = sgmts[corners(i_min, 1)].alpha;
+    c.length2 = sgmts[corners(i_min, 1)].length;
+    c.angleBegin2 = sgmts[corners(i_min, 1)].angleBegin;
+    c.angleEnd2 = sgmts[corners(i_min, 1)].angleEnd;
     c.diag = sqrt(c.d1 * c.d1 + c.d2 * c.d2);
     c.theta = fmod(c.alpha1 + atan2(c.d2, c.d1) + 2. * PI, 2 * PI);
-    c.cornerAngle = PI - abs(normalizeAngle(sgmts[corners(i_min, 0)].alpha - sgmts[corners(i_min, 1)].alpha));
-
-    //    std::cout << "**************************" << std::endl;
-    //    std::cout << "Corner detection" << std::endl;
-    //    std::cout << "  d1:" << c.d1 << std::endl;
-    //    std::cout << "  alpha1  (deg):" << c.alpha1 * 180. / PI << std::endl;
-    //    std::cout << "  d2:" << c.d2 << std::endl;
-    //    std::cout << "  alpha2  (deg):" << c.alpha2 * 180. / PI << std::endl;
-    //    std::cout << "  theta  (deg):" << c.theta * 180. / PI << std::endl;
-    //    std::cout << "  corner angle (deg):" << c.cornerAngle * 180. / PI << std::endl;
+    c.cornerAngle = cornerAngle;
 
     return c;
 }

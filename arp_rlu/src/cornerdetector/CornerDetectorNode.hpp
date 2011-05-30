@@ -12,6 +12,8 @@
 #include <sensor_msgs/LaserScan.h>
 #include <arp_rlu/DetectCorner.h>
 
+namespace arp_rlu
+{
 class CornerDetectorNode
 {
     public:
@@ -54,6 +56,9 @@ class CornerDetectorNode
          */
         bool detectCornerCallback(arp_rlu::DetectCorner::Request& req, arp_rlu::DetectCorner::Response& res);
 
+        arp_rlu::Scan cropScan( double minAngle, double maxAngle);
+
 };
+}
 
 #endif /* _ARP_RLU_CORNERDETECTORNODE_HPP_ */

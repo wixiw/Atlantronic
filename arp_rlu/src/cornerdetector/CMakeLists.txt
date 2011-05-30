@@ -6,6 +6,8 @@ rosbuild_add_library(cornerdetector CornerDetector.cpp)
             
 rosbuild_add_executable(CornerDetectorNode CornerDetectorNode.cpp)
 target_link_libraries(CornerDetectorNode cornerdetector)
+
+rosbuild_add_executable(ReLocalizatorNode ReLocalizatorNode.cpp)
             
 
 
