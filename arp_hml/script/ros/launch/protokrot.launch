@@ -1,6 +1,7 @@
 <!--  Use this file de deploy the real platform "Protokrot" hardware -->
 <launch>
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
+	<include file="$(find arp_hml)/script/ros/launch/geometry_protokrot.launch"/>
 	
 	<remap from="scan" to="front_scan" />
 	<node name="FrontHokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="true" output="screen">
@@ -9,12 +10,7 @@
   		<param name="intensity" type="bool" value="false"/> 
   		<param name="frame_id" type="string" value="front_laser" />
   	</node>
-	<node 	name="FrontHokuyoTfBroadcaster"
-			pkg="tf" 
-			type="static_transform_publisher" 
-			args="0.260 0.053 0.060 0 0 -3.14159 base_link front_laser 100"
-			respawn="true" />
-			
+  	
 	<remap from="scan" to="top_scan" />
 	<node name="TopHokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="true" output="screen">
     	<param name="calibrate_time" type="bool" value="false"/> 
@@ -22,12 +18,7 @@
   		<param name="intensity" type="bool" value="false"/> 
   		<param name="frame_id" type="string" value="top_laser" />
   	</node>
-	<node 	name="TopHokuyoTfBroadcaster"
-			pkg="tf" 
-			type="static_transform_publisher" 
-			args="0.070 0.090 0.270 0 0 0 base_link top_laser 100"
-			respawn="true" />
-			
+  	
 	<node 	name="ArpHml" 
 			pkg="ocl" 
 			type="deployer-gnulinux" 
@@ -36,11 +27,4 @@
 			respawn="false"
 			required="true"
 			/>
-			
-	<node 	name="RearIrTfBroadcaster"
-			pkg="tf" 
-			type="static_transform_publisher" 
-			args="0.030 0.065 0.285 0 -2.1 0 base_link rear_ir_switch 100"
-			respawn="true" />
-			
 </launch>

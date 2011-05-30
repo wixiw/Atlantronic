@@ -148,7 +148,7 @@ void ObstacleDetector::initTransforms()
     ros::Time t = ros::Time::now();
     try
     {
-        m_tfListener.waitForTransform(m_baseFrameName, m_rearIrFrameName, t, ros::Duration(1.0));
+        m_tfListener.waitForTransform(m_baseFrameName, m_rearIrFrameName, t, ros::Duration(2.0));
         m_tfListener.lookupTransform(m_baseFrameName, m_rearIrFrameName, t, m_baseToIr);
     } catch (tf::TransformException ex)
     {
@@ -157,7 +157,7 @@ void ObstacleDetector::initTransforms()
 
     try
     {
-        m_tfListener.waitForTransform(m_baseFrameName, m_frontLaserFrameName, t, ros::Duration(1.0));
+        m_tfListener.waitForTransform(m_baseFrameName, m_frontLaserFrameName, t, ros::Duration(2.0));
         m_tfListener.lookupTransform(m_baseFrameName, m_frontLaserFrameName, t, m_baseToFrontLaser);
     } catch (tf::TransformException ex)
     {

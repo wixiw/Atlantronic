@@ -1,0 +1,18 @@
+<!--  Use this file de deploy the real platform "Protokrot" hardware -->
+<launch>
+	<node 	name="FrontHokuyoTfBroadcaster"
+			pkg="tf" 
+			type="static_transform_publisher" 
+			args="0.260 0.053 0.060 0 0 -3.14159 base_link front_laser 100"
+			respawn="true" />
+	<node 	name="TopHokuyoTfBroadcaster"
+			pkg="tf" 
+			type="static_transform_publisher" 
+			args="0.070 0.090 0.270 0 0 0 base_link top_laser 100"
+			respawn="true" />
+	<node 	name="RearIrTfBroadcaster"
+			pkg="tf" 
+			type="static_transform_publisher" 
+			args="0.030 0.065 0.285 0 -2.1 0 base_link rear_ir_switch 100"
+			respawn="true" />	
+</launch>
