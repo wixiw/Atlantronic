@@ -11,4 +11,5 @@
 #include <boost/bind.hpp>
 
 #include "uTest_TableCorner.hpp"
+#include "uTest_selectTargetCorner.hpp"
 

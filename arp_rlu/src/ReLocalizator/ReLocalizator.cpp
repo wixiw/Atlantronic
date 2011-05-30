@@ -16,10 +16,8 @@ TableCorner::TableCorner() :
 
 }
 
-TableCorner::TableCorner(double x, double y, TableCornerType type):
-        x(x),
-        y(y),
-        type(type)
+TableCorner::TableCorner(double x, double y, TableCornerType type) :
+    x(x), y(y), type(type)
 {
 
 }
@@ -59,7 +57,7 @@ bool TableCorner::isVisibleFrom(double xLaser, double yLaser, double minAngle, d
     // Ensuite on regarde si le coin est correctement visible dans la plage angulaire du Laser
     capSigth = betweenMinusPiAndPlusPi(capSigth + PI);
 
-    if (betweenMinusPiAndPlusPi(maxAngle-minAngle) > 0)
+    if (betweenMinusPiAndPlusPi(maxAngle - minAngle) > 0)
     {
         if (betweenMinusPiAndPlusPi(capSigth - minAngle) < 0)
         {
@@ -82,7 +80,7 @@ ReLocalizator::ReLocalizator() :
     /*
 
      _________________________________________________________
-    M|         L|----------|I          H|----------|E         |D
+     M|         L|----------|I          H|----------|E         |D
      |          |K        J|            |G        F|          |
      |                                                        |
      |                                                        |
@@ -93,20 +91,20 @@ ReLocalizator::ReLocalizator() :
      |                                                        |
      |                                                        |
      |                                                        |
-    N|_______                                         ________|C
-    O|                                                        |B
+     N|_______                                         ________|C
+     O|                                                        |B
      |                                                        |
-    P|________________________________________________________|A
+     P|________________________________________________________|A
 
      */
 
     std::vector<TableCorner> vtc;
 
     //coin C
-    TableCorner C = TableCorner(-1.500,0.628,NORTH_EAST);
+    TableCorner C = TableCorner(-1.500, 0.628, NORTH_EAST);
     vtc.push_back(C);
     //coin N
-    TableCorner N = TableCorner(1.500,0.628,SOUTH_EAST);
+    TableCorner N = TableCorner(1.500, 0.628, SOUTH_EAST);
     vtc.push_back(N);
 
     setTableCorners(vtc);
@@ -156,7 +154,31 @@ void ReLocalizator::printTableCorners()
 
 TableCorner ReLocalizator::selectTargetTableCorner()
 {
-    return TableCorner();
+    std::vector<TableCorner> compatibleCorners;
+    for (std::vector<TableCorner>::iterator it = tableCorners.begin(); it != tableCorners.end(); ++it)
+    {
+        if (it->isVisibleFrom(previousX, previousY, previousTheta, previousTheta + PI / 2.)
+         || it->isVisibleFrom(previousX, previousY, previousTheta - PI / 2., previousTheta))
+        {
+            compatibleCorners.push_back(*it);
+        }
+    }
+    if (compatibleCorners.size() == 0)
+        return TableCorner();
+
+    double min_distance = 666.;
+    TableCorner target;
+    for (std::vector<TableCorner>::iterator it = compatibleCorners.begin(); it != compatibleCorners.end(); ++it)
+    {
+        double distance = sqrt((it->x - previousX) * (it->x - previousX) + (it->y - previousY) * (it->y - previousY));
+        if (distance < min_distance)
+        {
+            min_distance = distance;
+            target = *it;
+        }
+    }
+
+    return target;
 }
 
 std::pair<double, double> ReLocalizator::chooseScanWindow(TableCorner target)
