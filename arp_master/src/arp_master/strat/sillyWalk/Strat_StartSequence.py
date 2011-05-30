@@ -80,7 +80,7 @@ class SetPos_hor_bord(CyclicState):
 
 class Retour_hor_bord(CyclicActionState):
     def createAction(self):
-       self.pointcap(Inputs.getx(),Table.HWALL_Y-0.200,-pi/2)
+       self.pointcap(Inputs.getx(),Table.HWALL_Y-0.180,-pi/2)
      
 
 class hor_to_vert(CyclicActionState):
@@ -91,7 +91,7 @@ class hor_to_vert(CyclicActionState):
 
 class Recal_vert_bord(CyclicActionState):
     def createAction(self): 
-        poseRecalVert=AmbiPoseRed(-Table.VWALL_X-0.250,Table.HWALL_Y-0.200,0,Data.color)
+        poseRecalVert=AmbiPoseRed(-Table.VWALL_X-0.250,Table.HWALL_Y-0.180,0,Data.color)
         self.pointcap_reverse(poseRecalVert.x,poseRecalVert.y,poseRecalVert.theta)
 
 
@@ -109,7 +109,7 @@ class SetPos_vert_bord(CyclicState):
 
 class Retour_vert_bord(CyclicActionState):
     def createAction(self):
-        poseStart=AmbiPoseRed(-Table.VWALL_X+Robot.DIST_BACK+0.030,Table.HWALL_Y-0.200,0,Data.color)
+        poseStart=AmbiPoseRed(-Table.VWALL_X+Robot.DIST_BACK+0.030,Table.HWALL_Y-0.180,0,Data.color)
         self.pointcap(poseStart.x,poseStart.y,poseStart.theta)
        
        

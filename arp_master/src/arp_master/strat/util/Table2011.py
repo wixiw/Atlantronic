@@ -3,11 +3,7 @@ import roslib; roslib.load_manifest('arp_master')
 import rospy
 from rospy import loginfo
 
-from math import cos
-from math import sin
-from math import pi
-from math import floor
-from math import atan2
+from math import *
 from UtilARD import *
 
 class Direction:
@@ -83,6 +79,19 @@ class Table:
     def init():
         Table.HWALL_Y=rospy.get_param('/Table/HWALL_Y')
         Table.VWALL_X=rospy.get_param('/Table/VWALL_X')
+
+class PionBord:
+    def __init__(self,rang,color):
+        if color=='red':
+            self.xCenter=-(1.5-0.2)
+        else:
+            self.xCenter=(1.5-0.2)
+        self.yCenter=2.100/2-0.400-0.290-0.280*(rang-1)
+    
+    def coord_WhenPionMilieu(self,theta):
+        x=self.xCenter-(Robot.xPion*cos(theta)-Robot.yPion*sin(theta))
+        y=self.yCenter-(Robot.xPion*sin(theta)+Robot.yPion*cos(theta))
+        return (x,y)     
 
 class Case:
     #attention a cette numerotation tres intelligente !
@@ -201,4 +210,39 @@ class AmbiPoseRed:
             self.y=y
             self.theta=normalizeAngle(pi-theta)
         
+#cette fonction a ete testee a part d'ou ses arguments a rallonge
+def calculateRobotForDrop(xRobot,yRobot,xCenter,yCenter,xPion,yPion):
+    #un peu de geometrie
+    #je trace un segment qui va du point courant A au point centre case B
+    #mon centre de robot est R
+    # la projection du centre case sur l'axe robot est C
+    BC=fabs(yPion)
+    AB=sqrt((xCenter-xRobot)**2+(yCenter-yRobot)**2)
+    #soit M le milieu de AB
+    xM=(xCenter+xRobot)/2
+    yM=(yCenter+yRobot)/2
+    # je sais que ABC est rectangle
+    #donc le milieu de AB a un distance AB/2 avec C
+    # et 
+    #je sais que la distance de B a C est la position en y du palet sur le robot
+    results=intersectCircle(xM,yM,AB/2,xCenter,yCenter,BC)
+    if results==None:
+        return
+    (xC_1,yC_1,xC_2,yC_2)=results
+    cap_1=atan2(yC_1-yRobot,xC_1-xRobot)
+    cap_2=atan2(yC_2-yRobot,xC_2-xRobot)
+    capcentre=atan2(yCenter-yRobot,xCenter-xRobot)
+    #y'a deux solutions. la bonne est celle ou le trou du robot est a gauche !
+    if normalizeAngle(cap_1-capcentre)>0:
+        cap=cap_1
+        xC=xC_1
+        yC=yC_1
+    else:
+        cap=cap_2
+        xC=xC_2
+        yC=yC_2
         
+    xFinal=xC-xPion*cos(cap)
+    yFinal=yC-xPion*sin(cap)
+    
+    return (xFinal,yFinal,cap)

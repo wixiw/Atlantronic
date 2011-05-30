@@ -26,64 +26,113 @@ class Opening_C(PreemptiveStateMachine):
         with self:
             PreemptiveStateMachine.addPreemptive('ObstaclePreemption',
                       ObstaclePreemption(),
-                      transitions={'avoid':'EscapeObstacle'})
+                      transitions={'avoid':'problem'})
             
             PreemptiveStateMachine.add('EscapeStartpoint',
                       EscapeStartpoint(),
-                      transitions={'succeeded':'ChopePaletMilieu', 'aborted':'problem'})
+                      transitions={'succeeded':'Prempion1', 'aborted':'problem'})
             
             self.setInitialState('EscapeStartpoint')
             
-            PreemptiveStateMachine.add('ChopePaletMilieu',
-                      ChopePaletMilieu(),
-                      transitions={'succeeded':'Depose', 'aborted':'problem'})
+            PreemptiveStateMachine.add('Prempion1',
+                      Prempion1(),
+                      transitions={'succeeded':'Prempion2', 'aborted':'problem'})
             
-            PreemptiveStateMachine.add('Depose',
-                      Depose(),
-                      transitions={'succeeded':'PrepareSillyWalk', 'aborted':'problem'})
-            PreemptiveStateMachine.add('PrepareSillyWalk',
-                      PrepareSillyWalk(),
+            PreemptiveStateMachine.add('Prempion2',
+                      Prempion2(),
+                      transitions={'succeeded':'Prempion3', 'aborted':'problem'})
+            
+            PreemptiveStateMachine.add('Prempion3',
+                      Prempion3(),
+                      transitions={'succeeded':'Prempion4', 'aborted':'problem'})
+            
+            PreemptiveStateMachine.add('Prempion4',
+                      Prempion4(),
+                      transitions={'succeeded':'RetourPrempion1', 'aborted':'problem'})
+            
+            PreemptiveStateMachine.add('RetourPrempion1',
+                      RetourPrempion1(),
+                      transitions={'succeeded':'RetourPrempion2', 'aborted':'problem'})
+            
+            PreemptiveStateMachine.add('RetourPrempion2',
+                      RetourPrempion2(),
+                      transitions={'succeeded':'PremRecal', 'aborted':'problem'})
+            
+            PreemptiveStateMachine.add('PremRecal',
+                      PremRecal(),
+                      transitions={'done':'PourWilly'})
+            
+            PreemptiveStateMachine.add('PourWilly',
+                      PourWilly(),
                       transitions={'succeeded':'endOpening', 'aborted':'problem'})
-            
-            PreemptiveStateMachine.add('EscapeObstacle',
-                      EscapeObstacle(),
-                      transitions={'succeeded':'problem', 'aborted':'problem'})
+ 
  
 class EscapeStartpoint(CyclicActionState):
     def createAction(self):
-        pose = AmbiPoseRed(-0.5, Table.HWALL_Y-0.200,0, Data.color)
-        self.pointcap_pass(pose.x, pose.y, pose.theta)
+        pose = AmbiPoseRed(-0.8, Table.HWALL_Y-0.180,0, Data.color)
+        self.pointcap(pose.x, pose.y, pose.theta)
 
-class ChopePaletMilieu(CyclicActionState):
+class Prempion1(CyclicActionState):
     def createAction(self):
-        casedepose = AmbiCaseRed(0, 0, Data.color)
-        (xobj, yobj) = casedepose.coord_WhenPionMilieu(-pi / 2)
-        self.pointcap_pass(xobj, yobj, -pi / 2)           
-        
-class Depose(CyclicActionState):
-    def createAction(self):
-        casedepose = AmbiCaseRed(-1, -5, Data.color)
-        
+        pose = AmbiPoseRed(-0.8, 0.5, -pi/2, Data.color)
         if Data.color=='red':
-            (xobj, yobj) = casedepose.coord_WhenPionMilieu(-pi / 2)
-            yobj+=0.045
-            xobj-=0.080
-            capobj=-pi / 2
+            self.pointcap(pose.x, pose.y, pose.theta)
         else:
-            (xobj, yobj) = casedepose.coord_WhenPionMilieu(-pi / 2+pi/8)
-            capobj=-pi / 2+pi/8
-            yobj+=0.045
-            xobj-=0.080
+            self.pointcap(pose.x, pose.y-0.030, pose.theta)
 
-        self.pointcap(xobj, yobj, capobj)
-      
-
-        
-class PrepareSillyWalk(CyclicActionState):
+class Prempion2(CyclicActionState):
     def createAction(self):
-        case = AmbiCaseRed(-1, -3, Data.color)
-        self.pointcap_reverse(case.xCenter, case.yCenter, pi/4)
+        if Data.color=='red':
+            prempion=PionBord(1,'red')
+            cap=-5*pi/6
+            (xrobot,yrobot)=prempion.coord_WhenPionMilieu(cap)
+            # j'ajoute -20 mm pour que ca soit un peu plus bas ca marche mieux..
+            self.pointcap(xrobot-0.020,yrobot-0.020, cap )
+        else:
+            prempion=PionBord(1,'blue')
+            cap=0
+            (xrobot,yrobot)=prempion.coord_WhenPionMilieu(cap)
+            self.pointcap(xrobot,yrobot, cap )
         
+class Prempion3(CyclicActionState):
+    def createAction(self):
+        self.cap(-pi/8)            
+
+class Prempion4(CyclicActionState):
+    def createAction(self):
+        case=AmbiCaseRed(-3,1,Data.color)
+        #cap=AmbiCapRed(-pi/8,Data.color)
+        #(xrobot,yrobot)=case.coord_WhenPionMilieu(cap.angle)
+        #self.pointcap(xrobot, yrobot, cap.angle)   
+        
+        #>>>>>>>>>> retour devrait etre teste a true ou false !
+        self.dropOnCase(case)  
+
+class RetourPrempion1(CyclicActionState):
+    def createAction(self):
+        self.backward(0.2) 
+
+class RetourPrempion2(CyclicActionState):
+    def createAction(self):
+        cap=AmbiCapRed(-pi,Data.color)
+        self.cap(cap.angle)
+        
+class PremRecal(CyclicState):
+    def __init__(self):
+        CyclicState.__init__(self, outcomes=['done'])
+    
+    def executeTransitions(self):
+        return 'done'
+        
+    def executeIn(self):
+        self.relocate()
+
+class PourWilly(CyclicActionState):
+    def createAction(self):
+        cap=AmbiCapRed(0,Data.color)
+        self.cap(cap.angle)
+
+
 
 class ObstaclePreemption(PreemptiveCyclicState):
     def __init__(self):

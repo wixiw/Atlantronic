@@ -12,6 +12,7 @@ from Data import Data
 from arp_core.srv import Spawn
 from arp_core.srv import SetPosition
 from arp_hml.srv import SetMotorPower
+from arp_rlu.srv import EstimatePosition
 
 class CyclicState(smach.StateMachine):
     def __init__(self,outcomes):
@@ -19,6 +20,7 @@ class CyclicState(smach.StateMachine):
         self.preemptiveStates=[]
         self.initSetPositionClient()
         self.initSetMotorPower()
+        self.initEstimatePositionClient()
         
     def execute(self,userdata):
         Inputs.update()
@@ -59,14 +61,27 @@ class CyclicState(smach.StateMachine):
         self.setPosition_loc=rospy.ServiceProxy("Localizator/setPosition",SetPosition)
         self.setPosition_simu=rospy.ServiceProxy("PhysicsSimu/setPosition",SetPosition)
         
+    def initEstimatePositionClient(self):
+        self.estimatePosition_srv=rospy.ServiceProxy("/ReLocalizator/EstimatePosition",EstimatePosition)
+
     def setPosition(self,x,y,theta):
         self.setPosition_loc(x,y,theta)
         try:
             self.setPosition_simu(x,y,theta)
         except rospy.ServiceException, e:
             rospy.logerr("Position could not be set on simulator")
-        #self.setPosition_loclaser(x,y,theta)
-        
+    
+    def relocate(self):
+        try:
+            answer=self.estimatePosition_srv(Inputs.getx(),Inputs.gety(),Inputs.gettheta())
+            if answer.quality==-1:
+                rospy.logerr(">>>> RELOCALISATION FAILURE")
+            else:
+                self.setPosition(answer.estimatedX,answer.estimatedY,answer.estimatedTheta)
+                rospy.loginfo(">>>> RELOCALISATION SUCCESS")
+
+        except rospy.ServiceException, e:
+            rospy.logerr("Exception on relocation")
     
     def initSetMotorPower(self):
         self.setMotorPower_srv=rospy.ServiceProxy("Protokrot/setMotorPower",SetMotorPower)

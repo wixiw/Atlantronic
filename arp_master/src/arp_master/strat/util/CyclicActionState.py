@@ -18,6 +18,8 @@ from Data import Data
 from arp_ods.msg import OrderGoal
 from arp_ods.msg import OrderAction
 
+from Table2011 import *
+from UtilARD import *
 
 class CyclicActionState(CyclicState):
     
@@ -107,6 +109,16 @@ class CyclicActionState(CyclicState):
     def backward(self,dist):
         self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()+pi),Inputs.gety()+dist*sin(Inputs.gettheta()+pi),Inputs.gettheta(),'POINTCAP',True,False)
 
+
+    def dropOnCase(self,case):
+        res=calculateRobotForDrop(Inputs.getx(),Inputs.gety(),case.xCenter,case.yCenter,Robot.xPion,Robot.yPion)
+        if res==None:
+            return False
+        else:
+            (x,y,cap)=res
+            self.createMotionControlAction(x,y,cap,'POINTCAP',False,False)
+            return True
+        
 
 
 
