@@ -222,10 +222,53 @@ std::pair<double, double> ReLocalizator::chooseScanWindow(TableCorner target)
     std::cout << "chooseScanWindow angleMin: " << angleMin << std::endl;
     std::cout << "chooseScanWindow angleMax: " << angleMax << std::endl;
 
-    return std::make_pair(betweenMinusPiAndPlusPi(angleMin - previousTheta), betweenMinusPiAndPlusPi(angleMax - previousTheta));
+    return std::make_pair(betweenMinusPiAndPlusPi(angleMin - previousTheta),
+            betweenMinusPiAndPlusPi(angleMax - previousTheta));
 }
 
 void ReLocalizator::estimatePose(Corner detected, TableCorner target)
 {
-    return;
+    if (detected.d1 == 0. || detected.d2 == 0. )
+    {
+        estimatedX = previousX;
+        estimatedY = previousY;
+        estimatedTheta = previousTheta;
+        quality = -1.;
+        return;
+    }
+
+    switch(target.type)
+    {
+        case NORTH_WEST:
+            estimatedX = target.x + detected.d1;
+            estimatedY = target.y + detected.d2;
+            estimatedTheta = betweenMinusPiAndPlusPi( PI - detected.alpha1);
+            quality = 1.;
+            return;
+        case NORTH_EAST:
+            estimatedX = target.x + detected.d2;
+            estimatedY = target.y - detected.d1;
+            estimatedTheta = betweenMinusPiAndPlusPi( PI - detected.alpha2);
+            quality = 1.;
+            return;
+        case SOUTH_EAST:
+            estimatedX = target.x - detected.d1;
+            estimatedY = target.y - detected.d2;
+            estimatedTheta = betweenMinusPiAndPlusPi( -detected.alpha1);
+            quality = 1.;
+            return;
+        case SOUTH_WEST:
+            estimatedX = target.x - detected.d2;
+            estimatedY = target.y + detected.d1;
+            estimatedTheta = betweenMinusPiAndPlusPi( -detected.alpha2);
+            quality = 1.;
+            return;
+        default:
+            estimatedX = previousX;
+            estimatedY = previousY;
+            estimatedTheta = previousTheta;
+            quality = -1.;
+            return;
+    }
+
 }

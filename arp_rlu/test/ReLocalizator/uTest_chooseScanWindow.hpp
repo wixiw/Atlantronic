@@ -83,7 +83,4 @@ BOOST_AUTO_TEST_CASE( chooseScanWindow_Test )
         BOOST_CHECK_CLOSE( p.second, betweenMinusPiAndPlusPi(atan2(tc.y + 0.25, tc.x) - rl.previousTheta), 0.01f );
     }
 
-    //    BOOST_CHECK_EQUAL( tc.y, 1.0 );
-    //    BOOST_CHECK_EQUAL( tc.type, SOUTH_EAST );
-
 }

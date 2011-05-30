@@ -13,4 +13,5 @@
 #include "uTest_TableCorner.hpp"
 #include "uTest_selectTargetCorner.hpp"
 #include "uTest_chooseScanWindow.hpp"
+#include "uTest_estimatePosition.hpp"
 
