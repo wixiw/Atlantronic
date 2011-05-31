@@ -229,6 +229,7 @@ void ProtokrotItf::readOdometers()
     	        LOG(Error) << "Did not receive the two Odometry measures in time-> Reseting HML" << endlog();
     	        ooResetHml();
     	        m_receivedPartialPosition = false;
+    	        ooSetMotorPower(true,1.0);
     	    }
     	    else
     	    {
