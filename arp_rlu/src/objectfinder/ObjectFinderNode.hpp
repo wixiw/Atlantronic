@@ -13,6 +13,7 @@
 
 #include <ros/ros.h>
 #include <sensor_msgs/LaserScan.h>
+#include <sensor_msgs/PointCloud.h>
 #include <arp_rlu/FindObjects.h>
 
 #include <string>
@@ -48,6 +49,19 @@ class ObjectFinderNode
         ros::Subscriber scan_sub;
 
         /**
+         * Publisher for rviz display
+         */
+        ros::Publisher m_towerPublisher;
+        ros::Publisher m_robotPublisher;
+        ros::Publisher m_figurePublisher;
+        ros::Publisher m_ufoPublisher;
+
+        sensor_msgs::PointCloud m_towerPointCloud;
+        sensor_msgs::PointCloud m_robotPointCloud;
+        sensor_msgs::PointCloud m_figurePointCloud;
+        sensor_msgs::PointCloud m_ufoPointCloud;
+
+        /**
          * Callback to computed the received scan
          */
         void scanCallback(sensor_msgs::LaserScanConstPtr scan);
@@ -66,6 +80,25 @@ class ObjectFinderNode
         bool reverse_scan;
 
         std::vector<KnownObject> objects;
+
+        /**
+         * Add an object to data published for Rviz. It finds the correcponsding point cloud topic
+         * related to the obj.type
+         * @param obj object to add
+         */
+        void recordObjectForRviz(KnownObject obj);
+
+        /**
+         * Publish point cloud topics for Rviz display
+         */
+        void publishForRviz();
+
+        /**
+         * append scan to the point cloud c
+         * @param s : scan to add to the point cloud
+         * @param c : point cloud receiving the object
+         */
+        void addToPointCloud(Scan s, sensor_msgs::PointCloud c);
 
 };
 }

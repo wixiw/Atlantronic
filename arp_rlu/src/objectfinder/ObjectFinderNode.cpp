@@ -36,6 +36,11 @@ ObjectFinderNode::ObjectFinderNode() :
         reverse_scan = false;
     }
 
+    m_towerPublisher = nh.advertise<PointCloud>("/ObjectFinder/display/pawn",1);
+    m_robotPublisher = nh.advertise<PointCloud>("/ObjectFinder/display/robot",1);
+    m_figurePublisher = nh.advertise<PointCloud>("/ObjectFinder/display/figure",1);
+    m_ufoPublisher = nh.advertise<PointCloud>("/ObjectFinder/display/ovni",1);
+
     scan_sub = nh.subscribe(front_scan_topic_name, 1, &ObjectFinderNode::scanCallback, this);
     findobjects_srv = nh.advertiseService("/ObjectFinder/FindObjects", &ObjectFinderNode::findobjectsCallback,
             this);
@@ -82,7 +87,7 @@ bool ObjectFinderNode::findobjectsCallback(FindObjects::Request& req, FindObject
     }
 
     objf.setPolarScan(scan);
-    // TODO : Changement de repère Hokuyo -> Base_Frame
+    // TODO BOR : Changement de repère Hokuyo -> Base_Frame
     objf.computeCartesianScan(req.xRobot, req.yRobot, req.thetaRobot);
     objf.onTableOnly();
     std::vector<Scan> vect = objf.clusterize();
@@ -95,10 +100,12 @@ bool ObjectFinderNode::findobjectsCallback(FindObjects::Request& req, FindObject
     {
         KnownObject obj;
         obj.recognize(vect[i]);
+        recordObjectForRviz(obj);
         ROS_INFO("Object %d", i);
         ROS_INFO_STREAM( obj.print() );
     }
 
+    publishForRviz();
 
 //    cd.setScan(cropScan(req.minAngle, req.maxAngle));
 //
@@ -125,6 +132,59 @@ bool ObjectFinderNode::findobjectsCallback(FindObjects::Request& req, FindObject
 
     res.confidence = vect.size();
     return true;
+}
+
+void ObjectFinderNode::recordObjectForRviz(KnownObject obj)
+{
+    switch (obj.type) {
+        case ROBOT:
+            addToPointCloud(obj.scan,m_robotPointCloud);
+            break;
+        case FIGURE:
+            addToPointCloud(obj.scan,m_figurePointCloud);
+            break;
+        case TOWER:
+            addToPointCloud(obj.scan,m_towerPointCloud);
+            break;
+        case UFO:
+            addToPointCloud(obj.scan,m_ufoPointCloud);
+            break;
+        default:
+            break;
+    }
+}
+
+void ObjectFinderNode::publishForRviz()
+{
+    ros::Time t = ros::Time::now();
+    m_towerPointCloud.header.stamp = t;
+    m_robotPointCloud.header.stamp = t;
+    m_figurePointCloud.header.stamp = t;
+    m_ufoPointCloud.header.stamp = t;
+    //TODO WLA : mettre la frame ID
+    m_towerPublisher.publish(m_towerPointCloud);
+    m_robotPublisher.publish(m_robotPointCloud);
+    m_figurePublisher.publish(m_figurePointCloud);
+    m_ufoPublisher.publish(m_ufoPointCloud);
+
+    m_towerPointCloud = sensor_msgs::PointCloud();
+    m_robotPointCloud = sensor_msgs::PointCloud();
+    m_figurePointCloud = sensor_msgs::PointCloud();
+    m_ufoPointCloud = sensor_msgs::PointCloud();
+}
+
+void ObjectFinderNode::addToPointCloud(Scan s, sensor_msgs::PointCloud c)
+{
+    unsigned int n = s.cols();
+    for( unsigned int i=0 ; i < n ; i++ )
+    {
+        geometry_msgs::Point32 pi;
+        pi.x = s(1,i);
+        pi.y = s(2,i);
+        //TODO WLA : mettre la hauteur du hokuyo qui va bien
+        pi.z = 0.0;
+        c.points.push_back(pi);
+    }
 }
 
 int main(int argc, char** argv)
