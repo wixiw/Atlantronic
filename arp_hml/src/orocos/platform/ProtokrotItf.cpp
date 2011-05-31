@@ -226,7 +226,9 @@ void ProtokrotItf::readOdometers()
     	{
     	    if( m_receivedPartialPosition == true )
     	    {
-    	        LOG(Error) << "should not received twice a partial odometer command" << endlog();
+    	        LOG(Error) << "Did not receive the two Odometry measures in time-> Reseting HML" << endlog();
+    	        ooResetHml();
+    	        m_receivedPartialPosition = false;
     	    }
     	    else
     	    {
