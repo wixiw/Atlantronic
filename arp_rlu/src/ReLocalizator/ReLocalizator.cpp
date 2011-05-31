@@ -127,18 +127,30 @@ ReLocalizator::ReLocalizator() :
     //coin A
     TableCorner A = TableCorner(-1.500,1.050,NORTH_EAST);
     vtc.push_back(A);
+    //coin B
+    TableCorner B = TableCorner(-1.500,0.650,NORTH_WEST);
+    vtc.push_back(B);
     //coin C
     TableCorner C = TableCorner(-1.500, 0.628, NORTH_EAST);
     vtc.push_back(C);
     //coin D
     TableCorner D = TableCorner(-1.500,-1.050,NORTH_WEST);
     vtc.push_back(D);
+    //coin H
+    TableCorner H = TableCorner(-0.350,-1.050,NORTH_WEST);
+    vtc.push_back(H);
+    //coin I
+    TableCorner I = TableCorner(0.350,-1.050,SOUTH_WEST);
+    vtc.push_back(I);
     //coin M
     TableCorner M = TableCorner(1.500,-1.050,SOUTH_WEST);
     vtc.push_back(M);
     //coin N
     TableCorner N = TableCorner(1.500, 0.628, SOUTH_EAST);
     vtc.push_back(N);
+    //coin O
+    TableCorner O = TableCorner(1.500,0.650,SOUTH_WEST);
+    vtc.push_back(O);
     //coin P
     TableCorner P = TableCorner(1.500,1.050,SOUTH_EAST);
     vtc.push_back(P);
