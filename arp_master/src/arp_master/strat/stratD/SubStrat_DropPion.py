@@ -30,18 +30,65 @@ class DropPion(PreemptiveStateMachine):
             #preemptive states
             PreemptiveStateMachine.addPreemptive('ObstaclePreemption',
                                              ObstaclePreemption(),
-                                             transitions={'avoid':'EscapeObstacle','impossible':'EscapePoint'})
-            PreemptiveStateMachine.addPreemptive('EndMatchPreemtion',
-                                             EndMatchPreemtion(),
+                                             transitions={'gotonextcase':'Drop1'})
+            PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
+                                             EndMatchPreemption(),
                                              transitions={'endPreemption':'endmatch'})
-
-class Drop(CyclicActionState): 
-    def createAction(self):
-        self.pointcap(0,0,0)
+            
+            PreemptiveStateMachine.add('Drop1',
+                      Drop1(),
+                      transitions={'succeeded':'Drop2', 'aborted':'dropped'})
+            
+            self.setInitialState('Drop1')
+            
+            PreemptiveStateMachine.add('Drop2',
+                      Drop2(),
+                      transitions={'succeeded':'dropped', 'aborted':'dropped'})
+            
+            
+            
+#classe qui sert a symboliser une case de depose: on lui rajoute une occupation 
+class DropCase(Case):
+    def __init__(self,i_hor,j_vert):
+        self.i=i_hor
+        self.j=j_vert
+        self.occupied=False
+    
+    def getCase(self):
+        return AmbiCaseRed(self.i,self.j,Data.color)
         
+
+class Drop1(CyclicActionState): 
+    def __init__(self):
+        CyclicActionState.__init__(self)
+        # la liste des cases par ordre de priorite
+        #c'est une liste de case cote rouge !
+        #comme c'est cree a l'init je ne sais pas encore la couleur
+        self.casePriority=[DropCase(3,3),DropCase(-1,3),DropCase(-5,3),DropCase(3,-1),DropCase(1,1),DropCase(-1,-1),DropCase(-3,1)]
+
+    def createAction(self):
+        #je parcours toutes les cases et je prend la premiere non occupee
+        for dropcase in self.casePriority:
+            if dropcase.occupied==False:
+                #je cree la bonne case bleue ou rouge, je stocke dans Data pour les autres etats
+                Data.currentDropCase=dropcase
+                #je vais dessus
+                self.dropOnCase(dropcase.getCase())
+                return
+        #si j'ai fini la liste, alors je prend la premiere (devrait pas arriver)
+        self.dropOnCase(self.casePriority[0].getCase())
+            
+    def executeOut(self):
+        #si j'ai reussi a terminer mon ordre je note que la case est occupee
+        if self.trans=='succeeded':
+            Data.currentDropCase.occupied=True
+        
+        
+class Drop2(CyclicActionState):
+    def createAction(self):
+        self.backward(0.35)    
  
- 
-class EndMatchPreemtion(PreemptiveCyclicState):
+class EndMatchPreemption(PreemptiveCyclicState):
     def __init__(self):
         PreemptiveCyclicState.__init__(self, outcomes=['endPreemption'])
         self.match_duration=rospy.get_param("/match_duration")
@@ -56,9 +103,9 @@ class EndMatchPreemtion(PreemptiveCyclicState):
         return 'endPreemption'
     
     
-class ObstacleARPreemption(PreemptiveCyclicState):
+class ObstaclePreemption(PreemptiveCyclicState):
     def __init__(self):
-        PreemptiveCyclicState.__init__(self, outcomes=['avoid'])
+        PreemptiveCyclicState.__init__(self, outcomes=['gotonextcase'])
         self.blinding_period=rospy.get_param("/blinding_period")
 
     def preemptionCondition(self):
@@ -69,4 +116,5 @@ class ObstacleARPreemption(PreemptiveCyclicState):
             return False
        
     def executeTransitions(self):
-        return 'avoid'
+        Data.currentDropCase.occupied=True
+        return 'gotonextcase'

@@ -18,53 +18,65 @@ from arp_master.strat.util.Data import Data
 from arp_ods.msg import OrderGoal
 from arp_ods.msg import OrderAction
 
-import SubStrat_GetPionBord
-import SubStrat_DropPion
-
 from math import pi
 
 from arp_master.strat.util.Table2011 import *
 from arp_master.strat.util.UtilARD import *
 
-class Middlegame_D(PreemptiveStateMachine):
+class GetPionBord(PreemptiveStateMachine):
     def __init__(self):
-        PreemptiveStateMachine.__init__(self,outcomes=['endMiddlegame'])
+        PreemptiveStateMachine.__init__(self,outcomes=['got','obstacle','endmatch','problem'])
         with self:
             #preemptive states
             PreemptiveStateMachine.addPreemptive('ObstaclePreemption',
                                              ObstaclePreemption(),
-                                             transitions={'avoid':'Selector'})
+                                             transitions={'obstaclepreemption':'obstacle'})
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
                                              EndMatchPreemption(),
-                                             transitions={'endPreemption':'endMiddlegame'})
-            # other states
-            PreemptiveStateMachine.add('Selector',
-                      Selector(),
-                      transitions={'getpion':'GetPionBord'})
-            #as initial state is not the preemptive one, it is necessary to add the information here !
-            self.setInitialState('Selector')
+                                             transitions={'endPreemption':'endmatch'})
             
-            PreemptiveStateMachine.add('GetPionBord', SubStrat_GetPionBord.GetPionBord(),
-                                   transitions={'got':'DropPion','obstacle':'Selector','endmatch':'endMiddlegame','problem':'Selector'})
-            PreemptiveStateMachine.add('DropPion', SubStrat_DropPion.DropPion(),
-                                   transitions={'dropped':'Selector','endmatch':'endMiddlegame'})
+            PreemptiveStateMachine.add('GotoFacePion1',
+                      GotoFacePion1(),
+                      transitions={'succeeded':'GotoFacePion2', 'aborted':'problem'})
+            
+            self.setInitialState('GotoFacePion1')
+            
+            PreemptiveStateMachine.add('GotoFacePion2',
+                      GotoFacePion2(),
+                      transitions={'succeeded':'Turn', 'aborted':'problem'})
+            
+            PreemptiveStateMachine.add('Turn',
+                      Turn(),
+                      transitions={'succeeded':'Avance', 'aborted':'problem'})
 
+            PreemptiveStateMachine.add('Avance',
+                      Avance(),
+                      transitions={'succeeded':'got', 'aborted':'problem'})
 
-#l'etat qui decide de ce qui va etre fait maintenant
-class Selector(CyclicState):
-    def __init__(self):
-        CyclicState.__init__(self, outcomes=['getpion'])
-    
-    def executeTransitions(self):
+class GotoFacePion1(CyclicActionState):
+    def createAction(self):
         if Data.pionBordObjectif==None:
             Data.pionBordObjectif=PionBord(0,Data.color)
-        else:
-            Data.pionBordObjectif=PionBord((Data.pionBordObjectif.rang+1)%4,Data.color)
-            
-        return 'getpion'
+        cap=AmbiCapRed(-pi,Data.color)
+        (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(cap.angle)
+        self.pointcap(xRobot-0.35*cos(cap.angle),yRobot-0.35*sin(cap.angle),cap.angle)     
         
+class GotoFacePion2(CyclicActionState):
+    def createAction(self):
+        if Data.pionBordObjectif==None:
+            Data.pionBordObjectif=PionBord(0,Data.color)
+        cap=AmbiCapRed(-pi,Data.color)
+        (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(cap.angle)
+        self.pointcap(xRobot,yRobot,cap.angle)    
 
-    
+class Turn(CyclicActionState):
+    def createAction(self):
+        self.cap(normalizeAngle(Inputs.gettheta()-9*pi/10))
+ 
+class Avance(CyclicActionState):
+    def createAction(self):
+        self.forward(0.100) 
+ 
 class EndMatchPreemption(PreemptiveCyclicState):
     def __init__(self):
         PreemptiveCyclicState.__init__(self, outcomes=['endPreemption'])
@@ -82,7 +94,7 @@ class EndMatchPreemption(PreemptiveCyclicState):
     
 class ObstaclePreemption(PreemptiveCyclicState):
     def __init__(self):
-        PreemptiveCyclicState.__init__(self, outcomes=['avoid'])
+        PreemptiveCyclicState.__init__(self, outcomes=['obstaclepreemption'])
         self.blinding_period=rospy.get_param("/blinding_period")
 
     def preemptionCondition(self):
@@ -93,4 +105,4 @@ class ObstaclePreemption(PreemptiveCyclicState):
             return False
        
     def executeTransitions(self):
-        return 'avoid'
+        return 'obstaclepreemption'

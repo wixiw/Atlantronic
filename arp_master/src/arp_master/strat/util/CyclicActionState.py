@@ -49,11 +49,11 @@ class CyclicActionState(CyclicState):
                     return label
                 
             #is the order terminated ?
-            trans=self.executeClientTransition()  
+            self.trans=self.executeClientTransition()  
                      
-            if trans!=None:
+            if self.trans!=None:
                 self.executeOut()
-                return trans
+                return self.trans
             
             Data.stateMachineRate.sleep()
             Inputs.update()

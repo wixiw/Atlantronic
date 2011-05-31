@@ -11,6 +11,7 @@ class Data:
     color='NONE'
     adv_color='NONE'
     going_back=False
+    pionBordObjectif=None
 
     liste_cases2_faites=[]
     

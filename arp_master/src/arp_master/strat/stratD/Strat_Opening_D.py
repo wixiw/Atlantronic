@@ -91,6 +91,10 @@ class Opening_D(PreemptiveStateMachine):
                                     
             PreemptiveStateMachine.add('DropBlue6',
                       DropBlue6(),
+                      transitions={'succeeded':'DropBlue7', 'aborted':'problem'}) 
+            
+            PreemptiveStateMachine.add('DropBlue7',
+                      DropBlue7(),
                       transitions={'succeeded':'RecalBlue', 'aborted':'problem'}) 
             
             PreemptiveStateMachine.add('RecalBlue',
@@ -191,6 +195,10 @@ class RecalBlue(CyclicState):
     def executeIn(self):
         self.relocate()
         
+class DropBlue7(CyclicActionState):
+    def createAction(self):
+        self.backward(0.300)
+         
 ################# PREEMPTIONS
 
 class ObstaclePreemption(PreemptiveCyclicState):

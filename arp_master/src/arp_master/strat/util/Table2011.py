@@ -91,7 +91,8 @@ class PionBord:
             self.xCenter=-(1.5-0.2)
         else:
             self.xCenter=(1.5-0.2)
-        self.yCenter=2.100/2-0.400-0.290-0.280*(rang-1)
+        self.yCenter=2.100/2-0.400-0.290-0.280*(rang)
+        self.rang=rang
     
     def coord_WhenPionMilieu(self,theta):
         x=self.xCenter-(Robot.xPion*cos(theta)-Robot.yPion*sin(theta))
@@ -196,6 +197,8 @@ class AmbiCaseRed(Case):
             Case.__init__(self,i_hor,j_vert)
         if color=='blue':
             Case.__init__(self,-i_hor,j_vert)
+            
+
     
 class AmbiCapRed:
     def __init__(self,angle,color):
