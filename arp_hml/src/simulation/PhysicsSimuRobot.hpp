@@ -167,7 +167,7 @@ namespace arp_hml
         /**
          * time of last command received
          */
-        ros::Time last_command_time_;
+        double last_command_time_;
 
         /** SImulate the motor power enable **/
         bool m_powerEnabled;

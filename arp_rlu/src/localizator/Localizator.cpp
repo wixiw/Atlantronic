@@ -31,6 +31,8 @@ Localizator::Localizator() :
         ROS_FATAL("pas reussi a recuperer le parametre LEFT_WHEEL_DIAMETER");
 
     m_monotonicTimeToRealTime = ros::Time::now().toSec() - getTime();
+
+    ROS_INFO("Localizator: delay from HML time set to %f",m_monotonicTimeToRealTime);
 }
 
 Localizator::~Localizator()

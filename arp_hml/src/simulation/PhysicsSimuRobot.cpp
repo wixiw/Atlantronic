@@ -76,7 +76,7 @@ bool PhysicsSimuRobot::srvResetHml(ResetHml::Request& req,
 void PhysicsSimuRobot::commandCallback(
         const arp_core::DifferentialCommandConstPtr& c)
 {
-    last_command_time_ = ros::Time::now();
+    last_command_time_ = getTime();
     v_left_ = c->v_left;
     v_right_ = c->v_right;
 }
@@ -96,7 +96,7 @@ void PhysicsSimuRobot::update(double dt, double canvas_width,
         double canvas_height)
 {
     // Au bout de 2000ms la commande n'est plus appliquée
-    if (ros::Time::now() - last_command_time_ > ros::Duration(2.00))
+    if (getTime() - last_command_time_ > 2.00)
     {
         v_right_ = 0.0f;
         v_left_ = 0.0f;
@@ -194,7 +194,7 @@ void PhysicsSimuRobot::update(double dt, double canvas_width,
     Odo o;
     o.odo_left = odo_left_;
     o.odo_right = odo_right_;
-    o.time = (ros::Time::now()).toSec();
+    o.time = getTime();
     odo_pub_.publish(o);
     ////////////////////////////////////////////////////
     //ROS_INFO("physic publie");
