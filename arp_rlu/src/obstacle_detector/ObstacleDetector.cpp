@@ -69,16 +69,23 @@ void ObstacleDetector::scanCallback(LaserScanConstPtr scan)
         relativeObstacleTf = m_baseToFrontLaser * obstacleTf;
         front_detection_distance = relativeObstacleTf.getOrigin().getX();
         lateral_detection_distance = relativeObstacleTf.getOrigin().getY();
+        m_tfBroadcaster.sendTransform(tf::StampedTransform(obstacleTf, t , m_frontLaserFrameName, "front_obstacle"));
 
+        //Test si la détection est suffisamment proche
         if ( 0 < front_detection_distance && front_detection_distance < FRONT_DETECTION_THRESHOLD
                 &&
-            fabs(lateral_detection_distance) < LATERAL_DETECTION_THRESHOLD   )
+             fabs(lateral_detection_distance) < LATERAL_DETECTION_THRESHOLD   )
         {
-            obs.detected = 1;
+            //Test si la détection n'est pas trop proche (câble, tour à nous)
+            if ( FRONT_BLIND_ZONE < front_detection_distance
+                    ||
+                LATERAL_BLIND_ZONE < fabs(lateral_detection_distance)  )
+            {
+                obs.detected = 1;
+            }
             //ROS_INFO("tf : (%0.3f,%0.3f)",obstacleTf.getOrigin().getX(), obstacleTf.getOrigin().getY());
             //ROS_INFO("relative tf : (%0.3f,%0.3f)",relativeObstacleTf.getOrigin().getX(), relativeObstacleTf.getOrigin().getY());
             //ROS_INFO("detected : d=%0.3f a=%0.3f",d,angle);
-            m_tfBroadcaster.sendTransform(tf::StampedTransform(obstacleTf, t , m_frontLaserFrameName, "front_obstacle"));
         }
     }
 
@@ -117,10 +124,22 @@ void ObstacleDetector::updateRosParams()
         FRONT_DETECTION_THRESHOLD = - 1.000;
     }
 
+    if (!ros::param::get("ObstacleDetector/FRONT_BLIND_ZONE", FRONT_BLIND_ZONE))
+    {
+        ROS_FATAL("did not found ObstacleDetector/FRONT_BLIND_ZONE");
+        FRONT_BLIND_ZONE = - 1.000;
+    }
+
     if (!ros::param::get("ObstacleDetector/LATERAL_DETECTION_THRESHOLD", LATERAL_DETECTION_THRESHOLD))
     {
         ROS_FATAL("did not found ObstacleDetector/LATERAL_DETECTION_THRESHOLD");
         LATERAL_DETECTION_THRESHOLD = - 1.000;
+    }
+
+    if (!ros::param::get("ObstacleDetector/LATERAL_BLIND_ZONE", LATERAL_BLIND_ZONE))
+    {
+        ROS_FATAL("did not found ObstacleDetector/LATERAL_BLIND_ZONE");
+        LATERAL_BLIND_ZONE = - 1.000;
     }
 
     if (!ros::param::get("ObstacleDetector/base_frame", m_baseFrameName))

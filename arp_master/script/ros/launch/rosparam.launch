@@ -21,7 +21,7 @@
     <param name="/arp_ods/ANG_VEL_MAX"  value="1.000" /> 
 
 	<!--maximum rotation acceleration (rad/s^2) -->
-    <param name="/arp_ods/ANG_ACC_MAX"  value="2.000" /> 
+    <param name="/arp_ods/ANG_ACC_MAX"  value="5.000" /> 
 	<!--maximum forward acceleration (m/s^02) -->
     <param name="/arp_ods/LIN_ACC_MAX"  value="0.500" /> 
 	<!--maximum forward deceleration (m/s^02) -->

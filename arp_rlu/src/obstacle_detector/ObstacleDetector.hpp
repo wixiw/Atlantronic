@@ -117,6 +117,8 @@ namespace arp_rlu
          */
         double FRONT_DETECTION_THRESHOLD;
         double LATERAL_DETECTION_THRESHOLD;
+        double FRONT_BLIND_ZONE;
+        double LATERAL_BLIND_ZONE;
 	};
 }
 
