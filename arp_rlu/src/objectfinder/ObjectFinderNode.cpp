@@ -81,12 +81,24 @@ bool ObjectFinderNode::findobjectsCallback(FindObjects::Request& req, FindObject
         return false;
     }
 
-    ROS_INFO("ObjectFinderNode findobjectsCallback");
-
     objf.setPolarScan(scan);
+    // TODO : Changement de repère Hokuyo -> Base_Frame
     objf.computeCartesianScan(req.xRobot, req.yRobot, req.thetaRobot);
     objf.onTableOnly();
     std::vector<Scan> vect = objf.clusterize();
+
+    ROS_INFO("*****************************");
+    ROS_INFO("Nb of detected clusters : %d", vect.size());
+
+    objects.clear();
+    for(unsigned int i = 0; i < vect.size() ; i++)
+    {
+        KnownObject obj;
+        obj.recognize(vect[i]);
+        ROS_INFO("Object %d", i);
+        ROS_INFO_STREAM( obj.print() );
+    }
+
 
 //    cd.setScan(cropScan(req.minAngle, req.maxAngle));
 //

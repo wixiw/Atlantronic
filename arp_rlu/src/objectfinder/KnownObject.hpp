@@ -28,11 +28,22 @@ class KnownObject
 
         void recognize(Scan s);
 
+        std::string print();
+
+        static const double diameter_tower_min = 0.0;
+        static const double diameter_tower_max = 0.1;
+
+        static const double diameter_figure_min = 0.1;
+        static const double diameter_figure_max = 0.3;
+
+        static const double diameter_robot_min = 0.3;
+
         KnownObjectType type;
         Scan scan;
         double x;
         double y;
         double confidence;
+        double diameter;  // = 3 sigma
 };
 }
 

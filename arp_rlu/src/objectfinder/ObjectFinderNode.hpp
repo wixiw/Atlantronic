@@ -9,6 +9,8 @@
 #define _ARP_RLU_OBJECTFINDERNODE_HPP_
 
 #include "ObjectFinder.hpp"
+#include "KnownObject.hpp"
+
 #include <ros/ros.h>
 #include <sensor_msgs/LaserScan.h>
 #include <arp_rlu/FindObjects.h>
@@ -62,6 +64,8 @@ class ObjectFinderNode
         bool findobjectsCallback(arp_rlu::FindObjects::Request& req, arp_rlu::FindObjects::Response& res);
 
         bool reverse_scan;
+
+        std::vector<KnownObject> objects;
 
 };
 }
