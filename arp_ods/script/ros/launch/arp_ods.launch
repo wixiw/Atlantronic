@@ -19,8 +19,6 @@
 		set it to 0.9, your robot will make big curve to reach the final point with the right angle. --> 
 	    <param name="FANTOM_COEF"  value="0" />
 	    
-		<!--distance where you are in init mode -->
-		<param name="RADIUS_INIT_ZONE"  value="0.0" />
 		<!--distance where you are in mode approaching point (m)  -->
 		<param name="RADIUS_APPROACH_ZONE"  value="0.015" />
 		<!--timeout before exiting pass mode if no other order is received  -->

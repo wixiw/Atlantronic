@@ -65,14 +65,16 @@ BOOST_AUTO_TEST_CASE( ModeSelectorModesNoPass )
 
     ms.setBeginPose(beginPose);
     ms.setEndPose(endPose);
-    ms.setRadiusInitZone(0.010);
     ms.setRadiusApproachZone(0.050);
     ms.setAngleAccuracy(0.2);
     ms.setDistanceAccurancy(0.010);
     ms.setPass(false);
+    ms.setOrderTimeout(10);
+
+    BOOST_CHECK_EQUAL( ms.getMode() , MODE_INIT );
 
     ms.switchMode(currentPose);
-    BOOST_CHECK_EQUAL( ms.getMode() , MODE_INIT );
+    BOOST_CHECK_EQUAL( ms.getMode() , MODE_RUN );
 
     currentPose.x = 0.020;
     ms.switchMode(currentPose);
@@ -121,19 +123,22 @@ BOOST_AUTO_TEST_CASE( ModeSelectorModesPass )
 
     ms.setBeginPose(beginPose);
     ms.setEndPose(endPose);
-    ms.setRadiusInitZone(0.010);
     ms.setRadiusApproachZone(0.050);
     ms.setAngleAccuracy(0.2);
     ms.setDistanceAccurancy(0.010);
     ms.setPass(true);
     ms.setPassTimeout(0.5);
+    ms.setOrderTimeout(10);
+
+
+    BOOST_CHECK_EQUAL( ms.getMode() , MODE_INIT );
 
     ms.switchMode(currentPose);
-    BOOST_CHECK_EQUAL( ms.getMode() , MODE_INIT );
+    BOOST_CHECK_EQUAL( ms.getMode() , MODE_RUN );
 
     currentPose.x = 0.020;
     ms.switchMode(currentPose);
-    BOOST_CHECK_EQUAL( ms.getMode() , MODE_RUN );
+
 
     currentPose.x = 1.000;
     ms.switchMode(currentPose);
@@ -170,20 +175,34 @@ BOOST_AUTO_TEST_CASE( ModeSelectorModesTimeout )
 
     ms.setBeginPose(beginPose);
     ms.setEndPose(endPose);
-    ms.setRadiusInitZone(0.010);
     ms.setRadiusApproachZone(0.050);
     ms.setAngleAccuracy(0.2);
     ms.setDistanceAccurancy(0.010);
-    ms.setPass(true);
+    ms.setPass(false);
     ms.setPassTimeout(0.5);
-    ms.setOrderTimeout(2.0);
+    ms.setOrderTimeout(0.5);
 
-    ms.switchMode(currentPose);
+
     BOOST_CHECK_EQUAL( ms.getMode() , MODE_INIT );
 
-    sleep(3);
+    ms.switchMode(currentPose);
+    BOOST_CHECK_EQUAL( ms.getMode() , MODE_RUN );
+    sleep(1);
     ms.switchMode(currentPose);
     BOOST_CHECK_EQUAL( ms.getMode() , MODE_ERROR );
+
+    ModeSelector ms4;
+    BOOST_CHECK_EQUAL( ms4.getMode() , MODE_INIT );
+    ms4.switchMode(currentPose);
+    BOOST_CHECK_EQUAL( ms4.getMode() , MODE_RUN );
+    currentPose.x = 1.000;
+    currentPose.y = 0.455;
+    ms4.switchMode(currentPose);
+    BOOST_CHECK_EQUAL( ms4.getMode() , MODE_APPROACH );
+    sleep(1);
+    ms4.switchMode(currentPose);
+    BOOST_CHECK_EQUAL( ms4.getMode() , MODE_ERROR );
+
 
 }
 

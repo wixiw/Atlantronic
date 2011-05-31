@@ -69,7 +69,6 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckApproachMode )
 
     fo.setBeginPose(beginPose);
     fo.setEndPose(endPose);
-    fo.setRadiusInitZone(0.010);
     fo.setRadiusApproachZone(0.050);
     fo.setAngleAccuracy(0.2);
     fo.setDistanceAccurancy(0.010);
@@ -130,7 +129,6 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckPassMode )
 
     fo.setBeginPose(beginPose);
     fo.setEndPose(endPose);
-    fo.setRadiusInitZone(0.010);
     fo.setRadiusApproachZone(0.050);
     fo.setAngleAccuracy(0.2);
     fo.setDistanceAccurancy(0.010);
@@ -180,7 +178,6 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckTranslationSpeedCmd )
 
     fo.setBeginPose(beginPose);
     fo.setEndPose(endPose);
-    fo.setRadiusInitZone(0.010);
     fo.setRadiusApproachZone(0.050);
     fo.setAngleAccuracy(0.2);
     fo.setDistanceAccurancy(0.010);
@@ -255,7 +252,6 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckNullFantomSpeedCmd )
 
     fo.setBeginPose(beginPose);
     fo.setEndPose(endPose);
-    fo.setRadiusInitZone(0.010);
     fo.setRadiusApproachZone(0.050);
     fo.setAngleAccuracy(0.2);
     fo.setDistanceAccurancy(0.010);
@@ -334,7 +330,6 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckFullFantomSpeedCmd )
 
     fo.setBeginPose(beginPose);
     fo.setEndPose(endPose);
-    fo.setRadiusInitZone(0.010);
     fo.setRadiusApproachZone(0.050);
     fo.setAngleAccuracy(0.2);
     fo.setDistanceAccurancy(0.010);
@@ -415,7 +410,6 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckReverseTranslationSpeedCmd )
 
     fo.setBeginPose(beginPose);
     fo.setEndPose(endPose);
-    fo.setRadiusInitZone(0.010);
     fo.setRadiusApproachZone(0.050);
     fo.setAngleAccuracy(0.2);
     fo.setDistanceAccurancy(0.010);
@@ -493,7 +487,6 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckReverseNullFantomSpeedCmd )
 
     fo.setBeginPose(beginPose);
     fo.setEndPose(endPose);
-    fo.setRadiusInitZone(0.010);
     fo.setRadiusApproachZone(0.050);
     fo.setAngleAccuracy(0.2);
     fo.setDistanceAccurancy(0.010);
@@ -573,7 +566,6 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckReverseFullFantomSpeedCmd )
 
     fo.setBeginPose(beginPose);
     fo.setEndPose(endPose);
-    fo.setRadiusInitZone(0.010);
     fo.setRadiusApproachZone(0.050);
     fo.setAngleAccuracy(0.2);
     fo.setDistanceAccurancy(0.010);
@@ -668,7 +660,6 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckVFinal )
 
     fo.setBeginPose(beginPose);
     fo.setEndPose(endPose);
-    fo.setRadiusInitZone(0.010);
     fo.setRadiusApproachZone(0.050);
     fo.setAngleAccuracy(0.2);
     fo.setDistanceAccurancy(0.010);
@@ -783,7 +774,6 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckVFinalReverse )
 
     fo.setBeginPose(beginPose);
     fo.setEndPose(endPose);
-    fo.setRadiusInitZone(0.010);
     fo.setRadiusApproachZone(0.050);
     fo.setAngleAccuracy(0.2);
     fo.setDistanceAccurancy(0.010);

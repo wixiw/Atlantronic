@@ -69,7 +69,6 @@ void ModeSelector::setDefaults(order::config conf)
 {
     m_angleAccuracy = conf.ANGLE_ACCURACY;
     m_distanceAccuracy = conf.DISTANCE_ACCURACY;
-    m_radiusInitZone = conf.RADIUS_INIT_ZONE;
     m_radiusApproachZone = conf.RADIUS_APPROACH_ZONE;
     m_passTimeout = conf.PASS_TIMEOUT;
     m_orderTimeout = conf.ORDER_TIMEOUT;
@@ -79,14 +78,8 @@ void ModeSelector::switchInit(arp_core::Pose currentPosition)
 {
     // as init is left as soon as it is entered, I allow to put the last init time into m_initTime
     m_initTime = getTime();
-
-    if (getCoveredDistance(currentPosition) >= getRadiusInitZone())
-    {
-        ROS_INFO("switched MODE_INIT --> MODE_RUN ");
-        m_currentMode = MODE_RUN;
-        return;
-    }
-    testTimeout("MODE_INIT");
+    testTimeout();
+    m_currentMode = MODE_RUN;
 }
 
 void ModeSelector::switchRun(arp_core::Pose currentPosition)
@@ -107,7 +100,7 @@ void ModeSelector::switchRun(arp_core::Pose currentPosition)
             return;
         }
     }
-    testTimeout("MODE_RUN");
+    testTimeout();
 }
 
 void ModeSelector::switchApproach(arp_core::Pose currentPosition)
@@ -123,7 +116,7 @@ void ModeSelector::switchApproach(arp_core::Pose currentPosition)
         m_currentMode = MODE_DONE;
         return;
     }
-    testTimeout("MODE_APPROACH");
+    testTimeout();
 
 }
 
@@ -218,11 +211,6 @@ double ModeSelector::getRadiusApproachZone() const
     return m_radiusApproachZone;
 }
 
-double ModeSelector::getRadiusInitZone() const
-{
-    return m_radiusInitZone;
-}
-
 double ModeSelector::getAngleAccuracy() const
 {
     return m_angleAccuracy;
@@ -251,11 +239,6 @@ void ModeSelector::setOrderTimeout(double timeout)
 void ModeSelector::setRadiusApproachZone(double m_radiusApproachZone)
 {
     this->m_radiusApproachZone = m_radiusApproachZone;
-}
-
-void ModeSelector::setRadiusInitZone(double m_radiusInitZone)
-{
-    this->m_radiusInitZone = m_radiusInitZone;
 }
 
 void ModeSelector::setAngleAccuracy(double m_angleAccuracy)
@@ -292,14 +275,14 @@ double ModeSelector::angle(arp_core::Pose a, arp_core::Pose b)
     return normalizeAngle(b.theta - a.theta);
 }
 
-void ModeSelector::testTimeout(std::string from_mode)
+void ModeSelector::testTimeout()
 {
     double t = getTime();
     double dt = t - m_initTime;
 
     if (m_initTime != -1 and dt > m_orderTimeout)
     {
-        ROS_INFO("switched %s --> MODE_ERROR because of dt=%0.3f", from_mode.c_str(), dt);
+        ROS_INFO_STREAM("switched from " << getMode() << " to MODE_ERROR because of dt=" << dt);
         m_currentMode = MODE_ERROR;
         return;
     }

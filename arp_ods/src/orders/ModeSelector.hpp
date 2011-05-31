@@ -86,7 +86,7 @@ class ModeSelector
         /**
          *  will test for timeout and if true, set mode to ERROR
          */
-        void testTimeout(std::string from_mode);
+        void testTimeout();
 
         /**
          * Returns the distance to the m_endPose
