@@ -26,14 +26,19 @@ class ObjectFinder
         Scan computeCartesianScan(double xOnTable, double yOnTable, double thetaOnTable);
         void setCartesianScan(Scan s);
         Scan onTableOnly();
-        std::pair<Scan, Scan> kMeans(Scan s, double threshDisplacement, unsigned int maxIterations);
+        std::pair<Scan, Scan> kMeans(Scan s);
 
-        std::vector<Scan> clusterize(Scan, unsigned int minNbPoints, double stddev);
+        std::vector<Scan> clusterize(Scan);
 
         double xMinTable;
         double xMaxTable;
         double yMinTable;
         double yMaxTable;
+
+        unsigned int clusterizeMinNbPoints;
+        double clusterizeStddevMax;
+        double kMeanThreshDisplacement;
+        unsigned int kMeanMaxIterations;
 
     protected:
         MedianFilter mf;

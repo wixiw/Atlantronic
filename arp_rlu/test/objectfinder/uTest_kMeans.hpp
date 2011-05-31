@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_CASE( kMeans_Test_1 )
     Scan scan = MatrixXd::Zero(0, 0);
 
     std::pair<Scan, Scan> p;
-    p = objf.kMeans(scan, 0.01, 4);
+    p = objf.kMeans(scan);
 
     BOOST_CHECK_EQUAL( p.first.rows(), 0 );
     BOOST_CHECK_EQUAL( p.first.cols(), 0 );
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE( kMeans_Test_2 )
     Scan scan = MatrixXd::Zero(3, 5);
 
     std::pair<Scan, Scan> p;
-    p = objf.kMeans(scan, 0.01, 4);
+    p = objf.kMeans(scan);
 
     BOOST_CHECK_EQUAL( p.first.rows(), 0 );
     BOOST_CHECK_EQUAL( p.first.cols(), 0 );
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE( kMeans_Test_3 )
     Scan scan = MatrixXd::Zero(4, 1);
 
     std::pair<Scan, Scan> p;
-    p = objf.kMeans(scan, 0.01, 4);
+    p = objf.kMeans(scan);
 
     BOOST_CHECK_EQUAL( p.first.rows(), 4 );
     BOOST_CHECK_EQUAL( p.first.cols(), 1 );
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE( kMeans_Test_4 )
     std::cout << scan << std::endl;
 
     std::pair<Scan, Scan> p;
-    p = objf.kMeans(scan, 0.01, 4);
+    p = objf.kMeans(scan);
 
     BOOST_CHECK_EQUAL( p.first.rows(), 4 );
     BOOST_CHECK_EQUAL( p.first.cols(), 1 );
@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE( kMeans_Test_5 )
     std::cout << scan << std::endl;
 
     std::pair<Scan, Scan> p;
-    p = objf.kMeans(scan, 0.01, 4);
+    p = objf.kMeans(scan);
 
     BOOST_CHECK_EQUAL( p.first.rows(), 4 );
     BOOST_CHECK( p.first.cols() == 2 ||p.first.cols() == 3  );

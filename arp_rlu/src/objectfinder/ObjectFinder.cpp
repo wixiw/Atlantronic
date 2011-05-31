@@ -13,7 +13,8 @@ using namespace arp_rlu;
 using namespace Eigen;
 
 ObjectFinder::ObjectFinder() :
-    mf(3), xMinTable(-1.300), xMaxTable(1.300), yMinTable(-0.850), yMaxTable(1.000)
+    mf(3), xMinTable(-1.300), xMaxTable(1.300), yMinTable(-0.850), yMaxTable(1.000),
+    clusterizeMinNbPoints(5), clusterizeStddevMax(0.1), kMeanThreshDisplacement(0.01), kMeanMaxIterations(5)
 {
 
 }
@@ -135,7 +136,7 @@ Scan ObjectFinder::onTableOnly()
     return scan;
 }
 
-std::pair<Scan, Scan> ObjectFinder::kMeans(Scan s, double threshDisplacement, unsigned int maxIterations)
+std::pair<Scan, Scan> ObjectFinder::kMeans(Scan s)
 {
     // On verifie que le scan n'est pas débile
     unsigned int n = s.cols();
@@ -170,7 +171,7 @@ std::pair<Scan, Scan> ObjectFinder::kMeans(Scan s, double threshDisplacement, un
 
     unsigned nbIt = 0;
     VectorXi attribution(n);
-    while (nbIt < maxIterations)
+    while (nbIt < kMeanMaxIterations)
     {
         // On compte les iterations
         nbIt++;
@@ -213,15 +214,15 @@ std::pair<Scan, Scan> ObjectFinder::kMeans(Scan s, double threshDisplacement, un
         xSecond = newXSecond;
         ySecond = newYSecond;
 
-        if (dispFirst < threshDisplacement && dispSecond < threshDisplacement)
+        if (dispFirst < kMeanThreshDisplacement && dispSecond < kMeanThreshDisplacement)
         {
-            ROS_INFO("ObjectFinder kMeans : Break on displacement threshold");
+            ROS_INFO("ObjectFinder kMeans : Break on displacement threshold (%f)", kMeanThreshDisplacement);
             break;
         }
     }
-    if (nbIt == maxIterations)
+    if (nbIt == kMeanMaxIterations)
     {
-        ROS_WARN("ObjectFinder kMeans : Convergence failed => max iteration (%d) reached !", maxIterations);
+        ROS_WARN("ObjectFinder kMeans : Convergence failed => max iteration (%d) reached !", kMeanMaxIterations);
         return std::make_pair(s, MatrixXd::Zero(0, 0));
     }
 
@@ -258,7 +259,7 @@ std::pair<Scan, Scan> ObjectFinder::kMeans(Scan s, double threshDisplacement, un
     return std::make_pair(scanFirst, scanSecond);
 }
 
-std::vector<Scan> clusterize(Scan s, unsigned int minNbPoints, double stddev)
+std::vector<Scan> ObjectFinder::clusterize(Scan s)
 {
     std::vector<Scan> result;
     result.clear();
@@ -277,9 +278,32 @@ std::vector<Scan> clusterize(Scan s, unsigned int minNbPoints, double stddev)
     }
     if (n < 5)
     {
-        ROS_WARN("ObjectFinder clusterize : Less than %d points in scan", minNbPoints);
+        ROS_WARN("ObjectFinder clusterize : Less than %d points in scan", clusterizeMinNbPoints);
         return result;
     }
+
+    // on check les stats
+    double xMean = s.block(2, 0, 1, n).sum() / n;
+    double yMean = s.block(3, 0, 1, n).sum() / n;
+    double stddev = 0.;
+    for (unsigned int i = 0; i < n; i++)
+    {
+        stddev += (xMean - s(2, i)) * (xMean - s(2, i)) + (yMean - s(3, i)) * (yMean - s(3, i));
+    }
+    stddev = sqrt(stddev / n);
+
+    if (stddev < clusterizeStddevMax)
+    {
+        result.push_back(s);
+        return result;
+    }
+
+    std::pair<Scan, Scan> p = kMeans(s);
+
+    result = clusterize(p.first);
+    std::vector<Scan> right = clusterize(p.second);
+
+    result.insert(result.end(), right.begin(), right.end());
 
     return result;
 }

@@ -13,4 +13,5 @@
 #include "uTest_computeCartesianScan.hpp"
 #include "uTest_onTableOnly.hpp"
 #include "uTest_kMeans.hpp"
+#include "uTest_clusterize.hpp"
 
