@@ -22,8 +22,12 @@ class ObjectFinder
         ObjectFinder();
         ~ObjectFinder();
 
+        void setPolarScan(Scan s);
+        Scan computeCartesianScan(double xOnTable, double yOnTable, double thetaOnTable );
+
     protected:
         MedianFilter mf;
+        Scan scan;
 };
 }
 

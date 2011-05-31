@@ -6,13 +6,11 @@
  */
 
 #include "MedianFilter.hpp"
+#include <ros/console.h>
 
 using namespace arp_rlu;
 using namespace Eigen;
 
-#ifndef ROS_WARN
-#define ROS_WARN(msg) (std::cout << msg << std::endl)
-#endif
 
 MedianFilter::MedianFilter(unsigned int w):
         width(w)
