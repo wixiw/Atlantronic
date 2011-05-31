@@ -26,7 +26,7 @@ class Opening_D(PreemptiveStateMachine):
         with self:
             PreemptiveStateMachine.addPreemptive('ObstaclePreemption',
                       ObstaclePreemption(),
-                      transitions={'avoid':'problem'})
+                      transitions={'avoidByMilieu':'Milieu1','jump':'endOpening'})
             
             PreemptiveStateMachine.add('EscapeStartpoint',
                       EscapeStartpoint(),
@@ -47,6 +47,7 @@ class Opening_D(PreemptiveStateMachine):
                       transitions={'succeeded':'SwitchRedBlue', 'aborted':'problem'})      
                   
             # attention il y a deux branches, suivant si on est rouge ou bleu
+            #rouge
             PreemptiveStateMachine.add('SwitchRedBlue',
                       SwitchRedBlue(),
                       transitions={'red':'DropRed1', 'blue':'DropBlue1'})  
@@ -68,7 +69,7 @@ class Opening_D(PreemptiveStateMachine):
                       DropRed3(),
                       transitions={'succeeded':'endOpening', 'aborted':'problem'})  
  
-             
+            #bleu 
             PreemptiveStateMachine.add('DropBlue1',
                       DropBlue1(),
                       transitions={'succeeded':'DropBlue2', 'aborted':'problem'})   
@@ -101,6 +102,17 @@ class Opening_D(PreemptiveStateMachine):
                       RecalBlue(),
                       transitions={'done':'endOpening'})  
  
+            #evitement par le milieu
+            PreemptiveStateMachine.add('Milieu1',
+                      Milieu1(),
+                      transitions={'succeeded':'Milieu2', 'aborted':'problem'})  
+            PreemptiveStateMachine.add('Milieu2',
+                      Milieu2(),
+                      transitions={'succeeded':'Milieu3', 'aborted':'problem'})  
+            PreemptiveStateMachine.add('Milieu3',
+                      Milieu3(),
+                      transitions={'succeeded':'endOpening', 'aborted':'problem'})  
+        
 ############### DESCENTE DE TABLE
 
 class EscapeStartpoint(CyclicActionState):
@@ -119,7 +131,7 @@ class LigneVert1(CyclicActionState):
 
 class LigneVert2(CyclicActionState):
     def createAction(self):
-        Data.obstacleAvoidType='Normal'
+        Data.obstacleAvoidType='Milieu'
         self.dropOnCase(AmbiCaseRed(-4, -2, Data.color))
         
 class LigneVert3(CyclicActionState):
@@ -201,15 +213,30 @@ class RecalBlue(CyclicState):
 class DropBlue7(CyclicActionState):
     def createAction(self):
         self.backward(0.300)
+        
+####### ALLER SUR CASE MILIEU
+class Milieu1(CyclicActionState):
+    def createAction(self):
+        Data.obstacleAvoidType='JumpToNext'
+        self.dropOnCase(Case(0,0))
+        
+class Milieu2(CyclicActionState):
+    def createAction(self):
+        self.dropOnCase(Case(3,-1))
+
+class Milieu3(CyclicActionState):
+    def createAction(self):
+        self.backward(0.350)     
          
 ################# PREEMPTIONS
 
 class ObstaclePreemption(PreemptiveCyclicState):
     def __init__(self):
-        PreemptiveCyclicState.__init__(self, outcomes=['avoid'])
+        PreemptiveCyclicState.__init__(self, outcomes=['avoidByMilieu','jump'])
         self.blinding_period=rospy.get_param("/blinding_period")
 
     def preemptionCondition(self):
+        
         if Inputs.getobstacle()==1 and rospy.get_rostime().secs-Data.time_obstacle>self.blinding_period and Data.obstacleAvoidType!='None':
             Data.time_obstacle=rospy.get_rostime().secs
             return True
@@ -217,7 +244,10 @@ class ObstaclePreemption(PreemptiveCyclicState):
             return False
        
     def executeTransitions(self):
-        return 'avoid'
+        if Data.obstacleAvoidType=='Milieu':
+            return 'avoidByMilieu'
+        else:
+            return 'jump'
 
         
 class EscapeObstacle(CyclicActionState):

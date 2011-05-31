@@ -1,7 +1,7 @@
 <!--  This file defines all the rosparam to configure the software -->
 <launch>
 	
-  	<param name="/match_duration" value="9000." /> 
+  	<param name="/match_duration" value="90." /> 
   	<param name="/blinding_period" value="2." /> 
 
 	<!--Distance in meters between wheels -->

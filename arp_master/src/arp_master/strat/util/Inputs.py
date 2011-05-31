@@ -63,18 +63,26 @@ class Inputs:
     
     @staticmethod
     def getobstacle():
-        if Inputs.obstacleInput.data.detected:
-            now = rospy.Time.now()
-            
-            try:
-                Inputs.listener.waitForTransform("/base_link", "/front_obstacle", now, rospy.Duration(0.2))
-                (trans,rot) = Inputs.listener.lookupTransform("/base_link", "/front_obstacle", now)
-            except (tf.Exception, tf.LookupException, tf.ConnectivityException):
-                return False
-            
-            return Table.isOnTable(trans[0],trans[1])
-        else:
-            return False
+        
+        return Inputs.obstacleInput.data.detected
+        
+        #if Inputs.obstacleInput.data.detected:
+        #    now = rospy.Time.now()
+        #    
+        #    try:
+        #        Inputs.listener.waitForTransform("/base_link", "/front_obstacle", now, rospy.Duration(0.2))
+        #        (trans,rot) = Inputs.listener.lookupTransform("/base_link", "/front_obstacle", now)
+        #    except (tf.Exception, tf.LookupException, tf.ConnectivityException):
+        #        rospy.loginfo("obstacle mais exception lors de calcul")
+        #        return 0
+        #    
+        #    if (Table.isOnTable(trans[0],trans[1])):
+        #        return 1
+        #    else:
+        #        rospy.loginfo("obstacle mais pas sur table")
+        #        return 0
+        #else:
+        #    return 0
 
     @staticmethod
     def getRearObstacle():

@@ -23,6 +23,7 @@ class Data:
     #type d'evitement d'obstacle
     #ce sont les etats qui le changent pour que la preemption reagisse differemment
     obstacleAvoidType='None'
+    obstacleARAvoidType='None'
     
     #utilise pour bloquer a chaque mouvement
     lastStart=1
