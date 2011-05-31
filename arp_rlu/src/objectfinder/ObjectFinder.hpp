@@ -28,6 +28,7 @@ class ObjectFinder
         Scan onTableOnly();
         std::pair<Scan, Scan> kMeans(Scan s);
 
+        std::vector<Scan> clusterize();
         std::vector<Scan> clusterize(Scan);
 
         double xMinTable;

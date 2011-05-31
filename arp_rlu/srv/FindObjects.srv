@@ -1,0 +1,5 @@
+float64 xRobot
+float64 yRobot
+float64 thetaRobot
+---
+float64 confidence

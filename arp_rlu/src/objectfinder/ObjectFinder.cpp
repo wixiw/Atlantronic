@@ -13,8 +13,8 @@ using namespace arp_rlu;
 using namespace Eigen;
 
 ObjectFinder::ObjectFinder() :
-    mf(3), xMinTable(-1.300), xMaxTable(1.300), yMinTable(-0.850), yMaxTable(1.000),
-    clusterizeMinNbPoints(5), clusterizeStddevMax(0.1), kMeanThreshDisplacement(0.01), kMeanMaxIterations(5)
+    mf(3), xMinTable(-1.300), xMaxTable(1.300), yMinTable(-0.850), yMaxTable(1.000), clusterizeMinNbPoints(5),
+            clusterizeStddevMax(0.1), kMeanThreshDisplacement(0.01), kMeanMaxIterations(5)
 {
 
 }
@@ -259,6 +259,11 @@ std::pair<Scan, Scan> ObjectFinder::kMeans(Scan s)
     return std::make_pair(scanFirst, scanSecond);
 }
 
+std::vector<Scan> ObjectFinder::clusterize()
+{
+    return clusterize(scan);
+}
+
 std::vector<Scan> ObjectFinder::clusterize(Scan s)
 {
     std::vector<Scan> result;
@@ -268,7 +273,7 @@ std::vector<Scan> ObjectFinder::clusterize(Scan s)
     unsigned int n = s.cols();
     if (n == 0)
     {
-        ROS_WARN("ObjectFinder clusterize : Scan is empty");
+        //ROS_WARN("ObjectFinder clusterize : Scan is empty");
         return result;
     }
     if (s.rows() != 4)
