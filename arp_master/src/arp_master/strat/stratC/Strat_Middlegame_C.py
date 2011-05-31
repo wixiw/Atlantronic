@@ -175,9 +175,7 @@ class Step2(CyclicActionState):
 
 class Step3(CyclicActionState):
     def createAction(self):
-        angleobj=Data.dirParcours.angle()+pi/4+pi/8
-        (xobj,yobj)=Data.case3.coord_WhenPionMilieu(angleobj)
-        self.pointcap(xobj,yobj,angleobj)
+        self.dropOnCase(Data.case3)
 
 class ObstaclePreemption(PreemptiveCyclicState):
     def __init__(self):

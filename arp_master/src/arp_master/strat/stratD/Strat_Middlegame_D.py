@@ -23,7 +23,7 @@ from math import pi
 from arp_master.strat.util.Table2011 import *
 from arp_master.strat.util.UtilARD import *
 
-class Middlegame(PreemptiveStateMachine):
+class Middlegame_D(PreemptiveStateMachine):
     def __init__(self):
         PreemptiveStateMachine.__init__(self,outcomes=['endMiddlegame'])
         with self:

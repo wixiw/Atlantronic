@@ -21,6 +21,7 @@ class CyclicState(smach.StateMachine):
         self.initSetPositionClient()
         self.initSetMotorPower()
         self.initEstimatePositionClient()
+        self.match_duration=rospy.get_param("/match_duration")
         
     def execute(self,userdata):
         Inputs.update()
@@ -35,7 +36,7 @@ class CyclicState(smach.StateMachine):
                 preempted=state.preemptionCondition()
                 if preempted:
                     return label
-            
+             
             #normal transitions
             trans=self.executeTransitions()
             if trans!=None:

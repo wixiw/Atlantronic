@@ -119,7 +119,9 @@ class CyclicActionState(CyclicState):
             self.createMotionControlAction(x,y,cap,'POINTCAP',False,False)
             return True
         
-
+    def dropOnCaseCap(self,case,cap):
+        (xrobot,yrobot)=case.coord_WhenPionMilieu(cap)
+        self.pointcap(xrobot,yrobot, cap )
 
 
     

@@ -173,8 +173,8 @@ void PhysicsSimuRobot::update(double dt, double canvas_width,
         orient_.angle() = 0;
     }
 
-    if ((pos_.x() > VWALL_X - DIST_BACK and orient_.angle() < -PI + 0.1
-            and orient_.angle() > PI - 0.1))
+    if ((pos_.x() > VWALL_X - DIST_BACK and (orient_.angle() < -PI + 0.1
+            or orient_.angle() > PI - 0.1)))
     {
        // ROS_INFO("clamping, robot a plat sur le mur de droite: %.3f,%.3f",
         //        pos_.x(), pos_.y());
