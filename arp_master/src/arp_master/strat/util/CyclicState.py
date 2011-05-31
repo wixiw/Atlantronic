@@ -21,7 +21,7 @@ class CyclicState(smach.StateMachine):
         self.initSetPositionClient()
         self.initSetMotorPower()
         self.initEstimatePositionClient()
-        self.match_duration=rospy.get_param("/match_duration")
+        
         
     def execute(self,userdata):
         Inputs.update()
@@ -76,16 +76,16 @@ class CyclicState(smach.StateMachine):
         try:
             answer=self.estimatePosition_srv(Inputs.getx(),Inputs.gety(),Inputs.gettheta())
             if answer.quality==-1:
-                rospy.logerr(">>>> RELOCALISATION FAILURE")
+                rospy.loginfo("RELOC>> Relocalisation failure: quality : -1")
             else:
                 rospy.loginfo(" Pose:  x=%.3f  y=%.3f,  theta=%.3f"%(Inputs.getx(),Inputs.gety(),Inputs.gettheta()))
                 rospy.loginfo(" Estimate:  x=%.3f  y=%.3f,  theta=%.3f"%(answer.estimatedX,answer.estimatedY,answer.estimatedTheta))
-                rospy.loginfo("delta Pose: delta x=%.3f delta y=%.3f, delta theta=%.3f"%(answer.estimatedX-Inputs.getx(),answer.estimatedY-Inputs.gety(),answer.estimatedTheta-Inputs.gettheta()))
+                rospy.loginfo("RELOC>> delta Pose: delta x=%.3f delta y=%.3f, delta theta=%.3f"%(answer.estimatedX-Inputs.getx(),answer.estimatedY-Inputs.gety(),answer.estimatedTheta-Inputs.gettheta()))
                 self.setPosition(answer.estimatedX,answer.estimatedY,answer.estimatedTheta)
-                rospy.loginfo(">>>> RELOCALISATION SUCCESS")
+                rospy.loginfo("RELOC>> RELOCALISATION SUCCESS")
 
         except rospy.ServiceException, e:
-            rospy.logerr("Exception on relocation")
+            rospy.logerr("RELOC>> Exception on relocation")
     
     def initSetMotorPower(self):
         self.setMotorPower_srv=rospy.ServiceProxy("Protokrot/setMotorPower",SetMotorPower)

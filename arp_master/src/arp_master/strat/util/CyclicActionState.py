@@ -7,9 +7,7 @@ import smach_ros
 import smach_msgs
 import actionlib
 
-from math import cos
-from math import sin
-from math import pi
+from math import *
 
 from CyclicState import CyclicState
 from Inputs import Inputs
@@ -26,6 +24,9 @@ class CyclicActionState(CyclicState):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['succeeded','aborted'])
         self.preemptiveStates=[]
+        self.initSetPositionClient()
+        self.initEstimatePositionClient()
+        self.lastStart=None
         
     def execute(self,userdata):
         Inputs.update()
@@ -46,6 +47,7 @@ class CyclicActionState(CyclicState):
                 state=p[1]
                 preempted=state.preemptionCondition()
                 if preempted:
+                    self.client.cancel_all_goals
                     return label
                 
             #is the order terminated ?
@@ -81,6 +83,13 @@ class CyclicActionState(CyclicState):
         goal.move_type=move_type
         goal.reverse=reverse
         goal.passe=passe
+        
+        #si le mouvement est suffisant, on lance le relocalisateur
+        if sqrt((x-Inputs.getx())**2+(y-Inputs.gety())**2)>0.200 and Data.allowRelocate==True:
+            rospy.logerr("RELOC>> trying to relocate because the movement asked is big enough to handle a jump")
+            self.relocate()
+            ##########################FONCTION BLOQUANTE !
+            #self.waitForStart()
         
         # THIS IS BLOCKING ! <<<<<<<<<<<<<<<<<<<<<<< !!!!!!!!!!!!!!
         self.client.wait_for_server()
@@ -123,7 +132,13 @@ class CyclicActionState(CyclicState):
         (xrobot,yrobot)=case.coord_WhenPionMilieu(cap)
         self.pointcap(xrobot,yrobot, cap )
 
+    def waitForStart(self):
+        while (Data.lastStart==Inputs.getstart()):
+            Data.stateMachineRate.sleep()
+            Inputs.update()
+        Data.lastStart=Inputs.getstart()
 
+        
     
     
     

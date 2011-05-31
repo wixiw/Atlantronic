@@ -16,3 +16,13 @@ class Data:
     liste_cases2_faites=[]
     
     time_obstacle=0
+    
+    #autorisation de relocalisation
+    allowRelocate=False
+    
+    #type d'evitement d'obstacle
+    #ce sont les etats qui le changent pour que la preemption reagisse differemment
+    obstacleAvoidType='None'
+    
+    #utilise pour bloquer a chaque mouvement
+    lastStart=1

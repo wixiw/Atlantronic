@@ -69,6 +69,13 @@ bool TableCorner::isVisibleFrom(double xLaser, double yLaser, double minAngle, d
         }
     }
 
+    // Finalement, on regarde s'il n'est pas trop loin (supérieur à 1m
+    double distance = sqrt( (xLaser - x)*(xLaser - x) + (yLaser - y)*(yLaser - y) );
+    if (distance > 1.0)
+    {
+        return false;
+    }
+
     return true;
 }
 

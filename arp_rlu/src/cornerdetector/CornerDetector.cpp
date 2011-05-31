@@ -318,7 +318,7 @@ Corner CornerDetector::extractCorner(std::vector<Segment> sgmts)
         return Corner();
     }
 
-    MatrixXi corners = MatrixXi::Zero(n * (n - 1) / 2, 3);
+    MatrixXd corners = MatrixXd::Zero(n * (n - 1) / 2, 3);
     unsigned int k = 0;
     for (unsigned int i = 0; i < n - 1; i++)
     {
@@ -326,15 +326,19 @@ Corner CornerDetector::extractCorner(std::vector<Segment> sgmts)
         {
             corners(k, 0) = i;
             corners(k, 1) = j;
-            corners(k, 2) = abs(abs(normalizeAngle(sgmts[i].alpha - sgmts[j].alpha)) - PI / 2.);
+            corners(k, 2) = abs(normalizeAngle(sgmts[j].alpha - sgmts[i].alpha) - PI / 2.);
             k++;
         }
     }
 
+    ROS_INFO_STREAM("Corners Matrix : " << std::endl << corners);
+
     int i_min;
     double alphaMin = corners.col(2).minCoeff(&i_min);
+    ROS_INFO("i_min = %d with alphaMin = %f", i_min, alphaMin);
 
     double cornerAngle = PI - abs(normalizeAngle(sgmts[corners(i_min, 0)].alpha - sgmts[corners(i_min, 1)].alpha));
+    ROS_INFO("cornerAngle (rad) = %f", cornerAngle);
 
     if( cornerAngle < PI/2. - 10. * PI/ 180. || cornerAngle > PI/2. + 10. * PI/ 180.)
     {

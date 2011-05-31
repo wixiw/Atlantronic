@@ -141,5 +141,8 @@ class WaitForMatch(CyclicState):
             return 'start'
         
     def executeOut(self):
+        #je note le temps de debut de match
         Data.start_time=rospy.get_rostime()
+        #a partir de maintenant j'autorise la relocalisation
+        Data.allowRelocate=True
         

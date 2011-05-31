@@ -105,6 +105,8 @@ class Opening_D(PreemptiveStateMachine):
 
 class EscapeStartpoint(CyclicActionState):
     def createAction(self):
+        Data.obstacleAvoidType='None'
+        
         if Data.color=='red':
             pose = AmbiPoseRed(-(3*0.350), Table.HWALL_Y-0.180,0, Data.color)
         else:
@@ -117,6 +119,7 @@ class LigneVert1(CyclicActionState):
 
 class LigneVert2(CyclicActionState):
     def createAction(self):
+        Data.obstacleAvoidType='Normal'
         self.dropOnCase(AmbiCaseRed(-4, -2, Data.color))
         
 class LigneVert3(CyclicActionState):
@@ -207,10 +210,7 @@ class ObstaclePreemption(PreemptiveCyclicState):
         self.blinding_period=rospy.get_param("/blinding_period")
 
     def preemptionCondition(self):
-        #######################
-        return False
-        #######################
-        if Inputs.getobstacle()==1 and rospy.get_rostime().secs-Data.time_obstacle>self.blinding_period:
+        if Inputs.getobstacle()==1 and rospy.get_rostime().secs-Data.time_obstacle>self.blinding_period and Data.obstacleAvoidType!='None':
             Data.time_obstacle=rospy.get_rostime().secs
             return True
         else:
