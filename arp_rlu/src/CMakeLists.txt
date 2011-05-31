@@ -11,6 +11,7 @@ configure_file(
 
 
 
+add_subdirectory(lasertoolbox)
 add_subdirectory(cornerdetector)
 add_subdirectory(localizator)
 add_subdirectory(obstacle_detector)

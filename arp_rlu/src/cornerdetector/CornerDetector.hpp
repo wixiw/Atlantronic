@@ -10,14 +10,13 @@
 
 #include "tf/tf.h"
 #include <math/math.hpp>
+#include "lasertoolbox/common.hpp"
 
 #include <vector>
 
 namespace arp_rlu
 {
 
-typedef Eigen::MatrixXd Scan;
-typedef Eigen::MatrixXd SegmentedScan;
 struct Corner
 {
         double d1;
