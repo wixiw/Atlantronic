@@ -10,5 +10,7 @@
 #include <boost/test/included/unit_test.hpp>
 #include <boost/bind.hpp>
 
+#include "uTest_computeCartesianScan.hpp"
 #include "uTest_onTableOnly.hpp"
+#include "uTest_kMeans.hpp"
 

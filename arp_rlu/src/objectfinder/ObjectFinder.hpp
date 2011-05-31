@@ -23,7 +23,17 @@ class ObjectFinder
         ~ObjectFinder();
 
         void setPolarScan(Scan s);
-        Scan computeCartesianScan(double xOnTable, double yOnTable, double thetaOnTable );
+        Scan computeCartesianScan(double xOnTable, double yOnTable, double thetaOnTable);
+        void setCartesianScan(Scan s);
+        Scan onTableOnly();
+        std::pair<Scan, Scan> kMeans(Scan s, double threshDisplacement, unsigned int maxIterations);
+
+        std::vector<Scan> clusterize(Scan, unsigned int minNbPoints, double stddev);
+
+        double xMinTable;
+        double xMaxTable;
+        double yMinTable;
+        double yMaxTable;
 
     protected:
         MedianFilter mf;
