@@ -102,13 +102,16 @@ bool ReLocalizatorNode::estimatePositionCallback(EstimatePosition::Request& req,
     c = cos(rl.estimatedTheta);
     s = sin(rl.estimatedTheta);
     res.estimatedX = rl.estimatedX - frontal_deport * c + lateral_deport * s;
-    res.estimatedY = rl.estimatedY - frontal_deport * s + lateral_deport * c;
+    res.estimatedY = rl.estimatedY - frontal_deport * s - lateral_deport * c;
     res.estimatedTheta = rl.estimatedTheta;
     res.quality = rl.quality;
 
     if (rl.quality > 0)
     {
-        ROS_INFO("SUCESS !!");
+        ROS_INFO("Laser estimatedX: %.3f", rl.estimatedX);
+        ROS_INFO("Laser estimatedY: %.3f", rl.estimatedY);
+        ROS_INFO("Laser estimatedTheta: %.3f", rl.estimatedTheta);
+        ROS_INFO("SUCCESS !!");
     }
     else
     {

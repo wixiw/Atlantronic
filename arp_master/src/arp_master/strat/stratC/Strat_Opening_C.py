@@ -52,19 +52,24 @@ class Opening_C(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('RetourPrempion1',
                       RetourPrempion1(),
-                      transitions={'succeeded':'RetourPrempion2', 'aborted':'problem'})
+                      transitions={'succeeded':'AvanceRecal', 'aborted':'problem'})
             
-            PreemptiveStateMachine.add('RetourPrempion2',
-                      RetourPrempion2(),
+            #PreemptiveStateMachine.add('RetourPrempion2',
+            #          RetourPrempion2(),
+            #          transitions={'succeeded':'PremRecal', 'aborted':'problem'})
+            
+            PreemptiveStateMachine.add('AvanceRecal',
+                      AvanceRecal(),
                       transitions={'succeeded':'PremRecal', 'aborted':'problem'})
             
             PreemptiveStateMachine.add('PremRecal',
                       PremRecal(),
-                      transitions={'done':'PourWilly'})
+                      transitions={'done':'ReculeRecal'})
             
-            PreemptiveStateMachine.add('PourWilly',
-                      PourWilly(),
-                      transitions={'succeeded':'endOpening', 'aborted':'problem'})
+            PreemptiveStateMachine.add('ReculeRecal',
+                      ReculeRecal(),
+                      transitions={'succeeded':'AvanceRecal', 'aborted':'problem'})
+            
  
  
 class EscapeStartpoint(CyclicActionState):
@@ -127,10 +132,15 @@ class PremRecal(CyclicState):
     def executeIn(self):
         self.relocate()
 
-class PourWilly(CyclicActionState):
+
+
+class AvanceRecal(CyclicActionState):
     def createAction(self):
-        cap=AmbiCapRed(0,Data.color)
-        self.cap(cap.angle)
+        self.pointcap(-0.800,0.350,-pi)
+        
+class ReculeRecal(CyclicActionState):
+    def createAction(self):
+        self.pointcap_reverse(-0.500,0.350,-pi)
 
 
 
@@ -140,6 +150,10 @@ class ObstaclePreemption(PreemptiveCyclicState):
         self.blinding_period=rospy.get_param("/blinding_period")
 
     def preemptionCondition(self):
+        ###################################################"
+        ###################################################
+        return False
+        ###################################################
         if Inputs.getobstacle()==1 and rospy.get_rostime().secs-Data.time_obstacle>self.blinding_period:
             Data.time_obstacle=rospy.get_rostime().secs
             return True

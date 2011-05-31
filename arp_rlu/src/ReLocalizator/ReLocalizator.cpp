@@ -161,7 +161,8 @@ void ReLocalizator::printTableCorners()
     ROS_INFO("*****************************");
     int n = tableCorners.size();
     ROS_INFO("Nb of TableCorners referenced : %d", n);
-    for (unsigned int i = 0; i < tableCorners.size(); i++)
+    for (unsigned int i = 0
+            ; i < tableCorners.size(); i++)
     {
         ROS_INFO("TableCorner %d", i);
         tableCorners[i].print();
@@ -190,6 +191,7 @@ TableCorner ReLocalizator::selectTargetTableCorner()
         compatibleCorners[i].print();
     }
 
+
     if (compatibleCorners.size() == 0)
     {
         ROS_WARN("ReLocalizator selectTargetTableCorner : No compatible TableCorner found");
@@ -207,6 +209,7 @@ TableCorner ReLocalizator::selectTargetTableCorner()
             min_distance = distance;
             target = *it;
         }
+
     }
 
     ROS_INFO("ReLocalizator selectTargetCorner : Selected TableCorner :");
@@ -282,7 +285,8 @@ void ReLocalizator::estimatePose(Corner detected, TableCorner target)
         case NORTH_EAST:
             estimatedX = target.x + detected.d2;
             estimatedY = target.y - detected.d1;
-            estimatedTheta = betweenMinusPiAndPlusPi( PI - detected.alpha2);
+            estimatedTheta
+            = betweenMinusPiAndPlusPi( PI - detected.alpha2);
             quality = 1.;
             return;
         case SOUTH_EAST:

@@ -112,9 +112,9 @@ Scan CornerDetectorNode::cropScan(double minAngle, double maxAngle)
     }
 
     ROS_INFO("Scan minAngle : %f", scan.row(0).minCoeff());
-    ROS_INFO("Scan maxAngle :", scan.row(0).maxCoeff());
-    ROS_INFO("asked minAngle :",minAngle);
-    ROS_INFO("asked maxAngle :", maxAngle);
+    ROS_INFO("Scan maxAngle : %f", scan.row(0).maxCoeff());
+    ROS_INFO("asked minAngle : %f",minAngle);
+    ROS_INFO("asked maxAngle : %f", maxAngle);
 
     // Crop scan
     unsigned int n = 0;

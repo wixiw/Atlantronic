@@ -77,6 +77,9 @@ class CyclicState(smach.StateMachine):
             if answer.quality==-1:
                 rospy.logerr(">>>> RELOCALISATION FAILURE")
             else:
+                rospy.loginfo(" Pose:  x=%.3f  y=%.3f,  theta=%.3f"%(Inputs.getx(),Inputs.gety(),Inputs.gettheta()))
+                rospy.loginfo(" Estimate:  x=%.3f  y=%.3f,  theta=%.3f"%(answer.estimatedX,answer.estimatedY,answer.estimatedTheta))
+                rospy.loginfo("delta Pose: delta x=%.3f delta y=%.3f, delta theta=%.3f"%(answer.estimatedX-Inputs.getx(),answer.estimatedY-Inputs.gety(),answer.estimatedTheta-Inputs.gettheta()))
                 self.setPosition(answer.estimatedX,answer.estimatedY,answer.estimatedTheta)
                 rospy.loginfo(">>>> RELOCALISATION SUCCESS")
 
