@@ -11,7 +11,7 @@
 #include <ros/ros.h>
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
-
+#include <geometry_msgs/Polygon.h>
 #include <arp_core/Odo.h>
 #include <arp_core/Pose.h>
 #include <arp_core/Spawn.h>
@@ -65,6 +65,11 @@ namespace arp_rlu
         ros::Publisher odom_pub;
 
         /**
+         *
+         */
+        ros::Publisher m_footprintPublisher;
+
+        /**
          * Used to publish Localizator's transforms
          */
         tf::TransformBroadcaster odom_tf_pub;
@@ -112,6 +117,11 @@ namespace arp_rlu
         double m_monotonicTimeToRealTime;
 
         /**
+         * default footprint for x=0,y=0,theta=0
+         */
+        geometry_msgs::Polygon m_footprint;
+
+        /**
          * these are ros param. see arp_master/script/launch/rosparam.launch for more info
          */
         double RIGHT_ROTATION_FACTOR;
@@ -156,6 +166,14 @@ namespace arp_rlu
          */
         void publishPoseTopic(const ros::Time t, const double vl,
                 const double vth);
+
+        /**
+         * Publish footprint
+         * @param x current x position
+         * @param y current y position
+         * @param theta current theta position
+         */
+        void publishFootprint(double x, double y, double cap);
 
     };
 }

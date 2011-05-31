@@ -1,10 +1,12 @@
 #include "Localizator.hpp"
 #include <ros/ros.h>
 #include <tf/transform_broadcaster.h>
+#include <geometry_msgs/Point32.h>
 
 using namespace arp_math;
 using namespace arp_core;
 using namespace arp_rlu;
+
 
 Localizator::Localizator() :
     nh(), odo_sub(), pose_pub(), odom_pub(), odom_tf_pub(), respawn_srv(),setPosition_srv(),
@@ -13,8 +15,9 @@ Localizator::Localizator() :
             trans(Vector2(0.0, 0.0)), orient(Rotation2(0.0))
 {
     odo_sub = nh.subscribe("Protokrot/odo", 1, &Localizator::odoCallback, this);
-    pose_pub = nh.advertise<Pose> ("Localizator/pose", 1);
+    pose_pub = nh.advertise<arp_core::Pose> ("Localizator/pose", 1);
     odom_pub = nh.advertise<nav_msgs::Odometry> ("Localizator/odomRos", 1);
+    m_footprintPublisher = nh.advertise<geometry_msgs::Polygon> ("Localizator/footprint",1);
     respawn_srv = nh.advertiseService("Localizator/respawn",
             &Localizator::respawnCallback, this);
     setPosition_srv = nh.advertiseService("Localizator/setPosition",
@@ -33,6 +36,25 @@ Localizator::Localizator() :
     m_monotonicTimeToRealTime = ros::Time::now().toSec() - getTime();
 
     ROS_INFO("Localizator: delay from HML time set to %f",m_monotonicTimeToRealTime);
+
+    geometry_msgs::Point32 p1; p1.x = -0.005; p1.y = 0.130;
+    m_footprint.points.push_back(p1);
+    geometry_msgs::Point32 p2; p2.x = 0.065; p2.y = 0.130;
+    m_footprint.points.push_back(p2);
+    geometry_msgs::Point32 p3; p3.x = 0.280; p3.y = 0.080;
+    m_footprint.points.push_back(p3);
+    geometry_msgs::Point32 p4; p4.x = 0.280; p4.y = 0.030;
+    m_footprint.points.push_back(p4);
+    geometry_msgs::Point32 p6; p6.x = 0.090; p6.y = 0.030;
+    m_footprint.points.push_back(p6);
+    geometry_msgs::Point32 p7; p7.x = 0.070; p7.y = -0.130;
+    m_footprint.points.push_back(p7);
+    geometry_msgs::Point32 p8; p8.x = 0.130; p8.y = 0.180;
+    m_footprint.points.push_back(p8);
+    geometry_msgs::Point32 p9; p9.x = 0.065; p9.y = -0.130;
+    m_footprint.points.push_back(p9);
+    geometry_msgs::Point32 p5; p5.x = -0.005; p5.y = -0.130;
+    m_footprint.points.push_back(p5);
 }
 
 Localizator::~Localizator()
@@ -123,6 +145,7 @@ void Localizator::odoCallback(const OdoConstPtr& o)
     publishTransform(ros::Time(t));
     publishOdomTopic(ros::Time(t), vx, vy, ang_vel);
     publishPoseTopic(ros::Time(t), lin_vel, ang_vel);
+    publishFootprint(trans.x(),trans.y(),orient.angle());
 
     // Buffer
     if( dt > 0 )
@@ -180,7 +203,7 @@ void Localizator::publishPoseTopic(const ros::Time t, const double vl,
         const double vth)
 {
     // Publication de la position estimée
-    Pose pose;
+    arp_core::Pose pose;
     pose.theta = orient.angle();
     pose.x = trans.x();
     pose.y = trans.y();
@@ -188,4 +211,19 @@ void Localizator::publishPoseTopic(const ros::Time t, const double vl,
     pose.angular_velocity = vth;
     pose.date=t.toSec();
     pose_pub.publish(pose);
+}
+
+void Localizator::publishFootprint(double x, double y, double cap)
+{
+    std::vector<geometry_msgs::Point32> v = m_footprint.points;
+    for (std::vector<geometry_msgs::Point32>::iterator it = v.begin(); it!=v.end(); ++it)
+    {
+        (*it).x += x;
+        (*it).y += y;
+    }
+
+    geometry_msgs::Polygon p;
+    p.points = v;
+    m_footprintPublisher.publish(p);
+
 }
