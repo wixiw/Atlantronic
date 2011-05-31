@@ -1,9 +1,12 @@
 ###################################################################################################################
 #    EDIT BELOW THIS LINE AND UNTIL NEXT LINE FOR A NEW PROJECT
 
-add_subdirectory(lasertoolbox)
-add_subdirectory(CornerDetector)
-add_subdirectory(ReLocalizator)
-add_subdirectory(objectfinder)
+
+rosbuild_add_library(objectfinder ObjectFinder.cpp)
+            
+rosbuild_add_executable(ObjectFinderNode ObjectFinderNode.cpp)
+target_link_libraries(ObjectFinderNode objectfinder)
+target_link_libraries(ObjectFinderNode lasertoolbox)
+
 
 ###################################################################################################################
