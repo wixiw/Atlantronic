@@ -1,3 +1,5 @@
+#!/bin/bash
+
 VERT="\\033[1;32m" 
 NORMAL="\\033[0;39m" 
 ROUGE="\\033[1;31m" 

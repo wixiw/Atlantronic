@@ -192,6 +192,14 @@ BOOST_AUTO_TEST_CASE( ModeSelectorModesTimeout )
     BOOST_CHECK_EQUAL( ms.getMode() , MODE_ERROR );
 
     ModeSelector ms4;
+    ms4.setBeginPose(beginPose);
+    ms4.setEndPose(endPose);
+    ms4.setRadiusApproachZone(0.050);
+    ms4.setAngleAccuracy(0.2);
+    ms4.setDistanceAccurancy(0.010);
+    ms4.setPass(false);
+    ms4.setPassTimeout(0.5);
+    ms4.setOrderTimeout(0.5);
     BOOST_CHECK_EQUAL( ms4.getMode() , MODE_INIT );
     ms4.switchMode(currentPose);
     BOOST_CHECK_EQUAL( ms4.getMode() , MODE_RUN );

@@ -73,6 +73,7 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckApproachMode )
     fo.setAngleAccuracy(0.2);
     fo.setDistanceAccurancy(0.010);
     fo.setPass(false);
+    fo.setFANTOM_COEF(0.5);
 
     BOOST_CHECK_EQUAL( fo.getMode() , MODE_INIT );
     BOOST_CHECK_CLOSE( fo.getRemainingDistance(currentPose) , sqrt(endPose.x*endPose.x+endPose.y*endPose.y) , 0.0001f);
@@ -186,6 +187,8 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckTranslationSpeedCmd )
     fo.setROTATION_D_GAIN(0.0);
     fo.setROTATION_GAIN(0.0);
     fo.setVEL_FINAL(0.0);
+    fo.setFANTOM_COEF(0.5);
+
     //fo switch automatiquement
     fo.switchMode(currentPose);
     BOOST_CHECK_EQUAL( fo.getMode() , MODE_RUN );
@@ -207,7 +210,7 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckTranslationSpeedCmd )
     BOOST_CHECK_CLOSE(e_d,0.5,0.0001f);//oui oui c'est plus parce que c'est l'erreur de cap qui est sencé nous ramener à destination
     BOOST_CHECK_CLOSE(e_theta,PI,0.0001f);//si on a dépassé c'est l'erreur de cap qui fait porte le demi tour
     BOOST_CHECK_CLOSE( fo.getRemainingAngle(currentPose,fo.getRemainingDistance(currentPose) ) , PI , 0.0001f);
-    BOOST_CHECK_CLOSE(v.linear,0,0.0001f);//du coup le linear smooth met la vitesse à 0 le temps que le robot fasse demi tour
+    BOOST_CHECK(fabs(v.linear) <= 0.0001);//du coup le linear smooth met la vitesse à 0 le temps que le robot fasse demi tour
 
     //passage en mode approche
     currentPose.x = 1.000;
@@ -260,7 +263,7 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckNullFantomSpeedCmd )
     fo.setROTATION_D_GAIN(0.0);
     fo.setROTATION_GAIN(1.0);
     fo.setVEL_FINAL(0.0);
-
+    fo.setFANTOM_COEF(0.5);
 
     //fo switch automatiquement
     fo.switchMode(currentPose);
@@ -338,7 +341,7 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckFullFantomSpeedCmd )
     fo.setROTATION_D_GAIN(0.0);
     fo.setROTATION_GAIN(1.0);
     fo.setVEL_FINAL(0.0);
-
+    fo.setFANTOM_COEF(0.5);
 
     //fo switch automatiquement
     fo.switchMode(currentPose);
@@ -419,6 +422,7 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckReverseTranslationSpeedCmd )
     fo.setROTATION_D_GAIN(0.0);
     fo.setROTATION_GAIN(0.0);
     fo.setVEL_FINAL(0.0);
+    fo.setFANTOM_COEF(0.5);
 
     //fo switch automatiquement
     fo.switchMode(currentPose);
@@ -496,6 +500,7 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckReverseNullFantomSpeedCmd )
     fo.setROTATION_D_GAIN(0.0);
     fo.setROTATION_GAIN(1.0);
     fo.setVEL_FINAL(0.0);
+    fo.setFANTOM_COEF(0.5);
 
 
     //fo switch automatiquement
@@ -517,7 +522,7 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckReverseNullFantomSpeedCmd )
     //cas tordu ou on a raté le mode approche
     currentPose.x = -0.500;
     v = fo.computeSpeed(currentPose);
-    BOOST_CHECK_CLOSE(normalizeAngle(v.angular)+PI,0,0.0001f);
+    BOOST_CHECK_CLOSE(normalizeAngle(v.angular),PI,0.0001f);
 
 
     //passage en mode approche
@@ -575,6 +580,7 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckReverseFullFantomSpeedCmd )
     fo.setROTATION_D_GAIN(0.0);
     fo.setROTATION_GAIN(1.0);
     fo.setVEL_FINAL(0.0);
+    fo.setFANTOM_COEF(0.5);
 
 
     //fo switch automatiquement
@@ -670,6 +676,7 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckVFinal )
     fo.setROTATION_GAIN(0.0);
     double VEL_FINAL = 0.10;
     fo.setVEL_FINAL(VEL_FINAL);
+    fo.setFANTOM_COEF(0.5);
 
     //fo switch automatiquement
     fo.switchMode(currentPose);
@@ -784,7 +791,7 @@ BOOST_AUTO_TEST_CASE( FantomOrderCheckVFinalReverse )
     fo.setROTATION_GAIN(0.0);
     double VEL_FINAL = 0.10;
     fo.setVEL_FINAL(0.10);
-
+    fo.setFANTOM_COEF(0.5);
 
     //fo switch automatiquement
     fo.switchMode(currentPose);
