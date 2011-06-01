@@ -12,4 +12,12 @@ LeftDriving.start();
 RightDriving.start();
 Io.start();
 
-
+//Definition des couples
+//TODO WLA post coupe faire mieux
+LeftDriving.ooSetOperationMode("other");
+RightDriving.ooSetOperationMode("other");
+LeftDriving.ooFaulhaberCmd(0x81,600); //600mA
+RightDriving.ooFaulhaberCmd(0x81,600); //600mA
+LeftDriving.ooSleep(1);
+LeftDriving.ooSetOperationMode("speed");
+RightDriving.ooSetOperationMode("speed");

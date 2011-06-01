@@ -122,6 +122,13 @@ namespace arp_hml
         void ooFaulhaberCmd(int cmd, int param);
 
         /**
+         * TODO WLA : post coupe virer
+         * Permet d'attendre pour bloquer le script de déploiement
+         * @param dt temps en s à dormir
+         */
+        void ooSleep(int dt);
+
+        /**
          * Choose the operation mode of the motor.
          * param mode : "speed","position","torque","homing","other"<=>faulhaber command
          */

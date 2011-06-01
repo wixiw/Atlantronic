@@ -73,6 +73,9 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
     addOperation("ooSetOperationMode", &Faulhaber3268Bx4::ooSetOperationMode,this, OwnThread )
     	.doc("")
     	.arg("mode"," string = speed,position,torque,homing,faulhaber");
+    addOperation("ooSleep", &Faulhaber3268Bx4::ooSleep,this, ClientThread )
+           .doc("Permet d'attendre pour bloquer le script de déploiement")
+           .arg("dt"," temps à dormir en s");
     addOperation("coWaitEnable", &Faulhaber3268Bx4::coWaitEnable,this, ClientThread )
     	.doc("")
     	.arg("timeout","in s");
@@ -255,7 +258,7 @@ void Faulhaber3268Bx4::runOther()
 		}
 		else
 		{
-			LOG(Info) << "faulhaber " << (int) m_faulhaberScriptCommand << " command succeed" << endlog();
+			LOG(Info) << "faulhaber " << (int) m_faulhaberScriptCommand << " command succeed with return "<< m_faulhaberCommandReturnParameter << endlog();
 			m_faulhaberCommandTodo = false;
 		}
 	}
@@ -314,6 +317,11 @@ void Faulhaber3268Bx4::ooFaulhaberCmd(int cmd, int param)
 	m_faulhaberScriptCommand = (UNS8) cmd;
 	m_faulhaberScriptCommandParam = (UNS32) param;
 	m_faulhaberCommandTodo = true;
+}
+
+void Faulhaber3268Bx4::ooSleep(int dt)
+{
+    sleep(dt);
 }
 
 bool Faulhaber3268Bx4::ooSetOperationMode(std::string mode)
