@@ -27,27 +27,32 @@ bool TableCorner::isVisibleFrom(double xLaser, double yLaser, double minAngle, d
 {
     // D'abord, on regarde si le coin est compatible avec la ligne de vue
     double capSigth = betweenMinusPiAndPlusPi(atan2(yLaser - y, xLaser - x));
+    const double angleRasant = 10. * PI / 180.;
 
     switch (type)
     {
         case NORTH_WEST:
-            if (capSigth > PI / 2.)
+            if (capSigth > PI / 2. - angleRasant)
                 return false;
-            if (capSigth < 0.)
+            if (capSigth < 0. + angleRasant)
                 return false;
             break;
         case NORTH_EAST:
-            if (capSigth > 0.)
+            if (capSigth > 0. + angleRasant)
                 return false;
-            if (capSigth < -PI / 2.)
+            if (capSigth < -PI / 2. + angleRasant)
                 return false;
             break;
         case SOUTH_EAST:
-            if (capSigth > -PI / 2.)
+            if (capSigth > -PI / 2. - angleRasant)
+                return false;
+            if (capSigth < -PI + angleRasant)
                 return false;
             break;
         case SOUTH_WEST:
-            if (capSigth < PI / 2.)
+            if (capSigth < PI / 2. + angleRasant)
+                return false;
+            if (capSigth > PI - angleRasant)
                 return false;
             break;
         default:
@@ -69,7 +74,7 @@ bool TableCorner::isVisibleFrom(double xLaser, double yLaser, double minAngle, d
         }
     }
 
-    // Finalement, on regarde s'il n'est pas trop loin (supérieur à 1m
+    // Finalement, on regarde s'il n'est pas trop loin (supérieur à 1m)
     double distance = sqrt( (xLaser - x)*(xLaser - x) + (yLaser - y)*(yLaser - y) );
     if (distance > 1.0)
     {
