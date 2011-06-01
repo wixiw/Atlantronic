@@ -22,8 +22,8 @@ ObjectFinderNode::ObjectFinderNode() :
     }
     else
     {
-        ROS_WARN("Failed to get param 'scan_topic_name'. Take default value (/top_scan)");
-        front_scan_topic_name = "/top_scan";
+        ROS_WARN("Failed to get param 'scan_topic_name'. Take default value (/scan)");
+        front_scan_topic_name = "/scan";
     }
 
     if (nh.getParam("ObjectFinder/reverse_scan", reverse_scan))
@@ -36,14 +36,15 @@ ObjectFinderNode::ObjectFinderNode() :
         reverse_scan = false;
     }
 
-    m_towerPublisher = nh.advertise<PointCloud>("/ObjectFinder/display/pawn",1);
+    m_towerPublisher = nh.advertise<PointCloud>("/ObjectFinder/display/tower",1);
     m_robotPublisher = nh.advertise<PointCloud>("/ObjectFinder/display/robot",1);
     m_figurePublisher = nh.advertise<PointCloud>("/ObjectFinder/display/figure",1);
-    m_ufoPublisher = nh.advertise<PointCloud>("/ObjectFinder/display/ovni",1);
+    m_ufoPublisher = nh.advertise<PointCloud>("/ObjectFinder/display/ufo",1);
 
     scan_sub = nh.subscribe(front_scan_topic_name, 1, &ObjectFinderNode::scanCallback, this);
-    findobjects_srv = nh.advertiseService("/ObjectFinder/FindObjects", &ObjectFinderNode::findobjectsCallback,
-            this);
+    findobjects_srv = nh.advertiseService("/ObjectFinder/FindObjects", &ObjectFinderNode::findobjectsCallback, this);
+
+    srand(time(NULL));
 }
 
 ObjectFinderNode::~ObjectFinderNode()
@@ -58,21 +59,37 @@ void ObjectFinderNode::go()
 void ObjectFinderNode::scanCallback(LaserScanConstPtr s)
 {
     unsigned int n = s->ranges.size();
-    scan = Eigen::MatrixXd(2, n);
+    unsigned int nb = 0;
+    for (unsigned int i = 0; i != n; i++)
+    {
+        if (s->ranges[i] > s->range_min && s->ranges[i] < s->range_max)
+            nb++;
+    }
+    scan = Eigen::MatrixXd(2, nb);
     if (!reverse_scan)
     {
+        unsigned int k = 0;
         for (unsigned int i = 0; i != n; i++)
         {
-            scan(0, i) = s->angle_min + i * s->angle_increment;
-            scan(1, i) = s->ranges[i];
+            if (s->ranges[i] > s->range_min && s->ranges[i] < s->range_max)
+            {
+                scan(0, k) = s->angle_min + i * s->angle_increment;
+                scan(1, k) = s->ranges[i];
+                k++;
+            }
         }
     }
     else
     {
+        unsigned int k = 0;
         for (unsigned int i = 0; i != n; i++)
         {
-            scan(0, n-1-i) = betweenMinusPiAndPlusPi( - s->angle_min - i * s->angle_increment );
-            scan(1, n-1-i) = s->ranges[i];
+            if (s->ranges[i] > s->range_min && s->ranges[i] < s->range_max)
+            {
+                scan(0, nb - 1 - k) = betweenMinusPiAndPlusPi(-s->angle_min - i * s->angle_increment);
+                scan(1, nb - 1 - k) = s->ranges[i];
+                k++;
+            }
         }
     }
 
@@ -88,49 +105,27 @@ bool ObjectFinderNode::findobjectsCallback(FindObjects::Request& req, FindObject
 
     objf.setPolarScan(scan);
     // TODO BOR : Changement de repère Hokuyo -> Base_Frame
-    objf.computeCartesianScan(req.xRobot, req.yRobot, req.thetaRobot);
-    objf.onTableOnly();
+    Scan cartScan = objf.computeCartesianScan(req.xRobot, req.yRobot, req.thetaRobot);
+    Scan cropedScan = objf.onTableOnly();
+
+    ROS_INFO("Nb of points in croped scan : %d", cropedScan.cols());
     std::vector<Scan> vect = objf.clusterize();
 
     ROS_INFO("*****************************");
     ROS_INFO("Nb of detected clusters : %d", vect.size());
 
     objects.clear();
-    for(unsigned int i = 0; i < vect.size() ; i++)
+    for (unsigned int i = 0; i < vect.size(); i++)
     {
         KnownObject obj;
         obj.recognize(vect[i]);
         recordObjectForRviz(obj);
         ROS_INFO("Object %d", i);
-        ROS_INFO_STREAM( obj.print() );
+        ROS_INFO_STREAM(obj.print());
     }
 
     publishForRviz();
-
-//    cd.setScan(cropScan(req.minAngle, req.maxAngle));
-//
-//    Corner c = cd.compute();
-//
-//    res.d1 = c.d1;
-//    res.alpha1 = c.alpha1;
-//    res.length1 = c.length1;
-//    res.angleBegin1 = c.angleBegin1;
-//    res.angleEnd1 = c.angleEnd1;
-//    res.d2 = c.d2;
-//    res.alpha2 = c.alpha2;
-//    res.length2 = c.length2;
-//    res.angleBegin2 = c.angleBegin2;
-//    res.angleEnd2 = c.angleEnd2;
-//    res.diag = c.diag;
-//    res.theta = c.theta;
-//    res.cornerAngleInDeg = c.cornerAngle * 180. / PI;
-
-    for(unsigned int i = 0; i < vect.size() ; i++)
-    {
-        ROS_INFO("Cluster %d - size: %d", i, vect[i].cols());
-    }
-
-    res.confidence = vect.size();
+    res.confidence = -1;
     return true;
 }
 
@@ -161,7 +156,12 @@ void ObjectFinderNode::publishForRviz()
     m_robotPointCloud.header.stamp = t;
     m_figurePointCloud.header.stamp = t;
     m_ufoPointCloud.header.stamp = t;
-    //TODO WLA : mettre la frame ID
+
+    m_towerPointCloud.header.frame_id = "base_link";
+    m_robotPointCloud.header.frame_id = "base_link";
+    m_figurePointCloud.header.frame_id = "base_link";
+    m_ufoPointCloud.header.frame_id = "base_link";
+
     m_towerPublisher.publish(m_towerPointCloud);
     m_robotPublisher.publish(m_robotPointCloud);
     m_figurePublisher.publish(m_figurePointCloud);

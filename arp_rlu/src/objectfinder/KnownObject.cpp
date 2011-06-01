@@ -39,10 +39,11 @@ std::string KnownObject::print()
             ss << "  type :       ROBOT" << std::endl;
             break;
     }
-    ss << "  confidence : " << confidence << std::endl;
     ss << "  x :          " << x << std::endl;
     ss << "  y :          " << y << std::endl;
     ss << "  diameter :   " << diameter << std::endl;
+    ss << "  size :       " << scan.cols() << std::endl;
+    ss << "  confidence : " << confidence << std::endl;
 
     return ss.str();
 }
@@ -90,11 +91,19 @@ void KnownObject::recognize(Scan s)
     if( diameter > diameter_tower_min && diameter < diameter_tower_max)
     {
         type = TOWER;
+        confidence = 1.;
+        return;
+    }
+    if( diameter > diameter_figure_min && diameter < diameter_figure_max)
+    {
+        type = FIGURE;
+        confidence = 1.;
         return;
     }
     if( diameter > diameter_robot_min)
     {
         type = ROBOT;
+        confidence = 1.;
         return;
     }
 }

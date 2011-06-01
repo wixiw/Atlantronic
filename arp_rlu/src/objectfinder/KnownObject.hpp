@@ -34,9 +34,9 @@ class KnownObject
         static const double diameter_tower_max = 0.1;
 
         static const double diameter_figure_min = 0.1;
-        static const double diameter_figure_max = 0.3;
+        static const double diameter_figure_max = 0.2;
 
-        static const double diameter_robot_min = 0.3;
+        static const double diameter_robot_min = 0.2;
 
         KnownObjectType type;
         Scan scan;

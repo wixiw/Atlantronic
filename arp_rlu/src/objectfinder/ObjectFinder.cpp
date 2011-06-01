@@ -14,9 +14,13 @@ using namespace Eigen;
 
 ObjectFinder::ObjectFinder() :
     mf(3), xMinTable(-1.300), xMaxTable(1.300), yMinTable(-0.850), yMaxTable(1.000), clusterizeMinNbPoints(5),
-            clusterizeStddevMax(0.1), kMeanThreshDisplacement(0.01), kMeanMaxIterations(5)
+            clusterizeStddevMax(0.1), kMeanThreshDisplacement(0.01), kMeanMaxIterations(10)
 {
-
+    // Pour les tests sur table
+    xMaxTable = 1.3;
+    xMinTable = 0.;
+    yMaxTable = 1.;
+    yMinTable = -1.;
 }
 
 ObjectFinder::~ObjectFinder()
@@ -28,19 +32,19 @@ void ObjectFinder::setPolarScan(Scan s)
     if (s.cols() == 0)
     {
         ROS_WARN("ObjectFinder setPolarScan : Scan is empty");
-        scan = MatrixXd::Zero(0, 0);
+        polarScan = MatrixXd::Zero(0, 0);
         return;
     }
 
     if (s.rows() != 2)
     {
         ROS_WARN("ObjectFinder setPolarScan : Scan.rows() != 2 => Scan is not in polar representation ?");
-        scan = MatrixXd::Zero(0, 0);
+        polarScan = MatrixXd::Zero(0, 0);
         return;
     }
 
-    scan = MatrixXd(2, s.cols());
-    scan = s;
+    polarScan.resize(2, s.cols());
+    polarScan = s;
 }
 
 void ObjectFinder::setCartesianScan(Scan s)
@@ -48,52 +52,53 @@ void ObjectFinder::setCartesianScan(Scan s)
     if (s.cols() == 0)
     {
         ROS_WARN("ObjectFinder setCartesianScan : Scan is empty");
-        scan = MatrixXd::Zero(0, 0);
+        cartesianScan = MatrixXd::Zero(0, 0);
         return;
     }
 
     if (s.rows() != 4)
     {
         ROS_WARN("ObjectFinder setCartesianScan : Scan.rows() != 4 => Scan is not in cartesian representation ?");
-        scan = MatrixXd::Zero(0, 0);
+        cartesianScan = MatrixXd::Zero(0, 0);
         return;
     }
 
-    scan = MatrixXd(4, s.cols());
-    scan = s;
+    cartesianScan.resize(4, s.cols());
+    cartesianScan = s;
 }
 
 Scan ObjectFinder::computeCartesianScan(double xOnTable, double yOnTable, double thetaOnTable)
 {
-    unsigned int n = scan.cols();
+    unsigned int n = polarScan.cols();
+//    std::cout << "ObjectFinder computeCartesianScan : polarScan" << std::endl << polarScan.transpose() << std::endl;
     if (n == 0)
     {
         ROS_WARN("ObjectFinder computeCartesianScan : Polar Scan is empty");
         return MatrixXd::Zero(0, 0);
     }
 
-    Scan cartScan = MatrixXd(4, n);
+    cartesianScan.resize(4,n);
+    cartesianScan = MatrixXd::Zero(4, n);
     for (unsigned int i = 0; i < n; i++)
     {
-        cartScan(0, i) = scan(0, i);
-        cartScan(1, i) = scan(1, i);
-        cartScan(2, i) = xOnTable + scan(1, i) * cos(scan(0, i) + thetaOnTable);
-        cartScan(3, i) = yOnTable + scan(1, i) * sin(scan(0, i) + thetaOnTable);
+        cartesianScan(0, i) = polarScan(0, i);
+        cartesianScan(1, i) = polarScan(1, i);
+        cartesianScan(2, i) = xOnTable + polarScan(1, i) * cos(polarScan(0, i) + thetaOnTable);
+        cartesianScan(3, i) = yOnTable + polarScan(1, i) * sin(polarScan(0, i) + thetaOnTable);
     }
-    scan = MatrixXd(4, n);
-    scan = cartScan;
-    return scan;
+
+    return cartesianScan;
 }
 
 Scan ObjectFinder::onTableOnly()
 {
-    unsigned int n = scan.cols();
+    unsigned int n = cartesianScan.cols();
     if (n == 0)
     {
         ROS_WARN("ObjectFinder onTableOnly : Scan is empty");
         return MatrixXd::Zero(0, 0);
     }
-    if (scan.rows() != 4)
+    if (cartesianScan.rows() != 4)
     {
         ROS_WARN("ObjectFinder onTableOnly : Scan.rows() != 4 => Scan is not in cartesian representation ?");
         return MatrixXd::Zero(0, 0);
@@ -102,38 +107,36 @@ Scan ObjectFinder::onTableOnly()
     unsigned int nb = 0;
     for (unsigned int i = 0; i < n; i++)
     {
-        if (scan(2, i) > xMaxTable)
+        if (cartesianScan(2, i) > xMaxTable)
             continue;
-        if (scan(2, i) < xMinTable)
+        if (cartesianScan(2, i) < xMinTable)
             continue;
-        if (scan(3, i) > yMaxTable)
+        if (cartesianScan(3, i) > yMaxTable)
             continue;
-        if (scan(3, i) < yMinTable)
+        if (cartesianScan(3, i) < yMinTable)
             continue;
         nb++;
     }
 
-    Scan s = MatrixXd(4, nb);
+    cropedScan = MatrixXd(4, nb);
     nb = 0;
     for (unsigned int i = 0; i < n; i++)
     {
-        if (scan(2, i) > xMaxTable)
+        if (cartesianScan(2, i) > xMaxTable)
             continue;
-        if (scan(2, i) < xMinTable)
+        if (cartesianScan(2, i) < xMinTable)
             continue;
-        if (scan(3, i) > yMaxTable)
+        if (cartesianScan(3, i) > yMaxTable)
             continue;
-        if (scan(3, i) < yMinTable)
+        if (cartesianScan(3, i) < yMinTable)
             continue;
-        s(0, nb) = scan(0, i);
-        s(1, nb) = scan(1, i);
-        s(2, nb) = scan(2, i);
-        s(3, nb) = scan(3, i);
+        cropedScan(0, nb) = cartesianScan(0, i);
+        cropedScan(1, nb) = cartesianScan(1, i);
+        cropedScan(2, nb) = cartesianScan(2, i);
+        cropedScan(3, nb) = cartesianScan(3, i);
         nb++;
     }
-    scan = MatrixXd(4, n);
-    scan = s;
-    return scan;
+    return cropedScan;
 }
 
 std::pair<Scan, Scan> ObjectFinder::kMeans(Scan s)
@@ -157,7 +160,6 @@ std::pair<Scan, Scan> ObjectFinder::kMeans(Scan s)
     }
 
     // On prend deux graines au hasard
-    srand(time(NULL));
     unsigned int idFirst = rand() % n;
     unsigned int idSecond = idFirst;
     while (idFirst == idSecond)
@@ -261,7 +263,7 @@ std::pair<Scan, Scan> ObjectFinder::kMeans(Scan s)
 
 std::vector<Scan> ObjectFinder::clusterize()
 {
-    return clusterize(scan);
+    return clusterize(cropedScan);
 }
 
 std::vector<Scan> ObjectFinder::clusterize(Scan s)
@@ -296,6 +298,8 @@ std::vector<Scan> ObjectFinder::clusterize(Scan s)
         stddev += (xMean - s(2, i)) * (xMean - s(2, i)) + (yMean - s(3, i)) * (yMean - s(3, i));
     }
     stddev = sqrt(stddev / n);
+
+    ROS_INFO("Clusterize : %d points with stddev=%f (compared to %f)", n , stddev, clusterizeStddevMax);
 
     if (stddev < clusterizeStddevMax)
     {

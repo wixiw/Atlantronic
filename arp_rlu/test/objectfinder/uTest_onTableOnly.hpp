@@ -22,6 +22,10 @@ BOOST_AUTO_TEST_CASE( onTableOnly_Test_1 )
             -1.4, -0.2,  1.5, -1.4, -0.2,  1.5, -1.4, -0.2,  1.5,
              1.2,  1.2,  1.2,  0.3,  0.3,  0.3, -0.9, -0.9, -0.9;
     objf.setCartesianScan(cart);
+    objf.xMinTable = -1.3;
+    objf.xMaxTable = 1.3;
+    objf.yMinTable = -0.850;
+    objf.yMaxTable = 1.;
     Scan s = objf.onTableOnly();
     BOOST_CHECK_EQUAL( objf.xMinTable, -1.3 );
     BOOST_CHECK_EQUAL( objf.xMaxTable,  1.3 );

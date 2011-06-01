@@ -43,7 +43,9 @@ class ObjectFinder
 
     protected:
         MedianFilter mf;
-        Scan scan;
+        Scan polarScan;
+        Scan cartesianScan;
+        Scan cropedScan;
 };
 }
 
