@@ -32,21 +32,7 @@ from arp_master.strat.util.UtilARD import *
 class Middlegame_D(PreemptiveStateMachine):
     def __init__(self):
         PreemptiveStateMachine.__init__(self,outcomes=['endMiddlegame'])
-        with self:
-            #preemptive states
-            PreemptiveStateMachine.addPreemptive('ObstaclePreemption',
-                                             ObstaclePreemption(),
-                                             transitions={'obstaclepreemption':'WaitBecauseObstacle'})
-            PreemptiveStateMachine.add('WaitBecauseObstacle',
-                      WaiterState(3.0),
-                      transitions={'done':'Selector'})       
-            PreemptiveStateMachine.addPreemptive('RearObstaclePreemption',
-                                             RearObstaclePreemption(),
-                                             transitions={'rearobstaclepreemption':'WaitBecauseRearObstacle'})
-            PreemptiveStateMachine.add('WaitBecauseRearObstacle',
-                      WaiterState(3.0),
-                      transitions={'done':'Selector'})
-            
+        with self:      
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
                                              EndMatchPreemption(),
                                              transitions={'endPreemption':'endMiddlegame'})
@@ -92,18 +78,4 @@ class EndMatchPreemption(PreemptiveCyclicState):
     def executeTransitions(self):
         return 'endPreemption'
     
-    
-class ObstaclePreemption(FrontObstaclePreempter):
-    def __init__(self):
-        FrontObstaclePreempter.__init__(self, outcomes=['obstaclepreemption'])
-        self.blinding_period=rospy.get_param("/blinding_period")
-       
-    def executeTransitions(self):
-        return 'obstaclepreemption'
-    
-class RearObstaclePreemption(RearObstaclePreempter):
-    def __init__(self):
-        RearObstaclePreempter.__init__(self, outcomes=['rearobstaclepreemption'])
-       
-    def executeTransitions(self):
-        return 'rearobstaclepreemption'
+##### il n'y a pas de preemption obstacle car je n'ai pas mis de mouvement 

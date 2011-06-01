@@ -50,13 +50,13 @@ class DropPion(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('Drop1',
                       Drop1(),
-                      transitions={'succeeded':'Drop2', 'aborted':'dropped'})
+                      transitions={'succeeded':'Drop2', 'aborted':'obstacle'})
             
             self.setInitialState('Drop1')
             
             PreemptiveStateMachine.add('Drop2',
                       Drop2(),
-                      transitions={'succeeded':'dropped', 'aborted':'dropped'})
+                      transitions={'succeeded':'dropped', 'aborted':'obstacle'})
             
             
             

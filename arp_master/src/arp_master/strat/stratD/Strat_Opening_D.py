@@ -50,21 +50,21 @@ class Opening_D(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('EscapeStartpoint',
                       EscapeStartpoint(),
-                      transitions={'succeeded':'LigneVert1', 'aborted':'problem'})
+                      transitions={'succeeded':'LigneVert1', 'aborted':'Milieu1'})
             
             self.setInitialState('EscapeStartpoint')
             
             PreemptiveStateMachine.add('LigneVert1',
                       LigneVert1(),
-                      transitions={'succeeded':'LigneVert2', 'aborted':'problem'})
+                      transitions={'succeeded':'LigneVert2', 'aborted':'Milieu1'})
 
             PreemptiveStateMachine.add('LigneVert2',
                       LigneVert2(),
-                      transitions={'succeeded':'LigneVert3', 'aborted':'problem'})
+                      transitions={'succeeded':'LigneVert3', 'aborted':'Milieu1'})
 
             PreemptiveStateMachine.add('LigneVert3',
                       LigneVert3(),
-                      transitions={'succeeded':'SwitchRedBlue', 'aborted':'problem'})      
+                      transitions={'succeeded':'SwitchRedBlue', 'aborted':'Milieu1'})      
                   
             # attention il y a deux branches, suivant si on est rouge ou bleu
             #rouge
@@ -75,7 +75,7 @@ class Opening_D(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('DropRed1',
                       DropRed1(),
-                      transitions={'succeeded':'RecalRed', 'aborted':'problem'})   
+                      transitions={'succeeded':'RecalRed', 'aborted':'Milieu1'})   
             
             PreemptiveStateMachine.add('RecalRed',
                       RecalRed(),
@@ -83,40 +83,40 @@ class Opening_D(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('DropRed2',
                       DropRed2(),
-                      transitions={'succeeded':'DropRed3', 'aborted':'problem'})   
+                      transitions={'succeeded':'DropRed3', 'aborted':'Milieu1'})   
  
             PreemptiveStateMachine.add('DropRed3',
                       DropRed3(),
-                      transitions={'succeeded':'endOpening', 'aborted':'problem'})  
+                      transitions={'succeeded':'endOpening', 'aborted':'Milieu1'})  
  
             #bleu 
             PreemptiveStateMachine.add('DropBlue1',
                       DropBlue1(),
-                      transitions={'succeeded':'DropBlue2', 'aborted':'problem'})   
+                      transitions={'succeeded':'DropBlue2', 'aborted':'Milieu1'})   
             
             PreemptiveStateMachine.add('DropBlue2',
                       DropBlue2(),
-                      transitions={'succeeded':'DropBlue3', 'aborted':'problem'}) 
+                      transitions={'succeeded':'DropBlue3', 'aborted':'Milieu1'}) 
             
             PreemptiveStateMachine.add('DropBlue3',
                       DropBlue3(),
-                      transitions={'succeeded':'DropBlue4', 'aborted':'problem'}) 
+                      transitions={'succeeded':'DropBlue4', 'aborted':'Milieu1'}) 
                         
             PreemptiveStateMachine.add('DropBlue4',
                       DropBlue4(),
-                      transitions={'succeeded':'DropBlue5', 'aborted':'problem'}) 
+                      transitions={'succeeded':'DropBlue5', 'aborted':'Milieu1'}) 
                         
             PreemptiveStateMachine.add('DropBlue5',
                       DropBlue5(),
-                      transitions={'succeeded':'DropBlue6', 'aborted':'problem'}) 
+                      transitions={'succeeded':'DropBlue6', 'aborted':'Milieu1'}) 
                                     
             PreemptiveStateMachine.add('DropBlue6',
                       DropBlue6(),
-                      transitions={'succeeded':'DropBlue7', 'aborted':'problem'}) 
+                      transitions={'succeeded':'DropBlue7', 'aborted':'Milieu1'}) 
             
             PreemptiveStateMachine.add('DropBlue7',
                       DropBlue7(),
-                      transitions={'succeeded':'RecalBlue', 'aborted':'problem'}) 
+                      transitions={'succeeded':'RecalBlue', 'aborted':'Milieu1'}) 
             
             PreemptiveStateMachine.add('RecalBlue',
                       RecalBlue(),
@@ -125,13 +125,13 @@ class Opening_D(PreemptiveStateMachine):
             #evitement par le milieu
             PreemptiveStateMachine.add('Milieu1',
                       Milieu1(),
-                      transitions={'succeeded':'Milieu2', 'aborted':'problem'})  
+                      transitions={'succeeded':'Milieu2', 'aborted':'endOpening'})  
             PreemptiveStateMachine.add('Milieu2',
                       Milieu2(),
-                      transitions={'succeeded':'Milieu3', 'aborted':'problem'})  
+                      transitions={'succeeded':'Milieu3', 'aborted':'endOpening'})  
             PreemptiveStateMachine.add('Milieu3',
                       Milieu3(),
-                      transitions={'succeeded':'endOpening', 'aborted':'problem'})  
+                      transitions={'succeeded':'endOpening', 'aborted':'endOpening'})  
         
 ############### DESCENTE DE TABLE
 
