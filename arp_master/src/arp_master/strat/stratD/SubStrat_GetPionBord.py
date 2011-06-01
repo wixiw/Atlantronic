@@ -13,6 +13,8 @@ from arp_master.strat.util.CyclicState import CyclicState
 from arp_master.strat.util.CyclicActionState import CyclicActionState
 from arp_master.strat.util.PreemptiveStateMachine import PreemptiveStateMachine
 from arp_master.strat.util.PreemptiveCyclicState import PreemptiveCyclicState
+from arp_master.strat.util.ObstaclePreempter import FrontObstaclePreempter
+from arp_master.strat.util.ObstaclePreempter import RearObstaclePreempter
 from arp_master.strat.util.Inputs import Inputs
 from arp_master.strat.util.Data import Data
 from arp_ods.msg import OrderGoal
@@ -31,6 +33,10 @@ class GetPionBord(PreemptiveStateMachine):
             PreemptiveStateMachine.addPreemptive('ObstaclePreemption',
                                              ObstaclePreemption(),
                                              transitions={'obstaclepreemption':'obstacle'})
+            PreemptiveStateMachine.addPreemptive('RearObstaclePreemption',
+                                             RearObstaclePreemption(),
+                                             transitions={'rearobstaclepreemption':'obstacle'})
+            
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
                                              EndMatchPreemption(),
                                              transitions={'endPreemption':'endmatch'})
@@ -92,17 +98,16 @@ class EndMatchPreemption(PreemptiveCyclicState):
         return 'endPreemption'
     
     
-class ObstaclePreemption(PreemptiveCyclicState):
+class ObstaclePreemption(FrontObstaclePreempter):
     def __init__(self):
-        PreemptiveCyclicState.__init__(self, outcomes=['obstaclepreemption'])
-        self.blinding_period=rospy.get_param("/blinding_period")
-
-    def preemptionCondition(self):
-        if Inputs.getobstacle()==1 and rospy.get_rostime().secs-Data.time_obstacle>self.blinding_period:
-            Data.time_obstacle=rospy.get_rostime().secs
-            return True
-        else:
-            return False
+        FrontObstaclePreempter.__init__(self, outcomes=['obstaclepreemption'])
        
     def executeTransitions(self):
         return 'obstaclepreemption'
+    
+class RearObstaclePreemption(RearObstaclePreempter):
+    def __init__(self):
+        RearObstaclePreempter.__init__(self, outcomes=['rearobstaclepreemption'])
+       
+    def executeTransitions(self):
+        return 'rearobstaclepreemption'

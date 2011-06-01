@@ -10,6 +10,8 @@ from arp_master.strat.util.CyclicState import CyclicState
 from arp_master.strat.util.CyclicActionState import CyclicActionState
 from arp_master.strat.util.PreemptiveStateMachine import PreemptiveStateMachine
 from arp_master.strat.util.PreemptiveCyclicState import PreemptiveCyclicState
+from arp_master.strat.util.ObstaclePreempter import FrontObstaclePreempter
+from arp_master.strat.util.ObstaclePreempter import RearObstaclePreempter
 from arp_master.strat.util.Inputs import Inputs
 from arp_master.strat.util.Data import Data
 from arp_ods.msg import OrderGoal
@@ -27,6 +29,10 @@ class Opening_D(PreemptiveStateMachine):
             PreemptiveStateMachine.addPreemptive('ObstaclePreemption',
                       ObstaclePreemption(),
                       transitions={'avoidByMilieu':'Milieu1','jump':'endOpening'})
+            
+            PreemptiveStateMachine.addPreemptive('RearObstaclePreemption',
+                      RearObstaclePreemption(),
+                      transitions={'die':'endOpening'})
             
             PreemptiveStateMachine.add('EscapeStartpoint',
                       EscapeStartpoint(),
@@ -132,6 +138,7 @@ class LigneVert1(CyclicActionState):
 class LigneVert2(CyclicActionState):
     def createAction(self):
         Data.obstacleAvoidType='Milieu'
+        Data.rearObstacleAvoidType='Normal'
         self.dropOnCase(AmbiCaseRed(-4, -2, Data.color))
         
 class LigneVert3(CyclicActionState):
@@ -230,28 +237,19 @@ class Milieu3(CyclicActionState):
          
 ################# PREEMPTIONS
 
-class ObstaclePreemption(PreemptiveCyclicState):
+class ObstaclePreemption(FrontObstaclePreempter):
     def __init__(self):
-        PreemptiveCyclicState.__init__(self, outcomes=['avoidByMilieu','jump'])
-        self.blinding_period=rospy.get_param("/blinding_period")
+        FrontObstaclePreempter.__init__(self, outcomes=['avoidByMilieu','jump'])
 
-    def preemptionCondition(self):
-        
-        if Inputs.getobstacle()==1 and rospy.get_rostime().secs-Data.time_obstacle>self.blinding_period and Data.obstacleAvoidType!='None':
-            Data.time_obstacle=rospy.get_rostime().secs
-            return True
-        else:
-            return False
-       
     def executeTransitions(self):
         if Data.obstacleAvoidType=='Milieu':
             return 'avoidByMilieu'
         else:
             return 'jump'
 
-        
-class EscapeObstacle(CyclicActionState):
-    def createAction(self):
-        case = AmbiCaseRed(-3, 3, Data.color)
-        cap = AmbiCapRed(0,Data.color)
-        self.pointcap_reverse(case.xCenter, case.yCenter, cap.angle)
+class RearObstaclePreemption(RearObstaclePreempter):
+    def __init__(self):
+        RearObstaclePreempter.__init__(self, outcomes=['die'])
+       
+    def executeTransitions(self):
+        return 'die'   

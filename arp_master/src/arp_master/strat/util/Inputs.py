@@ -8,6 +8,7 @@ from arp_core.msg import Obstacle
 from arp_core.msg import StartColor
 from arp_core.msg import Start
 from arp_core.msg import Pose
+from arp_core.msg import Velocity
 from Table2011 import *
 
 
@@ -42,6 +43,7 @@ class Inputs:
         Inputs.poseInput=Inputs.createInput("Localizator/pose", Pose)
         Inputs.rearObstacleInput=Inputs.createInput("ObstacleDetector/rear_obstacle", Obstacle)
         Inputs.listener = tf.TransformListener()
+        Inputs.linearVelocityInput=Inputs.createInput("/Command/velocity",Velocity)
     
     @staticmethod
     def createInput(name,type):
@@ -62,7 +64,7 @@ class Inputs:
         return Inputs.startInput.data.go
     
     @staticmethod
-    def getobstacle():
+    def getObstacle():
         
         return Inputs.obstacleInput.data.detected
         
@@ -100,5 +102,6 @@ class Inputs:
     def gettheta():
         return Inputs.poseInput.data.theta
     
-    
-  
+    @staticmethod
+    def getLinearVelocity():
+        return Inputs.linearVelocityInput.data.linear
