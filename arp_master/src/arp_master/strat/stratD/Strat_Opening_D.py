@@ -275,7 +275,7 @@ class RearObstaclePreemption(RearObstaclePreempter):
 ################# REVERSER
 class Reverse1(CyclicActionState):
     def createAction(self):
-        order=Data.listReplayOrders.last()
+        order=Data.listReplayOrders.pop()#retourne le dernier element et l'enleve de la liste
         if order==None:
             self.dropOnCase(Case(0,0))
         self.executeReplayOrder(order)
