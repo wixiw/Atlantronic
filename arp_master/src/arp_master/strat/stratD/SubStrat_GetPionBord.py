@@ -69,7 +69,7 @@ class GotoFacePion1(CyclicActionState):
             Data.pionBordObjectif=PionBord(0,Data.color)
         cap=AmbiCapRed(-pi,Data.color)
         (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(cap.angle)
-        #je recule de 350, je me decale coté fourche de 15
+        #je recule de 350, je me decale cote fourche de 15
         self.pointcap(xRobot-0.35*cos(cap.angle),yRobot-0.35*sin(cap.angle)+0.015*cos(cap.angle),cap.angle)     
 
 class GotoFacePion11(CyclicActionState):
@@ -78,7 +78,7 @@ class GotoFacePion11(CyclicActionState):
             Data.pionBordObjectif=PionBord(0,Data.color)
         cap=AmbiCapRed(-pi,Data.color)
         (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(cap.angle)
-        #je recule de 550, je me decale coté fourche de 15
+        #je recule de 550, je me decale cote fourche de 15
         self.pointcap_reverse(xRobot-0.55*cos(cap.angle),yRobot-0.55*sin(cap.angle)+0.015*cos(cap.angle),cap.angle)     
 
         
@@ -88,7 +88,7 @@ class GotoFacePion2(CyclicActionState):
             Data.pionBordObjectif=PionBord(0,Data.color)
         cap=AmbiCapRed(-pi,Data.color)
         (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(cap.angle)
-        #je vais à l'objectif, je me decale coté fourche de 15
+        #je vais a l'objectif, je me decale cote fourche de 15
         self.pointcap(xRobot,yRobot+0.015*cos(cap.angle),cap.angle)    
 
 class Turn(CyclicActionState):
