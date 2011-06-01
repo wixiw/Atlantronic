@@ -22,12 +22,14 @@
 #include <arp_core/Pose.h>
 #include <math/Geometry.hpp>
 #include <math/math.hpp>
+#include <std_msgs/Bool.h>
 
 #include "orders/orders.h"
 
 using namespace arp_core;
 using namespace nav_msgs;
 using namespace geometry_msgs;
+using namespace std_msgs;
 
 namespace arp_ods
 {
@@ -75,6 +77,21 @@ class MotionControl
          */
         Odometry m_poseFromCallback;
 
+        /**
+         * rempli par la callback dès qu'une roue est a Couple max
+         */
+        bool m_wheelBlocked;
+
+        /**
+         * Date du blocage
+         */
+        double m_blockTime;
+
+        /**
+         * Est vrai si les roues sont bloquées depuis trop longtemps -> abort
+         */
+        bool m_wheelBlockedTimeout;
+
         /** current Pose
          */
         arp_core::Pose m_currentPose;
@@ -100,6 +117,11 @@ class MotionControl
          * Read the inputs
          */
         void getInputs();
+
+        /**
+         * Regarde si les roues sont bloquées
+         */
+        void checkWheelBlocked();
 
         /**
          * Publish the processed datas
@@ -133,6 +155,11 @@ class MotionControl
         ros::Subscriber pose_sub_;
 
         /**
+         * Used to subscribe to "Protokrot/wheel_blocked"
+         */
+        ros::Subscriber m_wheelBlockedSubscriber;
+
+        /**
          * Used to publish on "Command/velocity"
          */
         ros::Publisher vel_pub_;
@@ -143,9 +170,19 @@ class MotionControl
         ros::ServiceServer setVMax_srv;
 
         /**
+         * ROS PARAM
+         */
+        double WHEEL_BLOCKED_TIMEOUT;
+
+        /**
          * Called when a new pose message is received
          */
         void poseCallback(OdometryConstPtr c);
+
+        /**
+         * Called when a new wheel blocked message is received
+         */
+        void wheelBlockedCallback(BoolConstPtr blocked);
 
         /**
          * TODO WLA a virer test laserator

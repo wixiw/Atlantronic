@@ -26,7 +26,6 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         propReductorValue(14),
         propEncoderResolution(3000),
         propMaximalTorque(1.0),
-        propBlockingTorqueTimeout(0.5),
         m_faulhaberCommandTodo(false),
         m_oldPositionMeasure(0),
         m_isMotorBlocked(false)
@@ -44,8 +43,6 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
     	.doc("Encoder resolution in point by rev");
     addProperty("propMaximalTorque",propMaximalTorque)
         .doc("Maximal Torque allowed in Amps");
-    addProperty("propBlockingTorqueTimeout",propBlockingTorqueTimeout)
-        .doc("Maximal allowed time at max torque in s");
 
 
     addPort("inSpeedCmd",inSpeedCmd)
@@ -143,13 +140,7 @@ bool Faulhaber3268Bx4::checkProperties()
         LOG(Error) << "checkProperties : propMaximalTorque has an incorrect value should be in ]0.2;11.0] AMpscurrent:" << propMaximalTorque << endlog();
     }
 
-    if( propBlockingTorqueTimeout <= 0.050 || propBlockingTorqueTimeout > 3.0 )
-    {
-        res = false;
-        LOG(Error) << "checkProperties : propBlockingTorqueTimeout has an incorrect value should be in ]0.050;3.0] s current:" << propBlockingTorqueTimeout << endlog();
-    }
-
-	return res;
+    return res;
 }
 
 bool Faulhaber3268Bx4::configureHook()
@@ -327,19 +318,12 @@ void Faulhaber3268Bx4::readCaptors()
 	if( fabs(ArdMotorItf::getTorqueMeasure()) >= propMaximalTorque*0.95 )
 	{
 	    attrBlockingDelay += attrPeriod;
-	}
-	else
-	{
-	    attrBlockingDelay = 0;
-	}
-
-	if( attrBlockingDelay >= propBlockingTorqueTimeout )
-	{
 	    m_isMotorBlocked = true;
 	}
 	else
 	{
 	    m_isMotorBlocked = false;
+	    attrBlockingDelay = 0;
 	}
 }
 

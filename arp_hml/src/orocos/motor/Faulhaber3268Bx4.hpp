@@ -69,7 +69,7 @@ namespace arp_hml
          * In a way, it is close to the period of the component.
          */
         double attrPeriod;
-        /** time for which we are blocking */
+        /** time for which the propMaximalTorque has been reached */
         double attrBlockingDelay;
 
         /** Is true when you when to invert the speed command and feedback of the motor softly **/
@@ -80,8 +80,6 @@ namespace arp_hml
         int propEncoderResolution;
         /** Maximal Torque allowed in Amps*/
         double propMaximalTorque;
-        /** Maximal allowed time at max torque in s*/
-        double propBlockingTorqueTimeout;
 
         /** Command to be used in position mode. It must be provided in rad on the reductor's output.
          * It is not available yet. */
@@ -109,7 +107,7 @@ namespace arp_hml
         OutputPort<bool> outDriveEnable;
         /** Provides the current mode of operation of the motor (speed,position,torque,homing,other=faulhaber) **/
         OutputPort<string> outCurrentOperationMode;
-        /** Is true when the propMaximalTorque has been reached for more propBlockingTorqueTimeout */
+        /** Is true when the propMaximalTorque has been reached*/
         OutputPort<bool> outMaxTorqueTimeout;
 
         /**

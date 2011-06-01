@@ -5,11 +5,14 @@ using namespace arp_math;
 using namespace arp_ods;
 using namespace nav_msgs;
 using namespace geometry_msgs;
+using namespace std_msgs;
 
 MotionControl::MotionControl() :
     m_poseFromCallback(), m_currentPose(), m_lastPose(), m_vMax(0),
             m_actionServer(ros::this_node::getName(), boost::bind(&MotionControl::newOrderCB, this, _1), false)
 {
+    WHEEL_BLOCKED_TIMEOUT = -1;
+
     updateParams();
 
     m_order = order::defaultOrder;
@@ -18,6 +21,7 @@ MotionControl::MotionControl() :
 
     // Suscribers
     pose_sub_ = nodeHandle.subscribe("Localizator/odomRos", 1, &MotionControl::poseCallback, this);
+    m_wheelBlockedSubscriber = nodeHandle.subscribe("Protokrot/wheel_blocked", 1, &MotionControl::wheelBlockedCallback, this);
     //TODO WLA test laserator
     //pose_sub_WLA = nh_.subscribe("pose2D", 1,
     //        &MotionControl::pose2DCallback, this);
@@ -66,11 +70,39 @@ void MotionControl::execute()
 
     m_orderMutex.unlock();
 
+    //check wheel blocked
+    checkWheelBlocked();
+
     //publish computed value
     setOutputs();
 
     // timer to scope performances
     timer_.Stop();
+}
+
+void MotionControl::checkWheelBlocked()
+{
+    //si les roues sont bloquées et que le timer est à 0 c'est qu'on vient de commencer à bloquer
+    if( m_wheelBlocked )
+    {
+        if( m_blockTime == 0)
+        {
+            m_blockTime = getTime();
+        }
+        else
+        {
+            double delay = getTime() - m_blockTime;
+            if( delay < 0 ||  delay > WHEEL_BLOCKED_TIMEOUT )
+            {
+                m_wheelBlockedTimeout = true;
+            }
+        }
+    }
+    else
+    {
+        m_blockTime = 0;
+        m_wheelBlockedTimeout = false;
+    }
 }
 
 void MotionControl::setOutputs()
@@ -91,6 +123,11 @@ void MotionControl::poseCallback(OdometryConstPtr c)
     m_poseFromCallback = *c;
     //à chaque fois qu'on reçoit une position on fait un calcul
     execute();
+}
+
+void MotionControl::wheelBlockedCallback(BoolConstPtr blocked)
+{
+    m_wheelBlocked = blocked->data;
 }
 
 // TODO WLA test laserator
@@ -114,8 +151,12 @@ void MotionControl::newOrderCB(const OrderGoalConstPtr &goal)
         ROS_ERROR(
                 "MotionControl : you are trying to send a new order (%s) since the last one is not processed. It won't be performed, try to interrupt it before",
                 goal->move_type.c_str());
-        goto not_processed;
+        goto abort;
     }
+
+    //annulation du blocage avant de partir pour ne pas s'en repayer un
+    m_blockTime = 0;
+    m_wheelBlockedTimeout = false;
 
     //prise de la main sur la mutex pour tripoter l'order
     m_orderMutex.lock();
@@ -134,7 +175,7 @@ void MotionControl::newOrderCB(const OrderGoalConstPtr &goal)
     else
     {
         ROS_ERROR("%s: not possible", goal->move_type.c_str());
-        goto not_processed;
+        goto abort;
     }
 
     //TODO WLA mettre ça dans order
@@ -153,11 +194,18 @@ void MotionControl::newOrderCB(const OrderGoalConstPtr &goal)
             goto preempted;
         }
 
+        //Blocage
+        if( m_wheelBlockedTimeout )
+        {
+            ROS_INFO("%s: WheelBlocked, canceling move", goal->move_type.c_str());
+            goto abort;
+        }
+
         //If order is in error something went wrong
         if (m_order->getMode() == MODE_ERROR)
         {
             ROS_ERROR("%s: not processed due to MODE_ERROR", goal->move_type.c_str());
-            goto not_processed;
+            goto abort;
         }
 
         r.sleep();
@@ -165,7 +213,7 @@ void MotionControl::newOrderCB(const OrderGoalConstPtr &goal)
     //if we are here it's because an order has been interrupt and the robot is halted
     goto success;
 
-    not_processed: result.x_end = m_currentPose.x;
+    abort: result.x_end = m_currentPose.x;
     result.y_end = m_currentPose.y;
     result.theta_end = m_currentPose.theta;
     m_order = order::defaultOrder;
@@ -232,6 +280,10 @@ void MotionControl::updateParams()
 
     if (ros::param::get("/MotionControl/ORDER_TIMEOUT", m_orderConfig.ORDER_TIMEOUT) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre ORDER_TIMEOUT");
+
+    if (ros::param::get("/MotionControl/WHEEL_BLOCKED_TIMEOUT", WHEEL_BLOCKED_TIMEOUT) == 0)
+        ROS_FATAL("pas reussi a recuperer le parametre WHEEL_BLOCKED_TIMEOUT");
+
 }
 
 bool MotionControl::timerreportCallback(TimerReport::Request& req, TimerReport::Response& res)
