@@ -17,7 +17,7 @@ class FrontObstaclePreempter(PreemptiveCyclicState):
         self.blinding_period=rospy.get_param("/blinding_period")
 
     def preemptionCondition(self):  
-        if Inputs.getObstacle()==1 and rospy.get_rostime().secs-Data.timeObstacle>self.blinding_period and Data.obstacleAvoidType!='None' and Inputs.getLinearVelocity()>0:
+        if Inputs.getObstacle()==1 and rospy.get_rostime().secs-Data.timeObstacle>self.blinding_period and Data.obstacleAvoidType!='None' and Inputs.getLinearVelocity()>0.010:
             Data.timeObstacle=rospy.get_rostime().secs
             return True
         else:
@@ -29,7 +29,7 @@ class RearObstaclePreempter(PreemptiveCyclicState):
         self.blinding_period=rospy.get_param("/blinding_period")
 
     def preemptionCondition(self):  
-        if Inputs.getRearObstacle()==1 and rospy.get_rostime().secs-Data.timeRearObstacle>self.blinding_period and Data.rearObstacleAvoidType!='None' and Inputs.getLinearVelocity()<0:
+        if Inputs.getRearObstacle()==1 and rospy.get_rostime().secs-Data.timeRearObstacle>self.blinding_period and Data.rearObstacleAvoidType!='None' and Inputs.getLinearVelocity()<-0.010:
             Data.timeRearObstacle=rospy.get_rostime().secs
             return True
         else:

@@ -43,10 +43,14 @@ class GetPionBord(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('GotoFacePion1',
                       GotoFacePion1(),
-                      transitions={'succeeded':'GotoFacePion2', 'aborted':'problem'})
+                      transitions={'succeeded':'GotoFacePion11', 'aborted':'problem'})
             
             self.setInitialState('GotoFacePion1')
             
+            PreemptiveStateMachine.add('GotoFacePion11',
+                      GotoFacePion11(),
+                      transitions={'succeeded':'GotoFacePion2', 'aborted':'problem'})
+                        
             PreemptiveStateMachine.add('GotoFacePion2',
                       GotoFacePion2(),
                       transitions={'succeeded':'Turn', 'aborted':'problem'})
@@ -65,7 +69,16 @@ class GotoFacePion1(CyclicActionState):
             Data.pionBordObjectif=PionBord(0,Data.color)
         cap=AmbiCapRed(-pi,Data.color)
         (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(cap.angle)
-        self.pointcap(xRobot-0.35*cos(cap.angle),yRobot-0.35*sin(cap.angle),cap.angle)     
+        self.pointcap(xRobot-0.35*cos(cap.angle),yRobot-0.35*sin(cap.angle)+0.030*cos(cap.angle),cap.angle)     
+
+class GotoFacePion11(CyclicActionState):
+    def createAction(self):
+        if Data.pionBordObjectif==None:
+            Data.pionBordObjectif=PionBord(0,Data.color)
+        cap=AmbiCapRed(-pi,Data.color)
+        (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(cap.angle)
+        self.pointcap_reverse(xRobot-0.55*cos(cap.angle),yRobot-0.55*sin(cap.angle)+0.030*cos(cap.angle),cap.angle)     
+
         
 class GotoFacePion2(CyclicActionState):
     def createAction(self):
@@ -73,7 +86,7 @@ class GotoFacePion2(CyclicActionState):
             Data.pionBordObjectif=PionBord(0,Data.color)
         cap=AmbiCapRed(-pi,Data.color)
         (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(cap.angle)
-        self.pointcap(xRobot,yRobot,cap.angle)    
+        self.pointcap(xRobot,yRobot+0.030*cos(cap.angle),cap.angle)    
 
 class Turn(CyclicActionState):
     def createAction(self):

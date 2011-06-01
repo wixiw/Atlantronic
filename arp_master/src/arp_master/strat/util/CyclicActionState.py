@@ -85,7 +85,7 @@ class CyclicActionState(CyclicState):
         goal.passe=passe
         
         #si le mouvement est suffisant, on lance le relocalisateur
-        if sqrt((x-Inputs.getx())**2+(y-Inputs.gety())**2)>0.200 and Data.allowRelocate==True:
+        if sqrt((x-Inputs.getx())**2+(y-Inputs.gety())**2)>0.100 and Data.allowRelocate==True:
             rospy.loginfo("RELOC>> trying to relocate because the movement asked is big enough to handle a jump")
             self.relocate()
             ##########################FONCTION BLOQUANTE !
