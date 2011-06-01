@@ -19,6 +19,8 @@ from arp_ods.msg import OrderAction
 from Table2011 import *
 from UtilARD import *
 
+from ReplayOrder import ReplayOrder
+
 class CyclicActionState(CyclicState):
     
     def __init__(self):
@@ -84,12 +86,14 @@ class CyclicActionState(CyclicState):
         goal.passe=passe
         
         #si le mouvement est suffisant, on lance le relocalisateur
-        if sqrt((x-Inputs.getx())**2+(y-Inputs.gety())**2)>0.100 and Data.allowRelocate==True:
-            rospy.loginfo("RELOC>> trying to relocate because the movement asked is big enough to handle a jump")
-            self.relocate()
+        #if sqrt((x-Inputs.getx())**2+(y-Inputs.gety())**2)>0.100 and Data.allowRelocate==True:
+            #rospy.loginfo("RELOC>> trying to relocate because the movement asked is big enough to handle a jump")
+            #self.relocate()
             ##########################FONCTION BLOQUANTE !
             #self.waitForStart()
         
+        self.registerReplayOrder(x,y,theta,move_type,reverse,passe)
+            
         # THIS IS BLOCKING ! <<<<<<<<<<<<<<<<<<<<<<< !!!!!!!!!!!!!!
         self.client.wait_for_server()
         self.client.cancel_all_goals
@@ -137,7 +141,11 @@ class CyclicActionState(CyclicState):
             Inputs.update()
         Data.lastStart=Inputs.getstart()
 
-        
+    def registerReplayOrder(self,x,y,theta,move_type,reverse,passe):
+        Data.listReplayOrders.append(ReplayOrder(x,y,theta,move_type,reverse,passe))   
     
+    def executeReplayOrder(self,replayOrder):
+        self.createMotionControlAction(replayOrder.reversegoal.x_des,replayOrder.reversegoal.y_des,replayOrder.reversegoal.theta_des,replayOrder.reversegoal.move_type,replayOrder.reversegoal.reverse,replayOrder.reversegoal.passe)
+   
     
     

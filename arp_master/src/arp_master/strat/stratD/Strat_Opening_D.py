@@ -33,7 +33,11 @@ class Opening_D(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('WaitBeforeMilieu',
                       WaiterState(3.0),
-                      transitions={'done':'Milieu1'})
+                      transitions={'done':'Reverse1'})
+            
+            PreemptiveStateMachine.add('Reverse1',
+                      Reverse1(),
+                      transitions={'succeeded':'Milieu1', 'aborted':'Milieu1'})
             
             PreemptiveStateMachine.add('WaitBeforeJump',
                       WaiterState(3.0),
@@ -268,4 +272,10 @@ class RearObstaclePreemption(RearObstaclePreempter):
     def executeTransitions(self):
         return 'rearobstaclepreemption' 
     
-
+################# REVERSER
+class Reverse1(CyclicActionState):
+    def createAction(self):
+        order=Data.listReplayOrders.last()
+        if order==None:
+            self.dropOnCase(Case(0,0))
+        self.executeReplayOrder(order)

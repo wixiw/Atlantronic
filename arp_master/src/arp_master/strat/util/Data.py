@@ -15,6 +15,8 @@ class Data:
 
     liste_cases2_faites=[]
     
+    listReplayOrders=[]
+    
     timeObstacle=0
     timeRearObstacle=0
     

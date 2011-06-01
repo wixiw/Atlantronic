@@ -25,7 +25,7 @@ class StartSequence(smach.StateMachine):
         with self:
             smach.StateMachine.add('Recal_hor_bord',
                       Recal_hor_bord(),
-                      transitions={'succeeded':'SetPos_hor_bord','aborted':'problem'})
+                      transitions={'succeeded':'SetPos_hor_bord','aborted':'SetPos_hor_bord'})
             
             smach.StateMachine.add('SetPos_hor_bord',
                       SetPos_hor_bord(),
@@ -42,7 +42,7 @@ class StartSequence(smach.StateMachine):
 
             smach.StateMachine.add('Recal_vert_bord',
                       Recal_vert_bord(),
-                      transitions={'succeeded':'SetPos_vert_bord','aborted':'problem'})
+                      transitions={'succeeded':'SetPos_vert_bord','aborted':'SetPos_vert_bord'})
 
             smach.StateMachine.add('SetPos_vert_bord',
                       SetPos_vert_bord(),
