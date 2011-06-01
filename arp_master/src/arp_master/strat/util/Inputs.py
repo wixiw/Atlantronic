@@ -66,6 +66,20 @@ class Inputs:
     @staticmethod
     def getObstacle():
         
+        if Inputs.obstacleInput.data.detected==1:
+            #il y a un adversaire !
+            obsX=Inputs.getx()+0.400*cos(Inputs.gettheta())
+            obsY=Inputs.gety()+0.400*sin(Inputs.gettheta())
+            #est ce qu'il est sur la table
+            if Table.isOnTable(obsX,obsY):
+                return 1
+            else:
+                return 0
+        else:
+            #y'a personne
+            return 0
+            
+        
         return Inputs.obstacleInput.data.detected
         
         #if Inputs.obstacleInput.data.detected:

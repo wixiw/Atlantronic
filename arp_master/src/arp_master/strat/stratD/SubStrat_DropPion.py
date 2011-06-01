@@ -33,16 +33,20 @@ class DropPion(PreemptiveStateMachine):
             #preemptive states
             PreemptiveStateMachine.addPreemptive('ObstaclePreemption',
                                              ObstaclePreemption(),
-                                             transitions={'gotonextcase':'Drop1'})
-            PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
-                                             EndMatchPreemption(),
-                                             transitions={'endPreemption':'endmatch'})
+                                             transitions={'gotonextcase':'WaitBecauseObstacle'})
+            PreemptiveStateMachine.add('WaitBecauseObstacle',
+                      WaiterState(3.0),
+                      transitions={'done':'Drop1'})
             PreemptiveStateMachine.addPreemptive('RearObstaclePreemption',
                                              RearObstaclePreemption(),
                                              transitions={'rearobstaclepreemption':'WaitBecauseRearObstacle'})
             PreemptiveStateMachine.add('WaitBecauseRearObstacle',
-                      WaiterState(7.0),
+                      WaiterState(3.0),
                       transitions={'done':'obstacle'})
+            
+            PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
+                                             EndMatchPreemption(),
+                                             transitions={'endPreemption':'endmatch'})
             
             PreemptiveStateMachine.add('Drop1',
                       Drop1(),

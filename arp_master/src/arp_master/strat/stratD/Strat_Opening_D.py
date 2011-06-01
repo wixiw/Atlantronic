@@ -29,14 +29,22 @@ class Opening_D(PreemptiveStateMachine):
         with self:
             PreemptiveStateMachine.addPreemptive('ObstaclePreemption',
                       ObstaclePreemption(),
-                      transitions={'avoidByMilieu':'Milieu1','jump':'endOpening'})
+                      transitions={'avoidByMilieu':'WaitBeforeMilieu','jump':'WaitBeforeJump'})
+            
+            PreemptiveStateMachine.add('WaitBeforeMilieu',
+                      WaiterState(3.0),
+                      transitions={'done':'Milieu1'})
+            
+            PreemptiveStateMachine.add('WaitBeforeJump',
+                      WaiterState(3.0),
+                      transitions={'done':'endOpening'})
             
             PreemptiveStateMachine.addPreemptive('RearObstaclePreemption',
                       RearObstaclePreemption(),
                       transitions={'rearobstaclepreemption':'WaitBecauseRearObstacle'})
             
             PreemptiveStateMachine.add('WaitBecauseRearObstacle',
-                      WaiterState(7.0),
+                      WaiterState(3.0),
                       transitions={'done':'endOpening'})
             
             
@@ -235,7 +243,7 @@ class Milieu1(CyclicActionState):
         
 class Milieu2(CyclicActionState):
     def createAction(self):
-        self.dropOnCase(Case(3,-1))
+        self.dropOnCase(AmbiCaseRed(3,-1,Data.color))
 
 class Milieu3(CyclicActionState):
     def createAction(self):

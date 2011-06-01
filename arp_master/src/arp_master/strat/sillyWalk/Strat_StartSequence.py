@@ -64,7 +64,8 @@ class StartSequence(smach.StateMachine):
 
 class Recal_hor_bord(CyclicActionState):
     def createAction(self):
-       self.backward(0.300)
+        self.setVMax(0.15)
+        self.backward(0.300)
  
  
 class SetPos_hor_bord(CyclicState):
@@ -141,6 +142,8 @@ class WaitForMatch(CyclicState):
             return 'start'
         
     def executeOut(self):
+        #je libere la vitesse
+        self.setVMaxDefault()
         #je note le temps de debut de match
         Data.start_time=rospy.get_rostime()
         #a partir de maintenant j'autorise la relocalisation

@@ -24,9 +24,6 @@ enum mode
     {
     struct config
     {
-        /** This default parameter defines the INIT mode area in m*/
-        double RADIUS_INIT_ZONE;
-
         /** This default parameter defines the APPROACH mode area in m*/
         double RADIUS_APPROACH_ZONE;
 

@@ -15,6 +15,7 @@ from arp_master.strat.util.PreemptiveStateMachine import PreemptiveStateMachine
 from arp_master.strat.util.PreemptiveCyclicState import PreemptiveCyclicState
 from arp_master.strat.util.ObstaclePreempter import FrontObstaclePreempter
 from arp_master.strat.util.ObstaclePreempter import RearObstaclePreempter
+from arp_master.strat.util.WaiterState import WaiterState
 from arp_master.strat.util.Inputs import Inputs
 from arp_master.strat.util.Data import Data
 from arp_ods.msg import OrderGoal
@@ -35,10 +36,16 @@ class Middlegame_D(PreemptiveStateMachine):
             #preemptive states
             PreemptiveStateMachine.addPreemptive('ObstaclePreemption',
                                              ObstaclePreemption(),
-                                             transitions={'obstaclepreemption':'Selector'})
+                                             transitions={'obstaclepreemption':'WaitBecauseObstacle'})
+            PreemptiveStateMachine.add('WaitBecauseObstacle',
+                      WaiterState(3.0),
+                      transitions={'done':'Selector'})       
             PreemptiveStateMachine.addPreemptive('RearObstaclePreemption',
                                              RearObstaclePreemption(),
-                                             transitions={'rearobstaclepreemption':'Selector'})
+                                             transitions={'rearobstaclepreemption':'WaitBecauseRearObstacle'})
+            PreemptiveStateMachine.add('WaitBecauseRearObstacle',
+                      WaiterState(3.0),
+                      transitions={'done':'Selector'})
             
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
                                              EndMatchPreemption(),

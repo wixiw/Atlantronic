@@ -81,8 +81,10 @@ class Table:
         Table.VWALL_X=rospy.get_param('/Table/VWALL_X')
     @staticmethod
     def isOnTable(x,y):
-        #TODO WLA
-        return True
+        if x<Table.VWALL_X and x>-Table.VWALL_X and y<Table.HWALL_Y and y>-Table.HWALL_Y :
+            return True
+        else:
+            return False
         
 
 class PionBord:
@@ -198,7 +200,6 @@ class AmbiCaseRed(Case):
         if color=='blue':
             Case.__init__(self,-i_hor,j_vert)
             
-
     
 class AmbiCapRed:
     def __init__(self,angle,color):

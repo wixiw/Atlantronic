@@ -33,12 +33,17 @@ class GetPionBord(PreemptiveStateMachine):
             #preemptive states
             PreemptiveStateMachine.addPreemptive('ObstaclePreemption',
                                              ObstaclePreemption(),
-                                             transitions={'obstaclepreemption':'obstacle'})
+                                             transitions={'obstaclepreemption':'WaitBecauseObstacle'})
+            
+            PreemptiveStateMachine.add('WaitBecauseObstacle',
+                      WaiterState(3.0),
+                      transitions={'done':'obstacle'})
+            
             PreemptiveStateMachine.addPreemptive('RearObstaclePreemption',
                                              RearObstaclePreemption(),
                                              transitions={'rearobstaclepreemption':'WaitBecauseRearObstacle'})
             PreemptiveStateMachine.add('WaitBecauseRearObstacle',
-                      WaiterState(7.0),
+                      WaiterState(3.0),
                       transitions={'done':'obstacle'})
             
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',

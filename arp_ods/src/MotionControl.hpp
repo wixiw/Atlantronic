@@ -17,6 +17,7 @@
 #include "arp_core/TimerReport.h"
 
 #include <arp_ods/OrderAction.h>
+#include <arp_ods/SetVMax.h>
 #include <arp_core/Velocity.h>
 #include <arp_core/Pose.h>
 #include <math/Geometry.hpp>
@@ -91,6 +92,11 @@ class MotionControl
         order::config m_orderConfig;
 
         /**
+         *  current max speed
+         */
+        double m_vMax;
+
+        /**
          * Read the inputs
          */
         void getInputs();
@@ -130,6 +136,11 @@ class MotionControl
          * Used to publish on "Command/velocity"
          */
         ros::Publisher vel_pub_;
+
+        /**
+         * used to offer velocity limitation service
+         */
+        ros::ServiceServer setVMax_srv;
 
         /**
          * Called when a new pose message is received
@@ -172,6 +183,11 @@ class MotionControl
          * \returns success boolean
          */
         bool timerreportCallback(TimerReport::Request& req, TimerReport::Response& res);
+
+        /**
+         * called when setvmax service is called
+         */
+        bool setVMaxCallback(SetVMax::Request& req, SetVMax::Response& res);
 
 };
 }

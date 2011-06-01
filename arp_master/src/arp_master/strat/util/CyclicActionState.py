@@ -24,9 +24,8 @@ class CyclicActionState(CyclicState):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['succeeded','aborted'])
         self.preemptiveStates=[]
-        self.initSetPositionClient()
-        self.initEstimatePositionClient()
         self.lastStart=None
+        self.initClients()
         
     def execute(self,userdata):
         Inputs.update()
@@ -47,7 +46,7 @@ class CyclicActionState(CyclicState):
                 state=p[1]
                 preempted=state.preemptionCondition()
                 if preempted:
-                    self.client.cancel_all_goals
+                    self.client.cancel_all_goals()
                     return label
                 
             #is the order terminated ?

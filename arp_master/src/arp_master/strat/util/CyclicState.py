@@ -13,14 +13,19 @@ from arp_core.srv import Spawn
 from arp_core.srv import SetPosition
 from arp_hml.srv import SetMotorPower
 from arp_rlu.srv import EstimatePosition
+from arp_ods.srv import SetVMax
 
 class CyclicState(smach.StateMachine):
     def __init__(self,outcomes):
         smach.StateMachine.__init__(self,outcomes)
         self.preemptiveStates=[]
+        self.initClients()
+    
+    def initClients(self):
         self.initSetPositionClient()
         self.initSetMotorPower()
         self.initEstimatePositionClient()
+        self.initSetVMaxClient()
         
         
     def execute(self,userdata):
@@ -58,6 +63,9 @@ class CyclicState(smach.StateMachine):
     def executeOut(self):
         return
     
+    def initSetVMaxClient(self):
+        self.setVMax_srv=rospy.ServiceProxy("MotionControl/setVMax",SetVMax)
+        
     def initSetPositionClient(self):
         self.setPosition_loc=rospy.ServiceProxy("Localizator/setPosition",SetPosition)
         self.setPosition_simu=rospy.ServiceProxy("PhysicsSimu/setPosition",SetPosition)
@@ -78,11 +86,19 @@ class CyclicState(smach.StateMachine):
             if answer.quality==-1:
                 rospy.loginfo("RELOC>> Relocalisation failure: quality : -1")
             else:
-                rospy.loginfo(" Pose:  x=%.3f  y=%.3f,  theta=%.3f"%(Inputs.getx(),Inputs.gety(),Inputs.gettheta()))
-                rospy.loginfo(" Estimate:  x=%.3f  y=%.3f,  theta=%.3f"%(answer.estimatedX,answer.estimatedY,answer.estimatedTheta))
-                rospy.loginfo("RELOC>> delta Pose: delta x=%.3f delta y=%.3f, delta theta=%.3f"%(answer.estimatedX-Inputs.getx(),answer.estimatedY-Inputs.gety(),answer.estimatedTheta-Inputs.gettheta()))
-                self.setPosition(answer.estimatedX,answer.estimatedY,answer.estimatedTheta)
-                rospy.loginfo("RELOC>> RELOCALISATION SUCCESS")
+                deltaX=answer.estimatedX-Inputs.getx()
+                deltaY=answer.estimatedY-Inputs.gety()
+                deltaTheta=answer.estimatedTheta-Inputs.gettheta()
+                
+                rospy.loginfo("RELOC>> Pose:  x=%.3f  y=%.3f,  theta=%.3f"%(Inputs.getx(),Inputs.gety(),Inputs.gettheta()))
+                rospy.loginfo("RELOC>> Estimate:  x=%.3f  y=%.3f,  theta=%.3f"%(answer.estimatedX,answer.estimatedY,answer.estimatedTheta))
+                rospy.loginfo("RELOC>> delta Pose: delta x=%.3f delta y=%.3f, delta theta=%.3f"%(deltaX,deltaY,deltaTheta))
+                
+                if (abs(deltaX)<0.300 and abs(deltaY)<0.300 and abs(deltaTheta)<pi/4):
+                    self.setPosition(answer.estimatedX,answer.estimatedY,answer.estimatedTheta)
+                    rospy.loginfo("RELOC>> RELOCALISATION SUCCESS")
+                else: 
+                    rospy.logwarn("RELOC>> TEEEELLLLEEETRANSPORTATIION !!! Reloc refusee. Boris, regarde ce qu'il se passe...")
 
         except rospy.ServiceException, e:
             rospy.logerr("RELOC>> Exception on relocation")
@@ -95,4 +111,10 @@ class CyclicState(smach.StateMachine):
         
     def disableDrive(self):
         self.setMotorPower_srv(False,2.0)
+        
+    def setVMax(self,v):
+        self.setVMax_srv(v,False)
+        
+    def setVMaxDefault(self):
+        self.setVMax_srv(0,True)
         

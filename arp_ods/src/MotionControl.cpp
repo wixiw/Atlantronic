@@ -7,7 +7,7 @@ using namespace nav_msgs;
 using namespace geometry_msgs;
 
 MotionControl::MotionControl() :
-    m_poseFromCallback(), m_currentPose(), m_lastPose(),
+    m_poseFromCallback(), m_currentPose(), m_lastPose(), m_vMax(0),
             m_actionServer(ros::this_node::getName(), boost::bind(&MotionControl::newOrderCB, this, _1), false)
 {
     updateParams();
@@ -24,8 +24,11 @@ MotionControl::MotionControl() :
 
     vel_pub_ = nodeHandle.advertise<arp_core::Velocity> ("Command/velocity", 1);
 
-    timerreport_srv = nodeHandle.advertiseService( ros::this_node::getName() + "/timerReport",
-                &MotionControl::timerreportCallback, this);
+    // service pour setter la vitess max
+    setVMax_srv = nodeHandle.advertiseService("MotionControl/setVMax", &MotionControl::setVMaxCallback, this);
+
+    timerreport_srv = nodeHandle.advertiseService(ros::this_node::getName() + "/timerReport",
+            &MotionControl::timerreportCallback, this);
 
     m_actionServer.start();
 }
@@ -73,8 +76,9 @@ void MotionControl::execute()
 void MotionControl::setOutputs()
 {
     //saturation des consignes
-    m_computedVelocityCmd.linear = saturate(m_computedVelocityCmd.linear, -m_orderConfig.LIN_VEL_MAX, m_orderConfig.LIN_VEL_MAX);
-    m_computedVelocityCmd.angular = saturate(m_computedVelocityCmd.angular, -m_orderConfig.ANG_VEL_MAX, m_orderConfig.ANG_VEL_MAX);
+    m_computedVelocityCmd.linear = saturate(m_computedVelocityCmd.linear, -m_vMax, m_vMax);
+    m_computedVelocityCmd.angular = saturate(m_computedVelocityCmd.angular, -m_orderConfig.ANG_VEL_MAX,
+            m_orderConfig.ANG_VEL_MAX);
 
     //ROS_WARN("linear=%0.3f angular=%0.3f",m_computedVelocityCmd.linear,m_computedVelocityCmd.angular);
 
@@ -101,7 +105,6 @@ void MotionControl::poseCallback(OdometryConstPtr c)
 
 void MotionControl::newOrderCB(const OrderGoalConstPtr &goal)
 {
-    ROS_WARN("newOrderCB");
     ros::Rate r(20);
     OrderResult result;
 
@@ -181,10 +184,10 @@ void MotionControl::newOrderCB(const OrderGoalConstPtr &goal)
 
 bool MotionControl::isOrderFinished()
 {
-    if ( m_order->getPass() && m_order->getMode() == MODE_PASS )
+    if (m_order->getPass() && m_order->getMode() == MODE_PASS)
         return true;
 
-    if( m_order->getMode() == MODE_DONE )
+    if (m_order->getMode() == MODE_DONE)
         return true;
 
     return false;
@@ -195,10 +198,10 @@ void MotionControl::updateParams()
     if (ros::param::get("/arp_ods/LIN_VEL_MAX", m_orderConfig.LIN_VEL_MAX) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre LIN_VEL_MAX");
 
+    m_vMax = m_orderConfig.LIN_VEL_MAX;
+
     if (ros::param::get("/arp_ods/ANG_VEL_MAX", m_orderConfig.ANG_VEL_MAX) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre ANG_VEL_MAX");
-
-
 
     if (ros::param::get("/MotionControl/ROTATION_GAIN", m_orderConfig.ROTATION_GAIN) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre ROTATION_GAIN");
@@ -215,9 +218,6 @@ void MotionControl::updateParams()
     if (ros::param::get("/MotionControl/FANTOM_COEF", m_orderConfig.FANTOM_COEF) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre FANTOM_COEF");
 
-    if (ros::param::get("/MotionControl/RADIUS_INIT_ZONE", m_orderConfig.RADIUS_INIT_ZONE) == 0)
-        ROS_FATAL("pas reussi a recuperer le parametre RADIUS_INIT_ZONE");
-
     if (ros::param::get("/MotionControl/RADIUS_APPROACH_ZONE", m_orderConfig.RADIUS_APPROACH_ZONE) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre RADIUS_APPROACH_ZONE");
 
@@ -231,36 +231,49 @@ void MotionControl::updateParams()
         ROS_FATAL("pas reussi a recuperer le parametre PASS_TIMEOUT");
 
     if (ros::param::get("/MotionControl/ORDER_TIMEOUT", m_orderConfig.ORDER_TIMEOUT) == 0)
-            ROS_FATAL("pas reussi a recuperer le parametre ORDER_TIMEOUT");
+        ROS_FATAL("pas reussi a recuperer le parametre ORDER_TIMEOUT");
 }
 
- bool MotionControl::timerreportCallback(TimerReport::Request& req, TimerReport::Response& res)
- {
-     std::stringstream info ;
-     info << "==============================================" << std::endl;
-     info << ros::this_node::getName() << " Performance Report (ms)" << std::endl;
-     info << "----------------------------------------------" << std::endl;
-     info << "  [*] Number of samples used : " << timer_.GetRawRefreshTime().size() << std::endl;
-     info << "  [*] Actual loop period   : mean=" << timer_.GetMeanRefreshTime() * 1000.0;
-     info << "  , stddev=" << timer_.GetStdDevRefreshTime() * 1000.0;
-     info << "  , min=" << timer_.GetMinRefreshTime() * 1000.0;
-     info << "  , max=" << timer_.GetMaxRefreshTime() * 1000.0;
-     info << "  , last=" << timer_.GetLastRefreshTime() * 1000.0 << std::endl;
-     /*info << "  [*] Raw actual loop periods :  ( ";
+bool MotionControl::timerreportCallback(TimerReport::Request& req, TimerReport::Response& res)
+{
+    std::stringstream info;
+    info << "==============================================" << std::endl;
+    info << ros::this_node::getName() << " Performance Report (ms)" << std::endl;
+    info << "----------------------------------------------" << std::endl;
+    info << "  [*] Number of samples used : " << timer_.GetRawRefreshTime().size() << std::endl;
+    info << "  [*] Actual loop period   : mean=" << timer_.GetMeanRefreshTime() * 1000.0;
+    info << "  , stddev=" << timer_.GetStdDevRefreshTime() * 1000.0;
+    info << "  , min=" << timer_.GetMinRefreshTime() * 1000.0;
+    info << "  , max=" << timer_.GetMaxRefreshTime() * 1000.0;
+    info << "  , last=" << timer_.GetLastRefreshTime() * 1000.0 << std::endl;
+    /*info << "  [*] Raw actual loop periods :  ( ";
      for(std::vector<double>::const_iterator it = timer_.GetRawRefreshTime().begin(); it != timer_.GetRawRefreshTime().end(); ++it)
-       info << (*it) * 1000.0 << " ";
+     info << (*it) * 1000.0 << " ";
      info << " )" << std::endl;*/
-     info << "  [*] Loop duration    : mean=" << timer_.GetMeanElapsedTime() * 1000.0;
-     info << "  , stddev=" << timer_.GetStdDevElapsedTime() * 1000.0;
-     info << "  , min=" << timer_.GetMinElapsedTime() * 1000.0;
-     info << "  , max=" << timer_.GetMaxElapsedTime() * 1000.0;
-     info << "  , last=" << timer_.GetLastElapsedTime() * 1000.0 << std::endl;
-     /*info << "  [*] Raw loop durations :  ( ";
+    info << "  [*] Loop duration    : mean=" << timer_.GetMeanElapsedTime() * 1000.0;
+    info << "  , stddev=" << timer_.GetStdDevElapsedTime() * 1000.0;
+    info << "  , min=" << timer_.GetMinElapsedTime() * 1000.0;
+    info << "  , max=" << timer_.GetMaxElapsedTime() * 1000.0;
+    info << "  , last=" << timer_.GetLastElapsedTime() * 1000.0 << std::endl;
+    /*info << "  [*] Raw loop durations :  ( ";
      for(std::vector<double>::const_iterator it = timer_.GetRawElapsedTime().begin(); it != timer_.GetRawElapsedTime().end(); ++it)
-       info << (*it) * 1000.0 << " ";
+     info << (*it) * 1000.0 << " ";
      info << " )" << std::endl; */
 
-     res.report = info.str();
-     return true;
- }
+    res.report = info.str();
+    return true;
+}
 
+bool MotionControl::setVMaxCallback(SetVMax::Request& req, SetVMax::Response& res)
+{
+    if (req.setToDefault == false)
+    {
+        m_vMax = req.vMax;
+    }
+    else
+    {
+        m_vMax = m_orderConfig.LIN_VEL_MAX;
+    }
+
+    return true;
+}
