@@ -12,6 +12,7 @@ from arp_master.strat.util.PreemptiveStateMachine import PreemptiveStateMachine
 from arp_master.strat.util.PreemptiveCyclicState import PreemptiveCyclicState
 from arp_master.strat.util.ObstaclePreempter import FrontObstaclePreempter
 from arp_master.strat.util.ObstaclePreempter import RearObstaclePreempter
+from arp_master.strat.util.WaiterState import WaiterState
 from arp_master.strat.util.Inputs import Inputs
 from arp_master.strat.util.Data import Data
 from arp_ods.msg import OrderGoal
@@ -32,7 +33,12 @@ class Opening_D(PreemptiveStateMachine):
             
             PreemptiveStateMachine.addPreemptive('RearObstaclePreemption',
                       RearObstaclePreemption(),
-                      transitions={'die':'endOpening'})
+                      transitions={'rearobstaclepreemption':'WaitBecauseRearObstacle'})
+            
+            PreemptiveStateMachine.add('WaitBecauseRearObstacle',
+                      WaiterState(7.0),
+                      transitions={'done':'endOpening'})
+            
             
             PreemptiveStateMachine.add('EscapeStartpoint',
                       EscapeStartpoint(),
@@ -197,7 +203,7 @@ class DropBlue3(CyclicActionState):
 
 class DropBlue4(CyclicActionState):
     def createAction(self):
-        self.cap(radians(-120.0))
+        self.cap(radians(-125.0))
 
 class DropBlue5(CyclicActionState):
     def createAction(self):
@@ -249,7 +255,9 @@ class ObstaclePreemption(FrontObstaclePreempter):
 
 class RearObstaclePreemption(RearObstaclePreempter):
     def __init__(self):
-        RearObstaclePreempter.__init__(self, outcomes=['die'])
+        RearObstaclePreempter.__init__(self, outcomes=['rearobstaclepreemption'])
        
     def executeTransitions(self):
-        return 'die'   
+        return 'rearobstaclepreemption' 
+    
+

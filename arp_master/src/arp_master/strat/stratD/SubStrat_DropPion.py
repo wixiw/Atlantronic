@@ -15,6 +15,7 @@ from arp_master.strat.util.PreemptiveStateMachine import PreemptiveStateMachine
 from arp_master.strat.util.PreemptiveCyclicState import PreemptiveCyclicState
 from arp_master.strat.util.ObstaclePreempter import FrontObstaclePreempter
 from arp_master.strat.util.ObstaclePreempter import RearObstaclePreempter
+from arp_master.strat.util.WaiterState import WaiterState
 from arp_master.strat.util.Inputs import Inputs
 from arp_master.strat.util.Data import Data
 from arp_ods.msg import OrderGoal
@@ -38,7 +39,11 @@ class DropPion(PreemptiveStateMachine):
                                              transitions={'endPreemption':'endmatch'})
             PreemptiveStateMachine.addPreemptive('RearObstaclePreemption',
                                              RearObstaclePreemption(),
-                                             transitions={'rearobstaclepreemption':'obstacle'})
+                                             transitions={'rearobstaclepreemption':'WaitBecauseRearObstacle'})
+            PreemptiveStateMachine.add('WaitBecauseRearObstacle',
+                      WaiterState(7.0),
+                      transitions={'done':'obstacle'})
+            
             PreemptiveStateMachine.add('Drop1',
                       Drop1(),
                       transitions={'succeeded':'Drop2', 'aborted':'dropped'})
