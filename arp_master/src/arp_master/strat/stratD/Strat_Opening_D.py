@@ -32,7 +32,7 @@ class Opening_D(PreemptiveStateMachine):
                       transitions={'avoidByMilieu':'WaitBeforeMilieu','jump':'WaitBeforeJump'})
             
             PreemptiveStateMachine.add('WaitBeforeMilieu',
-                      WaiterState(3.0),
+                      WaiterState(1.0),
                       transitions={'done':'Reverse1'})
             
             PreemptiveStateMachine.add('Reverse1',
@@ -60,15 +60,15 @@ class Opening_D(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('LigneVert1',
                       LigneVert1(),
-                      transitions={'succeeded':'LigneVert2', 'aborted':'Milieu1'})
+                      transitions={'succeeded':'LigneVert2', 'aborted':'Reverse1'})
 
             PreemptiveStateMachine.add('LigneVert2',
                       LigneVert2(),
-                      transitions={'succeeded':'LigneVert3', 'aborted':'Milieu1'})
+                      transitions={'succeeded':'LigneVert3', 'aborted':'Reverse1'})
 
             PreemptiveStateMachine.add('LigneVert3',
                       LigneVert3(),
-                      transitions={'succeeded':'SwitchRedBlue', 'aborted':'Milieu1'})      
+                      transitions={'succeeded':'SwitchRedBlue', 'aborted':'Reverse1'})      
                   
             # attention il y a deux branches, suivant si on est rouge ou bleu
             #rouge
@@ -79,7 +79,7 @@ class Opening_D(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('DropRed1',
                       DropRed1(),
-                      transitions={'succeeded':'RecalRed', 'aborted':'Milieu1'})   
+                      transitions={'succeeded':'RecalRed', 'aborted':'Reverse1'})   
             
             PreemptiveStateMachine.add('RecalRed',
                       RecalRed(),
@@ -87,40 +87,40 @@ class Opening_D(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('DropRed2',
                       DropRed2(),
-                      transitions={'succeeded':'DropRed3', 'aborted':'Milieu1'})   
+                      transitions={'succeeded':'DropRed3', 'aborted':'Reverse1'})   
  
             PreemptiveStateMachine.add('DropRed3',
                       DropRed3(),
-                      transitions={'succeeded':'endOpening', 'aborted':'Milieu1'})  
+                      transitions={'succeeded':'endOpening', 'aborted':'Reverse1'})  
  
             #bleu 
             PreemptiveStateMachine.add('DropBlue1',
                       DropBlue1(),
-                      transitions={'succeeded':'DropBlue2', 'aborted':'Milieu1'})   
+                      transitions={'succeeded':'DropBlue2', 'aborted':'Reverse1'})   
             
             PreemptiveStateMachine.add('DropBlue2',
                       DropBlue2(),
-                      transitions={'succeeded':'DropBlue3', 'aborted':'Milieu1'}) 
+                      transitions={'succeeded':'DropBlue3', 'aborted':'Reverse1'}) 
             
             PreemptiveStateMachine.add('DropBlue3',
                       DropBlue3(),
-                      transitions={'succeeded':'DropBlue4', 'aborted':'Milieu1'}) 
+                      transitions={'succeeded':'DropBlue4', 'aborted':'Reverse1'}) 
                         
             PreemptiveStateMachine.add('DropBlue4',
                       DropBlue4(),
-                      transitions={'succeeded':'DropBlue5', 'aborted':'Milieu1'}) 
+                      transitions={'succeeded':'DropBlue5', 'aborted':'Reverse1'}) 
                         
             PreemptiveStateMachine.add('DropBlue5',
                       DropBlue5(),
-                      transitions={'succeeded':'DropBlue6', 'aborted':'Milieu1'}) 
+                      transitions={'succeeded':'DropBlue6', 'aborted':'Reverse1'}) 
                                     
             PreemptiveStateMachine.add('DropBlue6',
                       DropBlue6(),
-                      transitions={'succeeded':'DropBlue7', 'aborted':'Milieu1'}) 
+                      transitions={'succeeded':'DropBlue7', 'aborted':'Reverse1'}) 
             
             PreemptiveStateMachine.add('DropBlue7',
                       DropBlue7(),
-                      transitions={'succeeded':'RecalBlue', 'aborted':'Milieu1'}) 
+                      transitions={'succeeded':'RecalBlue', 'aborted':'Reverse1'}) 
             
             PreemptiveStateMachine.add('RecalBlue',
                       RecalBlue(),
