@@ -39,6 +39,11 @@ rear_obstacle.transport = 3; // ROS == 3
 rear_obstacle.name_id = "/Protokrot/rear_obstacle"; // ros topic
 stream("Protokrot.outRearObstacle", rear_obstacle);
 
+var ConnPolicy blocked;
+blocked.transport = 3; // ROS == 3
+blocked.name_id = "/Protokrot/wheel_blocked"; // ros topic
+stream("Protokrot.outWheelBlocked", blocked);
+
 
 /*Connexion de l'interface interne de ProtoKrot*/
 connect("Protokrot.inIoStart", "Io.outBit1",ConnPolicy());
@@ -55,3 +60,5 @@ connect("Protokrot.inRightSpeedMeasure", "RightDriving.outComputedSpeed",ConnPol
 connect("Protokrot.inLeftDriveConnected", "LeftDriving.outConnected",ConnPolicy());
 connect("Protokrot.inRightDriveConnected", "RightDriving.outConnected",ConnPolicy());
 connect("Protokrot.inWoodheadConnected", "Io.outConnected",ConnPolicy());
+connect("Protokrot.inLeftBlockedWheel", "LeftDriving.outMaxTorqueTimeout",ConnPolicy());
+connect("Protokrot.inRightBlockedWheel", "RightDriving.outMaxTorqueTimeout",ConnPolicy());

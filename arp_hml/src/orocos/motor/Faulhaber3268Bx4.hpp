@@ -69,6 +69,8 @@ namespace arp_hml
          * In a way, it is close to the period of the component.
          */
         double attrPeriod;
+        /** time for which we are blocking */
+        double attrBlockingDelay;
 
         /** Is true when you when to invert the speed command and feedback of the motor softly **/
         bool propInvertDriveDirection;
@@ -76,6 +78,10 @@ namespace arp_hml
         double propReductorValue;
         /** Encoder resolution in point by rev **/
         int propEncoderResolution;
+        /** Maximal Torque allowed in Amps*/
+        double propMaximalTorque;
+        /** Maximal allowed time at max torque in s*/
+        double propBlockingTorqueTimeout;
 
         /** Command to be used in position mode. It must be provided in rad on the reductor's output.
          * It is not available yet. */
@@ -87,9 +93,9 @@ namespace arp_hml
 
         /** Provides the measured position of the encoder from CAN. It is converted in rad on the reductor's output's axe. **/
         OutputPort<double> outMeasuredPosition;
-        /** */
+        /** Sync time of the position mesure*/
         OutputPort<double> outMeasuredPositionTime;
-        /** Provides the torque measured from CAN. Not available yet **/
+        /** Provides the torque measured from CAN. In Amps**/
         OutputPort<double> outMeasuredTorque;
         /** Provides a computed speed from the encoder position. In rad/s on the reductor's output's axe. */
         OutputPort<double> outComputedSpeed;
@@ -103,6 +109,8 @@ namespace arp_hml
         OutputPort<bool> outDriveEnable;
         /** Provides the current mode of operation of the motor (speed,position,torque,homing,other=faulhaber) **/
         OutputPort<string> outCurrentOperationMode;
+        /** Is true when the propMaximalTorque has been reached for more propBlockingTorqueTimeout */
+        OutputPort<bool> outMaxTorqueTimeout;
 
         /**
          * Enable motors to move
@@ -235,6 +243,8 @@ namespace arp_hml
         double m_oldPositionMeasure;
         /** Time of last speed computation */
         double m_oldPositionMeasureTime;
+        /** is motor blocked */
+        bool m_isMotorBlocked;
 
         /** Read the input ports and prepare internal variables. It allows to do a snapshot of inputs to work with coherent datas */
         void getInputs();

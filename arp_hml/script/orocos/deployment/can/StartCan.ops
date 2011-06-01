@@ -16,8 +16,8 @@ Io.start();
 //TODO WLA post coupe faire mieux
 LeftDriving.ooSetOperationMode("other");
 RightDriving.ooSetOperationMode("other");
-LeftDriving.ooFaulhaberCmd(0x81,600); //600mA
-RightDriving.ooFaulhaberCmd(0x81,600); //600mA
+LeftDriving.ooFaulhaberCmd(0x81,LeftDriving.propMaximalTorque*1000); 
+RightDriving.ooFaulhaberCmd(0x81,RightDriving.propMaximalTorque*1000);
 LeftDriving.ooSleep(1);
 LeftDriving.ooSetOperationMode("speed");
 RightDriving.ooSetOperationMode("speed");

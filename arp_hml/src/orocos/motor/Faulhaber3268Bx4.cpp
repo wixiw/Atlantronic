@@ -21,15 +21,20 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         CanOpenNode(name),
         ArdMotorItf(),
         attrState(ArdDs402::UnknownDs402State),
+        attrBlockingDelay(0),
         propInvertDriveDirection(false),
         propReductorValue(14),
         propEncoderResolution(3000),
+        propMaximalTorque(1.0),
+        propBlockingTorqueTimeout(0.5),
         m_faulhaberCommandTodo(false),
-        m_oldPositionMeasure(0)
+        m_oldPositionMeasure(0),
+        m_isMotorBlocked(false)
 {
     addAttribute("attrState",attrState);
     addAttribute("attrCommandedSpeed",m_speedCommand);
     addAttribute("attrPeriod",attrPeriod);
+    addAttribute("attrBlockingDelay",attrBlockingDelay);
 
     addProperty("propInvertDriveDirection",propInvertDriveDirection)
     	.doc("Is true when you when to invert the speed command and feedback of the motor softly");
@@ -37,6 +42,11 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
     	.doc("Reductor's value from the motor's axe to the reductor's output's axe. So it should be greather than 1");
     addProperty("propEncoderResolution",propEncoderResolution)
     	.doc("Encoder resolution in point by rev");
+    addProperty("propMaximalTorque",propMaximalTorque)
+        .doc("Maximal Torque allowed in Amps");
+    addProperty("propBlockingTorqueTimeout",propBlockingTorqueTimeout)
+        .doc("Maximal allowed time at max torque in s");
+
 
     addPort("inSpeedCmd",inSpeedCmd)
             .doc("Command to be used in position mode. It must be provided in rad on the reductor's output. It is not available yet.");
@@ -63,6 +73,8 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         .doc("Is true when the drive is ready to be operated (axe blocked). If it is false, the axe is free of any mouvement");
     addPort("outCurrentOperationMode",outCurrentOperationMode)
     	.doc("Provides the current mode of operation of the motor (speed,position,torque,homing,other=faulhaber)");
+    addPort("outMaxTorqueTimeout",outMaxTorqueTimeout)
+        .doc(" Is true when the propMaximalTorque has been reached for more propBlockingTorqueTimeout");
 
     addOperation("ooEnableDrive", &Faulhaber3268Bx4::enableDrive,this, OwnThread )
         .doc("");
@@ -116,14 +128,26 @@ bool Faulhaber3268Bx4::checkProperties()
 	if( propReductorValue <= 1 || propReductorValue > 1000 )
 	{
     	res = false;
-    	LOG(Error) << "checkProperties : propReductorValue has an incorrect value should be in ]1;1000]" << endlog();
+    	LOG(Error) << "checkProperties : propReductorValue has an incorrect value should be in ]1;1000] current:" << propReductorValue << endlog();
 	}
 
 	if( propEncoderResolution <= 1 || propEncoderResolution > 10000 )
 	{
     	res = false;
-    	LOG(Error) << "checkProperties : propEncoderResolution has an incorrect value should be in ]1;10000]" << endlog();
+    	LOG(Error) << "checkProperties : propEncoderResolution has an incorrect value should be in ]1;10000] point/rev current:" << propEncoderResolution << endlog();
 	}
+
+    if( propMaximalTorque <= 0.2 || propMaximalTorque > 11 )
+    {
+        res = false;
+        LOG(Error) << "checkProperties : propMaximalTorque has an incorrect value should be in ]0.2;11.0] AMpscurrent:" << propMaximalTorque << endlog();
+    }
+
+    if( propBlockingTorqueTimeout <= 0.050 || propBlockingTorqueTimeout > 3.0 )
+    {
+        res = false;
+        LOG(Error) << "checkProperties : propBlockingTorqueTimeout has an incorrect value should be in ]0.050;3.0] s current:" << propBlockingTorqueTimeout << endlog();
+    }
 
 	return res;
 }
@@ -190,6 +214,9 @@ void Faulhaber3268Bx4::setOutputs()
 	outComputedSpeed.write( ArdMotorItf::getSpeedMeasure() );
     //lecture du courant
     outMeasuredTorque.write( ArdMotorItf::getTorqueMeasure() );
+
+    //publication du blocage
+    outMaxTorqueTimeout.write( m_isMotorBlocked );
 
     //publication du mode d'operation
     outCurrentOperationMode.write( getStringFromMode(getOperationMode()) );
@@ -278,10 +305,9 @@ void Faulhaber3268Bx4::readCaptors()
     //lecture de l'état DS402s
     attrState = ArdDs402::getStateFromCanStatusWord( *m_ds402State );
 
-    //lecture du courant
-    //TODO WLA mettre dans la bonne unité
+    //lecture du courant (en mA)
 	double current = *m_measuredCurrent;
-	m_torqueMeasure = current;
+	m_torqueMeasure = current/1000;
 	LeaveMutex();
 
 	//calcul de la vitesse
@@ -296,6 +322,25 @@ void Faulhaber3268Bx4::readCaptors()
 	}
 	m_oldPositionMeasure = m_positionMeasure;
 	m_oldPositionMeasureTime = attrSyncTime;
+
+	//détection du blocage
+	if( fabs(ArdMotorItf::getTorqueMeasure()) >= propMaximalTorque*0.95 )
+	{
+	    attrBlockingDelay += attrPeriod;
+	}
+	else
+	{
+	    attrBlockingDelay = 0;
+	}
+
+	if( attrBlockingDelay >= propBlockingTorqueTimeout )
+	{
+	    m_isMotorBlocked = true;
+	}
+	else
+	{
+	    m_isMotorBlocked = false;
+	}
 }
 
 void Faulhaber3268Bx4::stopHook()

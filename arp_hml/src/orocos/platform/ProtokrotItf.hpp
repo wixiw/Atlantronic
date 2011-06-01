@@ -149,6 +149,9 @@ namespace arp_hml
         /** Is true when an obstacle is present behind */
         OutputPort<Bool> outRearObstacle;
 
+        /** Is true when wheel are blocked */
+        OutputPort<Bool> outWheelBlocked;
+
 /*****************************************************************
  *  Interface with the INSIDE (hml !)
  *****************************************************************/
@@ -191,11 +194,18 @@ namespace arp_hml
         /** Woodhead connectivity **/
         InputPort<bool> inWoodheadConnected;
 
+        /** Blocage roue gauche */
+        InputPort<bool> inLeftBlockedWheel;
+
+        /** Blocage roue droite */
+        InputPort<bool> inRightBlockedWheel;
+
         /** Speed command for the left motor in rad/s on the wheel axe **/
         OutputPort<double> outLeftSpeedCmd;
 
         /** Speed command for the right motor in rad/s on the wheel axe **/
         OutputPort<double> outRightSpeedCmd;
+
 
 
 /**************************************************************
@@ -272,6 +282,11 @@ protected:
          * Read the value of the rear obstacle detector
          */
         void readRearObstacle();
+
+        /**
+         * Read if wheel are blocked
+         */
+        void readWheelBlocked();
     };
 
 }

@@ -61,6 +61,8 @@ ProtokrotItf::ProtokrotItf(const std::string& name):
     	.doc("Is true when the 2 drives are enabled. Since this port is false, drive speed are forced to 0");
     addPort("outRearObstacle",outRearObstacle)
         .doc("Is true when an obstacle is present behind ");
+    addPort("outWheelBlocked",outWheelBlocked)
+         .doc("Is true when wheel are blocked");
 
     /** Interface with INSIDE (hml !) **/
     addEventPort("inIoStart",inIoStart)
@@ -87,11 +89,15 @@ ProtokrotItf::ProtokrotItf(const std::string& name):
               .doc("Woodhead connectivity");
     addPort("inRightSpeedMeasure",inRightSpeedMeasure)
             .doc("Value of the right speed in rad/s on the wheel axe");
-
     addPort("inLeftDriveEnable",inLeftDriveEnable)
     		.doc("Left drive soft enable state");
     addPort("inRightDriveEnable",inRightDriveEnable)
     		.doc("Right drive soft enable state");
+    addPort("inLeftBlockedWheel",inLeftBlockedWheel)
+            .doc("Blocage roue gauche");
+    addPort("inRightBlockedWheel",inRightBlockedWheel)
+            .doc(" Blocage roue droite");
+
     addPort("outLeftSpeedCmd",outLeftSpeedCmd)
             .doc("Speed command for the left motor in rad/s on the wheel axe");
     addPort("outRightSpeedCmd",outRightSpeedCmd)
@@ -173,6 +179,9 @@ void ProtokrotItf::updateHook()
 
     //lecture du capteur de détection d'osbtacles arrière
     readRearObstacle();
+
+    //lecture du blocage roues
+    readWheelBlocked();
 }
 
 void ProtokrotItf::writeDifferentialCmd()
@@ -330,6 +339,18 @@ void ProtokrotItf::readRearObstacle()
         outRearObstacle.write(obstacle);
     }
 }
+
+void ProtokrotItf::readWheelBlocked()
+{
+    bool leftWheelBlocked = false;
+    bool rightWheelBlocked = false;
+    Bool blocked;
+    inLeftBlockedWheel.readNewest(leftWheelBlocked);
+    inRightBlockedWheel.readNewest(rightWheelBlocked);
+    blocked.data = leftWheelBlocked || rightWheelBlocked;
+    outWheelBlocked.write(blocked);
+}
+
 
 
 bool ProtokrotItf::ooSetMotorPower(bool powerOn, double timeout)
