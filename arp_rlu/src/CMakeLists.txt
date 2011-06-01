@@ -17,5 +17,6 @@ add_subdirectory(localizator)
 add_subdirectory(obstacle_detector)
 add_subdirectory(ReLocalizator)
 add_subdirectory(objectfinder)
+add_subdirectory(LaserCalibrator)
 
 ###################################################################################################################  
