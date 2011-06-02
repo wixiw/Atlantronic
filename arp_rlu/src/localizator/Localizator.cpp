@@ -23,6 +23,9 @@ Localizator::Localizator() :
     setPosition_srv = nh.advertiseService("Localizator/setPosition",
                 &Localizator::setPositionCallback, this);
 
+    timerreport_srv = nh.advertiseService(ros::this_node::getName() + "/timerReport",
+            &Localizator::timerreportCallback, this);
+
     // Parameters
     if (nh.getParam("/Protokrot/RIGHT_ROTATION_FACTOR", RIGHT_ROTATION_FACTOR) == 0)
         ROS_FATAL("pas reussi a recuperer le parametre RIGHT_ROTATION_FACTOR");
@@ -99,6 +102,9 @@ bool Localizator::setPositionCallback(SetPosition::Request& req, SetPosition::Re
 
 void Localizator::odoCallback(const OdoConstPtr& o)
 {
+    // timer to scope performances
+    timer_.Start();
+
     double dt;
     double odo_left, odo_right;
     double lin_vel, ang_vel;
@@ -154,6 +160,9 @@ void Localizator::odoCallback(const OdoConstPtr& o)
     }
     last_odo_right = odo_right;
     last_odo_left = odo_left;
+
+    // timer to scope performances
+    timer_.Stop();
 }
 
 void Localizator::publishTransform(const ros::Time t)
@@ -179,7 +188,7 @@ void Localizator::publishOdomTopic(const ros::Time t, const double vx,
 {
     nav_msgs::Odometry odom;
     odom.header.stamp = t;
-    odom.header.frame_id = "Localizator/odomRos";
+    odom.header.frame_id = "/Localizator/odomRos";
     geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(
             orient.angle());
 
@@ -226,4 +235,34 @@ void Localizator::publishFootprint(double x, double y, double cap)
     p.points = v;
     m_footprintPublisher.publish(p);
 
+}
+
+bool Localizator::timerreportCallback(TimerReport::Request& req, TimerReport::Response& res)
+{
+    std::stringstream info;
+    info << "==============================================" << std::endl;
+    info << ros::this_node::getName() << " Performance Report (ms)" << std::endl;
+    info << "----------------------------------------------" << std::endl;
+    info << "  [*] Number of samples used : " << timer_.GetRawRefreshTime().size() << std::endl;
+    info << "  [*] Actual loop period   : mean=" << timer_.GetMeanRefreshTime() * 1000.0;
+    info << "  , stddev=" << timer_.GetStdDevRefreshTime() * 1000.0;
+    info << "  , min=" << timer_.GetMinRefreshTime() * 1000.0;
+    info << "  , max=" << timer_.GetMaxRefreshTime() * 1000.0;
+    info << "  , last=" << timer_.GetLastRefreshTime() * 1000.0 << std::endl;
+    /*info << "  [*] Raw actual loop periods :  ( ";
+     for(std::vector<double>::const_iterator it = timer_.GetRawRefreshTime().begin(); it != timer_.GetRawRefreshTime().end(); ++it)
+     info << (*it) * 1000.0 << " ";
+     info << " )" << std::endl;*/
+    info << "  [*] Loop duration    : mean=" << timer_.GetMeanElapsedTime() * 1000.0;
+    info << "  , stddev=" << timer_.GetStdDevElapsedTime() * 1000.0;
+    info << "  , min=" << timer_.GetMinElapsedTime() * 1000.0;
+    info << "  , max=" << timer_.GetMaxElapsedTime() * 1000.0;
+    info << "  , last=" << timer_.GetLastElapsedTime() * 1000.0 << std::endl;
+    /*info << "  [*] Raw loop durations :  ( ";
+     for(std::vector<double>::const_iterator it = timer_.GetRawElapsedTime().begin(); it != timer_.GetRawElapsedTime().end(); ++it)
+     info << (*it) * 1000.0 << " ";
+     info << " )" << std::endl; */
+
+    res.report = info.str();
+    return true;
 }

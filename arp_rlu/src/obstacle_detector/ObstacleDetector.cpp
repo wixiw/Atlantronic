@@ -164,7 +164,7 @@ void ObstacleDetector::updateRosParams()
 void ObstacleDetector::initTransforms()
 {
     // **** get base to laser tf
-    ros::Time t = ros::Time::now();
+    ros::Time t = ros::Time(0,0);
     try
     {
         m_tfListener.waitForTransform(m_baseFrameName, m_rearIrFrameName, t, ros::Duration(2.0));

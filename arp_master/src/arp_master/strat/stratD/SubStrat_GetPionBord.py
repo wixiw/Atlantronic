@@ -21,7 +21,7 @@ from arp_master.strat.util.Data import Data
 from arp_ods.msg import OrderGoal
 from arp_ods.msg import OrderAction
 
-from math import pi
+from math import *
 
 from arp_master.strat.util.Table2011 import *
 from arp_master.strat.util.UtilARD import *
@@ -52,10 +52,11 @@ class GetPionBord(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('GotoFacePion1',
                       GotoFacePion1(),
-                      transitions={'succeeded':'GotoFacePion11', 'aborted':'obstacle'})
+                      transitions={'succeeded':'GotoFacePion2', 'aborted':'obstacle'})
             
             self.setInitialState('GotoFacePion1')
             
+            # CET ETAT N'EST PLUS UTILISE  C'EST LE RECUL A WILLY
             PreemptiveStateMachine.add('GotoFacePion11',
                       GotoFacePion11(),
                       transitions={'succeeded':'GotoFacePion2', 'aborted':'obstacle'})
@@ -102,7 +103,7 @@ class GotoFacePion2(CyclicActionState):
 
 class Turn(CyclicActionState):
     def createAction(self):
-        self.cap(normalizeAngle(Inputs.gettheta()-9*pi/10))
+        self.cap(radians(50))
  
 class Avance(CyclicActionState):
     def createAction(self):

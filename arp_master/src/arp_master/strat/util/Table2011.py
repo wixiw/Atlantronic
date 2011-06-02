@@ -79,9 +79,10 @@ class Table:
     def init():
         Table.HWALL_Y=rospy.get_param('/Table/HWALL_Y')
         Table.VWALL_X=rospy.get_param('/Table/VWALL_X')
+        
     @staticmethod
     def isOnTable(x,y):
-        if x<Table.VWALL_X and x>-Table.VWALL_X and y<Table.HWALL_Y and y>-Table.HWALL_Y :
+        if x<Table.VWALL_X-0.150 and x>-Table.VWALL_X+0.150 and y<Table.HWALL_Y-0.150 and y>-Table.HWALL_Y+0.150 :
             return True
         else:
             return False

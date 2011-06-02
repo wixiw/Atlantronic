@@ -50,6 +50,7 @@ HmlGraphicsFrame::HmlGraphicsFrame():
 	obstacle_pub = m_nodeHandle.advertise<Obstacle>("ObstacleDetector/front_obstacle", 1);
 	rear_obstacle_pub = m_nodeHandle.advertise<Bool>("Protokrot/rear_obstacle", 1);
 	emergency_pub = m_nodeHandle.advertise<Bool>("Protokrot/emergency_stop", 1);
+	wheel_blocked_pub = m_nodeHandle.advertise<Bool>("Protokrot/wheel_blocked", 1);
 
 	ROS_INFO("Starting HmlGraphics with node name %s", ros::this_node::getName().c_str()) ;
 }
@@ -114,6 +115,14 @@ void HmlGraphicsFrame::onPaint(wxPaintEvent& evt)
     	dc.DrawLine(240,100,180,130);
     	dc.DrawLine(220,100,280,130);
     	dc.DrawLine(280,100,220,130);
+
+    	double d = 0.500;
+    	double angle = 0;
+        //création de la tf associée au point de mesure
+    	tf::StampedTransform obstacleTf;
+    	obstacleTf.setOrigin( tf::Vector3(d*cos(angle), d*sin(angle), 0) );
+        obstacleTf.setRotation( tf::Quaternion(0, 0, 0) );
+        m_tfBroadcaster.sendTransform(tf::StampedTransform(obstacleTf, ros::Time::now() , "top_laser", "front_obstacle"));
     }
 
     //dessin de l'obstacle
@@ -146,6 +155,11 @@ void HmlGraphicsFrame::onPaint(wxPaintEvent& evt)
 	obstacle_pub.publish(m_obstacle);
 	rear_obstacle_pub.publish(m_rearObstacle);
 	emergency_pub.publish(m_emergency);
+
+	//roues bloquées
+    Bool b;
+    b.data = false;
+    wheel_blocked_pub.publish(b);
 }
 
 void HmlGraphicsFrame::onStart(wxCommandEvent& event)

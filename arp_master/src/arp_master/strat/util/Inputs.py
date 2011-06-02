@@ -66,39 +66,40 @@ class Inputs:
     @staticmethod
     def getObstacle():
         
-        if Inputs.obstacleInput.data.detected==1:
-            #il y a un adversaire !
-            obsX=Inputs.getx()+0.400*cos(Inputs.gettheta())
-            obsY=Inputs.gety()+0.400*sin(Inputs.gettheta())
-            #est ce qu'il est sur la table
-            if Table.isOnTable(obsX,obsY):
-                return 1
-            else:
-                return 0
-        else:
-            #y'a personne
-            return 0
+#        if Inputs.obstacleInput.data.detected==1:
+#            #il y a un adversaire !
+#            obsX=Inputs.getx()+0.400*cos(Inputs.gettheta())
+#            obsY=Inputs.gety()+0.400*sin(Inputs.gettheta())
+#            #est ce qu'il est sur la table
+#            if Table.isOnTable(obsX,obsY):
+#                return 1
+#            else:
+#                return 0
+#        else:
+#            #y'a personne
+#            return 0
             
         
-        return Inputs.obstacleInput.data.detected
+        #return Inputs.obstacleInput.data.detected
         
-        #if Inputs.obstacleInput.data.detected:
-        #    now = rospy.Time.now()
-        #    
-        #    try:
-        #        Inputs.listener.waitForTransform("/base_link", "/front_obstacle", now, rospy.Duration(0.2))
-        #        (trans,rot) = Inputs.listener.lookupTransform("/base_link", "/front_obstacle", now)
-        #    except (tf.Exception, tf.LookupException, tf.ConnectivityException):
-        #        rospy.loginfo("obstacle mais exception lors de calcul")
-        #        return 0
-        #    
-        #    if (Table.isOnTable(trans[0],trans[1])):
-        #        return 1
-        #    else:
-        #        rospy.loginfo("obstacle mais pas sur table")
-        #        return 0
-        #else:
-        #    return 0
+        if Inputs.obstacleInput.data.detected:
+            now = rospy.Time.now()
+            
+            try:
+                Inputs.listener.waitForTransform("/world", "/front_obstacle", now, rospy.Duration(0.5))
+                (trans,rot) = Inputs.listener.lookupTransform("/world", "/front_obstacle", now)
+            except (tf.Exception, tf.LookupException, tf.ConnectivityException):
+                rospy.loginfo("obstacle mais exception lors de calcul")
+                return 0
+            
+            if (Table.isOnTable(trans[0],trans[1])):
+                rospy.loginfo("obstacle detecte sur la table")
+                return 1
+            else:
+                rospy.loginfo("obstacle mais pas sur table")
+                return 0
+        else:
+            return 0
 
     @staticmethod
     def getRearObstacle():

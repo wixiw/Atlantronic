@@ -23,14 +23,14 @@ CornerDetectorNode::CornerDetectorNode() :
     }
     else
     {
-        ROS_WARN("Failed to get param 'front_scan_topic_name'. Take default value (/front_scan)");
+        ROS_WARN("CornerDetectorNode: Failed to get param 'front_scan_topic_name'. Take default value (/front_scan)");
         front_scan_topic_name = "/front_scan";
     }
 
 
     if (nh.getParam("CornerDetector/reverse_scan", reverse_scan))
     {
-        ROS_INFO("Got param named 'reverse_scan' : %i", reverse_scan);
+        ROS_INFO("CornerDetectorNode : Got param named 'reverse_scan' : %i", reverse_scan);
     }
     else
     {

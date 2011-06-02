@@ -17,6 +17,9 @@
 #include <arp_core/StartColor.h>
 #include <arp_core/Start.h>
 
+#include <tf/transform_broadcaster.h>
+
+
 #define ID_START_HANDLER 1
 #define ID_COLOR_HANDLER 2
 #define ID_OBSTACLE_HANDLER 3
@@ -52,6 +55,11 @@ namespace arp_hml
         ~HmlGraphicsFrame();
 
     protected:
+
+        /**
+         * Publie les tf
+         */
+        tf::TransformBroadcaster m_tfBroadcaster;
 
         /**
          * Simulator Nodehandle
@@ -143,6 +151,11 @@ namespace arp_hml
          * Used to publish on "Protokrot/start"
          */
         ros::Publisher emergency_pub;
+
+        /**
+         * Used to publish on "Protokrot/wheel_blocked"
+         */
+        ros::Publisher wheel_blocked_pub;
 
         /**
          * used to call onUpdate

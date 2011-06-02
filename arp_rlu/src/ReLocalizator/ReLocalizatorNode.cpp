@@ -31,8 +31,8 @@ ReLocalizatorNode::ReLocalizatorNode() :
 
     try
     {
-        ros::Time t = ros::Time::now();
-        m_tfListener.waitForTransform(m_baseFrameName, m_frontLaserFrameName, t, ros::Duration(1.0));
+        ros::Time t = ros::Time(0,0);
+        m_tfListener.waitForTransform(m_baseFrameName, m_frontLaserFrameName, t, ros::Duration(2.0));
         m_tfListener.lookupTransform(m_baseFrameName, m_frontLaserFrameName, t, m_baseToFrontLaser);
     } catch (tf::TransformException ex)
     {

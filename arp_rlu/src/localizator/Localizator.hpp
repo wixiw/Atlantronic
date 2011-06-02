@@ -17,7 +17,8 @@
 #include <arp_core/Spawn.h>
 #include <arp_core/SetPosition.h>
 #include "math/math.hpp"
-
+#include "timer/StatTimer.hpp"
+#include "arp_core/TimerReport.h"
 using namespace arp_core;
 
 namespace arp_rlu
@@ -63,6 +64,17 @@ namespace arp_rlu
          * Used to publish on "Localizator/odomRos"
          */
         ros::Publisher odom_pub;
+
+        /**
+         * Timer to scope performance
+         */
+        StatTimer timer_;
+
+        /**
+         * Used to provide timer report
+         */
+        ros::ServiceServer timerreport_srv;
+
 
         /**
          *
@@ -141,6 +153,12 @@ namespace arp_rlu
          * \returns succes boolean
          */
         void odoCallback(const arp_core::OdoConstPtr& o);
+
+        /**
+         * Called when timerreport service is called
+         * \returns success boolean
+         */
+        bool timerreportCallback(TimerReport::Request& req, TimerReport::Response& res);
 
         /**
          * Publish the computed transformation into the odometry tf frame
