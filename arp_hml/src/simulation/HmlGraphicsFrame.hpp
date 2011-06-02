@@ -25,6 +25,7 @@
 #define ID_OBSTACLE_HANDLER 3
 #define ID_EMERGENCY_HANDLER 4
 #define ID_REAR_OBSTACLE_HANDLER 5
+#define ID_WHEEL_BLOCKED_HANDLER 6
 
 using namespace arp_core;
 using namespace std_msgs;
@@ -103,6 +104,11 @@ namespace arp_hml
         wxButton* m_emergencyButton;
 
         /**
+         * Button représentant l'AU
+         */
+        wxButton* m_wheelBlockedButton;
+
+        /**
          * Représente l'état du switch de la couleur
          */
         StartColor m_color;
@@ -126,6 +132,11 @@ namespace arp_hml
          * Représente l'état de l'au
          */
         Bool m_emergency;
+
+        /**
+         * Représente l'état du blocage roue
+         */
+        Bool m_wheelBlocked;
 
         /**
          * Used to publish on "Protokrot/start"
@@ -198,6 +209,11 @@ namespace arp_hml
          * Called when the obstacle button is trigerred
          */
         void onEmergency(wxCommandEvent& event);
+
+        /**
+         * Called when the wheel blocked button is trigered
+         */
+        void onWheelBlocked(wxCommandEvent& event);
 
     private:
         DECLARE_EVENT_TABLE()

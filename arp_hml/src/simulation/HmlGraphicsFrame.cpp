@@ -32,6 +32,7 @@ HmlGraphicsFrame::HmlGraphicsFrame():
 	m_obstacle.detected = false;
 	m_rearObstacle.data = false;
 	m_emergency.data = false;
+	m_wheelBlocked.data = false;
 
 	update_timer_ = new wxTimer(this);
 	update_timer_->Start(100.);
@@ -41,6 +42,7 @@ HmlGraphicsFrame::HmlGraphicsFrame():
 	m_obstacleButton = new wxButton(this, ID_OBSTACLE_HANDLER, wxT("Obstacle"), wxPoint(20,100),wxDefaultSize);
 	m_rearObstacleButton = new wxButton(this, ID_REAR_OBSTACLE_HANDLER, wxT("Rear Obstacle"), wxPoint(20,140),wxDefaultSize);
 	m_emergencyButton = new wxButton(this, ID_EMERGENCY_HANDLER, wxT("AU"), wxPoint(20,180),wxDefaultSize);
+	m_wheelBlockedButton = new wxButton(this, ID_WHEEL_BLOCKED_HANDLER, wxT("Wheel Blocked"), wxPoint(20,220),wxDefaultSize);
 
 	Connect(update_timer_->GetId(), wxEVT_TIMER, wxTimerEventHandler(HmlGraphicsFrame::onUpdate), NULL, this);
 	Connect(wxEVT_PAINT, wxPaintEventHandler(HmlGraphicsFrame::onPaint), NULL, this);
@@ -63,6 +65,7 @@ HmlGraphicsFrame::~HmlGraphicsFrame()
 	  delete m_rearObstacleButton ;
 	  delete m_emergencyButton;
 	  delete update_timer_ ;
+	  delete m_wheelBlockedButton;
 }
 
 void HmlGraphicsFrame::onUpdate(wxTimerEvent& evt)
@@ -157,9 +160,8 @@ void HmlGraphicsFrame::onPaint(wxPaintEvent& evt)
 	emergency_pub.publish(m_emergency);
 
 	//roues bloquées
-    Bool b;
-    b.data = false;
-    wheel_blocked_pub.publish(b);
+    wheel_blocked_pub.publish(m_wheelBlocked);
+
 }
 
 void HmlGraphicsFrame::onStart(wxCommandEvent& event)
@@ -193,4 +195,11 @@ void HmlGraphicsFrame::onEmergency(wxCommandEvent& event)
 {
     //inversion du bouton
     m_emergency.data = !m_emergency.data;
+}
+
+void HmlGraphicsFrame::onWheelBlocked(wxCommandEvent& event)
+{
+    //inversion du bouton
+    ROS_INFO("bite!!!!!!!!!!!!!!!!");
+    m_wheelBlocked.data = !m_wheelBlocked.data;
 }
