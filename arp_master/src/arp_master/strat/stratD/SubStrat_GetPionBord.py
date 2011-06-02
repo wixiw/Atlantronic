@@ -52,17 +52,21 @@ class GetPionBord(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('GotoFacePion1',
                       GotoFacePion1(),
-                      transitions={'succeeded':'GotoFacePion2', 'aborted':'obstacle'})
+                      transitions={'succeeded':'GotoFacePion2plusloin', 'aborted':'obstacle'})
             
             self.setInitialState('GotoFacePion1')
-            
-            # CET ETAT N'EST PLUS UTILISE  C'EST LE RECUL A WILLY
-            PreemptiveStateMachine.add('GotoFacePion11',
-                      GotoFacePion11(),
-                      transitions={'succeeded':'GotoFacePion2', 'aborted':'obstacle'})
                         
+            #CET ETAT A ETE REMPLACE PAR LE SUIVANT. juste garde au cas ou ca marche pas
             PreemptiveStateMachine.add('GotoFacePion2',
                       GotoFacePion2(),
+                      transitions={'succeeded':'Turn', 'aborted':'obstacle'})
+            
+            PreemptiveStateMachine.add('GotoFacePion2plusloin',
+                      GotoFacePion2plusloin(),
+                      transitions={'succeeded':'GotoFacePion3', 'aborted':'GotoFacePion3'})
+            
+            PreemptiveStateMachine.add('GotoFacePion3',
+                      GotoFacePion3(),
                       transitions={'succeeded':'Turn', 'aborted':'obstacle'})
             
             PreemptiveStateMachine.add('Turn',
@@ -72,6 +76,14 @@ class GetPionBord(PreemptiveStateMachine):
             PreemptiveStateMachine.add('Avance',
                       Avance(),
                       transitions={'succeeded':'got', 'aborted':'obstacle'})
+            
+            ## si on a un probleme on fait un safety drop
+            PreemptiveStateMachine.add('Reverse1',
+                      Reverse1(),
+                      transitions={'succeeded':'SafetyDrop', 'aborted':'obstacle'})
+            PreemptiveStateMachine.add('SafetyDrop',
+                      SafetyDrop(),
+                      transitions={'succeeded':'obstacle', 'aborted':'obstacle'})            
 
 class GotoFacePion1(CyclicActionState):
     def createAction(self):
@@ -81,11 +93,11 @@ class GotoFacePion1(CyclicActionState):
         (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(cap.angle)
         #je recule de 350, je me decale cote fourche de 15
         if Data.color=='red':
-            self.pointcap(xRobot-0.35*cos(cap.angle),yRobot-0.35*sin(cap.angle)+0.005*cos(cap.angle),cap.angle)     
+            self.pointcap(xRobot-0.35*cos(cap.angle),yRobot-0.35*sin(cap.angle)-0.005*cos(cap.angle),cap.angle)     
         else:
             self.pointcap(xRobot-0.35*cos(cap.angle),yRobot-0.35*sin(cap.angle)-0.005*cos(cap.angle),cap.angle)     
         
-
+# CET ETAT N'EST PLUS UTILISE  C'EST LE RECUL A WILLY
 class GotoFacePion11(CyclicActionState):
     def createAction(self):
         if Data.pionBordObjectif==None:
@@ -115,6 +127,19 @@ class Turn(CyclicActionState):
 class Avance(CyclicActionState):
     def createAction(self):
         self.forward(0.100) 
+ 
+ ##### pour le blocage: reverse et depose du pion avant de reessayer
+class Reverse1(CyclicActionState):
+    def createAction(self):
+        order=Data.listReplayOrders.pop()#retourne le dernier element et l'enleve de la liste
+        if order==None:
+            self.dropOnCase(Case(0,0))
+        self.executeReplayOrder(order)  
+        
+class SafetyDrop(CyclicActionState):
+    def createAction(self):
+        self.dropOnCase(AmbiCaseRed(-3,-3,Data.color)) 
+        
  
 class EndMatchPreemption(PreemptiveCyclicState):
     def __init__(self):

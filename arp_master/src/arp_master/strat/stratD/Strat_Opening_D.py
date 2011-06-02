@@ -76,14 +76,9 @@ class Opening_D(PreemptiveStateMachine):
                       SwitchRedBlue(),
                       transitions={'red':'DropRed1', 'blue':'DropBlue0'})  
             
-            
             PreemptiveStateMachine.add('DropRed1',
                       DropRed1(),
-                      transitions={'succeeded':'RecalRed', 'aborted':'Reverse1'})   
-            
-            PreemptiveStateMachine.add('RecalRed',
-                      RecalRed(),
-                      transitions={'done':'DropRed2'})   
+                      transitions={'succeeded':'DropRed2', 'aborted':'Reverse1'})   
             
             PreemptiveStateMachine.add('DropRed2',
                       DropRed2(),
@@ -91,7 +86,7 @@ class Opening_D(PreemptiveStateMachine):
  
             PreemptiveStateMachine.add('DropRed3',
                       DropRed3(),
-                      transitions={'succeeded':'endOpening', 'aborted':'Reverse1'})  
+                      transitions={'succeeded':'Photo', 'aborted':'Reverse1'})  
  
             #bleu 
             PreemptiveStateMachine.add('DropBlue0',
@@ -123,11 +118,12 @@ class Opening_D(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('DropBlue7',
                       DropBlue7(),
-                      transitions={'succeeded':'RecalBlue', 'aborted':'Reverse1'}) 
+                      transitions={'succeeded':'Photo', 'aborted':'Reverse1'}) 
             
-            PreemptiveStateMachine.add('RecalBlue',
-                      RecalBlue(),
-                      transitions={'done':'endOpening'})  
+            #la petite photo
+            PreemptiveStateMachine.add('Photo',
+                      Photo(),
+                      transitions={'succeeded':'endOpening', 'aborted':'Reverse1'}) 
  
             #evitement par le milieu
             PreemptiveStateMachine.add('Milieu1',
@@ -187,16 +183,6 @@ class DropRed1(CyclicActionState):
     def createAction(self):
         self.cap(-pi/3)
 
-class RecalRed(CyclicState):
-    def __init__(self):
-        CyclicState.__init__(self, outcomes=['done'])
-    
-    def executeTransitions(self):
-        return 'done'
-        
-    def executeIn(self):
-        self.relocate()
-
 class DropRed2(CyclicActionState):
     def createAction(self):
         self.dropOnCase(Case(-1,-5))
@@ -236,20 +222,17 @@ class DropBlue6(CyclicActionState):
     def createAction(self):
         self.cap(radians(-85.0)) 
         
-class RecalBlue(CyclicState):
-    def __init__(self):
-        CyclicState.__init__(self, outcomes=['done'])
-    
-    def executeTransitions(self):
-        return 'done'
-
-    def executeIn(self):
-        self.relocate()
         
 class DropBlue7(CyclicActionState):
     def createAction(self):
         self.backward(0.300)
-        
+
+###### UNE PETITE PHOTO POUR BORIS !
+class Photo(CyclicActionState):
+    def createAction(self):
+        pose = AmbiPoseRed(-0.350, -0.350,3*pi/4, Data.color)
+        self.pointcap(pose.x, pose.y, pose.theta)
+
 ####### ALLER SUR CASE MILIEU
 class Milieu1(CyclicActionState):
     def createAction(self):
