@@ -71,6 +71,8 @@ namespace arp_hml
         double attrPeriod;
         /** time for which the propMaximalTorque has been reached */
         double attrBlockingDelay;
+        /** brut value of the odometer */
+        int attrIncrementalOdometer;
 
         /** Is true when you when to invert the speed command and feedback of the motor softly **/
         bool propInvertDriveDirection;

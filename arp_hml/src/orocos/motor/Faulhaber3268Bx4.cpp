@@ -34,6 +34,7 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
     addAttribute("attrCommandedSpeed",m_speedCommand);
     addAttribute("attrPeriod",attrPeriod);
     addAttribute("attrBlockingDelay",attrBlockingDelay);
+    addAttribute("attrIncrementalOdometer",attrIncrementalOdometer);
 
     addProperty("propInvertDriveDirection",propInvertDriveDirection)
     	.doc("Is true when you when to invert the speed command and feedback of the motor softly");
@@ -286,7 +287,8 @@ void Faulhaber3268Bx4::readCaptors()
 {
     EnterMutex();
     //lecture de la position
-    double position = TURN_TO_RAD*(*m_measuredPosition)/(propReductorValue*propEncoderResolution);
+    attrIncrementalOdometer = (*m_measuredPosition);
+    double position = TURN_TO_RAD*(double)attrIncrementalOdometer/(propReductorValue*(double)propEncoderResolution);
 	if( propInvertDriveDirection )
 	{
 		position = -position;
