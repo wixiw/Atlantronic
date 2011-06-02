@@ -1,0 +1,8 @@
+float64 xRobot
+float64 yRobot
+float64 thetaRobot
+string color
+---
+float64 confidence
+int64 figure1
+int64 figure2

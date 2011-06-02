@@ -8,5 +8,9 @@ rosbuild_add_executable(ObjectFinderNode ObjectFinderNode.cpp)
 target_link_libraries(ObjectFinderNode objectfinder)
 target_link_libraries(ObjectFinderNode lasertoolbox)
 
+rosbuild_add_executable(ChessboardReader ChessboardReader.cpp)
+target_link_libraries(ChessboardReader objectfinder)
+target_link_libraries(ChessboardReader lasertoolbox)
+
 
 ###################################################################################################################
