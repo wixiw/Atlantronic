@@ -82,7 +82,7 @@ class Table:
         
     @staticmethod
     def isOnTable(x,y):
-        if x<Table.VWALL_X-0.150 and x>-Table.VWALL_X+0.150 and y<Table.HWALL_Y-0.150 and y>-Table.HWALL_Y+0.150 :
+        if x<Table.VWALL_X-0.350 and x>-Table.VWALL_X+0.350 and y<Table.HWALL_Y-0.200 and y>-Table.HWALL_Y+0.300 :
             return True
         else:
             return False

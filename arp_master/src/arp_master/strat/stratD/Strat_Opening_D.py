@@ -74,7 +74,7 @@ class Opening_D(PreemptiveStateMachine):
             #rouge
             PreemptiveStateMachine.add('SwitchRedBlue',
                       SwitchRedBlue(),
-                      transitions={'red':'DropRed1', 'blue':'DropBlue1'})  
+                      transitions={'red':'DropRed1', 'blue':'DropBlue0'})  
             
             
             PreemptiveStateMachine.add('DropRed1',
@@ -94,6 +94,9 @@ class Opening_D(PreemptiveStateMachine):
                       transitions={'succeeded':'endOpening', 'aborted':'Reverse1'})  
  
             #bleu 
+            PreemptiveStateMachine.add('DropBlue0',
+                      DropBlue0(),
+                      transitions={'succeeded':'DropBlue1', 'aborted':'Reverse1'})  
             PreemptiveStateMachine.add('DropBlue1',
                       DropBlue1(),
                       transitions={'succeeded':'DropBlue2', 'aborted':'Reverse1'})   
@@ -161,7 +164,11 @@ class LigneVert2(CyclicActionState):
         
 class LigneVert3(CyclicActionState):
     def createAction(self):
-        self.dropOnCase(AmbiCaseRed(-1, -3, Data.color))
+        if Data.color=='red':
+            self.dropOnCase(AmbiCaseRed(-1, -3, Data.color))
+        else:
+            self.dropOnCase(AmbiCaseRed(0, -2, Data.color))
+        
 
 
 class SwitchRedBlue(CyclicState):
@@ -199,6 +206,10 @@ class DropRed3(CyclicActionState):
         self.backward(0.300)
 
 ################## DEPOSE DU BLEU EN BAS
+
+class DropBlue0(CyclicActionState):
+    def createAction(self):
+        self.cap(-radians(70))
 
 class DropBlue1(CyclicActionState):
     def createAction(self):
