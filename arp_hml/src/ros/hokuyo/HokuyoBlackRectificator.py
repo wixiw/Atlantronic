@@ -14,6 +14,7 @@ class HokuyoBlackRectificator():
 
     def callback(self, data):
         rospy.loginfo(rospy.get_name() + "bite !")
+        
 
 
 if __name__ == '__main__':
