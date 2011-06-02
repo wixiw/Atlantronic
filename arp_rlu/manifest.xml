@@ -11,8 +11,6 @@
     <depend package="std_srvs" />
     <depend package="tf" />
     <depend package="nav_msgs" />
-    <depend package="canonical_scan_matcher" />
-    <depend package="tf"/>
     <depend package="roscpp"/>
     <depend package="sensor_msgs"/>
     <depend package="geometry_msgs"/>
