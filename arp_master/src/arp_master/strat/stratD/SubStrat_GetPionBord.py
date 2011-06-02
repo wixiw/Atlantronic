@@ -52,17 +52,12 @@ class GetPionBord(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('GotoFacePion1',
                       GotoFacePion1(),
-                      transitions={'succeeded':'GotoFacePion2plusloin', 'aborted':'obstacle'})
+                      transitions={'succeeded':'GotoFacePion2', 'aborted':'obstacle'})
             
             self.setInitialState('GotoFacePion1')
-                        
-            #CET ETAT A ETE REMPLACE PAR LE SUIVANT. juste garde au cas ou ca marche pas
+            
             PreemptiveStateMachine.add('GotoFacePion2',
                       GotoFacePion2(),
-                      transitions={'succeeded':'Turn', 'aborted':'obstacle'})
-            
-            PreemptiveStateMachine.add('GotoFacePion2plusloin',
-                      GotoFacePion2plusloin(),
                       transitions={'succeeded':'GotoFacePion3', 'aborted':'GotoFacePion3'})
             
             PreemptiveStateMachine.add('GotoFacePion3',
@@ -97,17 +92,6 @@ class GotoFacePion1(CyclicActionState):
         else:
             self.pointcap(xRobot-0.35*cos(cap.angle),yRobot-0.35*sin(cap.angle)-0.005*cos(cap.angle),cap.angle)     
         
-# CET ETAT N'EST PLUS UTILISE  C'EST LE RECUL A WILLY
-class GotoFacePion11(CyclicActionState):
-    def createAction(self):
-        if Data.pionBordObjectif==None:
-            Data.pionBordObjectif=PionBord(0,Data.color)
-        cap=AmbiCapRed(-pi,Data.color)
-        (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(cap.angle)
-        #je recule de 550, je me decale cote fourche de 15
-        self.pointcap_reverse(xRobot-0.55*cos(cap.angle),yRobot-0.55*sin(cap.angle)+0.005*cos(cap.angle),cap.angle)     
-
-        
 class GotoFacePion2(CyclicActionState):
     def createAction(self):
         if Data.pionBordObjectif==None:
@@ -115,8 +99,12 @@ class GotoFacePion2(CyclicActionState):
         cap=AmbiCapRed(-pi,Data.color)
         (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(cap.angle)
         #je vais a l'objectif, je me decale cote fourche de 15
-        self.pointcap(xRobot,yRobot+0.005*cos(cap.angle),cap.angle)    
+        self.pointcap(xRobot+0.020*cos(cap.angle),yRobot+0.005*cos(cap.angle),cap.angle)   
 
+class GotoFacePion3(CyclicActionState):
+    def createAction(self):
+        self.backward(0.020)
+        
 class Turn(CyclicActionState):
     def createAction(self):
         if Data.color=='red':
