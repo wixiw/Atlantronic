@@ -7,13 +7,14 @@
 	<!--Distance in meters between wheels -->
     <param name="/Protokrot/BASE_LINE" value="0.307039062"/>
     <!--Factor for cap odometry on the right wheel in rad -->
-    <param name="/Protokrot/RIGHT_ROTATION_FACTOR" value="0.21840899"/>   
+    <param name="/Protokrot/RIGHT_ROTATION_FACTOR" value="0.220486132"/>   
     <!--Factor for cap odometry on the left wheel in rad -->
-    <param name="/Protokrot/LEFT_ROTATION_FACTOR" value="0.21718462"/> 
+    <param name="/Protokrot/LEFT_ROTATION_FACTOR" value="0.220451657"/> 
 	<!--Diameter in meters -->
-	<param name="/Protokrot/RIGHT_WHEEL_DIAMETER" value="0.06739019" /> 
+	<param name="/Protokrot/RIGHT_WHEEL_DIAMETER" value="0.067645146" />
 	<!--Diameter in meters -->
-	<param name="/Protokrot/LEFT_WHEEL_DIAMETER" value="0.06708807" /> 
+	<param name="/Protokrot/LEFT_WHEEL_DIAMETER" value="0.067560591" />
+	
 
 	<!--maximum forward velocity (m/s) (1 by willy) -->
     <param name="/arp_ods/LIN_VEL_MAX"  value="0.3000" /> 
