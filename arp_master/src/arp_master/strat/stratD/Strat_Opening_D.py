@@ -64,21 +64,26 @@ class Opening_D(PreemptiveStateMachine):
 
             PreemptiveStateMachine.add('LigneVert2',
                       LigneVert2(),
-                      transitions={'succeeded':'LigneVert3', 'aborted':'Reverse1'})
-
-            PreemptiveStateMachine.add('LigneVert3',
-                      LigneVert3(),
-                      transitions={'succeeded':'SwitchRedBlue', 'aborted':'Reverse1'})      
+                      transitions={'succeeded':'SwitchRedBlue', 'aborted':'Reverse1'})
+    
                   
             # attention il y a deux branches, suivant si on est rouge ou bleu
             #rouge
             PreemptiveStateMachine.add('SwitchRedBlue',
                       SwitchRedBlue(),
-                      transitions={'red':'DropRed1', 'blue':'DropBlue0'})  
+                      transitions={'red':'DropRed0', 'blue':'DropBlue_1'})  
+            
+            PreemptiveStateMachine.add('DropRed0',
+                      DropRed0(),
+                      transitions={'succeeded':'DropRed1', 'aborted':'Reverse1'})
             
             PreemptiveStateMachine.add('DropRed1',
                       DropRed1(),
-                      transitions={'succeeded':'DropRed2', 'aborted':'Reverse1'})   
+                      transitions={'succeeded':'DropRed11', 'aborted':'Reverse1'})   
+            
+            PreemptiveStateMachine.add('DropRed11',
+                      DropRed11(),
+                      transitions={'succeeded':'DropRed2', 'aborted':'Reverse1'}) 
             
             PreemptiveStateMachine.add('DropRed2',
                       DropRed2(),
@@ -89,6 +94,10 @@ class Opening_D(PreemptiveStateMachine):
                       transitions={'succeeded':'Photo', 'aborted':'Reverse1'})  
  
             #bleu 
+            PreemptiveStateMachine.add('DropBlue_1',
+                      DropBlue_1(),
+                      transitions={'succeeded':'DropBlue0', 'aborted':'Reverse1'}) 
+            
             PreemptiveStateMachine.add('DropBlue0',
                       DropBlue0(),
                       transitions={'succeeded':'DropBlue1', 'aborted':'Reverse1'})  
@@ -157,15 +166,6 @@ class LigneVert2(CyclicActionState):
         Data.obstacleAvoidType='Milieu'
         Data.rearObstacleAvoidType='Normal'
         self.dropOnCase(AmbiCaseRed(-4, -2, Data.color))
-        
-class LigneVert3(CyclicActionState):
-    def createAction(self):
-        if Data.color=='red':
-            self.dropOnCase(AmbiCaseRed(-1, -3, Data.color))
-        else:
-            self.dropOnCase(AmbiCaseRed(0, -2, Data.color))
-        
-
 
 class SwitchRedBlue(CyclicState):
     def __init__(self):
@@ -178,10 +178,17 @@ class SwitchRedBlue(CyclicState):
             return 'blue'
 
 ############### DEPOSE DU ROUGE EN BAS
-      
+class DropRed0(CyclicActionState):
+     def createAction(self):
+         self.dropOnCase(AmbiCaseRed(-1, -3, Data.color))
+               
 class DropRed1(CyclicActionState):
     def createAction(self):
-        self.cap(-pi/3)
+        self.cap(radians(-130))
+        
+class DropRed11(CyclicActionState):
+    def createAction(self):
+        self.cap(radians(-60))
 
 class DropRed2(CyclicActionState):
     def createAction(self):
@@ -193,6 +200,10 @@ class DropRed3(CyclicActionState):
 
 ################## DEPOSE DU BLEU EN BAS
 
+class DropBlue_1(CyclicActionState):
+    def createAction(self):
+        self.dropOnCase(AmbiCaseRed(0, -2, Data.color))
+        
 class DropBlue0(CyclicActionState):
     def createAction(self):
         self.cap(-radians(70))
