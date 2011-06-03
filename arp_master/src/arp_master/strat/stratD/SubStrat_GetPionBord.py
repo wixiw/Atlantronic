@@ -48,11 +48,11 @@ class GetPionBord(PreemptiveStateMachine):
             
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
                                              EndMatchPreemption(),
-                                             transitions={'endPreemption':'endmatch'})
+                                             transitions={'endPreemption':'obstacle'})
             
             PreemptiveStateMachine.add('GotoFacePion1',
                       GotoFacePion1(),
-                      transitions={'succeeded':'GotoFacePion2', 'aborted':'obstacle'})
+                      transitions={'succeeded':'GotoFacePion2', 'aborted':'problem'})
             
             self.setInitialState('GotoFacePion1')
             
@@ -62,23 +62,26 @@ class GetPionBord(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('GotoFacePion3',
                       GotoFacePion3(),
-                      transitions={'succeeded':'Turn', 'aborted':'obstacle'})
+                      transitions={'succeeded':'Turn', 'aborted':'Reverse1'})
             
             PreemptiveStateMachine.add('Turn',
                       Turn(),
-                      transitions={'succeeded':'Avance', 'aborted':'obstacle'})
+                      transitions={'succeeded':'Avance', 'aborted':'Reverse1'})
 
             PreemptiveStateMachine.add('Avance',
                       Avance(),
-                      transitions={'succeeded':'got', 'aborted':'obstacle'})
+                      transitions={'succeeded':'got', 'aborted':'Reverse1'})
             
             ## si on a un probleme on fait un safety drop
             PreemptiveStateMachine.add('Reverse1',
                       Reverse1(),
-                      transitions={'succeeded':'SafetyDrop', 'aborted':'obstacle'})
-            PreemptiveStateMachine.add('SafetyDrop',
-                      SafetyDrop(),
-                      transitions={'succeeded':'obstacle', 'aborted':'obstacle'})            
+                      transitions={'succeeded':'SafetyDrop1', 'aborted':'obstacle'})
+            PreemptiveStateMachine.add('SafetyDrop1',
+                      SafetyDrop1(),
+                      transitions={'succeeded':'SafetyDrop2', 'aborted':'obstacle'})    
+            PreemptiveStateMachine.add('SafetyDrop2',
+                      SafetyDrop2(),
+                      transitions={'succeeded':'obstacle', 'aborted':'obstacle'})          
 
 class GotoFacePion1(CyclicActionState):
     def createAction(self):
@@ -122,11 +125,15 @@ class Reverse1(CyclicActionState):
             self.dropOnCase(Case(0,0))
         self.executeReplayOrder(order)  
         
-class SafetyDrop(CyclicActionState):
+class SafetyDrop1(CyclicActionState):
     def createAction(self):
         self.dropOnCase(AmbiCaseRed(-3,-3,Data.color)) 
-        
+
+class SafetyDrop2(CyclicActionState):
+    def createAction(self):
+        self.backward(.300)       
  
+## PREEMPTIONS
 class EndMatchPreemption(PreemptiveCyclicState):
     def __init__(self):
         PreemptiveCyclicState.__init__(self, outcomes=['endPreemption'])
