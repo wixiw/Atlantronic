@@ -69,7 +69,8 @@ def getCase(x,y):
 #represent the robot dimensions    
 class Robot:
     xPion=0.142 
-    yPion=-0.087
+    #yPion=-0.087
+    yPion=-0.095
     @staticmethod
     def init():
         Robot.DIST_BACK=rospy.get_param('/Protokrot/DIST_BACK')

@@ -65,6 +65,10 @@ class Opening_D(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('LigneVert1',
                       LigneVert1(),
+                      transitions={'succeeded':'LigneVert10', 'aborted':'Reverse1'})
+            
+            PreemptiveStateMachine.add('LigneVert10',
+                      LigneVert10(),
                       transitions={'succeeded':'LigneVert11', 'aborted':'Reverse1'})
             
             PreemptiveStateMachine.add('LigneVert11',
@@ -190,6 +194,10 @@ class LigneVert1(CyclicActionState):
     def createAction(self):
         self.dropOnCase(AmbiCaseRed(-4, 4, Data.color))
         
+class LigneVert10(CyclicActionState):
+    def createAction(self):
+        self.forward(0.050)
+        
 class LigneVert11(CyclicActionState):
     def createAction(self):
         self.dropOnCase(AmbiCaseRed(-4, 2, Data.color))
@@ -255,28 +263,28 @@ class DropBlue_1(CyclicActionState):
         
 class DropBlue0(CyclicActionState):
     def createAction(self):
-        self.cap(-radians(70))
+        self.cap(-radians(135))
 
 class DropBlue1(CyclicActionState):
     def createAction(self):
-        self.dropOnCase(Case(0,-4))
+        self.forward(0.300)
         
 class DropBlue2(CyclicActionState):
     def createAction(self):
-        self.cap(-pi/2)
+        self.cap(-radians(35))
         
         
 class DropBlue3(CyclicActionState):
     def createAction(self):
-        self.backward(0.300)
+        self.forward(0.140)
 
 class DropBlue4(CyclicActionState):
     def createAction(self):
-        self.cap(radians(-125.0))
+        self.cap(0)
 
 class DropBlue5(CyclicActionState):
     def createAction(self):
-        self.forward(0.280)
+        self.backward(0.250)
 
 class DropBlue6(CyclicActionState):
     def createAction(self):

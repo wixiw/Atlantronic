@@ -11,5 +11,5 @@
   <simple name="propReductorValue" type="double"><value>14</value></simple>
   <simple name="propEncoderResolution" type="long"><value>3000</value></simple>
   <simple name="propCanConfigurationScript" type="string"><description>this script is executed in the configureHook to set up CAN config values</description><value>ConfigureProtokrotDriving.ops</value></simple>
-  <simple name="propMaximalTorque" type="double"><description>Maximal Torque allowed in Amps</description><value>0.600</value></simple>
+  <simple name="propMaximalTorque" type="double"><description>Maximal Torque allowed in Amps</description><value>0.700</value></simple>
 </properties>
