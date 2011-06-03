@@ -61,11 +61,15 @@ void ChessboardReader::scanCallback(LaserScanConstPtr s)
 
 bool ChessboardReader::findRoyalFamilyCallback(FindRoyalFamily::Request& req, FindRoyalFamily::Response& res)
 {
+    res.figure1 = 0;
+    res.figure2 = 2;
+    res.confidence = -1.0;
+
     if (scan.rows() < 2)
     {
         scan = Eigen::MatrixXd::Zero(0, 0);
         ROS_WARN("ChessboardReader findRoyalFamilyCallback : scan is empty");
-        return false;
+        return true;
     }
 
     objf.setPolarScan(scan);
@@ -88,6 +92,13 @@ bool ChessboardReader::findRoyalFamilyCallback(FindRoyalFamily::Request& req, Fi
 
     res.figure1 = result.first;
     res.figure2 = result.second;
+
+    if(result.first > 3 || result.first < 0 || result.second > 3 || result.second < 0 || result.first == result.second)
+    {
+        res.figure1 = 0;
+        res.figure2 = 2;
+    }
+
     if (success)
         res.confidence = 1.0;
     else
@@ -104,12 +115,14 @@ bool ChessboardReader::compute(std::string color)
     if (cartScan.cols() == 0)
     {
         ROS_WARN("ChessboardReader compute : cartScan is empty");
+        result = std::make_pair(0, 2);
         return false;
     }
 
     if (cartScan.rows() != 4)
     {
         ROS_WARN("ChessboardReader compute : cartScan.rows() != 4 => Scan is not in cartesian representation ?");
+        result = std::make_pair(0, 2);
         return false;
     }
 
@@ -154,16 +167,20 @@ bool ChessboardReader::compute(std::string color)
     int idFirst;
     int idSecond;
 
+    // get first maximum
     int i_max;
     int nbPoints_max = nbPoints.maxCoeff(&i_max);
     const int nbPointsMin = 5;
     if (nbPoints_max < nbPointsMin)
     {
         ROS_WARN("ChessboardReader compute : Not enough detected points on maximum case (%d)", nbPoints_max);
+        result = std::make_pair(0, 2);
         return false;
     }
     idFirst = i_max;
     ROS_INFO("ChessboardReader compute : Case %d has maximum points (%d)", i_max, nbPoints_max);
+
+    // get second maximum
     nbPoints(i_max) = -1;
     nbPoints_max = nbPoints.maxCoeff(&i_max);
     if (nbPoints_max < nbPointsMin)
@@ -172,7 +189,6 @@ bool ChessboardReader::compute(std::string color)
         if (idFirst == 4)
         {
             ROS_INFO("ChessboardReader compute : Case 4 is unacceptable. We choose (0,2)");
-            return false;
         }
         if (idFirst != 0)
             idSecond = 0;
@@ -184,6 +200,7 @@ bool ChessboardReader::compute(std::string color)
     idSecond = i_max;
     ROS_INFO("ChessboardReader compute : Case %d has second maximum points (%d)", i_max, nbPoints_max);
 
+    // we avoid the config 4
     if (idFirst == 4)
     {
         if (idSecond != 0)
@@ -191,6 +208,8 @@ bool ChessboardReader::compute(std::string color)
         else
             idFirst = 2;
         ROS_INFO("ChessboardReader compute : Case 4 is unacceptable. We choose %d", idFirst);
+        result = std::make_pair(idFirst, idSecond);
+        return false;
     }
     if (idSecond == 4)
     {
