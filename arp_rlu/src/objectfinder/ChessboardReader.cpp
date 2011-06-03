@@ -16,7 +16,7 @@ ChessboardReader::ChessboardReader() :
     nh(), scan(Eigen::MatrixXd::Zero(1, 1))
 {
 
-    scan_sub = nh.subscribe("/scan", 1, &ChessboardReader::scanCallback, this);
+    scan_sub = nh.subscribe("/front_scan", 1, &ChessboardReader::scanCallback, this);
     findroyalfamily_srv = nh.advertiseService("/ChessboardReader/FindRoyalFamily",
             &ChessboardReader::findRoyalFamilyCallback, this);
 
