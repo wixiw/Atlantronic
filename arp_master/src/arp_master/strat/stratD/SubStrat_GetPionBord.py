@@ -162,7 +162,7 @@ class Turn(CyclicActionState):
  
 class Avance(CyclicActionState):
     def createAction(self):
-        self.forward(0.100) 
+        self.forward(0.200) 
  
  ##### pour le blocage: reverse et depose du pion avant de reessayer
 class Reverse1(CyclicActionState):

@@ -17,7 +17,7 @@
 	
 
 	<!--maximum forward velocity (m/s) (1 by willy) -->
-    <param name="/arp_ods/LIN_VEL_MAX"  value="0.3000" /> 
+    <param name="/arp_ods/LIN_VEL_MAX"  value="1.000" /> 
 	<!--maximum rotation velocity (rad/s) (7 by willy) -->
     <param name="/arp_ods/ANG_VEL_MAX"  value="1.000" /> 
 

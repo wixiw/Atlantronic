@@ -55,7 +55,7 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('WaitForStartPlug', WaitForStartPlug(),
                                    transitions={'startplug':'WaitForStartUnplug'})
             smach.StateMachine.add('WaitForStartUnplug', WaitForStartUnplug(),
-                                   transitions={'startunplug':'Rush1'})
+                                   transitions={'startunplug':'Droite1'})
             
             smach.StateMachine.add('Cap1', Cap1(),
                                    transitions={'succeeded':'Cap2', 'aborted':'end'})
@@ -70,12 +70,12 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('Cap6', Cap6(),
                                    transitions={'succeeded':'Cap7', 'aborted':'end'})
             smach.StateMachine.add('Cap7', Cap7(),
-                                   transitions={'succeeded':'Init', 'aborted':'end'})
+                                   transitions={'succeeded':'Cap1', 'aborted':'end'})
             
             smach.StateMachine.add('Droite1', Droite1(),
                                    transitions={'succeeded':'Droite2', 'aborted':'end'})
             smach.StateMachine.add('Droite2', Droite2(),
-                                   transitions={'succeeded':'Init', 'aborted':'end'})
+                                   transitions={'succeeded':'Droite1', 'aborted':'end'})
             
             
             smach.StateMachine.add('Fantom1', Fantom1(),
@@ -168,7 +168,7 @@ class WaitForStartUnplug(CyclicState):
             return 'startunplug'
         
     def executeOut(self):
-        self.setPosition(-1.45,0.84,0)
+        self.setPosition(0,0,0)
         self.enableDrive()
    
 class Cap1(CyclicActionState):
@@ -201,7 +201,8 @@ class Cap7(CyclicActionState):
         
 class Droite1(CyclicActionState):
     def createAction(self):
-        self.pointcap(1,0,0)
+        #self.pointcap(1,0,0)
+        self.pointcap(1.00,0.0,0)
         
 class Droite2(CyclicActionState):
     def createAction(self):

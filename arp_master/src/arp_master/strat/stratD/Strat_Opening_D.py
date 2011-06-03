@@ -276,7 +276,7 @@ class DropBlue4(CyclicActionState):
 
 class DropBlue5(CyclicActionState):
     def createAction(self):
-        self.forward(0.320)
+        self.forward(0.280)
 
 class DropBlue6(CyclicActionState):
     def createAction(self):
