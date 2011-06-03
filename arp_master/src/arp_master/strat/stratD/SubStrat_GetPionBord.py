@@ -100,19 +100,31 @@ class GotoFacePion1(CyclicActionState):
     def createAction(self):
         if Data.pionBordObjectif==None:
             Data.pionBordObjectif=PionBord(0,Data.color)
-        (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(-pi)
-        pose = AmbiPoseRed(-0.810, yRobot,-pi, Data.color)
+        cap=AmbiCapRed(-pi,Data.color)
+  
+        if Data.color=='red':
+            xtarget = -0.810
+        else:
+            xtarget = 0.810
+        cap=AmbiCapRed(-pi,Data.color)
+        (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(cap.angle)
         #je recule de 350, je me decale lateralement
-        self.pointcap(pose.x,pose.y-0.005,pose.theta)     
+        self.pointcap(xtarget,yRobot-0.350*sin(cap.angle)-0.005*cos(cap.angle),cap.angle)     
     
         
 class GotoFacePion2(CyclicActionState):
     def createAction(self):
         if Data.pionBordObjectif==None:
             Data.pionBordObjectif=PionBord(0,Data.color)
-        (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(-pi)
-        pose = AmbiPoseRed(-1.205, yRobot,-pi, Data.color)
-        self.pointcap(pose.x, pose.y-0.005, pose.theta)
+        cap=AmbiCapRed(-pi,Data.color)
+        if Data.color=='red':
+            xtarget = -1.200
+        else:
+            xtarget = 1.200
+        cap=AmbiCapRed(-pi,Data.color)
+        (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(cap.angle)
+        #je vais a l'objectif, je me decale lateralement
+        self.pointcap(xtarget,yRobot+0.005*cos(cap.angle),cap.angle)   
 
 class GotoFacePion3(CyclicActionState):
     def createAction(self):
@@ -139,7 +151,7 @@ class PreTurn(CyclicActionState):
 
 class ForwardABit(CyclicActionState):
     def createAction(self):
-        self.forward(0.080)
+        self.forward(0.100)
         
 class Turn(CyclicActionState):
     def createAction(self):

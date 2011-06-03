@@ -198,11 +198,11 @@ class LigneVert2(CyclicActionState):
     def createAction(self):
         Data.obstacleAvoidType='Milieu'
         Data.rearObstacleAvoidType='Normal'
-        self.dropOnCase(AmbiCaseRed(-4, -3, Data.color))
+        self.dropOnCase(AmbiCaseRed(-4, -2, Data.color))
 
 class BlackBox1(CyclicActionState):
     def createAction(self):
-        self.forward(0.080)
+        self.forward(0.120)
         
 class BlackBox2(CyclicActionState):
     def createAction(self):
@@ -233,7 +233,7 @@ class DropRed0(CyclicActionState):
                
 class DropRed1(CyclicActionState):
     def createAction(self):
-        self.cap(radians(-130))
+        self.cap(radians(-115))
         
 class DropRed11(CyclicActionState):
     def createAction(self):
@@ -276,7 +276,7 @@ class DropBlue4(CyclicActionState):
 
 class DropBlue5(CyclicActionState):
     def createAction(self):
-        self.forward(0.350)
+        self.forward(0.320)
 
 class DropBlue6(CyclicActionState):
     def createAction(self):
