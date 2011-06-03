@@ -13,6 +13,7 @@ from arp_master.strat.util.PreemptiveCyclicState import PreemptiveCyclicState
 from arp_master.strat.util.ObstaclePreempter import FrontObstaclePreempter
 from arp_master.strat.util.ObstaclePreempter import RearObstaclePreempter
 from arp_master.strat.util.WaiterState import WaiterState
+from arp_master.strat.util.EndMatchPreempter import EndMatchPreempter
 from arp_master.strat.util.Inputs import Inputs
 from arp_master.strat.util.Data import Data
 from arp_ods.msg import OrderGoal
@@ -27,6 +28,10 @@ class Opening_D(PreemptiveStateMachine):
     def __init__(self):
         PreemptiveStateMachine.__init__(self, outcomes=['endOpening', 'problem'])
         with self:
+            PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
+                                             EndMatchPreempter(-30.0),
+                                             transitions={'endMatch':'problem'})
+            
             PreemptiveStateMachine.addPreemptive('ObstaclePreemption',
                       ObstaclePreemption(),
                       transitions={'avoidByMilieu':'WaitBeforeMilieu','jump':'WaitBeforeJump'})

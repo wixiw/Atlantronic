@@ -15,7 +15,7 @@ from arp_master.strat.sillyWalk import Strat_Initialisation
 from arp_master.strat.sillyWalk import Strat_StartSequence
 import Strat_Opening_D
 import Strat_Middlegame_D
-from arp_master.strat.sillyWalk import Strat_Endgame
+import Strat_Endgame_D
 from arp_master.strat.sillyWalk import Strat_Uninitialisation
 
 from arp_master.strat.util.Inputs import Inputs
@@ -73,7 +73,7 @@ class MainStateMachine(smach.StateMachine):
                                     transitions={'endOpening':'Middlegame','problem':'Middlegame'})
             smach.StateMachine.add('Middlegame', Strat_Middlegame_D.Middlegame_D(),
                                     transitions={'endMiddlegame':'Endgame'})
-            smach.StateMachine.add('Endgame', Strat_Endgame.Endgame(),
+            smach.StateMachine.add('Endgame', Strat_Endgame_D.Endgame_D(),
                                     transitions={'endEndgame':'Uninitialisation'})
             smach.StateMachine.add('Uninitialisation', Strat_Uninitialisation.Uninitialisation(),
                                     transitions={'endUninitialisation':'end'})

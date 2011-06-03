@@ -16,6 +16,8 @@ def intersectCircle(x0,y0,r0,x1,y1,r1):
         return
     
     a = (r0**2 - r1**2 + d**2 ) / (2* d)
+    if (r0**2 - a**2 <=0.0):
+        return
     h = sqrt(r0**2 - a**2) 
     
     x2 = x0 + a * ( x1 - x0 ) / d

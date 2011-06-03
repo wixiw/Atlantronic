@@ -15,6 +15,7 @@ from arp_master.strat.util.PreemptiveStateMachine import PreemptiveStateMachine
 from arp_master.strat.util.PreemptiveCyclicState import PreemptiveCyclicState
 from arp_master.strat.util.ObstaclePreempter import FrontObstaclePreempter
 from arp_master.strat.util.ObstaclePreempter import RearObstaclePreempter
+from arp_master.strat.util.EndMatchPreempter import EndMatchPreempter
 from arp_master.strat.util.WaiterState import WaiterState
 from arp_master.strat.util.Inputs import Inputs
 from arp_master.strat.util.Data import Data
@@ -45,8 +46,8 @@ class DropPion(PreemptiveStateMachine):
                       transitions={'done':'obstacle'})
             
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
-                                             EndMatchPreemption(),
-                                             transitions={'endPreemption':'endmatch'})
+                                             EndMatchPreempter(-5.0),
+                                             transitions={'endMatch':'endmatch'})
             
             PreemptiveStateMachine.add('Drop1',
                       Drop1(),
@@ -100,21 +101,6 @@ class Drop1(CyclicActionState):
 class Drop2(CyclicActionState):
     def createAction(self):
         self.backward(0.35)    
- 
-class EndMatchPreemption(PreemptiveCyclicState):
-    def __init__(self):
-        PreemptiveCyclicState.__init__(self, outcomes=['endPreemption'])
-        self.match_duration=rospy.get_param("/match_duration")
-
-    def preemptionCondition(self):
-        if (rospy.get_rostime()-Data.start_time).to_sec()>self.match_duration:
-            return True
-        else:
-            return False
-       
-    def executeTransitions(self):
-        return 'endPreemption'
-    
     
 class ObstaclePreemption(FrontObstaclePreempter):
     def __init__(self):
