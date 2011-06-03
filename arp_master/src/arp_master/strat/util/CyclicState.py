@@ -14,6 +14,7 @@ from arp_core.srv import SetPosition
 from arp_hml.srv import SetMotorPower
 from arp_rlu.srv import EstimatePosition
 from arp_ods.srv import SetVMax
+from arp_rlu.srv import FindRoyalFamily
 
 class CyclicState(smach.StateMachine):
     def __init__(self,outcomes):
@@ -26,6 +27,7 @@ class CyclicState(smach.StateMachine):
         self.initSetMotorPower()
         self.initEstimatePositionClient()
         self.initSetVMaxClient()
+        self.initFindRoyalFamilyClient()
         
         
     def execute(self,userdata):
@@ -73,6 +75,9 @@ class CyclicState(smach.StateMachine):
     def initEstimatePositionClient(self):
         self.estimatePosition_srv=rospy.ServiceProxy("/ReLocalizator/EstimatePosition",EstimatePosition)
 
+    def initFindRoyalFamilyClient(self):
+          self.findRoyalFamily_srv=rospy.ServiceProxy("/ChessboardReader/FindRoyalFamily",FindRoyalFamily)
+
     def setPosition(self,x,y,theta):
         self.setPosition_loc(x,y,theta)
         try:
@@ -117,4 +122,18 @@ class CyclicState(smach.StateMachine):
         
     def setVMaxDefault(self):
         self.setVMax_srv(0,True)
+        
+    def findRoyalFamily(self):
+        rospy.loginfo("ROYALFAMILY>> calling find royal family")
+        result=self.findRoyalFamily_srv(Inputs.getx(),Inputs.gety(),Inputs.gettheta(),Data.color)
+        if result.confidence!=-1:
+            rospy.loginfo("ROYALFAMILY>> ok")
+            if 0<=result.figure1 <=3:
+                Data.listStatusPionsBord[result.figure1]='FIGURE'
+            if 0<=result.figure2 <= 3:
+                Data.listStatusPionsBord[result.figure2]='FIGURE'
+        else:
+            rospy.loginfo("ROYALFAMILY>> not found")
+        return result
+        
         

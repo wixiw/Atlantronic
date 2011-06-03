@@ -54,7 +54,28 @@ class Selector(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['getpion'])
     
+
     def executeTransitions(self):
+        rospy.loginfo("Entering selector")
+        rospy.loginfo(str(Data.listStatusPionsBord))
+        #premier tour: je regarde si roi ou reine
+        for i in range(4):
+            if Data.listStatusPionsBord[i]=='FIGURE':
+                Data.pionBordObjectif=PionBord(i,Data.color)
+                Data.listStatusPionsBord[i]='DONE'
+                rospy.loginfo("Going for a figure in %i"%i)
+                return 'getpion'
+        #deuxieme tour: premier endroit dispo
+        for i in range(4):
+            if Data.listStatusPionsBord[i]=='NORMAL':
+                Data.pionBordObjectif=PionBord(i,Data.color)
+                Data.listStatusPionsBord[i]='DONE'
+                rospy.loginfo("Going for a pion in %i"%i)
+                return 'getpion'
+        
+        #si je suis arrive la : plus peronne de prenable
+                
+        rospy.loginfo("no normal pion and no figure")
         if Data.pionBordObjectif==None:
             Data.pionBordObjectif=PionBord(0,Data.color)
         else:

@@ -1,5 +1,5 @@
 /*
- * ObjectFinderNode.cpp
+ * .cpp
  *
  *  Created on: 30 mai 2011
  *      Author: Boris

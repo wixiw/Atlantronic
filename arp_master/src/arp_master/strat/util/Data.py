@@ -17,6 +17,8 @@ class Data:
     
     listReplayOrders=[]
     
+    listStatusPionsBord=['NORMAL','NORMAL','NORMAL','NORMAL']
+    
     timeObstacle=0
     timeRearObstacle=0
     

@@ -132,7 +132,11 @@ class Opening_D(PreemptiveStateMachine):
             #la petite photo
             PreemptiveStateMachine.add('Photo',
                       Photo(),
-                      transitions={'succeeded':'endOpening', 'aborted':'Reverse1'}) 
+                      transitions={'succeeded':'FindRoi', 'aborted':'endOpening'}) 
+            
+            PreemptiveStateMachine.add('FindRoi',
+                      FindRoi(),
+                      transitions={'done':'endOpening'}) 
  
             #evitement par le milieu
             PreemptiveStateMachine.add('Milieu1',
@@ -143,7 +147,7 @@ class Opening_D(PreemptiveStateMachine):
                       transitions={'succeeded':'Milieu3', 'aborted':'endOpening'})  
             PreemptiveStateMachine.add('Milieu3',
                       Milieu3(),
-                      transitions={'succeeded':'endOpening', 'aborted':'endOpening'})  
+                      transitions={'succeeded':'Photo', 'aborted':'endOpening'})  
         
 ############### DESCENTE DE TABLE
 
@@ -243,6 +247,14 @@ class Photo(CyclicActionState):
     def createAction(self):
         pose = AmbiPoseRed(-0.350, -0.350,3*pi/4, Data.color)
         self.pointcap(pose.x, pose.y, pose.theta)
+        
+class FindRoi(CyclicState):
+    def __init__(self):
+        CyclicState.__init__(self, outcomes=['done'])
+    
+    def executeTransitions(self):
+        result=self.findRoyalFamily()
+        return 'done'
 
 ####### ALLER SUR CASE MILIEU
 class Milieu1(CyclicActionState):

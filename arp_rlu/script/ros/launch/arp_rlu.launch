@@ -23,7 +23,7 @@
   		<param name="base_frame" type="string" value="base_link"/>
   		<param name="front_laser_frame" type="string" value="top_laser"/> 
  	</node> 
- 	
+ 	<node name="ChessboardReader"  pkg="arp_rlu"  type="ChessboardReader"  args="" output="screen"/>
  	<!--
  	<node name="Laserator" pkg="canonical_scan_matcher" type="csm_node" output="log">
   		<param name="world_frame" type="string" value="world"/>
