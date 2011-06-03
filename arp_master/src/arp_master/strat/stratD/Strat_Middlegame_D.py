@@ -60,7 +60,7 @@ class Selector(CyclicState):
         rospy.loginfo("Entering selector")
         rospy.loginfo(str(Data.listStatusPionsBord))
         #premier tour: je regarde si roi ou reine
-        for i in range(4):
+        for i in range(3,-1,-1):
             if Data.listStatusPionsBord[i]=='FIGURE':
                 Data.pionBordObjectif=PionBord(i,Data.color)
                 Data.listStatusPionsBord[i]='DONE'

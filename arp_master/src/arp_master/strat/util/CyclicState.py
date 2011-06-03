@@ -124,16 +124,25 @@ class CyclicState(smach.StateMachine):
         self.setVMax_srv(0,True)
         
     def findRoyalFamily(self):
-        rospy.loginfo("ROYALFAMILY>> calling find royal family")
-        result=self.findRoyalFamily_srv(Inputs.getx(),Inputs.gety(),Inputs.gettheta(),Data.color)
-        if result.confidence!=-1:
-            rospy.loginfo("ROYALFAMILY>> ok")
-            if 0<=result.figure1 <=3:
-                Data.listStatusPionsBord[result.figure1]='FIGURE'
-            if 0<=result.figure2 <= 3:
-                Data.listStatusPionsBord[result.figure2]='FIGURE'
-        else:
-            rospy.loginfo("ROYALFAMILY>> not found")
-        return result
+        try:
+            rospy.loginfo("ROYALFAMILY>> calling find royal family")
+            result=self.findRoyalFamily_srv(Inputs.getx(),Inputs.gety(),Inputs.gettheta(),Data.color)
+            if result.confidence!=-1:
+                rospy.loginfo("ROYALFAMILY>> ok")
+                if 0<=result.figure1 <=3:
+                    Data.listStatusPionsBord[result.figure1]='FIGURE'
+                if 0<=result.figure2 <= 3:
+                    Data.listStatusPionsBord[result.figure2]='FIGURE'
+            else:
+                rospy.loginfo("ROYALFAMILY>> not found")
+                rospy.logerr("ROYALFAMILY>> I officially declare 0 and 2 as king and queen")
+                Data.listStatusPionsBord[0]='FIGURE'
+                Data.listStatusPionsBord[2]='FIGURE'
+            return result
+        except rospy.ServiceException, e:
+            rospy.logerr("ROYALFAMILY>> Exception when calling service or computing answer")
+            rospy.logerr("ROYALFAMILY>> I officially declare 0 and 2 as king and queen")
+            Data.listStatusPionsBord[0]='FIGURE'
+            Data.listStatusPionsBord[2]='FIGURE'
         
         
