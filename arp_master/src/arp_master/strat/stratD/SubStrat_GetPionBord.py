@@ -63,6 +63,18 @@ class GetPionBord(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('GotoFacePion3',
                       GotoFacePion3(),
+                      transitions={'succeeded':'HandleFirstRedPion', 'aborted':'Reverse1'})
+            
+            PreemptiveStateMachine.add('HandleFirstRedPion',
+                      HandleFirstRedPion(),
+                      transitions={'forwardabit':'PreTurn', 'noforward':'Turn'})
+            
+            PreemptiveStateMachine.add('PreTurn',
+                      PreTurn(),
+                      transitions={'succeeded':'ForwardABit', 'aborted':'Reverse1'})
+                        
+            PreemptiveStateMachine.add('ForwardABit',
+                      ForwardABit(),
                       transitions={'succeeded':'Turn', 'aborted':'Reverse1'})
             
             PreemptiveStateMachine.add('Turn',
@@ -88,24 +100,46 @@ class GotoFacePion1(CyclicActionState):
     def createAction(self):
         if Data.pionBordObjectif==None:
             Data.pionBordObjectif=PionBord(0,Data.color)
-        cap=AmbiCapRed(-pi,Data.color)
-        (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(cap.angle)
+        (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(-pi)
+        pose = AmbiPoseRed(-0.810, yRobot,-pi, Data.color)
         #je recule de 350, je me decale lateralement
-        self.pointcap(xRobot-0.350*cos(cap.angle),yRobot-0.350*sin(cap.angle)-0.005*cos(cap.angle),cap.angle)     
+        self.pointcap(pose.x,pose.y-0.005,pose.theta)     
     
         
 class GotoFacePion2(CyclicActionState):
     def createAction(self):
         if Data.pionBordObjectif==None:
             Data.pionBordObjectif=PionBord(0,Data.color)
-        cap=AmbiCapRed(-pi,Data.color)
-        (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(cap.angle)
-        #je vais a l'objectif, je me decale lateralement
-        self.pointcap(xRobot+0.250*cos(cap.angle),yRobot+0.005*cos(cap.angle),cap.angle)   
+        (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(-pi)
+        pose = AmbiPoseRed(-1.205, yRobot,-pi, Data.color)
+        self.pointcap(pose.x, pose.y-0.005, pose.theta)
 
 class GotoFacePion3(CyclicActionState):
     def createAction(self):
         self.backward(0.010)
+
+#gestion du cas rouge en haut ou il ne faut pas avancer        
+class HandleFirstRedPion(CyclicState):
+    def __init__(self):
+        CyclicState.__init__(self, outcomes=['noforward','forwardabit'])
+    
+    def executeTransitions(self):
+        
+        if Data.pionBordObjectif.rang==0 and Data.color=='red':
+            return 'noforward'
+        else:
+            return 'forwardabit'
+        
+class PreTurn(CyclicActionState):
+    def createAction(self):
+        if Data.color=='red':
+            self.cap(2*pi/3)
+        else:
+            self.cap(-pi/3)
+
+class ForwardABit(CyclicActionState):
+    def createAction(self):
+        self.forward(0.080)
         
 class Turn(CyclicActionState):
     def createAction(self):

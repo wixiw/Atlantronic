@@ -51,9 +51,13 @@ class DropPion(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('Drop1',
                       Drop1(),
-                      transitions={'succeeded':'Drop2', 'aborted':'obstacle'})
+                      transitions={'succeeded':'Drop11', 'aborted':'obstacle'})
             
             self.setInitialState('Drop1')
+            
+            PreemptiveStateMachine.add('Drop11',
+                      Drop11(),
+                      transitions={'succeeded':'Drop2', 'aborted':'obstacle'})
             
             PreemptiveStateMachine.add('Drop2',
                       Drop2(),
@@ -96,7 +100,12 @@ class Drop1(CyclicActionState):
         #si j'ai reussi a terminer mon ordre je note que la case est occupee
         if self.trans=='succeeded':
             Data.currentDropCase.occupied=True
-        
+      
+      
+#tourne un peu pour degager le nez 
+class Drop11(CyclicActionState):
+    def createAction(self):
+        self.cap(Inputs.gettheta()+radians(15))
         
 class Drop2(CyclicActionState):
     def createAction(self):

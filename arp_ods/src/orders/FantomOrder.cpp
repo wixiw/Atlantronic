@@ -72,7 +72,7 @@ shared_ptr<MotionOrder> FantomOrder::createOrder( const OrderGoalConstPtr &goal,
 double FantomOrder::linearReductionCoef(double angle_error)
 {
     //le coefficient est 1 si angle est =0, il est 0 si angle=PI/8 au +, avec un smoothstep entre 2
-    double result = smoothStep(fabs(angle_error), 1, 0, 0, PI / 8.0);
+    double result = smoothStep(fabs(angle_error), 1, 0, 0, PI / 16.0);
     //ROS_INFO("smoothStep  error %.3f  =>> abs %.3f ",angle_error,d_abs(angle_error));
     //ROS_INFO("smoothStep abs error %.3f  =>> coef %.3f ",d_abs(angle_error), result);
     return result;

@@ -65,10 +65,34 @@ class Opening_D(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('LigneVert1',
                       LigneVert1(),
+                      transitions={'succeeded':'LigneVert11', 'aborted':'Reverse1'})
+            
+            PreemptiveStateMachine.add('LigneVert11',
+                      LigneVert11(),
                       transitions={'succeeded':'LigneVert2', 'aborted':'Reverse1'})
 
             PreemptiveStateMachine.add('LigneVert2',
                       LigneVert2(),
+                      transitions={'succeeded':'SwitchBlackBox', 'aborted':'Reverse1'})
+            
+            PreemptiveStateMachine.add('SwitchBlackBox',
+                      SwitchRedBlue(),
+                      transitions={'red':'SwitchRedBlue', 'blue':'BlackBox1'})
+                        
+            PreemptiveStateMachine.add('BlackBox1',
+                      BlackBox1(),
+                      transitions={'succeeded':'SwitchRedBlue', 'aborted':'BlackBox2'})
+            
+            PreemptiveStateMachine.add('BlackBox2',
+                      BlackBox2(),
+                      transitions={'succeeded':'BlackBox3', 'aborted':'Reverse1'})
+                        
+            PreemptiveStateMachine.add('BlackBox3',
+                      BlackBox3(),
+                      transitions={'succeeded':'BlackBox4', 'aborted':'Reverse1'})
+            
+            PreemptiveStateMachine.add('BlackBox4',
+                      BlackBox4(),
                       transitions={'succeeded':'SwitchRedBlue', 'aborted':'Reverse1'})
     
                   
@@ -128,10 +152,6 @@ class Opening_D(PreemptiveStateMachine):
                                     
             PreemptiveStateMachine.add('DropBlue6',
                       DropBlue6(),
-                      transitions={'succeeded':'DropBlue7', 'aborted':'Reverse1'}) 
-            
-            PreemptiveStateMachine.add('DropBlue7',
-                      DropBlue7(),
                       transitions={'succeeded':'Photo', 'aborted':'Reverse1'}) 
             
             #la petite photo
@@ -169,12 +189,32 @@ class EscapeStartpoint(CyclicActionState):
 class LigneVert1(CyclicActionState):
     def createAction(self):
         self.dropOnCase(AmbiCaseRed(-4, 4, Data.color))
+        
+class LigneVert11(CyclicActionState):
+    def createAction(self):
+        self.dropOnCase(AmbiCaseRed(-4, 2, Data.color))
 
 class LigneVert2(CyclicActionState):
     def createAction(self):
         Data.obstacleAvoidType='Milieu'
         Data.rearObstacleAvoidType='Normal'
-        self.dropOnCase(AmbiCaseRed(-4, -2, Data.color))
+        self.dropOnCase(AmbiCaseRed(-4, -3, Data.color))
+
+class BlackBox1(CyclicActionState):
+    def createAction(self):
+        self.forward(0.080)
+        
+class BlackBox2(CyclicActionState):
+    def createAction(self):
+        self.dropOnCase(AmbiCaseRed(-2, -3, Data.color))
+        
+class BlackBox3(CyclicActionState):
+    def createAction(self):
+        self.cap(-pi/3)
+
+class BlackBox4(CyclicActionState):
+    def createAction(self):
+        self.cap(0)
 
 class SwitchRedBlue(CyclicState):
     def __init__(self):
@@ -240,13 +280,10 @@ class DropBlue5(CyclicActionState):
 
 class DropBlue6(CyclicActionState):
     def createAction(self):
-        self.cap(radians(-85.0)) 
+        self.cap(radians(22.0)) 
+        #opitmise pour point de photo
         
         
-class DropBlue7(CyclicActionState):
-    def createAction(self):
-        self.backward(0.300)
-
 ###### UNE PETITE PHOTO POUR BORIS !
 class Photo(CyclicActionState):
     def createAction(self):

@@ -200,6 +200,5 @@ void HmlGraphicsFrame::onEmergency(wxCommandEvent& event)
 void HmlGraphicsFrame::onWheelBlocked(wxCommandEvent& event)
 {
     //inversion du bouton
-    ROS_INFO("bite!!!!!!!!!!!!!!!!");
     m_wheelBlocked.data = !m_wheelBlocked.data;
 }
