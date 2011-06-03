@@ -42,6 +42,7 @@ class ChessboardReader
         arp_rlu::ObjectFinder objf;
 
         arp_rlu::Scan scan;
+        arp_rlu::Scan cartScan;
 
         /**
          * Used to subscribe to "scan"
@@ -65,8 +66,12 @@ class ChessboardReader
          */
         bool findRoyalFamilyCallback(arp_rlu::FindRoyalFamily::Request& req, arp_rlu::FindRoyalFamily::Response& res);
 
+        bool compute(std::string color);
+
 
         std::vector<KnownObject> objects;
+
+        std::pair<int, int> result;
 
 };
 }
