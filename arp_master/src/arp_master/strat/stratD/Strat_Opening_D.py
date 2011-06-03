@@ -233,7 +233,7 @@ class DropRed0(CyclicActionState):
                
 class DropRed1(CyclicActionState):
     def createAction(self):
-        self.cap(radians(-115))
+        self.cap(radians(-105))
         
 class DropRed11(CyclicActionState):
     def createAction(self):
