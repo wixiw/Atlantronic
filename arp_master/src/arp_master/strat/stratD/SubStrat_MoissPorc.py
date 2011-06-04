@@ -43,7 +43,6 @@ class MoissPorc(PreemptiveStateMachine):
             PreemptiveStateMachine.add('Moiss1',
                                       Moiss1(),
                                       transitions={'succeeded':'Moiss2', 'aborted':'endmatch'})
-            #as initial state is not the preemptive one, it is necessary to add the information here !
             
             
             PreemptiveStateMachine.add('Moiss2',

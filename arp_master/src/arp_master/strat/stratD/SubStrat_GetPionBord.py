@@ -47,7 +47,7 @@ class GetPionBord(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('GotoFacePion1',
                       GotoFacePion1(),
-                      transitions={'succeeded':'GotoFacePion2', 'aborted':'problem'})
+                      transitions={'succeeded':'GotoFacePion2', 'aborted':'TakeMiddle'})
             
             self.setInitialState('GotoFacePion1')
             
@@ -82,7 +82,11 @@ class GetPionBord(PreemptiveStateMachine):
             ## si on a un probleme on fait un safety drop
             PreemptiveStateMachine.add('Reverse1',
                       Reverse1(),
-                      transitions={'succeeded':'problem', 'aborted':'problem'})
+                      transitions={'succeeded':'TakeMiddle', 'aborted':'problem'})
+            
+            PreemptiveStateMachine.add('TakeMiddle',
+                      TakeMiddle(),
+                      transitions={'succeeded':'got', 'aborted':'problem'})
          
 
 class GotoFacePion1(CyclicActionState):
@@ -166,4 +170,7 @@ class Reverse1(CyclicActionState):
             self.dropOnCase(Case(0,0))
         self.executeReplayOrder(order)  
  
+class TakeMiddle(CyclicActionState):
+    def createAction(self):
+        self.dropOnCase(Case(0,0))
  

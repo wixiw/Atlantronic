@@ -30,9 +30,11 @@ class CyclicState(smach.StateMachine):
         self.initFindRoyalFamilyClient()
     
     def waitForStart(self):
+        rospy.logerr("wait for start")
         while (Data.lastStart==Inputs.getstart()):
             Data.stateMachineRate.sleep()
             Inputs.update()
+        rospy.logerr("end of wait for start")
         Data.lastStart=Inputs.getstart()   
         
     def execute(self,userdata):
@@ -132,22 +134,21 @@ class CyclicState(smach.StateMachine):
         try:
             rospy.loginfo("ROYALFAMILY>> calling find royal family")
             result=self.findRoyalFamily_srv(Inputs.getx(),Inputs.gety(),Inputs.gettheta(),Data.color)
-            if result.confidence!=-1:
-                rospy.loginfo("ROYALFAMILY>> ok")
-                if 0<=result.figure1 <=3:
+            if result.confidence1>0  or result.confidence2>0:
+                if result.confidence1>0 and 0<=result.figure1 <=3: 
+                    rospy.loginfo("ROYALFAMILY 1>> ok")
                     Data.listStatusPionsBord[result.figure1]='FIGURE'
-                if 0<=result.figure2 <= 3:
+                if result.confidence2>0 and 0<=result.figure2 <= 3:
+                    rospy.loginfo("ROYALFAMILY 2>> ok")        
                     Data.listStatusPionsBord[result.figure2]='FIGURE'
             else:
                 rospy.loginfo("ROYALFAMILY>> not found")
-                rospy.logerr("ROYALFAMILY>> I officially declare 0 and 2 as king and queen")
-                Data.listStatusPionsBord[0]='FIGURE'
+                rospy.logerr("ROYALFAMILY>> I officially declare 2 as king ")
                 Data.listStatusPionsBord[2]='FIGURE'
             return result
         except rospy.ServiceException, e:
             rospy.logerr("ROYALFAMILY>> Exception when calling service or computing answer")
-            rospy.logerr("ROYALFAMILY>> I officially declare 0 and 2 as king and queen")
-            Data.listStatusPionsBord[0]='FIGURE'
+            rospy.logerr("ROYALFAMILY>> I officially declare  2 as king")
             Data.listStatusPionsBord[2]='FIGURE'
         
         
