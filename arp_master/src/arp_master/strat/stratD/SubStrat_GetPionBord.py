@@ -100,7 +100,7 @@ class GotoFacePion1(CyclicActionState):
             yoffset = -0.015
         else:
             xtarget = 0.810
-            yoffset = 0.030
+            yoffset = -0.010
         cap=AmbiCapRed(-pi,Data.color)
         (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(cap.angle)
         #je recule de 350, je me decale lateralement
@@ -117,7 +117,7 @@ class GotoFacePion2(CyclicActionState):
             yoffset = 0
         else:
             xtarget = 1.190
-            yoffset = 0.030
+            yoffset = -0.010
         cap=AmbiCapRed(-pi,Data.color)
         (xRobot,yRobot)=Data.pionBordObjectif.coord_WhenPionMilieu(cap.angle)
         #je vais a l'objectif, je me decale lateralement
