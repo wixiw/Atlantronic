@@ -28,6 +28,7 @@ class CyclicActionState(CyclicState):
         self.preemptiveStates=[]
         self.lastStart=None
         self.initClients()
+        self.blinding_period=rospy.get_param("/blinding_period")
         
     def execute(self,userdata):
         Inputs.update()
@@ -67,12 +68,25 @@ class CyclicActionState(CyclicState):
         if state==actionlib.GoalStatus.SUCCEEDED:
             return 'succeeded'
         
-        if state==actionlib.GoalStatus.ABORTED or state==actionlib.GoalStatus.REJECTED or state==actionlib.GoalStatus.LOST or state==actionlib.GoalStatus.PREEMPTED :
+        if state==actionlib.GoalStatus.ABORTED or state==actionlib.GoalStatus.REJECTED or state==actionlib.GoalStatus.LOST or state==actionlib.GoalStatus.PREEMPTED or self.isFrontObstacle() or self.isRearObstacle():
+            self.client.cancel_all_goals()
             return 'aborted'  
         
         #all others are considered "waiting"
         #Possible States Are: PENDING, ACTIVE, RECALLED, REJECTED, PREEMPTED, ABORTED, SUCCEEDED, LOST
-        
+    
+    def isFrontObstacle(self):
+        if Inputs.getObstacle()==1 and rospy.get_rostime().secs-Data.timeObstacleInAction>self.blinding_period and Inputs.getLinearVelocity()>0.010:
+            Data.timeObstacleInAction=rospy.get_rostime().secs
+            return True
+        else:
+            return False
+    def isRearObstacle(self):    
+        if Inputs.getRearObstacle()==1 and rospy.get_rostime().secs-Data.timeRearObstacleInAction>self.blinding_period and Inputs.getLinearVelocity()<-0.010:
+            Data.timeRearObstacleInAction=rospy.get_rostime().secs
+            return True
+        else:
+            return False     
              
     # generic motioncontrol action creator.
     def createMotionControlAction(self,x,y,theta,move_type,reverse,passe):
@@ -135,11 +149,6 @@ class CyclicActionState(CyclicState):
         (xrobot,yrobot)=case.coord_WhenPionMilieu(cap)
         self.pointcap(xrobot,yrobot, cap )
 
-    def waitForStart(self):
-        while (Data.lastStart==Inputs.getstart()):
-            Data.stateMachineRate.sleep()
-            Inputs.update()
-        Data.lastStart=Inputs.getstart()
 
     def registerReplayOrder(self,x,y,theta,move_type,reverse,passe):
         Data.listReplayOrders.append(ReplayOrder(x,y,theta,move_type,reverse,passe))   

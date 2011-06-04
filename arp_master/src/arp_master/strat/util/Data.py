@@ -2,6 +2,8 @@
 import roslib; roslib.load_manifest('arp_master')
 import rospy
 
+from DropCase import *
+    
 class Data:
 
     #proprietes
@@ -17,10 +19,14 @@ class Data:
     
     listReplayOrders=[]
     
+    casePriority=[DropCase(3,3),DropCase(3,-1)]
+    
     listStatusPionsBord=['NORMAL','NORMAL','NORMAL','NORMAL']
     
     timeObstacle=0
     timeRearObstacle=0
+    timeObstacleInAction=0
+    timeRearObstacleInAction=0
     
     #autorisation de relocalisation
     allowRelocate=False
@@ -32,3 +38,5 @@ class Data:
     
     #utilise pour bloquer a chaque mouvement
     lastStart=1
+    
+    

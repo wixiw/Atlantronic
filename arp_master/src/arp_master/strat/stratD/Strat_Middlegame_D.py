@@ -24,6 +24,7 @@ from arp_ods.msg import OrderAction
 
 import SubStrat_GetPionBord
 import SubStrat_DropPion
+import SubStrat_MoissPorc
 
 from math import pi
 
@@ -45,9 +46,11 @@ class Middlegame_D(PreemptiveStateMachine):
             self.setInitialState('Selector')
             
             PreemptiveStateMachine.add('GetPionBord', SubStrat_GetPionBord.GetPionBord(),
-                                   transitions={'got':'DropPion','obstacle':'Selector','endmatch':'endMiddlegame','problem':'Selector'})
+                                   transitions={'got':'DropPion','obstacle':'DropPion','endmatch':'endMiddlegame','problem':'DropPion'})
             PreemptiveStateMachine.add('DropPion', SubStrat_DropPion.DropPion(),
-                                   transitions={'dropped':'Selector','obstacle':'Selector','endmatch':'endMiddlegame'})
+                                   transitions={'dropped':'MoissbatPorc','endmatch':'endMiddlegame'})
+            PreemptiveStateMachine.add('MoissbatPorc', SubStrat_MoissPorc.MoissPorc(),
+                                   transitions={'endmatch':'endMiddlegame'})
 
 
 #l'etat qui decide de ce qui va etre fait maintenant

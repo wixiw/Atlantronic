@@ -32,17 +32,11 @@ class GetPionBord(PreemptiveStateMachine):
         PreemptiveStateMachine.__init__(self,outcomes=['got','obstacle','endmatch','problem'])
         with self:
             #preemptive states
-            PreemptiveStateMachine.addPreemptive('ObstaclePreemption',
-                                             ObstaclePreemption(),
-                                             transitions={'obstaclepreemption':'WaitBecauseObstacle'})
-            
+                       
             PreemptiveStateMachine.add('WaitBecauseObstacle',
                       WaiterState(1.0),
                       transitions={'done':'obstacle'})
             
-            PreemptiveStateMachine.addPreemptive('RearObstaclePreemption',
-                                             RearObstaclePreemption(),
-                                             transitions={'rearobstaclepreemption':'WaitBecauseRearObstacle'})
             PreemptiveStateMachine.add('WaitBecauseRearObstacle',
                       WaiterState(1.0),
                       transitions={'done':'obstacle'})
@@ -88,13 +82,8 @@ class GetPionBord(PreemptiveStateMachine):
             ## si on a un probleme on fait un safety drop
             PreemptiveStateMachine.add('Reverse1',
                       Reverse1(),
-                      transitions={'succeeded':'SafetyDrop1', 'aborted':'obstacle'})
-            PreemptiveStateMachine.add('SafetyDrop1',
-                      SafetyDrop1(),
-                      transitions={'succeeded':'SafetyDrop2', 'aborted':'obstacle'})    
-            PreemptiveStateMachine.add('SafetyDrop2',
-                      SafetyDrop2(),
-                      transitions={'succeeded':'obstacle', 'aborted':'obstacle'})          
+                      transitions={'succeeded':'problem', 'aborted':'problem'})
+         
 
 class GotoFacePion1(CyclicActionState):
     def createAction(self):
@@ -176,28 +165,5 @@ class Reverse1(CyclicActionState):
         if order==None:
             self.dropOnCase(Case(0,0))
         self.executeReplayOrder(order)  
-        
-class SafetyDrop1(CyclicActionState):
-    def createAction(self):
-        self.dropOnCase(AmbiCaseRed(-3,-3,Data.color)) 
-
-class SafetyDrop2(CyclicActionState):
-    def createAction(self):
-        self.backward(.300)       
  
-## PREEMPTIONS
-    
-    
-class ObstaclePreemption(FrontObstaclePreempter):
-    def __init__(self):
-        FrontObstaclePreempter.__init__(self, outcomes=['obstaclepreemption'])
-       
-    def executeTransitions(self):
-        return 'obstaclepreemption'
-    
-class RearObstaclePreemption(RearObstaclePreempter):
-    def __init__(self):
-        RearObstaclePreempter.__init__(self, outcomes=['rearobstaclepreemption'])
-       
-    def executeTransitions(self):
-        return 'rearobstaclepreemption'
+ 

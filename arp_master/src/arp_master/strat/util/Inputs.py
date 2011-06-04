@@ -86,10 +86,10 @@ class Inputs:
             now = rospy.Time.now()
             
             try:
-                Inputs.listener.waitForTransform("/world", "/front_obstacle", now, rospy.Duration(0.5))
-                (trans,rot) = Inputs.listener.lookupTransform("/world", "/front_obstacle", now)
-            except (tf.Exception, tf.LookupException, tf.ConnectivityException):
-                rospy.loginfo("obstacle mais exception lors de calcul")
+                Inputs.listener.waitForTransform("/world", "/front_obstacle", rospy.Time(0), rospy.Duration(0.5))
+                (trans,rot) = Inputs.listener.lookupTransform("/world", "/front_obstacle", rospy.Time(0))
+            except (tf.Exception, tf.LookupException, tf.ConnectivityException) as ex:
+                rospy.loginfo("obstacle mais exception lors de calcul tf machintruc:"+str(ex))
                 return 0
             
             if (Table.isOnTable(trans[0],trans[1])):

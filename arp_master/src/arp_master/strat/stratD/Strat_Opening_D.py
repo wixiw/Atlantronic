@@ -29,34 +29,17 @@ class Opening_D(PreemptiveStateMachine):
         PreemptiveStateMachine.__init__(self, outcomes=['endOpening', 'problem'])
         with self:
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
-                                             EndMatchPreempter(-30.0),
+                                             EndMatchPreempter(-5.0),
                                              transitions={'endMatch':'problem'})
-            
-            PreemptiveStateMachine.addPreemptive('ObstaclePreemption',
-                      ObstaclePreemption(),
-                      transitions={'avoidByMilieu':'WaitBeforeMilieu','jump':'WaitBeforeJump'})
-            
-            PreemptiveStateMachine.add('WaitBeforeMilieu',
-                      WaiterState(1.0),
-                      transitions={'done':'Reverse1'})
             
             PreemptiveStateMachine.add('Reverse1',
                       Reverse1(),
                       transitions={'succeeded':'Milieu1', 'aborted':'Milieu1'})
             
             PreemptiveStateMachine.add('WaitBeforeJump',
-                      WaiterState(3.0),
+                      WaiterState(1.0),
                       transitions={'done':'endOpening'})
-            
-            PreemptiveStateMachine.addPreemptive('RearObstaclePreemption',
-                      RearObstaclePreemption(),
-                      transitions={'rearobstaclepreemption':'WaitBecauseRearObstacle'})
-            
-            PreemptiveStateMachine.add('WaitBecauseRearObstacle',
-                      WaiterState(3.0),
-                      transitions={'done':'endOpening'})
-            
-            
+                        
             PreemptiveStateMachine.add('EscapeStartpoint',
                       EscapeStartpoint(),
                       transitions={'succeeded':'LigneVert1', 'aborted':'Milieu1'})
@@ -298,11 +281,13 @@ class Photo(CyclicActionState):
         pose = AmbiPoseRed(-0.350, -0.350,3*pi/4, Data.color)
         self.pointcap(pose.x, pose.y, pose.theta)
         
+        
 class FindRoi(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['done'])
     
     def executeTransitions(self):
+        #self.waitForStart()
         result=self.findRoyalFamily()
         return 'done'
 
@@ -314,31 +299,12 @@ class Milieu1(CyclicActionState):
         
 class Milieu2(CyclicActionState):
     def createAction(self):
-        self.dropOnCase(AmbiCaseRed(3,-1,Data.color))
+        self.dropOnCase(AmbiCaseRed(3,-1,Data.color))        
 
 class Milieu3(CyclicActionState):
     def createAction(self):
         self.backward(0.350)     
          
-################# PREEMPTIONS
-
-class ObstaclePreemption(FrontObstaclePreempter):
-    def __init__(self):
-        FrontObstaclePreempter.__init__(self, outcomes=['avoidByMilieu','jump'])
-
-    def executeTransitions(self):
-        if Data.obstacleAvoidType=='Milieu':
-            return 'avoidByMilieu'
-        else:
-            return 'jump'
-
-class RearObstaclePreemption(RearObstaclePreempter):
-    def __init__(self):
-        RearObstaclePreempter.__init__(self, outcomes=['rearobstaclepreemption'])
-       
-    def executeTransitions(self):
-        return 'rearobstaclepreemption' 
-    
 ################# REVERSER
 class Reverse1(CyclicActionState):
     def createAction(self):

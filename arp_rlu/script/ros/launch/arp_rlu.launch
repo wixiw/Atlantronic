@@ -4,7 +4,7 @@
 	<node name="Localizator"  pkg="arp_rlu"  type="LocalizatorNode"  args="" output="screen"/>
  	<node name="ObstacleDetector"  pkg="arp_rlu"  type="ObstacleDetectorNode"  args="" output="screen">
  		<!--  L'obstacle n'est détecté que s'il est à moins de FRONT_DETECTION_THRESHOLD m vers l'avant (depuis l'essieu, PAS de symétrie vers l'arrière) -->
- 		<param name="FRONT_DETECTION_THRESHOLD" type="double" value="0.500"/> 
+ 		<param name="FRONT_DETECTION_THRESHOLD" type="double" value="0.600"/> 
  		<!--  L'obstacle n'est détecté que s'il est à moins de LATERAL_DETECTION_THRESHOLD sur un côté (depuis le centre du robot, symétrique) -->
  		<param name="LATERAL_DETECTION_THRESHOLD" type="double" value="0.250"/> 
  		<!--  zone morte devant, pour ne pas détecter ce qui est dans le robot(depuis l'essieu, PAS de symétrie vers l'arrière) -->

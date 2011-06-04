@@ -28,7 +28,12 @@ class CyclicState(smach.StateMachine):
         self.initEstimatePositionClient()
         self.initSetVMaxClient()
         self.initFindRoyalFamilyClient()
-        
+    
+    def waitForStart(self):
+        while (Data.lastStart==Inputs.getstart()):
+            Data.stateMachineRate.sleep()
+            Inputs.update()
+        Data.lastStart=Inputs.getstart()   
         
     def execute(self,userdata):
         Inputs.update()
