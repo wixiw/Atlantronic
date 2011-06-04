@@ -41,6 +41,7 @@ class MoissPorc(PreemptiveStateMachine):
                                         transitions={'done':'Moiss1'})
             self.setInitialState('InitMoiss')
             
+
             PreemptiveStateMachine.add('Moiss1',
                                       Moiss1(),
                                       transitions={'succeeded':'Moiss2', 'aborted':'RandomDrop'})
@@ -60,7 +61,7 @@ class MoissPorc(PreemptiveStateMachine):
 
             PreemptiveStateMachine.add('Pousse1_1',
                                         Pousse1_1(),
-                                        transitions={'succeeded':'Pousse1_2', 'aborted':'endmatch'})
+                                        transitions={'succeeded':'Pousse1_2', 'aborted':'DropWalk1_1'})
 
             PreemptiveStateMachine.add('Pousse1_2',
                                         Pousse1_2(),
@@ -68,7 +69,7 @@ class MoissPorc(PreemptiveStateMachine):
 
             PreemptiveStateMachine.add('Pousse1_3',
                                         Pousse1_3(),
-                                        transitions={'succeeded':'DropWalk2_1', 'aborted':'Pousse1_3'})
+                                        transitions={'succeeded':'DropWalk1_1', 'aborted':'Pousse1_3'})
        
             
             PreemptiveStateMachine.add('DropWalk2_1',
