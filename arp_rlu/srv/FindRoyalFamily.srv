@@ -3,6 +3,7 @@ float64 yRobot
 float64 thetaRobot
 string color
 ---
-float64 confidence
 int64 figure1
+float64 confidence1
 int64 figure2
+float64 confidence2

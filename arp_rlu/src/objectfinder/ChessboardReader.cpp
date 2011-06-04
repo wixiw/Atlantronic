@@ -16,7 +16,7 @@ ChessboardReader::ChessboardReader() :
     nh(), scan(Eigen::MatrixXd::Zero(1, 1))
 {
 
-    scan_sub = nh.subscribe("/front_scan", 1, &ChessboardReader::scanCallback, this);
+    scan_sub = nh.subscribe("/scan", 1, &ChessboardReader::scanCallback, this);
     findroyalfamily_srv = nh.advertiseService("/ChessboardReader/FindRoyalFamily",
             &ChessboardReader::findRoyalFamilyCallback, this);
 
@@ -63,7 +63,8 @@ bool ChessboardReader::findRoyalFamilyCallback(FindRoyalFamily::Request& req, Fi
 {
     res.figure1 = 0;
     res.figure2 = 2;
-    res.confidence = -1.0;
+    res.confidence1 = -1.0;
+    res.confidence2 = -1.0;
 
     if (scan.rows() < 2)
     {
@@ -88,7 +89,7 @@ bool ChessboardReader::findRoyalFamilyCallback(FindRoyalFamily::Request& req, Fi
     ROS_INFO("xLaser=%f  yLaser=%f  thetaLaser=%f", x, y, theta);
 
     cartScan = objf.computeCartesianScan(x, y, theta);
-    bool success = compute(req.color);
+    std::pair<bool,bool> success = compute(req.color);
 
     res.figure1 = result.first;
     res.figure2 = result.second;
@@ -99,31 +100,37 @@ bool ChessboardReader::findRoyalFamilyCallback(FindRoyalFamily::Request& req, Fi
         res.figure2 = 2;
     }
 
-    if (success)
-        res.confidence = 1.0;
+
+    if (success.first)
+        res.confidence1 = 1.0;
     else
-        res.confidence = -1.0;
+        res.confidence1 = -1.0;
+
+    if (success.second)
+        res.confidence2 = 1.0;
+    else
+        res.confidence2 = -1.0;
 
     return true;
 }
 
-bool ChessboardReader::compute(std::string color)
+std::pair<bool,bool> ChessboardReader::compute(std::string color)
 {
     // default result
     result = std::make_pair(0, 2);
 
     if (cartScan.cols() == 0)
     {
-        ROS_WARN("ChessboardReader compute : cartScan is empty");
+        ROS_WARN("ChessboardReader compute : cartScan is empty. We choose (0, 2)");
         result = std::make_pair(0, 2);
-        return false;
+        return std::make_pair(false,false);
     }
 
     if (cartScan.rows() != 4)
     {
-        ROS_WARN("ChessboardReader compute : cartScan.rows() != 4 => Scan is not in cartesian representation ?");
+        ROS_WARN("ChessboardReader compute : cartScan.rows() != 4 => Scan is not in cartesian representation ? We choose (0, 2)");
         result = std::make_pair(0, 2);
-        return false;
+        return std::make_pair(false,false);
     }
 
     double xMin = -1.500;
@@ -141,28 +148,30 @@ bool ChessboardReader::compute(std::string color)
     {
         if (cartScan(2, i) > xMin && cartScan(2, i) < xMax)
         {
-            if (cartScan(3, i) > 0.310 && cartScan(3, i) < 0.650)
+            if (cartScan(3, i) > 0.220 && cartScan(3, i) < 0.500)
             {
                 nbPoints(0) = nbPoints(0) + 1;
             }
-            if (cartScan(3, i) > -0.030 && cartScan(3, i) < 0.310)
+            if (cartScan(3, i) > -0.060 && cartScan(3, i) < 0.220)
             {
                 nbPoints(1) = nbPoints(1) + 1;
             }
-            if (cartScan(3, i) > -0.370 && cartScan(3, i) < -0.030)
+            if (cartScan(3, i) > -0.340 && cartScan(3, i) < -0.060)
             {
                 nbPoints(2) = nbPoints(2) + 1;
             }
-            if (cartScan(3, i) > -0.710 && cartScan(3, i) < -0.370)
+            if (cartScan(3, i) > -0.620 && cartScan(3, i) < -0.340)
             {
                 nbPoints(3) = nbPoints(3) + 1;
             }
-            if (cartScan(3, i) > -1.050 && cartScan(3, i) < -0.710)
+            if (cartScan(3, i) > -0.900 && cartScan(3, i) < -0.620)
             {
                 nbPoints(4) = nbPoints(4) + 1;
             }
         }
     }
+
+    ROS_INFO_STREAM("nbPoints :" << nbPoints.transpose() );
 
     int idFirst;
     int idSecond;
@@ -173,9 +182,9 @@ bool ChessboardReader::compute(std::string color)
     const int nbPointsMin = 5;
     if (nbPoints_max < nbPointsMin)
     {
-        ROS_WARN("ChessboardReader compute : Not enough detected points on maximum case (%d)", nbPoints_max);
+        ROS_WARN("ChessboardReader compute : Not enough detected points on maximum case (%d). We choose (0,2)", nbPoints_max);
         result = std::make_pair(0, 2);
-        return false;
+        return std::make_pair(false,false);
     }
     idFirst = i_max;
     ROS_INFO("ChessboardReader compute : Case %d has maximum points (%d)", i_max, nbPoints_max);
@@ -188,14 +197,17 @@ bool ChessboardReader::compute(std::string color)
         ROS_WARN("ChessboardReader compute : Not enough detected points on second maximum case (%d)", nbPoints_max);
         if (idFirst == 4)
         {
-            ROS_INFO("ChessboardReader compute : Case 4 is unacceptable. We choose (0,2)");
+            ROS_INFO("ChessboardReader compute : Case 4 is unacceptable for position 1. We choose (0,2)");
+            result = std::make_pair(0, 2);
+            return std::make_pair(false,false);
         }
         if (idFirst != 0)
             idSecond = 0;
         else
             idSecond = 2;
         result = std::make_pair(idFirst, idSecond);
-        return false;
+        ROS_INFO("ChessboardReader compute : We choose (%d,%d)", idFirst, idSecond);
+        return std::make_pair(true,false);
     }
     idSecond = i_max;
     ROS_INFO("ChessboardReader compute : Case %d has second maximum points (%d)", i_max, nbPoints_max);
@@ -207,9 +219,9 @@ bool ChessboardReader::compute(std::string color)
             idFirst = 0;
         else
             idFirst = 2;
-        ROS_INFO("ChessboardReader compute : Case 4 is unacceptable. We choose %d", idFirst);
+        ROS_INFO("ChessboardReader compute : Case 4 is unacceptable for position 1. We choose (%d,%d)", idFirst, idSecond);
         result = std::make_pair(idFirst, idSecond);
-        return false;
+        return std::make_pair(false,true);
     }
     if (idSecond == 4)
     {
@@ -217,13 +229,14 @@ bool ChessboardReader::compute(std::string color)
             idSecond = 0;
         else
             idSecond = 2;
-        ROS_INFO("ChessboardReader compute : Case 4 is unacceptable. We choose %d", idSecond);
+        ROS_INFO("ChessboardReader compute : Case 4 is unacceptable for position 2. We choose (%d,%d)", idFirst, idSecond);
         result = std::make_pair(idFirst, idSecond);
-        return false;
+        return std::make_pair(true,false);
     }
 
     result = std::make_pair(idFirst, idSecond);
-    return true;
+    ROS_INFO("ChessboardReader compute : Everything is all rigth. We choose (%d,%d)", idFirst, idSecond);
+    return std::make_pair(true,true);
 }
 
 int main(int argc, char** argv)

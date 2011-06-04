@@ -66,7 +66,7 @@ class ChessboardReader
          */
         bool findRoyalFamilyCallback(arp_rlu::FindRoyalFamily::Request& req, arp_rlu::FindRoyalFamily::Response& res);
 
-        bool compute(std::string color);
+        std::pair<bool,bool> compute(std::string color);
 
 
         std::vector<KnownObject> objects;
