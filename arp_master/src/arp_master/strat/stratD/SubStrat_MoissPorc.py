@@ -56,24 +56,27 @@ class MoissPorc(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('DropPion',
                                         SubStrat_DropPion.DropPion(),
-                                        transitions={'dropped':'Walk1_1','endmatch':'endmatch'})
+                                        transitions={'dropped':'Pousse1_1','endmatch':'endmatch'})
 
-            PreemptiveStateMachine.add('Walk1_1',
-                                        Walk1_1(),
-                                        transitions={'succeeded':'DropWalk1_1', 'aborted':'endmatch'})
-            PreemptiveStateMachine.add('DropWalk1_1',
-                                        DropWalk1_1(),
-                                        transitions={'succeeded':'DropWalk1_2', 'aborted':'endmatch'})
-            PreemptiveStateMachine.add('DropWalk1_2',
-                                        DropTurn(),
-                                        transitions={'succeeded':'DropWalk1_3', 'aborted':'endmatch'})
-            PreemptiveStateMachine.add('DropWalk1_3',
-                                        DropBack(),
-                                        transitions={'succeeded':'Walk2_1', 'aborted':'endmatch'})
-            
+            PreemptiveStateMachine.add('Pousse1_1',
+                                        Pousse1_1(),
+                                        transitions={'succeeded':'Pousse1_2', 'aborted':'endmatch'})
+
+            PreemptiveStateMachine.add('Pousse1_2',
+                                        Pousse1_2(),
+                                        transitions={'succeeded':'Pousse1_3', 'aborted':'endmatch'})
+
+            PreemptiveStateMachine.add('Pousse1_3',
+                                        Pousse1_3(),
+                                        transitions={'succeeded':'DropWalk2_1', 'aborted':'endmatch'})
+
+
+############### le premier walk 2 n'est pas utilise
             PreemptiveStateMachine.add('Walk2_1',
                                         Walk2_1(),
                                         transitions={'succeeded':'DropWalk2_1', 'aborted':'endmatch'})
+#############            
+            
             PreemptiveStateMachine.add('DropWalk2_1',
                                         DropWalk2_1(),
                                         transitions={'succeeded':'DropWalk2_2', 'aborted':'endmatch'})
@@ -82,14 +85,25 @@ class MoissPorc(PreemptiveStateMachine):
                                         transitions={'succeeded':'DropWalk2_3', 'aborted':'endmatch'})
             PreemptiveStateMachine.add('DropWalk2_3',
                                         DropBack(),
-                                        transitions={'succeeded':'Bidon1', 'aborted':'endmatch'})
+                                        transitions={'succeeded':'DropWalk1_1', 'aborted':'endmatch'})
             
-            PreemptiveStateMachine.add('Bidon1',
-                                        Bidon1(),
-                                        transitions={'succeeded':'Bidon2', 'aborted':'endmatch'})
-            PreemptiveStateMachine.add('Bidon2',
-                                        Bidon2(),
-                                        transitions={'succeeded':'Bidon1', 'aborted':'endmatch'})
+            
+ ############### le premier walk 1 n'est pas utilise
+            PreemptiveStateMachine.add('Walk1_1',
+                                        Walk1_1(),
+                                        transitions={'succeeded':'DropWalk1_1', 'aborted':'endmatch'})
+####################
+
+            PreemptiveStateMachine.add('DropWalk1_1',
+                                        DropWalk1_1(),
+                                        transitions={'succeeded':'DropWalk1_2', 'aborted':'endmatch'})
+            PreemptiveStateMachine.add('DropWalk1_2',
+                                        DropTurn(),
+                                        transitions={'succeeded':'DropWalk1_3', 'aborted':'endmatch'})
+            PreemptiveStateMachine.add('DropWalk1_3',
+                                        DropBack(),
+                                        transitions={'succeeded':'DropWalk2_1', 'aborted':'endmatch'})
+            
             
 class InitMoiss(CyclicState):
     def __init__(self):
@@ -125,15 +139,17 @@ class DropBack(CyclicActionState):
         self.backward(0.35)
 
 #### WALK
-
+# PAS UTILISE
 class Walk1_1(CyclicActionState):
     def createAction(self):
-        self.dropOnCase(AmbiCaseRed(-3,3,Data.color))  
-
+        self.dropOnCase(AmbiCaseRed(-3,3,Data.color))
+          
+# PAS UTILISE
 class DropWalk1_1(CyclicActionState):
     def createAction(self):
         self.dropOnCase(AmbiCaseRed(-5,3,Data.color))
-
+        
+# PAS UTILISE
 class Walk2_1(CyclicActionState):
     def createAction(self):
         self.dropOnCase(AmbiCaseRed(0,0,Data.color))  
@@ -142,12 +158,21 @@ class DropWalk2_1(CyclicActionState):
     def createAction(self):
         self.dropOnCase(AmbiCaseRed(1,-3,Data.color))
 
-class Bidon1(CyclicActionState):
+    
+#poussage au fond
+class Pousse1_1(CyclicActionState):
     def createAction(self):
-        self.cap(0) 
-class Bidon2(CyclicActionState):
+        pose=AmbiPoseRed(0,0.125,0,Data.color)
+        self.pointcap_reverse(pose.x,pose.y,pose.theta)  
+
+class Pousse1_2(CyclicActionState):
     def createAction(self):
-        self.cap(pi/2)     
+        self.dropOnCase(AmbiCaseRed(5,1,Data.color))
+        
+class Pousse1_3(CyclicActionState):
+    def createAction(self):
+        pose=AmbiPoseRed(0,0.125,0,Data.color)
+        self.pointcap_reverse(pose.x,pose.y,pose.theta)
         
         
   
