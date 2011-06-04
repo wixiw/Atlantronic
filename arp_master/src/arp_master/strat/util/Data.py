@@ -21,6 +21,8 @@ class Data:
     
     casePriority=[DropCase(3,3),DropCase(3,-1)]
     
+    randomDropList=[DropCase(-3,5),DropCase(-5,3),DropCase(-5,-1),DropCase(-3,-3),DropCase(1,-3)]
+    
     listStatusPionsBord=['NORMAL','NORMAL','NORMAL','NORMAL']
     
     timeObstacle=0

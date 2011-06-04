@@ -39,13 +39,9 @@ class DropPion(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('Drop1',
                       Drop1(),
-                      transitions={'succeeded':'Drop11', 'aborted':'WaitIfPbDrop1'})
+                      transitions={'succeeded':'Drop11', 'aborted':'LittleBack'})
             
             self.setInitialState('Drop1')
-            
-            PreemptiveStateMachine.add('WaitIfPbDrop1',
-                      WaiterState(1.0),
-                      transitions={'done':'Drop1'})
             
             PreemptiveStateMachine.add('Drop11',
                       Drop11(),
@@ -54,7 +50,10 @@ class DropPion(PreemptiveStateMachine):
             PreemptiveStateMachine.add('Drop2',
                       Drop2(),
                       transitions={'succeeded':'dropped', 'aborted':'dropped'})
-            
+
+            PreemptiveStateMachine.add('LittleBack',
+                      LittleBack(),
+                      transitions={'succeeded':'Drop1', 'aborted':'dropped'})            
 
 
         
@@ -85,7 +84,7 @@ class Drop1(CyclicActionState):
                 return
             
         #si j'ai fini la liste, alors je prend la premiere (devrait pas arriver)
-        self.dropOnCase(self.casePriority[0].getCase(Data.color))
+        Data.dropOnCase(self.casePriority[0].getCase(Data.color))
         rospy.loginfo("DROP >> a rien trouve :"+str(dropcase.getCase(Data.color)))
             
     def executeOut(self):
@@ -104,4 +103,8 @@ class Drop11(CyclicActionState):
 class Drop2(CyclicActionState):
     def createAction(self):
         self.backward(0.35)    
+        
+class LittleBack(CyclicActionState):
+    def createAction(self):
+        self.backward(0.050)    
     

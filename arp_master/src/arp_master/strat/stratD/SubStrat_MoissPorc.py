@@ -24,6 +24,7 @@ from arp_ods.msg import OrderAction
 import SubStrat_DropPion
 
 from math import *
+from random import *
 
 from arp_master.strat.util.Table2011 import *
 from arp_master.strat.util.UtilARD import *
@@ -42,16 +43,16 @@ class MoissPorc(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('Moiss1',
                                       Moiss1(),
-                                      transitions={'succeeded':'Moiss2', 'aborted':'endmatch'})
+                                      transitions={'succeeded':'Moiss2', 'aborted':'RandomDrop'})
             
             
             PreemptiveStateMachine.add('Moiss2',
                                         Moiss2(),
-                                        transitions={'succeeded':'Moiss3', 'aborted':'endmatch'})
+                                        transitions={'succeeded':'Moiss3', 'aborted':'RandomDrop'})
             
             PreemptiveStateMachine.add('Moiss3',
                                         Moiss3(),
-                                        transitions={'succeeded':'DropPion', 'aborted':'endmatch'})
+                                        transitions={'succeeded':'DropPion', 'aborted':'RandomDrop'})
             
             PreemptiveStateMachine.add('DropPion',
                                         SubStrat_DropPion.DropPion(),
@@ -63,46 +64,44 @@ class MoissPorc(PreemptiveStateMachine):
 
             PreemptiveStateMachine.add('Pousse1_2',
                                         Pousse1_2(),
-                                        transitions={'succeeded':'Pousse1_3', 'aborted':'endmatch'})
+                                        transitions={'succeeded':'Pousse1_3', 'aborted':'Pousse1_3'})
 
             PreemptiveStateMachine.add('Pousse1_3',
                                         Pousse1_3(),
-                                        transitions={'succeeded':'DropWalk2_1', 'aborted':'endmatch'})
-
-
-############### le premier walk 2 n'est pas utilise
-            PreemptiveStateMachine.add('Walk2_1',
-                                        Walk2_1(),
-                                        transitions={'succeeded':'DropWalk2_1', 'aborted':'endmatch'})
-#############            
+                                        transitions={'succeeded':'DropWalk2_1', 'aborted':'Pousse1_3'})
+       
             
             PreemptiveStateMachine.add('DropWalk2_1',
                                         DropWalk2_1(),
-                                        transitions={'succeeded':'DropWalk2_2', 'aborted':'endmatch'})
+                                        transitions={'succeeded':'DropWalk2_2', 'aborted':'DropWalk1_2'})
             PreemptiveStateMachine.add('DropWalk2_2',
                                         DropTurn(),
-                                        transitions={'succeeded':'DropWalk2_3', 'aborted':'endmatch'})
+                                        transitions={'succeeded':'DropWalk2_3', 'aborted':'DropWalk2_3'})
             PreemptiveStateMachine.add('DropWalk2_3',
                                         DropBack(),
                                         transitions={'succeeded':'DropWalk1_1', 'aborted':'endmatch'})
             
-            
- ############### le premier walk 1 n'est pas utilise
-            PreemptiveStateMachine.add('Walk1_1',
-                                        Walk1_1(),
-                                        transitions={'succeeded':'DropWalk1_1', 'aborted':'endmatch'})
-####################
 
             PreemptiveStateMachine.add('DropWalk1_1',
                                         DropWalk1_1(),
-                                        transitions={'succeeded':'DropWalk1_2', 'aborted':'endmatch'})
+                                        transitions={'succeeded':'DropWalk1_2', 'aborted':'DropWalk2_2'})
             PreemptiveStateMachine.add('DropWalk1_2',
                                         DropTurn(),
-                                        transitions={'succeeded':'DropWalk1_3', 'aborted':'endmatch'})
+                                        transitions={'succeeded':'DropWalk1_3', 'aborted':'DropWalk1_3'})
             PreemptiveStateMachine.add('DropWalk1_3',
                                         DropBack(),
                                         transitions={'succeeded':'DropWalk2_1', 'aborted':'endmatch'})
-            
+          
+          
+            PreemptiveStateMachine.add('RandomDrop',
+                                        RandomDrop(),
+                                        transitions={'succeeded':'RandomDropTurn', 'aborted':'RandomDrop'})  
+            PreemptiveStateMachine.add('RandomDropTurn',
+                                        DropTurn(),
+                                        transitions={'succeeded':'RandomDropBack', 'aborted':'RandomDropBack'})
+            PreemptiveStateMachine.add('RandomDropBack',
+                                        DropBack(),
+                                        transitions={'succeeded':'RandomDrop', 'aborted':'RandomDrop'})
             
 class InitMoiss(CyclicState):
     def __init__(self):
@@ -128,6 +127,8 @@ class DropMoiss1(CyclicActionState):
     def createAction(self):
         self.dropOnCase(AmbiCaseRed(3,-1,Data.color))
 
+
+
 ##### CES ETATS LA SONT TOUT LE TEMPS UTILISES
 class DropTurn(CyclicActionState):
     def createAction(self):
@@ -138,20 +139,12 @@ class DropBack(CyclicActionState):
         self.backward(0.35)
 
 #### WALK
-# PAS UTILISE
-class Walk1_1(CyclicActionState):
-    def createAction(self):
-        self.dropOnCase(AmbiCaseRed(-3,3,Data.color))
-          
-# PAS UTILISE
+
+
 class DropWalk1_1(CyclicActionState):
     def createAction(self):
-        self.dropOnCase(AmbiCaseRed(-5,3,Data.color))
-        
-# PAS UTILISE
-class Walk2_1(CyclicActionState):
-    def createAction(self):
-        self.dropOnCase(AmbiCaseRed(0,0,Data.color))  
+        self.dropOnCase(AmbiCaseRed(1,5,Data.color))
+
 
 class DropWalk2_1(CyclicActionState):
     def createAction(self):
@@ -174,4 +167,17 @@ class Pousse1_3(CyclicActionState):
         self.pointcap_reverse(pose.x,pose.y,pose.theta)
         
         
+        
+class RandomDrop(CyclicActionState):
+    def createAction(self):
+        dropCase=Data.randomDropList[randint(0,len(Data.randomDropList)-1)]
+        self.dropOnCase(dropCase.getCase(Data.color))
+        
+class ReturnCenter(CyclicActionState):
+    def createAction(self):
+        pose=AmbiPoseRed(-0.125,0,Inputs.gettheta(),Data.color)
+        self.pointcap_reverse(pose.x,pose.y,pose.theta)
+        
+
+
   
