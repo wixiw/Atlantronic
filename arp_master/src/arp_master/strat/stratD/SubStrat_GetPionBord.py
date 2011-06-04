@@ -97,7 +97,7 @@ class GotoFacePion1(CyclicActionState):
   
         if Data.color=='red':
             xtarget = -0.810
-            yoffset = 0
+            yoffset = -0.015
         else:
             xtarget = 0.810
             yoffset = 0.030

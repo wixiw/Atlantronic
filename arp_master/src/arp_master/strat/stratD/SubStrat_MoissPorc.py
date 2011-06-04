@@ -79,7 +79,7 @@ class MoissPorc(PreemptiveStateMachine):
                                         transitions={'succeeded':'DropWalk2_3', 'aborted':'DropWalk2_3'})
             PreemptiveStateMachine.add('DropWalk2_3',
                                         DropBack(),
-                                        transitions={'succeeded':'DropWalk1_1', 'aborted':'endmatch'})
+                                        transitions={'succeeded':'DropWalk1_1', 'aborted':'RandomDrop'})
             
 
             PreemptiveStateMachine.add('DropWalk1_1',
@@ -90,7 +90,7 @@ class MoissPorc(PreemptiveStateMachine):
                                         transitions={'succeeded':'DropWalk1_3', 'aborted':'DropWalk1_3'})
             PreemptiveStateMachine.add('DropWalk1_3',
                                         DropBack(),
-                                        transitions={'succeeded':'DropWalk2_1', 'aborted':'endmatch'})
+                                        transitions={'succeeded':'DropWalk2_1', 'aborted':'RandomDrop'})
           
           
             PreemptiveStateMachine.add('RandomDrop',

@@ -141,6 +141,9 @@ class CyclicState(smach.StateMachine):
                 if result.confidence2>0 and 0<=result.figure2 <= 3:
                     rospy.loginfo("ROYALFAMILY 2>> ok")        
                     Data.listStatusPionsBord[result.figure2]='FIGURE'
+                #case de merde
+                if Data.listStatusPionsBord[0]=='FIGURE'  and Data.color=='red':
+                    Data.listStatusPionsBord[0]='NORMAL'
             else:
                 rospy.loginfo("ROYALFAMILY>> not found")
                 rospy.logerr("ROYALFAMILY>> I officially declare 2 as king ")
