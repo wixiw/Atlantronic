@@ -67,13 +67,6 @@ for o in scanproc.objects:
   print "  x:",o.xCenter
   print "  y:",o.yCenter
   print "  r:",o.radius
-  b = scanproc.getNearestBeacons(o)
-  print "Recognized Beacon:"
-  print "  x:",b.xCenter
-  print "  y:",b.yCenter
-  print "  r:",b.radius
-  print "error in mm:", sqrt( (b.xCenter-o.xCenter)**2 + (b.yCenter-o.yCenter)**2 )*1000.
-  print "======================"
   
 # Plot
 fig = plt.figure()

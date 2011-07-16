@@ -15,6 +15,8 @@ class Object:
     self.xCenter = 0.0
     self.yCenter = 0.0
     self.radius  = 0.0
+    self.t_beg   = None
+    self.t_end   = None
     
 class ScanProcessor:
   def __init__(self):
@@ -27,17 +29,20 @@ class ScanProcessor:
     self.currentIndex = -1
     self.currentPts = [[],[]]
     self.clusterOpen = False
+    self.t_last_open = None
     
   def setScan(self, s):
     self.scan = s
     
+  # for internal use only
   def openCluster(self, r, t, x, y):
     self.currentIndex = self.currentIndex + 1
     self.currentPts = [[x+ r * cos(t)],
                        [y + r * sin(t)]]
     self.clusterOpen = True
-    # print "open new cluster with theta:", t*180./pi, "and range:",r
+    self.t_last_open = t
     
+  # for internal use only
   def closeCluster(self, r, t, x, y):
     obj = Object()
     xMean = mean(self.currentPts[0])
@@ -48,20 +53,19 @@ class ScanProcessor:
     xB = self.currentPts[0][len(self.currentPts[0])-1]
     yB = self.currentPts[1][len(self.currentPts[0])-1]
     obj.radius = math.sqrt( (xB-xA)**2 + (yB-yA)**2 ) / 2.
+    # le 0.85 est statistique. Il permet de reculer le point pour arriver pres du centre
     obj.xCenter = mean(self.currentPts[0]) + 0.85 * obj.radius * cos(math.atan2(yMean-y, xMean-x))
     obj.yCenter = mean(self.currentPts[1]) + 0.85 * obj.radius * sin(math.atan2(yMean-y, xMean-x))
-    # obj.xCenter = xMean
-    # obj.yCenter = yMean
+    obj.t_beg = self.t_last_open
+    obj.t_end = t
     self.objects.append( obj )
     self.currentPts = [[],[]]
     self.clusterOpen = False
-    # print "close cluster with theta:", t*180./pi, "and range:",r
     
-    
+  # for internal use only
   def addToCurrentCluster(self, r, t, x, y):
       self.currentPts[0].append( x + r * cos(t) )
       self.currentPts[1].append( y + r * sin(t) )
-    
     
     
   def findCluster(self, xx, yy, aa):
@@ -93,16 +97,19 @@ class ScanProcessor:
         self.objIndex.append(None)
       prev = r
     
-  def getBalise(self, t):
-    theta = None
-    range = None
+    
+  def getBeacons(self, t):
     xBeacon = None
     yBeacon = None
-    return theta, range, xBeacon, yBeacon
-    
-  def getNearestBeacons(self, obj):
     if self.beacons == []:
-      return None
-    dist = array([ (b.xCenter-obj.xCenter)**2 + (b.xCenter-obj.xCenter)**2 for b in self.beacons ])
-    iMin = argmin(dist)
-    return self.beacons[iMin]
+      return xBeacon, yBeacon
+    for o in self.objects:
+      if t < (o.t_beg + o.t_end)/2. + 0.00005 and t >= (o.t_beg + o.t_end)/2. - 0.00005:
+        dist = array([ (b.xCenter-obj.xCenter)**2 + (b.xCenter-obj.xCenter)**2 for b in self.beacons ])
+        minDist = min(dist)
+        iMin = argmin(dist)
+        if minDist < 0.2:
+          xBeacon = self.beacons[iMin].xCenter
+          yBeacon = self.beacons[iMin].yCenter
+    return xBeacon, yBeacon
+    
