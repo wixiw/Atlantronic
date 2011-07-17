@@ -2,8 +2,8 @@ from numpy import *
 import math
 import random
 
-from ScanProcessor import Scan
-from ScanProcessor import Object
+from BaseClasses import Scan
+from BaseClasses import Object
 
 class LRFSimulator:
   def __init__(self):

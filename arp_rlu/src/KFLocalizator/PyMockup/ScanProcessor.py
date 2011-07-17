@@ -2,21 +2,8 @@ from numpy import *
 import math
 import random
 
-class Scan:
-  def __init__(self):
-    self.tbeg  = 0.
-    self.tend  = 0.
-    self.tt    = array( () )
-    self.theta = array( () )
-    self.range = array( () )
-    
-class Object:
-  def __init_(self):
-    self.xCenter = 0.0
-    self.yCenter = 0.0
-    self.radius  = 0.0
-    self.t_beg   = None
-    self.t_end   = None
+from BaseClasses import Scan
+from BaseClasses import Object
     
 class ScanProcessor:
   def __init__(self):
@@ -56,8 +43,8 @@ class ScanProcessor:
     # le 0.85 est statistique. Il permet de reculer le point pour arriver pres du centre
     obj.xCenter = mean(self.currentPts[0]) + 0.85 * obj.radius * cos(math.atan2(yMean-y, xMean-x))
     obj.yCenter = mean(self.currentPts[1]) + 0.85 * obj.radius * sin(math.atan2(yMean-y, xMean-x))
-    obj.t_beg = self.t_last_open
-    obj.t_end = t
+    obj.tBeg = self.t_last_open
+    obj.tEnd = t
     self.objects.append( obj )
     self.currentPts = [[],[]]
     self.clusterOpen = False
@@ -102,14 +89,14 @@ class ScanProcessor:
     xBeacon = None
     yBeacon = None
     if self.beacons == []:
-      return xBeacon, yBeacon
+      return (xBeacon, yBeacon)
     for o in self.objects:
-      if t < (o.t_beg + o.t_end)/2. + 0.00005 and t >= (o.t_beg + o.t_end)/2. - 0.00005:
+      if t < (o.tBeg + o.tEnd)/2. + 0.00005 and t >= (o.tBeg + o.tEnd)/2. - 0.00005:
         dist = array([ (b.xCenter-obj.xCenter)**2 + (b.xCenter-obj.xCenter)**2 for b in self.beacons ])
         minDist = min(dist)
         iMin = argmin(dist)
         if minDist < 0.2:
           xBeacon = self.beacons[iMin].xCenter
           yBeacon = self.beacons[iMin].yCenter
-    return xBeacon, yBeacon
+    return (xBeacon, yBeacon)
     

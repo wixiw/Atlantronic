@@ -1,11 +1,7 @@
 from numpy import *
 import random
 
-class OdoVelocity:
-  def __init__(self):
-    self.vx = 0.
-    self.vy = 0.
-    self.va = 0.
+from BaseClasses import OdoVelocity
 
 class OdoSimulator:
   def __init__(self):

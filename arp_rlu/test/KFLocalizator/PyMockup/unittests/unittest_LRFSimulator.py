@@ -5,8 +5,8 @@ from numpy import *
 import random
 import math
 
-from ScanProcessor import Scan
-from ScanProcessor import Object
+from BaseClasses import Scan
+from BaseClasses import Object
 
 from LRFSimulator import *
 
