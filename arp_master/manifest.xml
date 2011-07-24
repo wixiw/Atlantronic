@@ -20,6 +20,5 @@
   <depend package="arp_ods" />
   <depend package="arp_rlu" />
   <rosdep name="wxwidgets"/>
-  <rosdep name="canonical_scan_matcher"/>
 </package>
 
