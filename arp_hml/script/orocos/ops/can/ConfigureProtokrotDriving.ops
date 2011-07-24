@@ -62,7 +62,8 @@ if (attrScriptRes==false) then return;
 
 //configure Node Guarding of motor 
 print.log(Info, "configure Node Guarding");
-sdo = CanDicoEntry(propNodeId,0x100C,0,Can1.propSyncPeriod*1000,0,2);
+var int32 period = Can1.propSyncPeriod*1000;
+sdo = CanDicoEntry(propNodeId,0x100C,0,period,0,2);
 attrScriptRes = Can1.coWriteInRemoteDico(sdo);
 if (attrScriptRes==false) then return;
 sdo = CanDicoEntry(propNodeId,0x100D,0,10,0,1);

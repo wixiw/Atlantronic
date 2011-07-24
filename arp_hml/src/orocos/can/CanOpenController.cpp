@@ -191,11 +191,13 @@ void CanOpenController::updateHook()
     //dispatch bootup frame to the rigth output port
     m_dispatcher.dispatchBootUp(propNodeId, inBootUpReceived);
 
-    //dispatch bootup frame to the rigth output port
+    //wake up slave activities of all registered nodes after a certain amount of time to wait for PDOs
+    usleep(propPdoMaxAwaitedDelay*1E6);
+
+    //dispatch bootup frame to the right output port
+    //done after PDO not to mess up the bus
     m_dispatcher.dispatchNmtState();
 
-    //wake up slave activities of all registered nodes after a certian amount of time to wait for PDOs
-    usleep(propPdoMaxAwaitedDelay*1E6);
     outNodesClock.write(syncTime);
 }
 

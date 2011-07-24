@@ -1,3 +1,9 @@
 var CanDicoEntry sdo;
-var int Info = 2;
+require("print");
 attrScriptRes=true;
+
+//configure PDO to be send every sync
+print.log(Info, "configure PDO to be send every sync");
+sdo = CanDicoEntry(propNodeId,0x1800,2,1,0,1);
+attrScriptRes = Can1.coWriteInRemoteDico(sdo);
+if (attrScriptRes==false) then return;
