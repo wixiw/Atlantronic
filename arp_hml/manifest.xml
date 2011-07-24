@@ -8,7 +8,7 @@
 	<depend package="roscpp"/>
 	<depend package="rospy"/>
     <depend package="arp_core" />
-    <depend package="advantech_susi" />
+    <!--  Desactivated in waiting newer Advantech version <depend package="advantech_susi" />-->
   	<depend package="rosconsole"/>
     <depend package="socket_can" />
     <depend package="can_festival" />

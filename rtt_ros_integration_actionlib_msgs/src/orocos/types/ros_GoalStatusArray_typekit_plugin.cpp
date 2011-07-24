@@ -4,6 +4,21 @@
 #include <rtt/types/SequenceTypeInfo.hpp>
 #include <vector>
 
+// Note: we need to put these up-front or we get gcc compiler warnings:
+// <<warning: type attributes ignored after type is already defined>>        
+template class RTT_EXPORT RTT::internal::DataSourceTypeInfo< actionlib_msgs::GoalStatusArray >;
+template class RTT_EXPORT RTT::internal::DataSource< actionlib_msgs::GoalStatusArray >;
+template class RTT_EXPORT RTT::internal::AssignableDataSource< actionlib_msgs::GoalStatusArray >;
+template class RTT_EXPORT RTT::internal::AssignCommand< actionlib_msgs::GoalStatusArray >;
+template class RTT_EXPORT RTT::internal::ValueDataSource< actionlib_msgs::GoalStatusArray >;
+template class RTT_EXPORT RTT::internal::ConstantDataSource< actionlib_msgs::GoalStatusArray >;
+template class RTT_EXPORT RTT::internal::ReferenceDataSource< actionlib_msgs::GoalStatusArray >;
+template class RTT_EXPORT RTT::OutputPort< actionlib_msgs::GoalStatusArray >;
+template class RTT_EXPORT RTT::InputPort< actionlib_msgs::GoalStatusArray >;
+template class RTT_EXPORT RTT::Property< actionlib_msgs::GoalStatusArray >;
+template class RTT_EXPORT RTT::Attribute< actionlib_msgs::GoalStatusArray >;
+template class RTT_EXPORT RTT::Constant< actionlib_msgs::GoalStatusArray >;
+
 namespace ros_integration {
   using namespace RTT;
     // Factory function

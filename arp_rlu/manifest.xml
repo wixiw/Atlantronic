@@ -9,6 +9,7 @@
     <depend package="arp_core" />
     <depend package="arp_hml" />
     <depend package="std_srvs" />
+    <depend package="std_msgs" />
     <depend package="tf" />
     <depend package="nav_msgs" />
     <depend package="roscpp"/>

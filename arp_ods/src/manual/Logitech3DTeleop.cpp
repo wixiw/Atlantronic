@@ -7,7 +7,6 @@
 
 #include "Logitech3DTeleop.hpp"
 #include <ocl/Component.hpp>
-#include <susi.h>
 #include <ros/package.h>
 
 using namespace arp_ods;

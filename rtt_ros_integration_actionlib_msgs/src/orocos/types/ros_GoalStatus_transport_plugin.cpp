@@ -11,7 +11,7 @@ namespace ros_integration {
     {
       bool registerTransport(std::string name, types::TypeInfo* ti)
       {
-	if(name == "//GoalStatus")
+	if(name == "/actionlib_msgs/GoalStatus")
 	  return ti->addProtocol(ORO_ROS_PROTOCOL_ID,new RosMsgTransporter<actionlib_msgs::GoalStatus>());
 	return false;
       }

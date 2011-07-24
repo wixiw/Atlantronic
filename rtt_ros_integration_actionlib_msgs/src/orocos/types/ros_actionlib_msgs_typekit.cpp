@@ -1,6 +1,6 @@
-#include <actionlib_msgs/GoalStatus.h>
 #include <actionlib_msgs/GoalID.h>
 #include <actionlib_msgs/GoalStatusArray.h>
+#include <actionlib_msgs/GoalStatus.h>
 
 #include <rtt/types/TypekitPlugin.hpp>
 #include <rtt/types/StructTypeInfo.hpp>
@@ -9,9 +9,9 @@ namespace ros_integration {
   using namespace RTT;
 
     /** Declare all factory functions */
-            void rtt_ros_addType_GoalStatus();
-        void rtt_ros_addType_GoalID();
+            void rtt_ros_addType_GoalID();
         void rtt_ros_addType_GoalStatusArray();
+        void rtt_ros_addType_GoalStatus();
 
    
     /**
@@ -27,9 +27,9 @@ namespace ros_integration {
 
       virtual bool loadTypes() {
           // call all factory functions
-                  rtt_ros_addType_GoalStatus(); // factory function for adding TypeInfo.
-        rtt_ros_addType_GoalID(); // factory function for adding TypeInfo.
+                  rtt_ros_addType_GoalID(); // factory function for adding TypeInfo.
         rtt_ros_addType_GoalStatusArray(); // factory function for adding TypeInfo.
+        rtt_ros_addType_GoalStatus(); // factory function for adding TypeInfo.
 
           return true;
       }

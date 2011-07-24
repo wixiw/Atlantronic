@@ -10,7 +10,10 @@ DEMO_PROG = demo_brightness demo_cpu demo_gpio demo_hwm demo_iic demo_smbus demo
 	$(CC) $(CFLAGS) -o bin/$@ $< $(LINKLIB) 
 
 
-default: $(DEMO_PROG)
+#default: $(DEMO_PROG)
+#build desactivated in waiting of new advantech version
+default:
+	
 
 install:
 	rm  /usr/lib/$(LIB_NAME).*

@@ -27,8 +27,8 @@ TaskContext* tcJoystick;
 TestJoystick::TestJoystick(const std::string& name):
 	HmlTaskContext(name)
 {
-	int attrTcTest = (int) tcTest;
-	int attrTcJoystick = (int) tcJoystick;
+	long attrTcTest = (long) tcTest;
+	long attrTcJoystick = (long) tcJoystick;
 	addAttribute("tcTest", attrTcTest);
 	addAttribute("tcJoystick", attrTcJoystick);
 

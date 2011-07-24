@@ -11,7 +11,7 @@ namespace ros_integration {
     {
       bool registerTransport(std::string name, types::TypeInfo* ti)
       {
-	if(name == "//Velocity")
+	if(name == "/arp_core/Velocity")
 	  return ti->addProtocol(ORO_ROS_PROTOCOL_ID,new RosMsgTransporter<arp_core::Velocity>());
 	return false;
       }
