@@ -2,12 +2,12 @@
 #include <unistd.h>
 #include <sys/mman.h>
 
-#include <native/task.h>
-#include <native/timer.h>
-#include <native/sem.h>
-#include <native/mutex.h>
-#include <native/cond.h>
-#include <native/alarm.h>
+#include <xenomai/native/task.h>
+#include <xenomai/native/timer.h>
+#include <xenomai/native/sem.h>
+#include <xenomai/native/mutex.h>
+#include <xenomai/native/cond.h>
+#include <xenomai/native/alarm.h>
 
 #include "applicfg.h"
 #include "can_driver.h"

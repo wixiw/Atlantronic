@@ -5,12 +5,12 @@
 
 // includes Types.hpp headers for all messages:
 #include "DifferentialCommand.h"
-#include "StartColor.h"
+#include "Velocity.h"
+#include "Start.h"
+#include "Obstacle.h"
 #include "Pose.h"
 #include "Odo.h"
-#include "Velocity.h"
-#include "Obstacle.h"
-#include "Start.h"
+#include "StartColor.h"
 
 
 #endif

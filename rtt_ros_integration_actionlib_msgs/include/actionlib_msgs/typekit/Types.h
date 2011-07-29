@@ -4,9 +4,9 @@
 #define __OROCOS_ROS_GENERATED_actionlib_msgs_TYPES_HPP
 
 // includes Types.hpp headers for all messages:
+#include "GoalStatus.h"
 #include "GoalID.h"
 #include "GoalStatusArray.h"
-#include "GoalStatus.h"
 
 
 #endif

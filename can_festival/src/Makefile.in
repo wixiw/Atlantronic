@@ -24,7 +24,7 @@
 all: objdictedit canfestival examples
 
 examples: canfestival driver
-	$(MAKE) -C examples all
+	#$(MAKE) -C examples all
 
 documentation:
 	$(MAKE) -C doc/doxygen
