@@ -8,6 +8,7 @@
 #ifndef ARDTASKCONTEXT_HPP_
 #define ARDTASKCONTEXT_HPP_
 
+#include <rtt/typekit/Types.hpp>
 #include <rtt/RTT.hpp>
 #include <rtt/scripting/Scripting.hpp>
 #include <rtt/marsh/Marshalling.hpp>
