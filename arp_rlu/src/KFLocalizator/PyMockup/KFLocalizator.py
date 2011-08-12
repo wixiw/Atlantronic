@@ -80,15 +80,14 @@ class KFLocalizator:
     self.B = zeros( (6,6) )
     
     self.R = array( [[sigmaLaserRange]] )
-  
-  def newOdoVelocity(self, currentT, ov):
+    
+  def predict(self, currentT, ov, dt):
     U = array([[0.], 
                [0.], 
                [0.], 
                [ov.vx], 
                [ov.vy],
                [ov.va]])
-    dt = currentT - self.timeBuf.getNewest()
     self.A = array([[1., 0., 0., dt, 0., 0.],
                     [0., 1., 0., 0., dt, 0.],
                     [0., 0., 1., 0., 0., dt],
@@ -96,6 +95,11 @@ class KFLocalizator:
                     [0., 0., 0., 0., 0., 0.],
                     [0., 0., 0., 0., 0., 0.]])
     (self.X, self.P) = kf_predict(self.X, self.P, self.A, self.Q, self.B, U)
+  
+  def newOdoVelocity(self, currentT, ov):
+      
+    dt = currentT - self.timeBuf.getNewest()
+    predict(currentT, ov, dt)
     
     estim = Estimate()
     estim.xRobot = self.X[0,0]
@@ -162,6 +166,8 @@ class KFLocalizator:
     
     self.scanproc.findCluster(tt, xx, yy, hh)
     
+    ov = OdoVelocity()
+    
     # loop on time 
     for i in range(len(tt)):
       t = tt[i]
@@ -170,11 +176,25 @@ class KFLocalizator:
           # TODO init Y
           (self.X, self.P, K,IM,IS) = kf_update(self.X, self.P, Y, self.H, self.R)
       
-      vx = vvx[i]
-      vy = vvy[i]
-      vh = vvh[i]
-      U = array([[0.], [0.], [0.],  [vx],  [vy],  [vh]])
-      (self.X, self.P) = kf_predict(self.X, self.P, self.A, self.Q, self.B, U)
+      ov = OdoVelocity()
+      ov.vx = vvx[i]
+      ov.vy = vvy[i]
+      ov.vh = vvh[i]
+      # TODO init dt
+      predict(currentT, ov, dt)
+      
+    estim = Estimate()
+    estim.xRobot = self.X[0,0]
+    estim.yRobot = self.X[1,0]
+    estim.hRobot = self.X[2,0]
+    estim.velXRobot = self.X[3,0]
+    estim.velYRobot = self.X[4,0]
+    estim.velHRobot = self.X[5,0]
+    estim.covariance = self.P
+  
+    self.timeBuf.append(t)
+    self.odoVelBuf.append(ov)
+    self.estimateBuf.append(estim)
   
   def getLastEstimate(self):
     return self.estimateBuf.getNewest()
