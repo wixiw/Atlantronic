@@ -24,7 +24,8 @@ class TestKFLocalizator(unittest.TestCase):
     self.assertEqual(self.kfloc.R, [])
     
   def testInitialize(self):
-    self.kfloc.initialize(1000,
+    self.kfloc.initialize(0.0,
+                          1000,
                           0.,
                           0.,
                           0.,
@@ -35,7 +36,9 @@ class TestKFLocalizator(unittest.TestCase):
                           0.)
     self.assertTrue( array_equiv(self.kfloc.odoVelBuf.data,   [None] * 1000 ))
     self.assertTrue( array_equiv(self.kfloc.estimateBuf.data, [None] * 1000 ))
-    self.assertTrue( array_equiv(self.kfloc.timeBuf.data,     [None] * 1000 ))
+    t = [None] * 1000
+    t[-1] = 0.0
+    self.assertTrue( array_equiv(self.kfloc.timeBuf.data, t ))
     
     
     

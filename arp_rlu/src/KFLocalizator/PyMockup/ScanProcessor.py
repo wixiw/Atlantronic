@@ -16,21 +16,23 @@ class ScanProcessor:
     self.currentIndex = -1
     self.currentPts = [[],[]]
     self.clusterOpen = False
-    self.t_last_open = None
+    self.thetaLastOpen = None
+    self.timeLastOpen = None
     
   def setScan(self, s):
     self.scan = s
     
   # for internal use only
-  def openCluster(self, r, t, x, y):
+  def openCluster(self, t, r, theta, x, y):
     self.currentIndex = self.currentIndex + 1
-    self.currentPts = [[x+ r * cos(t)],
-                       [y + r * sin(t)]]
+    self.currentPts = [[x + r * cos(theta)],
+                       [y + r * sin(theta)]]
     self.clusterOpen = True
-    self.t_last_open = t
+    self.thetaLastOpen = theta
+    self.timeLastOpen = t
     
   # for internal use only
-  def closeCluster(self, r, t, x, y):
+  def closeCluster(self, t, r, theta, x, y):
     obj = Object()
     xMean = mean(self.currentPts[0])
     yMean = mean(self.currentPts[1])
@@ -43,41 +45,44 @@ class ScanProcessor:
     # le 0.85 est statistique. Il permet de reculer le point pour arriver pres du centre
     obj.xCenter = mean(self.currentPts[0]) + 0.85 * obj.radius * cos(math.atan2(yMean-y, xMean-x))
     obj.yCenter = mean(self.currentPts[1]) + 0.85 * obj.radius * sin(math.atan2(yMean-y, xMean-x))
-    obj.tBeg = self.t_last_open
-    obj.tEnd = t
+    obj.thetaBeg = self.thetaLastOpen
+    obj.thetaEnd = theta
+    obj.timeBeg = self.timeLastOpen
+    obj.timeEnd = t
     self.objects.append( obj )
     self.currentPts = [[],[]]
     self.clusterOpen = False
     
   # for internal use only
-  def addToCurrentCluster(self, r, t, x, y):
-      self.currentPts[0].append( x + r * cos(t) )
-      self.currentPts[1].append( y + r * sin(t) )
+  def addToCurrentCluster(self, t, r, theta, x, y):
+      self.currentPts[0].append( x + r * cos(theta) )
+      self.currentPts[1].append( y + r * sin(theta) )
     
     
-  def findCluster(self, xx, yy, aa):
-    theta = array( [ self.scan.theta[i] + aa[i] for i in range(len(self.scan.theta)) ] )
+  def findCluster(self, tt, xx, yy, hh):
+    thetatheta = array( [ self.scan.theta[i] + hh[i] for i in range(len(self.scan.theta)) ] )
     prev = 0.
     for i in range(len(self.scan.range)):
       r = self.scan.range[i]
-      t = theta[i]
+      t = tt[i]
+      theta = thetatheta[i]
       if r > 0.:
         if prev > 0.:
           if self.clusterOpen:
             if abs(r - prev) > self.thresholdRange:
               print "range threshold hook"
-              self.closeCluster(r,t, xx[i], yy[i])
+              self.closeCluster(t, r, theta, xx[i], yy[i])
             else:
-              self.addToCurrentCluster(r,t, xx[i], yy[i])              
+              self.addToCurrentCluster(t, r, theta, xx[i], yy[i])              
           else:
             if abs(r - prev) < self.thresholdRange:
-              self.openCluster(r, t, xx[i], yy[i])
+              self.openCluster(t, r, theta, xx[i], yy[i])
         else:
           if i > 0:
-            self.openCluster(r, t, xx[i], yy[i])
+            self.openCluster(t, r, theta, xx[i], yy[i])
       else:
         if self.clusterOpen:
-          self.closeCluster(r,t, xx[i], yy[i])
+          self.closeCluster(t, r, theta, xx[i], yy[i])
       if self.clusterOpen:
         self.objIndex.append(self.currentIndex)
       else:
@@ -85,14 +90,15 @@ class ScanProcessor:
       prev = r
     
     
-  def getBeacons(self, t):
+  def getBeacons(self, time):
     xBeacon = None
     yBeacon = None
     if self.beacons == []:
       return (xBeacon, yBeacon)
     for o in self.objects:
-      if t < (o.tBeg + o.tEnd)/2. + 0.00005 and t >= (o.tBeg + o.tEnd)/2. - 0.00005:
-        dist = array([ (b.xCenter-obj.xCenter)**2 + (b.xCenter-obj.xCenter)**2 for b in self.beacons ])
+      # we select the object detected at time t (if exist)
+      if time < (o.timeBeg + o.timeEnd)/2. + 0.00005 and time >= (o.timeBeg + o.timeEnd)/2. - 0.00005:
+        dist = array([ (b.xCenter-o.xCenter)**2 + (b.xCenter-o.xCenter)**2 for b in self.beacons ])
         minDist = min(dist)
         iMin = argmin(dist)
         if minDist < 0.2:

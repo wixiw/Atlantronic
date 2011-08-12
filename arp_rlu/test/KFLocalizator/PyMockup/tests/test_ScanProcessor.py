@@ -55,7 +55,7 @@ scan = lrfsim.computeScan(xx, yy, aa, tt)
 # Find clusters
 scanproc = ScanProcessor()
 scanproc.setScan(scan)
-scanproc.findCluster(xx, yy, aa)
+scanproc.findCluster(tt, xx, yy, aa)
 
 # Beacons
 scanproc.beacons = lrfsim.objects

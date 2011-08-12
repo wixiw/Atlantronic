@@ -15,11 +15,12 @@ class TestScanProcessor(unittest.TestCase):
     self.assertEqual(self.scanproc.beacons, [])
     
   def testFindClusters(self):
+    tt = []
     xx = []
     yy = []
     aa = []
     scan = Scan()
-    self.scanproc.findCluster(xx, yy, aa)
+    self.scanproc.findCluster(tt, xx, yy, aa)
     self.assertEqual(self.scanproc.objects, [])
 
 if __name__ == '__main__':
