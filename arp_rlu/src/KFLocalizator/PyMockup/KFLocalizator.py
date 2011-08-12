@@ -32,22 +32,14 @@ class KFLocalizator:
     
     # input effect matrix (6x6 matrix)
     self.B = []
-    
-    # control input. (6x1 matrix)
-    U = []
-    
-    # measurement : range of beacon (1x1 matrix)
-    Y = []
-    
-    # measurement model (matrix 1x6)
-    self.H = [] 
-    # and its  measurement noise covariance matrix (1x1 matrix)
+
+    # measurement noise covariance matrix (1x1 matrix)
     self.R = []
     
   def initialize(self, currentTime, N, 
                        initialXPosition, initialYPosition, initialHeading, 
                        sigmaInitialPosition, sigmaInitialHeading,
-                       sigmaTransOdoVelocity, sigmaRotOdoVelocity, sigmaLaserRange):
+                       sigmaTransOdoVelocity, sigmaRotOdoVelocity, sigmaLaserRange, sigmaLaserAngle):
     self.timeBuf     = RingBuffer(N)
     self.timeBuf.append(currentTime)
     self.odoVelBuf   = RingBuffer(N)
@@ -79,7 +71,7 @@ class KFLocalizator:
                    sigmaRotOdoVelocity))
     self.B = zeros( (6,6) )
     
-    self.R = array( [[sigmaLaserRange]] )
+    self.R = array( [[sigmaLaserRange], [sigmaLaserAngle]] )
     
   def predict(self, currentT, ov, dt):
     U = array([[0.], 
@@ -172,9 +164,18 @@ class KFLocalizator:
     for i in range(len(tt)):
       t = tt[i]
       (xBeacon, yBeacon) = self.scanproc.getBeacons(t)
-      if xBeacon != None:
-          # TODO init Y
-          (self.X, self.P, K,IM,IS) = kf_update(self.X, self.P, Y, self.H, self.R)
+      if xBeacon != None and yBeacon != None:
+          Y = zeros((2,1))
+          Y[0,0] = sqrt( (self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
+          Y[1,0] = atan2(yBeacon - self.X[1,0], xBeacon - self.X[0,0]) - self.X[2,0]
+          H = zeros( (2,6) )
+          H[0,0] = (self.X[0,0] - xBeacon) / sqrt( (self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
+          H[0,1] = (self.X[1,0] - yBeacon) / sqrt( (self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
+          H[0,2] = 0.
+          H[1,0] = (self.X[1,0] - yBeacon) / ( (self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
+          H[1,1] = (self.X[0,0] - xBeacon) / ( (self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
+          H[1,2] = -1.
+          (self.X, self.P, K,IM,IS) = kf_update(self.X, self.P, Y, H, self.R)
       
       ov = OdoVelocity()
       ov.vx = vvx[i]
