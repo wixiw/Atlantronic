@@ -1,22 +1,22 @@
 #script d'initialisation permettant de demarrer le module can
 #
 
-#choose xenomai or gnulinux
-OS=xenomai
+#choose driver under xenomai or gnulinux
+#DRIVER=sja1000_isa
+DRIVER=xeno_can_mem
 BAUDRATE=1000000
 #notice that we can only set one IRQ for both can, this is an hardware limitation
-IRQ=10
+CAN_OPTS="irq=10,10 mem=0xD0000,0xD0200 ocr=0x5e,0x5e cdr=0,0"
 
-if [ $OS == "xenomai" ] 
+#chargement du driver
+modprobe $DRIVER $CAN_OPTS
+
+
+if [ $DRIVER == "xeno_can_mem" ] 
 then
-	modprobe xeno_can_mem irq=10,10 io=... ocr=0x5e,0x5e cdr=0,0
-	
-	rtcanconfig rtcan0 -b $BAUDRATE start
-	rtcanconfig rtcan1 -b $BAUDRATE start
+	rtcanconfig rtcan0 -b $BAUDRATE -v start
+	rtcanconfig rtcan1 -b $BAUDRATE -v start
 else
-	#chargement du driver
-	modprobe sja1000_isa irq=$IRQ,$IRQ mem=0xD0000,0xD0200 ocr=0x5e,0x5e cdr=0,0
-	
 	#chargement de l'interface dans ifconfig
 	ip link set can0 type can bitrate $BAUDRATE restart-ms 1000
 	ip link set can1 type can bitrate $BAUDRATE restart-ms 1000

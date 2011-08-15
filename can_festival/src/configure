@@ -467,8 +467,8 @@ fi
 
 if [ "$SUB_TIMERS_DRIVER" = "xeno" ]; then
 	RT_LIB_DIR=`$XENO_CONFIG --library-dir`\ -Wl,-rpath\ `$XENO_CONFIG --library-dir`
-    SUB_EXE_CFLAGS=$SUB_EXE_CFLAGS\ `$XENO_CONFIG --skin=native --ldflags`\ -L$RT_LIB_DIR\ -lnative\ -lrtdm
-	SUB_PROG_CFLAGS=$SUB_PROG_CFLAGS\ -DUSE_XENO\ `$XENO_CONFIG --skin=native --cflags`
+    SUB_EXE_CFLAGS=$SUB_EXE_CFLAGS\ -L$RT_LIB_DIR\ `$XENO_CONFIG --skin=native --ldflags`\ `$XENO_CONFIG --skin=rtdm --ldflags`\  
+	SUB_PROG_CFLAGS=$SUB_PROG_CFLAGS\ -DUSE_XENO\ `$XENO_CONFIG --skin=native --cflags`\ `$XENO_CONFIG --skin=rtdm --cflags`
     RTCAN_SOCKET=1
 fi
 

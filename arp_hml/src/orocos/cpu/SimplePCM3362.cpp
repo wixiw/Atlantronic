@@ -7,7 +7,7 @@
 
 #include "SimplePCM3362.hpp"
 #include <ocl/Component.hpp>
-#include <susi.h>
+//#include <susi.h>
 
 using namespace arp_hml;
 using namespace arp_core;
