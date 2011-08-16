@@ -169,7 +169,7 @@ class KFLocalizator:
     
     self.scanproc.findCluster(tt, xx, yy, hh)
     
-    print "========================================="
+    # print "========================================="
     
     # loop on time 
     for i in range(len(tt)):
@@ -203,7 +203,7 @@ class KFLocalizator:
           # print "  en cap (deg) :", betweenMinusPiAndPlusPi(self.X[2,0]) * 180.*pi
           # print "estimée : Y="; print Y
           # print "estimée : IM="; print IM
-          # print "Y[1] - IM[1]=", (Y[1,0] - IM[1,0])*180. / pi
+          # print "Y[0] - IM[0]=", (Y[0,0] - IM[0,0])*1000.
           (self.X, self.P, K,IM,IS) = kf_update(self.X, self.P, Y, H, self.R, IM)
           # print "estimée post update :"
           # print "  sur x (en mm):", self.X[0,0] * 1000.
