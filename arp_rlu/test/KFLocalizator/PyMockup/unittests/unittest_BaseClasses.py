@@ -10,6 +10,24 @@ class TestBaseClasse(unittest.TestCase):
   def setUp(self):
     pass
 
+  def testBetweenZeroAndTwoPi(self):
+    for k in range(100):
+      angle1 = random.uniform( -100., 100)
+      angle2 = betweenZeroAndTwoPi(angle1)
+      self.assertTrue( angle2 >= 0. )
+      self.assertTrue( angle2 < 2.*pi )
+      self.assertAlmostEqual(sin(angle1), sin(angle2))
+      self.assertAlmostEqual(cos(angle1), cos(angle2))
+  
+  def testBetweenMinusPiAndPlusPi(self):
+    for k in range(100):
+      angle1 = random.uniform( -100., 100)
+      angle2 = betweenMinusPiAndPlusPi(angle1)
+      self.assertTrue( angle2 <= pi )
+      self.assertTrue( angle2 >= -pi )
+      self.assertAlmostEqual(sin(angle1), sin(angle2))
+      self.assertAlmostEqual(cos(angle1), cos(angle2))
+
   def testInterp1d(self):
     tp = [ 1.0, 2.0, 3.0 ]
     yp = [0.0, 1.0, 3.0]

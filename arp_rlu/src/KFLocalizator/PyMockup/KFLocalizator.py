@@ -36,8 +36,6 @@ class KFLocalizator:
                        initialXPosition, initialYPosition, initialHeading, 
                        sigmaInitialPosition, sigmaInitialHeading,
                        sigmaTransOdoVelocity, sigmaRotOdoVelocity, sigmaLaserRange, sigmaLaserAngle):
-    self.buffer = RingBuffer(N)
-    self.buffer.append([currentTime, None])
     self.X = array([[initialXPosition], 
                     [initialYPosition], 
                     [initialHeading], 
@@ -50,6 +48,17 @@ class KFLocalizator:
                    0.,
                    0.,
                    0.))
+    estim = Estimate()
+    estim.xRobot = self.X[0,0]
+    estim.yRobot = self.X[1,0]
+    estim.hRobot = self.X[2,0]
+    estim.velXRobot = self.X[3,0]
+    estim.velYRobot = self.X[4,0]
+    estim.velHRobot = self.X[5,0]
+    estim.covariance = self.P
+    self.buffer = RingBuffer(N)
+    self.buffer.append([currentTime, estim])
+    
     self.Q = diag((0.,
                    0.,
                    0.,
@@ -66,7 +75,7 @@ class KFLocalizator:
                [0.], 
                [ov.vx], 
                [ov.vy],
-               [ov.va]])
+               [ov.vh]])
     A = array([[1., 0., 0., dt, 0., 0.],
                [0., 1., 0., 0., dt, 0.],
                [0., 0., 1., 0., 0., dt],
@@ -78,12 +87,12 @@ class KFLocalizator:
   def newOdoVelocity(self, currentT, ov):
     last = self.buffer.getNewest()
     if last == None:
-      return false
+      return False
     if last[0] == None:
-      return false
+      return False
   
     dt = currentT - last[0]
-    predict(currentT, ov, dt)
+    self.predict(currentT, ov, dt)
     
     estim = Estimate()
     estim.xRobot = self.X[0,0]
@@ -95,7 +104,7 @@ class KFLocalizator:
     estim.covariance = self.P
     
     self.buffer.append( [ currentT, estim ] ) 
-    return true
+    return True
     
   # for internal use only
   def backInThePast(self, tCurrent, duration = 0.1, deltaT = 0.0001):
@@ -141,9 +150,9 @@ class KFLocalizator:
     # back in the past
     duration = 0.1
     dt = 0.0001
-    (tt, xx, yy, hh, vvx, vvy, vvh, covars) = backInThePast(currentTime, duration, dt)
+    (tt, xx, yy, hh, vvx, vvy, vvh, covars) = self.backInThePast(currentTime, duration, dt)
     if len(tt) == 0:
-      return false
+      return False
   
     self.buffer.clear()
     
@@ -162,11 +171,15 @@ class KFLocalizator:
     # loop on time 
     for i in range(len(tt)):
       t = tt[i]
-      (xBeacon, yBeacon, radius, theta) = self.scanproc.getBeacons(t)
+      (xBeacon, yBeacon, r, theta) = self.scanproc.getBeacons(t)
       if xBeacon != None and yBeacon != None:
+          # print "========================================="
+          # print "xBeacon =", xBeacon
+          # print "yBeacon =", yBeacon
           Y = zeros((2,1))
-          Y[0,0] = radius
+          Y[0,0] = r
           Y[1,0] = theta
+          # print "KFLocalizator - newScan() : Y="; print Y
           H = zeros( (2,6) )
           H[0,0] = (self.X[0,0] - xBeacon) / sqrt( (self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
           H[0,1] = (self.X[1,0] - yBeacon) / sqrt( (self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
@@ -174,13 +187,18 @@ class KFLocalizator:
           H[1,0] = (self.X[1,0] - yBeacon) / ( (self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
           H[1,1] = (self.X[0,0] - xBeacon) / ( (self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
           H[1,2] = -1.
-          (self.X, self.P, K,IM,IS) = kf_update(self.X, self.P, Y, H, self.R)
+          # print "KFLocalizator - newScan() : H="; print H
+          IM = zeros((2,1))
+          IM[0,0] = sqrt((self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
+          IM[1,0] = betweenMinusPiAndPlusPi(math.atan2(yBeacon - self.X[1,0], xBeacon - self.X[0,0]) -  self.X[2,0])          
+          # print "KFLocalizator - newScan() : IM="; print IM
+          (self.X, self.P, K,IM,IS) = kf_update(self.X, self.P, Y, H, self.R, IM)
       
       ov = OdoVelocity()
       ov.vx = vvx[i]
       ov.vy = vvy[i]
       ov.vh = vvh[i]
-      predict(t, ov, dt)
+      self.predict(t, ov, dt)
       
     estim = Estimate()
     estim.xRobot = self.X[0,0]
@@ -192,8 +210,11 @@ class KFLocalizator:
     estim.covariance = self.P
   
     self.buffer.append([t, estim])
-    return true
+    return True
   
   def getBestEstimate(self):
     return self.buffer.getNewest()
+
+  def setBeacons(self, beacons):
+    self.scanproc.beacons = beacons
   

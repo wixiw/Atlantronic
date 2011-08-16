@@ -1,11 +1,24 @@
 from numpy import *
 import math
 
+def betweenMinusPiAndPlusPi(angle):
+  angle = betweenZeroAndTwoPi( angle )
+  if angle > pi:
+    angle = angle - 2 * pi
+  if angle < -pi:
+    angle = angle + 2 * pi
+  return angle
+
+
+def betweenZeroAndTwoPi(angle):
+  return fmod( fmod(angle, 2 * pi) + 4. * pi, 2. * pi);
+
+
 class OdoVelocity:
   def __init__(self):
     self.vx = 0.
     self.vy = 0.
-    self.va = 0.
+    self.vh = 0.
 
 class Scan:
   def __init__(self):
@@ -49,7 +62,7 @@ class RingBuffer:
   def getOldest(self):
     return self.data[0]
   def getNewest(self):
-    return self.data[-1:]
+    return self.data[-1]
 
 def interp1d( t, tp, yp ):
     y = interp(t, tp, yp)

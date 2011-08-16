@@ -27,10 +27,18 @@ def kf_predict(X, P, A, Q, B, U):
 # K : the Kalman Gain matrix
 # IM : the Mean of predictive distribution of Y
 # IS : the Covariance or predictive mean of Y
-def kf_update(X, P, Y, H, R):
-  IM = dot(H, X)
+def kf_update(X, P, Y, H, R, IM = None):
+  if IM == None:
+      IM = dot(H, X)
+  # print "KalmanFilter - kf_update : H=";  print H
+  # print "KalmanFilter - kf_update : X=";  print X
+  # print "KalmanFilter - kf_update : IM="; print IM
   IS = R + dot(H, dot(P, H.T))
+  # print "KalmanFilter - kf_update : IS=", IS
   K = dot(P, dot(H.T, linalg.inv(IS)))
+  # print "KalmanFilter - kf_update : K=", K
   X = X + dot(K, (Y-IM))
+  # print "KalmanFilter - kf_update : X=", X
   P = P - dot(K, dot(IS, K.T))
+  # print "KalmanFilter - kf_update : P=", P
   return (X,P,K,IM,IS)

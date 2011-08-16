@@ -59,10 +59,6 @@ class LRFSimulator:
     
     s = Scan()
     s.theta = arange( -2.*pi*340./1024., -2.*pi*340./1024. + 2.*pi*681./1024., 2.*pi/1024.)
-    print "min s.theta (en deg):", min(s.theta)*180./pi
-    print "max s.theta (en deg):", max(s.theta)*180./pi
-    print "delta s.theta (en deg):", (max(s.theta) - min(s.theta))*180./pi
-    print "len(s.theta):", len(s.theta)
     
     if len(s.theta) > len(tt):
       raise NameError("tt vector is too small (<", len(s.theta), ") : len(tt)=" + str(len(tt)))
