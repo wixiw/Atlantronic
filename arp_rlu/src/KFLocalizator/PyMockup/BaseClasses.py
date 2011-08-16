@@ -31,11 +31,13 @@ class Scan:
     
 class Object:
   def __init_(self):
-    self.xCenter = 0.0
-    self.yCenter = 0.0
-    self.radius  = 0.0
-    self.tBeg   = None
-    self.tEnd   = None
+    self.xCenter  = 0.0
+    self.yCenter  = 0.0
+    self.radius   = 0.0
+    self.thetaBeg = None
+    self.thetaEnd = None
+    self.timeBeg  = None
+    self.timeEnd  = None
 
 class Estimate:
   def __init__(self):

@@ -17,7 +17,9 @@ class ScanProcessor:
     self.currentPts = [[],[],[],[]]
     self.clusterOpen = False
     self.thetaLastOpen = None
+    self.thetaLastAdded = None
     self.timeLastOpen = None
+    self.timeLastAdded = None
     
   def setScan(self, s):
     self.scan = s
@@ -32,6 +34,8 @@ class ScanProcessor:
     self.clusterOpen = True
     self.thetaLastOpen = theta
     self.timeLastOpen = t
+    self.thetaLastAdded = theta
+    self.timeLastAdded = t
     
   # for internal use only
   def closeCluster(self, t, r, theta, x, y, h):
@@ -48,9 +52,9 @@ class ScanProcessor:
     obj.xCenter = mean(self.currentPts[0]) + 0.85 * obj.radius * cos(math.atan2(yMean-y, xMean-x))
     obj.yCenter = mean(self.currentPts[1]) + 0.85 * obj.radius * sin(math.atan2(yMean-y, xMean-x))
     obj.thetaBeg = self.thetaLastOpen
-    obj.thetaEnd = theta
+    obj.thetaEnd = self.thetaLastAdded
     obj.timeBeg = self.timeLastOpen
-    obj.timeEnd = t
+    obj.timeEnd = self.timeLastAdded
     obj.range = mean(self.currentPts[2]) + 0.85 * obj.radius
     self.objects.append( obj )
     self.currentPts = [[],[],[],[]]
@@ -62,6 +66,8 @@ class ScanProcessor:
       self.currentPts[1].append( y + r * sin(theta + h) )
       self.currentPts[2].append( r )
       self.currentPts[3].append( theta )
+      self.thetaLastAdded = theta
+      self.timeLastAdded = t
       
     
     
@@ -101,11 +107,11 @@ class ScanProcessor:
     range = None
     theta = None
     if self.beacons == []:
-      print "WARNING: ScanProcessor.getBeacons(): No beacon registred"
+      # print "WARNING: ScanProcessor.getBeacons(): No beacon registred"
       return (xBeacon, yBeacon, range, theta)
     for o in self.objects:
       # we select the object detected at time t (if exist)
-      if time < (o.timeBeg + o.timeEnd)/2. + 0.00005 and time >= (o.timeBeg + o.timeEnd)/2. - 0.00005:
+      if time < (o.timeBeg + o.timeEnd)/2. + 0.1/2048. and time >= (o.timeBeg + o.timeEnd)/2. - 0.1/2048.:
         dist = array([ (b.xCenter-o.xCenter)**2 + (b.yCenter-o.yCenter)**2 for b in self.beacons ])
         # print "========================================="
         # print "ScanProcessor.getBeacons(): o.xCenter=", o.xCenter
@@ -118,8 +124,21 @@ class ScanProcessor:
           xBeacon = self.beacons[iMin].xCenter
           yBeacon = self.beacons[iMin].yCenter
           range  = o.range
-          theta  = (o.thetaEnd + o.thetaBeg) / 2
+          theta  = (o.thetaEnd + o.thetaBeg) / 2.
           # print "ScanProcessor.getBeacons(): o.thetaBeg=", o.thetaBeg
           # print "ScanProcessor.getBeacons(): o.thetaEnd=", o.thetaEnd
+        else:
+          print "WARNING : the targeted beacon is too far !"
     return (xBeacon, yBeacon, range, theta)
+
+  def printObjects(self):
+    for o in self.objects:
+      print "---"
+      print " xCenter=",o.xCenter
+      print " yCenter=",o.yCenter
+      print " radius=",o.radius
+      print " thetaBeg=",o.thetaBeg
+      print " thetaEnd",o.thetaEnd
+      print " timeBeg=",o.timeBeg
+      print " timeEnd=",o.timeEnd
     

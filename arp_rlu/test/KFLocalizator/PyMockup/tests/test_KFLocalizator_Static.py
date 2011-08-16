@@ -20,9 +20,9 @@ initialXPosition = random.uniform( -1.5, 1.5)
 initialYPosition = random.uniform( -1.0, 1.0)
 initialHeading = random.uniform( -2. * pi, 2. * pi)
 sigmaInitialPosition = 0.002
-sigmaInitialHeading = 0.01
+sigmaInitialHeading = 0.02
 sigmaTransOdoVelocity = 0.01
-sigmaRotOdoVelocity = 0.01
+sigmaRotOdoVelocity = 0.001
 sigmaLaserRange = 0.01
 sigmaLaserAngle = 0.001
 kfloc.initialize(0.0,
@@ -32,7 +32,7 @@ kfloc.initialize(0.0,
                  sigmaTransOdoVelocity, sigmaRotOdoVelocity, 
                  sigmaLaserRange, sigmaLaserAngle)
 
-print "-----------------------"
+print "======================="
 print "Etat initial :"
 print "  xPosition:", initialXPosition
 print "  yPosition:", initialYPosition
@@ -43,29 +43,35 @@ print "  vz:", 0.
 
 
 #===============================================================================
-# On reste sur place 1 sec
+# On reste sur place quelques sec
 #===============================================================================
+odoDurationInSec = 3.
 ov = OdoVelocity()
-ov.vx = 0.
-ov.vy = 0.
-ov.vh = 0.
-for t in arange(0., 1., 0.01):
+ov.vx = random.normalvariate(0., sigmaTransOdoVelocity)
+ov.vy = random.normalvariate(0., sigmaTransOdoVelocity)
+ov.vh = random.normalvariate(0., sigmaRotOdoVelocity)
+for t in arange(0., odoDurationInSec, 0.01):
   kfloc.newOdoVelocity(t, ov)
 
 #===============================================================================
 # Estimee odo avant le scan
 #===============================================================================
-estim = kfloc.getBestEstimate()
-print "-----------------------"
+estim1 = kfloc.getBestEstimate()
+print "======================="
 print "Estimee avant le scan :"
-print "  xPosition:", estim[1].xRobot
-print "  yPosition:", estim[1].yRobot
-print "  hPosition:", estim[1].hRobot
-print "  vx:", estim[1].velXRobot
-print "  vy:", estim[1].velYRobot
-print "  vz:", estim[1].velHRobot
+print "  xPosition:", estim1[1].xRobot
+print "  yPosition:", estim1[1].yRobot
+print "  hPosition:", estim1[1].hRobot
+print "  vx:", estim1[1].velXRobot
+print "  vy:", estim1[1].velYRobot
+print "  vz:", estim1[1].velHRobot
 # print "Covariance avant le scan :"
-# print estim[1].covariance
+# print estim1[1].covariance
+
+print "erreur statique apres les odos :"
+print "  sur x (en mm):", (estim1[1].xRobot - initialXPosition) * 1000.
+print "  sur y (en mm):", (estim1[1].yRobot - initialYPosition) * 1000.
+print "  en cap (deg) :", betweenMinusPiAndPlusPi( estim1[1].hRobot - initialHeading ) *180./pi
 
 #===============================================================================
 # On simule le scan
@@ -82,25 +88,82 @@ xx = ones( (len(tt)) ) * x
 yy = ones( (len(tt)) ) * y
 hh = tt * vh + h
 
-
+radius = 0.05
 obj1 = Object()
 obj1.xCenter = 1.5
 obj1.yCenter = 0.
-obj1.radius = 0.05
+obj1.radius = radius
 lrfsim.objects.append(obj1)
 obj2 = Object()
 obj2.xCenter = -1.5
 obj2.yCenter = -1.
-obj2.radius = 0.05
+obj2.radius = radius
 lrfsim.objects.append(obj2)
 obj3 = Object()
 obj3.xCenter = -1.5
 obj3.yCenter = 1.
-obj3.radius = 0.05
+obj3.radius = radius
 lrfsim.objects.append(obj3)
+
+#===============================================================================
+# obj4 = Object()
+# obj4.xCenter = -1.5
+# obj4.yCenter = 0.
+# obj4.radius = radius
+# lrfsim.objects.append(obj4)
+# obj5 = Object()
+# obj5.xCenter = 1.5
+# obj5.yCenter = 1.
+# obj5.radius = radius
+# lrfsim.objects.append(obj5)
+# obj6 = Object()
+# obj6.xCenter = 1.5
+# obj6.yCenter = -1.
+# obj6.radius = radius
+# lrfsim.objects.append(obj6)
+# 
+# obj7 = Object()
+# obj7.xCenter = 0.
+# obj7.yCenter = 1.
+# obj7.radius = radius
+# lrfsim.objects.append(obj7)
+# obj8 = Object()
+# obj8.xCenter = 0.
+# obj8.yCenter = -1.
+# obj8.radius = radius
+# lrfsim.objects.append(obj8)
+#===============================================================================
 
 # On calcule enfin le scan
 scan = lrfsim.computeScan(xx, yy, hh, tt)
+
+
+#===============================================================================
+# Estimation via le scan
+#===============================================================================
+kfloc.setBeacons( lrfsim.objects )
+kfloc.newScan(odoDurationInSec, scan)
+
+#===============================================================================
+# Estimee apres le scan
+#===============================================================================
+estim2 = kfloc.getBestEstimate()
+print "======================="
+print "Estimee apres le scan :"
+print "  xPosition:", estim2[1].xRobot
+print "  yPosition:", estim2[1].yRobot
+print "  hPosition:", estim2[1].hRobot
+print "  vx:", estim2[1].velXRobot
+print "  vy:", estim2[1].velYRobot
+print "  vz:", estim2[1].velHRobot
+# print "Covariance apres le scan :"
+# print estim2[1].covariance
+
+print "Erreur statique apres le scan :"
+print "  sur x (en mm):", (estim2[1].xRobot - initialXPosition) * 1000.
+print "  sur y (en mm):", (estim2[1].yRobot - initialYPosition) * 1000.
+print "  en cap (deg) :", betweenMinusPiAndPlusPi( estim2[1].hRobot - initialHeading ) *180./pi
+
 
 #===============================================================================
 # Affichage
@@ -126,35 +189,11 @@ ax.plot( [xx[-N], xx[-N] + cos(hh[-N] + min(scan.theta))], [yy[-N], yy[-N] + sin
 ax.plot( [xx[-1], xx[-1] + cos(hh[-1] + max(scan.theta))], 
          [yy[-1], yy[-1] + sin(hh[-1] + max(scan.theta))], '-m')
 
-#for o in scanproc.objects:
-#  ax.plot( [o.xCenter], [o.yCenter], 'or')
 
 ax.axis([-1.6, 1.6, -1.1, 1.1])
 plt.draw()
 
-
-#===============================================================================
-# Estimation via le scan
-#===============================================================================
-kfloc.setBeacons( lrfsim.objects )
-kfloc.newScan(1., scan)
-
-#===============================================================================
-# Estimee apres le scan
-#===============================================================================
-estim = kfloc.getBestEstimate()
-print "-----------------------"
-print "Estimee apres le scan :"
-print "  xPosition:", estim[1].xRobot
-print "  yPosition:", estim[1].yRobot
-print "  hPosition:", estim[1].hRobot
-print "  vx:", estim[1].velXRobot
-print "  vy:", estim[1].velYRobot
-print "  vz:", estim[1].velHRobot
-# print "Covariance apres le scan :"
-# print estim[1].covariance
-
-
-
+# arr1 = plt.Arrow(0.1, -0.1, 0.1, 0.1, edgecolor='green')
+# ax.add_patch(arr1)
 
 plt.show()

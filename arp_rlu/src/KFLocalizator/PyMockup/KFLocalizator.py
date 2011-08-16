@@ -1,3 +1,4 @@
+# coding=utf-8
 from numpy import *
 import math
 import random
@@ -107,7 +108,7 @@ class KFLocalizator:
     return True
     
   # for internal use only
-  def backInThePast(self, tCurrent, duration = 0.1, deltaT = 0.0001):
+  def backInThePast(self, tCurrent, duration = 681. * 0.1 / 1024., deltaT = 0.1 / 1024.):
     tt_ = []
     xx_ = []
     yy_ = []
@@ -148,8 +149,8 @@ class KFLocalizator:
     self.scanproc.setScan(scan)
     
     # back in the past
-    duration = 0.1
-    dt = 0.0001
+    duration = 681. * 0.1 / 1024.
+    dt = 0.1 / 1024.
     (tt, xx, yy, hh, vvx, vvy, vvh, covars) = self.backInThePast(currentTime, duration, dt)
     if len(tt) == 0:
       return False
@@ -167,6 +168,8 @@ class KFLocalizator:
     
     
     self.scanproc.findCluster(tt, xx, yy, hh)
+    
+    print "========================================="
     
     # loop on time 
     for i in range(len(tt)):
@@ -191,8 +194,21 @@ class KFLocalizator:
           IM = zeros((2,1))
           IM[0,0] = sqrt((self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
           IM[1,0] = betweenMinusPiAndPlusPi(math.atan2(yBeacon - self.X[1,0], xBeacon - self.X[0,0]) -  self.X[2,0])          
-          # print "KFLocalizator - newScan() : IM="; print IM
+          # print "KFLocalizator - newScan() : IM="; print IM
+          
+          # print "--------------------"
+          # print "estimée pre update :"
+          # print "  sur x (en mm):", self.X[0,0] * 1000.
+          # print "  sur y (en mm):", self.X[1,0] * 1000.
+          # print "  en cap (deg) :", betweenMinusPiAndPlusPi(self.X[2,0]) * 180.*pi
+          # print "estimée : Y="; print Y
+          # print "estimée : IM="; print IM
+          # print "Y[1] - IM[1]=", (Y[1,0] - IM[1,0])*180. / pi
           (self.X, self.P, K,IM,IS) = kf_update(self.X, self.P, Y, H, self.R, IM)
+          # print "estimée post update :"
+          # print "  sur x (en mm):", self.X[0,0] * 1000.
+          # print "  sur y (en mm):", self.X[1,0] * 1000.
+          # print "  en cap (deg) :", betweenMinusPiAndPlusPi(self.X[2,0]) * 180.*pi
       
       ov = OdoVelocity()
       ov.vx = vvx[i]
