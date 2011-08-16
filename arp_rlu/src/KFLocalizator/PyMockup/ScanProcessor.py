@@ -93,6 +93,8 @@ class ScanProcessor:
   def getBeacons(self, time):
     xBeacon = None
     yBeacon = None
+    radius = None
+    theta = None
     if self.beacons == []:
       return (xBeacon, yBeacon)
     for o in self.objects:
@@ -104,5 +106,7 @@ class ScanProcessor:
         if minDist < 0.2:
           xBeacon = self.beacons[iMin].xCenter
           yBeacon = self.beacons[iMin].yCenter
-    return (xBeacon, yBeacon)
+          radius  = o.radius
+          theta  = (o.thetaEnd + o.thetaBegin) / 2
+    return (xBeacon, yBeacon, radius, theta)
     

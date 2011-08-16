@@ -58,10 +58,14 @@ class LRFSimulator:
     # tt numpy array size (1,N) for time
     
     s = Scan()
-    s.theta = arange( -2.*pi/3., 2.*pi/3. + 4.*pi/3./666., 4.*pi/3./666.)
+    s.theta = arange( -2.*pi*340./1024., -2.*pi*340./1024. + 2.*pi*681./1024., 2.*pi/1024.)
+    print "min s.theta (en deg):", min(s.theta)*180./pi
+    print "max s.theta (en deg):", max(s.theta)*180./pi
+    print "delta s.theta (en deg):", (max(s.theta) - min(s.theta))*180./pi
+    print "len(s.theta):", len(s.theta)
     
     if len(s.theta) > len(tt):
-      raise NameError("tt vector is too small (< 667) : len(tt)=" + str(len(tt)))
+      raise NameError("tt vector is too small (<", len(s.theta), ") : len(tt)=" + str(len(tt)))
     if len(xx) != len(tt):
       raise NameError('xx and tt do not have same length')
     if len(yy) != len(tt):
@@ -69,15 +73,17 @@ class LRFSimulator:
     if len(aa) != len(tt):
       raise NameError('aa and tt do not have same length')
     
-    s.tbeg  = tt[0]
+    ideb = len(tt) - len(s.theta)
+    s.tbeg  = tt[ideb]
     s.range = zeros( (len(s.theta)) )
     s.tt    = zeros( (len(s.theta)) )
+    s.tsync = tt[ideb] - 44. * 0.1 / 1024.
     
     for i in range(len(s.theta)):
-      t = tt[i]
-      x = xx[i]
-      y = yy[i]
-      a = aa[i]
+      t = tt[ideb+i]
+      x = xx[ideb+i]
+      y = yy[ideb+i]
+      a = aa[ideb+i]
       s.tend = t
       s.tt[i] = t
       r, inter = self.rayTracer(x, y, a + s.theta[i])

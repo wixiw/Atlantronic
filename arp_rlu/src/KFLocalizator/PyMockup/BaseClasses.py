@@ -9,6 +9,7 @@ class OdoVelocity:
 
 class Scan:
   def __init__(self):
+    self.tsync = 0.
     self.tbeg  = 0.
     self.tend  = 0.
     self.tt    = array( () )
@@ -36,10 +37,13 @@ class Estimate:
   
 class RingBuffer:
   def __init__(self, size):
-    self.data = [None for i in xrange(size)]
+    self.N = size
+    self.data = [None for i in xrange(self.N)]
   def append(self, x):
     self.data.pop(0)
     self.data.append(x)
+  def clear(self):
+    self.data = [None for i in xrange(self.N)]
   def getAll(self):
     return self.data
   def getOldest(self):
