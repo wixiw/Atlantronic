@@ -124,7 +124,7 @@ class ScanProcessor:
         # print "ScanProcessor.getBeacons(): dist="; print dist
         minDist = min(dist)
         iMin = argmin(dist)
-        if minDist < 0.2:
+        if minDist < 0.5:
           xBeacon = self.beacons[iMin].xCenter
           yBeacon = self.beacons[iMin].yCenter
           range  = o.range

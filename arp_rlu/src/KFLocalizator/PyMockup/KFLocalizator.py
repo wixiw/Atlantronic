@@ -17,20 +17,14 @@ class KFLocalizator:
     # X[0,0] is xRobot
     # X[1,0] is yRobot
     # X[2,0] is thetaRobot
-    # X[3,0] is temporal derivative of xRobot
-    # X[4,0] is temporal derivative of yRobot
-    # X[5,0] is temporal derivative of thetaRobot
     self.X = []
-    # and its covariance (6x6 matrix)
+    # and its covariance (3x3 matrix)
     self.P = [] 
     
-    # and its process noise covariance matrix.  (6x6 matrix)
+    # command noise covariance matrix.  (3x3 matrix)
     self.Q = []
-    
-    # input effect matrix (6x6 matrix)
-    self.B = []
 
-    # measurement noise covariance matrix (1x1 matrix)
+    # measurement noise covariance matrix (2x2 matrix)
     self.R = []
     
   def initialize(self, currentTime, N, 
@@ -39,31 +33,22 @@ class KFLocalizator:
                        sigmaTransOdoVelocity, sigmaRotOdoVelocity, sigmaLaserRange, sigmaLaserAngle):
     self.X = array([[initialXPosition], 
                     [initialYPosition], 
-                    [initialHeading], 
-                    [0.], 
-                    [0.],
-                    [0.]])
+                    [initialHeading]])
     self.P = diag((sigmaInitialPosition,
                    sigmaInitialPosition,
-                   sigmaInitialHeading,
-                   0.,
-                   0.,
-                   0.))
+                   sigmaInitialHeading))
     estim = Estimate()
     estim.xRobot = self.X[0,0]
     estim.yRobot = self.X[1,0]
     estim.hRobot = self.X[2,0]
-    estim.velXRobot = self.X[3,0]
-    estim.velYRobot = self.X[4,0]
-    estim.velHRobot = self.X[5,0]
+    estim.velXRobot = 0.
+    estim.velYRobot = 0.
+    estim.velHRobot = 0.
     estim.covariance = self.P
     self.buffer = RingBuffer(N)
     self.buffer.append([currentTime, estim])
     
-    self.Q = diag((0.,
-                   0.,
-                   0.,
-                   sigmaTransOdoVelocity,
+    self.Q = diag((sigmaTransOdoVelocity,
                    sigmaTransOdoVelocity,
                    sigmaRotOdoVelocity))
     
@@ -71,19 +56,13 @@ class KFLocalizator:
                    sigmaLaserAngle))
     
   def predict(self, currentT, ov, dt):
-    U = array([[0.], 
-               [0.], 
-               [0.], 
-               [ov.vx], 
+    U = array([[ov.vx], 
                [ov.vy],
                [ov.vh]])
-    A = array([[1., 0., 0., dt, 0., 0.],
-               [0., 1., 0., 0., dt, 0.],
-               [0., 0., 1., 0., 0., dt],
-               [0., 0., 0., 0., 0., 0.],
-               [0., 0., 0., 0., 0., 0.],
-               [0., 0., 0., 0., 0., 0.]])
-    (self.X, self.P) = kf_predict(self.X, self.P, A, self.Q, identity(6), U)
+    A = array([[1., 0., 0.],
+               [0., 1., 0.],
+               [0., 0., 1.]])
+    (self.X, self.P) = kf_predict(self.X, self.P, A, self.Q, diag((dt,dt,dt)), U)
   
   def newOdoVelocity(self, currentT, ov):
     last = self.buffer.getNewest()
@@ -99,9 +78,9 @@ class KFLocalizator:
     estim.xRobot = self.X[0,0]
     estim.yRobot = self.X[1,0]
     estim.hRobot = self.X[2,0]
-    estim.velXRobot = self.X[3,0]
-    estim.velYRobot = self.X[4,0]
-    estim.velHRobot = self.X[5,0]
+    estim.velXRobot = ov.vx
+    estim.velYRobot = ov.vy
+    estim.velHRobot = ov.vh
     estim.covariance = self.P
     
     self.buffer.append( [ currentT, estim ] ) 
@@ -161,10 +140,7 @@ class KFLocalizator:
     # reinit self.X and self.P
     self.X = array([[xx[0]], 
                     [yy[0]], 
-                    [hh[0]], 
-                    [vvx[0]], 
-                    [vvy[0]],
-                    [vvh[0]]])
+                    [hh[0]]])
     self.P = covars[0]
     
     
@@ -177,8 +153,8 @@ class KFLocalizator:
     # loop on time 
     for i in range(len(tt)):
       t = tt[i]
-      # (xBeacon, yBeacon, r, theta) = self.scanproc.getBeacons(t)
-      (xBeacon, yBeacon, r, theta) = self.scanproc.getTrueBeacons(i)
+      (xBeacon, yBeacon, r, theta) = self.scanproc.getBeacons(t)
+      # (xBeacon, yBeacon, r, theta) = self.scanproc.getTrueBeacons(i)
       if xBeacon != None and yBeacon != None:
           # print "========================================="
           # print "xBeacon =", xBeacon
@@ -187,7 +163,7 @@ class KFLocalizator:
           Y[0,0] = r
           Y[1,0] = theta
           # print "KFLocalizator - newScan() : Y="; print Y
-          H = zeros( (2,6) )
+          H = zeros( (2,3) )
           H[0,0] = (self.X[0,0] - xBeacon) / sqrt( (self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
           H[0,1] = (self.X[1,0] - yBeacon) / sqrt( (self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
           H[0,2] = 0.
@@ -205,9 +181,9 @@ class KFLocalizator:
           # print "  sur x (en mm):", self.X[0,0] * 1000.
           # print "  sur y (en mm):", self.X[1,0] * 1000.
           # print "  en cap (deg) :", betweenMinusPiAndPlusPi(self.X[2,0]) * 180.*pi
-          print "---"
-          print "mesure : Y.r=", r, "  Y.theta=", theta
-          print "simulée : IM.r=", IM[0,0], "  IM.theta=", IM[1,0]
+          # print "---"
+          # print "mesure : Y.r=", r, "  Y.theta=", theta
+          # print "simulée : IM.r=", IM[0,0], "  IM.theta=", IM[1,0]
           # print "Y[0] - IM[0]=", (Y[0,0] - IM[0,0])*1000.
           (self.X, self.P, K,IM,IS) = kf_update(self.X, self.P, Y, H, self.R, IM)
           # print "estimée post update :"
@@ -220,9 +196,6 @@ class KFLocalizator:
           estim.xRobot = self.X[0,0]
           estim.yRobot = self.X[1,0]
           estim.hRobot = self.X[2,0]
-          estim.velXRobot = self.X[3,0]
-          estim.velYRobot = self.X[4,0]
-          estim.velHRobot = self.X[5,0]
           estim.covariance = self.P
           self.buffer.append([t, estim])
       
@@ -239,9 +212,9 @@ class KFLocalizator:
     estim.xRobot = self.X[0,0]
     estim.yRobot = self.X[1,0]
     estim.hRobot = self.X[2,0]
-    estim.velXRobot = self.X[3,0]
-    estim.velYRobot = self.X[4,0]
-    estim.velHRobot = self.X[5,0]
+    estim.velXRobot = ov.vx
+    estim.velYRobot = ov.vy
+    estim.velHRobot = ov.vh
     estim.covariance = self.P
   
     self.buffer.append([t, estim])

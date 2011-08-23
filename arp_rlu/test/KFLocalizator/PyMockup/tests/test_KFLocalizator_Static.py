@@ -16,13 +16,13 @@ set_printoptions(precision=4)
 # Initialization triviale du KF
 #===============================================================================
 kfloc = KFLocalizator()
-trueX = 0. #random.uniform( -1.5, 1.5)
-trueY = 0. #random.uniform( -1.0, 1.0)
-trueH = 0. #random.uniform( -2. * pi, 2. * pi)
-sigmaInitialPosition = 0.01
-sigmaInitialHeading = 0.03
-sigmaTransOdoVelocity = 0.05 #0.01
-sigmaRotOdoVelocity = 0.002 #0.01
+trueX = random.uniform( -1.5, 1.5)
+trueY = random.uniform( -1.0, 1.0)
+trueH = random.uniform( -2. * pi, 2. * pi)
+sigmaInitialPosition = 0.1
+sigmaInitialHeading = 0.3
+sigmaTransOdoVelocity = 0.001 #0.01
+sigmaRotOdoVelocity = 0.001 #0.01
 sigmaLaserRange = 0.01
 sigmaLaserAngle = 0.001
 initialXPosition = trueX + random.normalvariate(0., sigmaInitialPosition)
@@ -66,32 +66,34 @@ obj3.yCenter = 1.
 obj3.radius = radius
 lrfsim.objects.append(obj3)
 
-obj4 = Object()
-obj4.xCenter = -1.5
-obj4.yCenter = 0.
-obj4.radius = radius
-lrfsim.objects.append(obj4)
-obj5 = Object()
-obj5.xCenter = 1.5
-obj5.yCenter = 1.
-obj5.radius = radius
-lrfsim.objects.append(obj5)
-obj6 = Object()
-obj6.xCenter = 1.5
-obj6.yCenter = -1.
-obj6.radius = radius
-lrfsim.objects.append(obj6)
- 
-obj7 = Object()
-obj7.xCenter = 0.
-obj7.yCenter = 1.
-obj7.radius = radius
-lrfsim.objects.append(obj7)
-obj8 = Object()
-obj8.xCenter = 0.
-obj8.yCenter = -1.
-obj8.radius = radius
-lrfsim.objects.append(obj8)
+#===============================================================================
+# obj4 = Object()
+# obj4.xCenter = -1.5
+# obj4.yCenter = 0.
+# obj4.radius = radius
+# lrfsim.objects.append(obj4)
+# obj5 = Object()
+# obj5.xCenter = 1.5
+# obj5.yCenter = 1.
+# obj5.radius = radius
+# lrfsim.objects.append(obj5)
+# obj6 = Object()
+# obj6.xCenter = 1.5
+# obj6.yCenter = -1.
+# obj6.radius = radius
+# lrfsim.objects.append(obj6)
+# 
+# obj7 = Object()
+# obj7.xCenter = 0.
+# obj7.yCenter = 1.
+# obj7.radius = radius
+# lrfsim.objects.append(obj7)
+# obj8 = Object()
+# obj8.xCenter = 0.
+# obj8.yCenter = -1.
+# obj8.radius = radius
+# lrfsim.objects.append(obj8)
+#===============================================================================
 
 kfloc.setBeacons( lrfsim.objects )
 
@@ -184,13 +186,13 @@ for k in range(Ntour):
     #===============================================================================
     # Estimee apres le scan
     #===============================================================================
-    estims = kfloc.getLastEstimates()
-    for estim2 in estims[:-1]:
-      print "-----------------------"
-      print "  Erreur statique post update (t =",estim2[0],"): "
-      print "    sur x (en mm):", (estim2[1].xRobot - trueX) * 1000.
-      print "    sur y (en mm):", (estim2[1].yRobot - trueY) * 1000.
-      print "    en cap (deg) :", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./pi
+    # estims = kfloc.getLastEstimates()
+    # for estim2 in estims[:-1]:
+    #   print "-----------------------"
+    #   print "  Erreur statique post update (t =",estim2[0],"): "
+    #   print "    sur x (en mm):", (estim2[1].xRobot - trueX) * 1000.
+    #   print "    sur y (en mm):", (estim2[1].yRobot - trueY) * 1000.
+    #   print "    en cap (deg) :", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./pi
       
     estim2 = kfloc.getBestEstimate()
     print "======================="
