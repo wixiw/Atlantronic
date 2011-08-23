@@ -2,8 +2,7 @@ from numpy import *
 import math
 import random
 
-from BaseClasses import Scan
-from BaseClasses import Object
+from BaseClasses import *
     
 class ScanProcessor:
   def __init__(self):
@@ -23,6 +22,11 @@ class ScanProcessor:
     
   def setScan(self, s):
     self.scan = s
+    
+  def setTrueStaticPositionForDebugOnly(self, x, y, h):
+    self.trueX = x
+    self.trueY = y
+    self.trueH = h
     
   # for internal use only
   def openCluster(self, t, r, theta, x, y, h):
@@ -129,6 +133,24 @@ class ScanProcessor:
           # print "ScanProcessor.getBeacons(): o.thetaEnd=", o.thetaEnd
         else:
           print "WARNING : the targeted beacon is too far !"
+    return (xBeacon, yBeacon, range, theta)
+
+  def getTrueBeacons(self, index):
+    xBeacon = None
+    yBeacon = None
+    range = None
+    theta = None
+    minTheta = min(self.scan.theta)
+    maxTheta = max(self.scan.theta)
+    thetaStep = betweenMinusPiAndPlusPi((maxTheta - minTheta)/(len(self.scan.theta)-1))
+    for b in self.beacons:
+      thetaBeac = betweenMinusPiAndPlusPi(math.atan2(b.yCenter - self.trueY, b.xCenter - self.trueX) -  self.trueH)
+      if self.scan.theta[index] > thetaBeac - thetaStep/2. and self.scan.theta[index] <= thetaBeac + thetaStep/2.:
+        xBeacon = b.xCenter
+        yBeacon = b.yCenter
+        range = sqrt((self.trueX - xBeacon)**2 + (self.trueY - yBeacon)**2 )
+        theta = thetaBeac
+        return (xBeacon, yBeacon, range, theta)
     return (xBeacon, yBeacon, range, theta)
 
   def printObjects(self):

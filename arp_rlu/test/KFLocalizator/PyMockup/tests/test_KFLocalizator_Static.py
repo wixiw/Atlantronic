@@ -16,40 +16,39 @@ set_printoptions(precision=4)
 # Initialization triviale du KF
 #===============================================================================
 kfloc = KFLocalizator()
-initialXPosition = random.uniform( -1.5, 1.5)
-initialYPosition = random.uniform( -1.0, 1.0)
-initialHeading = random.uniform( -2. * pi, 2. * pi)
-sigmaInitialPosition = 0.02
-sigmaInitialHeading = 0.001
-sigmaTransOdoVelocity = 0.0001
-sigmaRotOdoVelocity = 0.001
+trueX = 0. #random.uniform( -1.5, 1.5)
+trueY = 0. #random.uniform( -1.0, 1.0)
+trueH = 0. #random.uniform( -2. * pi, 2. * pi)
+sigmaInitialPosition = 0.01
+sigmaInitialHeading = 0.03
+sigmaTransOdoVelocity = 0.05 #0.01
+sigmaRotOdoVelocity = 0.002 #0.01
 sigmaLaserRange = 0.01
 sigmaLaserAngle = 0.001
+initialXPosition = trueX + random.normalvariate(0., sigmaInitialPosition)
+initialYPosition = trueY + random.normalvariate(0., sigmaInitialPosition)
+initialHeading = trueH + random.normalvariate(0., sigmaInitialHeading)
 kfloc.initialize(0.0,
                  100,
-                 initialXPosition + random.normalvariate(0., sigmaInitialPosition), 
-                 initialYPosition + random.normalvariate(0., sigmaInitialPosition), 
-                 initialHeading   + random.normalvariate(0., sigmaInitialHeading), 
+                 initialXPosition, 
+                 initialYPosition, 
+                 initialHeading, 
                  sigmaInitialPosition, sigmaInitialHeading,
                  sigmaTransOdoVelocity, sigmaRotOdoVelocity, 
                  sigmaLaserRange, sigmaLaserAngle)
 
-print "======================="
-print "Etat initial :"
-print "  xPosition:", initialXPosition
-print "  yPosition:", initialYPosition
-print "  hPosition:", initialHeading
-print "  vx:", 0.
-print "  vy:", 0.
-print "  vz:", 0.
 
 
 #===============================================================================
-# Estimation via le scan
+# Simulateur de LRF
 #===============================================================================
 lrfsim = LRFSimulator()
 lrfsim.sigma = 0.01
 
+
+#===============================================================================
+# Positionnement des balises
+#===============================================================================
 radius = 0.05
 obj1 = Object()
 obj1.xCenter = 1.5
@@ -67,41 +66,68 @@ obj3.yCenter = 1.
 obj3.radius = radius
 lrfsim.objects.append(obj3)
 
-#===============================================================================
-# obj4 = Object()
-# obj4.xCenter = -1.5
-# obj4.yCenter = 0.
-# obj4.radius = radius
-# lrfsim.objects.append(obj4)
-# obj5 = Object()
-# obj5.xCenter = 1.5
-# obj5.yCenter = 1.
-# obj5.radius = radius
-# lrfsim.objects.append(obj5)
-# obj6 = Object()
-# obj6.xCenter = 1.5
-# obj6.yCenter = -1.
-# obj6.radius = radius
-# lrfsim.objects.append(obj6)
-# 
-# obj7 = Object()
-# obj7.xCenter = 0.
-# obj7.yCenter = 1.
-# obj7.radius = radius
-# lrfsim.objects.append(obj7)
-# obj8 = Object()
-# obj8.xCenter = 0.
-# obj8.yCenter = -1.
-# obj8.radius = radius
-# lrfsim.objects.append(obj8)
-#===============================================================================
+obj4 = Object()
+obj4.xCenter = -1.5
+obj4.yCenter = 0.
+obj4.radius = radius
+lrfsim.objects.append(obj4)
+obj5 = Object()
+obj5.xCenter = 1.5
+obj5.yCenter = 1.
+obj5.radius = radius
+lrfsim.objects.append(obj5)
+obj6 = Object()
+obj6.xCenter = 1.5
+obj6.yCenter = -1.
+obj6.radius = radius
+lrfsim.objects.append(obj6)
+ 
+obj7 = Object()
+obj7.xCenter = 0.
+obj7.yCenter = 1.
+obj7.radius = radius
+lrfsim.objects.append(obj7)
+obj8 = Object()
+obj8.xCenter = 0.
+obj8.yCenter = -1.
+obj8.radius = radius
+lrfsim.objects.append(obj8)
 
 kfloc.setBeacons( lrfsim.objects )
 
-Ntour = 20
+
+#===============================================================================
+# En avant !
+#===============================================================================
 
 time = 0.
+
+print "======================="
+print "Position réelle :"
+print "  xPosition:", trueX
+print "  yPosition:", trueY
+print "  hPosition:", trueH
+
+print "======================="
+print "Etat initial :"
+print "  xPosition:", initialXPosition
+print "  yPosition:", initialYPosition
+print "  hPosition:", initialHeading
+print "  vx:", 0.
+print "  vy:", 0.
+print "  vz:", 0.
+
+    
+print "erreur statique sur l'état initial (t =",time,") :"
+print "  sur x (en mm):", (initialXPosition - trueX) * 1000.
+print "  sur y (en mm):", (initialYPosition - trueY) * 1000.
+print "  en cap (deg) :", betweenMinusPiAndPlusPi( initialHeading - trueH ) *180./pi
+
+Ntour = 10
 for k in range(Ntour):
+    print "=============================================="
+    print "=============================================="
+    print " TOUR", k
     #===============================================================================
     # On reste sur place quelques sec
     #===============================================================================
@@ -119,7 +145,7 @@ for k in range(Ntour):
     #===============================================================================
     estim1 = kfloc.getBestEstimate()
     print "======================="
-    print "Estimee avant le scan :"
+    print "Estimee via odo (t =",estim1[0],"): "
     print "  xPosition:", estim1[1].xRobot
     print "  yPosition:", estim1[1].yRobot
     print "  hPosition:", estim1[1].hRobot
@@ -130,32 +156,45 @@ for k in range(Ntour):
     # print estim1[1].covariance
     
     print "erreur statique apres les odos :"
-    print "  sur x (en mm):", (estim1[1].xRobot - initialXPosition) * 1000.
-    print "  sur y (en mm):", (estim1[1].yRobot - initialYPosition) * 1000.
-    print "  en cap (deg) :", betweenMinusPiAndPlusPi( estim1[1].hRobot - initialHeading ) *180./pi
+    print "  sur x (en mm):", (estim1[1].xRobot - trueX) * 1000.
+    print "  sur y (en mm):", (estim1[1].yRobot - trueY) * 1000.
+    print "  en cap (deg) :", betweenMinusPiAndPlusPi( estim1[1].hRobot - trueH ) *180./pi
     
     duration = 681. * 0.1 / 1024.
     
-    x = initialXPosition
-    y = initialYPosition
-    h = initialHeading
+    x = trueX
+    y = trueY
+    h = trueH
     vh = 0.
-    tt = arange( time, time + duration, 0.1 / 1024.)
+    tt = arange( time - duration, time, 0.1 / 1024.)
+    tt = tt[-681:]
     xx = ones( (len(tt)) ) * x
     yy = ones( (len(tt)) ) * y
     hh = tt * vh + h
     
+    
     # On calcule enfin le scan
     scan = lrfsim.computeScan(xx, yy, hh, tt)
+    
+    
+    kfloc.scanproc.setTrueStaticPositionForDebugOnly(trueX, trueY, trueH)
     
     kfloc.newScan(time, scan)
     
     #===============================================================================
     # Estimee apres le scan
     #===============================================================================
+    estims = kfloc.getLastEstimates()
+    for estim2 in estims[:-1]:
+      print "-----------------------"
+      print "  Erreur statique post update (t =",estim2[0],"): "
+      print "    sur x (en mm):", (estim2[1].xRobot - trueX) * 1000.
+      print "    sur y (en mm):", (estim2[1].yRobot - trueY) * 1000.
+      print "    en cap (deg) :", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./pi
+      
     estim2 = kfloc.getBestEstimate()
     print "======================="
-    print "Estimee apres le scan :"
+    print "Estimée via scan (t =",estim2[0],"): "
     print "  xPosition:", estim2[1].xRobot
     print "  yPosition:", estim2[1].yRobot
     print "  hPosition:", estim2[1].hRobot
@@ -163,12 +202,12 @@ for k in range(Ntour):
     print "  vy:", estim2[1].velYRobot
     print "  vz:", estim2[1].velHRobot
     # print "Covariance apres le scan :"
-    # print estim2[1].covariance
-    
-    print "Erreur statique apres le scan :"
-    print "  sur x (en mm):", (estim2[1].xRobot - initialXPosition) * 1000.
-    print "  sur y (en mm):", (estim2[1].yRobot - initialYPosition) * 1000.
-    print "  en cap (deg) :", betweenMinusPiAndPlusPi( estim2[1].hRobot - initialHeading ) *180./pi
+    # print estim2[1].covariance    
+    print "Erreur statique après scan :"
+    print "  sur x (en mm):", (estim2[1].xRobot - trueX) * 1000.
+    print "  sur y (en mm):", (estim2[1].yRobot - trueY) * 1000.
+    print "  en cap (deg) :", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./pi
+
 
 
 #===============================================================================

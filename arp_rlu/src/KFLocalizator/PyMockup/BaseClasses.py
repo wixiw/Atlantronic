@@ -61,6 +61,8 @@ class RingBuffer:
     self.data = [None for i in xrange(self.N)]
   def getAll(self):
     return self.data
+  def getAllNoNone(self):
+    return filter(lambda x: x != None ,self.data)
   def getOldest(self):
     return self.data[0]
   def getNewest(self):

@@ -135,6 +135,7 @@ class KFLocalizator:
       return (tt_, xx_, yy_, hh_, vvx_, vvy_, vvh_, covars_)
 
     tt = arange(tCurrent-duration, tCurrent, deltaT)
+    tt = tt[-681:]
     xx = interp1d(tt, tt_, xx_)
     yy = interp1d(tt, tt_, yy_)
     hh = interp1d(tt, tt_, hh_)
@@ -170,11 +171,14 @@ class KFLocalizator:
     self.scanproc.findCluster(tt, xx, yy, hh)
     
     # print "========================================="
+    nbVisibleBeacons = 0
+    
     
     # loop on time 
     for i in range(len(tt)):
       t = tt[i]
-      (xBeacon, yBeacon, r, theta) = self.scanproc.getBeacons(t)
+      # (xBeacon, yBeacon, r, theta) = self.scanproc.getBeacons(t)
+      (xBeacon, yBeacon, r, theta) = self.scanproc.getTrueBeacons(i)
       if xBeacon != None and yBeacon != None:
           # print "========================================="
           # print "xBeacon =", xBeacon
@@ -201,20 +205,35 @@ class KFLocalizator:
           # print "  sur x (en mm):", self.X[0,0] * 1000.
           # print "  sur y (en mm):", self.X[1,0] * 1000.
           # print "  en cap (deg) :", betweenMinusPiAndPlusPi(self.X[2,0]) * 180.*pi
-          # print "estimée : Y="; print Y
-          # print "estimée : IM="; print IM
+          print "---"
+          print "mesure : Y.r=", r, "  Y.theta=", theta
+          print "simulée : IM.r=", IM[0,0], "  IM.theta=", IM[1,0]
           # print "Y[0] - IM[0]=", (Y[0,0] - IM[0,0])*1000.
           (self.X, self.P, K,IM,IS) = kf_update(self.X, self.P, Y, H, self.R, IM)
           # print "estimée post update :"
           # print "  sur x (en mm):", self.X[0,0] * 1000.
           # print "  sur y (en mm):", self.X[1,0] * 1000.
           # print "  en cap (deg) :", betweenMinusPiAndPlusPi(self.X[2,0]) * 180.*pi
+          nbVisibleBeacons = nbVisibleBeacons + 1
+          
+          estim = Estimate()
+          estim.xRobot = self.X[0,0]
+          estim.yRobot = self.X[1,0]
+          estim.hRobot = self.X[2,0]
+          estim.velXRobot = self.X[3,0]
+          estim.velYRobot = self.X[4,0]
+          estim.velHRobot = self.X[5,0]
+          estim.covariance = self.P
+          self.buffer.append([t, estim])
       
       ov = OdoVelocity()
       ov.vx = vvx[i]
       ov.vy = vvy[i]
       ov.vh = vvh[i]
       self.predict(t, ov, dt)
+    
+    print "======================="
+    print "  ==>",nbVisibleBeacons, "beacons have been seen"
       
     estim = Estimate()
     estim.xRobot = self.X[0,0]
@@ -230,6 +249,9 @@ class KFLocalizator:
   
   def getBestEstimate(self):
     return self.buffer.getNewest()
+
+  def getLastEstimates(self):
+    return self.buffer.getAllNoNone()
 
   def setBeacons(self, beacons):
     self.scanproc.beacons = beacons
