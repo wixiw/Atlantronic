@@ -30,7 +30,7 @@ class Scan:
     self.range = array( () )
     
 class Object:
-  def __init_(self):
+  def __init__(self):
     self.xCenter  = 0.0
     self.yCenter  = 0.0
     self.radius   = 0.0
@@ -38,6 +38,10 @@ class Object:
     self.thetaEnd = None
     self.timeBeg  = None
     self.timeEnd  = None
+    self.used     = False
+  def __str__(self):
+    return "xCenter=%f  yCenter=%f r=%f thetaBeg=%f thetaEnd=%f timeBeg=%f timeEnd=%f" % (self.xCenter, self.yCenter, self.radius, self.thetaBeg, self.thetaEnd, self.timeBeg, self.timeEnd)
+    
 
 class Estimate:
   def __init__(self):

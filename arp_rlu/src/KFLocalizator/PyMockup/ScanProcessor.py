@@ -20,7 +20,20 @@ class ScanProcessor:
     self.timeLastOpen = None
     self.timeLastAdded = None
     
+  def reset(self):
+    self.objects = []
+    self.objIndex = []
+    self.currentIndex = -1
+    self.currentPts = [[],[],[],[]]
+    self.clusterOpen = False
+    self.thetaLastOpen = None
+    self.thetaLastAdded = None
+    self.timeLastOpen = None
+    self.timeLastAdded = None
+    
+    
   def setScan(self, s):
+    self.reset()
     self.scan = s
     
   def setTrueStaticPositionForDebugOnly(self, x, y, h):
@@ -115,22 +128,30 @@ class ScanProcessor:
       return (xBeacon, yBeacon, range, theta)
     for o in self.objects:
       # we select the object detected at time t (if exist)
-      if time < (o.timeBeg + o.timeEnd)/2. + 0.1/2048. and time >= (o.timeBeg + o.timeEnd)/2. - 0.1/2048.:
-        dist = array([ (b.xCenter-o.xCenter)**2 + (b.yCenter-o.yCenter)**2 for b in self.beacons ])
-        # print "========================================="
+      # print "ScanProcessor.getBeacons(): o.thetaBeg=", o.thetaBeg, "  time=", time, "  o.thetaEnd=", o.thetaEnd
+      if time > (o.timeBeg + o.timeEnd)/2. and o.used == False :
+        o.used = True
+        dist = array([ sqrt((b.xCenter-o.xCenter)**2 + (b.yCenter-o.yCenter)**2) for b in self.beacons ])
+        #=======================================================================
+        # print "-----------------------------------------"
+        # print "ScanProcessor.getBeacons(): min time=", (o.timeBeg + o.timeEnd)/2. - 0.1/2048.
+        # print "ScanProcessor.getBeacons(): time    =", time
+        # print "ScanProcessor.getBeacons(): max time=", (o.timeBeg + o.timeEnd)/2. + 0.1/2048.
+        # print "ScanProcessor.getBeacons(): timeBeg=", o.timeBeg
+        # print "ScanProcessor.getBeacons(): timeEnd=", o.timeEnd
         # print "ScanProcessor.getBeacons(): o.xCenter=", o.xCenter
         # print "ScanProcessor.getBeacons(): o.yCenter=", o.yCenter
-        # print "ScanProcessor.getBeacons(): beacons="; print [ [b.xCenter, b.yCenter] for b in self.beacons ]
-        # print "ScanProcessor.getBeacons(): dist="; print dist
+        # print "ScanProcessor.getBeacons(): beacons=", [ [b.xCenter, b.yCenter] for b in self.beacons ]
+        # print "ScanProcessor.getBeacons(): dist=", dist
+        #=======================================================================
+        
         minDist = min(dist)
         iMin = argmin(dist)
-        if minDist < 0.5:
+        if minDist < 0.7:
           xBeacon = self.beacons[iMin].xCenter
           yBeacon = self.beacons[iMin].yCenter
           range  = o.range
           theta  = (o.thetaEnd + o.thetaBeg) / 2.
-          # print "ScanProcessor.getBeacons(): o.thetaBeg=", o.thetaBeg
-          # print "ScanProcessor.getBeacons(): o.thetaEnd=", o.thetaEnd
         else:
           print "WARNING : the targeted beacon is too far !"
     return (xBeacon, yBeacon, range, theta)

@@ -10,7 +10,10 @@ from LRFSimulator import *
 
 set_printoptions(precision=4)
 
-
+graine = randint(0,1000)
+graine = 128
+random.seed(graine)
+print "graine :", graine
 
 #===============================================================================
 # Initialization triviale du KF
@@ -20,7 +23,7 @@ trueX = random.uniform( -1.5, 1.5)
 trueY = random.uniform( -1.0, 1.0)
 trueH = random.uniform( -2. * pi, 2. * pi)
 sigmaInitialPosition = 0.1
-sigmaInitialHeading = 0.3
+sigmaInitialHeading = 0.1
 sigmaTransOdoVelocity = 0.001 #0.01
 sigmaRotOdoVelocity = 0.001 #0.01
 sigmaLaserRange = 0.01
@@ -99,6 +102,41 @@ kfloc.setBeacons( lrfsim.objects )
 
 
 #===============================================================================
+# Affichage initial
+#===============================================================================
+fig = plt.figure()
+
+ax = fig.add_subplot(111, aspect='equal')
+ax.axis([-1.6, 1.6, -1.1, 1.1])
+
+# table
+plt.plot( [-1.5, -1.5, 1.5, 1.5, -1.5], [-1., 1., 1., -1., -1.], '-k')
+
+# beacons
+for obj in lrfsim.objects:
+  border = arange( 0.0, 2 * pi, pi / 100)
+  xBalls = cos(border) * obj.radius + obj.xCenter
+  yBalls = sin(border) * obj.radius + obj.yCenter
+  ax.plot( xBalls, yBalls, '-g')
+
+xArrowBeg = initialXPosition
+yArrowBeg = initialYPosition
+xArrowEnd = 0.1 * cos(initialHeading)
+yArrowEnd = 0.1 * sin(initialHeading)
+arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.01, color="red")
+ax.add_patch(arrow)
+
+xArrowBeg = trueX
+yArrowBeg = trueY
+xArrowEnd = 0.1 * cos(trueH)
+yArrowEnd = 0.1 * sin(trueH)
+arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.01, color="magenta")
+ax.add_patch(arrow)
+
+
+plt.draw()
+
+#===============================================================================
 # En avant !
 #===============================================================================
 
@@ -125,7 +163,10 @@ print "  sur x (en mm):", (initialXPosition - trueX) * 1000.
 print "  sur y (en mm):", (initialYPosition - trueY) * 1000.
 print "  en cap (deg) :", betweenMinusPiAndPlusPi( initialHeading - trueH ) *180./pi
 
-Ntour = 10
+xOld = initialXPosition
+yOld = initialYPosition
+
+Ntour = 4
 for k in range(Ntour):
     print "=============================================="
     print "=============================================="
@@ -186,13 +227,15 @@ for k in range(Ntour):
     #===============================================================================
     # Estimee apres le scan
     #===============================================================================
-    # estims = kfloc.getLastEstimates()
-    # for estim2 in estims[:-1]:
-    #   print "-----------------------"
-    #   print "  Erreur statique post update (t =",estim2[0],"): "
-    #   print "    sur x (en mm):", (estim2[1].xRobot - trueX) * 1000.
-    #   print "    sur y (en mm):", (estim2[1].yRobot - trueY) * 1000.
-    #   print "    en cap (deg) :", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./pi
+    estims = kfloc.getLastEstimates()
+    for estim2 in estims[:-1]:
+      print "-----------------------"
+      print "  Erreur statique post update (t =",estim2[0],"): "
+      print "    sur x (en mm):", (estim2[1].xRobot - trueX) * 1000.
+      print "    sur y (en mm):", (estim2[1].yRobot - trueY) * 1000.
+      print "    en cap (deg) :", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./pi
+      
+      
       
     estim2 = kfloc.getBestEstimate()
     print "======================="
@@ -210,37 +253,34 @@ for k in range(Ntour):
     print "  sur y (en mm):", (estim2[1].yRobot - trueY) * 1000.
     print "  en cap (deg) :", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./pi
 
-
-
-#===============================================================================
-# Affichage
-#===============================================================================
-fig = plt.figure()
-ax = fig.add_subplot(111, aspect='equal')
-plt.plot( [-1.5, -1.5, 1.5, 1.5, -1.5], [-1., 1., 1., -1., -1.], '-k')
-for obj in lrfsim.objects:
-  border = arange( 0.0, 2 * pi, pi / 100)
-  xBalls = cos(border) * obj.radius + obj.xCenter
-  yBalls = sin(border) * obj.radius + obj.yCenter
-  ax.plot( xBalls, yBalls, '-g')
-
-for i in range(len(scan.range)):
-  if scan.range[-1-i] > 0.:
-    xImpact = xx[-1-i] + cos(hh[-1-i] + scan.theta[-1-i]) * scan.range[-1-i]
-    yImpact = yy[-1-i] + sin(hh[-1-i] + scan.theta[-1-i]) * scan.range[-1-i]
-    ax.plot( [xImpact] , [yImpact], 'xb' )
-    ax.plot( [xx[-1-i], xImpact] , [yy[-1-i], yImpact], '--b' )
+    xArrowBeg = estim2[1].xRobot
+    yArrowBeg = estim2[1].yRobot
+    xArrowEnd = 0.1 * cos(estim2[1].hRobot)
+    yArrowEnd = 0.1 * sin(estim2[1].hRobot)
+    arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.01, alpha=0.3)
+    ax.add_patch(arrow)
     
-N = len(scan.theta)
-ax.plot( [xx[-N], xx[-N] + cos(hh[-N] + min(scan.theta))], [yy[-N], yy[-N] + sin(hh[-N] + min(scan.theta))], '-m')
-ax.plot( [xx[-1], xx[-1] + cos(hh[-1] + max(scan.theta))], 
-         [yy[-1], yy[-1] + sin(hh[-1] + max(scan.theta))], '-m')
+    ax.plot( [xOld, xArrowBeg], [yOld, yArrowBeg], '-b' )
+    xOld = xArrowBeg
+    yOld = yArrowBeg
+    
+    plt.draw()
+    
+    # scan
+    if k == 0:
+      for i in range(len(scan.range)):
+        if scan.range[-1-i] > 0.:
+          xImpact = trueX + cos(trueH + scan.theta[-1-i]) * scan.range[-1-i]
+          yImpact = trueY + sin(trueH + scan.theta[-1-i]) * scan.range[-1-i]
+          ax.plot( [xImpact] , [yImpact], 'xb' )
+          ax.plot( [trueX, xImpact] , [trueY, yImpact], '--b' )
+      
+      # field of view
+      ax.plot( [trueX, trueX + cos(trueH + min(scan.theta))], [trueY, trueY + sin(trueH + min(scan.theta))], '-m')
+      ax.plot( [trueX, trueX + cos(trueH + max(scan.theta))], [trueY, trueY + sin(trueH + max(scan.theta))], '-m')
+    
 
 
-ax.axis([-1.6, 1.6, -1.1, 1.1])
-plt.draw()
-
-# arr1 = plt.Arrow(0.1, -0.1, 0.1, 0.1, edgecolor='green')
-# ax.add_patch(arr1)
-
+print "graine =", graine
+#ax.axis([trueX-0.4, trueX+0.4, trueY-0.4, trueY+0.4])
 plt.show()
