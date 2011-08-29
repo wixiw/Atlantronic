@@ -6,12 +6,13 @@ import random
 from KalmanFilter import *
 from BaseClasses import *
 from ScanProcessor import *
+from ScanProcessor2 import *
 
 class KFLocalizator:
   def __init__(self):
     self.buffer = []
     
-    self.scanproc = ScanProcessor()
+    self.scanproc = ScanProcessor2()
     
     # mean state estimate
     # X[0,0] is xRobot
@@ -160,8 +161,8 @@ class KFLocalizator:
     # loop on time 
     for i in range(len(tt)):
       t = tt[i]
-      #(xBeacon, yBeacon, r, theta) = self.scanproc.getBeacons(t)
-      (xBeacon, yBeacon, r, theta) = self.scanproc.getTrueBeacons(i)
+      (xBeacon, yBeacon, r, theta) = self.scanproc.getBeacons(t)
+      #(xBeacon, yBeacon, r, theta) = self.scanproc.getTrueBeacons(i)
       if xBeacon != None and yBeacon != None:
           # print "========================================="
           # print "xBeacon =", xBeacon
@@ -170,13 +171,16 @@ class KFLocalizator:
           Y[0,0] = r
           Y[1,0] = theta
           # print "KFLocalizator - newScan() : Y="; print Y
-          H = zeros( (2,3) )
-          H[0,0] = (self.X[0,0] - xBeacon) / sqrt( (self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
-          H[0,1] = (self.X[1,0] - yBeacon) / sqrt( (self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
-          H[0,2] = 0.
-          H[1,0] = (self.X[1,0] - yBeacon) / ( (self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
-          H[1,1] = (self.X[0,0] - xBeacon) / ( (self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
-          H[1,2] = -1.
+          def J(X):
+            H = zeros( (2,3) )
+            H[0,0] = (X[0,0] - xBeacon) / sqrt( (X[0,0] - xBeacon)**2 + (X[1,0] - yBeacon)**2 )
+            H[0,1] = (X[1,0] - yBeacon) / sqrt( (X[0,0] - xBeacon)**2 + (X[1,0] - yBeacon)**2 )
+            H[0,2] = 0.
+            H[1,0] = (X[1,0] - yBeacon) / ( (X[0,0] - xBeacon)**2 + (X[1,0] - yBeacon)**2 )
+            H[1,1] = (X[0,0] - xBeacon) / ( (X[0,0] - xBeacon)**2 + (X[1,0] - yBeacon)**2 )
+            H[1,2] = -1.
+            return H
+        
           # print "KFLocalizator - newScan() : H="; print H
           IM = zeros((2,1))
           IM[0,0] = sqrt((self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
@@ -189,14 +193,15 @@ class KFLocalizator:
           # print "  sur y (en mm):", self.X[1,0] * 1000.
           # print "  en cap (deg) :", betweenMinusPiAndPlusPi(self.X[2,0]) * 180.*pi
           # print "---"
-          print "mesure : Y.r=", r, "  Y.theta=", theta
-          print "simulée : IM.r=", IM[0,0], "  IM.theta=", IM[1,0]
+          #print "mesure : Y.r=", r, "  Y.theta=", theta
+          #print "simulée : IM.r=", IM[0,0], "  IM.theta=", IM[1,0]
           # print "Y[0] - IM[0]=", (Y[0,0] - IM[0,0])*1000.
-          (self.X, self.P, K,IM,IS) = kf_update(self.X, self.P, Y, H, self.R, IM)
+          #(self.X, self.P, K,IM,IS) = ekf_update(self.X, self.P, Y, J(self.X), self.R, IM)
           
-          IM[0,0] = sqrt((self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
-          IM[1,0] = betweenMinusPiAndPlusPi(math.atan2(yBeacon - self.X[1,0], xBeacon - self.X[0,0]) -  self.X[2,0])  
-          print "simulée post update: IM.r=", IM[0,0], "  IM.theta=", IM[1,0]
+          Nit = 10
+          threshold = array([ [0.01], [0.01], [0.01]])
+          (self.X, self.P, K,IM,IS, k) = iekf_update(self.X, self.P, Y, J, self.R, IM, Nit, threshold)
+  
           
           # print "estimée post update :"
           # print "  sur x (en mm):", self.X[0,0] * 1000.

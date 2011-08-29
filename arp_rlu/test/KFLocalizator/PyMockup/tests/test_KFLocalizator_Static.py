@@ -11,9 +11,20 @@ from LRFSimulator import *
 set_printoptions(precision=4)
 
 graine = randint(0,1000)
-graine = 128
+#graine = 128
+graine = 988
 random.seed(graine)
 print "graine :", graine
+
+#trueX = 0.1
+#trueY = -0.1
+#trueH = 0.0
+#initialXPosition = 1.15624056453
+#initialYPosition = -0.655125447019
+#initialHeading = 0.22679772196
+
+
+
 
 #===============================================================================
 # Initialization triviale du KF
@@ -166,7 +177,7 @@ print "  en cap (deg) :", betweenMinusPiAndPlusPi( initialHeading - trueH ) *180
 xOld = initialXPosition
 yOld = initialYPosition
 
-Ntour = 4
+Ntour = 5
 for k in range(Ntour):
     print "=============================================="
     print "=============================================="
@@ -188,13 +199,13 @@ for k in range(Ntour):
     #===============================================================================
     estim1 = kfloc.getBestEstimate()
     print "======================="
-    print "Estimee via odo (t =",estim1[0],"): "
-    print "  xPosition:", estim1[1].xRobot
-    print "  yPosition:", estim1[1].yRobot
-    print "  hPosition:", estim1[1].hRobot
-    print "  vx:", estim1[1].velXRobot
-    print "  vy:", estim1[1].velYRobot
-    print "  vz:", estim1[1].velHRobot
+    #print "Estimee via odo (t =",estim1[0],"): "
+    #print "  xPosition:", estim1[1].xRobot
+    #print "  yPosition:", estim1[1].yRobot
+    #print "  hPosition:", estim1[1].hRobot
+    #print "  vx:", estim1[1].velXRobot
+    #print "  vy:", estim1[1].velYRobot
+    #print "  vz:", estim1[1].velHRobot
     # print "Covariance avant le scan :"
     # print estim1[1].covariance
     
@@ -228,26 +239,26 @@ for k in range(Ntour):
     # Estimee apres le scan
     #===============================================================================
     estims = kfloc.getLastEstimates()
-    for estim2 in estims[:-1]:
-      print "-----------------------"
-      print "  Erreur statique post update (t =",estim2[0],"): "
-      print "    sur x (en mm):", (estim2[1].xRobot - trueX) * 1000.
-      print "    sur y (en mm):", (estim2[1].yRobot - trueY) * 1000.
-      print "    en cap (deg) :", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./pi
+    #for estim2 in estims[:-1]:
+    #  print "-----------------------"
+    #    print "  Erreur statique post update (t =",estim2[0],"): "
+    #    print "    sur x (en mm):", (estim2[1].xRobot - trueX) * 1000.
+    #    print "    sur y (en mm):", (estim2[1].yRobot - trueY) * 1000.
+    #    print "    en cap (deg) :", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./pi
       
       
       
     estim2 = kfloc.getBestEstimate()
     print "======================="
-    print "Estimée via scan (t =",estim2[0],"): "
-    print "  xPosition:", estim2[1].xRobot
-    print "  yPosition:", estim2[1].yRobot
-    print "  hPosition:", estim2[1].hRobot
-    print "  vx:", estim2[1].velXRobot
-    print "  vy:", estim2[1].velYRobot
-    print "  vz:", estim2[1].velHRobot
-    # print "Covariance apres le scan :"
-    # print estim2[1].covariance    
+    #print "Estimée via scan (t =",estim2[0],"): "
+    #print "  xPosition:", estim2[1].xRobot
+    #print "  yPosition:", estim2[1].yRobot
+    #print "  hPosition:", estim2[1].hRobot
+    #print "  vx:", estim2[1].velXRobot
+    #print "  vy:", estim2[1].velYRobot
+    #print "  vz:", estim2[1].velHRobot
+    print "Covariance apres le scan :"
+    print estim2[1].covariance
     print "Erreur statique après scan :"
     print "  sur x (en mm):", (estim2[1].xRobot - trueX) * 1000.
     print "  sur y (en mm):", (estim2[1].yRobot - trueY) * 1000.
@@ -281,6 +292,5 @@ for k in range(Ntour):
     
 
 
-print "graine =", graine
 #ax.axis([trueX-0.4, trueX+0.4, trueY-0.4, trueY+0.4])
 plt.show()

@@ -7,18 +7,9 @@ from BaseClasses import *
 class ScanProcessor:
   def __init__(self):
     self.beacons = []
-    self.objects = []
-    self.objIndex = []
-    self.scan = Scan()
     self.thresholdRange = 0.05
-    
-    self.currentIndex = -1
-    self.currentPts = [[],[],[],[]]
-    self.clusterOpen = False
-    self.thetaLastOpen = None
-    self.thetaLastAdded = None
-    self.timeLastOpen = None
-    self.timeLastAdded = None
+    self.scan = Scan()
+    self.reset()
     
   def reset(self):
     self.objects = []
@@ -41,8 +32,7 @@ class ScanProcessor:
     self.trueY = y
     self.trueH = h
     
-  # for internal use only
-  def openCluster(self, t, r, theta, x, y, h):
+  def __openCluster(self, t, r, theta, x, y, h):
     self.currentIndex = self.currentIndex + 1
     self.currentPts = [[x + r * cos(theta + h)],
                        [y + r * sin(theta + h)],
@@ -54,8 +44,7 @@ class ScanProcessor:
     self.thetaLastAdded = theta
     self.timeLastAdded = t
     
-  # for internal use only
-  def closeCluster(self, t, r, theta, x, y, h):
+  def __closeCluster(self, t, r, theta, x, y, h):
     obj = Object()
     xMean = mean(self.currentPts[0])
     yMean = mean(self.currentPts[1])
@@ -77,8 +66,7 @@ class ScanProcessor:
     self.currentPts = [[],[],[],[]]
     self.clusterOpen = False
     
-  # for internal use only
-  def addToCurrentCluster(self, t, r, theta, x, y, h):
+  def __addToCurrentCluster(self, t, r, theta, x, y, h):
       self.currentPts[0].append( x + r * cos(theta + h) )
       self.currentPts[1].append( y + r * sin(theta + h) )
       self.currentPts[2].append( r )
@@ -99,18 +87,18 @@ class ScanProcessor:
         if prev > 0.:
           if self.clusterOpen:
             if abs(r - prev) > self.thresholdRange:
-              self.closeCluster(t, r, theta, xx[i], yy[i], hh[i])
+              self.__closeCluster(t, r, theta, xx[i], yy[i], hh[i])
             else:
-              self.addToCurrentCluster(t, r, theta, xx[i], yy[i], hh[i])              
+              self.__addToCurrentCluster(t, r, theta, xx[i], yy[i], hh[i])              
           else:
             if abs(r - prev) < self.thresholdRange:
-              self.openCluster(t, r, theta, xx[i], yy[i], hh[i])
+              self.__openCluster(t, r, theta, xx[i], yy[i], hh[i])
         else:
           if i > 0:
-            self.openCluster(t, r, theta, xx[i], yy[i], hh[i])
+            self.__openCluster(t, r, theta, xx[i], yy[i], hh[i])
       else:
         if self.clusterOpen:
-          self.closeCluster(t, r, theta, xx[i], yy[i], hh[i])
+          self.__closeCluster(t, r, theta, xx[i], yy[i], hh[i])
       if self.clusterOpen:
         self.objIndex.append(self.currentIndex)
       else:

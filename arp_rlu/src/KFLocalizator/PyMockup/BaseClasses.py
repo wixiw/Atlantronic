@@ -13,7 +13,6 @@ def betweenMinusPiAndPlusPi(angle):
 def betweenZeroAndTwoPi(angle):
   return fmod( fmod(angle, 2 * pi) + 4. * pi, 2. * pi);
 
-
 class OdoVelocity:
   def __init__(self):
     self.vx = 0.
@@ -28,6 +27,11 @@ class Scan:
     self.tt    = array( () )
     self.theta = array( () )
     self.range = array( () )
+    
+class PointCloud:
+  def __init__(self, N = 0):
+    self.points = zeros( (2,N))
+    self.tt = zeros( (N) )
     
 class Object:
   def __init__(self):
@@ -95,3 +99,41 @@ def interpMatrix( t, tp, yp):
       for k in range(len(t)):
         y[k][i,j] = interp1d([t[k]], tp, yp_)
   return y
+
+class MedianFilter:
+  def __init__(self, N):
+    self.N = N
+  def getMedian(self, v):
+    if len(v) == 1:
+      return v[0]
+    noChange = False
+    while not noChange:
+      noChange = True
+      for j in range(len(v)-1):
+        if v[j] > v[j+1]:
+          tmp = v[j+1]
+          v[j+1] = v[j]
+          v[j] = tmp
+          noChange = False
+    return v[(len(v)-1)/2]
+  def compute(self, scan):
+    filtscan = copy(scan)
+    infIndex = (self.N -1)/2
+    supIndex = self.N -1 - (self.N -1)/2
+    for j in range(int(scan.shape[1])):
+      if j-infIndex < 0:
+        continue
+      if j+supIndex > int(scan.shape[1]) - 1:
+        continue
+      v = list(scan[1,(j-infIndex):(j+supIndex+1)])
+      filtscan[1,j] = self.getMedian(v)
+    return filtscan
+  
+def computePointCloud(scan, tt, xx, yy, hh):
+  pc = PointCloud()
+  pc.points = zeros( (2, scan.theta.shape[0]) )
+  pc.points[0,0:] = xx[0:] + scan.range[0:] * cos(scan.theta[0:] + hh[0:])
+  pc.points[1,0:] = yy[0:] + scan.range[0:] * sin(scan.theta[0:] + hh[0:])
+  pc.tt = array(tt)
+  return pc
+
