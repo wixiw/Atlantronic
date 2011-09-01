@@ -8,7 +8,7 @@
 #include "ProtokrotItf.hpp"
 #include "arp_hml_version.h"
 
-#include <ocl/Component.hpp>
+#include <rtt/Component.hpp>
 #include <math/math.hpp>
 
 using namespace arp_hml;

@@ -5,7 +5,7 @@
  *      Author: wla
  */
 
-#include <ocl/Component.hpp>
+#include <rtt/Component.hpp>
 
 #include "orocos/can/CanOpenNode.hpp"
 #include <rtt/scripting/ProgramInterface.hpp>

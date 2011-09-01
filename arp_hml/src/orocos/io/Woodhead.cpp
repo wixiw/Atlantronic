@@ -6,7 +6,7 @@
  */
 
 #include "Woodhead.hpp"
-#include <ocl/Component.hpp>
+#include <rtt/Component.hpp>
 #include "orocos/can/dictionnary/CanARD.h"
 #include "orocos/can/wrappers/CanARDDictionnaryAccessor.hpp"
 

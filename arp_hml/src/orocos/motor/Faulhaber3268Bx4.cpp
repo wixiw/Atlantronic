@@ -6,7 +6,7 @@
  */
 
 #include "Faulhaber3268Bx4.hpp"
-#include <ocl/Component.hpp>
+#include <rtt/Component.hpp>
 #include "orocos/can/dictionnary/CanARD.h"
 #include "orocos/can/wrappers/CanARDDictionnaryAccessor.hpp"
 #include <math/math.hpp>

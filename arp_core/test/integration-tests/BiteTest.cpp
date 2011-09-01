@@ -6,7 +6,7 @@
  */
 
 #include "BiteTest.hpp"
-#include <ocl/Component.hpp>
+#include <rtt/Component.hpp>
 
 
 using namespace arp_core;

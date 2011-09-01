@@ -6,7 +6,7 @@
  */
 #include <stdio.h>
 #include <string.h>
-#include <ocl/Component.hpp>
+#include <rtt/Component.hpp>
 
 #include "CanOpenController.hpp"
 #include "orocos/can/wrappers/can_festival_ARD_master_wrapper.hpp"

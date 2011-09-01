@@ -6,7 +6,7 @@
  */
 
 #include "GamepadPS1.hpp"
-#include <ocl/Component.hpp>
+#include <rtt/Component.hpp>
 #include <linux/input.h>
 #include <sys/ioctl.h>
 

@@ -6,7 +6,7 @@
  */
 
 #include "HmlTaskContext.hpp"
-#include <ocl/Component.hpp>
+#include <rtt/Component.hpp>
 #include <ros/package.h>
 
 using namespace arp_hml;

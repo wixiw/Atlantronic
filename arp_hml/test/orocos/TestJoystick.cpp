@@ -8,7 +8,7 @@
 
 
 #include "TestJoystick.hpp"
-#include <ocl/Component.hpp>
+#include <rtt/Component.hpp>
 #include "orocos/taskcontexts/HmlTaskContext.hpp"
 
 #define BOOST_TEST_DYN_LINK
