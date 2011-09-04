@@ -8,8 +8,8 @@
 #ifndef ARDTASKCONTEXT_HPP_
 #define ARDTASKCONTEXT_HPP_
 
-//TODO probleme de link
-//include <rtt/typekit/Types.hpp>
+//TODO WLA a remettre plus tard, bug Orocos
+//#include <rtt/typekit/Types.hpp>
 #include <rtt/RTT.hpp>
 #include <rtt/scripting/Scripting.hpp>
 #include <rtt/marsh/Marshalling.hpp>

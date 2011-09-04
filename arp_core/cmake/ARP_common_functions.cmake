@@ -8,7 +8,6 @@ macro( add_orocos )
     set( RTT_HINTS HINTS ${rtt_PACKAGE_PATH}/install )
     find_package(OROCOS-RTT REQUIRED rtt-marshalling   rtt-scripting  ${RTT_HINTS})
     include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DRTT_COMPONENT")
 endmacro()
 
 # USER : use it in your source dirs CMakeLists.txt
