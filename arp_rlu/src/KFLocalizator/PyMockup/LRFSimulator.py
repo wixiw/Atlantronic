@@ -14,12 +14,9 @@ class LRFSimulator:
   def circleIntersection(self, x, y, theta, obj):
     # M is Robot center and O is object center
     MO = np.array( [ [obj.xCenter - x], [obj.yCenter - y] ] )
-    # print "MO:", MO
     
     # laser direction vector
     u  = np.array( [[np.cos(theta)], [np.sin(theta)]] )
-    # print "u:",u
-    # print "vdot(u, MO):",vdot(u, MO)
     
     # P is O projected on (M, theta)
     if np.vdot(u, MO) < 0.:
@@ -28,7 +25,6 @@ class LRFSimulator:
       return range, intersection
     else:
       PO = MO - u * np.vdot(u, MO)
-      # print "PO:",PO
       if np.linalg.norm(PO) < obj.radius:
         delta = math.sqrt( obj.radius * obj.radius - np.linalg.norm(PO) * np.linalg.norm(PO) )
         range = np.vdot(u, MO) - delta
@@ -45,25 +41,6 @@ class LRFSimulator:
     
     M = np.array( [[x],[y]])
     D = np.dot( np.linalg.pinv( np.hstack((sgmt.B - sgmt.A, -np.array([[math.cos(theta)],[math.sin(theta)]]) )) ), (M - sgmt.A))
-    
-#    print "A:"
-#    print sgmt.A
-#    print "B:"
-#    print sgmt.B
-#    print "M:"
-#    print M
-#    print "B-A:"
-#    print sgmt.B - sgmt.A
-#    print "array:"
-#    print -np.array([[math.cos(theta)],[math.sin(theta)]])
-#    print "to pinv"
-#    print np.hstack((sgmt.B - sgmt.A, -np.array([[math.cos(theta)],[math.sin(theta)]]) ))
-#    print "pinv"
-#    print np.linalg.pinv( np.hstack((sgmt.B - sgmt.A, -np.array([[math.cos(theta)],[math.sin(theta)]]) )) )
-#    print "M - sgmt.A"
-#    print M - sgmt.A
-#    print "D:"
-#    print D
     
     if D[1,0] > 0:
       if D[0,0] >= 0 and D[0,0] <= 1:
