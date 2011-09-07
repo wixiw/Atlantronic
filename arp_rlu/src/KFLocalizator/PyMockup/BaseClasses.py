@@ -1,5 +1,6 @@
 import numpy as np
 import math
+from abc import ABCMeta
 
 def betweenMinusPiAndPlusPi(angle):
   angle = betweenZeroAndTwoPi( angle )
@@ -58,6 +59,9 @@ class PointCloud:
     self.tt = np.array(tt)
     
 class Object:
+  __metaclass__ = ABCMeta
+  
+class Circle(Object):
   def __init__(self):
     self.xCenter  = 0.0
     self.yCenter  = 0.0
@@ -70,6 +74,14 @@ class Object:
   def __str__(self):
     return "xCenter=%f  yCenter=%f r=%f thetaBeg=%f thetaEnd=%f timeBeg=%f timeEnd=%f" % (self.xCenter, self.yCenter, self.radius, self.thetaBeg, self.thetaEnd, self.timeBeg, self.timeEnd)
     
+class Segment(Object):
+  def __init__(self):
+    self.A = np.zeros( (2,1) )
+    self.B = np.zeros( (2,1) )
+  def __str__(self):
+    return "A.x=%f  A.y=%f r=%f B.x=%f B.y=%f" % (self.A[0,0], self.A[1,0], self.B[0,0], self.B[1,0])
+      
+
 
 class Estimate:
   def __init__(self):

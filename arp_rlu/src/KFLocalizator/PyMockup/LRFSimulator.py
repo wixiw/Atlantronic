@@ -3,7 +3,8 @@ import math
 import random
 
 from BaseClasses import Scan
-from BaseClasses import Object
+from BaseClasses import Circle
+from BaseClasses import Segment
 
 class LRFSimulator:
   def __init__(self):
@@ -39,21 +40,48 @@ class LRFSimulator:
         return range, intersection
       
   def segmentIntersection(self, x, y, theta, sgmt):
-    range = None
+    range = float('inf')
     intersection = None
+    
+    M = np.array( [[x],[y]])
+    D = np.dot( np.linalg.pinv( np.hstack((sgmt.B - sgmt.A, -np.array([[math.cos(theta)],[math.sin(theta)]]) )) ), (M - sgmt.A))
+    
+#    print "A:"
+#    print sgmt.A
+#    print "B:"
+#    print sgmt.B
+#    print "M:"
+#    print M
+#    print "B-A:"
+#    print sgmt.B - sgmt.A
+#    print "array:"
+#    print -np.array([[math.cos(theta)],[math.sin(theta)]])
+#    print "to pinv"
+#    print np.hstack((sgmt.B - sgmt.A, -np.array([[math.cos(theta)],[math.sin(theta)]]) ))
+#    print "pinv"
+#    print np.linalg.pinv( np.hstack((sgmt.B - sgmt.A, -np.array([[math.cos(theta)],[math.sin(theta)]]) )) )
+#    print "M - sgmt.A"
+#    print M - sgmt.A
+#    print "D:"
+#    print D
+    
+    if D[1,0] > 0:
+      if D[0,0] >= 0 and D[0,0] <= 1:
+        range = D[1,0]
+        intersection = sgmt.A + D[0,0] * (sgmt.B - sgmt.A)
     return range, intersection
     
   def rayTracer(self, x, y, a):
     range = float('inf')
     intersection = None
     for obj in self.objects:
-      # print "object.xCenter:", obj.xCenter
-      # print "object.yCenter:", obj.yCenter
-      # print "object.radius:", obj.radius
-      r, inter = self.circleIntersection(x, y, a, obj)
+      if isinstance(obj, Circle):
+        r, inter = self.circleIntersection(x, y, a, obj)
+      elif isinstance(obj, Segment):
+        r, inter = self.segmentIntersection(x, y, a, obj)
       if r < range:
         range = r
-        intersection = inter
+        intersection = inter        
     return range, intersection
     
   def computeScan(self, xx, yy, aa, tt):
