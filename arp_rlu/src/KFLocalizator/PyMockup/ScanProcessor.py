@@ -1,5 +1,5 @@
 # coding=utf-8
-from numpy import *
+import numpy as np
 import math
 import random
 
@@ -35,8 +35,8 @@ class ScanProcessor:
     
   def __openCluster(self, t, r, theta, x, y, h):
     self.currentIndex = self.currentIndex + 1
-    self.currentPts = [[x + r * cos(theta + h)],
-                       [y + r * sin(theta + h)],
+    self.currentPts = [[x + r * math.cos(theta + h)],
+                       [y + r * math.sin(theta + h)],
                        [r],
                        [theta]]
     self.clusterOpen = True
@@ -47,8 +47,8 @@ class ScanProcessor:
     
   def __closeCluster(self, t, r, theta, x, y, h):
     obj = Object()
-    xMean = mean(self.currentPts[0])
-    yMean = mean(self.currentPts[1])
+    xMean = math.mean(self.currentPts[0])
+    yMean = math.mean(self.currentPts[1])
     obj.pts = self.currentPts
     xA = self.currentPts[0][0]
     yA = self.currentPts[1][0]
@@ -56,13 +56,13 @@ class ScanProcessor:
     yB = self.currentPts[1][len(self.currentPts[0])-1]
     obj.radius = math.sqrt( (xB-xA)**2 + (yB-yA)**2 ) / 2.
     # le 0.85 est statistique. Il permet de reculer le point pour arriver pres du centre
-    obj.xCenter = mean(self.currentPts[0]) + 0.85 * obj.radius * cos(math.atan2(yMean-y, xMean-x))
-    obj.yCenter = mean(self.currentPts[1]) + 0.85 * obj.radius * sin(math.atan2(yMean-y, xMean-x))
+    obj.xCenter = math.mean(self.currentPts[0]) + 0.85 * obj.radius * cos(math.atan2(yMean-y, xMean-x))
+    obj.yCenter = math.mean(self.currentPts[1]) + 0.85 * obj.radius * sin(math.atan2(yMean-y, xMean-x))
     obj.thetaBeg = self.thetaLastOpen
     obj.thetaEnd = self.thetaLastAdded
     obj.timeBeg = self.timeLastOpen
     obj.timeEnd = self.timeLastAdded
-    obj.range = mean(self.currentPts[2]) + 0.85 * obj.radius
+    obj.range = math.mean(self.currentPts[2]) + 0.85 * obj.radius
     self.objects.append( obj )
     self.currentPts = [[],[],[],[]]
     self.clusterOpen = False
@@ -78,7 +78,7 @@ class ScanProcessor:
     
     
   def findCluster(self, tt, xx, yy, hh):
-    thetatheta = array( [ self.scan.theta[i] + hh[i] for i in range(len(self.scan.theta)) ] )
+    thetatheta = np.array( [ self.scan.theta[i] + hh[i] for i in range(len(self.scan.theta)) ] )
     prev = 0.
     for i in range(len(self.scan.range)):
       r = self.scan.range[i]
@@ -120,7 +120,7 @@ class ScanProcessor:
       # print "ScanProcessor.getBeacons(): o.thetaBeg=", o.thetaBeg, "  time=", time, "  o.thetaEnd=", o.thetaEnd
       if time > (o.timeBeg + o.timeEnd)/2. and o.used == False :
         o.used = True
-        dist = array([ sqrt((b.xCenter-o.xCenter)**2 + (b.yCenter-o.yCenter)**2) for b in self.beacons ])
+        dist = np.array([ math.sqrt((b.xCenter-o.xCenter)**2 + (b.yCenter-o.yCenter)**2) for b in self.beacons ])
         #=======================================================================
         # print "-----------------------------------------"
         # print "ScanProcessor.getBeacons(): min time=", (o.timeBeg + o.timeEnd)/2. - 0.1/2048.
@@ -134,8 +134,8 @@ class ScanProcessor:
         # print "ScanProcessor.getBeacons(): dist=", dist
         #=======================================================================
         
-        minDist = min(dist)
-        iMin = argmin(dist)
+        minDist = np.min(dist)
+        iMin = np.argmin(dist)
         if minDist < 0.7:
           xBeacon = self.beacons[iMin].xCenter
           yBeacon = self.beacons[iMin].yCenter
@@ -150,15 +150,15 @@ class ScanProcessor:
     yBeacon = None
     range = None
     theta = None
-    minTheta = min(self.scan.theta)
-    maxTheta = max(self.scan.theta)
+    minTheta = np.min(self.scan.theta)
+    maxTheta = np.max(self.scan.theta)
     thetaStep = betweenMinusPiAndPlusPi((maxTheta - minTheta)/(len(self.scan.theta)-1))
     for b in self.beacons:
       thetaBeac = betweenMinusPiAndPlusPi(math.atan2(b.yCenter - self.trueY, b.xCenter - self.trueX) -  self.trueH)
       if self.scan.theta[index] > thetaBeac - thetaStep/2. and self.scan.theta[index] <= thetaBeac + thetaStep/2.:
         xBeacon = b.xCenter
         yBeacon = b.yCenter
-        range = sqrt((self.trueX - xBeacon)**2 + (self.trueY - yBeacon)**2 )
+        range = math.sqrt((self.trueX - xBeacon)**2 + (self.trueY - yBeacon)**2 )
         theta = thetaBeac
         return (xBeacon, yBeacon, range, theta)
     return (xBeacon, yBeacon, range, theta)

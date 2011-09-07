@@ -1,4 +1,4 @@
-from numpy import *
+import numpy as np
 import math
 import random
 
@@ -12,31 +12,36 @@ class LRFSimulator:
     
   def circleIntersection(self, x, y, theta, obj):
     # M is Robot center and O is object center
-    MO = array( [ [obj.xCenter - x], [obj.yCenter - y] ] )
+    MO = np.array( [ [obj.xCenter - x], [obj.yCenter - y] ] )
     # print "MO:", MO
     
     # laser direction vector
-    u  = array( [[cos(theta)], [sin(theta)]] )
+    u  = np.array( [[np.cos(theta)], [np.sin(theta)]] )
     # print "u:",u
     # print "vdot(u, MO):",vdot(u, MO)
     
     # P is O projected on (M, theta)
-    if vdot(u, MO) < 0.:
+    if np.vdot(u, MO) < 0.:
       range = float('inf')
       intersection = None
       return range, intersection
     else:
-      PO = MO - u * vdot(u, MO)
+      PO = MO - u * np.vdot(u, MO)
       # print "PO:",PO
-      if linalg.norm(PO) < obj.radius:
-        delta = math.sqrt( obj.radius * obj.radius - linalg.norm(PO) * linalg.norm(PO) )
-        range = vdot(u, MO) - delta
-        intersection = array( [ [x], [y] ] ) + u * range
+      if np.linalg.norm(PO) < obj.radius:
+        delta = math.sqrt( obj.radius * obj.radius - np.linalg.norm(PO) * np.linalg.norm(PO) )
+        range = np.vdot(u, MO) - delta
+        intersection = np.array( [ [x], [y] ] ) + u * range
         return range, intersection
       else:
         range = float('inf')
         intersection = None
         return range, intersection
+      
+  def segmentIntersection(self, x, y, theta, sgmt):
+    range = None
+    intersection = None
+    return range, intersection
     
   def rayTracer(self, x, y, a):
     range = float('inf')
@@ -58,7 +63,7 @@ class LRFSimulator:
     # tt numpy array size (1,N) for time
     
     s = Scan()
-    s.theta = arange( -2.*pi*340./1024., -2.*pi*340./1024. + 2.*pi*681./1024., 2.*pi/1024.)
+    s.theta = np.arange( -2.*np.pi*340./1024., -2.*np.pi*340./1024. + 2.*np.pi*681./1024., 2.*np.pi/1024.)
     
     if len(s.theta) > len(tt):
       raise NameError("tt vector is too small (<", len(s.theta), ") : len(tt)=" + str(len(tt)))
@@ -71,8 +76,8 @@ class LRFSimulator:
     
     ideb = len(tt) - len(s.theta)
     s.tbeg  = tt[ideb]
-    s.range = zeros( (len(s.theta)) )
-    s.tt    = zeros( (len(s.theta)) )
+    s.range = np.zeros( (len(s.theta)) )
+    s.tt    = np.zeros( (len(s.theta)) )
     s.tsync = tt[ideb] - 44. * 0.1 / 1024.
     
     for i in range(len(s.theta)):

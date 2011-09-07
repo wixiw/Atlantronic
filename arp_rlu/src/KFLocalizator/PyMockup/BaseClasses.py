@@ -1,17 +1,17 @@
-from numpy import *
+import numpy as np
 import math
 
 def betweenMinusPiAndPlusPi(angle):
   angle = betweenZeroAndTwoPi( angle )
-  if angle > pi:
-    angle = angle - 2 * pi
-  if angle < -pi:
-    angle = angle + 2 * pi
+  if angle > np.pi:
+    angle = angle - 2 * np.pi
+  if angle < -np.pi:
+    angle = angle + 2 * np.pi
   return angle
 
 
 def betweenZeroAndTwoPi(angle):
-  return fmod( fmod(angle, 2 * pi) + 4. * pi, 2. * pi);
+  return np.fmod( np.fmod(angle, 2 * np.pi) + 4. * np.pi, 2. * np.pi);
 
 class OdoVelocity:
   def __init__(self):
@@ -24,14 +24,14 @@ class Scan:
     self.tsync = 0.
     self.tbeg  = 0.
     self.tend  = 0.
-    self.tt    = array( () )
-    self.theta = array( () )
-    self.range = array( () )
+    self.tt    = np.array( () )
+    self.theta = np.array( () )
+    self.range = np.array( () )
     
 class PointCloud:
   def __init__(self, N = 0):
-    self.points = zeros( (2,N))
-    self.tt = zeros( (N) )
+    self.points = np.zeros( (2,N))
+    self.tt = np.zeros( (N) )
   def fromScan(self, scan, tt, xx, yy, hh):
     n = scan.theta.shape[0]
     if type(tt) != type([]):
@@ -52,10 +52,10 @@ class PointCloud:
       xx = xx[0]
       yy = yy[0]
       hh = hh[0]
-    self.points = zeros( (2, scan.theta.shape[0]) )
-    self.points[0,0:] = xx[0:] + scan.range[0:] * cos(scan.theta[0:] + hh[0:])
-    self.points[1,0:] = yy[0:] + scan.range[0:] * sin(scan.theta[0:] + hh[0:])
-    self.tt = array(tt)
+    self.points = np.zeros( (2, scan.theta.shape[0]) )
+    self.points[0,0:] = xx[0:] + scan.range[0:] * np.cos(scan.theta[0:] + hh[0:])
+    self.points[1,0:] = yy[0:] + scan.range[0:] * np.sin(scan.theta[0:] + hh[0:])
+    self.tt = np.array(tt)
     
 class Object:
   def __init__(self):
@@ -101,7 +101,7 @@ class RingBuffer:
     return self.data[-1]
 
 def interp1d( t, tp, yp ):
-    y = interp(t, tp, yp)
+    y = np.interp(t, tp, yp)
     if len(tp) < 2:
         return y
     for i in range(len(t)):
@@ -114,7 +114,7 @@ def interp1d( t, tp, yp ):
 def interpMatrix( t, tp, yp):
   y = []
   for k in range(len(t)):
-    y.append( zeros( yp[0].shape ) )
+    y.append( np.zeros( yp[0].shape ) )
   for i in range(int(yp[0].shape[0])):
     for j in range(int(yp[0].shape[1])):
       yp_ = []
@@ -141,7 +141,7 @@ class MedianFilter:
           noChange = False
     return v[(len(v)-1)/2]
   def compute(self, scan):
-    filtscan = copy(scan)
+    filtscan = np.copy(scan)
     infIndex = (self.N -1)/2
     supIndex = self.N -1 - (self.N -1)/2
     for j in range(int(scan.shape[1])):
