@@ -1,3 +1,4 @@
+# coding=utf-8
 import sys
 sys.path.append( "../../../../src/KFLocalizator/PyMockup" )
 import unittest
@@ -135,7 +136,8 @@ class TestBaseClasse(unittest.TestCase):
     xx = zeros( (4) )
     yy = zeros( (4) )
     hh = zeros( (4) )
-    pc = computePointCloud(scan, tt, xx, yy, hh)
+    pc = PointCloud()
+    pc.fromScan(scan, tt, xx, yy, hh)
     self.assertTrue(array_equiv( pc.points, zeros( (2,4)) ))
     self.assertTrue(array_equiv( pc.tt, zeros( (4)) ))
     
@@ -149,7 +151,8 @@ class TestBaseClasse(unittest.TestCase):
     xx = ones( (4) ) * 0.3
     yy = ones( (4) ) * -0.1
     hh = ones( (4) ) * pi/2.
-    pc = computePointCloud(scan, tt, xx, yy, hh)
+    pc = PointCloud()
+    pc.fromScan(scan, tt, xx, yy, hh)
     self.assertTrue(allclose( pc.points, array( [[ 0.3, -0.2, 0.3, 3.3 ], [ 0.9, -0.1,-2.1,-0.1]]) ))
     self.assertTrue(allclose( pc.tt, zeros( (4)) ))
 

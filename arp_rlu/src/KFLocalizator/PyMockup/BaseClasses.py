@@ -32,6 +32,30 @@ class PointCloud:
   def __init__(self, N = 0):
     self.points = zeros( (2,N))
     self.tt = zeros( (N) )
+  def fromScan(self, scan, tt, xx, yy, hh):
+    n = scan.theta.shape[0]
+    if type(tt) != type([]):
+      tt = [tt] 
+    if type(xx) != type([]):
+      xx = [xx] 
+    if type(yy) != type([]):
+      yy = [yy] 
+    if type(hh) != type([]):
+      hh = [hh] 
+    if len(tt)*len(xx)*len(yy)*len(hh) < 1:
+      tt = [ 0. ] * n
+      xx = [ 0. ] * n
+      yy = [ 0. ] * n
+      hh = [ 0. ] * n
+    if len(tt) != n or len(xx) != n or len(yy) != n or len(hh) != n:
+      tt = tt[0]
+      xx = xx[0]
+      yy = yy[0]
+      hh = hh[0]
+    self.points = zeros( (2, scan.theta.shape[0]) )
+    self.points[0,0:] = xx[0:] + scan.range[0:] * cos(scan.theta[0:] + hh[0:])
+    self.points[1,0:] = yy[0:] + scan.range[0:] * sin(scan.theta[0:] + hh[0:])
+    self.tt = array(tt)
     
 class Object:
   def __init__(self):
@@ -129,11 +153,4 @@ class MedianFilter:
       filtscan[1,j] = self.getMedian(v)
     return filtscan
   
-def computePointCloud(scan, tt, xx, yy, hh):
-  pc = PointCloud()
-  pc.points = zeros( (2, scan.theta.shape[0]) )
-  pc.points[0,0:] = xx[0:] + scan.range[0:] * cos(scan.theta[0:] + hh[0:])
-  pc.points[1,0:] = yy[0:] + scan.range[0:] * sin(scan.theta[0:] + hh[0:])
-  pc.tt = array(tt)
-  return pc
 
