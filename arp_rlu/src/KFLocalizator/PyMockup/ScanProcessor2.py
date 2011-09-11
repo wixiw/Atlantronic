@@ -43,13 +43,13 @@ class ScanProcessor2:
     
     
     for v in vPC:
-#      print "************"
+      print "************"
 #      print v.points
       means, stddev, vectors = BaseClasses.pca(v.points[0:2,:])
 #      print "means:", means
 #      print "stddev:", stddev
 #      print "vectors:"
-      print vectors
+#      print vectors
       fobj = BaseClasses.FoundObject() 
       fobj.x = means[0]
       fobj.y = means[1]
@@ -63,27 +63,55 @@ class ScanProcessor2:
       y_ = yy[index[0]]
       alpha = BaseClasses.betweenMinusPiAndPlusPi(math.atan2(fobj.y - y_, fobj.x - x_))
       fobj.detectionTheta = BaseClasses.betweenMinusPiAndPlusPi(alpha - hh[index[0]])
+      fobj.detectionRange = math.sqrt( (fobj.y - y_)**2 + (fobj.x - x_)**2 )
       
       ratio = np.max(stddev) / np.min(stddev)
-      if ratio > self.minRatio and fobj.nbPoints > self.minNbPointsForAngleComputing:
+      print "x=", fobj.x
+      print "y=", fobj.y
+      print "ratio=", ratio
+      print "nbPoints=", fobj.nbPoints
+      if ratio >= self.minRatio and fobj.nbPoints >= self.minNbPointsForAngleComputing:
         sgmtDir = vectors[0:, np.argmax(stddev)]
         laserDir = np.array( [math.cos(alpha), math.sin(alpha)] )
         if laserDir[0] * sgmtDir[1] - laserDir[1] * sgmtDir[0] > 0.:
           sgmtDir = -sgmtDir
         beta = math.atan2( sgmtDir[1], sgmtDir[0] )
-        fobj.h =  BaseClasses.betweenMinusPiAndPlusPi( beta - alpha + np.pi/2.)
-          
+        fobj.h = BaseClasses.betweenMinusPiAndPlusPi( beta + np.pi/2.)
+        print "h=", fobj.h * 180. / np.pi, "°"
+        fobj.cap =  BaseClasses.betweenMinusPiAndPlusPi( beta - alpha + np.pi/2.)
+        
       self.objects.append(fobj)
     
     
     
   
-  def getBeacons(self, time):
+  def getBeacons(self, time, epsilon_time):
     xBeacon = None
     yBeacon = None
     range = None
     theta = None
-    return (xBeacon, yBeacon, range, theta)
+    heading = None
+    if self.beacons == []:
+      print "WARNING: ScanProcessor.getBeacons(): No beacon registred"
+      return (xBeacon, yBeacon, range, theta, heading)
+    
+    for o in self.objects:
+      if o.detectionTime < time + epsilon_time/2. and o.detectionTime >= time - epsilon_time/2. and o.used == False:
+        o.used = True
+        dist = np.array([ math.sqrt((b.xCenter-o.xCenter)**2 + (b.yCenter-o.yCenter)**2) for b in self.beacons ])
+        
+        minDist = np.min(dist)
+        iMin = np.argmin(dist)
+        if minDist < 0.7:
+          xBeacon = o.x
+          yBeacon = o.y
+          range  = o.detectionRange
+          theta  = o.detectionTheta
+          heading = o.cap
+        else:
+          print "WARNING : the targeted beacon is too far !"
+          
+    return (xBeacon, yBeacon, range, theta, heading)
 
   def getTrueBeacons(self, index):
     xBeacon = None

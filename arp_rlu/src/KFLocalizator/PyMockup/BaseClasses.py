@@ -47,11 +47,14 @@ class FoundObject(Object):
     self.x = None     
     self.y = None     
     self.h = None
+    self.cap = None
     self.detectionTime = None
     self.detectionTheta = None
+    self.detectionRange = None
     self.nbPoints = 0
+    self.used = False
   def __str__(self):
-    return "x=%s  y=%s h=%s detectionTime=%s detectionTheta=%s nbPoints=%d" % (str(self.x), str(self.y), str(self.h * 180. / np.pi) + "deg", str(self.detectionTime), str(self.detectionTheta * 180. / np.pi) + "deg", self.nbPoints)
+    return "x=%s  y=%s h=%s cap=%s detectionTime=%s detectionTheta=%s detectionRange=%s nbPoints=%d" % (str(self.x), str(self.y), str(self.h), str(self.cap), str(self.detectionTime), str(self.detectionTheta), str(self.detectionRange), self.nbPoints)
     
     
 

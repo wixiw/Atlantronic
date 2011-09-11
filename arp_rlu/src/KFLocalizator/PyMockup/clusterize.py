@@ -11,7 +11,7 @@ class ClusterizeParams:
   def __init__(self):
     self.kmeansMaxIt = 10
     self.kmeansDispThreshold = 0.01
-    self.minNbPoints = 5
+    self.minNbPoints = 4
     self.maxStddev = 0.1
 
 def clusterize(pc, params):
