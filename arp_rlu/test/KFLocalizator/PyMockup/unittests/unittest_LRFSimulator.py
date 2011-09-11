@@ -87,7 +87,7 @@ class TestLRFSimulator(unittest.TestCase):
     yy = np.ones( (1000) ) * y
     aa = np.ones( (1000) ) * a
     tt = np.arange( 0.0, 0.1, 0.0001)
-    scan = self.lrfsim.computeScan(xx, yy, aa, tt)
+    scan = self.lrfsim.computeScan(tt, xx, yy, aa)
     
   def testRayTracerOneSegment1(self):
     x = 0.

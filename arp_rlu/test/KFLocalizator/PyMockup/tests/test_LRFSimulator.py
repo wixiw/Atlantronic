@@ -62,7 +62,7 @@ lrfsim.objects.append(sgmtW)
 
 
 # Compute
-scan = lrfsim.computeScan(xx, yy, aa, tt)
+scan = lrfsim.computeScan(tt, xx, yy, aa)
 
 
 # Plot

@@ -61,7 +61,7 @@ class LRFSimulator:
         intersection = inter        
     return range, intersection
     
-  def computeScan(self, xx, yy, aa, tt):
+  def computeScan(self, tt, xx, yy, hh):
     # xx numpy array size (1,N) for xRobot
     # yy numpy array size (1,N) for yRobot
     # aa numpy array size (1,N) for headingRobot
@@ -71,13 +71,13 @@ class LRFSimulator:
     s.theta = np.arange( -2.*np.pi*340./1024., -2.*np.pi*340./1024. + 2.*np.pi*681./1024., 2.*np.pi/1024.)
     
     if len(s.theta) > len(tt):
-      raise NameError("tt vector is too small (<", len(s.theta), ") : len(tt)=" + str(len(tt)))
+      raise ValueError("tt vector is too small (<", len(s.theta), ") : len(tt)=" + str(len(tt)))
     if len(xx) != len(tt):
-      raise NameError('xx and tt do not have same length')
+      raise ValueError('xx and tt do not have same length')
     if len(yy) != len(tt):
-      raise NameError('yy and tt do not have same length')
-    if len(aa) != len(tt):
-      raise NameError('aa and tt do not have same length')
+      raise ValueError('yy and tt do not have same length')
+    if len(hh) != len(tt):
+      raise ValueError('aa and tt do not have same length')
     
     ideb = len(tt) - len(s.theta)
     s.tbeg  = tt[ideb]
@@ -89,10 +89,10 @@ class LRFSimulator:
       t = tt[ideb+i]
       x = xx[ideb+i]
       y = yy[ideb+i]
-      a = aa[ideb+i]
+      h = hh[ideb+i]
       s.tend = t
       s.tt[i] = t
-      r, inter = self.rayTracer(x, y, a + s.theta[i])
+      r, inter = self.rayTracer(x, y, h + s.theta[i])
       if inter != None:
         s.range[i] = r + random.normalvariate(0.0, self.sigma)
     

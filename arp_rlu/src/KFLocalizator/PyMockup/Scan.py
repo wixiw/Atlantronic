@@ -62,6 +62,13 @@ class Scan:
       log.warning("tt and range do not have same shape")
     return res
   
+  def cleanUp(self):
+    self.check()
+    self.tt = self.tt[np.nonzero(self.range)]
+    self.theta = self.theta[np.nonzero(self.range)]
+    self.range = self.range[np.nonzero(self.range)]
+    self.check()
+  
   def doMedianFiltering(self, width):
     mf = MedianFilter(width)
     self.range = mf.compute(self.range)
