@@ -8,7 +8,7 @@ from BaseClasses import PointCloud
 
 def kmeans(pc, maxIt, dispTh):
     log = logging.getLogger('kmeans')
-    log.debug("pc.points: %s", str(pc.points))
+#    log.debug("pc.points: %s", str(pc.points))
     
     n = pc.points.shape[1]
     if n == 0:

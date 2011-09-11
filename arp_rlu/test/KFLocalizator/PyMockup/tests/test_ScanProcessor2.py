@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import random
 
 import logging
-logging.basicConfig(level=logging.ERROR) #level=logging.DEBUG  
+logging.basicConfig(level=logging.ERROR) 
+#logging.basicConfig(level=logging.DEBUG)
 
 import LRFSimulator
 import ScanProcessor2
@@ -43,25 +44,16 @@ lrfsim.objects.append(sgmt2)
 
 # Compute
 scan = lrfsim.computeScan(xx, yy, aa, tt)
+L = scan.range.shape[0]
 
 # Process scan
 scanproc = ScanProcessor2.ScanProcessor2()
 scanproc.clusterParams.maxStddev = 0.5
-vPC = scanproc.process(scan, tt[0], xx[0], yy[0], aa[0])
+scanproc.process(scan, tt[0:L], xx[0:L], yy[0:L], aa[0:L])
 
-for v in vPC:
+for o in scanproc.objects:
   print "-----------------"
-  means, stddev, vectors = pca(v.points)
-  print "nb points:", v.points.shape[1]
-  print "means:"
-  print means
-  print "stddev:"
-  print stddev
-  print "vectors:"
-  print vectors
-  print "ratio:", np.max(stddev) / np.min(stddev)
-  print "sgmt direction:"
-  print vectors[0:, np.argmax(stddev)]
+  print o
 
 
 # Plot

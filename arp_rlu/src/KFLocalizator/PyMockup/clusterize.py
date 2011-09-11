@@ -16,7 +16,7 @@ class ClusterizeParams:
 
 def clusterize(pc, params):
   log = logging.getLogger('clusterize')
-  log.debug("pc.points: %s", str(pc.points))
+#  log.debug("pc.points: %s", str(pc.points))
   
   n = pc.points.shape[1]
   if n == 0:

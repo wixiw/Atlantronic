@@ -7,6 +7,8 @@ import logging
 import PointCloud
 import clusterize
 import ransac
+from BaseClasses import pca
+from BaseClasses import FoundObject
     
 class ScanProcessor2:
   def __init__(self):
@@ -25,17 +27,40 @@ class ScanProcessor2:
     self.trueY = y
     self.trueH = h
   
-  def process(self, scan, tt, xx, yy, hh):
+  def process(self, raw, tt, xx, yy, hh):
     self.reset()
     
-    mf = MedianFilter(self.medianFilterWidth)
-    filtScan = mf.compute(scan)
+    scan = raw.copy()
+    scan.doMedianFiltering(self.medianFilterWidth)
+    
     pc = PointCloud.PointCloud()
-    pc.fromScan(filtScan, tt, xx, yy, hh)
+    pc.fromScan(scan, tt, xx, yy, hh)
     pc.cleanUp()
     
     vPC = clusterize.clusterize(pc, self.clusterParams)
-    return vPC
+    
+    
+    for v in vPC:
+      print "************"
+      print v.points
+      means, stddev, vectors = pca(v.points[0:2,:])
+      fobj = FoundObject() 
+      fobj.x = means[0]
+      fobj.y = means[1]
+      fobj.nbPoints = v.points.shape[1]
+      fobj.detectionTime = np.squeeze(np.mean(v.points[2,:]))
+      ratio = np.max(stddev) / np.min(stddev)
+      
+      self.objects.append(fobj)
+#      if ratio > 2.0:
+#        sgmtDir = vectors[0:, np.argmax(stddev)]
+#        if 
+#        jobj.h = 
+#      print "ratio:", np.max(stddev) / np.min(stddev)
+#      print "sgmt direction:"
+#      print vectors[0:, np.argmax(stddev)]
+    
+    
     
     
   
@@ -52,9 +77,6 @@ class ScanProcessor2:
     range = None
     theta = None    
     return (xBeacon, yBeacon, range, theta)
-
-
-  def __associate(self):
-    pass
+    
 
   

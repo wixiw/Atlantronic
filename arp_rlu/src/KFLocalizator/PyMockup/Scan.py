@@ -51,6 +51,17 @@ class Scan:
     retval.range = np.copy(self.range)
     return retval
   
+  def check(self):
+    log = logging.getLogger('Scan - check()')
+    res = True
+    if self.tt.shape != self.theta.shape:
+      res = False
+      log.warning("tt and theta do not have same shape")
+    if self.tt.shape != self.range.shape:
+      res = False
+      log.warning("tt and range do not have same shape")
+    return res
+  
   def doMedianFiltering(self, width):
     mf = MedianFilter(width)
     self.range = mf.compute(self.range)

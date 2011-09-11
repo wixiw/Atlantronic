@@ -3,6 +3,8 @@ import math
 from abc import ABCMeta
 import logging
 
+from BaseMethods import interp1d
+
 class PointCloud:
   def __init__(self, N = 0):
     self.points = np.zeros( (3,N))
@@ -10,26 +12,25 @@ class PointCloud:
   def fromScan(self, scan, tt, xx, yy, hh):
     log = logging.getLogger('fromScan')
     n = scan.theta.shape[0]
-    if type(tt) is float:
-      tt = [tt] * n
-    if type(xx) is float:
-      xx = [xx] * n
-    if type(yy) is float:
-      yy = [yy] * n
-    if type(hh) is float:
-      hh = [hh] * n
-    if len(tt) != n:
-      raise TypeError("tt should be scalars or list with the same length than scan.theta. len(tt)=%d" % len(tt))
-    if len(xx) != n:
-      raise TypeError("xx should be scalars or list with the same length than scan.theta. len(xx)=%d" % len(xx))
-    if len(yy) != n:
-      raise TypeError("yy should be scalars or list with the same length than scan.theta. len(yy)=%d" % len(yy))
-    if len(hh) != n:
-      raise TypeError("hh should be scalars or list with the same length than scan.theta. len(hh)=%d" % len(hh))
+
+    tt_ = scan.tt
+    xx_ = np.array( interp1d( tt_, list(tt), list(xx) ))
+    yy_ = np.array( interp1d( tt_, list(tt), list(yy) ))
+    hh_ = np.array( interp1d( tt_, list(tt), list(hh) ))
+
     self.points = np.zeros((3, n ))
-    self.points[0,0:] = xx[0:] + scan.range[0:] * np.cos(scan.theta[0:] + hh[0:])
-    self.points[1,0:] = yy[0:] + scan.range[0:] * np.sin(scan.theta[0:] + hh[0:])
-    self.points[2,0:] = tt[0:]
+    log.debug("tt_.shape %s" % str(tt_.shape))
+    log.debug("xx_.shape %s" % str(xx_.shape))
+    log.debug("yy.shape %s" % str(yy_.shape))
+    log.debug("hh.shape %s" % str(hh_.shape))
+    log.debug("scan.range.shape %s" % str(scan.range.shape))
+    log.debug("scan.theta.shape %s" % str(scan.theta.shape))
+    log.debug("points[0,0:].shape %s" % str(self.points[0,0:].shape))
+    log.debug("points[1,0:].shape %s" % str(self.points[1,0:].shape))
+    log.debug("points[2,0:].shape %s" % str(self.points[2,0:].shape))
+    self.points[0,0:] = xx_ + scan.range * np.cos(scan.theta + hh_)
+    self.points[1,0:] = yy_ + scan.range * np.sin(scan.theta + hh_)
+    self.points[2,0:] = tt_
     
   def cleanUp(self):
     self.points = np.vstack( (self.points[0, np.nonzero(self.points[1,0:])], 
