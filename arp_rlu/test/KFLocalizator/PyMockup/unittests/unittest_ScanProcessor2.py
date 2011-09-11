@@ -13,6 +13,8 @@ class TestScanProcessor2(unittest.TestCase):
   def setUp(self):
     self.scanproc = ScanProcessor2()
     
+  
+    
 if __name__ == '__main__':
     logging.basicConfig(level=logging.ERROR) #level=logging.DEBUG  
     unittest.main()

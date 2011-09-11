@@ -4,8 +4,8 @@ import math
 import random
 import logging
 
-from BaseClasses import *
-from clusterize import *
+from BaseClasses import MedianFilter, PointCloud
+import clusterize
 import ransac
     
 class ScanProcessor2:
@@ -15,7 +15,7 @@ class ScanProcessor2:
     self.reset()
 
     self.medianFilterWidth = 3
-    self.clusterParams = ClusterizeParams()
+    self.clusterParams = clusterize.ClusterizeParams()
   
   def reset(self):
     self.objects = []
@@ -32,8 +32,10 @@ class ScanProcessor2:
     filtScan = mf.compute(scan)
     pc = PointCloud()
     pc.fromScan(filtScan, tt, xx, yy, hh)
+    pc.cleanUp()
     
-    vPC = clusterize(pc, self.clusterParams)
+    vPC = clusterize.clusterize(pc, self.clusterParams)
+    return vPC
     
     
   

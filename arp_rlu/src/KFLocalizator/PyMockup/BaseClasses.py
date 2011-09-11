@@ -28,35 +28,46 @@ class Scan:
     self.tt    = np.array( () )
     self.theta = np.array( () )
     self.range = np.array( () )
+  def copy(self):
+    retval = Scan()
+    retval.tsync = self.tsync
+    retval.tbeg = self.tbeg
+    retval.tend = self.tend
+    retval.tt = np.copy(self.tt)
+    retval.theta = np.copy(self.theta)
+    retval.range = np.copy(self.range)
+    return retval
     
 class PointCloud:
   def __init__(self, N = 0):
-    self.points = np.zeros( (2,N))
     self.tt = np.zeros( (N) )
+    self.points = np.zeros( (2,N))
   def fromScan(self, scan, tt, xx, yy, hh):
     n = scan.theta.shape[0]
     if type(tt) != type([]):
-      tt = [tt] 
+      tt = [tt] * n
     if type(xx) != type([]):
-      xx = [xx] 
+      xx = [xx] * n
     if type(yy) != type([]):
-      yy = [yy] 
+      yy = [yy] * n
     if type(hh) != type([]):
-      hh = [hh] 
-    if len(tt)*len(xx)*len(yy)*len(hh) < 1:
-      tt = [ 0. ] * n
-      xx = [ 0. ] * n
-      yy = [ 0. ] * n
-      hh = [ 0. ] * n
-    if len(tt) != n or len(xx) != n or len(yy) != n or len(hh) != n:
-      tt = tt[0]
-      xx = xx[0]
-      yy = yy[0]
-      hh = hh[0]
+      hh = [hh] * n
+    if len(tt) != n:
+      raise TypeError("tt should be scalars or list with the same length than scan.theta. len(tt)=%d" % len(tt))
+    if len(xx) != n:
+      raise TypeError("xx should be scalars or list with the same length than scan.theta. len(xx)=%d" % len(xx))
+    if len(yy) != n:
+      raise TypeError("yy should be scalars or list with the same length than scan.theta. len(yy)=%d" % len(yy))
+    if len(hh) != n:
+      raise TypeError("hh should be scalars or list with the same length than scan.theta. len(hh)=%d" % len(hh))
     self.points = np.zeros( (2, scan.theta.shape[0]) )
     self.points[0,0:] = xx[0:] + scan.range[0:] * np.cos(scan.theta[0:] + hh[0:])
     self.points[1,0:] = yy[0:] + scan.range[0:] * np.sin(scan.theta[0:] + hh[0:])
     self.tt = np.array(tt)
+  def cleanUp(self):
+    self.tt  = self.tt[np.nonzero(self.points[1,0:])]
+    self.points = np.vstack( (self.points[0, np.nonzero(self.points[1,0:])], self.points[1, np.nonzero(self.points[1,0:])]) )
+    
     
 class Object:
   __metaclass__ = ABCMeta
@@ -136,6 +147,12 @@ def interpMatrix( t, tp, yp):
         y[k][i,j] = interp1d([t[k]], tp, yp_)
   return y
 
+def pca(x):
+  means = np.mean(x, 1)
+  cov = np.cov( x - means.reshape((2,1)) ) 
+  values, vectors = np.linalg.eig( cov )
+  return means, np.sqrt(values), vectors
+
 class MedianFilter:
   def __init__(self, N):
     self.N = N
@@ -153,16 +170,16 @@ class MedianFilter:
           noChange = False
     return v[(len(v)-1)/2]
   def compute(self, scan):
-    filtscan = np.copy(scan)
+    filtscan = scan.copy()
     infIndex = (self.N -1)/2
     supIndex = self.N -1 - (self.N -1)/2
-    for j in range(int(scan.shape[1])):
+    for j in range(int(scan.range.shape[0])):
       if j-infIndex < 0:
         continue
-      if j+supIndex > int(scan.shape[1]) - 1:
+      if j+supIndex > int(scan.range.shape[0]) - 1:
         continue
-      v = list(scan[1,(j-infIndex):(j+supIndex+1)])
-      filtscan[1,j] = self.getMedian(v)
+      v = list(scan.range[(j-infIndex):(j+supIndex+1)])
+      filtscan.range[j] = self.getMedian(v)
     return filtscan
   
 
