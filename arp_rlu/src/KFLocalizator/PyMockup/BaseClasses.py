@@ -1,6 +1,10 @@
 import numpy as np
 import math
 from abc import ABCMeta
+import logging
+
+from Scan import Scan
+from PointCloud import PointCloud
 
 def betweenMinusPiAndPlusPi(angle):
   angle = betweenZeroAndTwoPi( angle )
@@ -10,7 +14,6 @@ def betweenMinusPiAndPlusPi(angle):
     angle = angle + 2 * np.pi
   return angle
 
-
 def betweenZeroAndTwoPi(angle):
   return np.fmod( np.fmod(angle, 2 * np.pi) + 4. * np.pi, 2. * np.pi);
 
@@ -19,55 +22,7 @@ class OdoVelocity:
     self.vx = 0.
     self.vy = 0.
     self.vh = 0.
-
-class Scan:
-  def __init__(self):
-    self.tsync = 0.
-    self.tbeg  = 0.
-    self.tend  = 0.
-    self.tt    = np.array( () )
-    self.theta = np.array( () )
-    self.range = np.array( () )
-  def copy(self):
-    retval = Scan()
-    retval.tsync = self.tsync
-    retval.tbeg = self.tbeg
-    retval.tend = self.tend
-    retval.tt = np.copy(self.tt)
-    retval.theta = np.copy(self.theta)
-    retval.range = np.copy(self.range)
-    return retval
-    
-class PointCloud:
-  def __init__(self, N = 0):
-    self.tt = np.zeros( (N) )
-    self.points = np.zeros( (2,N))
-  def fromScan(self, scan, tt, xx, yy, hh):
-    n = scan.theta.shape[0]
-    if type(tt) != type([]):
-      tt = [tt] * n
-    if type(xx) != type([]):
-      xx = [xx] * n
-    if type(yy) != type([]):
-      yy = [yy] * n
-    if type(hh) != type([]):
-      hh = [hh] * n
-    if len(tt) != n:
-      raise TypeError("tt should be scalars or list with the same length than scan.theta. len(tt)=%d" % len(tt))
-    if len(xx) != n:
-      raise TypeError("xx should be scalars or list with the same length than scan.theta. len(xx)=%d" % len(xx))
-    if len(yy) != n:
-      raise TypeError("yy should be scalars or list with the same length than scan.theta. len(yy)=%d" % len(yy))
-    if len(hh) != n:
-      raise TypeError("hh should be scalars or list with the same length than scan.theta. len(hh)=%d" % len(hh))
-    self.points = np.zeros( (2, scan.theta.shape[0]) )
-    self.points[0,0:] = xx[0:] + scan.range[0:] * np.cos(scan.theta[0:] + hh[0:])
-    self.points[1,0:] = yy[0:] + scan.range[0:] * np.sin(scan.theta[0:] + hh[0:])
-    self.tt = np.array(tt)
-  def cleanUp(self):
-    self.tt  = self.tt[np.nonzero(self.points[1,0:])]
-    self.points = np.vstack( (self.points[0, np.nonzero(self.points[1,0:])], self.points[1, np.nonzero(self.points[1,0:])]) )
-    
+  
     
 class Object:
   __metaclass__ = ABCMeta
@@ -153,33 +108,6 @@ def pca(x):
   values, vectors = np.linalg.eig( cov )
   return means, np.sqrt(values), vectors
 
-class MedianFilter:
-  def __init__(self, N):
-    self.N = N
-  def getMedian(self, v):
-    if len(v) == 1:
-      return v[0]
-    noChange = False
-    while not noChange:
-      noChange = True
-      for j in range(len(v)-1):
-        if v[j] > v[j+1]:
-          tmp = v[j+1]
-          v[j+1] = v[j]
-          v[j] = tmp
-          noChange = False
-    return v[(len(v)-1)/2]
-  def compute(self, scan):
-    filtscan = scan.copy()
-    infIndex = (self.N -1)/2
-    supIndex = self.N -1 - (self.N -1)/2
-    for j in range(int(scan.range.shape[0])):
-      if j-infIndex < 0:
-        continue
-      if j+supIndex > int(scan.range.shape[0]) - 1:
-        continue
-      v = list(scan.range[(j-infIndex):(j+supIndex+1)])
-      filtscan.range[j] = self.getMedian(v)
-    return filtscan
+
   
 

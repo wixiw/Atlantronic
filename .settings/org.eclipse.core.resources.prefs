@@ -1,4 +1,4 @@
-#Wed Sep 07 23:47:43 CEST 2011
+#Sun Sep 11 14:54:16 CEST 2011
 eclipse.preferences.version=1
 encoding//arp_rlu/src/KFLocalizator/PyMockup/KFLocalizator.py=utf-8
 encoding//arp_rlu/src/KFLocalizator/PyMockup/KalmanFilter.py=utf-8
@@ -17,6 +17,6 @@ encoding//arp_rlu/test/KFLocalizator/PyMockup/unittests/unitest_ransac.py=utf-8
 encoding//arp_rlu/test/KFLocalizator/PyMockup/unittests/unittest_BaseClasses.py=utf-8
 encoding//arp_rlu/test/KFLocalizator/PyMockup/unittests/unittest_KFLocalizator.py=utf-8
 encoding//arp_rlu/test/KFLocalizator/PyMockup/unittests/unittest_LRFSimulator.py=utf-8
+encoding//arp_rlu/test/KFLocalizator/PyMockup/unittests/unittest_MedianFilter.py=utf-8
 encoding//arp_rlu/test/KFLocalizator/PyMockup/unittests/unittest_OdoSimulator.py=utf-8
-encoding//arp_rlu/test/KFLocalizator/PyMockup/unittests/unittest_ScanProcessor.py=utf-8
 encoding//arp_rlu/test/KFLocalizator/PyMockup/unittests/unittest_ScanProcessor2.py=utf-8

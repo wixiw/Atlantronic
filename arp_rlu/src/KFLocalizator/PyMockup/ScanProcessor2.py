@@ -4,7 +4,7 @@ import math
 import random
 import logging
 
-from BaseClasses import MedianFilter, PointCloud
+import PointCloud
 import clusterize
 import ransac
     
@@ -30,7 +30,7 @@ class ScanProcessor2:
     
     mf = MedianFilter(self.medianFilterWidth)
     filtScan = mf.compute(scan)
-    pc = PointCloud()
+    pc = PointCloud.PointCloud()
     pc.fromScan(filtScan, tt, xx, yy, hh)
     pc.cleanUp()
     
