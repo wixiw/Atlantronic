@@ -77,8 +77,7 @@ class TestBaseClasses(unittest.TestCase):
     hh = np.zeros( (4) )
     pc = PointCloud()
     pc.fromScan(scan, tt, xx, yy, hh)
-    self.assertTrue(np.array_equiv( pc.points, np.zeros( (2,4)) ))
-    self.assertTrue(np.array_equiv( pc.tt, np.zeros( (4)) ))
+    self.assertTrue(np.array_equiv( pc.points, np.zeros( (3,4)) ))
     
   def testComputePointCloud2(self):
     scan = Scan()
@@ -92,8 +91,9 @@ class TestBaseClasses(unittest.TestCase):
     hh = np.ones( (4) ) * np.pi/2.
     pc = PointCloud()
     pc.fromScan(scan, tt, xx, yy, hh)
-    self.assertTrue(np.allclose( pc.points, np.array( [[ 0.3, -0.2, 0.3, 3.3 ], [ 0.9, -0.1,-2.1,-0.1]]) ))
-    self.assertTrue(np.allclose( pc.tt, np.zeros( (4)) ))
+    self.assertTrue(np.allclose( pc.points, np.array( [[ 0.3, -0.2, 0.3, 3.3 ], 
+                                                       [ 0.9, -0.1,-2.1,-0.1 ],
+                                                       [ 0. ,  0. , 0., 0.  ]]) ))
 
     
 if __name__ == '__main__':

@@ -81,11 +81,9 @@ def kmeans(pc, maxIt, dispTh):
       return (pc,PointCloud())
     
     pcFirst = PointCloud()
-    pcFirst.points = reshape(pc.points[0:, nonzero(first)], (2,-1))
-    pcFirst.tt = squeeze(pc.tt[nonzero(first)])
+    pcFirst.points = reshape(pc.points[0:, nonzero(first)], (3,-1))
     pcSecond = PointCloud()
-    pcSecond.points = reshape(pc.points[0:, nonzero(second)], (2,-1))
-    pcSecond.tt = squeeze(pc.tt[nonzero(second)])
+    pcSecond.points = reshape(pc.points[0:, nonzero(second)], (3,-1))
     log.debug("pcFirst.points: %s", str(pcFirst.points))
     log.debug("pcSecond.points: %s", str(pcSecond.points))
     return (pcFirst, pcSecond)

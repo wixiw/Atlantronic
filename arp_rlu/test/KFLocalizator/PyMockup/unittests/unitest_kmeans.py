@@ -19,19 +19,15 @@ class TestKMeans(unittest.TestCase):
     pc = PointCloud()
     for i in range(Ntests):
       (pcFirst, pcSecond) = kmeans(pc, maxIt=10, dispTh=0.01)
-      self.assertTrue(array_equiv( pcFirst.points, zeros((2,0)) ))
-      self.assertTrue(array_equiv( pcFirst.tt, zeros((0)) ))
-      self.assertTrue(array_equiv( pcSecond.points, zeros((2,0)) ))
-      self.assertTrue(array_equiv( pcSecond.tt, zeros((0)) ))
+      self.assertTrue(array_equiv( pcFirst.points, zeros((3,0)) ))
+      self.assertTrue(array_equiv( pcSecond.points, zeros((3,0)) ))
       
   def testOnePoint(self):
     pc = PointCloud(1)
     for i in range(Ntests):
       (pcFirst, pcSecond) = kmeans(pc, maxIt=10, dispTh=0.01)
       self.assertTrue(array_equiv( pcFirst.points, pc.points ))
-      self.assertTrue(array_equiv( pcFirst.tt, pc.tt ))
-      self.assertTrue(array_equiv( pcSecond.points, zeros((2,0)) ))
-      self.assertTrue(array_equiv( pcSecond.tt, zeros((0)) ))
+      self.assertTrue(array_equiv( pcSecond.points, zeros((3,0)) ))
     
   def testTwoPoints(self):
     pc = PointCloud(2)
