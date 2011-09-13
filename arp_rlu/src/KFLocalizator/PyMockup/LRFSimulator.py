@@ -52,6 +52,8 @@ class LRFSimulator:
     range = float('inf')
     intersection = None
     for obj in self.objects:
+      r = float('inf')
+      inter = None
       if isinstance(obj, Circle):
         r, inter = self.circleIntersection(x, y, a, obj)
       elif isinstance(obj, Segment):

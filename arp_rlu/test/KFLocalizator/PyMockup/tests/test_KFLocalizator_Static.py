@@ -12,7 +12,7 @@ set_printoptions(precision=4)
 
 graine = randint(0,1000)
 #graine = 128
-graine = 988
+#graine = 988
 random.seed(graine)
 print "graine :", graine
 
@@ -64,45 +64,45 @@ lrfsim.sigma = 0.01
 # Positionnement des balises
 #===============================================================================
 radius = 0.05
-obj1 = Object()
+obj1 = Circle()
 obj1.xCenter = 1.5
 obj1.yCenter = 0.
 obj1.radius = radius
 lrfsim.objects.append(obj1)
-obj2 = Object()
+obj2 = Circle()
 obj2.xCenter = -1.5
 obj2.yCenter = -1.
 obj2.radius = radius
 lrfsim.objects.append(obj2)
-obj3 = Object()
+obj3 = Circle()
 obj3.xCenter = -1.5
 obj3.yCenter = 1.
 obj3.radius = radius
 lrfsim.objects.append(obj3)
 
 #===============================================================================
-# obj4 = Object()
+# obj4 = Circle()
 # obj4.xCenter = -1.5
 # obj4.yCenter = 0.
 # obj4.radius = radius
 # lrfsim.objects.append(obj4)
-# obj5 = Object()
+# obj5 = Circle()
 # obj5.xCenter = 1.5
 # obj5.yCenter = 1.
 # obj5.radius = radius
 # lrfsim.objects.append(obj5)
-# obj6 = Object()
+# obj6 = Circle()
 # obj6.xCenter = 1.5
 # obj6.yCenter = -1.
 # obj6.radius = radius
 # lrfsim.objects.append(obj6)
 # 
-# obj7 = Object()
+# obj7 = Circle()
 # obj7.xCenter = 0.
 # obj7.yCenter = 1.
 # obj7.radius = radius
 # lrfsim.objects.append(obj7)
-# obj8 = Object()
+# obj8 = Circle()
 # obj8.xCenter = 0.
 # obj8.yCenter = -1.
 # obj8.radius = radius
@@ -228,7 +228,7 @@ for k in range(Ntour):
     
     
     # On calcule enfin le scan
-    scan = lrfsim.computeScan(xx, yy, hh, tt)
+    scan = lrfsim.computeScan(tt, xx, yy, hh)
     
     
     kfloc.scanproc.setTrueStaticPositionForDebugOnly(trueX, trueY, trueH)

@@ -43,7 +43,7 @@ class TestClusterize(unittest.TestCase):
     pc.points[1,0:] = [  1.2,  0.7,  0.6,  1.1,  0.6,  0.6,   1.1,  1.2,   1.2 ]
     result = clusterize(pc, self.params)
     for i in range(len(result)):
-      self.assertEqual( len(result), 1 )
+      self.assertEqual( len(result), 2 )
       
   def testFull2(self):
     pc = PointCloud(18)
@@ -51,7 +51,7 @@ class TestClusterize(unittest.TestCase):
     pc.points[1,0:] = [  1.2,  0.7,  0.6,  1.1,  0.6,  0.6,   1.1,  1.2,   1.2,  2.2, -1.7, -1.6,  2.1, -1.6, -1.6,   2.1,  2.2,   2.2 ]
     pc.points[2,0:] = range(18)
     result = clusterize(pc, self.params)
-    self.assertEqual( len(result), 2 )
+    self.assertEqual( len(result), 4 )
 
       
   def testEmpty(self):

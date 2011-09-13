@@ -46,9 +46,9 @@ class ScanProcessor:
     self.timeLastAdded = t
     
   def __closeCluster(self, t, r, theta, x, y, h):
-    obj = Object()
-    xMean = math.mean(self.currentPts[0])
-    yMean = math.mean(self.currentPts[1])
+    obj = Circle()
+    xMean = np.mean(self.currentPts[0])
+    yMean = np.mean(self.currentPts[1])
     obj.pts = self.currentPts
     xA = self.currentPts[0][0]
     yA = self.currentPts[1][0]
@@ -56,20 +56,20 @@ class ScanProcessor:
     yB = self.currentPts[1][len(self.currentPts[0])-1]
     obj.radius = math.sqrt( (xB-xA)**2 + (yB-yA)**2 ) / 2.
     # le 0.85 est statistique. Il permet de reculer le point pour arriver pres du centre
-    obj.xCenter = math.mean(self.currentPts[0]) + 0.85 * obj.radius * cos(math.atan2(yMean-y, xMean-x))
-    obj.yCenter = math.mean(self.currentPts[1]) + 0.85 * obj.radius * sin(math.atan2(yMean-y, xMean-x))
+    obj.xCenter = np.mean(self.currentPts[0]) + 0.85 * obj.radius * math.cos(math.atan2(yMean-y, xMean-x))
+    obj.yCenter = np.mean(self.currentPts[1]) + 0.85 * obj.radius * math.sin(math.atan2(yMean-y, xMean-x))
     obj.thetaBeg = self.thetaLastOpen
     obj.thetaEnd = self.thetaLastAdded
     obj.timeBeg = self.timeLastOpen
     obj.timeEnd = self.timeLastAdded
-    obj.range = math.mean(self.currentPts[2]) + 0.85 * obj.radius
+    obj.range = np.mean(self.currentPts[2]) + 0.85 * obj.radius
     self.objects.append( obj )
     self.currentPts = [[],[],[],[]]
     self.clusterOpen = False
     
   def __addToCurrentCluster(self, t, r, theta, x, y, h):
-      self.currentPts[0].append( x + r * cos(theta + h) )
-      self.currentPts[1].append( y + r * sin(theta + h) )
+      self.currentPts[0].append( x + r * math.cos(theta + h) )
+      self.currentPts[1].append( y + r * math.sin(theta + h) )
       self.currentPts[2].append( r )
       self.currentPts[3].append( theta )
       self.thetaLastAdded = theta
