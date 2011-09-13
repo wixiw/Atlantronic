@@ -93,9 +93,7 @@ class TestLRFSimulator(unittest.TestCase):
     x = 0.
     y = 0.
     a = 0.
-    obj = Segment()
-    obj.A = np.array( [[1.],[-0.5]])
-    obj.B = np.array( [[1.],[ 0.5]])
+    obj = Segment(1., 0., 0., 1.)
     self.lrfsim.objects = [ obj ]
     range, intersection = self.lrfsim.rayTracer(x, y, a)
     self.assertEqual( range, 1. )
@@ -105,9 +103,7 @@ class TestLRFSimulator(unittest.TestCase):
     x = 0.
     y = 0.
     a = np.pi / 2.
-    obj = Segment()
-    obj.A = np.array( [[-1.],[0.5]])
-    obj.B = np.array( [[ 1.],[0.5]])
+    obj = Segment(0., 0.5, np.pi/2., 2.)
     self.lrfsim.objects = [ obj ]
     range, intersection = self.lrfsim.rayTracer(x, y, a)
     self.assertEqual( range, 0.5 )
@@ -117,9 +113,7 @@ class TestLRFSimulator(unittest.TestCase):
     x = 0.
     y = 0.
     a = -np.pi / 2.
-    obj = Segment()
-    obj.A = np.array( [[-1.],[0.5]])
-    obj.B = np.array( [[ 1.],[0.5]])
+    obj = Segment(0., 0.5, np.pi/2., 2.)
     self.lrfsim.objects = [ obj ]
     range, intersection = self.lrfsim.rayTracer(x, y, a)
     self.assertEqual( range, float('inf') )

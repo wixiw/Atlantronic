@@ -32,13 +32,13 @@ class Circle(Object):
     return "xCenter=%f  yCenter=%f r=%f thetaBeg=%f thetaEnd=%f timeBeg=%f timeEnd=%f" % (self.xCenter, self.yCenter, self.radius, self.thetaBeg, self.thetaEnd, self.timeBeg, self.timeEnd)
     
 class Segment(Object):
-  def __init__(self, x=None, y=None, h=None, l=None):
-    if (x is None) or (y is None) or (h is None) or (l is None):
-      self.A = np.zeros( (2,1) )
-      self.B = np.zeros( (2,1) )
-    else:
-      self.A = np.array( [[x],[y]]) + 0.5 * l * np.array([[math.cos(h - np.pi/2.)],[math.sin(h - np.pi/2.)]])
-      self.B = np.array( [[x],[y]]) + 0.5 * l * np.array([[math.cos(h + np.pi/2.)],[math.sin(h + np.pi/2.)]])
+  def __init__(self, x, y, h, l):
+    self.x = x
+    self.y = y
+    self.h = h
+    self.l = l
+    self.A = np.array( [[x],[y]]) + 0.5 * l * np.array([[math.cos(h - np.pi/2.)],[math.sin(h - np.pi/2.)]])
+    self.B = np.array( [[x],[y]]) + 0.5 * l * np.array([[math.cos(h + np.pi/2.)],[math.sin(h + np.pi/2.)]])
   def __str__(self):
     return "A.x=%f  A.y=%f r=%f B.x=%f B.y=%f" % (self.A[0,0], self.A[1,0], self.B[0,0], self.B[1,0])
  
@@ -46,15 +46,15 @@ class FoundObject(Object):
   def __init__(self):
     self.x = None     
     self.y = None     
-    self.h = None
-    self.cap = None
+    self.beta = None
+    self.hb = None
     self.detectionTime = None
     self.detectionTheta = None
     self.detectionRange = None
     self.nbPoints = 0
     self.used = False
   def __str__(self):
-    return "x=%s  y=%s h=%s cap=%s detectionTime=%s detectionTheta=%s detectionRange=%s nbPoints=%d" % (str(self.x), str(self.y), str(self.h), str(self.cap), str(self.detectionTime), str(self.detectionTheta), str(self.detectionRange), self.nbPoints)
+    return "x=%s  y=%s hb=%s beta=%s detectionTime=%s detectionTheta=%s detectionRange=%s nbPoints=%d" % (str(self.x), str(self.y), str(self.hb), str(self.beta), str(self.detectionTime), str(self.detectionTheta), str(self.detectionRange), self.nbPoints)
     
     
 

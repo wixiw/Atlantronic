@@ -12,8 +12,8 @@ class KFLocalizator:
   def __init__(self):
     self.buffer = []
     
-    self.scanproc = ScanProcessor()
-#    self.scanproc = ScanProcessor2()
+#    self.scanproc = ScanProcessor()
+    self.scanproc = ScanProcessor2()
     
     # mean state estimate
     # X[0,0] is xRobot
@@ -26,13 +26,11 @@ class KFLocalizator:
     # command noise covariance matrix.  (3x3 matrix)
     self.Q = []
 
-    # measurement noise covariance matrix (2x2 matrix)
-    self.R = []
     
   def initialize(self, currentTime, N, 
                        initialXPosition, initialYPosition, initialHeading, 
                        sigmaInitialPosition, sigmaInitialHeading,
-                       sigmaTransOdoVelocity, sigmaRotOdoVelocity, sigmaLaserRange, sigmaLaserAngle):
+                       sigmaTransOdoVelocity, sigmaRotOdoVelocity, sigmaLaserRange, sigmaLaserAngle, sigmaSegmentHeading):
     self.X = array([[initialXPosition], 
                     [initialYPosition], 
                     [initialHeading]])
@@ -54,8 +52,10 @@ class KFLocalizator:
                    sigmaTransOdoVelocity,
                    sigmaRotOdoVelocity))
     
-    self.R = diag((sigmaLaserRange, 
-                   sigmaLaserAngle))
+    self.sigmaLaserRange = sigmaLaserRange
+    self.sigmaLaserAngle = sigmaLaserAngle
+    self.sigmaSegmentHeading = sigmaSegmentHeading
+    
     
   def predict(self, currentT, ov, dt):
     U = array([[ov.vx], 
@@ -128,7 +128,7 @@ class KFLocalizator:
   
   
   def newScan(self, currentTime, scan):
-    self.scanproc.setScan(scan)
+#    self.scanproc.setScan(scan)
     
     # back in the past
     duration = 681. * 0.1 / 1024.
@@ -146,11 +146,11 @@ class KFLocalizator:
     self.P = covars[0]
     
     
-    self.scanproc.findCluster(tt, xx, yy, hh)
-#    self.scanproc.process(scan, tt, xx, yy, hh)
+#    self.scanproc.findCluster(tt, xx, yy, hh)
+    self.scanproc.process(scan, tt, xx, yy, hh)
     
     
-    # print "========================================="
+#    print "========================================="
     nbVisibleBeacons = 0
     
     print "======================="
@@ -164,8 +164,10 @@ class KFLocalizator:
     for i in range(len(tt)):
       t = tt[i]
       heading = None
-      (xBeacon, yBeacon, r, theta) = self.scanproc.getBeacons(t)
-#      (xBeacon, yBeacon, r, theta, heading) = self.scanproc.getBeacons(t)
+      hBeacon = None
+#      (xBeacon, yBeacon, r, theta) = self.scanproc.getBeacons(t)
+      (xBeacon, yBeacon, hBeacon, r, theta, heading) = self.scanproc.getBeacons(t, epsilon_time=tt[1]-tt[0])
+#      heading = None
       #(xBeacon, yBeacon, r, theta) = self.scanproc.getTrueBeacons(i)
       if xBeacon != None and yBeacon != None:
         
@@ -192,10 +194,13 @@ class KFLocalizator:
             IM[0,0] = sqrt((self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
             IM[1,0] = betweenMinusPiAndPlusPi(math.atan2(yBeacon - self.X[1,0], xBeacon - self.X[0,0]) -  self.X[2,0])
             # print "KFLocalizator - newScan() : IM="; print IM
-
+            
+            R = diag((self.sigmaLaserRange, 
+                      self.sigmaLaserAngle))
             
           else:
             # on voit le cap du segment
+            print " heading OK :-)"
             Y = zeros((3,1))
             Y[0,0] = r
             Y[1,0] = theta
@@ -209,39 +214,49 @@ class KFLocalizator:
               H[1,0] = (X[1,0] - yBeacon) / ( (X[0,0] - xBeacon)**2 + (X[1,0] - yBeacon)**2 )
               H[1,1] = (X[0,0] - xBeacon) / ( (X[0,0] - xBeacon)**2 + (X[1,0] - yBeacon)**2 )
               H[1,2] = -1.
-              H[2,0] = 0.
-              H[2,1] = 0.
+              H[2,0] = (X[1,0] - yBeacon) / ( (X[0,0] - xBeacon)**2 + (X[1,0] - yBeacon)**2 )
+              H[2,1] = (X[0,0] - xBeacon) / ( (X[0,0] - xBeacon)**2 + (X[1,0] - yBeacon)**2 )
               H[2,2] = 0.
               return H
             
             IM = zeros((3,1))
             IM[0,0] = sqrt((self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
             IM[1,0] = betweenMinusPiAndPlusPi(math.atan2(yBeacon - self.X[1,0], xBeacon - self.X[0,0]) -  self.X[2,0])
-            IM[2,0] = 0.
+            IM[2,0] = betweenMinusPiAndPlusPi(math.atan2(yBeacon - self.X[1,0], xBeacon - self.X[0,0]) -  hBeacon)
             # print "KFLocalizator - newScan() : IM="; print IM
             
-          # print "--------------------"
-          # print "estimée pre update :"
-          # print "  sur x (en mm):", self.X[0,0] * 1000.
-          # print "  sur y (en mm):", self.X[1,0] * 1000.
-          # print "  en cap (deg) :", betweenMinusPiAndPlusPi(self.X[2,0]) * 180.*pi
-          # print "---"
-          # print "mesure : Y.r=", r, "  Y.theta=", theta
-          # print "simulée : IM.r=", IM[0,0], "  IM.theta=", IM[1,0]
-          # print "Y[0] - IM[0]=", (Y[0,0] - IM[0,0])*1000.
-          (self.X, self.P, K,IM,IS) = ekf_update(self.X, self.P, Y, J(self.X), self.R, IM)
             
-#            Nit = 10
-#            threshold = array([ [0.01], [0.01], [0.01]])
-#            (self.X, self.P, K,IM,IS, k) = iekf_update(self.X, self.P, Y, J, self.R, IM, Nit, threshold)
+            R = diag((self.sigmaLaserRange, 
+                      self.sigmaLaserAngle,
+                      self.sigmaSegmentHeading))
+            
+            print "---"
+            print "mesure : Y.r=", r, "  Y.theta=", theta, "  Y.beta=", heading
+            print "simulée : IM.r=", IM[0,0], "  IM.theta=", IM[1,0], "  IM.beta=", IM[2,0]
+            print "Y[0] - IM[0]=", (Y[0,0] - IM[0,0])*1000.
+            
+#          print "--------------------"
+#          print "estimée pre update :"
+#          print "  sur x (en mm):", self.X[0,0] * 1000.
+#          print "  sur y (en mm):", self.X[1,0] * 1000.
+#          print "  en cap (deg) :", betweenMinusPiAndPlusPi(self.X[2,0]) * 180.*pi
+#          print "---"
+#          print "mesure : Y.r=", r, "  Y.theta=", theta
+#          print "simulée : IM.r=", IM[0,0], "  IM.theta=", IM[1,0]
+#          print "Y[0] - IM[0]=", (Y[0,0] - IM[0,0])*1000.
+#          (self.X, self.P, K,IM,IS) = ekf_update(self.X, self.P, Y, J(self.X), R, IM)
+            
+          Nit = 10
+          threshold = array([ [0.01], [0.01], [0.01]])
+          (self.X, self.P, K,IM,IS, k) = iekf_update(self.X, self.P, Y, J, R, IM, Nit, threshold)
           
           
-          # print "estimée post update :"
-          # print "  sur x (en mm):", self.X[0,0] * 1000.
-          # print "  sur y (en mm):", self.X[1,0] * 1000.
-          # print "  en cap (deg) :", betweenMinusPiAndPlusPi(self.X[2,0]) * 180.*pi
+#          print "estimée post update :"
+#          print "  sur x (en mm):", self.X[0,0] * 1000.
+#          print "  sur y (en mm):", self.X[1,0] * 1000.
+#          print "  en cap (deg) :", betweenMinusPiAndPlusPi(self.X[2,0]) * 180.*pi
           nbVisibleBeacons = nbVisibleBeacons + 1
-          print "xBeacon:", xBeacon, "  yBeacon:", yBeacon
+          print "xBeacon:", xBeacon, "  yBeacon:", yBeacon, "  hBeacon:", str(hBeacon)
           
           estim = Estimate()
           estim.xRobot = self.X[0,0]
