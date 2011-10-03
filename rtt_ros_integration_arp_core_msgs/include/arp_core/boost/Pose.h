@@ -19,6 +19,7 @@ void serialize(Archive& a,  ::arp_core::Pose_<ContainerAllocator>  & m, unsigned
     a & make_nvp("theta",m.theta);
     a & make_nvp("linear_velocity",m.linear_velocity);
     a & make_nvp("angular_velocity",m.angular_velocity);
+    a & make_nvp("date",m.date);
 }
 
 } // namespace serialization

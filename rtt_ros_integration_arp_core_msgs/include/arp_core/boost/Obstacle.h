@@ -5,6 +5,12 @@
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <arp_core/Obstacle.h>
+#include <ros/common.h>
+#if ROS_VERSION_MINIMUM(1,4,0)
+#include <std_msgs/Header.h>
+#else
+#include <roslib/Header.h>
+#endif
 
 namespace boost
 {
@@ -14,6 +20,7 @@ namespace serialization
 template<class Archive, class ContainerAllocator>
 void serialize(Archive& a,  ::arp_core::Obstacle_<ContainerAllocator>  & m, unsigned int)
 {
+    a & make_nvp("header",m.header);
     a & make_nvp("detected",m.detected);
 }
 

@@ -16,6 +16,7 @@ void serialize(Archive& a,  ::arp_core::Odo_<ContainerAllocator>  & m, unsigned 
 {
     a & make_nvp("odo_left",m.odo_left);
     a & make_nvp("odo_right",m.odo_right);
+    a & make_nvp("time",m.time);
 }
 
 } // namespace serialization
