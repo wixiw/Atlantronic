@@ -7,6 +7,7 @@
 
 #include "ARDTaskContext.hpp"
 #include <iostream>
+#include <fstream>
 #include <rtt/base/InputPortInterface.hpp>
 
 using namespace arp_core;
@@ -71,8 +72,6 @@ bool ARDTaskContext::configureHook()
         res &= loadPrograms();
         res &= loadStateMachines();
     }
-
-    res &= checkInputsPorts();
 
     return res;
 }
@@ -151,16 +150,19 @@ bool ARDTaskContext::loadProperties()
 
     if( marshalling != NULL)
     {
-        if( marshalling->readProperties(fileName) == false )
+        if( std::ifstream( fileName.c_str() ) )
         {
-            LOG(Error) << "Configure failed, error while reading or file not found " << fileName << endlog();
-            res &= false;
-        }
-        //on a reussit à charger les propriétés !
-        else
-        {
-            LOG(Info) << "Properties loaded successfully from " << fileName << endlog();
-            res &= true;
+            if( marshalling->updateProperties(fileName) == false )
+            {
+                LOG(Error) << "Configure failed, error while reading " << fileName << endlog();
+                res &= false;
+            }
+            //on a reussit à charger les propriétés !
+            else
+            {
+                LOG(Info) << "Properties loaded successfully from " << fileName << endlog();
+                res &= true;
+            }
         }
     }
     else

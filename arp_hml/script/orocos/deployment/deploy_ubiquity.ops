@@ -1,4 +1,4 @@
-/* ARD arp_core main deployment file */
 loadService ("Deployer","Lua")
 Lua.exec_file("/opt/ros/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua")
+Lua.exec_file("/opt/ros/ard/arp_hml/script/orocos/deployment/deploy_ubiquity.lua")
 

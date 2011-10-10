@@ -1,11 +1,11 @@
 /*
- * Demo.cpp
+ * UbiquityItf.cpp
  *
  *  Created on: 26 oct. 2010
  *      Author: wla
  */
 
-#include "Demo.hpp"
+#include "UbiquityItf.hpp"
 #include "arp_hml_version.h"
 
 #include <rtt/Component.hpp>
@@ -16,9 +16,9 @@ using namespace arp_core;
 using namespace arp_math;
 using namespace std_msgs;
 
-ORO_LIST_COMPONENT_TYPE( arp_hml::Demo )
+ORO_LIST_COMPONENT_TYPE( arp_hml::UbiquityItf )
 
-Demo::Demo(const std::string& name):
+UbiquityItf::UbiquityItf(const std::string& name):
 	HmlTaskContext(name),
     attrCurrentCmd(),
     attrOdometers(),
@@ -145,33 +145,33 @@ Demo::Demo(const std::string& name):
     addPort("outRearSteeringSpeedCmd",outRearSteeringSpeedCmd)
             .doc("Speed command for the rear steering motor in rad/s on the wheel axe");
 
-    addOperation("coGetCoreVersion",&Demo::coGetCoreVersion, this, ClientThread)
+    addOperation("coGetCoreVersion",&UbiquityItf::coGetCoreVersion, this, ClientThread)
     		.doc("Returns a string containing Core version");
-    addOperation("coGetHmlVersion",&Demo::coGetHmlVersion, this, ClientThread)
+    addOperation("coGetHmlVersion",&UbiquityItf::coGetHmlVersion, this, ClientThread)
     		.doc("Returns a string containing HML version");
-    addOperation("ooSetMotorPower",&Demo::ooSetMotorPower, this, OwnThread)
+    addOperation("ooSetMotorPower",&UbiquityItf::ooSetMotorPower, this, OwnThread)
             .doc("Defines if motor are powered or not. Returns true if succeed")
             .arg("powerOn","when set to true motor is powered and ready to move. If a null speed is provided, the motor is locked as if brakes where enabled. When set to false there is no power in the motor which means that the motor is free to any move.")
             .arg("timeout","maximal time to wait for completion");
-    addOperation("ooResetHml",&Demo::ooResetHml, this, OwnThread)
+    addOperation("ooResetHml",&UbiquityItf::ooResetHml, this, OwnThread)
     	.doc("Ask all cane node to reset. Could be usefull after an emergency stop");
 
     ros::NodeHandle nh;
-    m_srvSetMotorPower = nh.advertiseService("/Protokrot/setMotorPower", &Demo::srvSetMotorPower, this);
-    m_srvResetHml = nh.advertiseService("/Protokrot/resetHml", &Demo::srvResetHml, this);
+    m_srvSetMotorPower = nh.advertiseService("/Protokrot/setMotorPower", &UbiquityItf::srvSetMotorPower, this);
+    m_srvResetHml = nh.advertiseService("/Protokrot/resetHml", &UbiquityItf::srvResetHml, this);
 }
 
-string Demo::coGetCoreVersion()
+string UbiquityItf::coGetCoreVersion()
 {
 	return "not implemented yet";
 }
 
-string Demo::coGetHmlVersion()
+string UbiquityItf::coGetHmlVersion()
 {
 	return ARP_HML_VERSION;
 }
 
-bool Demo::configureHook()
+bool UbiquityItf::configureHook()
 {
     bool res = true;
     HmlTaskContext::configureHook();
@@ -213,7 +213,7 @@ bool Demo::configureHook()
     return res;
 }
 
-void Demo::updateHook()
+void UbiquityItf::updateHook()
 {
 	HmlTaskContext::updateHook();
 
@@ -239,7 +239,7 @@ void Demo::updateHook()
     readWheelBlocked();
 }
 
-void Demo::writeOmniCmd()
+void UbiquityItf::writeOmniCmd()
 {
     OmniCommand cmd;
 	struct timespec now;
@@ -289,7 +289,7 @@ void Demo::writeOmniCmd()
     outRearSteeringSpeedCmd.write(attrCurrentCmd.v_rear_steering);
 }
 
-void Demo::readOdometers()
+void UbiquityItf::readOdometers()
 {
     double odoValueLeftDriving;
     double odoValueRightDriving;
@@ -358,7 +358,7 @@ void Demo::readOdometers()
     }
 }
 
-void Demo::readStart()
+void UbiquityItf::readStart()
 {
 	bool io = false;
 	Start start;
@@ -369,7 +369,7 @@ void Demo::readStart()
 	}
 }
 
-void Demo::readDriveEnable()
+void UbiquityItf::readDriveEnable()
 {
 	bool leftDrivingEnable = false;
 	bool rightDrivingEnable = false;
@@ -391,7 +391,7 @@ void Demo::readDriveEnable()
     outDriveEnable.write( enable );
 }
 
-void Demo::readConnectivity()
+void UbiquityItf::readConnectivity()
 {
     bool leftDrivingConnectivity = false;
     bool rightDrivingConnectivity = false;
@@ -418,7 +418,7 @@ void Demo::readConnectivity()
     outEmergencyStop.write(emergency);
 }
 
-void Demo::readSpeed()
+void UbiquityItf::readSpeed()
 {
 	double leftDrivingSpeed = 0.0;
 	double rightDrivingSpeed = 0.0;
@@ -446,7 +446,7 @@ void Demo::readSpeed()
 	}
 }
 
-void Demo::readWheelBlocked()
+void UbiquityItf::readWheelBlocked()
 {
     bool leftWheelBlocked = false;
     bool rightWheelBlocked = false;
@@ -462,7 +462,7 @@ void Demo::readWheelBlocked()
 
 
 
-bool Demo::ooSetMotorPower(bool powerOn, double timeout)
+bool UbiquityItf::ooSetMotorPower(bool powerOn, double timeout)
 {
     double chrono = 0.0;
     bool leftDrivingEnableTmp;
@@ -549,13 +549,13 @@ bool Demo::ooSetMotorPower(bool powerOn, double timeout)
         return true;
 }
 
-bool Demo::srvSetMotorPower(SetMotorPower::Request& req, SetMotorPower::Response& res)
+bool UbiquityItf::srvSetMotorPower(SetMotorPower::Request& req, SetMotorPower::Response& res)
 {
     res.success = ooSetMotorPower(req.powerOn, req.timeout);
     return true;
 }
 
-bool Demo::ooResetHml()
+bool UbiquityItf::ooResetHml()
 {
     bool res = true;
     res &= m_coResetWoodheadO();
@@ -569,7 +569,7 @@ bool Demo::ooResetHml()
     return false;
 }
 
-bool Demo::srvResetHml(ResetHml::Request& req, ResetHml::Response& res)
+bool UbiquityItf::srvResetHml(ResetHml::Request& req, ResetHml::Response& res)
 {
     res.success = ooResetHml();
     return true;

@@ -1,23 +1,23 @@
 /*
- * Demo.hpp
+ * UbiquityItf.hpp
  *
  *  Created on: 03 Oct 2011
  *      Author: wla
  *
  *  This is the hardware interface published to the wonderfull open world. It *IS* hardware dependant and let the outside
- *  having a synthetic (and somehow synchronized) view of the current HML. This one is for Demo, the second ARD's robot,
+ *  having a synthetic (and somehow synchronized) view of the current HML. This one is for UbiquityItf, the second ARD's robot,
  *  which is a nice omni-drive robot.
  *
  *  Everything that comes in HML must go througth it
  *  Everything that goes outside HML must go througth it.
  *  It's HML Bigbrother.
  *
- *  Everything that is dependant on the Protokrot platform must come here !
- *  Everything that needs an information dependant on Protokrot platform must get it from here !
+ *  Everything that is dependant on the Ubiquity platform must come here !
+ *  Everything that needs an information dependant on Ubiquity platform must get it from here !
  */
 
-#ifndef DEMOITF_HPP_
-#define DEMOITF_HPP_
+#ifndef UBIQUITYITF_HPP_
+#define UBIQUITYITF_HPP_
 
 #include "orocos/taskcontexts/HmlTaskContext.hpp"
 #include <arp_core/OmniCommand.h>
@@ -30,15 +30,16 @@
 #include "ros/ros.h"
 
 using namespace arp_core;
+using namespace arp_hml;
 using namespace std_msgs;
 
 namespace arp_hml
 {
 
-    class Demo: public HmlTaskContext
+    class UbiquityItf: public HmlTaskContext
     {
     public:
-    	Demo(const std::string& name);
+    	UbiquityItf(const std::string& name);
 
     protected:
 
