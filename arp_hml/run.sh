@@ -10,14 +10,22 @@ BLANCLAIR="\\033[1;08m"
 JAUNE="\\033[1;33m" 
 CYAN="\\033[1;36m" 
 
+if [[ $EUID -ne 0 ]]; then
+   echo -e $ROUGE "This script must be run as root" $NORMAL 1>&2
+   exit 1
+fi
+cd `rospack find arp_hml`
+
+ROOT_DEPLOYMENT_FILE="`rospack find arp_hml`/script/orocos/deployment/deploy_ubiquity_simul.ops"
+
+
 if [ $# == 1 ]
 then
 	echo -e $JAUNE "You probably need to copy paste this into gdb :" $NORMAL
-	echo -e $JAUNE "run -s script/orocos/deployment/deploy_protokrot.ops" $NORMAL
-	gdb `rospack find ocl`/install/bin/deployer-gnulinux
+	echo -e $JAUNE "run -s $ROOT_DEPLOYMENT_FILE" $NORMAL
+	gdb `rospack find ocl`/install/bin/deployer-$OROCOS_TARGET
 else
-	rosrun ocl deployer-gnulinux -s script/orocos/deployment/deploy_protokrot.ops	
-	#rosrun ocl deployer-gnulinux -s script/orocos/deployment/deploy_hml_simul.ops	
+	rosrun ocl deployer-$OROCOS_TARGET -s $ROOT_DEPLOYMENT_FILE
 fi
 
 
