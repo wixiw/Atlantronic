@@ -7,6 +7,7 @@
 
 #include "UbiquitySimul.hpp"
 #include <rtt/Component.hpp>
+#include <math/math.hpp>
 
 using namespace arp_hml;
 
@@ -20,24 +21,28 @@ UbiquityItf(name)
 bool UbiquitySimul::configureHook()
 {
     bool res = true;
-    HmlTaskContext::configureHook();
+    return HmlTaskContext::configureHook();
 }
 
 void UbiquitySimul::updateHook()
 {
-    UbiquityItf::writeOmniCmd();
-
     loopEncoder();
 }
 
 void UbiquitySimul::loopEncoder()
 {
-    attrOdometers.odo_left_driving = 0;
-    attrOdometers.odo_right_driving = 0;
-    attrOdometers.odo_rear_driving = 0;
-    attrOdometers.odo_left_steering = 0;
-    attrOdometers.odo_right_steering = 0;
-    attrOdometers.odo_rear_steering = 0;
-    attrOdometers.time = 0;
+    OmniCommand cmd;
+    if(NewData==inOmniCmd.readNewest(cmd))
+    {
+       attrCurrentCmd = cmd;
+    }
+
+    attrOdometers.odo_left_driving = attrCurrentCmd.v_left_driving;
+    attrOdometers.odo_right_driving = attrCurrentCmd.v_right_driving;
+    attrOdometers.odo_rear_driving = attrCurrentCmd.v_rear_driving;
+    attrOdometers.odo_left_steering = attrCurrentCmd.v_left_steering;
+    attrOdometers.odo_right_steering = attrCurrentCmd.v_right_steering;
+    attrOdometers.odo_rear_steering = attrCurrentCmd.v_rear_steering;
+    attrOdometers.time = arp_math::getTime();
     outOdometryMeasures.write(attrOdometers);
 }
