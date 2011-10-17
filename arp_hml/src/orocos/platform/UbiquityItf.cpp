@@ -110,13 +110,13 @@ UbiquityItf::UbiquityItf(const std::string& name):
             .doc("Left driving soft enable state");
     addPort("inRightDrivingEnable",inRightDrivingEnable)
             .doc("Right driving soft enable state");
-    addPort("inReadDrivingEnable",inRearDrivingEnable)
+    addPort("inRearDrivingEnable",inRearDrivingEnable)
             .doc("Rear driving soft enable state");
     addPort("inLeftSteeringEnable",inLeftSteeringEnable)
             .doc("Left steering soft enable state");
     addPort("inRightSteeringEnable",inRightSteeringEnable)
             .doc("Right steering soft enable state");
-    addPort("inReadSteeringEnable",inRearSteeringEnable)
+    addPort("inRearSteeringEnable",inRearSteeringEnable)
             .doc("Rear steering soft enable state");
 
     addPort("inLeftDrivingBlocked",inLeftDrivingBlocked)

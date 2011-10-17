@@ -7,24 +7,27 @@ print("début déploiment arp_hml")
 -- chargement des librairies contenants les composants d'arp_hml
 Deployer:import("arp_hml");
 
--- chargement de l'interface HML
-Deployer:loadComponent("Hml","arp_hml::UbiquityItf");
-Hml = Deployer:getPeer("Hml")
-Deployer:setActivity("Hml",0.050,0,1);
---Hml:configure();
---Hml:start();
 
-dofile("script/orocos/deployment/can_deployer.lua");
-dofile("script/orocos/deployment/motor_deployer.lua");
+dofile("script/orocos/deployment/ubiquity/can_deployer.lua");
+dofile("script/orocos/deployment/ubiquity/motor_deployer.lua");
+dofile("script/orocos/deployment/ubiquity/io_deployer.lua");
+dofile("script/orocos/deployment/ubiquity/hml_itf_deployer.lua");
 
 CanDeployer:load()
+MotorDeployer:load()
+IoDeployer:load()
+HmlItfDeployer:load()
+
+
 CanDeployer:connect()
+MotorDeployer:connect()
+IoDeployer:connect()
+HmlItfDeployer:connect()
+
 CanDeployer:start()
-
---MotorDeployer:load()
---MotorDeployer:connect()
---MotorDeployer:start()
-
+MotorDeployer:start()
+IoDeployer:start()
+HmlItfDeployer:start()
 
 print("fin déploiment arp_hml")
 print("====================")

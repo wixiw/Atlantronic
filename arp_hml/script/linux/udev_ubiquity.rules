@@ -1,0 +1,1 @@
+KERNEL=="ttyACM[0-9]*", ATTRS{manufacturer}=="Hokuyo Data Flex for USB", ATTRS{product}=="URG-Series USB Driver", PROGRAM=="/opt/ros/ard/arp_hml/script/linux/hokuyo_getID.sh %N q", SYMLINK+="hokuyo_%c"

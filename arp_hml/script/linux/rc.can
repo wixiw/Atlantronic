@@ -2,21 +2,18 @@
 #
 
 #choose driver under xenomai or gnulinux
-#DRIVER=sja1000_isa
-DRIVER=xeno_can_mem
 BAUDRATE=1000000
 #notice that we can only set one IRQ for both can, this is an hardware limitation
 CAN_OPTS="irq=10,10 mem=0xD0000,0xD0200 ocr=0x5e,0x5e cdr=0,0"
 
-#chargement du driver
-modprobe $DRIVER $CAN_OPTS
-
-
-if [ $DRIVER == "xeno_can_mem" ] 
+if [ $OROCOS_TARGET == "xenomai" ] 
 then
+	modprobe xeno_can_mem $CAN_OPTS
 	rtcanconfig rtcan0 -b $BAUDRATE -v start
 	rtcanconfig rtcan1 -b $BAUDRATE -v start
 else
+	modprobe sja1000_isa $CAN_OPTS
+	
 	#chargement de l'interface dans ifconfig
 	ip link set can0 type can bitrate $BAUDRATE restart-ms 1000
 	ip link set can1 type can bitrate $BAUDRATE restart-ms 1000

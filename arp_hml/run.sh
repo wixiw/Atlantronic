@@ -16,14 +16,15 @@ if [[ $EUID -ne 0 ]]; then
 fi
 cd `rospack find arp_hml`
 
-ROOT_DEPLOYMENT_FILE="`rospack find arp_hml`/script/orocos/deployment/deploy_ubiquity_simul.ops"
+ROOT_DEPLOYMENT_FILE="`rospack find arp_hml`/script/orocos/deployment/deploy_ubiquity.ops"
+#ROOT_DEPLOYMENT_FILE="`rospack find arp_hml`/script/orocos/deployment/deploy_ubiquity_simul.ops"
 
 
 if [ $# == 1 ]
 then
 	echo -e $JAUNE "You probably need to copy paste this into gdb :" $NORMAL
 	echo -e $JAUNE "run -s $ROOT_DEPLOYMENT_FILE" $NORMAL
-	gdb `rospack find ocl`/install/bin/deployer-$OROCOS_TARGET
+	gdb `rospack find ocl`/bin/deployer-$OROCOS_TARGET
 else
 	rosrun ocl deployer-$OROCOS_TARGET -s $ROOT_DEPLOYMENT_FILE
 fi

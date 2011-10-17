@@ -1,4 +1,4 @@
-dofile("/opt/ros/ard/arp_core/script/orocos/deployment/component_deployer_object.lua")
+dofile("/opt/ard/arp_core/script/orocos/deployment/component_deployer_object.lua")
 
 
 MotorDeployer = ComposantDeployer:new()
@@ -20,19 +20,26 @@ function MotorDeployer:load()
 end
 
 function MotorDeployer:connect()
-	--Deployer:addPeer("LeftDriving", "Can1");
+	Deployer:addPeer("LeftDriving", "Can1");
 	Deployer:addPeer("Reporting", "LeftDriving")
-	--Deployer:addPeer("RightDriving", "Can1");
+	Deployer:addPeer("RightDriving", "Can1");
 	Deployer:addPeer("Reporting", "RightDriving")
-	--Deployer:addPeer("RearDriving", "Can1");
+	Deployer:addPeer("RearDriving", "Can1");
 	Deployer:addPeer("Reporting", "RearDriving")
 
-	--Deployer:addPeer("LeftSteering", "Can1");
+	Deployer:addPeer("LeftSteering", "Can1");
 	Deployer:addPeer("Reporting", "LeftSteering")
-	--Deployer:addPeer("RightSteering", "Can1");
+	Deployer:addPeer("RightSteering", "Can1");
 	Deployer:addPeer("Reporting", "RightSteering")
-	--Deployer:addPeer("RearSteering", "Can1");
+	Deployer:addPeer("RearSteering", "Can1");
 	Deployer:addPeer("Reporting", "RearSteering")
+
+	Deployer:connect("LeftDriving.inSpeedCmd", "Hml.outLeftDrivingSpeedCmd",cp);
+	Deployer:connect("RightDriving.inSpeedCmd", "Hml.outRightDrivingSpeedCmd",cp);
+	Deployer:connect("RearDriving.inSpeedCmd", "Hml.outRearDrivingSpeedCmd",cp);
+	Deployer:connect("LeftSteering.inSpeedCmd", "Hml.outLeftSteeringSpeedCmd",cp);
+	Deployer:connect("RightSteering.inSpeedCmd", "Hml.outRightSteeringSpeedCmd",cp);
+	Deployer:connect("RearSteering.inSpeedCmd", "Hml.outRearSteeringSpeedCmd",cp);
 end
 
 function MotorDeployer:start()

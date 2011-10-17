@@ -7,34 +7,61 @@
 /* Declaration of mapped variables                                        */
 /**************************************************************************/
 UNS8 Woodhead_outputs = 0x0;		/* Mapped at index 0x2050, subindex 0x01 */
-INTEGER32 FrontSteering_MeasuredSpeed = 0x0;		/* Mapped at index 0x2210, subindex 0x01 */
-UNS16 FrontSteering_Ds402State = 0x0;		/* Mapped at index 0x2210, subindex 0x02 */
-INTEGER32 FrontSteering_MeasuredPosition = 0x0;		/* Mapped at index 0x2210, subindex 0x03 */
-INTEGER16 FrontSteering_MeasuredCurrent = 0x0;		/* Mapped at index 0x2210, subindex 0x04 */
-UNS32 FrontSteering_FaulhaberCommandParameter = 0x0;		/* Mapped at index 0x2210, subindex 0x05 */
-UNS32 FrontSteering_FaulhaberCommand = 0x0;		/* Mapped at index 0x2210, subindex 0x06 */
-UNS8 FrontSteering_FaulhaberCommandReturn = 0x0;		/* Mapped at index 0x2210, subindex 0x07 */
-UNS8 FrontSteering_FaulhaberCommandReturnCode = 0x0;		/* Mapped at index 0x2210, subindex 0x08 */
-UNS32 FrontSteering_FaulhaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2210, subindex 0x09 */
-INTEGER32 LeftDriving_MeasuredSpeed = 0x0;		/* Mapped at index 0x2320, subindex 0x01 */
-UNS16 LeftDriving_Ds402State = 0x0;		/* Mapped at index 0x2320, subindex 0x02 */
-INTEGER32 LeftDriving_MeasuredPosition = 0x0;		/* Mapped at index 0x2320, subindex 0x03 */
-INTEGER16 LeftDriving_MeasuredCurrent = 0x0;		/* Mapped at index 0x2320, subindex 0x04 */
-UNS32 LeftDriving_FaulhaberCommandParameter = 0x0;		/* Mapped at index 0x2320, subindex 0x05 */
-UNS8 LeftDriving_FaulhaberCommand = 0x0;		/* Mapped at index 0x2320, subindex 0x06 */
-UNS8 LeftDriving_FaulhaberCommandReturn = 0x0;		/* Mapped at index 0x2320, subindex 0x07 */
-UNS8 LeftDriving_FaulhaberCommandReturnCode = 0x0;		/* Mapped at index 0x2320, subindex 0x08 */
-UNS32 LeftDriving_FaulhaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2320, subindex 0x09 */
-UNS8 LeftDriving_Undefined = 0x0;		/* Mapped at index 0x2320, subindex 0x0A */
-INTEGER32 RightDriving_MeasuredSpeed = 0x0;		/* Mapped at index 0x2330, subindex 0x01 */
-UNS16 RightDriving_Ds402State = 0x0;		/* Mapped at index 0x2330, subindex 0x02 */
-INTEGER32 RightDriving_MeasuredPosition = 0x0;		/* Mapped at index 0x2330, subindex 0x03 */
-INTEGER16 RightDriving_MeasuredCurrent = 0x0;		/* Mapped at index 0x2330, subindex 0x04 */
-UNS32 RightDriving_FaulhaberCommandParameter = 0x0;		/* Mapped at index 0x2330, subindex 0x05 */
-UNS8 RightDriving_FaulhaberCommand = 0x0;		/* Mapped at index 0x2330, subindex 0x06 */
-UNS8 RightDriving_FaulhaberCommandReturn = 0x0;		/* Mapped at index 0x2330, subindex 0x07 */
-UNS8 RightDriving_FaulhaberCommandReturnCode = 0x0;		/* Mapped at index 0x2330, subindex 0x08 */
-UNS32 RightDriving_FaulhaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2330, subindex 0x09 */
+INTEGER32 LeftSteering_MeasuredSpeed = 0x0;		/* Mapped at index 0x2210, subindex 0x01 */
+UNS16 LeftSteering_Ds402State = 0x0;		/* Mapped at index 0x2210, subindex 0x02 */
+INTEGER32 LeftSteering_MeasuredPosition = 0x0;		/* Mapped at index 0x2210, subindex 0x03 */
+INTEGER16 LeftSteering_MeasuredCurrent = 0x0;		/* Mapped at index 0x2210, subindex 0x04 */
+UNS32 LeftSteering_FaulhaberCommandParameter = 0x0;		/* Mapped at index 0x2210, subindex 0x05 */
+UNS8 LeftSteering_FaulhaberCommand = 0x0;		/* Mapped at index 0x2210, subindex 0x06 */
+UNS8 LeftSteering_FaulhaberCommandReturn = 0x0;		/* Mapped at index 0x2210, subindex 0x07 */
+UNS8 LeftSteering_FaulhaberCommandReturnCode = 0x0;		/* Mapped at index 0x2210, subindex 0x08 */
+UNS32 LeftSteering_FaulhaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2210, subindex 0x09 */
+INTEGER32 RightSteering_MeasuredSpeed = 0x0;		/* Mapped at index 0x2220, subindex 0x01 */
+UNS16 RightSteering_Ds402State = 0x0;		/* Mapped at index 0x2220, subindex 0x02 */
+INTEGER32 RightSteering_MeasuredPosition = 0x0;		/* Mapped at index 0x2220, subindex 0x03 */
+INTEGER16 RightSteering_MeasuredCurrent = 0x0;		/* Mapped at index 0x2220, subindex 0x04 */
+UNS32 RightSteering_FaulhaberCommandParameter = 0x0;		/* Mapped at index 0x2220, subindex 0x05 */
+UNS8 RightSteering_FaulhaberCommand = 0x0;		/* Mapped at index 0x2220, subindex 0x06 */
+UNS8 RightSteering_FaulhaberCommandReturn = 0x0;		/* Mapped at index 0x2220, subindex 0x07 */
+UNS8 RightSteering_FaulhaberCommandReturnCode = 0x0;		/* Mapped at index 0x2220, subindex 0x08 */
+UNS32 RightSteering_FaulhaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2220, subindex 0x09 */
+INTEGER32 RearSteering_MeasuredSpeed = 0x0;		/* Mapped at index 0x2230, subindex 0x01 */
+UNS16 RearSteering_Ds402State = 0x0;		/* Mapped at index 0x2230, subindex 0x02 */
+INTEGER32 RearSteering_MeasuredPosition = 0x0;		/* Mapped at index 0x2230, subindex 0x03 */
+INTEGER16 RearSteering_MeasuredCurrent = 0x0;		/* Mapped at index 0x2230, subindex 0x04 */
+UNS32 RearSteering_FaulhaberCommandParameter = 0x0;		/* Mapped at index 0x2230, subindex 0x05 */
+UNS8 RearSteering_FaulhaberCommand = 0x0;		/* Mapped at index 0x2230, subindex 0x06 */
+UNS8 RearSteering_FaulhaberCommandReturn = 0x0;		/* Mapped at index 0x2230, subindex 0x07 */
+UNS8 RearSteering_FaulhaberCommandReturnCode = 0x0;		/* Mapped at index 0x2230, subindex 0x08 */
+UNS32 RearSteering_FaulhaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2230, subindex 0x09 */
+INTEGER32 LeftDriving_MeasuredSpeed = 0x0;		/* Mapped at index 0x2310, subindex 0x01 */
+UNS16 LeftDriving_Ds402State = 0x0;		/* Mapped at index 0x2310, subindex 0x02 */
+INTEGER32 LeftDriving_MeasuredPosition = 0x0;		/* Mapped at index 0x2310, subindex 0x03 */
+INTEGER16 LeftDriving_MeasuredCurrent = 0x0;		/* Mapped at index 0x2310, subindex 0x04 */
+UNS32 LeftDriving_FaulhaberCommandParameter = 0x0;		/* Mapped at index 0x2310, subindex 0x05 */
+UNS8 LeftDriving_FaulhaberCommand = 0x0;		/* Mapped at index 0x2310, subindex 0x06 */
+UNS8 LeftDriving_FaulhaberCommandReturn = 0x0;		/* Mapped at index 0x2310, subindex 0x07 */
+UNS8 LeftDriving_FaulhaberCommandReturnCode = 0x0;		/* Mapped at index 0x2310, subindex 0x08 */
+UNS32 LeftDriving_FaulhaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2310, subindex 0x09 */
+INTEGER32 RightDriving_MeasuredSpeed = 0x0;		/* Mapped at index 0x2320, subindex 0x01 */
+UNS16 RightDriving_Ds402State = 0x0;		/* Mapped at index 0x2320, subindex 0x02 */
+INTEGER32 RightDriving_MeasuredPosition = 0x0;		/* Mapped at index 0x2320, subindex 0x03 */
+INTEGER16 RightDriving_MeasuredCurrent = 0x0;		/* Mapped at index 0x2320, subindex 0x04 */
+UNS32 RightDriving_FaulhaberCommandParameter = 0x0;		/* Mapped at index 0x2320, subindex 0x05 */
+UNS8 RightDriving_FaulhaberCommand = 0x0;		/* Mapped at index 0x2320, subindex 0x06 */
+UNS8 RightDriving_FaulhaberCommandReturn = 0x0;		/* Mapped at index 0x2320, subindex 0x07 */
+UNS8 RightDriving_FaulhaberCommandReturnCode = 0x0;		/* Mapped at index 0x2320, subindex 0x08 */
+UNS32 RightDriving_FaulhaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2320, subindex 0x09 */
+UNS8 RightDriving_Undefined = 0x0;		/* Mapped at index 0x2320, subindex 0x0A */
+INTEGER32 RearDriving_MeasuredSpeed = 0x0;		/* Mapped at index 0x2330, subindex 0x01 */
+UNS16 RearDriving_Ds402State = 0x0;		/* Mapped at index 0x2330, subindex 0x02 */
+INTEGER32 RearDriving_MeasuredPosition = 0x0;		/* Mapped at index 0x2330, subindex 0x03 */
+INTEGER16 RearDriving_MeasuredCurrent = 0x0;		/* Mapped at index 0x2330, subindex 0x04 */
+UNS32 RearDriving_FaulhaberCommandParameter = 0x0;		/* Mapped at index 0x2330, subindex 0x05 */
+UNS8 RearDriving_FaulhaberCommand = 0x0;		/* Mapped at index 0x2330, subindex 0x06 */
+UNS8 RearDriving_FaulhaberCommandReturn = 0x0;		/* Mapped at index 0x2330, subindex 0x07 */
+UNS8 RearDriving_FaulhaberCommandReturnCode = 0x0;		/* Mapped at index 0x2330, subindex 0x08 */
+UNS32 RearDriving_FaulhaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2330, subindex 0x09 */
 
 /**************************************************************************/
 /* Declaration of value range types                                       */
@@ -115,7 +142,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                      };
 
 /* index 0x1006 :   Communication / Cycle Period. */
-                    UNS32 CanARD_obj1006 = 0x27100000;	/* beaucoup */
+                    UNS32 CanARD_obj1006 = 0x2710;	/* 10000 */
                     ODCallback_t CanARD_Index1006_callbacks[] = 
                      {
                        NULL,
@@ -215,6 +242,45 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1283_COB_ID_Client_to_Server_Transmit_SDO },
                        { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1283_COB_ID_Server_to_Client_Receive_SDO },
                        { RW, uint8, sizeof (UNS8), (void*)&CanARD_obj1283_Node_ID_of_the_SDO_Server }
+                     };
+
+/* index 0x1284 :   Client SDO 5 Parameter. */
+                    UNS8 CanARD_highestSubIndex_obj1284 = 3; /* number of subindex - 1*/
+                    UNS32 CanARD_obj1284_COB_ID_Client_to_Server_Transmit_SDO = 0x622;	/* 1570 */
+                    UNS32 CanARD_obj1284_COB_ID_Server_to_Client_Receive_SDO = 0x5A2;	/* 1442 */
+                    UNS8 CanARD_obj1284_Node_ID_of_the_SDO_Server = 0x22;	/* 34 */
+                    subindex CanARD_Index1284[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj1284 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1284_COB_ID_Client_to_Server_Transmit_SDO },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1284_COB_ID_Server_to_Client_Receive_SDO },
+                       { RW, uint8, sizeof (UNS8), (void*)&CanARD_obj1284_Node_ID_of_the_SDO_Server }
+                     };
+
+/* index 0x1285 :   Client SDO 6 Parameter. */
+                    UNS8 CanARD_highestSubIndex_obj1285 = 3; /* number of subindex - 1*/
+                    UNS32 CanARD_obj1285_COB_ID_Client_to_Server_Transmit_SDO = 0x623;	/* 1571 */
+                    UNS32 CanARD_obj1285_COB_ID_Server_to_Client_Receive_SDO = 0x5A3;	/* 1443 */
+                    UNS8 CanARD_obj1285_Node_ID_of_the_SDO_Server = 0x23;	/* 35 */
+                    subindex CanARD_Index1285[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj1285 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1285_COB_ID_Client_to_Server_Transmit_SDO },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1285_COB_ID_Server_to_Client_Receive_SDO },
+                       { RW, uint8, sizeof (UNS8), (void*)&CanARD_obj1285_Node_ID_of_the_SDO_Server }
+                     };
+
+/* index 0x1286 :   Client SDO 7 Parameter. */
+                    UNS8 CanARD_highestSubIndex_obj1286 = 3; /* number of subindex - 1*/
+                    UNS32 CanARD_obj1286_COB_ID_Client_to_Server_Transmit_SDO = 0x631;	/* 1585 */
+                    UNS32 CanARD_obj1286_COB_ID_Server_to_Client_Receive_SDO = 0x5B1;	/* 1457 */
+                    UNS8 CanARD_obj1286_Node_ID_of_the_SDO_Server = 0x31;	/* 49 */
+                    subindex CanARD_Index1286[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj1286 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1286_COB_ID_Client_to_Server_Transmit_SDO },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1286_COB_ID_Server_to_Client_Receive_SDO },
+                       { RW, uint8, sizeof (UNS8), (void*)&CanARD_obj1286_Node_ID_of_the_SDO_Server }
                      };
 
 /* index 0x1400 :   Receive PDO 1 Parameter. */
@@ -647,15 +713,20 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 /* index 0x2050 :   Mapped variable Woodhead */
                     UNS8 CanARD_highestSubIndex_obj2050 = 1; /* number of subindex - 1*/
+                    ODCallback_t Woodhead_callbacks[] = 
+                     {
+                       NULL,
+                       NULL,
+                     };
                     subindex CanARD_Index2050[] = 
                      {
                        { RO, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj2050 },
                        { RW, uint8, sizeof (UNS8), (void*)&Woodhead_outputs }
                      };
 
-/* index 0x2210 :   Mapped variable FrontSteering */
+/* index 0x2210 :   Mapped variable LeftSteering */
                     UNS8 CanARD_highestSubIndex_obj2210 = 9; /* number of subindex - 1*/
-                    ODCallback_t FrontSteering_callbacks[] = 
+                    ODCallback_t LeftSteering_callbacks[] = 
                      {
                        NULL,
                        NULL,
@@ -671,20 +742,107 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                     subindex CanARD_Index2210[] = 
                      {
                        { RO, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj2210 },
-                       { RW, int32, sizeof (INTEGER32), (void*)&FrontSteering_MeasuredSpeed },
-                       { RW, uint16, sizeof (UNS16), (void*)&FrontSteering_Ds402State },
-                       { RW, int32, sizeof (INTEGER32), (void*)&FrontSteering_MeasuredPosition },
-                       { RW, int16, sizeof (INTEGER16), (void*)&FrontSteering_MeasuredCurrent },
-                       { RW, uint32, sizeof (UNS32), (void*)&FrontSteering_FaulhaberCommandParameter },
-                       { RW, uint32, sizeof (UNS32), (void*)&FrontSteering_FaulhaberCommand },
-                       { RW, uint8, sizeof (UNS8), (void*)&FrontSteering_FaulhaberCommandReturn },
-                       { RW, uint8, sizeof (UNS8), (void*)&FrontSteering_FaulhaberCommandReturnCode },
-                       { RW, uint32, sizeof (UNS32), (void*)&FrontSteering_FaulhaberCommandReturnParameter }
+                       { RW, int32, sizeof (INTEGER32), (void*)&LeftSteering_MeasuredSpeed },
+                       { RW, uint16, sizeof (UNS16), (void*)&LeftSteering_Ds402State },
+                       { RW, int32, sizeof (INTEGER32), (void*)&LeftSteering_MeasuredPosition },
+                       { RW, int16, sizeof (INTEGER16), (void*)&LeftSteering_MeasuredCurrent },
+                       { RW, uint32, sizeof (UNS32), (void*)&LeftSteering_FaulhaberCommandParameter },
+                       { RW, uint8, sizeof (UNS8), (void*)&LeftSteering_FaulhaberCommand },
+                       { RW, uint8, sizeof (UNS8), (void*)&LeftSteering_FaulhaberCommandReturn },
+                       { RW, uint8, sizeof (UNS8), (void*)&LeftSteering_FaulhaberCommandReturnCode },
+                       { RW, uint32, sizeof (UNS32), (void*)&LeftSteering_FaulhaberCommandReturnParameter }
                      };
 
-/* index 0x2320 :   Mapped variable LeftDriving */
-                    UNS8 CanARD_highestSubIndex_obj2320 = 10; /* number of subindex - 1*/
+/* index 0x2220 :   Mapped variable RightSteering */
+                    UNS8 CanARD_highestSubIndex_obj2220 = 9; /* number of subindex - 1*/
+                    ODCallback_t RightSteering_callbacks[] = 
+                     {
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                     };
+                    subindex CanARD_Index2220[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj2220 },
+                       { RW, int32, sizeof (INTEGER32), (void*)&RightSteering_MeasuredSpeed },
+                       { RW, uint16, sizeof (UNS16), (void*)&RightSteering_Ds402State },
+                       { RW, int32, sizeof (INTEGER32), (void*)&RightSteering_MeasuredPosition },
+                       { RW, int16, sizeof (INTEGER16), (void*)&RightSteering_MeasuredCurrent },
+                       { RW, uint32, sizeof (UNS32), (void*)&RightSteering_FaulhaberCommandParameter },
+                       { RW, uint8, sizeof (UNS8), (void*)&RightSteering_FaulhaberCommand },
+                       { RW, uint8, sizeof (UNS8), (void*)&RightSteering_FaulhaberCommandReturn },
+                       { RW, uint8, sizeof (UNS8), (void*)&RightSteering_FaulhaberCommandReturnCode },
+                       { RW, uint32, sizeof (UNS32), (void*)&RightSteering_FaulhaberCommandReturnParameter }
+                     };
+
+/* index 0x2230 :   Mapped variable RearSteering */
+                    UNS8 CanARD_highestSubIndex_obj2230 = 9; /* number of subindex - 1*/
+                    ODCallback_t RearSteering_callbacks[] = 
+                     {
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                     };
+                    subindex CanARD_Index2230[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj2230 },
+                       { RW, int32, sizeof (INTEGER32), (void*)&RearSteering_MeasuredSpeed },
+                       { RW, uint16, sizeof (UNS16), (void*)&RearSteering_Ds402State },
+                       { RW, int32, sizeof (INTEGER32), (void*)&RearSteering_MeasuredPosition },
+                       { RW, int16, sizeof (INTEGER16), (void*)&RearSteering_MeasuredCurrent },
+                       { RW, uint32, sizeof (UNS32), (void*)&RearSteering_FaulhaberCommandParameter },
+                       { RW, uint8, sizeof (UNS8), (void*)&RearSteering_FaulhaberCommand },
+                       { RW, uint8, sizeof (UNS8), (void*)&RearSteering_FaulhaberCommandReturn },
+                       { RW, uint8, sizeof (UNS8), (void*)&RearSteering_FaulhaberCommandReturnCode },
+                       { RW, uint32, sizeof (UNS32), (void*)&RearSteering_FaulhaberCommandReturnParameter }
+                     };
+
+/* index 0x2310 :   Mapped variable LeftDriving */
+                    UNS8 CanARD_highestSubIndex_obj2310 = 9; /* number of subindex - 1*/
                     ODCallback_t LeftDriving_callbacks[] = 
+                     {
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                     };
+                    subindex CanARD_Index2310[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj2310 },
+                       { RW, int32, sizeof (INTEGER32), (void*)&LeftDriving_MeasuredSpeed },
+                       { RW, uint16, sizeof (UNS16), (void*)&LeftDriving_Ds402State },
+                       { RW, int32, sizeof (INTEGER32), (void*)&LeftDriving_MeasuredPosition },
+                       { RW, int16, sizeof (INTEGER16), (void*)&LeftDriving_MeasuredCurrent },
+                       { RW, uint32, sizeof (UNS32), (void*)&LeftDriving_FaulhaberCommandParameter },
+                       { RW, uint8, sizeof (UNS8), (void*)&LeftDriving_FaulhaberCommand },
+                       { RW, uint8, sizeof (UNS8), (void*)&LeftDriving_FaulhaberCommandReturn },
+                       { RW, uint8, sizeof (UNS8), (void*)&LeftDriving_FaulhaberCommandReturnCode },
+                       { RW, uint32, sizeof (UNS32), (void*)&LeftDriving_FaulhaberCommandReturnParameter }
+                     };
+
+/* index 0x2320 :   Mapped variable RightDriving */
+                    UNS8 CanARD_highestSubIndex_obj2320 = 10; /* number of subindex - 1*/
+                    ODCallback_t RightDriving_callbacks[] = 
                      {
                        NULL,
                        NULL,
@@ -701,21 +859,21 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                     subindex CanARD_Index2320[] = 
                      {
                        { RO, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj2320 },
-                       { RW, int32, sizeof (INTEGER32), (void*)&LeftDriving_MeasuredSpeed },
-                       { RW, uint16, sizeof (UNS16), (void*)&LeftDriving_Ds402State },
-                       { RW, int32, sizeof (INTEGER32), (void*)&LeftDriving_MeasuredPosition },
-                       { RW, int16, sizeof (INTEGER16), (void*)&LeftDriving_MeasuredCurrent },
-                       { RW, uint32, sizeof (UNS32), (void*)&LeftDriving_FaulhaberCommandParameter },
-                       { RW, uint8, sizeof (UNS8), (void*)&LeftDriving_FaulhaberCommand },
-                       { RW, uint8, sizeof (UNS8), (void*)&LeftDriving_FaulhaberCommandReturn },
-                       { RW, uint8, sizeof (UNS8), (void*)&LeftDriving_FaulhaberCommandReturnCode },
-                       { RW, uint32, sizeof (UNS32), (void*)&LeftDriving_FaulhaberCommandReturnParameter },
-                       { RW, uint8, sizeof (UNS8), (void*)&LeftDriving_Undefined }
+                       { RW, int32, sizeof (INTEGER32), (void*)&RightDriving_MeasuredSpeed },
+                       { RW, uint16, sizeof (UNS16), (void*)&RightDriving_Ds402State },
+                       { RW, int32, sizeof (INTEGER32), (void*)&RightDriving_MeasuredPosition },
+                       { RW, int16, sizeof (INTEGER16), (void*)&RightDriving_MeasuredCurrent },
+                       { RW, uint32, sizeof (UNS32), (void*)&RightDriving_FaulhaberCommandParameter },
+                       { RW, uint8, sizeof (UNS8), (void*)&RightDriving_FaulhaberCommand },
+                       { RW, uint8, sizeof (UNS8), (void*)&RightDriving_FaulhaberCommandReturn },
+                       { RW, uint8, sizeof (UNS8), (void*)&RightDriving_FaulhaberCommandReturnCode },
+                       { RW, uint32, sizeof (UNS32), (void*)&RightDriving_FaulhaberCommandReturnParameter },
+                       { RW, uint8, sizeof (UNS8), (void*)&RightDriving_Undefined }
                      };
 
-/* index 0x2330 :   Mapped variable RightDriving */
+/* index 0x2330 :   Mapped variable RearDriving */
                     UNS8 CanARD_highestSubIndex_obj2330 = 9; /* number of subindex - 1*/
-                    ODCallback_t RightDriving_callbacks[] = 
+                    ODCallback_t RearDriving_callbacks[] = 
                      {
                        NULL,
                        NULL,
@@ -731,15 +889,15 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                     subindex CanARD_Index2330[] = 
                      {
                        { RO, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj2330 },
-                       { RW, int32, sizeof (INTEGER32), (void*)&RightDriving_MeasuredSpeed },
-                       { RW, uint16, sizeof (UNS16), (void*)&RightDriving_Ds402State },
-                       { RW, int32, sizeof (INTEGER32), (void*)&RightDriving_MeasuredPosition },
-                       { RW, int16, sizeof (INTEGER16), (void*)&RightDriving_MeasuredCurrent },
-                       { RW, uint32, sizeof (UNS32), (void*)&RightDriving_FaulhaberCommandParameter },
-                       { RW, uint8, sizeof (UNS8), (void*)&RightDriving_FaulhaberCommand },
-                       { RW, uint8, sizeof (UNS8), (void*)&RightDriving_FaulhaberCommandReturn },
-                       { RW, uint8, sizeof (UNS8), (void*)&RightDriving_FaulhaberCommandReturnCode },
-                       { RW, uint32, sizeof (UNS32), (void*)&RightDriving_FaulhaberCommandReturnParameter }
+                       { RW, int32, sizeof (INTEGER32), (void*)&RearDriving_MeasuredSpeed },
+                       { RW, uint16, sizeof (UNS16), (void*)&RearDriving_Ds402State },
+                       { RW, int32, sizeof (INTEGER32), (void*)&RearDriving_MeasuredPosition },
+                       { RW, int16, sizeof (INTEGER16), (void*)&RearDriving_MeasuredCurrent },
+                       { RW, uint32, sizeof (UNS32), (void*)&RearDriving_FaulhaberCommandParameter },
+                       { RW, uint8, sizeof (UNS8), (void*)&RearDriving_FaulhaberCommand },
+                       { RW, uint8, sizeof (UNS8), (void*)&RearDriving_FaulhaberCommandReturn },
+                       { RW, uint8, sizeof (UNS8), (void*)&RearDriving_FaulhaberCommandReturnCode },
+                       { RW, uint32, sizeof (UNS32), (void*)&RearDriving_FaulhaberCommandReturnParameter }
                      };
 
 /**************************************************************************/
@@ -759,6 +917,9 @@ const indextable CanARD_objdict[] =
   { (subindex*)CanARD_Index1281,sizeof(CanARD_Index1281)/sizeof(CanARD_Index1281[0]), 0x1281},
   { (subindex*)CanARD_Index1282,sizeof(CanARD_Index1282)/sizeof(CanARD_Index1282[0]), 0x1282},
   { (subindex*)CanARD_Index1283,sizeof(CanARD_Index1283)/sizeof(CanARD_Index1283[0]), 0x1283},
+  { (subindex*)CanARD_Index1284,sizeof(CanARD_Index1284)/sizeof(CanARD_Index1284[0]), 0x1284},
+  { (subindex*)CanARD_Index1285,sizeof(CanARD_Index1285)/sizeof(CanARD_Index1285[0]), 0x1285},
+  { (subindex*)CanARD_Index1286,sizeof(CanARD_Index1286)/sizeof(CanARD_Index1286[0]), 0x1286},
   { (subindex*)CanARD_Index1400,sizeof(CanARD_Index1400)/sizeof(CanARD_Index1400[0]), 0x1400},
   { (subindex*)CanARD_Index1401,sizeof(CanARD_Index1401)/sizeof(CanARD_Index1401[0]), 0x1401},
   { (subindex*)CanARD_Index1402,sizeof(CanARD_Index1402)/sizeof(CanARD_Index1402[0]), 0x1402},
@@ -787,6 +948,9 @@ const indextable CanARD_objdict[] =
   { (subindex*)CanARD_Index1A02,sizeof(CanARD_Index1A02)/sizeof(CanARD_Index1A02[0]), 0x1A02},
   { (subindex*)CanARD_Index2050,sizeof(CanARD_Index2050)/sizeof(CanARD_Index2050[0]), 0x2050},
   { (subindex*)CanARD_Index2210,sizeof(CanARD_Index2210)/sizeof(CanARD_Index2210[0]), 0x2210},
+  { (subindex*)CanARD_Index2220,sizeof(CanARD_Index2220)/sizeof(CanARD_Index2220[0]), 0x2220},
+  { (subindex*)CanARD_Index2230,sizeof(CanARD_Index2230)/sizeof(CanARD_Index2230[0]), 0x2230},
+  { (subindex*)CanARD_Index2310,sizeof(CanARD_Index2310)/sizeof(CanARD_Index2310[0]), 0x2310},
   { (subindex*)CanARD_Index2320,sizeof(CanARD_Index2320)/sizeof(CanARD_Index2320[0]), 0x2320},
   { (subindex*)CanARD_Index2330,sizeof(CanARD_Index2330)/sizeof(CanARD_Index2330[0]), 0x2330},
 };
@@ -807,36 +971,42 @@ const indextable * CanARD_scanIndexOD (UNS16 wIndex, UNS32 * errorCode, ODCallba
 		case 0x1281: i = 8;break;
 		case 0x1282: i = 9;break;
 		case 0x1283: i = 10;break;
-		case 0x1400: i = 11;break;
-		case 0x1401: i = 12;break;
-		case 0x1402: i = 13;break;
-		case 0x1403: i = 14;break;
-		case 0x1404: i = 15;break;
-		case 0x1405: i = 16;break;
-		case 0x1406: i = 17;break;
-		case 0x1407: i = 18;break;
-		case 0x1408: i = 19;break;
-		case 0x1409: i = 20;break;
-		case 0x1600: i = 21;break;
-		case 0x1601: i = 22;break;
-		case 0x1602: i = 23;break;
-		case 0x1603: i = 24;break;
-		case 0x1604: i = 25;break;
-		case 0x1605: i = 26;break;
-		case 0x1606: i = 27;break;
-		case 0x1607: i = 28;break;
-		case 0x1608: i = 29;break;
-		case 0x1609: i = 30;break;
-		case 0x1800: i = 31;*callbacks = CanARD_Index1800_callbacks; break;
-		case 0x1801: i = 32;*callbacks = CanARD_Index1801_callbacks; break;
-		case 0x1802: i = 33;*callbacks = CanARD_Index1802_callbacks; break;
-		case 0x1A00: i = 34;break;
-		case 0x1A01: i = 35;break;
-		case 0x1A02: i = 36;break;
-		case 0x2050: i = 37;break;
-		case 0x2210: i = 38;*callbacks = FrontSteering_callbacks; break;
-		case 0x2320: i = 39;*callbacks = LeftDriving_callbacks; break;
-		case 0x2330: i = 40;*callbacks = RightDriving_callbacks; break;
+		case 0x1284: i = 11;break;
+		case 0x1285: i = 12;break;
+		case 0x1286: i = 13;break;
+		case 0x1400: i = 14;break;
+		case 0x1401: i = 15;break;
+		case 0x1402: i = 16;break;
+		case 0x1403: i = 17;break;
+		case 0x1404: i = 18;break;
+		case 0x1405: i = 19;break;
+		case 0x1406: i = 20;break;
+		case 0x1407: i = 21;break;
+		case 0x1408: i = 22;break;
+		case 0x1409: i = 23;break;
+		case 0x1600: i = 24;break;
+		case 0x1601: i = 25;break;
+		case 0x1602: i = 26;break;
+		case 0x1603: i = 27;break;
+		case 0x1604: i = 28;break;
+		case 0x1605: i = 29;break;
+		case 0x1606: i = 30;break;
+		case 0x1607: i = 31;break;
+		case 0x1608: i = 32;break;
+		case 0x1609: i = 33;break;
+		case 0x1800: i = 34;*callbacks = CanARD_Index1800_callbacks; break;
+		case 0x1801: i = 35;*callbacks = CanARD_Index1801_callbacks; break;
+		case 0x1802: i = 36;*callbacks = CanARD_Index1802_callbacks; break;
+		case 0x1A00: i = 37;break;
+		case 0x1A01: i = 38;break;
+		case 0x1A02: i = 39;break;
+		case 0x2050: i = 40;*callbacks = Woodhead_callbacks; break;
+		case 0x2210: i = 41;*callbacks = LeftSteering_callbacks; break;
+		case 0x2220: i = 42;*callbacks = RightSteering_callbacks; break;
+		case 0x2230: i = 43;*callbacks = RearSteering_callbacks; break;
+		case 0x2310: i = 44;*callbacks = LeftDriving_callbacks; break;
+		case 0x2320: i = 45;*callbacks = RightDriving_callbacks; break;
+		case 0x2330: i = 46;*callbacks = RearDriving_callbacks; break;
 		default:
 			*errorCode = OD_NO_SUCH_OBJECT;
 			return NULL;
@@ -855,19 +1025,19 @@ s_PDO_status CanARD_PDO_status[3] = {s_PDO_status_Initializer,s_PDO_status_Initi
 const quick_index CanARD_firstIndex = {
   6, /* SDO_SVR */
   7, /* SDO_CLT */
-  11, /* PDO_RCV */
-  21, /* PDO_RCV_MAP */
-  31, /* PDO_TRS */
-  34 /* PDO_TRS_MAP */
+  14, /* PDO_RCV */
+  24, /* PDO_RCV_MAP */
+  34, /* PDO_TRS */
+  37 /* PDO_TRS_MAP */
 };
 
 const quick_index CanARD_lastIndex = {
   6, /* SDO_SVR */
-  10, /* SDO_CLT */
-  20, /* PDO_RCV */
-  30, /* PDO_RCV_MAP */
-  33, /* PDO_TRS */
-  36 /* PDO_TRS_MAP */
+  13, /* SDO_CLT */
+  23, /* PDO_RCV */
+  33, /* PDO_RCV_MAP */
+  36, /* PDO_TRS */
+  39 /* PDO_TRS_MAP */
 };
 
 const UNS16 CanARD_ObjdictSize = sizeof(CanARD_objdict)/sizeof(CanARD_objdict[0]); 

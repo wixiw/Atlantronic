@@ -12,8 +12,8 @@
     <depend package="socket_can" />
     <depend package="can_festival" />
     <depend package="rtt" />
-    <depend package="rtt_ros_integration_std_msgs"/>
-  	<depend package="rtt_ros_integration_arp_core_msgs"/>
+    <depend package="rtt_std_msgs"/>
+  	<depend package="rtt_arp_core"/>
 	<depend package="std_msgs" />
 	<depend package="sensor_msgs" />
 	<depend package="std_srvs" />

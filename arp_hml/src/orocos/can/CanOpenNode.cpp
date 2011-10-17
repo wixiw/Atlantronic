@@ -17,7 +17,7 @@ using namespace scripting;
 CanOpenNode::CanOpenNode(const std::string& name):
 	HmlTaskContext(name),
     propNodeId(int(0xFF)),
-    propNmtTimeout(1.000),
+    propNmtTimeout(2.000),
     propCanOpenControllerName("Can1"),
     propCanConfigurationScript(""),
     inMasterClock(),

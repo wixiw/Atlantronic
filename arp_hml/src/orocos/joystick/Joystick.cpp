@@ -17,6 +17,7 @@ Joystick::Joystick(const std::string& name) :
 		HmlTaskContext(name),
         propDevName("/dev/input/js0"),
         propMinimalDriverVersion(0x020000),
+        propMaxNoEventDelay(2.0),
         attrIsConnected(false),
         attrIsIdentityOk(false),
         m_fd(-666),

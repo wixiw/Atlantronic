@@ -20,9 +20,9 @@ CanOpenController::CanOpenController(const std::string& name) :
             HmlTaskContext(name),
             attrCurrentNMTState(Unknown_state),
             propCanFestivalDriverName(
-                    "/opt/ros/ard/can_festival/lib/libcanfestival_can_socket.so"),
+                    "/opt/ard/can_festival/lib/libcanfestival_can_socket.so"),
             propBusName("can1"), propBaudRate("250K"), propNodeId(0),
-            propMasterMaxBootDelay(50), propSyncPeriod(0.010),
+            propMasterMaxBootDelay(0.050), propSyncPeriod(0.010),
             propPdoMaxAwaitedDelay(propSyncPeriod/2),
             m_dispatcher(*this), m_canPort(NULL)
 {
@@ -347,10 +347,10 @@ bool CanOpenController::coWriteInLocalDico(CanDicoEntry dicoEntry)
 {
     int writeResult;
     UNS32 size = dicoEntry.size;
-    EnterMutex();
+    //EnterMutex();
     writeResult
             = writeLocalDict( &CanARD_Data, dicoEntry.index, dicoEntry.subindex, &dicoEntry.value, &size, 0);
-    LeaveMutex();
+    //LeaveMutex();
     if (OD_SUCCESSFUL != writeResult)
     {
         LOG(Error) << "Write failed in 0x" << std::hex << dicoEntry.index
