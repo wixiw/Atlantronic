@@ -5,6 +5,8 @@
 -- Comp1:load()
 -- Comp1:connect()
 
+cp=rtt.Variable("ConnPolicy")
+
 ComposantDeployer = 
 {
 	name="noname"
