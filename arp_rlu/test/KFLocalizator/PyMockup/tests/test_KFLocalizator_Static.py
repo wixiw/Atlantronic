@@ -3,7 +3,7 @@ import sys
 sys.path.append( "../../../../src/KFLocalizator/PyMockup" )
 
 import logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger('main')
 
 import numpy as np
@@ -22,9 +22,13 @@ graine_ = random.randint(0,1000)
 #graine = 128
 #graine = 988
 #graine = 821
+
+#graine = 273
+#graine_ = 809
+
 random.seed(graine)
-log.info("graine :%d", graine)
-log.info("graine_ :%d", graine_)
+log.info("graine pour la position réelle :%d", graine)
+log.info("graine pour la simulation :%d", graine_)
 
 
 #===============================================================================
@@ -48,14 +52,15 @@ kfloc.initialize(0.0,
                  params.sigmaInitialPosition, params.sigmaInitialHeading,
                  params.sigmaTransOdoVelocity, params.sigmaRotOdoVelocity, 
                  params.sigmaLaserRange, params.sigmaLaserAngle, params.sigmaSegmentHeading)
-
+kfloc.Nit = params.Nit
+kfloc.threshold = params.threshold
 
 
 #===============================================================================
 # Simulateur de LRF
 #===============================================================================
 lrfsim = LRFSimulator()
-lrfsim.sigma = 0.01
+lrfsim.sigma = params.sigmaLRF
 
 
 #===============================================================================
@@ -167,24 +172,24 @@ time = 0.
 
 log.info("=======================")
 log.info("Position réelle :")
-log.info("  xPosition:%f", trueX)
-log.info("  yPosition:%f", trueY)
-log.info("  hPosition:%f", trueH)
+log.info("  xPosition: %f", trueX)
+log.info("  yPosition: %f", trueY)
+log.info("  hPosition: %f", trueH)
 
 log.info("=======================")
 log.info("Etat initial :")
-log.info("  xPosition:%f", initialXPosition)
-log.info("  yPosition:%f", initialYPosition)
-log.info("  hPosition:%f", initialHeading)
-log.info("  vx:%f", 0.)
-log.info("  vy:%f", 0.)
-log.info("  vz:%f", 0.)
+log.info("  xPosition: %f", initialXPosition)
+log.info("  yPosition: %f", initialYPosition)
+log.info("  hPosition: %f", initialHeading)
+log.info("  vx: %f", 0.)
+log.info("  vy: %f", 0.)
+log.info("  vz: %f", 0.)
 
     
-log.info("erreur statique sur l'état initial (t =%f) :", time)
-log.info("  sur x (en mm):%f", (initialXPosition - trueX) * 1000.)
-log.info("  sur y (en mm):%f", (initialYPosition - trueY) * 1000.)
-log.info("  en cap (deg) :%f", betweenMinusPiAndPlusPi( initialHeading - trueH ) *180./np.pi)
+log.info("erreur statique sur l'état initial (t = %f) :", time)
+log.info("  sur x (en mm): %f", (initialXPosition - trueX) * 1000.)
+log.info("  sur y (en mm): %f", (initialYPosition - trueY) * 1000.)
+log.info("  en cap (deg) : %f", betweenMinusPiAndPlusPi( initialHeading - trueH ) *180./np.pi)
 
 xOld = initialXPosition
 yOld = initialYPosition
@@ -222,9 +227,9 @@ for k in range(Ntour):
     # print estim1[1].covariance
     
     log.info( "erreur statique apres les odos :")
-    log.info( "  sur x (en mm):%f", (estim1[1].xRobot - trueX) * 1000.)
-    log.info( "  sur y (en mm):%f", (estim1[1].yRobot - trueY) * 1000.)
-    log.info( "  en cap (deg) :%f", betweenMinusPiAndPlusPi( estim1[1].hRobot - trueH ) *180./np.pi)
+    log.info( "  sur x (en mm): %f", (estim1[1].xRobot - trueX) * 1000.)
+    log.info( "  sur y (en mm): %f", (estim1[1].yRobot - trueY) * 1000.)
+    log.info( "  en cap (deg) : %f", betweenMinusPiAndPlusPi( estim1[1].hRobot - trueH ) *180./np.pi)
     
     duration = 681. * 0.1 / 1024.
     
@@ -253,10 +258,10 @@ for k in range(Ntour):
     estims = kfloc.getLastEstimates()
     for estim2 in estims[:-1]:
       log.debug( "-----------------------")
-      log.debug( "  Erreur statique post update (t =%f): ", estim2[0])
-      log.debug( "    sur x (en mm):%f", (estim2[1].xRobot - trueX) * 1000.)
-      log.debug( "    sur y (en mm):%f", (estim2[1].yRobot - trueY) * 1000.)
-      log.debug( "    en cap (deg) :%f", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./np.pi)
+      log.debug( "  Erreur statique post update (t = %f): ", estim2[0])
+      log.debug( "    sur x (en mm): %f", (estim2[1].xRobot - trueX) * 1000.)
+      log.debug( "    sur y (en mm): %f", (estim2[1].yRobot - trueY) * 1000.)
+      log.debug( "    en cap (deg) : %f", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./np.pi)
       
       
       
@@ -272,9 +277,9 @@ for k in range(Ntour):
     #print "Covariance apres le scan :"
     #print estim2[1].covariance )
     log.info( "Erreur statique après scan :")
-    log.info( "  sur x (en mm):%f", (estim2[1].xRobot - trueX) * 1000.)
-    log.info( "  sur y (en mm):%f", (estim2[1].yRobot - trueY) * 1000.)
-    log.info( "  en cap (deg) :%f", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./np.pi)
+    log.info( "  sur x (en mm): %f", (estim2[1].xRobot - trueX) * 1000.)
+    log.info( "  sur y (en mm): %f", (estim2[1].yRobot - trueY) * 1000.)
+    log.info( "  en cap (deg) : %f", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./np.pi)
 
     xArrowBeg = estim2[1].xRobot
     yArrowBeg = estim2[1].yRobot

@@ -25,7 +25,11 @@ class KFLocalizator:
     
     # command noise covariance matrix.  (3x3 matrix)
     self.Q = []
-
+    
+    # Max number of iterations (in case of IEKF only)
+    self.Nit = 10
+    # threshold use to stop iteration (in case of IEKF only)
+    self.threshold = np.array([ [0.01], [0.01], [0.01]])
     
   def initialize(self, currentTime, N, 
                        initialXPosition, initialYPosition, initialHeading, 
@@ -191,14 +195,18 @@ class KFLocalizator:
               H[1,2] = -1.
               return H
           
-            # print "KFLocalizator - newScan() : H="; print H
             IM = np.zeros((2,1))
             IM[0,0] = np.sqrt((self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
             IM[1,0] = betweenMinusPiAndPlusPi(math.atan2(yBeacon - self.X[1,0], xBeacon - self.X[0,0]) -  self.X[2,0])
-            # print "KFLocalizator - newScan() : IM="; print IM
             
             R = np.diag((self.sigmaLaserRange, 
                          self.sigmaLaserAngle))
+            
+            
+            log.debug("---")
+            log.debug("mesure : Y.r= %f  Y.theta= %f", r, theta)
+            log.debug("simulée : IM.r= %f  IM.theta= %f", IM[0,0], IM[1,0])
+            log.debug("Y[0] - IM[0]= %f", (Y[0,0] - IM[0,0])*1000.)
             
           else:
             # on voit le cap du segment
@@ -233,32 +241,29 @@ class KFLocalizator:
                          self.sigmaSegmentHeading))
             
             log.debug("---")
-            log.debug("mesure : Y.r=%f  Y.theta=%f  Y.beta=%f", r, theta, heading)
-            log.debug("simulée : IM.r=%f  IM.theta=%f  IM.beta=%f", IM[0,0], IM[1,0], IM[2,0])
-            log.debug("Y[0] - IM[0]=%f", (Y[0,0] - IM[0,0])*1000.)
+            log.debug("mesure : Y.r= %f  Y.theta= %f  Y.beta= %f", r, theta, heading)
+            log.debug("simulée : IM.r= %f  IM.theta= %f  IM.beta= %f", IM[0,0], IM[1,0], IM[2,0])
+            log.debug("Y[0] - IM[0]= %f", (Y[0,0] - IM[0,0])*1000.)
             
-#          print "--------------------"
-#          print "estimée pre update :"
-#          print "  sur x (en mm):", self.X[0,0] * 1000.
-#          print "  sur y (en mm):", self.X[1,0] * 1000.
-#          print "  en cap (deg) :", betweenMinusPiAndPlusPi(self.X[2,0]) * 180.*pi
-#          print "---"
-#          print "mesure : Y.r=", r, "  Y.theta=", theta
-#          print "simulée : IM.r=", IM[0,0], "  IM.theta=", IM[1,0]
-#          print "Y[0] - IM[0]=", (Y[0,0] - IM[0,0])*1000.
+          log.debug( "-----------------------")
+          log.debug( "Estimée pre update:")
+          log.debug( "  sur x (en m):%f", self.X[0,0] )
+          log.debug( "  sur y (en m):%f", self.X[1,0] )
+          log.debug( "  en cap (deg) :%f", betweenMinusPiAndPlusPi(self.X[2,0]) * 180./np.pi)
+
+
 #          (self.X, self.P, K,IM,IS) = ekf_update(self.X, self.P, Y, J(self.X), R, IM)
-            
-          Nit = 10
-          threshold = np.array([ [0.01], [0.01], [0.01]])
-          (self.X, self.P, K,IM,IS, k) = iekf_update(self.X, self.P, Y, J, R, IM, Nit, threshold)
+          (self.X, self.P, K,IM,IS, k) = iekf_update(self.X, self.P, Y, J, R, IM, self.Nit, self.threshold)
           
           
-#          print "estimée post update :"
-#          print "  sur x (en mm):", self.X[0,0] * 1000.
-#          print "  sur y (en mm):", self.X[1,0] * 1000.
-#          print "  en cap (deg) :", betweenMinusPiAndPlusPi(self.X[2,0]) * 180.*pi
+          log.debug( "-----------------------")
+          log.debug( "Estimée post update:")
+          log.debug( "  sur x (en m):%f", self.X[0,0] )
+          log.debug( "  sur y (en m):%f", self.X[1,0] )
+          log.debug( "  en cap (deg) :%f", betweenMinusPiAndPlusPi(self.X[2,0]) * 180./np.pi)
+          
           nbVisibleBeacons = nbVisibleBeacons + 1
-          log.debug("xBeacon:%f  yBeacon:%f  hBeacon:%s", xBeacon, yBeacon, str(hBeacon))
+          log.debug("xBeacon: %f  yBeacon: %f  hBeacon: %s", xBeacon, yBeacon, str(hBeacon))
           
           estim = Estimate()
           estim.xRobot = self.X[0,0]
@@ -273,7 +278,7 @@ class KFLocalizator:
       ov.vh = vvh[i]
       self.predict(t, ov, dt)
     
-    log.debug("  ==>%d beacons have been seen", nbVisibleBeacons)
+    log.debug("  ==> %d beacons have been seen", nbVisibleBeacons)
       
     estim = Estimate()
     estim.xRobot = self.X[0,0]
