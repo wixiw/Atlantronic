@@ -13,6 +13,7 @@ add_subdirectory(math)
 add_subdirectory(plugin)
 add_subdirectory(taskcontexts)
 add_subdirectory(timer)
+add_subdirectory(sql_bridge)
 
 ####################################################################################################################
 

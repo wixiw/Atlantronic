@@ -66,15 +66,19 @@ fi
 echo -e $BLEU
 if [ $package_name == "ard" ]
 then
-	rsync  -avzh `rosstack find ard` root@$2:/opt/ros \
-	--delete \
-	--exclude "build" \
-	--exclude ".svn" \
-	--exclude ".git" \
-	--exclude ".hg" \
-	--exclude ".tb_history"\
-	--exclude "*.log"\
-	--exclude "doc"
+	stack_list=`rosstack depends ard`
+	for stack in $stack_list
+	do
+		rsync  -avzh `rosstack find $stack` root@$2:/opt/ros \
+		--delete \
+		--exclude "build" \
+		--exclude ".svn" \
+		--exclude ".git" \
+		--exclude ".hg" \
+		--exclude ".tb_history"\
+		--exclude "*.log"\
+		--exclude "doc"
+	done
 else
 	rsync  -avzh `rospack find $package_name` root@$2:`rosstack find ard` \
 	--delete \
