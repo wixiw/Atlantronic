@@ -13,44 +13,41 @@ import matplotlib.pyplot as plt
 from KFLocalizator import *
 from LRFSimulator import *
 
+import params_KFLocalizator_Static as params
+
 np.set_printoptions(precision=4)
 
 graine = random.randint(0,1000)
+graine_ = random.randint(0,1000)
 #graine = 128
 #graine = 988
 #graine = 821
 random.seed(graine)
-log.debug("graine :%d", graine)
-
-
-
+log.info("graine :%d", graine)
+log.info("graine_ :%d", graine_)
 
 
 #===============================================================================
-# Initialization triviale du KF
+# Initialization du KF
 #===============================================================================
 kfloc = KFLocalizator()
 trueX = random.uniform( -1.3, 1.3)
 trueY = random.uniform( -0.8, 0.8)
 trueH = random.uniform( -2. * np.pi, 2. * np.pi)
-sigmaInitialPosition = 0.1
-sigmaInitialHeading = 0.1
-sigmaTransOdoVelocity = 0.001 
-sigmaRotOdoVelocity = 0.001
-sigmaLaserRange = 0.01
-sigmaLaserAngle = 0.001
-sigmaSegmentHeading = 0.5
-initialXPosition = trueX + random.normalvariate(0., sigmaInitialPosition)
-initialYPosition = trueY + random.normalvariate(0., sigmaInitialPosition)
-initialHeading = trueH + random.normalvariate(0., sigmaInitialHeading)
+
+random.seed(graine_)
+
+initialXPosition = trueX + random.normalvariate(0., params.sigmaInitialPosition)
+initialYPosition = trueY + random.normalvariate(0., params.sigmaInitialPosition)
+initialHeading = trueH + random.normalvariate(0., params.sigmaInitialHeading)
 kfloc.initialize(0.0,
                  100,
                  initialXPosition, 
                  initialYPosition, 
                  initialHeading, 
-                 sigmaInitialPosition, sigmaInitialHeading,
-                 sigmaTransOdoVelocity, sigmaRotOdoVelocity, 
-                 sigmaLaserRange, sigmaLaserAngle, sigmaSegmentHeading)
+                 params.sigmaInitialPosition, params.sigmaInitialHeading,
+                 params.sigmaTransOdoVelocity, params.sigmaRotOdoVelocity, 
+                 params.sigmaLaserRange, params.sigmaLaserAngle, params.sigmaSegmentHeading)
 
 
 
@@ -203,9 +200,9 @@ for k in range(Ntour):
     odoDurationInSec = 0.1
     ov = OdoVelocity()
     for t in np.arange(time, time + odoDurationInSec, 0.01):
-      ov.vx = random.normalvariate(0., sigmaTransOdoVelocity)
-      ov.vy = random.normalvariate(0., sigmaTransOdoVelocity)
-      ov.vh = random.normalvariate(0., sigmaRotOdoVelocity)
+      ov.vx = random.normalvariate(0., params.sigmaTransOdoVelocity)
+      ov.vy = random.normalvariate(0., params.sigmaTransOdoVelocity)
+      ov.vh = random.normalvariate(0., params.sigmaRotOdoVelocity)
       kfloc.newOdoVelocity(t, ov)
     time = time + odoDurationInSec
     
