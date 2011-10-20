@@ -1,5 +1,5 @@
 # coding=utf-8
-from numpy import *
+import numpy as np
 import math
 import random
 
@@ -13,7 +13,7 @@ class KFLocalizator:
     self.buffer = []
     
 #    self.scanproc = ScanProcessor()
-    self.scanproc = ScanProcessor2()
+    self.scanproc = ScanProcessor()
     
     # mean state estimate
     # X[0,0] is xRobot
@@ -31,10 +31,10 @@ class KFLocalizator:
                        initialXPosition, initialYPosition, initialHeading, 
                        sigmaInitialPosition, sigmaInitialHeading,
                        sigmaTransOdoVelocity, sigmaRotOdoVelocity, sigmaLaserRange, sigmaLaserAngle, sigmaSegmentHeading):
-    self.X = array([[initialXPosition], 
+    self.X = np.array([[initialXPosition], 
                     [initialYPosition], 
                     [initialHeading]])
-    self.P = diag((sigmaInitialPosition,
+    self.P = np.diag((sigmaInitialPosition,
                    sigmaInitialPosition,
                    sigmaInitialHeading))
     estim = Estimate()
@@ -48,7 +48,7 @@ class KFLocalizator:
     self.buffer = RingBuffer(N)
     self.buffer.append([currentTime, estim])
     
-    self.Q = diag((sigmaTransOdoVelocity,
+    self.Q = np.diag((sigmaTransOdoVelocity,
                    sigmaTransOdoVelocity,
                    sigmaRotOdoVelocity))
     
@@ -58,13 +58,13 @@ class KFLocalizator:
     
     
   def predict(self, currentT, ov, dt):
-    U = array([[ov.vx], 
+    U = np.array([[ov.vx], 
                [ov.vy],
                [ov.vh]])
-    A = array([[1., 0., 0.],
+    A = np.array([[1., 0., 0.],
                [0., 1., 0.],
                [0., 0., 1.]])
-    (self.X, self.P) = kf_predict(self.X, self.P, A, self.Q, diag((dt,dt,dt)), U)
+    (self.X, self.P) = kf_predict(self.X, self.P, A, self.Q, np.diag((dt,dt,dt)), U)
   
   def newOdoVelocity(self, currentT, ov):
     last = self.buffer.getNewest()
@@ -115,7 +115,7 @@ class KFLocalizator:
     if len(tt_) == 0:
       return (tt_, xx_, yy_, hh_, vvx_, vvy_, vvh_, covars_)
 
-    tt = arange(tCurrent-duration, tCurrent, deltaT)
+    tt = np.arange(tCurrent-duration, tCurrent, deltaT)
     tt = tt[:681]
     xx = interp1d(tt, tt_, xx_)
     yy = interp1d(tt, tt_, yy_)
@@ -128,7 +128,8 @@ class KFLocalizator:
   
   
   def newScan(self, currentTime, scan):
-#    self.scanproc.setScan(scan)
+    log = logging.getLogger('newScan')
+    self.scanproc.setScan(scan)
     
     # back in the past
     duration = 681. * 0.1 / 1024.
@@ -140,34 +141,35 @@ class KFLocalizator:
     self.buffer.clear()
     
     # reinit self.X and self.P
-    self.X = array([[xx[0]], 
+    self.X = np.array([[xx[0]], 
                     [yy[0]], 
                     [hh[0]]])
     self.P = covars[0]
     
     
-#    self.scanproc.findCluster(tt, xx, yy, hh)
-    self.scanproc.process(scan, tt, xx, yy, hh)
+    self.scanproc.findCluster(tt, xx, yy, hh)
+#    self.scanproc.process(scan, tt, xx, yy, hh)
     
     
 #    print "========================================="
     nbVisibleBeacons = 0
     
-    print "======================="
-    print "nb of detected clusters:", len(self.scanproc.objects)
-    print "objects :"
+    log.debug("=======================")
+    log.debug("nb of detected clusters: %d", len(self.scanproc.objects))
+    log.debug("objects :")
     for o in self.scanproc.objects:
-      print " ",o
+      log.debug(" " + o.__str__())
       
-    
+    if len(self.scanproc.objects) < 2:
+      log.info("Only one beacon has been seen")
     # loop on time 
     for i in range(len(tt)):
       t = tt[i]
       heading = None
       hBeacon = None
-#      (xBeacon, yBeacon, r, theta) = self.scanproc.getBeacons(t)
-      (xBeacon, yBeacon, hBeacon, r, theta, heading) = self.scanproc.getBeacons(t, epsilon_time=tt[1]-tt[0])
-#      heading = None
+      (xBeacon, yBeacon, r, theta) = self.scanproc.getBeacons(t)
+#      (xBeacon, yBeacon, hBeacon, r, theta, heading) = self.scanproc.getBeacons(t, epsilon_time=tt[1]-tt[0])
+      heading = None
       #(xBeacon, yBeacon, r, theta) = self.scanproc.getTrueBeacons(i)
       if xBeacon != None and yBeacon != None:
         
@@ -175,14 +177,14 @@ class KFLocalizator:
             # print "========================================="
             # print "xBeacon =", xBeacon
             # print "yBeacon =", yBeacon
-            Y = zeros((2,1))
+            Y = np.zeros((2,1))
             Y[0,0] = r
             Y[1,0] = theta
             # print "KFLocalizator - newScan() : Y="; print Y
             def J(X):
-              H = zeros( (2,3) )
-              H[0,0] = (X[0,0] - xBeacon) / sqrt( (X[0,0] - xBeacon)**2 + (X[1,0] - yBeacon)**2 )
-              H[0,1] = (X[1,0] - yBeacon) / sqrt( (X[0,0] - xBeacon)**2 + (X[1,0] - yBeacon)**2 )
+              H = np.zeros( (2,3) )
+              H[0,0] = (X[0,0] - xBeacon) / np.sqrt( (X[0,0] - xBeacon)**2 + (X[1,0] - yBeacon)**2 )
+              H[0,1] = (X[1,0] - yBeacon) / np.sqrt( (X[0,0] - xBeacon)**2 + (X[1,0] - yBeacon)**2 )
               H[0,2] = 0.
               H[1,0] = (X[1,0] - yBeacon) / ( (X[0,0] - xBeacon)**2 + (X[1,0] - yBeacon)**2 )
               H[1,1] = (X[0,0] - xBeacon) / ( (X[0,0] - xBeacon)**2 + (X[1,0] - yBeacon)**2 )
@@ -190,26 +192,26 @@ class KFLocalizator:
               return H
           
             # print "KFLocalizator - newScan() : H="; print H
-            IM = zeros((2,1))
-            IM[0,0] = sqrt((self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
+            IM = np.zeros((2,1))
+            IM[0,0] = np.sqrt((self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
             IM[1,0] = betweenMinusPiAndPlusPi(math.atan2(yBeacon - self.X[1,0], xBeacon - self.X[0,0]) -  self.X[2,0])
             # print "KFLocalizator - newScan() : IM="; print IM
             
-            R = diag((self.sigmaLaserRange, 
-                      self.sigmaLaserAngle))
+            R = np.diag((self.sigmaLaserRange, 
+                         self.sigmaLaserAngle))
             
           else:
             # on voit le cap du segment
-            print " heading OK :-)"
-            Y = zeros((3,1))
+            log.debug(" heading OK :-)")
+            Y = np.zeros((3,1))
             Y[0,0] = r
             Y[1,0] = theta
             Y[2,0] = heading
   
             def J(X):
-              H = zeros( (3,3) )
-              H[0,0] = (X[0,0] - xBeacon) / sqrt( (X[0,0] - xBeacon)**2 + (X[1,0] - yBeacon)**2 )
-              H[0,1] = (X[1,0] - yBeacon) / sqrt( (X[0,0] - xBeacon)**2 + (X[1,0] - yBeacon)**2 )
+              H = np.zeros( (3,3) )
+              H[0,0] = (X[0,0] - xBeacon) / np.sqrt( (X[0,0] - xBeacon)**2 + (X[1,0] - yBeacon)**2 )
+              H[0,1] = (X[1,0] - yBeacon) / np.sqrt( (X[0,0] - xBeacon)**2 + (X[1,0] - yBeacon)**2 )
               H[0,2] = 0.
               H[1,0] = (X[1,0] - yBeacon) / ( (X[0,0] - xBeacon)**2 + (X[1,0] - yBeacon)**2 )
               H[1,1] = (X[0,0] - xBeacon) / ( (X[0,0] - xBeacon)**2 + (X[1,0] - yBeacon)**2 )
@@ -219,21 +221,21 @@ class KFLocalizator:
               H[2,2] = 0.
               return H
             
-            IM = zeros((3,1))
-            IM[0,0] = sqrt((self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
+            IM = np.zeros((3,1))
+            IM[0,0] = np.sqrt((self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
             IM[1,0] = betweenMinusPiAndPlusPi(math.atan2(yBeacon - self.X[1,0], xBeacon - self.X[0,0]) -  self.X[2,0])
             IM[2,0] = betweenMinusPiAndPlusPi(math.atan2(yBeacon - self.X[1,0], xBeacon - self.X[0,0]) -  hBeacon)
             # print "KFLocalizator - newScan() : IM="; print IM
             
             
-            R = diag((self.sigmaLaserRange, 
-                      self.sigmaLaserAngle,
-                      self.sigmaSegmentHeading))
+            R = np.diag((self.sigmaLaserRange, 
+                         self.sigmaLaserAngle,
+                         self.sigmaSegmentHeading))
             
-            print "---"
-            print "mesure : Y.r=", r, "  Y.theta=", theta, "  Y.beta=", heading
-            print "simulée : IM.r=", IM[0,0], "  IM.theta=", IM[1,0], "  IM.beta=", IM[2,0]
-            print "Y[0] - IM[0]=", (Y[0,0] - IM[0,0])*1000.
+            log.debug("---")
+            log.debug("mesure : Y.r=%f  Y.theta=%f  Y.beta=%f", r, theta, heading)
+            log.debug("simulée : IM.r=%f  IM.theta=%f  IM.beta=%f", IM[0,0], IM[1,0], IM[2,0])
+            log.debug("Y[0] - IM[0]=%f", (Y[0,0] - IM[0,0])*1000.)
             
 #          print "--------------------"
 #          print "estimée pre update :"
@@ -247,7 +249,7 @@ class KFLocalizator:
 #          (self.X, self.P, K,IM,IS) = ekf_update(self.X, self.P, Y, J(self.X), R, IM)
             
           Nit = 10
-          threshold = array([ [0.01], [0.01], [0.01]])
+          threshold = np.array([ [0.01], [0.01], [0.01]])
           (self.X, self.P, K,IM,IS, k) = iekf_update(self.X, self.P, Y, J, R, IM, Nit, threshold)
           
           
@@ -256,7 +258,7 @@ class KFLocalizator:
 #          print "  sur y (en mm):", self.X[1,0] * 1000.
 #          print "  en cap (deg) :", betweenMinusPiAndPlusPi(self.X[2,0]) * 180.*pi
           nbVisibleBeacons = nbVisibleBeacons + 1
-          print "xBeacon:", xBeacon, "  yBeacon:", yBeacon, "  hBeacon:", str(hBeacon)
+          log.debug("xBeacon:%f  yBeacon:%f  hBeacon:%s", xBeacon, yBeacon, str(hBeacon))
           
           estim = Estimate()
           estim.xRobot = self.X[0,0]
@@ -271,7 +273,7 @@ class KFLocalizator:
       ov.vh = vvh[i]
       self.predict(t, ov, dt)
     
-    print "  ==>",nbVisibleBeacons, "beacons have been seen"
+    log.debug("  ==>%d beacons have been seen", nbVisibleBeacons)
       
     estim = Estimate()
     estim.xRobot = self.X[0,0]

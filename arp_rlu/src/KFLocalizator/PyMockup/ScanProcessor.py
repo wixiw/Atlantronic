@@ -2,6 +2,7 @@
 import numpy as np
 import math
 import random
+import logging
 
 from BaseClasses import *
     
@@ -108,12 +109,15 @@ class ScanProcessor:
     
     
   def getBeacons(self, time):
+    log = logging.getLogger('getBeacons')
     xBeacon = None
     yBeacon = None
     range = None
     theta = None
     if self.beacons == []:
-      # print "WARNING: ScanProcessor.getBeacons(): No beacon registred"
+      log.warning("No beacon registred")
+      return (xBeacon, yBeacon, range, theta)
+    if len(self.objects) < 2:
       return (xBeacon, yBeacon, range, theta)
     for o in self.objects:
       # we select the object detected at time t (if exist)
@@ -142,7 +146,7 @@ class ScanProcessor:
           range  = o.range
           theta  = (o.thetaEnd + o.thetaBeg) / 2.
         else:
-          print "WARNING : the targeted beacon is too far !"
+          log.warning("the targeted beacon is too far !")
     return (xBeacon, yBeacon, range, theta)
 
   def getTrueBeacons(self, index):

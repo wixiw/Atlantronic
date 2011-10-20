@@ -1,5 +1,6 @@
 # coding=utf-8
-from numpy import *
+import numpy as np
+import logging
 
 # inputs : 
 # X : The mean state estimate of the previous step ( k -1 ).
@@ -12,8 +13,9 @@ from numpy import *
 # X : The predicted mean state estimate of current step ( k )
 # P : The predicted state covariance of current step ( k )
 def kf_predict(X, P, A, Q, B, U):
-  X = dot(A, X) + dot(B, U)
-  P = dot(A, dot(P, A.T)) + Q
+  log = logging.getLogger('kf_predict')
+  X = np.dot(A, X) + np.dot(B, U)
+  P = np.dot(A, np.dot(P, A.T)) + Q
   return(X,P)
   
 # inputs :
@@ -29,11 +31,12 @@ def kf_predict(X, P, A, Q, B, U):
 # IM : the Mean of predictive distribution of Y
 # IS : the Covariance or predictive mean of Y
 def kf_update(X, P, Y, H, R):
-  IM = dot(H, X)
-  IS = R + dot(H, dot(P, H.T))
-  K = dot(P, dot(H.T, linalg.inv(IS)))
-  X = X + dot(K, (Y-IM))
-  P = P - dot(K, dot(IS, K.T))
+  log = logging.getLogger('kf_update')
+  IM = np.dot(H, X)
+  IS = R + np.dot(H, np.dot(P, H.T))
+  K = np.dot(P, np.dot(H.T, np.linalg.inv(IS)))
+  X = X + np.dot(K, (Y-IM))
+  P = P - np.dot(K, np.dot(IS, K.T))
   return (X,P,K,IM,IS)
   
 # inputs :
@@ -50,10 +53,11 @@ def kf_update(X, P, Y, H, R):
 # IM : the Mean of predictive distribution of Y
 # IS : the Covariance or predictive mean of Y
 def ekf_update(X, P, Y, H, R, IM):
-  IS = R + dot(H, dot(P, H.T))
-  K = dot(P, dot(H.T, linalg.inv(IS)))
-  X = X + dot(K, (Y-IM))
-  P = P - dot(K, dot(IS, K.T))
+  log = logging.getLogger('ekf_update')
+  IS = R + np.dot(H, np.dot(P, H.T))
+  K = np.dot(P, np.dot(H.T, np.linalg.inv(IS)))
+  X = X + np.dot(K, (Y-IM))
+  P = P - np.dot(K, np.dot(IS, K.T))
   return (X,P,K,IM,IS)
   
 # inputs :
@@ -73,6 +77,7 @@ def ekf_update(X, P, Y, H, R, IM):
 # IS : the Covariance or predictive mean of Y
 # k  : nb of iterations computed
 def iekf_update(X, P, Y, J, R, IM, Nit, threshold):
+  log = logging.getLogger('iekf_update')
   X_ = X
   P_ = P
   IM_ = IM
@@ -80,8 +85,8 @@ def iekf_update(X, P, Y, J, R, IM, Nit, threshold):
     X__ = X_
     H = J(X_)
     (X_,P_,K,IM,IS) = ekf_update(X, P, Y, H, R, IM)
-    if all(less_equal( abs(X_ - X__), threshold ) ):
+    if np.all(np.less_equal( np.abs(X_ - X__), threshold ) ):
       break
-  print "iekf_update - Nit:", k+1
+  log.debug("Nit: %d", k+1)
   return (X_,P_,K,IM,IS,k+1)
       

@@ -1,28 +1,27 @@
 # coding=utf-8
 import sys
 sys.path.append( "../../../../src/KFLocalizator/PyMockup" )
-from numpy import *
-from random import *
+
+import logging
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger('main')
+
+import numpy as np
+import random
 import matplotlib.pyplot as plt
 
 from KFLocalizator import *
 from LRFSimulator import *
 
-set_printoptions(precision=4)
+np.set_printoptions(precision=4)
 
-graine = randint(0,1000)
+graine = random.randint(0,1000)
 #graine = 128
 #graine = 988
-graine = 821
+#graine = 821
 random.seed(graine)
-print "graine :", graine
+log.debug("graine :%d", graine)
 
-#trueX = 0.1
-#trueY = -0.1
-#trueH = 0.0
-#initialXPosition = 1.15624056453
-#initialYPosition = -0.655125447019
-#initialHeading = 0.22679772196
 
 
 
@@ -33,8 +32,8 @@ print "graine :", graine
 kfloc = KFLocalizator()
 trueX = random.uniform( -1.3, 1.3)
 trueY = random.uniform( -0.8, 0.8)
-trueH = random.uniform( -2. * pi, 2. * pi)
-sigmaInitialPosition = 0.02 #0.1
+trueH = random.uniform( -2. * np.pi, 2. * np.pi)
+sigmaInitialPosition = 0.1
 sigmaInitialHeading = 0.1
 sigmaTransOdoVelocity = 0.001 
 sigmaRotOdoVelocity = 0.001
@@ -65,32 +64,32 @@ lrfsim.sigma = 0.01
 #===============================================================================
 # Positionnement des balises
 #===============================================================================
-#radius = 0.05
-#obj1 = Circle()
-#obj1.xCenter = 1.5
-#obj1.yCenter = 0.
-#obj1.radius = radius
-#lrfsim.objects.append(obj1)
-#obj2 = Circle()
-#obj2.xCenter = -1.5
-#obj2.yCenter = -1.
-#obj2.radius = radius
-#lrfsim.objects.append(obj2)
-#obj3 = Circle()
-#obj3.xCenter = -1.5
-#obj3.yCenter = 1.
-#obj3.radius = radius
-#lrfsim.objects.append(obj3)
+radius = 0.05
+obj1 = Circle()
+obj1.xCenter = 1.5
+obj1.yCenter = 0.
+obj1.radius = radius
+lrfsim.objects.append(obj1)
+obj2 = Circle()
+obj2.xCenter = -1.5
+obj2.yCenter = -1.
+obj2.radius = radius
+lrfsim.objects.append(obj2)
+obj3 = Circle()
+obj3.xCenter = -1.5
+obj3.yCenter = 1.
+obj3.radius = radius
+lrfsim.objects.append(obj3)
 
-l = 0.4
-kfloc.scanproc.clusterParams.maxStddev = l
-lrfsim.objects = []
-sgmt1 = Segment(x=1.5, y=0., h=0., l=l)
-lrfsim.objects.append(sgmt1)
-sgmt2 = Segment(x=-1.5, y=1., h=3*np.pi/4., l=l)
-lrfsim.objects.append(sgmt2)
-sgmt3 = Segment(x=-1.5, y=-1., h=-3*np.pi/4., l=l)
-lrfsim.objects.append(sgmt3)
+#l = 0.4
+#kfloc.scanproc.clusterParams.maxStddev = l
+#lrfsim.objects = []
+#sgmt1 = Segment(x=1.5, y=0., h=0., l=l)
+#lrfsim.objects.append(sgmt1)
+#sgmt2 = Segment(x=-1.5, y=1., h=3*np.pi/4., l=l)
+#lrfsim.objects.append(sgmt2)
+#sgmt3 = Segment(x=-1.5, y=-1., h=-3*np.pi/4., l=l)
+#lrfsim.objects.append(sgmt3)
 
 #===============================================================================
 # obj4 = Circle()
@@ -138,9 +137,9 @@ plt.plot( [-1.5, -1.5, 1.5, 1.5, -1.5], [-1., 1., 1., -1., -1.], '-k')
 # beacons
 for obj in lrfsim.objects:
   if isinstance(obj, Circle):
-    border = arange( 0.0, 2 * pi, pi / 100)
-    xBalls = cos(border) * obj.radius + obj.xCenter
-    yBalls = sin(border) * obj.radius + obj.yCenter
+    border = np.arange( 0.0, 2 * np.pi, np.pi / 100)
+    xBalls = np.cos(border) * obj.radius + obj.xCenter
+    yBalls = np.sin(border) * obj.radius + obj.yCenter
     ax.plot( xBalls, yBalls, '-g')
   elif isinstance(obj, Segment):
     ax.plot( [obj.A[0,0], obj.B[0,0]], [obj.A[1,0], obj.B[1,0]], '-g')
@@ -148,15 +147,15 @@ for obj in lrfsim.objects:
 
 xArrowBeg = initialXPosition
 yArrowBeg = initialYPosition
-xArrowEnd = 0.1 * cos(initialHeading)
-yArrowEnd = 0.1 * sin(initialHeading)
+xArrowEnd = 0.1 * np.cos(initialHeading)
+yArrowEnd = 0.1 * np.sin(initialHeading)
 arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.01, color="red")
 ax.add_patch(arrow)
 
 xArrowBeg = trueX
 yArrowBeg = trueY
-xArrowEnd = 0.1 * cos(trueH)
-yArrowEnd = 0.1 * sin(trueH)
+xArrowEnd = 0.1 * np.cos(trueH)
+yArrowEnd = 0.1 * np.sin(trueH)
 arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.01, color="magenta")
 ax.add_patch(arrow)
 
@@ -169,41 +168,41 @@ plt.draw()
 
 time = 0.
 
-print "======================="
-print "Position réelle :"
-print "  xPosition:", trueX
-print "  yPosition:", trueY
-print "  hPosition:", trueH
+log.info("=======================")
+log.info("Position réelle :")
+log.info("  xPosition:%f", trueX)
+log.info("  yPosition:%f", trueY)
+log.info("  hPosition:%f", trueH)
 
-print "======================="
-print "Etat initial :"
-print "  xPosition:", initialXPosition
-print "  yPosition:", initialYPosition
-print "  hPosition:", initialHeading
-print "  vx:", 0.
-print "  vy:", 0.
-print "  vz:", 0.
+log.info("=======================")
+log.info("Etat initial :")
+log.info("  xPosition:%f", initialXPosition)
+log.info("  yPosition:%f", initialYPosition)
+log.info("  hPosition:%f", initialHeading)
+log.info("  vx:%f", 0.)
+log.info("  vy:%f", 0.)
+log.info("  vz:%f", 0.)
 
     
-print "erreur statique sur l'état initial (t =",time,") :"
-print "  sur x (en mm):", (initialXPosition - trueX) * 1000.
-print "  sur y (en mm):", (initialYPosition - trueY) * 1000.
-print "  en cap (deg) :", betweenMinusPiAndPlusPi( initialHeading - trueH ) *180./pi
+log.info("erreur statique sur l'état initial (t =%f) :", time)
+log.info("  sur x (en mm):%f", (initialXPosition - trueX) * 1000.)
+log.info("  sur y (en mm):%f", (initialYPosition - trueY) * 1000.)
+log.info("  en cap (deg) :%f", betweenMinusPiAndPlusPi( initialHeading - trueH ) *180./np.pi)
 
 xOld = initialXPosition
 yOld = initialYPosition
 
 Ntour = 5
 for k in range(Ntour):
-    print "=============================================="
-    print "=============================================="
-    print " TOUR", k
+    log.info("==============================================")
+    log.info("==============================================")
+    log.info(" TOUR %d", k)
     #===============================================================================
     # On reste sur place quelques sec
     #===============================================================================
     odoDurationInSec = 0.1
     ov = OdoVelocity()
-    for t in arange(time, time + odoDurationInSec, 0.01):
+    for t in np.arange(time, time + odoDurationInSec, 0.01):
       ov.vx = random.normalvariate(0., sigmaTransOdoVelocity)
       ov.vy = random.normalvariate(0., sigmaTransOdoVelocity)
       ov.vh = random.normalvariate(0., sigmaRotOdoVelocity)
@@ -214,7 +213,7 @@ for k in range(Ntour):
     # Estimee odo avant le scan
     #===============================================================================
     estim1 = kfloc.getBestEstimate()
-    print "======================="
+    log.info("=======================")
     #print "Estimee via odo (t =",estim1[0],"): "
     #print "  xPosition:", estim1[1].xRobot
     #print "  yPosition:", estim1[1].yRobot
@@ -225,10 +224,10 @@ for k in range(Ntour):
     # print "Covariance avant le scan :"
     # print estim1[1].covariance
     
-    print "erreur statique apres les odos :"
-    print "  sur x (en mm):", (estim1[1].xRobot - trueX) * 1000.
-    print "  sur y (en mm):", (estim1[1].yRobot - trueY) * 1000.
-    print "  en cap (deg) :", betweenMinusPiAndPlusPi( estim1[1].hRobot - trueH ) *180./pi
+    log.info( "erreur statique apres les odos :")
+    log.info( "  sur x (en mm):%f", (estim1[1].xRobot - trueX) * 1000.)
+    log.info( "  sur y (en mm):%f", (estim1[1].yRobot - trueY) * 1000.)
+    log.info( "  en cap (deg) :%f", betweenMinusPiAndPlusPi( estim1[1].hRobot - trueH ) *180./np.pi)
     
     duration = 681. * 0.1 / 1024.
     
@@ -236,10 +235,10 @@ for k in range(Ntour):
     y = trueY
     h = trueH
     vh = 0.
-    tt = arange( time - duration, time, 0.1 / 1024.)
+    tt = np.arange( time - duration, time, 0.1 / 1024.)
     tt = tt[-681:]
-    xx = ones( (len(tt)) ) * x
-    yy = ones( (len(tt)) ) * y
+    xx = np.ones( (len(tt)) ) * x
+    yy = np.ones( (len(tt)) ) * y
     hh = tt * vh + h
     
     
@@ -256,16 +255,16 @@ for k in range(Ntour):
     #===============================================================================
     estims = kfloc.getLastEstimates()
     for estim2 in estims[:-1]:
-      print "-----------------------"
-      print "  Erreur statique post update (t =",estim2[0],"): "
-      print "    sur x (en mm):", (estim2[1].xRobot - trueX) * 1000.
-      print "    sur y (en mm):", (estim2[1].yRobot - trueY) * 1000.
-      print "    en cap (deg) :", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./pi
+      log.debug( "-----------------------")
+      log.debug( "  Erreur statique post update (t =%f): ", estim2[0])
+      log.debug( "    sur x (en mm):%f", (estim2[1].xRobot - trueX) * 1000.)
+      log.debug( "    sur y (en mm):%f", (estim2[1].yRobot - trueY) * 1000.)
+      log.debug( "    en cap (deg) :%f", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./np.pi)
       
       
       
     estim2 = kfloc.getBestEstimate()
-    print "======================="
+    log.info( "=======================")
     #print "Estimée via scan (t =",estim2[0],"): "
     #print "  xPosition:", estim2[1].xRobot
     #print "  yPosition:", estim2[1].yRobot
@@ -274,16 +273,16 @@ for k in range(Ntour):
     #print "  vy:", estim2[1].velYRobot
     #print "  vz:", estim2[1].velHRobot
     #print "Covariance apres le scan :"
-    #print estim2[1].covariance
-    print "Erreur statique après scan :"
-    print "  sur x (en mm):", (estim2[1].xRobot - trueX) * 1000.
-    print "  sur y (en mm):", (estim2[1].yRobot - trueY) * 1000.
-    print "  en cap (deg) :", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./pi
+    #print estim2[1].covariance )
+    log.info( "Erreur statique après scan :")
+    log.info( "  sur x (en mm):%f", (estim2[1].xRobot - trueX) * 1000.)
+    log.info( "  sur y (en mm):%f", (estim2[1].yRobot - trueY) * 1000.)
+    log.info( "  en cap (deg) :%f", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./np.pi)
 
     xArrowBeg = estim2[1].xRobot
     yArrowBeg = estim2[1].yRobot
-    xArrowEnd = 0.1 * cos(estim2[1].hRobot)
-    yArrowEnd = 0.1 * sin(estim2[1].hRobot)
+    xArrowEnd = 0.1 * np.cos(estim2[1].hRobot)
+    yArrowEnd = 0.1 * np.sin(estim2[1].hRobot)
     arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.01, alpha=0.3)
     ax.add_patch(arrow)
     
@@ -297,14 +296,14 @@ for k in range(Ntour):
     if k == 0:
       for i in range(len(scan.range)):
         if scan.range[-1-i] > 0.:
-          xImpact = trueX + cos(trueH + scan.theta[-1-i]) * scan.range[-1-i]
-          yImpact = trueY + sin(trueH + scan.theta[-1-i]) * scan.range[-1-i]
+          xImpact = trueX + np.cos(trueH + scan.theta[-1-i]) * scan.range[-1-i]
+          yImpact = trueY + np.sin(trueH + scan.theta[-1-i]) * scan.range[-1-i]
           ax.plot( [xImpact] , [yImpact], 'xb' )
           ax.plot( [trueX, xImpact] , [trueY, yImpact], '--b' )
       
       # field of view
-      ax.plot( [trueX, trueX + cos(trueH + min(scan.theta))], [trueY, trueY + sin(trueH + min(scan.theta))], '-m')
-      ax.plot( [trueX, trueX + cos(trueH + max(scan.theta))], [trueY, trueY + sin(trueH + max(scan.theta))], '-m')
+      ax.plot( [trueX, trueX + np.cos(trueH + min(scan.theta))], [trueY, trueY + np.sin(trueH + min(scan.theta))], '-m')
+      ax.plot( [trueX, trueX + np.cos(trueH + max(scan.theta))], [trueY, trueY + np.sin(trueH + max(scan.theta))], '-m')
     
 
 
