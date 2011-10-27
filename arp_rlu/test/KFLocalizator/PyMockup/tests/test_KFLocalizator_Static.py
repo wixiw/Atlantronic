@@ -3,7 +3,7 @@ import sys
 sys.path.append( "../../../../src/KFLocalizator/PyMockup" )
 
 import logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 log = logging.getLogger('main')
 
 import numpy as np
