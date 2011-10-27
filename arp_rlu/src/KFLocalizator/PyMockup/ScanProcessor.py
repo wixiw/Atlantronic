@@ -10,6 +10,7 @@ class ScanProcessor:
   def __init__(self):
     self.beacons = []
     self.thresholdRange = 0.05
+    self.maxDistance = 0.7
     self.scan = Scan()
     self.reset()
     
@@ -140,7 +141,7 @@ class ScanProcessor:
         
         minDist = np.min(dist)
         iMin = np.argmin(dist)
-        if minDist < 0.7:
+        if minDist < self.maxDistance:
           xBeacon = self.beacons[iMin].xCenter
           yBeacon = self.beacons[iMin].yCenter
           range  = o.range

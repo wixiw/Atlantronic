@@ -68,7 +68,7 @@ class KFLocalizator:
     A = np.array([[1., 0., 0.],
                [0., 1., 0.],
                [0., 0., 1.]])
-    (self.X, self.P) = kf_predict(self.X, self.P, A, self.Q, np.diag((dt,dt,dt)), U)
+    (self.X, self.P) = kf_predict(self.X, self.P, A, dt * self.Q, np.diag((dt,dt,dt)), U)
   
   def newOdoVelocity(self, currentT, ov):
     last = self.buffer.getNewest()
@@ -149,6 +149,7 @@ class KFLocalizator:
                     [yy[0]], 
                     [hh[0]]])
     self.P = covars[0]
+    log.debug("back in the past : covars:\n%s",repr(covars[0]))
     
     
     self.scanproc.findCluster(tt, xx, yy, hh)
@@ -173,8 +174,7 @@ class KFLocalizator:
       hBeacon = None
       (xBeacon, yBeacon, r, theta) = self.scanproc.getBeacons(t)
 #      (xBeacon, yBeacon, hBeacon, r, theta, heading) = self.scanproc.getBeacons(t, epsilon_time=tt[1]-tt[0])
-      heading = None
-      #(xBeacon, yBeacon, r, theta) = self.scanproc.getTrueBeacons(i)
+#      (xBeacon, yBeacon, r, theta) = self.scanproc.getTrueBeacons(i)
       if xBeacon != None and yBeacon != None:
         
           if heading is None:
@@ -205,7 +205,7 @@ class KFLocalizator:
             
             log.debug("---")
             log.debug("mesure : Y.r= %f  Y.theta= %f", r, theta)
-            log.debug("simulée : IM.r= %f  IM.theta= %f", IM[0,0], IM[1,0])
+            log.debug("simulée pre update: IM.r= %f  IM.theta= %f", IM[0,0], IM[1,0])
             log.debug("Y[0] - IM[0]= %f", (Y[0,0] - IM[0,0])*1000.)
             
           else:
@@ -245,22 +245,30 @@ class KFLocalizator:
             log.debug("simulée : IM.r= %f  IM.theta= %f  IM.beta= %f", IM[0,0], IM[1,0], IM[2,0])
             log.debug("Y[0] - IM[0]= %f", (Y[0,0] - IM[0,0])*1000.)
             
-          log.debug( "-----------------------")
-          log.debug( "Estimée pre update:")
-          log.debug( "  sur x (en m):%f", self.X[0,0] )
-          log.debug( "  sur y (en m):%f", self.X[1,0] )
-          log.debug( "  en cap (deg) :%f", betweenMinusPiAndPlusPi(self.X[2,0]) * 180./np.pi)
+#          log.debug( "-----------------------")
+#          log.debug( "Estimée pre update:")
+#          log.debug( "  sur x (en m):%f", self.X[0,0] )
+#          log.debug( "  sur y (en m):%f", self.X[1,0] )
+#          log.debug( "  en cap (deg) :%f", betweenMinusPiAndPlusPi(self.X[2,0]) * 180./np.pi)
 
 
 #          (self.X, self.P, K,IM,IS) = ekf_update(self.X, self.P, Y, J(self.X), R, IM)
+          log.debug("covariance pre update: \n%s", repr(self.P))
           (self.X, self.P, K,IM,IS, k) = iekf_update(self.X, self.P, Y, J, R, IM, self.Nit, self.threshold)
+          log.debug("covariance post update: \n%s", repr(self.P))
           
           
-          log.debug( "-----------------------")
-          log.debug( "Estimée post update:")
-          log.debug( "  sur x (en m):%f", self.X[0,0] )
-          log.debug( "  sur y (en m):%f", self.X[1,0] )
-          log.debug( "  en cap (deg) :%f", betweenMinusPiAndPlusPi(self.X[2,0]) * 180./np.pi)
+          IM = np.zeros((2,1))
+          IM[0,0] = np.sqrt((self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
+          IM[1,0] = betweenMinusPiAndPlusPi(math.atan2(yBeacon - self.X[1,0], xBeacon - self.X[0,0]) -  self.X[2,0])
+          log.debug("simulée post update: IM.r= %f  IM.theta= %f", IM[0,0], IM[1,0])
+          log.debug("Y[0] - IM[0]= %f", (Y[0,0] - IM[0,0])*1000.)
+          
+#          log.debug( "-----------------------")
+#          log.debug( "Estimée post update:")
+#          log.debug( "  sur x (en m):%f", self.X[0,0] )
+#          log.debug( "  sur y (en m):%f", self.X[1,0] )
+#          log.debug( "  en cap (deg) :%f", betweenMinusPiAndPlusPi(self.X[2,0]) * 180./np.pi)
           
           nbVisibleBeacons = nbVisibleBeacons + 1
           log.debug("xBeacon: %f  yBeacon: %f  hBeacon: %s", xBeacon, yBeacon, str(hBeacon))

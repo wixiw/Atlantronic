@@ -19,12 +19,27 @@ np.set_printoptions(precision=4)
 
 graine = random.randint(0,1000)
 graine_ = random.randint(0,1000)
-#graine = 128
-#graine = 988
-#graine = 821
 
-#graine = 273
-#graine_ = 809
+# divergence
+#graine = 66 #graine_ = 562
+#graine = 206 #graine_ = 967
+#graine = 100 #graine_ = 649   !!!
+#graine = 601 #graine_ = 577   !!!
+#graine = 522 #graine_ = 521   !!!
+#graine = 913 #graine_ = 339   !!!
+
+# biais
+#graine = 431 #graine_ = 118
+#graine = 323 #graine_ = 590
+#graine = 572 #graine_ = 638
+
+# pb de détection de balise 
+#graine = 800 #graine_ = 112
+#graine = 461 #graine_ = 441
+
+# bizarre !!
+#graine = 394 #graine_ = 830
+
 
 random.seed(graine)
 log.info("graine pour la position réelle :%d", graine)
@@ -54,6 +69,9 @@ kfloc.initialize(0.0,
                  params.sigmaLaserRange, params.sigmaLaserAngle, params.sigmaSegmentHeading)
 kfloc.Nit = params.Nit
 kfloc.threshold = params.threshold
+kfloc.scanproc.maxDistance = params.maxDistance
+
+kfloc.scanproc.setTrueStaticPositionForDebugOnly(trueX, trueY, trueH)
 
 
 #===============================================================================
@@ -94,32 +112,32 @@ lrfsim.objects.append(obj3)
 #lrfsim.objects.append(sgmt3)
 
 #===============================================================================
-# obj4 = Circle()
-# obj4.xCenter = -1.5
-# obj4.yCenter = 0.
-# obj4.radius = radius
-# lrfsim.objects.append(obj4)
-# obj5 = Circle()
-# obj5.xCenter = 1.5
-# obj5.yCenter = 1.
-# obj5.radius = radius
-# lrfsim.objects.append(obj5)
-# obj6 = Circle()
-# obj6.xCenter = 1.5
-# obj6.yCenter = -1.
-# obj6.radius = radius
-# lrfsim.objects.append(obj6)
+#obj4 = Circle()
+#obj4.xCenter = -1.5
+#obj4.yCenter = 0.
+#obj4.radius = radius
+#lrfsim.objects.append(obj4)
+#obj5 = Circle()
+#obj5.xCenter = 1.5
+#obj5.yCenter = 1.
+#obj5.radius = radius
+#lrfsim.objects.append(obj5)
+#obj6 = Circle()
+#obj6.xCenter = 1.5
+#obj6.yCenter = -1.
+#obj6.radius = radius
+#lrfsim.objects.append(obj6)
 # 
-# obj7 = Circle()
-# obj7.xCenter = 0.
-# obj7.yCenter = 1.
-# obj7.radius = radius
-# lrfsim.objects.append(obj7)
-# obj8 = Circle()
-# obj8.xCenter = 0.
-# obj8.yCenter = -1.
-# obj8.radius = radius
-# lrfsim.objects.append(obj8)
+#obj7 = Circle()
+#obj7.xCenter = 0.
+#obj7.yCenter = 1.
+#obj7.radius = radius
+#lrfsim.objects.append(obj7)
+#obj8 = Circle()
+#obj8.xCenter = 0.
+#obj8.yCenter = -1.
+#obj8.radius = radius
+#lrfsim.objects.append(obj8)
 #===============================================================================
 
 kfloc.setBeacons( lrfsim.objects )
@@ -128,7 +146,7 @@ kfloc.setBeacons( lrfsim.objects )
 #===============================================================================
 # Affichage initial
 #===============================================================================
-fig = plt.figure()
+fig = plt.figure(figsize=(15,10))
 
 ax = fig.add_subplot(111, aspect='equal')
 ax.axis([-1.6, 1.6, -1.1, 1.1])
@@ -160,6 +178,10 @@ xArrowEnd = 0.1 * np.cos(trueH)
 yArrowEnd = 0.1 * np.sin(trueH)
 arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.01, color="magenta")
 ax.add_patch(arrow)
+circ = plt.Circle((trueX, trueY), radius=0.005, ec="magenta", fc="none")
+ax.add_patch(circ)
+circ = plt.Circle((trueX, trueY), radius=0.025, ec="magenta", fc="none")
+ax.add_patch(circ)
 
 
 plt.draw()
@@ -190,11 +212,14 @@ log.info("erreur statique sur l'état initial (t = %f) :", time)
 log.info("  sur x (en mm): %f", (initialXPosition - trueX) * 1000.)
 log.info("  sur y (en mm): %f", (initialYPosition - trueY) * 1000.)
 log.info("  en cap (deg) : %f", betweenMinusPiAndPlusPi( initialHeading - trueH ) *180./np.pi)
+log.info("covariance : \n%s", repr(kfloc.P))
 
 xOld = initialXPosition
 yOld = initialYPosition
 
-Ntour = 5
+time = 0.01
+
+Ntour = 8
 for k in range(Ntour):
     log.info("==============================================")
     log.info("==============================================")
@@ -230,6 +255,7 @@ for k in range(Ntour):
     log.info( "  sur x (en mm): %f", (estim1[1].xRobot - trueX) * 1000.)
     log.info( "  sur y (en mm): %f", (estim1[1].yRobot - trueY) * 1000.)
     log.info( "  en cap (deg) : %f", betweenMinusPiAndPlusPi( estim1[1].hRobot - trueH ) *180./np.pi)
+    log.info("covariance :\n%s", repr(estim1[1].covariance))    
     
     duration = 681. * 0.1 / 1024.
     
@@ -248,8 +274,6 @@ for k in range(Ntour):
     scan = lrfsim.computeScan(tt, xx, yy, hh)
     
     
-    kfloc.scanproc.setTrueStaticPositionForDebugOnly(trueX, trueY, trueH)
-    
     kfloc.newScan(time, scan)
     
     #===============================================================================
@@ -262,6 +286,16 @@ for k in range(Ntour):
       log.debug( "    sur x (en mm): %f", (estim2[1].xRobot - trueX) * 1000.)
       log.debug( "    sur y (en mm): %f", (estim2[1].yRobot - trueY) * 1000.)
       log.debug( "    en cap (deg) : %f", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./np.pi)
+      log.debug("covariance :\n%s", repr(estim2[1].covariance))    
+      xArrowBeg = estim2[1].xRobot
+      yArrowBeg = estim2[1].yRobot
+      xArrowEnd = 0.1 * np.cos(estim2[1].hRobot)
+      yArrowEnd = 0.1 * np.sin(estim2[1].hRobot)
+      arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.005, alpha=0.3, color="green")
+      ax.add_patch(arrow)
+      ax.plot( [xOld, xArrowBeg], [yOld, yArrowBeg], '-b' )
+      xOld = xArrowBeg
+      yOld = yArrowBeg
       
       
       
@@ -280,6 +314,7 @@ for k in range(Ntour):
     log.info( "  sur x (en mm): %f", (estim2[1].xRobot - trueX) * 1000.)
     log.info( "  sur y (en mm): %f", (estim2[1].yRobot - trueY) * 1000.)
     log.info( "  en cap (deg) : %f", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./np.pi)
+    log.info("covariance :\n%s", repr(estim2[1].covariance))
 
     xArrowBeg = estim2[1].xRobot
     yArrowBeg = estim2[1].yRobot
@@ -308,6 +343,8 @@ for k in range(Ntour):
       ax.plot( [trueX, trueX + np.cos(trueH + max(scan.theta))], [trueY, trueY + np.sin(trueH + max(scan.theta))], '-m')
     
 
+log.info("graine pour la position réelle :%d", graine)
+log.info("graine pour la simulation :%d", graine_)
 
-#ax.axis([trueX-0.4, trueX+0.4, trueY-0.4, trueY+0.4])
+ax.axis([trueX-0.2, trueX+0.2, trueY-0.15, trueY+0.15])
 plt.show()
