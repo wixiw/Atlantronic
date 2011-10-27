@@ -11,6 +11,8 @@ simu_cfg = {
 
 # LRFSimulator
 "sigmaLRF" : 0.01,   # en m
+
+# Simu des odo
 "sigmaTransOdoVelocity" : 0.001, #0.01    # en m/s
 "sigmaRotOdoVelocity" : 0.01, #0.1   # en rad/s
 
@@ -35,7 +37,7 @@ kf_cfg = {
 
 # Performance du LRF
 "sigmaLaserRange" : 0.005,    # en m
-"sigmaLaserAngle" : 0.001,    # en rad
+"sigmaLaserAngle" : 0.05,    # en rad
 "sigmaSegmentHeading" : 0.5,   # en rad
 
 # relatif au IEKF
@@ -49,6 +51,8 @@ kf_cfg = {
                   "maxDistance" : 0.9,      # erreur cartésienne max sur l'estimée de la position balise. En m
                   "thresholdRange" : 0.08,  # seuil de découpe de cluster sur r. En m
                   },
+
+"givePerfectLRFMeasures" : False,  # for debug only
 }
 
 

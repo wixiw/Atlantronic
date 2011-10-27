@@ -3,7 +3,7 @@ import sys
 sys.path.append( "../../../../src/KFLocalizator/PyMockup" )
 
 import logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger('main')
 
 import numpy as np
@@ -25,7 +25,6 @@ graine_ = random.randint(0,1000)
 # divergence
 #graine = 66 #graine_ = 562
 #graine = 206 #graine_ = 967
-#graine = 100 #graine_ = 649   !!!
 #graine = 601 #graine_ = 577   !!!
 #graine = 522 #graine_ = 521   !!!
 #graine = 913 #graine_ = 339   !!!
@@ -34,17 +33,14 @@ graine_ = random.randint(0,1000)
 #graine = 431 #graine_ = 118
 #graine = 323 #graine_ = 590
 #graine = 572 #graine_ = 638
+# graine = 155 #graine_ = 828 
 
 # pb de détection de balise 
 #graine = 800 #graine_ = 112
 #graine = 461 #graine_ = 441
 
-# bizarre !!
-#graine = 394 #graine_ = 830
 
 
-#graine = 66 
-#graine_ = 562
 
 random.seed(graine)
 log.info("graine pour la position réelle :%d", graine)
@@ -78,7 +74,7 @@ kfloc.scanproc.maxDistance = params.kf_cfg["scanproc_cfg"]["maxDistance"]
 kfloc.scanproc.thresholdRange = params.kf_cfg["scanproc_cfg"]["thresholdRange"]
 
 kfloc.scanproc.setTrueStaticPositionForDebugOnly(trueX, trueY, trueH)
-
+kfloc.givePerfectLRFMeasures = params.kf_cfg["givePerfectLRFMeasures"]
 
 #===============================================================================
 # Simulateur de LRF
@@ -375,4 +371,12 @@ log.info("graine pour la simulation :%d", graine_)
 if params.visu_cfg["zoom"]:
   ax.axis([trueX-0.2, trueX+0.2, trueY-0.15, trueY+0.15])
   
+  
+#plt.title("Iterations : "+ repr(params.simu_cfg["Nscans"]) 
+#          + " Erreur sur x="+str((estim2[1].xRobot - trueX) * 1000.) +"mm "
+#          + "(+-"+str(1.5 * math.sqrt(estim2[1].covariance[0,0])) +"mm)"
+#          + "  sur y="+repr((estim2[1].yRobot - trueY) * 1000.)+"mm "
+#          + "(+-"+repr(1.5 * math.sqrt(estim2[1].covariance[1,1]))+"mm)"
+#          + " et sur h="+ repr(betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./np.pi)+ "deg "
+#          + "(+-"+repr(1.5 * math.sqrt(estim2[1].covariance[1,1]) *180./np.pi)+"deg)")
 plt.show()

@@ -14,6 +14,7 @@ class KFLocalizator:
     
 #    self.scanproc = ScanProcessor()
     self.scanproc = ScanProcessor()
+    self.givePerfectLRFMeasures = False
     
     # mean state estimate
     # X[0,0] is xRobot
@@ -174,7 +175,10 @@ class KFLocalizator:
       hBeacon = None
       (xBeacon, yBeacon, r, theta) = self.scanproc.getBeacons(t)
 #      (xBeacon, yBeacon, hBeacon, r, theta, heading) = self.scanproc.getBeacons(t, epsilon_time=tt[1]-tt[0])
-#      (xBeacon, yBeacon, r, theta) = self.scanproc.getTrueBeacons(i)
+
+      if self.givePerfectLRFMeasures:
+        (xBeacon, yBeacon, r, theta) = self.scanproc.getTrueBeacons(i)
+        
       if xBeacon != None and yBeacon != None:
         
           if heading is None:
