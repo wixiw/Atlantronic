@@ -9,7 +9,7 @@ from BaseClasses import *
 class ScanProcessor:
   def __init__(self):
     self.beacons = []
-    self.thresholdRange = 0.05
+    self.thresholdRange = 0.08
     self.maxDistance = 0.7
     self.scan = Scan()
     self.reset()

@@ -41,6 +41,11 @@ graine_ = random.randint(0,1000)
 #graine = 394 #graine_ = 830
 
 
+
+graine = 461
+graine_ = 441
+
+
 random.seed(graine)
 log.info("graine pour la position réelle :%d", graine)
 log.info("graine pour la simulation :%d", graine_)
@@ -56,20 +61,21 @@ trueH = random.uniform( -2. * np.pi, 2. * np.pi)
 
 random.seed(graine_)
 
-initialXPosition = trueX + random.normalvariate(0., params.sigmaInitialPosition)
-initialYPosition = trueY + random.normalvariate(0., params.sigmaInitialPosition)
-initialHeading = trueH + random.normalvariate(0., params.sigmaInitialHeading)
+initialXPosition = trueX + random.normalvariate(0., params.simu_cfg["sigmaInitialPosition"])
+initialYPosition = trueY + random.normalvariate(0., params.simu_cfg["sigmaInitialPosition"])
+initialHeading = trueH + random.normalvariate(0., params.simu_cfg["sigmaInitialHeading"])
 kfloc.initialize(0.0,
                  100,
                  initialXPosition, 
                  initialYPosition, 
                  initialHeading, 
-                 params.sigmaInitialPosition, params.sigmaInitialHeading,
-                 params.sigmaTransOdoVelocity, params.sigmaRotOdoVelocity, 
-                 params.sigmaLaserRange, params.sigmaLaserAngle, params.sigmaSegmentHeading)
-kfloc.Nit = params.Nit
-kfloc.threshold = params.threshold
-kfloc.scanproc.maxDistance = params.maxDistance
+                 params.simu_cfg["sigmaInitialPosition"], params.simu_cfg["sigmaInitialHeading"],
+                 params.kf_cfg["sigmaTransOdoVelocity"], params.kf_cfg["sigmaRotOdoVelocity"], 
+                 params.kf_cfg["sigmaLaserRange"], params.kf_cfg["sigmaLaserAngle"], params.kf_cfg["sigmaSegmentHeading"])
+kfloc.Nit = params.kf_cfg["iekf_cfg"]["Nit"]
+kfloc.threshold = params.kf_cfg["iekf_cfg"]["threshold"]
+kfloc.scanproc.maxDistance = params.kf_cfg["scanproc_cfg"]["maxDistance"]
+kfloc.scanproc.thresholdRange = params.kf_cfg["scanproc_cfg"]["thresholdRange"]
 
 kfloc.scanproc.setTrueStaticPositionForDebugOnly(trueX, trueY, trueH)
 
@@ -78,7 +84,7 @@ kfloc.scanproc.setTrueStaticPositionForDebugOnly(trueX, trueY, trueH)
 # Simulateur de LRF
 #===============================================================================
 lrfsim = LRFSimulator()
-lrfsim.sigma = params.sigmaLRF
+lrfsim.sigma = params.simu_cfg["sigmaLRF"]
 
 
 #===============================================================================
@@ -230,9 +236,9 @@ for k in range(Ntour):
     odoDurationInSec = 0.1
     ov = OdoVelocity()
     for t in np.arange(time, time + odoDurationInSec, 0.01):
-      ov.vx = random.normalvariate(0., params.sigmaTransOdoVelocity)
-      ov.vy = random.normalvariate(0., params.sigmaTransOdoVelocity)
-      ov.vh = random.normalvariate(0., params.sigmaRotOdoVelocity)
+      ov.vx = random.normalvariate(0., params.kf_cfg["sigmaTransOdoVelocity"])
+      ov.vy = random.normalvariate(0., params.kf_cfg["sigmaTransOdoVelocity"])
+      ov.vh = random.normalvariate(0., params.kf_cfg["sigmaRotOdoVelocity"])
       kfloc.newOdoVelocity(t, ov)
     time = time + odoDurationInSec
     
@@ -346,5 +352,5 @@ for k in range(Ntour):
 log.info("graine pour la position réelle :%d", graine)
 log.info("graine pour la simulation :%d", graine_)
 
-ax.axis([trueX-0.2, trueX+0.2, trueY-0.15, trueY+0.15])
+#ax.axis([trueX-0.2, trueX+0.2, trueY-0.15, trueY+0.15])
 plt.show()
