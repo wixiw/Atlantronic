@@ -3,6 +3,7 @@ import numpy as np
 
 #================================
 # Paramètres du simu
+
 simu_cfg = {
 # Erreur sur la position initiale
 "sigmaInitialPosition" : 0.05,   # en m
@@ -10,14 +11,27 @@ simu_cfg = {
 
 # LRFSimulator
 "sigmaLRF" : 0.01,   # en m
+"sigmaTransOdoVelocity" : 0.001, #0.01    # en m/s
+"sigmaRotOdoVelocity" : 0.01, #0.1   # en rad/s
+
+"Nscans" : 5
 }
+
+visu_cfg = {
+"ellipse" : True,
+"intermediary_arrow" : True,
+"intermediary_ellipse" : False,
+"zoom" : True,
+}
+
 
 #============================
 # Paramètres du KFLocalizator
+
 kf_cfg = {
 # Performance de l'odométrie
-"sigmaTransOdoVelocity" : 0.1, #0.01    # en m/s
-"sigmaRotOdoVelocity" : 0.1, #0.1   # en rad/s
+"sigmaTransOdoVelocity" : 0.01, #0.01    # en m/s
+"sigmaRotOdoVelocity" : 0.01, #0.1   # en rad/s
 
 # Performance du LRF
 "sigmaLaserRange" : 0.005,    # en m
@@ -36,3 +50,5 @@ kf_cfg = {
                   "thresholdRange" : 0.08,  # seuil de découpe de cluster sur r. En m
                   },
 }
+
+

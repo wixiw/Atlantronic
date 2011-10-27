@@ -38,9 +38,9 @@ class KFLocalizator:
     self.X = np.array([[initialXPosition], 
                     [initialYPosition], 
                     [initialHeading]])
-    self.P = np.diag((sigmaInitialPosition,
-                   sigmaInitialPosition,
-                   sigmaInitialHeading))
+    self.P = np.diag((sigmaInitialPosition**2,
+                   sigmaInitialPosition**2,
+                   sigmaInitialHeading**2))
     estim = Estimate()
     estim.xRobot = self.X[0,0]
     estim.yRobot = self.X[1,0]
@@ -52,9 +52,9 @@ class KFLocalizator:
     self.buffer = RingBuffer(N)
     self.buffer.append([currentTime, estim])
     
-    self.Q = np.diag((sigmaTransOdoVelocity,
-                   sigmaTransOdoVelocity,
-                   sigmaRotOdoVelocity))
+    self.Q = np.diag((sigmaTransOdoVelocity**2,
+                   sigmaTransOdoVelocity**2,
+                   sigmaRotOdoVelocity**2))
     
     self.sigmaLaserRange = sigmaLaserRange
     self.sigmaLaserAngle = sigmaLaserAngle
@@ -199,8 +199,8 @@ class KFLocalizator:
             IM[0,0] = np.sqrt((self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
             IM[1,0] = betweenMinusPiAndPlusPi(math.atan2(yBeacon - self.X[1,0], xBeacon - self.X[0,0]) -  self.X[2,0])
             
-            R = np.diag((self.sigmaLaserRange, 
-                         self.sigmaLaserAngle))
+            R = np.diag((self.sigmaLaserRange**2, 
+                         self.sigmaLaserAngle**2))
             
             
             log.debug("---")
@@ -236,9 +236,9 @@ class KFLocalizator:
             # print "KFLocalizator - newScan() : IM="; print IM
             
             
-            R = np.diag((self.sigmaLaserRange, 
-                         self.sigmaLaserAngle,
-                         self.sigmaSegmentHeading))
+            R = np.diag((self.sigmaLaserRange**2, 
+                         self.sigmaLaserAngle**2,
+                         self.sigmaSegmentHeading**2))
             
             log.debug("---")
             log.debug("mesure : Y.r= %f  Y.theta= %f  Y.beta= %f", r, theta, heading)

@@ -45,6 +45,25 @@ def pca(x):
   values, vectors = np.linalg.eig( cov )
   return means, np.sqrt(values), vectors
 
-
+def getEllipseParametersFromEstimate(estim):
+  log = logging.getLogger('getEllipseParametersFromEstimate')
+  cov = estim.covariance[0:2, 0:2]
+  log.debug("cov: \n%s", repr(cov))
+  values, vectors = np.linalg.eig( cov )
+  log.debug("values: \n%s", repr(values))
+  log.debug("vectors: \n%s", repr(vectors))
+  stddev = np.sqrt(values)
+  log.debug("stddev: \n%s", repr(stddev))
+  axe = vectors[0:, np.argmax(stddev)]
+  log.debug("axe: \n%s", repr(axe))
+  height = 3 * np.min(stddev)
+  log.debug("height: %f", height)
+  width = 3 * np.max(stddev)
+  log.debug("width: %f", width)
+  xy = (estim.xRobot, estim.yRobot)
+  log.debug("xy: (%f,%f)", xy[0], xy[1])
+  angle = math.atan2( axe[1], axe[0]) * 180. / np.pi
+  log.debug("angle: %f", angle)
+  return xy, width, height, angle
   
 

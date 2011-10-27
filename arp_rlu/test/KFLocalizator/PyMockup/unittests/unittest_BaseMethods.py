@@ -67,7 +67,18 @@ class TestBaseMethods(unittest.TestCase):
     self.assertTrue(np.array_equiv( y[3], np.array([[1., 2., 3.], [4., 5., 6.]]) ))
     self.assertTrue(np.array_equiv( y[4], np.array([[2., 4., 6.], [8., 10., 12.]]) ))
 
-
+  def testGetEllipseParametersFromEstimate1(self):
+    estim = Estimate()
+    estim.xRobot = 10.
+    estim.yRobot = -3.
+    estim.covariance = np.diag((3., 2., 0.))
+    xy, width, height, angle = getEllipseParametersFromEstimate(estim)
+    self.assertAlmostEqual( xy[0], 10 )
+    self.assertAlmostEqual( xy[1], -3 )
+    self.assertAlmostEqual( width, 3. * math.sqrt(3.) )
+    self.assertAlmostEqual( height, 3. * math.sqrt(2.) )
+    self.assertAlmostEqual( angle, 0. )
+    
     
 if __name__ == '__main__':
     logging.basicConfig(level=logging.ERROR) 

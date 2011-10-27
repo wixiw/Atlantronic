@@ -3,12 +3,14 @@ import sys
 sys.path.append( "../../../../src/KFLocalizator/PyMockup" )
 
 import logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 log = logging.getLogger('main')
 
 import numpy as np
 import random
 import matplotlib.pyplot as plt
+from matplotlib.collections import PatchCollection
+import matplotlib.patches as mpatches
 
 from KFLocalizator import *
 from LRFSimulator import *
@@ -41,10 +43,8 @@ graine_ = random.randint(0,1000)
 #graine = 394 #graine_ = 830
 
 
-
-graine = 461
-graine_ = 441
-
+#graine = 66 
+#graine_ = 562
 
 random.seed(graine)
 log.info("graine pour la position réelle :%d", graine)
@@ -177,6 +177,15 @@ xArrowEnd = 0.1 * np.cos(initialHeading)
 yArrowEnd = 0.1 * np.sin(initialHeading)
 arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.01, color="red")
 ax.add_patch(arrow)
+if params.visu_cfg["ellipse"]:
+  estim = Estimate()
+  estim.xRobot = kfloc.X[0,0]
+  estim.yRobot = kfloc.X[1,0]
+  estim.hRobot = kfloc.X[2,0]
+  estim.covariance = kfloc.P
+  xy, width, height, angle = getEllipseParametersFromEstimate(estim)
+  ellipse = mpatches.Ellipse(xy, width, height, angle, alpha=0.3, ec="red", fc = "none")
+  ax.add_patch(ellipse)
 
 xArrowBeg = trueX
 yArrowBeg = trueY
@@ -225,8 +234,7 @@ yOld = initialYPosition
 
 time = 0.01
 
-Ntour = 8
-for k in range(Ntour):
+for k in range(params.simu_cfg["Nscans"]):
     log.info("==============================================")
     log.info("==============================================")
     log.info(" TOUR %d", k)
@@ -236,9 +244,9 @@ for k in range(Ntour):
     odoDurationInSec = 0.1
     ov = OdoVelocity()
     for t in np.arange(time, time + odoDurationInSec, 0.01):
-      ov.vx = random.normalvariate(0., params.kf_cfg["sigmaTransOdoVelocity"])
-      ov.vy = random.normalvariate(0., params.kf_cfg["sigmaTransOdoVelocity"])
-      ov.vh = random.normalvariate(0., params.kf_cfg["sigmaRotOdoVelocity"])
+      ov.vx = random.normalvariate(0., params.simu_cfg["sigmaTransOdoVelocity"])
+      ov.vy = random.normalvariate(0., params.simu_cfg["sigmaTransOdoVelocity"])
+      ov.vh = random.normalvariate(0., params.simu_cfg["sigmaRotOdoVelocity"])
       kfloc.newOdoVelocity(t, ov)
     time = time + odoDurationInSec
     
@@ -292,16 +300,23 @@ for k in range(Ntour):
       log.debug( "    sur x (en mm): %f", (estim2[1].xRobot - trueX) * 1000.)
       log.debug( "    sur y (en mm): %f", (estim2[1].yRobot - trueY) * 1000.)
       log.debug( "    en cap (deg) : %f", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./np.pi)
-      log.debug("covariance :\n%s", repr(estim2[1].covariance))    
-      xArrowBeg = estim2[1].xRobot
-      yArrowBeg = estim2[1].yRobot
-      xArrowEnd = 0.1 * np.cos(estim2[1].hRobot)
-      yArrowEnd = 0.1 * np.sin(estim2[1].hRobot)
-      arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.005, alpha=0.3, color="green")
-      ax.add_patch(arrow)
-      ax.plot( [xOld, xArrowBeg], [yOld, yArrowBeg], '-b' )
-      xOld = xArrowBeg
-      yOld = yArrowBeg
+      log.debug("covariance :\n%s", repr(estim2[1].covariance))
+
+      if params.visu_cfg["intermediary_arrow"]:    
+        xArrowBeg = estim2[1].xRobot
+        yArrowBeg = estim2[1].yRobot
+        xArrowEnd = 0.1 * np.cos(estim2[1].hRobot)
+        yArrowEnd = 0.1 * np.sin(estim2[1].hRobot)
+        arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.005, alpha=0.3, color="green")
+        ax.add_patch(arrow)
+        ax.plot( [xOld, xArrowBeg], [yOld, yArrowBeg], '-b' )
+        xOld = xArrowBeg
+        yOld = yArrowBeg
+      
+      if params.visu_cfg["intermediary_ellipse"]:
+        xy, width, height, angle = getEllipseParametersFromEstimate(estim2[1])
+        ellipse = mpatches.Ellipse(xy, width, height, angle, alpha=0.3, ec="green", fc="none")
+        ax.add_patch(ellipse)
       
       
       
@@ -326,8 +341,13 @@ for k in range(Ntour):
     yArrowBeg = estim2[1].yRobot
     xArrowEnd = 0.1 * np.cos(estim2[1].hRobot)
     yArrowEnd = 0.1 * np.sin(estim2[1].hRobot)
-    arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.01, alpha=0.3)
+    arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.01, alpha=0.3, color="blue")
     ax.add_patch(arrow)
+    
+    if params.visu_cfg["ellipse"]:
+      xy, width, height, angle = getEllipseParametersFromEstimate(estim2[1])
+      ellipse = mpatches.Ellipse(xy, width, height, angle, alpha=0.1, color="blue")
+      ax.add_patch(ellipse)
     
     ax.plot( [xOld, xArrowBeg], [yOld, yArrowBeg], '-b' )
     xOld = xArrowBeg
@@ -352,5 +372,7 @@ for k in range(Ntour):
 log.info("graine pour la position réelle :%d", graine)
 log.info("graine pour la simulation :%d", graine_)
 
-#ax.axis([trueX-0.2, trueX+0.2, trueY-0.15, trueY+0.15])
+if params.visu_cfg["zoom"]:
+  ax.axis([trueX-0.2, trueX+0.2, trueY-0.15, trueY+0.15])
+  
 plt.show()
