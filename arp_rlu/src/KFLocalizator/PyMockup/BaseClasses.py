@@ -32,13 +32,14 @@ class Circle(Object):
     return "xCenter=%f  yCenter=%f r=%f thetaBeg=%f thetaEnd=%f timeBeg=%f timeEnd=%f" % (self.xCenter, self.yCenter, self.radius, self.thetaBeg, self.thetaEnd, self.timeBeg, self.timeEnd)
     
 class Segment(Object):
-  def __init__(self, x, y, h, l):
+  def __init__(self, x = None, y = None, h = None, l = None):
     self.x = x
     self.y = y
     self.h = h
     self.l = l
-    self.A = np.array( [[x],[y]]) + 0.5 * l * np.array([[math.cos(h - np.pi/2.)],[math.sin(h - np.pi/2.)]])
-    self.B = np.array( [[x],[y]]) + 0.5 * l * np.array([[math.cos(h + np.pi/2.)],[math.sin(h + np.pi/2.)]])
+    if x != None and y != None and h != None and l != None:
+      self.A = np.array( [[x],[y]]) + 0.5 * l * np.array([[math.cos(h - np.pi/2.)],[math.sin(h - np.pi/2.)]])
+      self.B = np.array( [[x],[y]]) + 0.5 * l * np.array([[math.cos(h + np.pi/2.)],[math.sin(h + np.pi/2.)]])
   def __str__(self):
     return "A.x=%f  A.y=%f r=%f B.x=%f B.y=%f" % (self.A[0,0], self.A[1,0], self.B[0,0], self.B[1,0])
  

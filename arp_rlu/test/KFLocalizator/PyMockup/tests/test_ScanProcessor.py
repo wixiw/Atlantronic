@@ -1,95 +1,148 @@
 # coding=utf-8
 import sys
 sys.path.append( "../../../../src/KFLocalizator/PyMockup" )
+
+import random
+import logging
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger('main')
+
 import numpy as np
 import matplotlib.pyplot as plt
-import random
+from matplotlib.collections import PatchCollection
+import matplotlib.patches as mpatches
 
 import LRFSimulator
 from BaseClasses import Circle
 from BaseClasses import Segment
 import ScanProcessor
 
-lrfsim = LRFSimulator.LRFSimulator()
 
-x = random.uniform( -1.5, 1.5)
-y = random.uniform( -1.0, 1.0)
-a = random.uniform( 0., 2. * np.pi)
-va = random.uniform( -2. * np.pi, 2. * np.pi)
-print "va:",va
+#===============================================================================
+# trajectory generation
+#===============================================================================
+ax = random.uniform( -6., 6.)
+ay = random.uniform( -6., 6.)
+ah = random.uniform( -4. * np.pi, 4. * np.pi)
+log.info("ax:%f",ax)
+log.info("ay:%f",ay)
+log.info("ah:%f",ah*180.0/np.pi)
+
+vx = random.uniform( -3., 3.)
+vy = random.uniform( -3., 3.)
+vh = random.uniform( -2. * np.pi, 2. * np.pi)
+log.info("vx:%f",vx)
+log.info("vy:%f",vy)
+log.info("vh:%f",vh*180.0/np.pi)
+
+x = random.uniform( -1.3, 1.3)
+y = random.uniform( -0.8, 0.8)
+h = random.uniform( 0., 2. * np.pi)
+
 tt = np.arange( 0.0, 0.1, 0.1 / 1024.)
-xx = np.ones( (len(tt)) ) * x
-yy = np.ones( (len(tt)) ) * y
-aa = tt * va + a
+xx = tt**2 * ax + tt * vx + x
+yy = tt**2 * ay + tt * vy + y
+hh = tt**2 * ah + tt * vh + h
 
+xx = np.clip(xx, -1.3, 1.3)
+yy = np.clip(yy, -0.8, 0.8)
+
+
+lrfsim = LRFSimulator.LRFSimulator()
 lrfsim.sigma = 0.01
 
 
-# Add objects
+#===============================================================================
+# add objects
+#===============================================================================
 nbObjects = 10
 lrfsim.objects = []
 for i in range(nbObjects):
   obj = Circle()
-  obj.xCenter = random.uniform( -1.5, 1.5)
-  obj.yCenter = random.uniform( -1.0, 1.0)
   obj.radius  = 0.04
-  while np.linalg.norm( np.array( [ [obj.xCenter - x], [obj.yCenter - y] ] )) < obj.radius:
+  penetration = True
+  while penetration:
+    penetration = False
     obj.xCenter = random.uniform( -1.5, 1.5)
     obj.yCenter = random.uniform( -1.0, 1.0)
+    for i in range(len(tt)):
+      x_ = xx[i]
+      y_ = yy[i]
+      penetration = penetration or (np.linalg.norm( np.array( [ [obj.xCenter - x_], [obj.yCenter - y_] ] )) < obj.radius)
   lrfsim.objects.append(obj)
   
-print ""
-print "Nb of objects :", len(lrfsim.objects)
+log.info("Nb of objects :%d", len(lrfsim.objects))
 for o in lrfsim.objects:
-  print "x:", o.xCenter, " - y:", o.yCenter, " - r:", o.radius
+  log.info("x:%f - y:%f - r:%f", o.xCenter, o.yCenter, o.radius)
   
   
-# Compute
-scan = lrfsim.computeScan(tt, xx, yy, aa)
+#===============================================================================
+# compute scan
+#===============================================================================
+scan = lrfsim.computeScan(tt, xx, yy, hh)
 N = len(scan.theta)
 
 
+#===============================================================================
 # Find clusters
+#===============================================================================
 scanproc = ScanProcessor.ScanProcessor()
 scanproc.setScan(scan)
-scanproc.findCluster(tt[-N:], xx[-N:], yy[-N:], aa[-N:])
+scanproc.findCluster(tt[-N:], xx[-N:], yy[-N:], hh[-N:])
 
 # Beacons
 scanproc.beacons = lrfsim.objects
 
-print "################################"
-print "Nb found clusters :", len(scanproc.objects)
+log.info("################################")
+log.info("Nb found clusters : %d", len(scanproc.objects))
 for o in scanproc.objects:
-  print "Object:"
-  print "x:", o.xCenter, " - y:", o.yCenter, " - r:", o.radius
-#  
+  log.info("Object:")
+  log.info("  x:%f - y:%f - r:%f", o.xCenter, o.yCenter, o.radius)
 
-# Plot
+
+
+#===============================================================================
+# Ploting
+#===============================================================================
 fig = plt.figure()
-ax = fig.add_subplot(111, aspect='equal')
+axe = fig.add_subplot(111, aspect='equal')
+
+# table
 plt.plot( [-1.5, -1.5, 1.5, 1.5, -1.5], [-1., 1., 1., -1., -1.], '-k')
+
+# circles
 for obj in lrfsim.objects:
   if isinstance(obj, Circle):
-    border = np.arange( 0.0, 2 * np.pi, np.pi / 100)
-    xBalls = np.cos(border) * obj.radius + obj.xCenter
-    yBalls = np.sin(border) * obj.radius + obj.yCenter
-    ax.plot( xBalls, yBalls, '-g')
+    circle = mpatches.Circle(xy=(obj.xCenter, obj.yCenter), radius=obj.radius, ec="green", fc = "none")
+    axe.add_patch(circle)
 
+# scan (ray and impacts)
 for i in range(len(scan.range)):
   if scan.range[-1-i] > 0.:
-    xImpact = xx[-1-i] + np.cos(aa[-1-i] + scan.theta[-1-i]) * scan.range[-1-i]
-    yImpact = yy[-1-i] + np.sin(aa[-1-i] + scan.theta[-1-i]) * scan.range[-1-i]
-    ax.plot( [xImpact] , [yImpact], 'xb' )
-    ax.plot( [xx[i], xImpact] , [yy[i], yImpact], '--b' )
+    xImpact = xx[-1-i] + np.cos(hh[-1-i] + scan.theta[-1-i]) * scan.range[-1-i]
+    yImpact = yy[-1-i] + np.sin(hh[-1-i] + scan.theta[-1-i]) * scan.range[-1-i]
+    axe.plot( [xImpact] , [yImpact], 'xb' )
+    axe.plot( [xx[-1-i], xImpact] , [yy[-1-i], yImpact], '--b' )
+  axe.plot( [xx[-1-i]] , [yy[-1-i]], 'ob' )
+for i in range(0, len(scan.range), 10):
+  xArrowBeg = xx[-1-i]
+  yArrowBeg = yy[-1-i]
+  xArrowEnd = 0.07 * np.cos(hh[-1-i] + scan.theta[-1-i])
+  yArrowEnd = 0.07 * np.sin(hh[-1-i] + scan.theta[-1-i])
+  arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.005, alpha = 0.1, color="grey")
+  axe.add_patch(arrow)
     
-ax.plot( [xx[-N], xx[-N] + np.cos(aa[-N] + min(scan.theta))], [yy[-N], yy[-N] + np.sin(aa[-N] + np.min(scan.theta))], '-m')
-ax.plot( [xx[-1], xx[-1] + np.cos(aa[-1] + max(scan.theta))], 
-         [yy[-1], yy[-1] + np.sin(aa[-1] + max(scan.theta))], '-m')
+# borders
+axe.plot( [xx[-N], xx[-N] + np.cos(hh[-N] + min(scan.theta))], 
+          [yy[-N], yy[-N] + np.sin(hh[-N] + np.min(scan.theta))], '-m')
+axe.plot( [xx[-1], xx[-1] + np.cos(hh[-1] + max(scan.theta))], 
+         [yy[-1], yy[-1] + np.sin(hh[-1] + max(scan.theta))], '-m')
 
-#for o in scanproc.objects:
-#  ax.plot( [o.xCenter], [o.yCenter], 'or')
+# found objects
+for o in scanproc.objects:
+  axe.plot( [o.xCenter], [o.yCenter], 'or')
 
          
-ax.axis([-1.6, 1.6, -1.1, 1.1])
+axe.axis([-1.6, 1.6, -1.1, 1.1])
 plt.show()
 

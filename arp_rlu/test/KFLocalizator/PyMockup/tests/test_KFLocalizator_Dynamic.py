@@ -22,26 +22,6 @@ np.set_printoptions(precision=4)
 graine = random.randint(0,1000)
 graine_ = random.randint(0,1000)
 
-# divergence
-#graine = 66 #graine_ = 562
-#graine = 206 #graine_ = 967
-#graine = 601 #graine_ = 577   !!!
-#graine = 522 #graine_ = 521   !!!
-#graine = 913 #graine_ = 339   !!!
-
-# biais
-#graine = 431 #graine_ = 118
-#graine = 323 #graine_ = 590
-#graine = 572 #graine_ = 638
-# graine = 155 #graine_ = 828 
-
-# pb de détection de balise 
-#graine = 800 #graine_ = 112
-#graine = 461 #graine_ = 441
-
-#graine = 153
-#graine_ = 771
-
 
 random.seed(graine)
 log.info("graine pour la position réelle :%d", graine)
@@ -103,45 +83,6 @@ obj3.xCenter = -1.5
 obj3.yCenter = 1.
 obj3.radius = radius
 lrfsim.objects.append(obj3)
-
-#l = 0.4
-#kfloc.scanproc.clusterParams.maxStddev = l
-#lrfsim.objects = []
-#sgmt1 = Segment(x=1.5, y=0., h=0., l=l)
-#lrfsim.objects.append(sgmt1)
-#sgmt2 = Segment(x=-1.5, y=1., h=3*np.pi/4., l=l)
-#lrfsim.objects.append(sgmt2)
-#sgmt3 = Segment(x=-1.5, y=-1., h=-3*np.pi/4., l=l)
-#lrfsim.objects.append(sgmt3)
-
-#===============================================================================
-#obj4 = Circle()
-#obj4.xCenter = -1.5
-#obj4.yCenter = 0.
-#obj4.radius = radius
-#lrfsim.objects.append(obj4)
-#obj5 = Circle()
-#obj5.xCenter = 1.5
-#obj5.yCenter = 1.
-#obj5.radius = radius
-#lrfsim.objects.append(obj5)
-#obj6 = Circle()
-#obj6.xCenter = 1.5
-#obj6.yCenter = -1.
-#obj6.radius = radius
-#lrfsim.objects.append(obj6)
-# 
-#obj7 = Circle()
-#obj7.xCenter = 0.
-#obj7.yCenter = 1.
-#obj7.radius = radius
-#lrfsim.objects.append(obj7)
-#obj8 = Circle()
-#obj8.xCenter = 0.
-#obj8.yCenter = -1.
-#obj8.radius = radius
-#lrfsim.objects.append(obj8)
-#===============================================================================
 
 kfloc.setBeacons( lrfsim.objects )
 
