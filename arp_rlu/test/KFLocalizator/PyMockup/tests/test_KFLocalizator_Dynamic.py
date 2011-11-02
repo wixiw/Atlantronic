@@ -3,7 +3,7 @@ import sys
 sys.path.append( "../../../../src/KFLocalizator/PyMockup" )
 
 import logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger('main')
 
 import numpy as np
@@ -12,36 +12,40 @@ import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
 import matplotlib.patches as mpatches
 
-from KFLocalizator import *
-from LRFSimulator import *
+import KFLocalizator
+import LRFSimulator
 
-import params_KFLocalizator_Static as params
+from BaseClasses import *
+
+import params_KFLocalizator_Dynamic as params
 
 np.set_printoptions(precision=4)
 
 graine = random.randint(0,1000)
 graine_ = random.randint(0,1000)
 
-
-random.seed(graine)
 log.info("graine pour la position réelle :%d", graine)
 log.info("graine pour la simulation :%d", graine_)
 
 
 #===============================================================================
+# Generation de la trajectoire
+#===============================================================================
+import GenerateMouvement
+random.seed(graine)
+tt,xx,yy,hh,vx,vy,vh,ax,ay,ah = GenerateMouvement.gen(params.simu_cfg)
+
+
+#===============================================================================
 # Initialization du KF
 #===============================================================================
-kfloc = KFLocalizator()
-trueX = random.uniform( -1.3, 1.3)
-trueY = random.uniform( -0.8, 0.8)
-trueH = random.uniform( -2. * np.pi, 2. * np.pi)
-
+kfloc = KFLocalizator.KFLocalizator()
 random.seed(graine_)
 
-initialXPosition = trueX + random.normalvariate(0., params.simu_cfg["sigmaInitialPosition"])
-initialYPosition = trueY + random.normalvariate(0., params.simu_cfg["sigmaInitialPosition"])
-initialHeading = trueH + random.normalvariate(0., params.simu_cfg["sigmaInitialHeading"])
-kfloc.initialize(0.0,
+initialXPosition = random.normalvariate(xx[0], params.simu_cfg["sigmaInitialPosition"])
+initialYPosition = random.normalvariate(yy[0], params.simu_cfg["sigmaInitialPosition"])
+initialHeading   = random.normalvariate(hh[0], params.simu_cfg["sigmaInitialHeading"])
+kfloc.initialize(tt[0],
                  100,
                  initialXPosition, 
                  initialYPosition, 
@@ -54,19 +58,25 @@ kfloc.threshold = params.kf_cfg["iekf_cfg"]["threshold"]
 kfloc.scanproc.maxDistance = params.kf_cfg["scanproc_cfg"]["maxDistance"]
 kfloc.scanproc.thresholdRange = params.kf_cfg["scanproc_cfg"]["thresholdRange"]
 
-kfloc.scanproc.setTrueStaticPositionForDebugOnly(trueX, trueY, trueH)
 kfloc.givePerfectLRFMeasures = params.kf_cfg["givePerfectLRFMeasures"]
+kfloc.scanproc.setTrueStaticPositionForDebugOnly(xx[0], yy[0], hh[0])
+
+estim = kfloc.getBestEstimate()
+log.info( "**********************************************")
+log.info( "erreur initiale (t = %f): ", estim[0])
+log.info( "  sur x (en mm): %f", (estim[1].xRobot - xx[0]) * 1000.)
+log.info( "  sur y (en mm): %f", (estim[1].yRobot - yy[0]) * 1000.)
+log.info( "  en cap (deg) : %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot - hh[0] )))
+log.info("covariance :\n%s", repr(estim[1].covariance))
+log.info( "**********************************************")
 
 #===============================================================================
 # Simulateur de LRF
 #===============================================================================
-lrfsim = LRFSimulator()
+lrfsim = LRFSimulator.LRFSimulator()
 lrfsim.sigma = params.simu_cfg["sigmaLRF"]
 
-
-#===============================================================================
 # Positionnement des balises
-#===============================================================================
 radius = 0.05
 obj1 = Circle()
 obj1.xCenter = 1.5
@@ -91,6 +101,8 @@ kfloc.setBeacons( lrfsim.objects )
 # Affichage initial
 #===============================================================================
 fig = plt.figure(figsize=(15,10))
+plt.ion()
+plt.hold(True)
 
 ax = fig.add_subplot(111, aspect='equal')
 ax.axis([-1.6, 1.6, -1.1, 1.1])
@@ -108,12 +120,26 @@ for obj in lrfsim.objects:
   elif isinstance(obj, Segment):
     ax.plot( [obj.A[0,0], obj.B[0,0]], [obj.A[1,0], obj.B[1,0]], '-g')
     ax.plot( [obj.A[0,0], obj.B[0,0]], [obj.A[1,0], obj.B[1,0]], 'dg')
+    
+if params.visu_cfg["zoom"]:
+  ax.axis([np.mean(xx)-0.3, np.mean(xx)+0.3, np.mean(yy)-0.2, np.mean(yy)+0.2])
 
-xArrowBeg = initialXPosition
-yArrowBeg = initialYPosition
-xArrowEnd = 0.1 * np.cos(initialHeading)
-yArrowEnd = 0.1 * np.sin(initialHeading)
-arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.01, color="red")
+
+xArrowBeg = xx[0]
+yArrowBeg = yy[0]
+xArrowEnd = 0.1 * np.cos(hh[0])
+yArrowEnd = 0.1 * np.sin(hh[0])
+arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, alpha=0.8, width=0.01, color="grey")
+ax.add_patch(arrow)
+
+estimates = []
+estimates.append( kfloc.getBestEstimate() ) 
+
+xArrowBeg = kfloc.X[0,0]
+yArrowBeg = kfloc.X[1,0]
+xArrowEnd = 0.1 * np.cos(kfloc.X[2,0])
+yArrowEnd = 0.1 * np.sin(kfloc.X[2,0])
+arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, alpha=0.8, width=0.01, color="red")
 ax.add_patch(arrow)
 if params.visu_cfg["ellipse"]:
   estim = Estimate()
@@ -124,201 +150,180 @@ if params.visu_cfg["ellipse"]:
   xy, width, height, angle = getEllipseParametersFromEstimate(estim)
   ellipse = mpatches.Ellipse(xy, width, height, angle, alpha=0.3, ec="red", fc = "none")
   ax.add_patch(ellipse)
+xOldEstim = kfloc.X[0,0]
+yOldEstim = kfloc.X[1,0]
 
-xArrowBeg = trueX
-yArrowBeg = trueY
-xArrowEnd = 0.1 * np.cos(trueH)
-yArrowEnd = 0.1 * np.sin(trueH)
-arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.01, color="magenta")
-ax.add_patch(arrow)
-circ = plt.Circle((trueX, trueY), radius=0.005, ec="magenta", fc="none")
-ax.add_patch(circ)
-circ = plt.Circle((trueX, trueY), radius=0.025, ec="magenta", fc="none")
-ax.add_patch(circ)
+ax.plot( [kfloc.X[0,0], xx[0]], [kfloc.X[1,0], yy[0]], ':k' )
 
-
-plt.draw()
 
 #===============================================================================
 # En avant !
 #===============================================================================
-
-time = 0.
-
-log.info("=======================")
-log.info("Position réelle :")
-log.info("  xPosition: %f", trueX)
-log.info("  yPosition: %f", trueY)
-log.info("  hPosition: %f", trueH)
-
-log.info("=======================")
-log.info("Etat initial :")
-log.info("  xPosition: %f", initialXPosition)
-log.info("  yPosition: %f", initialYPosition)
-log.info("  hPosition: %f", initialHeading)
-log.info("  vx: %f", 0.)
-log.info("  vy: %f", 0.)
-log.info("  vz: %f", 0.)
-
+for i, time in enumerate(tt):
+  
+  # on regarde s'il faut faire quelque chose
+  if i == 0:
+    doOdo = False
+    doLrf = False
+  else:
+    doOdo = (math.floor(tt[i] / params.simu_cfg["odoTimeStep"]) > math.floor(tt[i-1] / params.simu_cfg["odoTimeStep"]) )
+    doLrf = (math.floor(tt[i] /0.1) > math.floor(tt[i-1] / 0.1) )
+  
+  # gestion du cas où on ne fait rien
+#  if not doOdo and not doLrf:
+#    log.debug("time: %f  => NOTHING", time)
+  
+  # si on "reçoit" des données odo
+  if doOdo:
+    log.info("==============================================")
+    log.info("time: %f => ODO", time)
     
-log.info("erreur statique sur l'état initial (t = %f) :", time)
-log.info("  sur x (en mm): %f", (initialXPosition - trueX) * 1000.)
-log.info("  sur y (en mm): %f", (initialYPosition - trueY) * 1000.)
-log.info("  en cap (deg) : %f", betweenMinusPiAndPlusPi( initialHeading - trueH ) *180./np.pi)
-log.info("covariance : \n%s", repr(kfloc.P))
-
-xOld = initialXPosition
-yOld = initialYPosition
-
-time = 0.01
-
-for k in range(params.simu_cfg["Nscans"]):
-    log.info("==============================================")
-    log.info("==============================================")
-    log.info(" TOUR %d", k)
-    #===============================================================================
-    # On reste sur place quelques sec
-    #===============================================================================
-    odoDurationInSec = 0.1
+    # simu des odos
+    vxOdo = np.sum(vx[i-102:i+1]) / 103.
+    vyOdo = np.sum(vy[i-102:i+1]) / 103.
+    vhOdo = betweenMinusPiAndPlusPi(np.sum(vh[i-102:i+1]) / 103.)
+    log.debug("-----------------------")
+    log.debug("vxOdo: %f m/s", vxOdo)
+    log.debug("vyOdo: %f m/s", vyOdo)
+    log.debug("vhOdo: %f deg/s", np.degrees(vhOdo))
     ov = OdoVelocity()
-    for t in np.arange(time, time + odoDurationInSec, 0.01):
-      ov.vx = random.normalvariate(0., params.simu_cfg["sigmaTransOdoVelocity"])
-      ov.vy = random.normalvariate(0., params.simu_cfg["sigmaTransOdoVelocity"])
-      ov.vh = random.normalvariate(0., params.simu_cfg["sigmaRotOdoVelocity"])
-      kfloc.newOdoVelocity(t, ov)
-    time = time + odoDurationInSec
+    ov.vx = random.normalvariate(vxOdo, params.simu_cfg["sigmaTransOdoVelocity"])
+    ov.vy = random.normalvariate(vyOdo, params.simu_cfg["sigmaTransOdoVelocity"])
+    ov.vh = random.normalvariate(vhOdo, params.simu_cfg["sigmaRotOdoVelocity"])
     
-    #===============================================================================
-    # Estimee odo avant le scan
-    #===============================================================================
-    estim1 = kfloc.getBestEstimate()
-    log.info("=======================")
-    #print "Estimee via odo (t =",estim1[0],"): "
-    #print "  xPosition:", estim1[1].xRobot
-    #print "  yPosition:", estim1[1].yRobot
-    #print "  hPosition:", estim1[1].hRobot
-    #print "  vx:", estim1[1].velXRobot
-    #print "  vy:", estim1[1].velYRobot
-    #print "  vz:", estim1[1].velHRobot
-    # print "Covariance avant le scan :"
-    # print estim1[1].covariance
+    # Estimation de postion via les odos
+    kfloc.newOdoVelocity(time, ov)
+  
+    estim = kfloc.getBestEstimate()
+    log.debug("-----------------------")
+    log.debug( "erreur après odos (t = %f):", estim[0])
+    log.debug( "  sur x (en mm): %f", (estim[1].xRobot - xx[i]) * 1000.)
+    log.debug( "  sur y (en mm): %f", (estim[1].yRobot - yy[i]) * 1000.)
+    log.debug( "  en cap (deg) : %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot - hh[i] )))
+    log.debug("covariance :\n%s", repr(estim[1].covariance))  
     
-    log.info( "erreur statique apres les odos :")
-    log.info( "  sur x (en mm): %f", (estim1[1].xRobot - trueX) * 1000.)
-    log.info( "  sur y (en mm): %f", (estim1[1].yRobot - trueY) * 1000.)
-    log.info( "  en cap (deg) : %f", betweenMinusPiAndPlusPi( estim1[1].hRobot - trueH ) *180./np.pi)
-    log.info("covariance :\n%s", repr(estim1[1].covariance))    
+    # On stocke l'estimée
+    estimates.append( kfloc.getBestEstimate() ) 
     
-    duration = 681. * 0.1 / 1024.
+    # Affichage de l'estimée post odo
     
-    x = trueX
-    y = trueY
-    h = trueH
-    vh = 0.
-    tt = np.arange( time - duration, time, 0.1 / 1024.)
-    tt = tt[-681:]
-    xx = np.ones( (len(tt)) ) * x
-    yy = np.ones( (len(tt)) ) * y
-    hh = tt * vh + h
+    if params.visu_cfg["odoAlone"]:
+      xArrowBeg = estim[1].xRobot
+      yArrowBeg = estim[1].yRobot
+      xArrowEnd = 0.1 * np.cos(estim[1].hRobot)
+      yArrowEnd = 0.1 * np.sin(estim[1].hRobot)
+      arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.01, alpha=0.1, color="red")
+      ax.add_patch(arrow)
+      
+      ax.plot( [xOldEstim, xArrowBeg], [yOldEstim, yArrowBeg], '-b' )
+      xOldEstim = xArrowBeg
+      yOldEstim = yArrowBeg
+      
+    if params.visu_cfg["ellipseOdoAlone"]:
+      xy, width, height, angle = getEllipseParametersFromEstimate(estim[1])
+      ellipse = mpatches.Ellipse(xy, width, height, angle, alpha=0.1, color="red")
+      ax.add_patch(ellipse)
+      
+  
+  # si on "reçoit" un scan
+  if doLrf:
+    log.info("==============================================")
+    log.info("time: %f => LRF", time)
     
+    estim = kfloc.getBestEstimate()
+    log.debug("-----------------------")
+    log.debug( "erreur avant scan (t = %f):", estim[0])
+    log.debug( "  sur x (en mm): %f", (estim[1].xRobot - xx[i]) * 1000.)
+    log.debug( "  sur y (en mm): %f", (estim[1].yRobot - yy[i]) * 1000.)
+    log.debug( "  en cap (deg) : %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot - hh[i] )))
+    log.debug("covariance :\n%s", repr(estim[1].covariance))   
     
-    # On calcule enfin le scan
-    scan = lrfsim.computeScan(tt, xx, yy, hh)
-    
-    
+    # Sélection de la fenêtre de position
+    tt_ = tt[i-680:i+1]
+    xx_ = xx[i-680:i+1]
+    yy_ = yy[i-680:i+1]
+    hh_ = hh[i-680:i+1]
+  
+    # On calcule le scan
+    scan = lrfsim.computeScan(tt_, xx_, yy_, hh_)
+    kfloc.scanproc.setTrueStaticPositionForDebugOnly(xx[i], yy[i], hh[i])
+  
+    # Estimation de postion via le scan
     kfloc.newScan(time, scan)
-    
-    #===============================================================================
-    # Estimee apres le scan
-    #===============================================================================
+  
+  # Estimée apres le scan
     estims = kfloc.getLastEstimates()
-    for estim2 in estims[:-1]:
+    for estim in estims[:-1]:
       log.debug( "-----------------------")
-      log.debug( "  Erreur statique post update (t = %f): ", estim2[0])
-      log.debug( "    sur x (en mm): %f", (estim2[1].xRobot - trueX) * 1000.)
-      log.debug( "    sur y (en mm): %f", (estim2[1].yRobot - trueY) * 1000.)
-      log.debug( "    en cap (deg) : %f", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./np.pi)
-      log.debug("covariance :\n%s", repr(estim2[1].covariance))
-
+      log.debug( "erreur en cours d'update (t = %f):", estim[0])
+      log.debug( "  sur x (en mm): %f", (estim[1].xRobot - xx[i]) * 1000.)
+      log.debug( "  sur y (en mm): %f", (estim[1].yRobot - yy[i]) * 1000.)
+      log.debug( "en cap (deg) : %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot - hh[i] )))
+      log.debug("covariance :\n%s", repr(estim[1].covariance))
+      
       if params.visu_cfg["intermediary_arrow"]:    
-        xArrowBeg = estim2[1].xRobot
-        yArrowBeg = estim2[1].yRobot
-        xArrowEnd = 0.1 * np.cos(estim2[1].hRobot)
-        yArrowEnd = 0.1 * np.sin(estim2[1].hRobot)
+        xArrowBeg = estim[1].xRobot
+        yArrowBeg = estim[1].yRobot
+        xArrowEnd = 0.1 * np.cos(estim[1].hRobot)
+        yArrowEnd = 0.1 * np.sin(estim[1].hRobot)
         arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.005, alpha=0.3, color="green")
         ax.add_patch(arrow)
-        ax.plot( [xOld, xArrowBeg], [yOld, yArrowBeg], '-b' )
-        xOld = xArrowBeg
-        yOld = yArrowBeg
+        ax.plot( [xOldEstim, xArrowBeg], [yOldEstim, yArrowBeg], '-b' )
+        xOldEstim = xArrowBeg
+        yOldEstim = yArrowBeg
       
       if params.visu_cfg["intermediary_ellipse"]:
-        xy, width, height, angle = getEllipseParametersFromEstimate(estim2[1])
+        xy, width, height, angle = getEllipseParametersFromEstimate(estim[1])
         ellipse = mpatches.Ellipse(xy, width, height, angle, alpha=0.3, ec="green", fc="none")
         ax.add_patch(ellipse)
       
-      
-      
-    estim2 = kfloc.getBestEstimate()
-    log.info( "=======================")
-    #print "Estimée via scan (t =",estim2[0],"): "
-    #print "  xPosition:", estim2[1].xRobot
-    #print "  yPosition:", estim2[1].yRobot
-    #print "  hPosition:", estim2[1].hRobot
-    #print "  vx:", estim2[1].velXRobot
-    #print "  vy:", estim2[1].velYRobot
-    #print "  vz:", estim2[1].velHRobot
-    #print "Covariance apres le scan :"
-    #print estim2[1].covariance )
-    log.info( "Erreur statique après scan :")
-    log.info( "  sur x (en mm): %f", (estim2[1].xRobot - trueX) * 1000.)
-    log.info( "  sur y (en mm): %f", (estim2[1].yRobot - trueY) * 1000.)
-    log.info( "  en cap (deg) : %f", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./np.pi)
-    log.info("covariance :\n%s", repr(estim2[1].covariance))
-
-    xArrowBeg = estim2[1].xRobot
-    yArrowBeg = estim2[1].yRobot
-    xArrowEnd = 0.1 * np.cos(estim2[1].hRobot)
-    yArrowEnd = 0.1 * np.sin(estim2[1].hRobot)
+    estim = kfloc.getBestEstimate()
+    log.info( "-----------------------")
+    log.info( "erreur après scan (t = %f): ", estim[0])
+    log.info( "  sur x (en mm): %f", (estim[1].xRobot - xx[i]) * 1000.)
+    log.info( "  sur y (en mm): %f", (estim[1].yRobot - yy[i]) * 1000.)
+    log.info( "  en cap (deg) : %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot - hh[i] )))
+    log.info("covariance :\n%s", repr(estim[1].covariance))
+    
+    # On stocke l'estimée
+    estimates.append( kfloc.getBestEstimate() ) 
+    
+    # Affichage de l'estimée post scan
+    xArrowBeg = estim[1].xRobot
+    yArrowBeg = estim[1].yRobot
+    xArrowEnd = 0.1 * np.cos(estim[1].hRobot)
+    yArrowEnd = 0.1 * np.sin(estim[1].hRobot)
     arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.01, alpha=0.3, color="blue")
     ax.add_patch(arrow)
     
     if params.visu_cfg["ellipse"]:
-      xy, width, height, angle = getEllipseParametersFromEstimate(estim2[1])
+      xy, width, height, angle = getEllipseParametersFromEstimate(estim[1])
       ellipse = mpatches.Ellipse(xy, width, height, angle, alpha=0.1, color="blue")
       ax.add_patch(ellipse)
     
-    ax.plot( [xOld, xArrowBeg], [yOld, yArrowBeg], '-b' )
-    xOld = xArrowBeg
-    yOld = yArrowBeg
+    ax.plot( [xOldEstim, xArrowBeg], [yOldEstim, yArrowBeg], '-b' )
+    xOldEstim = xArrowBeg
+    yOldEstim = yArrowBeg
+      
     
+  if doOdo or doLrf:        
+    # Affichage de la véritée terrain
+    xArrowBeg = xx[i]
+    yArrowBeg = yy[i]
+    xArrowEnd = 0.1 * np.cos(hh[i])
+    yArrowEnd = 0.1 * np.sin(hh[i])
+    arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.01, alpha=0.3, color="grey")
+    ax.add_patch(arrow)
+    
+    ax.plot( [estim[1].xRobot, xx[i]], [estim[1].yRobot, yy[i]], ':k' )
     plt.draw()
     
-    # scan
-    if k == 0:
-      for i in range(len(scan.range)):
-        if scan.range[-1-i] > 0.:
-          xImpact = trueX + np.cos(trueH + scan.theta[-1-i]) * scan.range[-1-i]
-          yImpact = trueY + np.sin(trueH + scan.theta[-1-i]) * scan.range[-1-i]
-          ax.plot( [xImpact] , [yImpact], 'xb' )
-          ax.plot( [trueX, xImpact] , [trueY, yImpact], '--b' )
-      
-      # field of view
-      ax.plot( [trueX, trueX + np.cos(trueH + min(scan.theta))], [trueY, trueY + np.sin(trueH + min(scan.theta))], '-m')
-      ax.plot( [trueX, trueX + np.cos(trueH + max(scan.theta))], [trueY, trueY + np.sin(trueH + max(scan.theta))], '-m')
+    log.info("==============================================")
     
+      
 
 log.info("graine pour la position réelle :%d", graine)
 log.info("graine pour la simulation :%d", graine_)
 
-if params.visu_cfg["zoom"]:
-  ax.axis([trueX-0.2, trueX+0.2, trueY-0.15, trueY+0.15])
-  
-  
-#plt.title("Iterations : "+ repr(params.simu_cfg["Nscans"]) 
-#          + " Erreur sur x="+str((estim2[1].xRobot - trueX) * 1000.) +"mm "
-#          + "(+-"+str(1.5 * math.sqrt(estim2[1].covariance[0,0])) +"mm)"
-#          + "  sur y="+repr((estim2[1].yRobot - trueY) * 1000.)+"mm "
-#          + "(+-"+repr(1.5 * math.sqrt(estim2[1].covariance[1,1]))+"mm)"
-#          + " et sur h="+ repr(betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./np.pi)+ "deg "
-#          + "(+-"+repr(1.5 * math.sqrt(estim2[1].covariance[1,1]) *180./np.pi)+"deg)")
+
 plt.show()

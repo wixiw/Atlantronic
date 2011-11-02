@@ -60,7 +60,7 @@ class TestGenerateMouvement(unittest.TestCase):
     params = {
               "duration"  : 1.,         # en s
               "maxLinAcc" : 6.,         # en m/s**2  
-              "maxRotAcc" : 0.* np.pi,  # en rad/s**2
+              "maxRotAcc" : 4.* np.pi,  # en rad/s**2
               "maxLinVel" : 3.,         # en m/s     
               "maxRotVel" : 2 * np.pi,  # en rad/s   
               "maxXPos"   :  1.3,       # en m       
