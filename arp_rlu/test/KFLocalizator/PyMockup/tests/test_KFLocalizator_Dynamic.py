@@ -304,6 +304,20 @@ for i, time in enumerate(tt):
     ax.plot( [xOldEstim, xArrowBeg], [yOldEstim, yArrowBeg], '-b' )
     xOldEstim = xArrowBeg
     yOldEstim = yArrowBeg
+    
+    # scan
+    if params.visu_cfg["scan"]:
+      L = len(scan.range)
+      for k in range(L):
+        if scan.range[-1-k] > 0.:
+          xImpact = xx[i-k] + np.cos(hh[i-k] + scan.theta[-1-k]) * scan.range[-1-k]
+          yImpact = yy[i-k] + np.sin(hh[i-k] + scan.theta[-1-k]) * scan.range[-1-k]
+          ax.plot( [xImpact] , [yImpact], 'xb' )
+          ax.plot( [xx[i-k], xImpact] , [yy[i-k], yImpact], '--b' )
+      
+      # field of view
+      ax.plot( [xx[i-L], xx[i-L] + np.cos(hh[i-L] + min(scan.theta))], [yy[i-L], yy[i-L] + np.sin(hh[i-L] + min(scan.theta))], '-m')
+      ax.plot( [xx[i], xx[i] + np.cos(hh[i] + max(scan.theta))], [yy[i], yy[i] + np.sin(hh[i] + max(scan.theta))], '-m')
       
     
   if doOdo or doLrf:        

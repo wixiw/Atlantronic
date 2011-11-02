@@ -6,7 +6,7 @@ import numpy as np
 
 simu_cfg = {
 # Durée
-"duration" : 1.0, #240 * 0.1 / 1024.,  # en s
+"duration" : 0.101, #240 * 0.1 / 1024.,  # en s
             
 # Generation du mouvement
 "maxLinAcc" : 0.,#7.,         # en m/s**2
@@ -23,7 +23,7 @@ simu_cfg = {
 "sigmaInitialHeading" : 0.001,   # en rad
 
 # LRFSimulator
-"sigmaLRF" : 0.01,   # en m
+"sigmaLRF" : 0., #0.01,   # en m
 
 # Simu des odo
 "sigmaTransOdoVelocity" : 0.001, #0.01    # en m/s
@@ -38,6 +38,7 @@ visu_cfg = {
 "ellipse" : True,
 "intermediary_arrow" : False,
 "intermediary_ellipse" : False,
+"scan" : True,
 "zoom" : False,
 }
 
