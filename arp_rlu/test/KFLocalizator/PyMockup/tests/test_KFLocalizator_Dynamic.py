@@ -24,8 +24,6 @@ np.set_printoptions(precision=4)
 graine = random.randint(0,1000)
 graine_ = random.randint(0,1000)
 
-graine = 528
-graine_ = 589
 
 log.info("graine pour la position réelle :%d", graine)
 log.info("graine pour la simulation :%d", graine_)
@@ -161,6 +159,7 @@ yOldEstim = kfloc.X[1,0]
 
 if params.visu_cfg["arrowInit"] and params.visu_cfg["arrowTrue"]:
   ax.plot( [kfloc.X[0,0], xx[0]], [kfloc.X[1,0], yy[0]], ':k' )
+      
   
 if params.visu_cfg["zoom"]:
   ax.axis([np.mean(xx)-0.3, np.mean(xx)+0.3, np.mean(yy)-0.2, np.mean(yy)+0.2])
@@ -205,7 +204,7 @@ for i, time in enumerate(tt):
     # simu des odos
     vxOdo = np.sum(vx[i-102:i+1]) / 103.
     vyOdo = np.sum(vy[i-102:i+1]) / 103.
-    vhOdo = betweenMinusPiAndPlusPi(np.sum(vh[i-102:i+1]) / 103.)
+    vhOdo = np.sum(vh[i-102:i+1]) / 103.
     log.debug("-----------------------")
     log.debug("vxOdo: %f m/s", vxOdo)
     log.debug("vyOdo: %f m/s", vyOdo)

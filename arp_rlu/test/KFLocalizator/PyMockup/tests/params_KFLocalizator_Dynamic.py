@@ -6,7 +6,7 @@ import numpy as np
 
 simu_cfg = {
 # Durée
-"duration" : 0.201,   # en s
+"duration" : 0.301,   # en s
             
 # Generation du mouvement
 "maxLinAcc" : 0.,#7.,         # en m/s**2
@@ -43,17 +43,17 @@ visu_cfg = {
 
 "arrowTrue" : True,
 
-"arrowOdo" : False,
-"ellipseOdo" : False,
+"arrowOdo" : True,
+"ellipseOdo" : True,
 
 "arrowLrf" : True,
 "ellipseLrf" : True,
 "arrowUpdateLrf" : False,
 "ellipseUpdateLrf" : False,
 
-"scan" : False,
+"scan" : True,
 "zoom" : True,
-"save" : True,
+"save" : False,
 }
 
 

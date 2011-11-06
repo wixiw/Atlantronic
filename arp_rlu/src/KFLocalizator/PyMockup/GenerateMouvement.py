@@ -65,11 +65,11 @@ def gen(params):
   for i in range(1, len(tt)):
     vx[i-1] = (xx[i] - xx[i-1] ) * td
     vy[i-1] = (yy[i] - yy[i-1] ) * td
-    vh[i-1] = betweenMinusPiAndPlusPi(hh[i] - hh[i-1] ) * td
+    vh[i-1] = (hh[i] - hh[i-1] ) * td
     
   for i in range(1, len(tt)):
     ax[i-1] = (vx[i] - vx[i-1] ) * td
     ay[i-1] = (vy[i] - vy[i-1] ) * td
-    ah[i-1] = betweenMinusPiAndPlusPi(vh[i] - vh[i-1] ) * td
+    ah[i-1] = (vh[i] - vh[i-1] ) * td
   
   return tt, xx, yy, hh, vx, vy, vh, ax, ay, ah
