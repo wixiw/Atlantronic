@@ -38,17 +38,20 @@ simu_cfg = {
 visu_cfg = {
 "arrowInit" : True,
 "ellipseInit" : True,
+
 "arrowTrue" : True,
 
-"arrowOdo" : True,
-"ellipseOdo" : True,
+"arrowOdo" : False,
+"ellipseOdo" : False,
+
 "arrowLrf" : True,
 "ellipseLrf" : True,
 "arrowUpdateLrf" : False,
 "ellipseUpdateLrf" : False,
 
-"scan" : True,
-"zoom" : False,
+"scan" : False,
+"zoom" : True,
+"save" : True,
 }
 
 

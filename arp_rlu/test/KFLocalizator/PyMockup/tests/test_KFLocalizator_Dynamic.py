@@ -105,7 +105,7 @@ kfloc.setBeacons( lrfsim.objects )
 #===============================================================================
 # Affichage initial
 #===============================================================================
-fig = plt.figure(figsize=(15,10))
+fig = plt.figure(figsize=(20,10))
 plt.ion()
 plt.hold(True)
 
@@ -161,11 +161,29 @@ yOldEstim = kfloc.X[1,0]
 
 if params.visu_cfg["arrowInit"] and params.visu_cfg["arrowTrue"]:
   ax.plot( [kfloc.X[0,0], xx[0]], [kfloc.X[1,0], yy[0]], ':k' )
-
+  
+if params.visu_cfg["zoom"]:
+  ax.axis([np.mean(xx)-0.3, np.mean(xx)+0.3, np.mean(yy)-0.2, np.mean(yy)+0.2])
+else:
+  ax.axis([-1.6, 1.6, -1.1, 1.1])
+plt.title("time: 0.0")
+plt.draw()
+  
+if params.visu_cfg["save"]:
+  import os
+  dirName = os.path.join(os.path.expanduser("~") , repr(graine) + "_" + repr(graine_))
+  if not os.path.exists(dirName):
+    os.mkdir(dirName)
+  else:
+    for f in os.listdir(dirName):
+      os.remove(os.path.join(dirName, f))
+  
+  plt.savefig(os.path.join(dirName, "0_0.000" + ".png"))
 
 #===============================================================================
 # En avant !
 #===============================================================================
+needRedraw = False
 for i, time in enumerate(tt):
   
   # on regarde s'il faut faire quelque chose
@@ -213,7 +231,7 @@ for i, time in enumerate(tt):
     
     # Affichage de l'estimée post odo
     
-    if params.visu_cfg["arrowOdo"]:
+    if params.visu_cfg["arrowOdo"] or (doLrf and params.visu_cfg["arrowLrf"]):
       xArrowBeg = estim[1].xRobot
       yArrowBeg = estim[1].yRobot
       xArrowEnd = 0.1 * np.cos(estim[1].hRobot)
@@ -224,11 +242,13 @@ for i, time in enumerate(tt):
       ax.plot( [xOldEstim, xArrowBeg], [yOldEstim, yArrowBeg], '-b' )
       xOldEstim = xArrowBeg
       yOldEstim = yArrowBeg
+      needRedraw = True
       
-    if params.visu_cfg["ellipseOdo"]:
+    if params.visu_cfg["ellipseOdo"] or (doLrf and params.visu_cfg["ellipseLrf"]):
       xy, width, height, angle = getEllipseParametersFromEstimate(estim[1])
       ellipse = mpatches.Ellipse(xy, width, height, angle, alpha=0.1, color="red")
       ax.add_patch(ellipse)
+      needRedraw = True
       
   
   # si on "reçoit" un scan
@@ -277,11 +297,13 @@ for i, time in enumerate(tt):
         ax.plot( [xOldEstim, xArrowBeg], [yOldEstim, yArrowBeg], '-b' )
         xOldEstim = xArrowBeg
         yOldEstim = yArrowBeg
+        needRedraw = True
       
       if params.visu_cfg["ellipseUpdateLrf"]:
         xy, width, height, angle = getEllipseParametersFromEstimate(estim[1])
         ellipse = mpatches.Ellipse(xy, width, height, angle, alpha=0.3, ec="green", fc="none")
         ax.add_patch(ellipse)
+        needRedraw = True
       
     estim = kfloc.getBestEstimate()
     log.info( "-----------------------")
@@ -305,11 +327,13 @@ for i, time in enumerate(tt):
       ax.plot( [xOldEstim, xArrowBeg], [yOldEstim, yArrowBeg], '-b' )
       xOldEstim = xArrowBeg
       yOldEstim = yArrowBeg
+      needRedraw = True
       
     if params.visu_cfg["ellipseLrf"]:
       xy, width, height, angle = getEllipseParametersFromEstimate(estim[1])
       ellipse = mpatches.Ellipse(xy, width, height, angle, alpha=0.1, color="blue")
       ax.add_patch(ellipse)
+      needRedraw = True
       
     
     # scan
@@ -325,10 +349,11 @@ for i, time in enumerate(tt):
       # field of view
       ax.plot( [xx[i-L], xx[i-L] + np.cos(hh[i-L] + min(scan.theta))], [yy[i-L], yy[i-L] + np.sin(hh[i-L] + min(scan.theta))], '-m')
       ax.plot( [xx[i], xx[i] + np.cos(hh[i] + max(scan.theta))], [yy[i], yy[i] + np.sin(hh[i] + max(scan.theta))], '-m')
+      needRedraw = True
       
-    
-  if doOdo or doLrf:        
+         
     # Affichage de la véritée terrain
+  if (doOdo and params.visu_cfg["arrowTrue"] and params.visu_cfg["arrowOdo"]) or (doLrf and params.visu_cfg["arrowTrue"] and params.visu_cfg["arrowLrf"]) :
     xArrowBeg = xx[i]
     yArrowBeg = yy[i]
     xArrowEnd = 0.1 * np.cos(hh[i])
@@ -337,7 +362,18 @@ for i, time in enumerate(tt):
     ax.add_patch(arrow)
     
     ax.plot( [estim[1].xRobot, xx[i]], [estim[1].yRobot, yy[i]], ':k' )
+    needRedraw = True
+    
+  if needRedraw:
+    if params.visu_cfg["zoom"]:
+      ax.axis([np.mean(xx)-0.3, np.mean(xx)+0.3, np.mean(yy)-0.2, np.mean(yy)+0.2])
+    else:
+      ax.axis([-1.6, 1.6, -1.1, 1.1])
+    plt.title("time: " + str(round(time,4)))
     plt.draw()
+    needRedraw = False
+    if params.visu_cfg["save"]:
+      plt.savefig(os.path.join(dirName, str(i) + "_" + str(round(time,4)) + ".png"))
     
     log.info("==============================================")
     
