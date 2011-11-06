@@ -6,7 +6,7 @@ import numpy as np
 
 simu_cfg = {
 # Durée
-"duration" : 0.101, #240 * 0.1 / 1024.,  # en s
+"duration" : 0.201,   # en s
             
 # Generation du mouvement
 "maxLinAcc" : 0.,#7.,         # en m/s**2
@@ -19,7 +19,7 @@ simu_cfg = {
 "minYPos"   : -0.8,       # en m
 
 # Erreur sur la position initiale
-"sigmaInitialPosition" : 0.01,   # en m
+"sigmaInitialPosition" : 0.005,   # en m
 "sigmaInitialHeading" : 0.001,   # en rad
 
 # LRFSimulator
@@ -30,14 +30,23 @@ simu_cfg = {
 "sigmaRotOdoVelocity" : 0.01, #0.1   # en rad/s
 "odoTimeStep" : 0.01, # en s
 
+# Débrayage des odo et/ou du scan pour le debug
+"odoSimu" : True,
+"lrfSimu" : True,
 }
 
 visu_cfg = {
-"odoAlone" : True,
-"ellipseOdoAlone" : False,
-"ellipse" : True,
-"intermediary_arrow" : False,
-"intermediary_ellipse" : False,
+"arrowInit" : True,
+"ellipseInit" : True,
+"arrowTrue" : True,
+
+"arrowOdo" : True,
+"ellipseOdo" : True,
+"arrowLrf" : True,
+"ellipseLrf" : True,
+"arrowUpdateLrf" : False,
+"ellipseUpdateLrf" : False,
+
 "scan" : True,
 "zoom" : False,
 }
@@ -47,6 +56,10 @@ visu_cfg = {
 # Paramètres du KFLocalizator
 
 kf_cfg = {
+# Erreur sur la position initiale
+"sigmaInitialPosition" : 0.01,   # en m
+"sigmaInitialHeading" : 0.001,   # en rad
+
 # Performance de l'odométrie
 "sigmaTransOdoVelocity" : 0.01, #0.01    # en m/s
 "sigmaRotOdoVelocity" : 0.01, #0.1   # en rad/s

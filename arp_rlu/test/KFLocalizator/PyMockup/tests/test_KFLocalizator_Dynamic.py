@@ -24,6 +24,9 @@ np.set_printoptions(precision=4)
 graine = random.randint(0,1000)
 graine_ = random.randint(0,1000)
 
+graine = 528
+graine_ = 589
+
 log.info("graine pour la position réelle :%d", graine)
 log.info("graine pour la simulation :%d", graine_)
 
@@ -50,7 +53,7 @@ kfloc.initialize(tt[0],
                  initialXPosition, 
                  initialYPosition, 
                  initialHeading, 
-                 params.simu_cfg["sigmaInitialPosition"], params.simu_cfg["sigmaInitialHeading"],
+                 params.kf_cfg["sigmaInitialPosition"], params.kf_cfg["sigmaInitialHeading"],
                  params.kf_cfg["sigmaTransOdoVelocity"], params.kf_cfg["sigmaRotOdoVelocity"], 
                  params.kf_cfg["sigmaLaserRange"], params.kf_cfg["sigmaLaserAngle"], params.kf_cfg["sigmaSegmentHeading"])
 kfloc.Nit = params.kf_cfg["iekf_cfg"]["Nit"]
@@ -69,6 +72,9 @@ log.info( "  sur y (en mm): %f", (estim[1].yRobot - yy[0]) * 1000.)
 log.info( "  en cap (deg) : %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot - hh[0] )))
 log.info("covariance :\n%s", repr(estim[1].covariance))
 log.info( "**********************************************")
+
+estimates = []
+estimates.append( kfloc.getBestEstimate() ) 
 
 #===============================================================================
 # Simulateur de LRF
@@ -95,7 +101,6 @@ obj3.radius = radius
 lrfsim.objects.append(obj3)
 
 kfloc.setBeacons( lrfsim.objects )
-
 
 #===============================================================================
 # Affichage initial
@@ -125,23 +130,24 @@ if params.visu_cfg["zoom"]:
   ax.axis([np.mean(xx)-0.3, np.mean(xx)+0.3, np.mean(yy)-0.2, np.mean(yy)+0.2])
 
 
-xArrowBeg = xx[0]
-yArrowBeg = yy[0]
-xArrowEnd = 0.1 * np.cos(hh[0])
-yArrowEnd = 0.1 * np.sin(hh[0])
-arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, alpha=0.8, width=0.01, color="grey")
-ax.add_patch(arrow)
+if params.visu_cfg["arrowTrue"]:
+  xArrowBeg = xx[0]
+  yArrowBeg = yy[0]
+  xArrowEnd = 0.1 * np.cos(hh[0])
+  yArrowEnd = 0.1 * np.sin(hh[0])
+  arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, alpha=0.8, width=0.01, color="grey")
+  ax.add_patch(arrow)
 
-estimates = []
-estimates.append( kfloc.getBestEstimate() ) 
 
-xArrowBeg = kfloc.X[0,0]
-yArrowBeg = kfloc.X[1,0]
-xArrowEnd = 0.1 * np.cos(kfloc.X[2,0])
-yArrowEnd = 0.1 * np.sin(kfloc.X[2,0])
-arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, alpha=0.8, width=0.01, color="red")
-ax.add_patch(arrow)
-if params.visu_cfg["ellipse"]:
+if params.visu_cfg["arrowInit"]:
+  xArrowBeg = kfloc.X[0,0]
+  yArrowBeg = kfloc.X[1,0]
+  xArrowEnd = 0.1 * np.cos(kfloc.X[2,0])
+  yArrowEnd = 0.1 * np.sin(kfloc.X[2,0])
+  arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, alpha=0.8, width=0.01, color="red")
+  ax.add_patch(arrow)
+  
+if params.visu_cfg["ellipseInit"]:
   estim = Estimate()
   estim.xRobot = kfloc.X[0,0]
   estim.yRobot = kfloc.X[1,0]
@@ -153,7 +159,8 @@ if params.visu_cfg["ellipse"]:
 xOldEstim = kfloc.X[0,0]
 yOldEstim = kfloc.X[1,0]
 
-ax.plot( [kfloc.X[0,0], xx[0]], [kfloc.X[1,0], yy[0]], ':k' )
+if params.visu_cfg["arrowInit"] and params.visu_cfg["arrowTrue"]:
+  ax.plot( [kfloc.X[0,0], xx[0]], [kfloc.X[1,0], yy[0]], ':k' )
 
 
 #===============================================================================
@@ -168,10 +175,9 @@ for i, time in enumerate(tt):
   else:
     doOdo = (math.floor(tt[i] / params.simu_cfg["odoTimeStep"]) > math.floor(tt[i-1] / params.simu_cfg["odoTimeStep"]) )
     doLrf = (math.floor(tt[i] /0.1) > math.floor(tt[i-1] / 0.1) )
-  
-  # gestion du cas où on ne fait rien
-#  if not doOdo and not doLrf:
-#    log.debug("time: %f  => NOTHING", time)
+    
+  doOdo = doOdo and params.simu_cfg["odoSimu"]
+  doLrf = doLrf and params.simu_cfg["lrfSimu"]
   
   # si on "reçoit" des données odo
   if doOdo:
@@ -207,7 +213,7 @@ for i, time in enumerate(tt):
     
     # Affichage de l'estimée post odo
     
-    if params.visu_cfg["odoAlone"]:
+    if params.visu_cfg["arrowOdo"]:
       xArrowBeg = estim[1].xRobot
       yArrowBeg = estim[1].yRobot
       xArrowEnd = 0.1 * np.cos(estim[1].hRobot)
@@ -219,7 +225,7 @@ for i, time in enumerate(tt):
       xOldEstim = xArrowBeg
       yOldEstim = yArrowBeg
       
-    if params.visu_cfg["ellipseOdoAlone"]:
+    if params.visu_cfg["ellipseOdo"]:
       xy, width, height, angle = getEllipseParametersFromEstimate(estim[1])
       ellipse = mpatches.Ellipse(xy, width, height, angle, alpha=0.1, color="red")
       ax.add_patch(ellipse)
@@ -261,7 +267,7 @@ for i, time in enumerate(tt):
       log.debug( "en cap (deg) : %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot - hh[i] )))
       log.debug("covariance :\n%s", repr(estim[1].covariance))
       
-      if params.visu_cfg["intermediary_arrow"]:    
+      if params.visu_cfg["arrowUpdateLrf"]:    
         xArrowBeg = estim[1].xRobot
         yArrowBeg = estim[1].yRobot
         xArrowEnd = 0.1 * np.cos(estim[1].hRobot)
@@ -272,7 +278,7 @@ for i, time in enumerate(tt):
         xOldEstim = xArrowBeg
         yOldEstim = yArrowBeg
       
-      if params.visu_cfg["intermediary_ellipse"]:
+      if params.visu_cfg["ellipseUpdateLrf"]:
         xy, width, height, angle = getEllipseParametersFromEstimate(estim[1])
         ellipse = mpatches.Ellipse(xy, width, height, angle, alpha=0.3, ec="green", fc="none")
         ax.add_patch(ellipse)
@@ -288,22 +294,23 @@ for i, time in enumerate(tt):
     # On stocke l'estimée
     estimates.append( kfloc.getBestEstimate() ) 
     
-    # Affichage de l'estimée post scan
-    xArrowBeg = estim[1].xRobot
-    yArrowBeg = estim[1].yRobot
-    xArrowEnd = 0.1 * np.cos(estim[1].hRobot)
-    yArrowEnd = 0.1 * np.sin(estim[1].hRobot)
-    arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.01, alpha=0.3, color="blue")
-    ax.add_patch(arrow)
-    
-    if params.visu_cfg["ellipse"]:
+    if params.visu_cfg["arrowLrf"]:
+      # Affichage de l'estimée post scan
+      xArrowBeg = estim[1].xRobot
+      yArrowBeg = estim[1].yRobot
+      xArrowEnd = 0.1 * np.cos(estim[1].hRobot)
+      yArrowEnd = 0.1 * np.sin(estim[1].hRobot)
+      arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.01, alpha=0.3, color="blue")
+      ax.add_patch(arrow)
+      ax.plot( [xOldEstim, xArrowBeg], [yOldEstim, yArrowBeg], '-b' )
+      xOldEstim = xArrowBeg
+      yOldEstim = yArrowBeg
+      
+    if params.visu_cfg["ellipseLrf"]:
       xy, width, height, angle = getEllipseParametersFromEstimate(estim[1])
       ellipse = mpatches.Ellipse(xy, width, height, angle, alpha=0.1, color="blue")
       ax.add_patch(ellipse)
-    
-    ax.plot( [xOldEstim, xArrowBeg], [yOldEstim, yArrowBeg], '-b' )
-    xOldEstim = xArrowBeg
-    yOldEstim = yArrowBeg
+      
     
     # scan
     if params.visu_cfg["scan"]:
