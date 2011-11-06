@@ -6,12 +6,12 @@ import numpy as np
 
 simu_cfg = {
 # Durée
-"duration" : 0.301,   # en s
+"duration" : 0.501,   # en s
             
 # Generation du mouvement
-"maxLinAcc" : 0.,#7.,         # en m/s**2
-"maxRotAcc" : 0.,#6. * np.pi,  # en rad/s**2
-"maxLinVel" : 1.,         # en m/s
+"maxLinAcc" : 7.,         # en m/s**2
+"maxRotAcc" : 6. * np.pi,  # en rad/s**2
+"maxLinVel" : 3.,         # en m/s
 "maxRotVel" : 2. * np.pi,  # en rad/s
 "maxXPos"   :  1.3,       # en m
 "minXPos"   : -1.3,       # en m
@@ -51,8 +51,8 @@ visu_cfg = {
 "arrowUpdateLrf" : False,
 "ellipseUpdateLrf" : False,
 
-"scan" : True,
-"zoom" : True,
+"scan" : False,
+"zoom" : False,
 "save" : False,
 }
 
