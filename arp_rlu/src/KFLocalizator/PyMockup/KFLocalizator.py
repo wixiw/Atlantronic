@@ -71,12 +71,15 @@ class KFLocalizator:
                [0., 0., 1.]])
     (self.X, self.P) = kf_predict(self.X, self.P, A, dt * self.Q, np.diag((dt,dt,dt)), U)
   
-  def newOdoVelocity(self, currentT, ov):
+  def newOdoVelocity(self, currentT, ov, Q = None):
     last = self.buffer.getNewest()
     if last == None:
       return False
     if last[0] == None:
       return False
+  
+    if Q is not None:
+      self.Q = Q
   
     dt = currentT - last[0]
     self.predict(currentT, ov, dt)

@@ -210,13 +210,19 @@ for i, time in enumerate(tt):
     log.debug("vxOdo: %f m/s", vxOdo)
     log.debug("vyOdo: %f m/s", vyOdo)
     log.debug("vhOdo: %f deg/s", np.degrees(vhOdo))
+    sigmaXOdo = np.max(  [params.simu_cfg["minSigmaTransOdoVelocity"], params.simu_cfg["percentSigmaTransOdoVelocity"] * np.fabs(vxOdo)])
+    sigmaYOdo = np.max( [params.simu_cfg["minSigmaTransOdoVelocity"], params.simu_cfg["percentSigmaTransOdoVelocity"] * np.fabs(vyOdo)])
+    sigmaHOdo = np.max( [params.simu_cfg["minSigmaRotOdoVelocity"],   params.simu_cfg["percentSigmaRotOdoVelocity"]   * np.fabs(vhOdo)])
+    log.debug("sigmaXOdo: %f m/s", sigmaXOdo)
+    log.debug("sigmaYOdo: %f m/s", sigmaYOdo)
+    log.debug("sigmaHOdo: %f deg/s", np.degrees(sigmaHOdo))
     ov = OdoVelocity()
-    ov.vx = random.normalvariate(vxOdo, params.simu_cfg["sigmaTransOdoVelocity"])
-    ov.vy = random.normalvariate(vyOdo, params.simu_cfg["sigmaTransOdoVelocity"])
-    ov.vh = random.normalvariate(vhOdo, params.simu_cfg["sigmaRotOdoVelocity"])
+    ov.vx = random.normalvariate(vxOdo, sigmaXOdo)
+    ov.vy = random.normalvariate(vyOdo, sigmaYOdo)
+    ov.vh = random.normalvariate(vhOdo, sigmaHOdo)
     
     # Estimation de postion via les odos
-    kfloc.newOdoVelocity(time, ov)
+    kfloc.newOdoVelocity(time, ov, np.diag((sigmaXOdo**2, sigmaYOdo**2, sigmaHOdo**2)))
   
     estim = kfloc.getBestEstimate()
     log.debug("-----------------------")
