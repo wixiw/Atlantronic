@@ -96,37 +96,33 @@ class TestGenerateMouvement(unittest.TestCase):
       for i in range(1, len(tt)):
         self.assertAlmostEqual( tt[i] - tt[i-1], dt )
         
-        self.assertAlmostEqual( xx[i], np.clip(xx[i-1] + vx[i-1] * dt, params["minXPos"], params["maxXPos"] ), places=3 )
-        self.assertAlmostEqual( yy[i], np.clip(yy[i-1] + vy[i-1] * dt, params["minYPos"], params["maxYPos"] ), places=3 )
+        self.assertAlmostEqual( xx[i], xx[i-1] + vx[i-1] * dt, places=3 )
+        self.assertAlmostEqual( yy[i], yy[i-1] + vy[i-1] * dt, places=3 )
         self.assertAlmostEqual( betweenMinusPiAndPlusPi(hh[i]), betweenMinusPiAndPlusPi(hh[i-1] + vh[i-1] * dt), places=3 )
         
-        self.assertAlmostEqual( vx[i], np.clip(vx[i-1] + ax[i-1] * dt, -params["maxLinVel"], params["maxLinVel"] ), places=3 )
-        self.assertAlmostEqual( vy[i], np.clip(vy[i-1] + ay[i-1] * dt, -params["maxLinVel"], params["maxLinVel"] ), places=3 )
+        self.assertAlmostEqual( vx[i], vx[i-1] + ax[i-1] * dt, places=3 )
+        self.assertAlmostEqual( vy[i], vy[i-1] + ay[i-1] * dt, places=3 )
         self.assertAlmostEqual( betweenMinusPiAndPlusPi(vh[i]), betweenMinusPiAndPlusPi(vh[i-1] + ah[i-1] * dt), places=3 )
         
-        self.assertAlmostEqual( ax[i] , ax[0] )
-        self.assertAlmostEqual( ay[i] , ay[0] )
-        self.assertAlmostEqual( ah[i] , ah[0] )
         
-        
-      self.assertTrue( np.max(xx) <= params["maxXPos"] )
-      self.assertTrue( np.min(xx) >= params["minXPos"] )
-      self.assertTrue( np.max(yy) <= params["maxYPos"] )
-      self.assertTrue( np.min(yy) >= params["minYPos"] )
-      
-      self.assertTrue( np.max(vx) <=  params["maxLinVel"] )
-      self.assertTrue( np.min(vx) >= -params["maxLinVel"] )
-      self.assertTrue( np.max(vy) <=  params["maxLinVel"] )
-      self.assertTrue( np.min(vy) >= -params["maxLinVel"] )
-      self.assertTrue( np.max(vh) <=  params["maxRotVel"] )
-      self.assertTrue( np.min(vh) >= -params["maxRotVel"] )
-      
-      self.assertTrue( np.max(ax) <=  params["maxLinAcc"] )
-      self.assertTrue( np.min(ax) >= -params["maxLinAcc"] )
-      self.assertTrue( np.max(ay) <=  params["maxLinAcc"] )
-      self.assertTrue( np.min(ay) >= -params["maxLinAcc"] )
-      self.assertTrue( np.max(ah) <=  params["maxRotAcc"] )
-      self.assertTrue( np.min(ah) >= -params["maxRotAcc"] )
+#      self.assertTrue( np.max(xx) <= params["maxXPos"] )
+#      self.assertTrue( np.min(xx) >= params["minXPos"] )
+#      self.assertTrue( np.max(yy) <= params["maxYPos"] )
+#      self.assertTrue( np.min(yy) >= params["minYPos"] )
+#      
+#      self.assertTrue( np.max(vx) <=  params["maxLinVel"] )
+#      self.assertTrue( np.min(vx) >= -params["maxLinVel"] )
+#      self.assertTrue( np.max(vy) <=  params["maxLinVel"] )
+#      self.assertTrue( np.min(vy) >= -params["maxLinVel"] )
+#      self.assertTrue( np.max(vh) <=  params["maxRotVel"] )
+#      self.assertTrue( np.min(vh) >= -params["maxRotVel"] )
+#      
+#      self.assertTrue( np.max(ax) <=  params["maxLinAcc"] )
+#      self.assertTrue( np.min(ax) >= -params["maxLinAcc"] )
+#      self.assertTrue( np.max(ay) <=  params["maxLinAcc"] )
+#      self.assertTrue( np.min(ay) >= -params["maxLinAcc"] )
+#      self.assertTrue( np.max(ah) <=  params["maxRotAcc"] )
+#      self.assertTrue( np.min(ah) >= -params["maxRotAcc"] )
     
     
   
