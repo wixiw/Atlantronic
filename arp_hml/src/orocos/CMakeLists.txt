@@ -1,17 +1,13 @@
 ###################################################################################################################
 #    EDIT BELOW THIS LINE AND UNTIL NEXT LINE FOR A NEW PROJECT
 
-    file(
-    	GLOB_RECURSE
-    	source_files
-    	*.c* 
-    )  
-    
-orocos_component(arp_hml ${source_files})
-#Desactivated in waiting new Advantech version 
-#target_link_libraries(arp_hml SUSI-3.02)
-target_link_libraries(arp_hml canfestival_unix)
-target_link_libraries(arp_hml canfestival)
+add_subdirectory(can)
+add_subdirectory(cpu)
+add_subdirectory(io)
+add_subdirectory(joystick)
+add_subdirectory(motor)
+add_subdirectory(platform)
+add_subdirectory(taskcontexts)
 
 ###################################################################################################################
 

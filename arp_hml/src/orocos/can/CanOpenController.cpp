@@ -14,14 +14,14 @@
 using namespace arp_hml;
 using namespace arp_core;
 
-ORO_LIST_COMPONENT_TYPE( arp_hml::CanOpenController)
+ORO_CREATE_COMPONENT( arp_hml::CanOpenController)
 
 CanOpenController::CanOpenController(const std::string& name) :
             HmlTaskContext(name),
             attrCurrentNMTState(Unknown_state),
             propCanFestivalDriverName(
                     "/opt/ard/can_festival/lib/libcanfestival_can_socket.so"),
-            propBusName("can1"), propBaudRate("250K"), propNodeId(0),
+            propBusName("can1"), propBaudRate("1000K"), propNodeId(0),
             propMasterMaxBootDelay(0.050), propSyncPeriod(0.010),
             propPdoMaxAwaitedDelay(propSyncPeriod/2),
             m_dispatcher(*this), m_canPort(NULL)

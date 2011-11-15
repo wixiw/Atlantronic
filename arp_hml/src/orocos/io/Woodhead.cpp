@@ -14,12 +14,12 @@ using namespace arp_hml;
 using namespace arp_core;
 
 
-ORO_LIST_COMPONENT_TYPE( arp_hml::Woodhead )
+ORO_CREATE_COMPONENT( arp_hml::Woodhead )
 
 Woodhead::Woodhead(const std::string& name) :
     CanOpenNode(name)
 {
-	m_outputs = CanARDDictionnaryAccessor::getUNS8Pointer("Woodhead","outputs");
+	m_outputs = CanARDDictionnaryAccessor::getUNS8Pointer(name,"outputs");
 
     addPort("outBit1",outBit1)
         .doc("Value of the output #1");

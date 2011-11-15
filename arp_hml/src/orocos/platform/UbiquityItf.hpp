@@ -200,8 +200,8 @@ namespace arp_hml
         OutputPort<double> outRearSteeringSpeedCmd;
 
         /** Woodhead connectivity **/
-        InputPort<bool> inWoodheadIConnected;
-        InputPort<bool> inWoodheadOConnected;
+        InputPort<bool> inWoodheadInConnected;
+        InputPort<bool> inWoodheadOutConnected;
 
 /**************************************************************
  * Internals
@@ -258,9 +258,9 @@ protected:
         OperationCaller<bool(string)> m_ooSetRearSteeringOperationMode;
 
         /** Pointer in the Woodhead 8 out coReset Operation**/
-        OperationCaller<bool(void)> m_coResetWoodheadO;
+        OperationCaller<bool(void)> m_coResetWoodheadOut;
         /** Pointer in the Woodhead 8 in coReset Operation**/
-        OperationCaller<bool(void)> m_coResetWoodheadI;
+        OperationCaller<bool(void)> m_coResetWoodheadIn;
         /** Pointer in the LeftDriving coReset Operation **/
         OperationCaller<bool(void)> m_coResetLeftDriving;
         /** Pointer in the RightDriving coReset Operation **/

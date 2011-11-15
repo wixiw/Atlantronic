@@ -16,6 +16,7 @@ using namespace arp_core;
 using namespace arp_math;
 using namespace std_msgs;
 
+ORO_CREATE_COMPONENT_LIBRARY()
 ORO_LIST_COMPONENT_TYPE( arp_hml::UbiquityItf )
 
 UbiquityItf::UbiquityItf(const std::string& name):
@@ -101,9 +102,9 @@ UbiquityItf::UbiquityItf(const std::string& name):
              .doc("Right steering connectivity");
     addPort("inRearSteeringConnected",inRearSteeringConnected)
              .doc("Rear steering connectivity");
-    addPort("inWoodheadIConnected",inWoodheadIConnected)
+    addPort("inWoodheadInConnected",inWoodheadInConnected)
              .doc("Input Woodhead connectivity");
-    addPort("inWoodheadOConnected",inWoodheadOConnected)
+    addPort("inWoodheadOutConnected",inWoodheadOutConnected)
              .doc("Output Woodhead connectivity");
 
     addPort("inLeftDrivingEnable",inLeftDrivingEnable)
@@ -196,8 +197,8 @@ bool UbiquityItf::configureHook()
     res &= getOperation("RightSteering", "ooSetOperationMode",  m_ooSetRightSteeringOperationMode);
     res &= getOperation("RearSteering", "ooSetOperationMode",  m_ooSetRearSteeringOperationMode);
 
-    res &= getOperation("WoodheadO"    , "coReset",  m_coResetWoodheadO);
-    res &= getOperation("WoodheadI"    , "coReset",  m_coResetWoodheadI);
+    res &= getOperation("WoodheadOut"    , "coReset",  m_coResetWoodheadOut);
+    res &= getOperation("WoodheadIn"    , "coReset",  m_coResetWoodheadIn);
     res &= getOperation("LeftDriving"  , "coReset",  m_coResetLeftDriving);
     res &= getOperation("RightDriving" , "coReset",  m_coResetRightDriving);
     res &= getOperation("RearDriving" , "coReset",  m_coResetRearDriving);
@@ -409,8 +410,8 @@ void UbiquityItf::readConnectivity()
     inLeftSteeringConnected.readNewest(leftSteeringConnectivity);
     inRightSteeringConnected.readNewest(rightSteeringConnectivity);
     inRearSteeringConnected.readNewest(rearSteeringConnectivity);
-    inWoodheadOConnected.readNewest(woodheadOConnectivity);
-    inWoodheadIConnected.readNewest(woodheadIConnectivity);
+    inWoodheadOutConnected.readNewest(woodheadOConnectivity);
+    inWoodheadInConnected.readNewest(woodheadIConnectivity);
 
     emergency.data = !leftDrivingConnectivity && !rightDrivingConnectivity && !rearDrivingConnectivity
                     && !leftSteeringConnectivity && !rightSteeringConnectivity && !rearSteeringConnectivity
@@ -558,8 +559,8 @@ bool UbiquityItf::srvSetMotorPower(SetMotorPower::Request& req, SetMotorPower::R
 bool UbiquityItf::ooResetHml()
 {
     bool res = true;
-    res &= m_coResetWoodheadO();
-    res &= m_coResetWoodheadI();
+    res &= m_coResetWoodheadOut();
+    res &= m_coResetWoodheadIn();
     res &= m_coResetLeftDriving();
     res &= m_coResetRightDriving();
     res &= m_coResetRearDriving();

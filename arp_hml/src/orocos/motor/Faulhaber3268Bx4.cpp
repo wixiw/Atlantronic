@@ -15,7 +15,7 @@ using namespace arp_hml;
 using namespace arp_core;
 using namespace arp_math;
 
-ORO_LIST_COMPONENT_TYPE( arp_hml::Faulhaber3268Bx4 )
+ORO_CREATE_COMPONENT( arp_hml::Faulhaber3268Bx4 )
 
 Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         CanOpenNode(name),

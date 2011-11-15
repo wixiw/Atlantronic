@@ -5,10 +5,11 @@ HmlItfDeployer = ComposantDeployer:new()
 
 function HmlItfDeployer:load()
 	Deployer:loadComponent("Hml","arp_hml::UbiquityItf")
-	Deployer:setActivity("Hml",0.050,0,1)
+	Deployer:setActivity("Hml",0.050,10,1)
 end
 
 function HmlItfDeployer:connectOneMotor(name)
+	Deployer:addPeer("Hml", name)
 	Deployer:connect("Hml.in"..name.."Position", name..".outMeasuredPosition",cp)
 	Deployer:connect("Hml.in"..name.."PositionTime", name..".outMeasuredPositionTime",cp)
 	Deployer:connect("Hml.in"..name.."Enable", name..".outDriveEnable",cp)
@@ -18,7 +19,7 @@ function HmlItfDeployer:connectOneMotor(name)
 end
 
 function HmlItfDeployer:connect()
-	Deployer:addPeer("Reporting", "Can1")
+	Deployer:addPeer("Reporting", "Hml")
 
 	HmlItfDeployer:connectOneMotor("LeftDriving")
 	HmlItfDeployer:connectOneMotor("RightDriving")
@@ -29,8 +30,8 @@ function HmlItfDeployer:connect()
 
 	Deployer:connect("Hml.inIoStart", "WoodheadIn.outBit1",cp)
 
-	Deployer:connect("Hml.inWoodheadIConnected", "WoodheadIn.outConnected",cp)
-	Deployer:connect("Hml.inWoodheadOConnected", "WoodheadOut.outConnected",cp)
+	Deployer:connect("Hml.inWoodheadInConnected", "WoodheadIn.outConnected",cp)
+	Deployer:connect("Hml.inWoodheadOutConnected", "WoodheadOut.outConnected",cp)
 end
 
 function HmlItfDeployer:start()

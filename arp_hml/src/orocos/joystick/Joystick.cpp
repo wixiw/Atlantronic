@@ -8,10 +8,13 @@
 #include "Joystick.hpp"
 #include "math/math.hpp"
 #include <iostream>
+#include <rtt/Component.hpp>
 
 using namespace arp_hml;
 using namespace arp_core;
 using namespace RTT;
+
+ORO_CREATE_COMPONENT_LIBRARY()
 
 Joystick::Joystick(const std::string& name) :
 		HmlTaskContext(name),

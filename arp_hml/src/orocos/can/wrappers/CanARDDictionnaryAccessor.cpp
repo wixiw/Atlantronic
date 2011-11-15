@@ -33,7 +33,8 @@ UNS8* CanARDDictionnaryAccessor::getUNS8Pointer(string componentName, string var
 //	cerr << " access to " << concataned << endl;
 //	cerr << "########################### " << endl;
 
-	IF_ACCESSOR_CASE(Woodhead_outputs);
+	IF_ACCESSOR_CASE(WoodheadIn_outputs);
+	IF_ACCESSOR_CASE(WoodheadOut_outputs);
 
 	IF_ACCESSOR_CASE(LeftSteering_FaulhaberCommandReturn);
 	IF_ACCESSOR_CASE(LeftSteering_FaulhaberCommandReturnCode);

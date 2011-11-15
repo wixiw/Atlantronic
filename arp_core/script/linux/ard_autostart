@@ -1,6 +1,6 @@
 #! /bin/sh
 ### BEGIN INIT INFO
-# Provides:          ard_boot
+# Provides:          ard_autostart
 # Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
@@ -16,18 +16,26 @@
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="This is used to autostart ARd's binairies for matches"
-NAME=daemonexecutablename
+NAME=ard_autostart
 DAEMON=/opt/boot.sh
 DAEMON_ARGS=""
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 
-# Exit if the package is not installed
-[ -x "$DAEMON" ] || exit 0
-
 # Exit if the environnement variables are not present
-[ -x "/opt/env.sh" ] || exit 0
-. /opt/env.sh
+if [ -x "/opt/env.sh" ] ; then
+	echo "ERROR : The /opt/env.sh script is not present : $DAEMON"
+	exit 0
+else
+	. /opt/env.sh	
+fi
+
+
+# Exit if the package is not installed
+if [! -x "$DAEMON" ] ; then
+	cecho "red" "The autostart script is not present : $DAEMON"
+	exit 0
+fi
 
 # Read configuration variable file if it is present
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
@@ -51,12 +59,12 @@ do_start()
 	#   2 if daemon could not be started
 
 	#lancement du CAN si le script d'init est la
-	if [ -f /opt/ros/ard/arp_hml/script/linux/rc.can ]; then
-		bash /opt/ros/ard/arp_hml/script/linux/rc.can
+	if [ -f /opt/ard/arp_hml/script/linux/rc.can ]; then
+		bash /opt/ard/arp_hml/script/linux/rc.can
 	fi
 	
 	if [ -f /opt/conf/MATCH ]; then
-		start-stop-daemon --start --exec /opt/boot.sh -b
+		start-stop-daemon --start --make-pidfile --pidfile $PIDFILE --exec $DAEMON -b
 		cecho "yellow" "Autostarting binaries !"
 		sleep 2
 	else
