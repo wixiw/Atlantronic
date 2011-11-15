@@ -69,26 +69,58 @@ then
 	stack_list=`rosstack depends ard`
 	for stack in $stack_list
 	do
-		rsync  -avzh `rosstack find $stack` root@$2:/opt/ros \
-		--delete \
-		--exclude "build" \
-		--exclude ".svn" \
-		--exclude ".git" \
-		--exclude ".hg" \
-		--exclude ".tb_history"\
-		--exclude "*.log"\
-		--exclude "doc"
+		#si c'est un package de ros_addons
+		if [ -d /opt/ros_addons/$stack ] ; then
+			rsync  -avzh `rosstack find $stack` root@$2:/opt/ros_addons \
+			--delete \
+			--exclude "build" \
+			--exclude ".svn" \
+			--exclude ".git" \
+			--exclude ".hg" \
+			--exclude ".tb_history"\
+			--exclude "*.log"\
+			--exclude "doc"
+		else
+			rsync  -avzh `rosstack find $stack` root@$2:/opt/ros \
+			--delete \
+			--exclude "build" \
+			--exclude ".svn" \
+			--exclude ".git" \
+			--exclude ".hg" \
+			--exclude ".tb_history"\
+			--exclude "*.log"\
+			--exclude "doc"
+		fi
 	done
-else
-	rsync  -avzh `rospack find $package_name` root@$2:`rosstack find ard` \
+
+	rsync  -avzh `rosstack find ard` root@$2:/opt \
 	--delete \
 	--exclude "build" \
-	--exclude ".svn"  \
+	--exclude ".svn" \
 	--exclude ".git" \
-	--exclude ".hg"\
+	--exclude ".hg" \
 	--exclude ".tb_history"\
-	--exclude "*.log" \
+	--exclude "*.log"\
 	--exclude "doc"
+
+	#syncronisation des fichiers supplementaires	
+	scp /opt/ros/setup.bash root@$2:/opt/ros
+	scp /opt/ros/setup.sh root@$2:/opt/ros
+	scp /opt/ros_addons/env.sh root@$2:/opt/ros_addons
+else
+	if [ -d /opt/ard/$stack ] ; then
+		rsync  -avzh `rospack find $package_name` root@$2:`rosstack find ard` \
+		--delete \
+		--exclude "build" \
+		--exclude ".svn"  \
+		--exclude ".git" \
+		--exclude ".hg"\
+		--exclude ".tb_history"\
+		--exclude "*.log" \
+		--exclude "doc"
+	else
+		echo -e $ROUGE "Please provide an ard package name or the ard stack name." -e $NORMAL
+	fi
 fi
 echo -e $NORMAL 
 
