@@ -1,8 +1,8 @@
 #! /bin/sh
 ### BEGIN INIT INFO
 # Provides:          ard_autostart
-# Required-Start:    $remote_fs $syslog
-# Required-Stop:     $remote_fs $syslog
+# Required-Start:    $remote_fs $syslog $ard_can
+# Required-Stop:     $remote_fs $syslog $ard_can
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: Example initscript
@@ -27,13 +27,14 @@ if [ -x "/opt/env.sh" ] ; then
 	echo "ERROR : The /opt/env.sh script is not present : $DAEMON"
 	exit 0
 else
-	. /opt/env.sh	
+	. /opt/color.sh
+	#. /opt/env.sh	
 fi
 
 
 # Exit if the package is not installed
-if [! -x "$DAEMON" ] ; then
-	cecho "red" "The autostart script is not present : $DAEMON"
+if [ ! -x "$DAEMON" ] ; then
+	cecho "red" "The autostart script is not present : $DAEMON, or it doesn't have execution rigths"
 	exit 0
 fi
 
@@ -57,14 +58,13 @@ do_start()
 	#   0 if daemon has been started
 	#   1 if daemon was already running
 	#   2 if daemon could not be started
+	start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON --test > /dev/null \
+		|| return 1
 
-	#lancement du CAN si le script d'init est la
-	if [ -f /opt/ard/arp_hml/script/linux/rc.can ]; then
-		bash /opt/ard/arp_hml/script/linux/rc.can
-	fi
-	
 	if [ -f /opt/conf/MATCH ]; then
-		start-stop-daemon --start --make-pidfile --pidfile $PIDFILE --exec $DAEMON -b
+		#S=start m=create pid file b=go to background v=verbose
+		start-stop-daemon -Smbv -x /opt/boot.sh -p $PIDFILE \
+			|| return 2
 		cecho "yellow" "Autostarting binaries !"
 		sleep 2
 	else
@@ -78,25 +78,15 @@ do_start()
 #
 do_stop()
 {
-	# Return
-	#   0 if daemon has been stopped
-	#   1 if daemon was already stopped
-	#   2 if daemon could not be stopped
-	#   other if a failure occurred
-	start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE --name $NAME
-	RETVAL="$?"
-	[ "$RETVAL" = 2 ] && return 2
-	# Wait for children to finish too if this is a daemon that forks
-	# and if the daemon is only ever run from this initscript.
-	# If the above conditions are not satisfied then add some other code
-	# that waits for the process to drop all resources that could be
-	# needed by services started subsequently.  A last resort is to
-	# sleep for some time.
-	start-stop-daemon --stop --quiet --oknodo --retry=0/30/KILL/5 --exec $DAEMON
-	[ "$?" = 2 ] && return 2
-	# Many daemons don't delete their pidfiles when they exit.
-	rm -f $PIDFILE
-	return "$RETVAL"
+	if [ -f $PIDFILE ] ; then	
+		cecho "yellow" "stopping autostarted binaries !"
+		kill -9 `cat $PIDFILE` 
+		rm -f $PIDFILE
+		return 0
+	else
+		cecho "red" "process are not started !"
+		return 2
+	fi
 }
 
 #
