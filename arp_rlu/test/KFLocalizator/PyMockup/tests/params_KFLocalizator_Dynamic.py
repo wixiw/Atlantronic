@@ -26,10 +26,17 @@ simu_cfg = {
 "sigmaLRF" : 0., #0.01,   # en m
 
 # Simu des odo
-"percentSigmaTransOdoVelocity" : 0.03,  # en pourcent (1.0 is 100%)
-"minSigmaTransOdoVelocity" : 0.001, #0.01    # en m/s
-"percentSigmaRotOdoVelocity" : 0.03,  # en pourcent  (1.0 is 100%)
-"minSigmaRotOdoVelocity" : 0.01, #0.1   # en rad/s
+#"percentSigmaTransOdoVelocity" : 0.03,  # en pourcent (1.0 is 100%)
+#"minSigmaTransOdoVelocity" : 0.001, #0.01    # en m/s
+#"percentSigmaRotOdoVelocity" : 0.03,  # en pourcent  (1.0 is 100%)
+#"minSigmaRotOdoVelocity" : 0.01, #0.1   # en rad/s
+#"odoTimeStep" : 0.01, # en s
+
+# Simu d'odo virtuels
+"percentSigmaTransOdoVelocity" : 0.0,  # en pourcent (1.0 is 100%)
+"minSigmaTransOdoVelocity" : 0.1, #0.01    # en m/s
+"percentSigmaRotOdoVelocity" : 0.0,  # en pourcent  (1.0 is 100%)
+"minSigmaRotOdoVelocity" : 0.1, #0.1   # en rad/s
 "odoTimeStep" : 0.01, # en s
 
 # Débrayage des odo et/ou du scan pour le debug
@@ -43,8 +50,8 @@ visu_cfg = {
 
 "arrowTrue" : True,
 
-"arrowOdo" : False,
-"ellipseOdo" : False,
+"arrowOdo" : True,
+"ellipseOdo" : True,
 
 "arrowLrf" : True,
 "ellipseLrf" : True,
