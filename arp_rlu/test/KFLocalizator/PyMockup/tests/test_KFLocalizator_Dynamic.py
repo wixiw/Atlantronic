@@ -3,8 +3,8 @@ import sys
 sys.path.append( "../../../../src/KFLocalizator/PyMockup" )
 
 import logging
-#logging.basicConfig(level=logging.DEBUG)
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
+#logging.basicConfig(level=logging.INFO)
 log = logging.getLogger('main')
 
 import numpy as np
@@ -28,6 +28,7 @@ graine_ = random.randint(0,1000)
 
 log.info("graine pour la position réelle :%d", graine)
 log.info("graine pour la simulation :%d", graine_)
+log.info("")
 
 
 #===============================================================================
@@ -64,13 +65,19 @@ kfloc.givePerfectLRFMeasures = params.kf_cfg["givePerfectLRFMeasures"]
 kfloc.scanproc.setTrueStaticPositionForDebugOnly(xx[0], yy[0], hh[0])
 
 estim = kfloc.getBestEstimate()
-log.info( "**********************************************")
+log.info("")
+log.info( "==============================================")
+log.info( "position réelle initiale (t = %f):", tt[0])
+log.info( "  x (en m): %f", xx[0])
+log.info( "  y (en m): %f", yy[0])
+log.info( "  h (en deg): %f", np.degrees(betweenMinusPiAndPlusPi( hh[0] )))
 log.info( "erreur initiale (t = %f): ", estim[0])
 log.info( "  sur x (en mm): %f", (estim[1].xRobot - xx[0]) * 1000.)
 log.info( "  sur y (en mm): %f", (estim[1].yRobot - yy[0]) * 1000.)
 log.info( "  en cap (deg) : %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot - hh[0] )))
 log.info("covariance :\n%s", repr(estim[1].covariance))
-log.info( "**********************************************")
+log.info( "==============================================")
+log.info("")
 
 estimates = []
 estimates.append( kfloc.getBestEstimate() ) 
@@ -197,32 +204,48 @@ for i, time in enumerate(tt):
   doOdo = doOdo and params.simu_cfg["odoSimu"]
   doLrf = doLrf and params.simu_cfg["lrfSimu"]
   
+  if doOdo or doLrf:
+    log.debug("==============================================")
+    log.debug("==============================================")
+    log.debug( "position réelle (t = %f):", tt[i])
+    log.debug( "  x (en m): %f", xx[i])
+    log.debug( "  y (en m): %f", yy[i])
+    log.debug( "  h (en deg): %f", np.degrees(betweenMinusPiAndPlusPi( hh[i] )))
+  
   # si on "reçoit" des données odo
   if doOdo:
-    log.info("==============================================")
-    log.info("time: %f => ODO", time)
+    log.debug("==============================================")
+    log.debug("time: %f => ODO", time)
     
-    # simu des odos
-    vxOdo = np.sum(vx[i-102:i+1]) / 103.
-    vyOdo = np.sum(vy[i-102:i+1]) / 103.
-    vhOdo = np.sum(vh[i-102:i+1]) / 103.
-    log.debug("-----------------------")
-    log.debug("vxOdo: %f m/s", vxOdo)
-    log.debug("vyOdo: %f m/s", vyOdo)
-    log.debug("vhOdo: %f deg/s", np.degrees(vhOdo))
-    sigmaXOdo = np.max(  [params.simu_cfg["minSigmaTransOdoVelocity"], params.simu_cfg["percentSigmaTransOdoVelocity"] * np.fabs(vxOdo)])
-    sigmaYOdo = np.max( [params.simu_cfg["minSigmaTransOdoVelocity"], params.simu_cfg["percentSigmaTransOdoVelocity"] * np.fabs(vyOdo)])
-    sigmaHOdo = np.max( [params.simu_cfg["minSigmaRotOdoVelocity"],   params.simu_cfg["percentSigmaRotOdoVelocity"]   * np.fabs(vhOdo)])
-    log.debug("sigmaXOdo: %f m/s", sigmaXOdo)
-    log.debug("sigmaYOdo: %f m/s", sigmaYOdo)
-    log.debug("sigmaHOdo: %f deg/s", np.degrees(sigmaHOdo))
-    ov = OdoVelocity()
-    ov.vx = random.normalvariate(vxOdo, sigmaXOdo)
-    ov.vy = random.normalvariate(vyOdo, sigmaYOdo)
-    ov.vh = random.normalvariate(vhOdo, sigmaHOdo)
+    if params.simu_cfg["virtualOdo"]:
+      # simule des odos virtuels
+      ov = OdoVelocity()
+      sigmaXOdo = math.fabs(vx[i]) #params.simu_cfg["virtualSigmaTransOdoVelocity"]
+      sigmaYOdo = math.fabs(vy[i]) #params.simu_cfg["virtualSigmaTransOdoVelocity"]
+      sigmaHOdo = math.fabs(vh[i]) #params.simu_cfg["virtualSigmaRotOdoVelocity"]
+      
+    else:
+      # simule des vrais odos
+      vxOdo = np.sum(vx[i-102:i+1]) / 103.
+      vyOdo = np.sum(vy[i-102:i+1]) / 103.
+      vhOdo = np.sum(vh[i-102:i+1]) / 103.
+      log.debug("-----------------------")
+      log.debug("vxOdo: %f m/s", vxOdo)
+      log.debug("vyOdo: %f m/s", vyOdo)
+      log.debug("vhOdo: %f deg/s", np.degrees(vhOdo))
+      sigmaXOdo = np.max(  [params.simu_cfg["minSigmaTransOdoVelocity"], params.simu_cfg["percentSigmaTransOdoVelocity"] * np.fabs(vxOdo)])
+      sigmaYOdo = np.max( [params.simu_cfg["minSigmaTransOdoVelocity"], params.simu_cfg["percentSigmaTransOdoVelocity"] * np.fabs(vyOdo)])
+      sigmaHOdo = np.max( [params.simu_cfg["minSigmaRotOdoVelocity"],   params.simu_cfg["percentSigmaRotOdoVelocity"]   * np.fabs(vhOdo)])
+      log.debug("sigmaXOdo: %f m/s", sigmaXOdo)
+      log.debug("sigmaYOdo: %f m/s", sigmaYOdo)
+      log.debug("sigmaHOdo: %f deg/s", np.degrees(sigmaHOdo))
+      ov = OdoVelocity()
+      ov.vx = random.normalvariate(vxOdo, sigmaXOdo)
+      ov.vy = random.normalvariate(vyOdo, sigmaYOdo)
+      ov.vh = random.normalvariate(vhOdo, sigmaHOdo)
     
     # Estimation de postion via les odos
-    kfloc.newOdoVelocity(time, ov, np.diag((sigmaXOdo**2, sigmaYOdo**2, sigmaHOdo**2)))
+    kfloc.newOdoVelocity(time, ov, sigmaXOdo, sigmaYOdo, sigmaHOdo)
   
     estim = kfloc.getBestEstimate()
     log.debug("-----------------------")
@@ -252,7 +275,7 @@ for i, time in enumerate(tt):
       
     if params.visu_cfg["ellipseOdo"] or (doLrf and params.visu_cfg["ellipseLrf"]):
       xy, width, height, angle = getEllipseParametersFromEstimate(estim[1])
-      ellipse = mpatches.Ellipse(xy, width, height, angle, alpha=0.1, color="red")
+      ellipse = mpatches.Ellipse(xy, width, height, angle, alpha=0.1, ec="red", fc="red")
       ax.add_patch(ellipse)
       needRedraw = True
       

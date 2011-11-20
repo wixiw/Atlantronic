@@ -6,38 +6,44 @@ import numpy as np
 
 simu_cfg = {
 # Durée
-"duration" : 0.501,   # en s
+"duration" : 0.601,   # en s
             
-# Generation du mouvement
-"maxLinAcc" : 7.,         # en m/s**2
-"maxRotAcc" : 6. * np.pi,  # en rad/s**2
-"maxLinVel" : 3.,         # en m/s
-"maxRotVel" : 2. * np.pi,  # en rad/s
+# Espace de naviguation
 "maxXPos"   :  1.3,       # en m
 "minXPos"   : -1.3,       # en m
 "maxYPos"   :  0.8,       # en m
 "minYPos"   : -0.8,       # en m
+
+## Generation d'un mouvement méchant
+#"maxLinAcc" : 7.,         # en m/s**2
+#"maxRotAcc" : 6. * np.pi,  # en rad/s**2
+#"maxLinVel" : 3.,         # en m/s
+#"maxRotVel" : 2. * np.pi,  # en rad/s
+
+# Generation d'un mouvement gentil
+"maxLinAcc" : 0.,         # en m/s**2
+"maxRotAcc" : 0.,  # en rad/s**2
+"maxLinVel" : 0.5,         # en m/s
+"maxRotVel" : 0.5 * np.pi,  # en rad/s
 
 # Erreur sur la position initiale
 "sigmaInitialPosition" : 0.005,   # en m
 "sigmaInitialHeading" : 0.001,   # en rad
 
 # LRFSimulator
-"sigmaLRF" : 0., #0.01,   # en m
+"sigmaLRF" : 0.01,   # en m
 
 # Simu des odo
-#"percentSigmaTransOdoVelocity" : 0.03,  # en pourcent (1.0 is 100%)
-#"minSigmaTransOdoVelocity" : 0.001, #0.01    # en m/s
-#"percentSigmaRotOdoVelocity" : 0.03,  # en pourcent  (1.0 is 100%)
-#"minSigmaRotOdoVelocity" : 0.01, #0.1   # en rad/s
-#"odoTimeStep" : 0.01, # en s
+"percentSigmaTransOdoVelocity" : 0.03,  # en pourcent (1.0 is 100%)
+"minSigmaTransOdoVelocity" : 0.001, #0.01    # en m/s
+"percentSigmaRotOdoVelocity" : 0.03,  # en pourcent  (1.0 is 100%)
+"minSigmaRotOdoVelocity" : 0.01, #0.1   # en rad/s
+"odoTimeStep" : 0.01, # en s
 
 # Simu d'odo virtuels
-"percentSigmaTransOdoVelocity" : 0.0,  # en pourcent (1.0 is 100%)
-"minSigmaTransOdoVelocity" : 0.1, #0.01    # en m/s
-"percentSigmaRotOdoVelocity" : 0.0,  # en pourcent  (1.0 is 100%)
-"minSigmaRotOdoVelocity" : 0.1, #0.1   # en rad/s
-"odoTimeStep" : 0.01, # en s
+"virtualOdo" : True,
+"virtualSigmaTransOdoVelocity" : 0.5,
+"virtualSigmaRotOdoVelocity" : 0.5 * np.pi,
 
 # Débrayage des odo et/ou du scan pour le debug
 "odoSimu" : True,
@@ -55,10 +61,10 @@ visu_cfg = {
 
 "arrowLrf" : True,
 "ellipseLrf" : True,
-"arrowUpdateLrf" : False,
-"ellipseUpdateLrf" : False,
+"arrowUpdateLrf" : True,
+"ellipseUpdateLrf" : True,
 
-"scan" : False,
+"scan" : True,
 "zoom" : False,
 "save" : False,
 }
@@ -69,10 +75,10 @@ visu_cfg = {
 
 kf_cfg = {
 # Erreur sur la position initiale
-"sigmaInitialPosition" : 0.01,   # en m
+"sigmaInitialPosition" : 0.005,   # en m
 "sigmaInitialHeading" : 0.001,   # en rad
 
-# Performance de l'odométrie
+# Performance de l'odométrie (initiale seulement)
 "sigmaTransOdoVelocity" : 0.01, #0.01    # en m/s
 "sigmaRotOdoVelocity" : 0.01, #0.1   # en rad/s
 
