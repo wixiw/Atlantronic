@@ -14,17 +14,17 @@ simu_cfg = {
 "maxYPos"   :  0.8,       # en m
 "minYPos"   : -0.8,       # en m
 
-## Generation d'un mouvement méchant
-#"maxLinAcc" : 7.,         # en m/s**2
-#"maxRotAcc" : 6. * np.pi,  # en rad/s**2
-#"maxLinVel" : 3.,         # en m/s
-#"maxRotVel" : 2. * np.pi,  # en rad/s
+# Generation d'un mouvement méchant
+"maxLinAcc" : 7.,         # en m/s**2
+"maxRotAcc" : 6. * np.pi,  # en rad/s**2
+"maxLinVel" : 3.,         # en m/s
+"maxRotVel" : 2. * np.pi,  # en rad/s
 
-# Generation d'un mouvement gentil
-"maxLinAcc" : 0.,         # en m/s**2
-"maxRotAcc" : 0.,  # en rad/s**2
-"maxLinVel" : 0.5,         # en m/s
-"maxRotVel" : 0.5 * np.pi,  # en rad/s
+## Generation d'un mouvement gentil
+#"maxLinAcc" : 0.,         # en m/s**2
+#"maxRotAcc" : 0.,  # en rad/s**2
+#"maxLinVel" : 0.5,         # en m/s
+#"maxRotVel" : 0.5 * np.pi,  # en rad/s
 
 # Erreur sur la position initiale
 "sigmaInitialPosition" : 0.005,   # en m
@@ -41,7 +41,7 @@ simu_cfg = {
 "odoTimeStep" : 0.01, # en s
 
 # Simu d'odo virtuels
-"virtualOdo" : True,
+"virtualOdo" : False,
 "virtualSigmaTransOdoVelocity" : 0.5,
 "virtualSigmaRotOdoVelocity" : 0.5 * np.pi,
 
@@ -56,15 +56,15 @@ visu_cfg = {
 
 "arrowTrue" : True,
 
-"arrowOdo" : True,
-"ellipseOdo" : True,
+"arrowOdo" : False,
+"ellipseOdo" : False,
 
 "arrowLrf" : True,
 "ellipseLrf" : True,
-"arrowUpdateLrf" : True,
-"ellipseUpdateLrf" : True,
+"arrowUpdateLrf" : False,
+"ellipseUpdateLrf" : False,
 
-"scan" : True,
+"scan" : False,
 "zoom" : False,
 "save" : False,
 }
