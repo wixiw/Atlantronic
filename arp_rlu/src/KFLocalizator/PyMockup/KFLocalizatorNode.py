@@ -4,6 +4,7 @@ import roslib; roslib.load_manifest('arp_rlu')
 import rospy
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import TwistWithCovarianceStamped
+from std_srvs.srv import *
 import KFLocalizator
 import params_KFLocalizator_Node as params
 
@@ -17,7 +18,7 @@ class KFLocalizatorNode():
     rospy.Service('stop', Empty, self.stop)
       
     self.kfloc = KFLocalizator.KFLocalizator()
-    self.run = false
+    self.run = False
     rospy.spin()
     
   def initialize(self, initialXPosition, initialYPosition, initialHeading):
@@ -49,11 +50,11 @@ class KFLocalizatorNode():
     # convert LaserScan into Scan
     # kfloc.newScan(...)
       
-  def start(self):
+  def start(self, req):
     self.run = True
     rospy.loginfo(rospy.get_name() + " start!")
     
-  def stop(self):
+  def stop(self, req):
     self.run = False
     rospy.loginfo(rospy.get_name() + " stop!")
       
