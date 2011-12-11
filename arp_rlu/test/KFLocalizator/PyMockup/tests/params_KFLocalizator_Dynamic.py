@@ -56,8 +56,8 @@ visu_cfg = {
 
 "arrowTrue" : True,
 
-"arrowOdo" : False,
-"ellipseOdo" : False,
+"arrowOdo" : True,
+"ellipseOdo" : True,
 
 "arrowLrf" : True,
 "ellipseLrf" : True,

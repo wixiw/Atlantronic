@@ -66,9 +66,23 @@ class KFLocalizatorNode():
     if not self.run:
       return
     
-    rospy.loginfo(rospy.get_name() + " update!")
+    rospy.loginfo(rospy.get_name() + " updating...")
+    currentT = data.header.stamp.to_sec()
+    
     # convert LaserScan into Scan
-    # self.kfloc.newScan(...)
+    scan = Scan(len(data.ranges))
+    for i, (r, intensity) in enumerate(zip(data.ranges, data.intensities)):
+      if r <= data.range_max and r >= data.range_min:
+        scan.range[i] = r
+      else:
+        scan.range[i] = 0.
+      scan.theta[i] = data.angle_min + i*data.angle_increment
+      scan.tt[i]    = data.header.stamp + i*data.time_increment
+      
+    self.kfloc.newScan(currentT, scan)
+    
+    self.publishPose()
+    rospy.loginfo(rospy.get_name() + " update OK")
       
   def start(self, req):
     self.run = True
