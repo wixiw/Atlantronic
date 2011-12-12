@@ -8,6 +8,7 @@ import random
 import logging
 
 from Scan import Scan, MedianFilter
+import BaseMethods
 
 class TestMedianFilter(unittest.TestCase):
   def setUp(self):
@@ -17,35 +18,35 @@ class TestMedianFilter(unittest.TestCase):
     mf = MedianFilter(3)
     
     v = [5.]
-    med = mf.getMedian(v)
+    med = BaseMethods.getMedian(v)
     self.assertAlmostEqual( med, 5.)
     
     v = [5., -1.]
-    med = mf.getMedian(v)
+    med = BaseMethods.getMedian(v)
     self.assertAlmostEqual( med, -1.)
     
     v = [0., 1., 2.]
-    med = mf.getMedian(v)
+    med = BaseMethods.getMedian(v)
     self.assertAlmostEqual( med, 1.)
     
     v = [0., -1., 2.]
-    med = mf.getMedian(v)
+    med = BaseMethods.getMedian(v)
     self.assertAlmostEqual( med, 0.)
     
     v = [0., -1., 0.5]
-    med = mf.getMedian(v)
+    med = BaseMethods.getMedian(v)
     self.assertAlmostEqual( med, 0.)
     
     v = [2.2, -1., 0.5]
-    med = mf.getMedian(v)
+    med = BaseMethods.getMedian(v)
     self.assertAlmostEqual( med, 0.5)
     
     v = [0., 1., 2., 3.]
-    med = mf.getMedian(v)
+    med = BaseMethods.getMedian(v)
     self.assertAlmostEqual( med, 1.)
     
     v = [3., -1., 8., -3., 5.]
-    med = mf.getMedian(v)
+    med = BaseMethods.getMedian(v)
     self.assertAlmostEqual( med, 3.)
     
   def testMedianFilter2(self):

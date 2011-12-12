@@ -2,23 +2,11 @@ import numpy as np
 import math
 from abc import ABCMeta
 import logging
+import BaseMethods
 
 class MedianFilter:
   def __init__(self, W):
     self.W = W
-  def getMedian(self, v):
-    if len(v) == 1:
-      return v[0]
-    noChange = False
-    while not noChange:
-      noChange = True
-      for j in range(len(v)-1):
-        if v[j] > v[j+1]:
-          tmp = v[j+1]
-          v[j+1] = v[j]
-          v[j] = tmp
-          noChange = False
-    return v[(len(v)-1)/2]
   def compute(self, raw):
     filt = np.copy(raw)
     infIndex = (self.W -1)/2
@@ -29,7 +17,7 @@ class MedianFilter:
       if j+supIndex > int(raw.shape[0]) - 1:
         continue
       v = list(raw[(j-infIndex):(j+supIndex+1)])
-      filt[j] = self.getMedian(v)
+      filt[j] = BaseMethods.getMedian(v)
     return filt
 
 class Scan:

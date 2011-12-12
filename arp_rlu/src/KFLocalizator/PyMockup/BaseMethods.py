@@ -55,5 +55,60 @@ def getEllipseParametersFromEstimate(estim):
   xy = (estim.xRobot, estim.yRobot)
   angle = math.atan2( axe[1], axe[0]) * 180. / np.pi
   return xy, width, height, angle
+
+
+def getMedian(v):
+  if len(v) == 1:
+    return v[0]
+  noChange = False
+  while not noChange:
+    noChange = True
+    for j in range(len(v)-1):
+      if v[j] > v[j+1]:
+        tmp = v[j+1]
+        v[j+1] = v[j]
+        v[j] = tmp
+        noChange = False
+  return v[(len(v)-1)/2]
+
+def enumerateCombinations(x, n):
+  out = []
+  if n < 1:
+    return out
+  if n == 1:
+    return [ [v] for v in x]
+  m = len(x)
+  if m < n:
+    return out
+  if m == n:
+    return [ x ]
   
+  for i in range(m-n+1):
+    combs = enumerateCombinations(x[i+1:], n-1)
+    for c in combs:
+      d = [v for v in c]
+      d.insert(0,x[i])
+      out.append( d )
+  return out
+
+def enumeratePermutations(x):
+  m = len(x)
+  if m == 1:
+    return [x]
+  if m == 2:
+    return [ [x[0], x[1]], [x[1], x[0]] ]
+  if m < 0:
+    return []
+  
+  out = []
+  
+  for i in range(m):
+    x_ = [v for v in x] 
+    x_.pop(i)
+    combs = enumeratePermutations(x_)
+    for c in combs:
+      d = [v for v in c]
+      d.insert(0,x[i])
+      out.append( d )
+  return out
 

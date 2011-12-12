@@ -79,6 +79,19 @@ class TestBaseMethods(unittest.TestCase):
     self.assertAlmostEqual( height, 3. * math.sqrt(2.) )
     self.assertAlmostEqual( angle, 0. )
     
+  def testEnumerateCombinations(self):
+    x = range(1,6)
+    n = 3
+    combs = enumerateCombinations(x,n)
+    self.assertEqual( len(combs), 10 )
+    
+    
+  def testEnumeratePermutations(self):
+    x = range(3)
+    perms = enumeratePermutations(x)
+    self.assertEqual( len(perms), 6 )
+    
+    
     
 if __name__ == '__main__':
     logging.basicConfig(level=logging.ERROR) 
