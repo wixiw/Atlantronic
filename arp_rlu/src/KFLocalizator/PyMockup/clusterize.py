@@ -33,7 +33,7 @@ def clusterize(pc, params):
   yMeans = np.ones((n)) * np.mean( pc.points[1,0:])
   stddev = np.square(xMeans - pc.points[0,0:]) + np.square(yMeans - pc.points[1,0:])
   stddev = math.sqrt(sum(stddev) / n) 
-  log.debug("Clusterize : %d points with stddev=%f (compared to %f)" % (n , stddev, params.maxStddev))
+#  log.debug("Clusterize : %d points with stddev=%f (compared to %f)" % (n , stddev, params.maxStddev))
   
   if stddev < params.maxStddev:
     return [pc]
