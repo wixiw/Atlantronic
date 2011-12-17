@@ -59,10 +59,10 @@ function MotorDeployer:start()
 
 	LeftDriving:start()
 	RightDriving:start()
-	RearDriving:configure()
+	RearDriving:start()
 	LeftSteering:start()
 	RightSteering:start()
-	RearSteering:configure()
+	RearSteering:start()
 end
 
 

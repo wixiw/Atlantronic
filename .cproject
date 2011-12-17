@@ -756,33 +756,29 @@
 			</profile>
 		</scannerConfigBuildInfo>
 	</storageModule>
+	<storageModule moduleId="refreshScope"/>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 		<buildTargets>
 			<target name="clean" path="arp_ods" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
+				<buildArguments/>
 				<buildTarget>clean</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
-			<target name="make arp_core" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+			<target name="make arp_ods" path="arp_ods" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>rosmake</buildCommand>
-				<buildArguments>arp_core</buildArguments>
+				<buildArguments>arp_ods</buildArguments>
+				<buildTarget/>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
-			<target name="make arp_hml" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+			<target name="make arp_rlu" path="arp_rlu" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>rosmake</buildCommand>
-				<buildArguments>arp_hml</buildArguments>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>false</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
-			<target name="make arp_master" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>rosmake</buildCommand>
-				<buildArguments>arp_master</buildArguments>
-				<buildTarget>make arp_master</buildTarget>
+				<buildArguments>arp_rlu</buildArguments>
+				<buildTarget/>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
@@ -794,49 +790,57 @@
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
-			<target name="make arp_rlu" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>rosmake</buildCommand>
-				<buildArguments>arp_rlu</buildArguments>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>false</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
-			<target name="make arp_ods" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>rosmake</buildCommand>
-				<buildArguments>arp_ods</buildArguments>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>false</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
 			<target name="install all on beta" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>/opt/ard/default/script/install_target.sh</buildCommand>
 				<buildArguments>ard beta</buildArguments>
-				<buildTarget/>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
 			<target name="clean" path="arp_hml" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
-				<buildArguments/>
 				<buildTarget>clean</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
-			<target name="make" path="arp_hml" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildTarget>make</buildTarget>
+			<target name="install hml on beta" path="arp_hml" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>/opt/ard/default/script/install_target.sh</buildCommand>
+				<buildArguments>arp_hml beta</buildArguments>
+				<buildTarget/>
 				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="make arp_hml" path="arp_hml" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>rosmake</buildCommand>
+				<buildArguments>arp_hml</buildArguments>
+				<buildTarget/>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="make arp_master" path="arp_master" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>rosmake</buildCommand>
+				<buildArguments>arp_master</buildArguments>
+				<buildTarget>make arp_master</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
 			<target name="clean" path="arp_core" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
-				<buildArguments/>
 				<buildTarget>clean</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="make arp_core" path="arp_core" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>rosmake</buildCommand>
+				<buildArguments>arp_core</buildArguments>
+				<buildTarget/>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
 		</buildTargets>
