@@ -594,7 +594,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 /* index 0x1800 :   Transmit PDO 1 Parameter. */
                     UNS8 CanARD_highestSubIndex_obj1800 = 5; /* number of subindex - 1*/
                     UNS32 CanARD_obj1800_COB_ID_used_by_PDO = 0x321;	/* 801 */
-                    UNS8 CanARD_obj1800_Transmission_Type = 0x0;	/* 0 */
+                    UNS8 CanARD_obj1800_Transmission_Type = 0x1;	/* 1 */
                     UNS16 CanARD_obj1800_Inhibit_Time = 0x0;	/* 0 */
                     UNS8 CanARD_obj1800_Compatibility_Entry = 0x0;	/* 0 */
                     UNS16 CanARD_obj1800_Event_Timer = 0x0;	/* 0 */
@@ -619,7 +619,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 /* index 0x1801 :   Transmit PDO 2 Parameter. */
                     UNS8 CanARD_highestSubIndex_obj1801 = 5; /* number of subindex - 1*/
-                    UNS32 CanARD_obj1801_COB_ID_used_by_PDO = 0x332;	/* 818 */
+                    UNS32 CanARD_obj1801_COB_ID_used_by_PDO = 0x322;	/* 802 */
                     UNS8 CanARD_obj1801_Transmission_Type = 0x1;	/* 1 */
                     UNS16 CanARD_obj1801_Inhibit_Time = 0x0;	/* 0 */
                     UNS8 CanARD_obj1801_Compatibility_Entry = 0x0;	/* 0 */
@@ -645,7 +645,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 /* index 0x1802 :   Transmit PDO 3 Parameter. */
                     UNS8 CanARD_highestSubIndex_obj1802 = 5; /* number of subindex - 1*/
-                    UNS32 CanARD_obj1802_COB_ID_used_by_PDO = 0x333;	/* 819 */
+                    UNS32 CanARD_obj1802_COB_ID_used_by_PDO = 0x323;	/* 803 */
                     UNS8 CanARD_obj1802_Transmission_Type = 0x1;	/* 1 */
                     UNS16 CanARD_obj1802_Inhibit_Time = 0x0;	/* 0 */
                     UNS8 CanARD_obj1802_Compatibility_Entry = 0x0;	/* 0 */
@@ -669,11 +669,89 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, uint16, sizeof (UNS16), (void*)&CanARD_obj1802_Event_Timer }
                      };
 
+/* index 0x1803 :   Transmit PDO 4 Parameter. */
+                    UNS8 CanARD_highestSubIndex_obj1803 = 5; /* number of subindex - 1*/
+                    UNS32 CanARD_obj1803_COB_ID_used_by_PDO = 0x331;	/* 817 */
+                    UNS8 CanARD_obj1803_Transmission_Type = 0x1;	/* 1 */
+                    UNS16 CanARD_obj1803_Inhibit_Time = 0x0;	/* 0 */
+                    UNS8 CanARD_obj1803_Compatibility_Entry = 0x0;	/* 0 */
+                    UNS16 CanARD_obj1803_Event_Timer = 0x0;	/* 0 */
+                    ODCallback_t CanARD_Index1803_callbacks[] = 
+                     {
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                     };
+                    subindex CanARD_Index1803[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj1803 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1803_COB_ID_used_by_PDO },
+                       { RW, uint8, sizeof (UNS8), (void*)&CanARD_obj1803_Transmission_Type },
+                       { RW, uint16, sizeof (UNS16), (void*)&CanARD_obj1803_Inhibit_Time },
+                       { RW, uint8, sizeof (UNS8), (void*)&CanARD_obj1803_Compatibility_Entry },
+                       { RW, uint16, sizeof (UNS16), (void*)&CanARD_obj1803_Event_Timer }
+                     };
+
+/* index 0x1804 :   Transmit PDO 5 Parameter. */
+                    UNS8 CanARD_highestSubIndex_obj1804 = 5; /* number of subindex - 1*/
+                    UNS32 CanARD_obj1804_COB_ID_used_by_PDO = 0x332;	/* 818 */
+                    UNS8 CanARD_obj1804_Transmission_Type = 0x1;	/* 1 */
+                    UNS16 CanARD_obj1804_Inhibit_Time = 0x0;	/* 0 */
+                    UNS8 CanARD_obj1804_Compatibility_Entry = 0x0;	/* 0 */
+                    UNS16 CanARD_obj1804_Event_Timer = 0x0;	/* 0 */
+                    ODCallback_t CanARD_Index1804_callbacks[] = 
+                     {
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                     };
+                    subindex CanARD_Index1804[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj1804 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1804_COB_ID_used_by_PDO },
+                       { RW, uint8, sizeof (UNS8), (void*)&CanARD_obj1804_Transmission_Type },
+                       { RW, uint16, sizeof (UNS16), (void*)&CanARD_obj1804_Inhibit_Time },
+                       { RW, uint8, sizeof (UNS8), (void*)&CanARD_obj1804_Compatibility_Entry },
+                       { RW, uint16, sizeof (UNS16), (void*)&CanARD_obj1804_Event_Timer }
+                     };
+
+/* index 0x1805 :   Transmit PDO 6 Parameter. */
+                    UNS8 CanARD_highestSubIndex_obj1805 = 5; /* number of subindex - 1*/
+                    UNS32 CanARD_obj1805_COB_ID_used_by_PDO = 0x333;	/* 819 */
+                    UNS8 CanARD_obj1805_Transmission_Type = 0x1;	/* 1 */
+                    UNS16 CanARD_obj1805_Inhibit_Time = 0x0;	/* 0 */
+                    UNS8 CanARD_obj1805_Compatibility_Entry = 0x0;	/* 0 */
+                    UNS16 CanARD_obj1805_Event_Timer = 0x0;	/* 0 */
+                    ODCallback_t CanARD_Index1805_callbacks[] = 
+                     {
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                     };
+                    subindex CanARD_Index1805[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj1805 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1805_COB_ID_used_by_PDO },
+                       { RW, uint8, sizeof (UNS8), (void*)&CanARD_obj1805_Transmission_Type },
+                       { RW, uint16, sizeof (UNS16), (void*)&CanARD_obj1805_Inhibit_Time },
+                       { RW, uint8, sizeof (UNS8), (void*)&CanARD_obj1805_Compatibility_Entry },
+                       { RW, uint16, sizeof (UNS16), (void*)&CanARD_obj1805_Event_Timer }
+                     };
+
 /* index 0x1A00 :   Transmit PDO 1 Mapping. */
                     UNS8 CanARD_highestSubIndex_obj1A00 = 2; /* number of subindex - 1*/
                     UNS32 CanARD_obj1A00[] = 
                     {
-                      0x22100620,	/* 571475488 */
+                      0x22100608,	/* 571475464 */
                       0x22100520	/* 571475232 */
                     };
                     subindex CanARD_Index1A00[] = 
@@ -687,8 +765,8 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                     UNS8 CanARD_highestSubIndex_obj1A01 = 2; /* number of subindex - 1*/
                     UNS32 CanARD_obj1A01[] = 
                     {
-                      0x23200608,	/* 589301256 */
-                      0x23200520	/* 589301024 */
+                      0x22200608,	/* 572524040 */
+                      0x22200520	/* 572523808 */
                     };
                     subindex CanARD_Index1A01[] = 
                      {
@@ -701,14 +779,56 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                     UNS8 CanARD_highestSubIndex_obj1A02 = 2; /* number of subindex - 1*/
                     UNS32 CanARD_obj1A02[] = 
                     {
-                      0x23300608,	/* 590349832 */
-                      0x23300520	/* 590349600 */
+                      0x22300608,	/* 573572616 */
+                      0x22300520	/* 573572384 */
                     };
                     subindex CanARD_Index1A02[] = 
                      {
                        { RW, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj1A02 },
                        { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1A02[0] },
                        { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1A02[1] }
+                     };
+
+/* index 0x1A03 :   Transmit PDO 4 Mapping. */
+                    UNS8 CanARD_highestSubIndex_obj1A03 = 2; /* number of subindex - 1*/
+                    UNS32 CanARD_obj1A03[] = 
+                    {
+                      0x23100608,	/* 588252680 */
+                      0x23100520	/* 588252448 */
+                    };
+                    subindex CanARD_Index1A03[] = 
+                     {
+                       { RW, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj1A03 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1A03[0] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1A03[1] }
+                     };
+
+/* index 0x1A04 :   Transmit PDO 5 Mapping. */
+                    UNS8 CanARD_highestSubIndex_obj1A04 = 2; /* number of subindex - 1*/
+                    UNS32 CanARD_obj1A04[] = 
+                    {
+                      0x23200608,	/* 589301256 */
+                      0x23200520	/* 589301024 */
+                    };
+                    subindex CanARD_Index1A04[] = 
+                     {
+                       { RW, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj1A04 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1A04[0] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1A04[1] }
+                     };
+
+/* index 0x1A05 :   Transmit PDO 6 Mapping. */
+                    UNS8 CanARD_highestSubIndex_obj1A05 = 2; /* number of subindex - 1*/
+                    UNS32 CanARD_obj1A05[] = 
+                    {
+                      0x23300608,	/* 590349832 */
+                      0x23300520	/* 590349600 */
+                    };
+                    subindex CanARD_Index1A05[] = 
+                     {
+                       { RW, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj1A05 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1A05[0] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1A05[1] }
                      };
 
 /* index 0x2050 :   Mapped variable Woodhead */
@@ -943,9 +1063,15 @@ const indextable CanARD_objdict[] =
   { (subindex*)CanARD_Index1800,sizeof(CanARD_Index1800)/sizeof(CanARD_Index1800[0]), 0x1800},
   { (subindex*)CanARD_Index1801,sizeof(CanARD_Index1801)/sizeof(CanARD_Index1801[0]), 0x1801},
   { (subindex*)CanARD_Index1802,sizeof(CanARD_Index1802)/sizeof(CanARD_Index1802[0]), 0x1802},
+  { (subindex*)CanARD_Index1803,sizeof(CanARD_Index1803)/sizeof(CanARD_Index1803[0]), 0x1803},
+  { (subindex*)CanARD_Index1804,sizeof(CanARD_Index1804)/sizeof(CanARD_Index1804[0]), 0x1804},
+  { (subindex*)CanARD_Index1805,sizeof(CanARD_Index1805)/sizeof(CanARD_Index1805[0]), 0x1805},
   { (subindex*)CanARD_Index1A00,sizeof(CanARD_Index1A00)/sizeof(CanARD_Index1A00[0]), 0x1A00},
   { (subindex*)CanARD_Index1A01,sizeof(CanARD_Index1A01)/sizeof(CanARD_Index1A01[0]), 0x1A01},
   { (subindex*)CanARD_Index1A02,sizeof(CanARD_Index1A02)/sizeof(CanARD_Index1A02[0]), 0x1A02},
+  { (subindex*)CanARD_Index1A03,sizeof(CanARD_Index1A03)/sizeof(CanARD_Index1A03[0]), 0x1A03},
+  { (subindex*)CanARD_Index1A04,sizeof(CanARD_Index1A04)/sizeof(CanARD_Index1A04[0]), 0x1A04},
+  { (subindex*)CanARD_Index1A05,sizeof(CanARD_Index1A05)/sizeof(CanARD_Index1A05[0]), 0x1A05},
   { (subindex*)CanARD_Index2050,sizeof(CanARD_Index2050)/sizeof(CanARD_Index2050[0]), 0x2050},
   { (subindex*)CanARD_Index2210,sizeof(CanARD_Index2210)/sizeof(CanARD_Index2210[0]), 0x2210},
   { (subindex*)CanARD_Index2220,sizeof(CanARD_Index2220)/sizeof(CanARD_Index2220[0]), 0x2220},
@@ -997,16 +1123,22 @@ const indextable * CanARD_scanIndexOD (UNS16 wIndex, UNS32 * errorCode, ODCallba
 		case 0x1800: i = 34;*callbacks = CanARD_Index1800_callbacks; break;
 		case 0x1801: i = 35;*callbacks = CanARD_Index1801_callbacks; break;
 		case 0x1802: i = 36;*callbacks = CanARD_Index1802_callbacks; break;
-		case 0x1A00: i = 37;break;
-		case 0x1A01: i = 38;break;
-		case 0x1A02: i = 39;break;
-		case 0x2050: i = 40;*callbacks = Woodhead_callbacks; break;
-		case 0x2210: i = 41;*callbacks = LeftSteering_callbacks; break;
-		case 0x2220: i = 42;*callbacks = RightSteering_callbacks; break;
-		case 0x2230: i = 43;*callbacks = RearSteering_callbacks; break;
-		case 0x2310: i = 44;*callbacks = LeftDriving_callbacks; break;
-		case 0x2320: i = 45;*callbacks = RightDriving_callbacks; break;
-		case 0x2330: i = 46;*callbacks = RearDriving_callbacks; break;
+		case 0x1803: i = 37;*callbacks = CanARD_Index1803_callbacks; break;
+		case 0x1804: i = 38;*callbacks = CanARD_Index1804_callbacks; break;
+		case 0x1805: i = 39;*callbacks = CanARD_Index1805_callbacks; break;
+		case 0x1A00: i = 40;break;
+		case 0x1A01: i = 41;break;
+		case 0x1A02: i = 42;break;
+		case 0x1A03: i = 43;break;
+		case 0x1A04: i = 44;break;
+		case 0x1A05: i = 45;break;
+		case 0x2050: i = 46;*callbacks = Woodhead_callbacks; break;
+		case 0x2210: i = 47;*callbacks = LeftSteering_callbacks; break;
+		case 0x2220: i = 48;*callbacks = RightSteering_callbacks; break;
+		case 0x2230: i = 49;*callbacks = RearSteering_callbacks; break;
+		case 0x2310: i = 50;*callbacks = LeftDriving_callbacks; break;
+		case 0x2320: i = 51;*callbacks = RightDriving_callbacks; break;
+		case 0x2330: i = 52;*callbacks = RearDriving_callbacks; break;
 		default:
 			*errorCode = OD_NO_SUCH_OBJECT;
 			return NULL;
@@ -1020,7 +1152,7 @@ const indextable * CanARD_scanIndexOD (UNS16 wIndex, UNS32 * errorCode, ODCallba
  * Even if no pdoTransmit are defined, at least one entry is computed
  * for compilations issues.
  */
-s_PDO_status CanARD_PDO_status[3] = {s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer};
+s_PDO_status CanARD_PDO_status[6] = {s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer};
 
 const quick_index CanARD_firstIndex = {
   6, /* SDO_SVR */
@@ -1028,7 +1160,7 @@ const quick_index CanARD_firstIndex = {
   14, /* PDO_RCV */
   24, /* PDO_RCV_MAP */
   34, /* PDO_TRS */
-  37 /* PDO_TRS_MAP */
+  40 /* PDO_TRS_MAP */
 };
 
 const quick_index CanARD_lastIndex = {
@@ -1036,8 +1168,8 @@ const quick_index CanARD_lastIndex = {
   13, /* SDO_CLT */
   23, /* PDO_RCV */
   33, /* PDO_RCV_MAP */
-  36, /* PDO_TRS */
-  39 /* PDO_TRS_MAP */
+  39, /* PDO_TRS */
+  45 /* PDO_TRS_MAP */
 };
 
 const UNS16 CanARD_ObjdictSize = sizeof(CanARD_objdict)/sizeof(CanARD_objdict[0]); 
