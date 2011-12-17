@@ -6,7 +6,7 @@ fi
 
 if [ $OROCOS_TARGET == "xenomai" ]
 then
-	rosrun socket_can candump -t a -a -c -e any,0:0,#FFFFFFFF
+	rtcanrecv rtcan1 -v 
 	exit
 fi
 
