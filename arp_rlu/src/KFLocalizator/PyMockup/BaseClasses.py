@@ -19,10 +19,10 @@ class Object:
   __metaclass__ = ABCMeta
   
 class Circle(Object):
-  def __init__(self):
-    self.xCenter  = 0.0
-    self.yCenter  = 0.0
-    self.radius   = 0.0
+  def __init__(self, x = 0.0, y = 0.0, r = 0.0):
+    self.xCenter  = x
+    self.yCenter  = y
+    self.radius   = r
     self.thetaBeg = None
     self.thetaEnd = None
     self.timeBeg  = None

@@ -31,11 +31,12 @@ def clusterize(pc, params):
 
   xMeans = np.ones((n)) * np.mean( pc.points[0,0:])
   yMeans = np.ones((n)) * np.mean( pc.points[1,0:])
-  stddev = np.square(xMeans - pc.points[0,0:]) + np.square(yMeans - pc.points[1,0:])
-  stddev = math.sqrt(sum(stddev) / n) 
+  
+  stddevXY = np.square(xMeans - pc.points[0,0:]) + np.square(yMeans - pc.points[1,0:])
+  stddevXY = math.sqrt(sum(stddevXY) / n) 
 #  log.debug("Clusterize : %d points with stddev=%f (compared to %f)" % (n , stddev, params.maxStddev))
   
-  if stddev < params.maxStddev:
+  if stddevXY < params.maxStddev:
     return [pc]
   
   (pcl, pcr) = kmeans(pc, params.kmeansMaxIt, params.kmeansDispThreshold)
