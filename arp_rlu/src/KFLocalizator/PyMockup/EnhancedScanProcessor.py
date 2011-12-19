@@ -107,6 +107,7 @@ class EnhancedScanProcessor:
     self.findClusters(tt, xx, yy, hh)
     self.filterClusters()
     self.associateClusters()
+    self.cleanResults()
     
     
   def findClusters(self, tt, xx, yy, hh):
@@ -159,7 +160,7 @@ class EnhancedScanProcessor:
       log.debug("2 candidates")
       fb = self.__recognizeTwoObjects(self.twoObjectsParams, self.objects[0], self.objects[1])
       if len(fb) == 0:
-        log.debug("fail to find segment => switch to recognizeOneObject")
+#        log.debug("fail to find segment => switch to recognizeOneObject")
         fb1 = self.__recognizeOneObject(self.oneObjectParams, self.objects[0])
         fb2 = self.__recognizeOneObject(self.oneObjectParams, self.objects[1])
         self.foundBeacons.extend(fb1)
@@ -170,7 +171,7 @@ class EnhancedScanProcessor:
       log.debug("3 or more candidates")
       fb = self.__recognizeTreeOrMoreObjects(self.treeObjectsParams, self.objects)
       if len(fb) == 0:
-        log.debug("fail to find triangle or segment => switch to recognizeOneObject")
+#        log.debug("fail to find triangle or segment => switch to recognizeOneObject")
         for o in self.objects:
           fb = self.__recognizeOneObject(self.oneObjectParams, o)
           alreadyInFb = False
@@ -185,7 +186,7 @@ class EnhancedScanProcessor:
         self.foundBeacons = fb
         
   def cleanResults(self):
-    log = logging.getLogger('cleanResults')
+#    log = logging.getLogger('cleanResults')
 #    log.debug("********* Cleaning *********")
     for b in self.trueBeacons:
 #      log.debug('beacon (%f,%f)', b.xCenter, b.yCenter)
@@ -221,9 +222,9 @@ class EnhancedScanProcessor:
         minDist = d
     if minDist < params["maxDistance"]:
       fb.append(o)
-      log.debug("one object (%f,%f) near beacon (%f,%f) with distance %f (against %f)", o.xCenter, o.yCenter, bestBeacon.xCenter, bestBeacon.yCenter, minDist, params["maxDistance"])
-    else:
-      log.debug("one object (%f,%f) is too far from nearest beacon (%f,%f) with distance %f (against %f)=> 0 beacons found", o.xCenter, o.yCenter, bestBeacon.xCenter, bestBeacon.yCenter, minDist, params["maxDistance"])
+#      log.debug("one object (%f,%f) near beacon (%f,%f) with distance %f (against %f)", o.xCenter, o.yCenter, bestBeacon.xCenter, bestBeacon.yCenter, minDist, params["maxDistance"])
+#    else:
+#      log.debug("one object (%f,%f) is too far from nearest beacon (%f,%f) with distance %f (against %f)=> 0 beacons found", o.xCenter, o.yCenter, bestBeacon.xCenter, bestBeacon.yCenter, minDist, params["maxDistance"])
     return fb
   
   
@@ -238,7 +239,7 @@ class EnhancedScanProcessor:
       if len(fb1) == 1 and len(fb2) == 1:
         fb.append(fb1[0])
         fb.append(fb2[0])
-        log.debug("2 beacons found forming small segment")
+#        log.debug("2 beacons found forming small segment")
         return fb
       else:
         log.debug("at least one beacon is too far from is target beacon")
@@ -250,13 +251,13 @@ class EnhancedScanProcessor:
       if len(fb1) == 1 and len(fb2) == 1:
         fb.append(fb1[0])
         fb.append(fb2[0])
-        log.debug("2 beacons found forming big segment")
+        log.debug("big segment has been found")
         return fb
       else:
-        log.debug("at least one beacon is too far from is target beacon")
+#        log.debug("at least one beacon is too far from is target beacon")
         return []
     else:
-      log.debug("no segment recognized : (%f,%f) & (%f,%f) width L=%f against %f or %f", o1.xCenter, o1.yCenter, o2.xCenter, o2.yCenter, L, self.refSmallLength, self.refBigLength)
+#      log.debug("no segment recognized : (%f,%f) & (%f,%f) width L=%f against %f or %f", o1.xCenter, o1.yCenter, o2.xCenter, o2.yCenter, L, self.refSmallLength, self.refBigLength)
       return []
   
   
@@ -268,19 +269,19 @@ class EnhancedScanProcessor:
     combs = BaseMethods.enumerateCombinations(range(len(oo)),3)
     for comb in combs:
       quality = self.__evalCombination(oo, comb)
-      log.debug("eval comb %s => quality is %f", str(comb), quality)
+#      log.debug("eval comb %s => quality is %f", str(comb), quality)
       if quality > bestQuality:
-        log.debug("best quality !")
+#        log.debug("best quality !")
         bestComb = comb
         bestQuality = quality
     if bestQuality < 1. / params["maxTriangleVariation"]:
-      log.info("Unable to recognize triangle in candidates : quality incorrect (%f against %f) => we try recognizeTwoObjects", bestQuality, 1. / params["maxTriangleVariation"])
+#      log.debug("Unable to recognize triangle in candidates : quality incorrect (%f against %f) => we try recognizeTwoObjects", bestQuality, 1. / params["maxTriangleVariation"])
       combs = BaseMethods.enumerateCombinations(range(len(oo)),2)
-      log.debug("combinations to be tryed:")
-      for c in combs:
-        log.debug("  (%d,%d)", c[0], c[1])
+#      log.debug("combinations to be tryed:")
+#      for c in combs:
+#        log.debug("  (%d,%d)", c[0], c[1])
       for comb in combs:
-        log.debug("considering (%d,%d)", comb[0], comb[1])
+#        log.debug("considering (%d,%d)", comb[0], comb[1])
         vv = self.__recognizeTwoObjects(self.twoObjectsParams, oo[comb[0]], oo[comb[1]])
         alreadyInFb = False
         for v in vv:

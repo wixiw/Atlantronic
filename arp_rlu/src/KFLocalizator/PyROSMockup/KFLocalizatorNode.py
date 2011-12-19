@@ -33,6 +33,10 @@ class KFLocalizatorNode():
     rospy.loginfo(rospy.get_name() + " is running")
     rospy.spin()
     
+    self.simulateTime = True
+    self.time = rospy.Time.now()
+    self.numberOfPrediction = 0
+    
   def initialize(self, initialXPosition, initialYPosition, initialHeading):
     self.kfloc.initialize(rospy.get_time(),100,
                           initialXPosition, 
@@ -47,10 +51,19 @@ class KFLocalizatorNode():
     self.kfloc.scanproc.thresholdRange = params.kf_cfg["scanproc_cfg"]["thresholdRange"]
 
   def predict(self, data):
-    if not self.run:
+    if not self.run or self.isRunning:
       return
+    self.isRunning = True
+    
     rospy.loginfo(rospy.get_name() + " predicting...")
-    currentT = data.header.stamp.to_sec()
+    
+    if self.simulateTime:
+      self.time = self.time + rospy.Duration.from_sec(0.01)
+      currentT = self.time.to_sec()
+      self.numberOfPrediction = self.numberOfPrediction + 1
+    else:
+      currentT = data.header.stamp.to_sec()
+      
     ov = OdoVelocity()
     ov.vx = data.twist.twist.linear.x
     ov.vy = data.twist.twist.linear.y
@@ -60,14 +73,26 @@ class KFLocalizatorNode():
     sigmaHOdo_ = data.twist.covariance[35]
     self.kfloc.newOdoVelocity(currentT, ov, sigmaXOdo_, sigmaYOdo_, sigmaHOdo_)
     self.publishPose()
+    
     rospy.loginfo(rospy.get_name() + " predict OK")
+    self.isRunning = False
       
   def update(self, data):
-    if not self.run:
+    if not self.run or self.isRunning:
       return
+    self.isRunning = True
     
     rospy.loginfo(rospy.get_name() + " updating...")
-    currentT = data.header.stamp.to_sec()
+    
+    if self.simulateTime:
+      self.time = self.time + rospy.Duration.from_sec(0.01)
+      currentT = self.time.to_sec()
+      if self.numberOfPrediction < 10:
+        return
+      else:
+        self.numberOfPrediction = 0
+    else:
+      currentT = data.header.stamp.to_sec()
     
     # convert LaserScan into Scan
     scan = Scan(len(data.ranges))
@@ -83,9 +108,11 @@ class KFLocalizatorNode():
     
     self.publishPose()
     rospy.loginfo(rospy.get_name() + " update OK")
+    self.isRunning = False
       
   def start(self, req):
     self.run = True
+    self.isRunning = False
     rospy.loginfo(rospy.get_name() + " start!")
     return EmptyResponse()
     
