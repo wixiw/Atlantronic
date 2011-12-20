@@ -25,9 +25,9 @@ class Scan:
     self.tsync = 0.
     self.tbeg  = 0.
     self.tend  = 0.
-    self.tt    = np.array( (N) )
-    self.theta = np.array( (N) )
-    self.range = np.array( (N) )
+    self.tt    = np.zeros( (N) )
+    self.theta = np.zeros( (N) )
+    self.range = np.zeros( (N) )
     
   def copy(self):
     retval = Scan()
