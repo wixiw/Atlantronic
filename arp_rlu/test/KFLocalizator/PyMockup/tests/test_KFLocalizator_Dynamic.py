@@ -113,13 +113,19 @@ kfloc.setBeacons( lrfsim.objects )
 #===============================================================================
 fig = plt.figure(figsize=(20,10))
 plt.ion()
-plt.hold(True)
 
 ax = fig.add_subplot(111, aspect='equal')
-ax.axis([-1.6, 1.6, -1.1, 1.1])
+
+if params.visu_cfg["zoom"]:
+  ax.axis([np.mean(xx)-0.3, np.mean(xx)+0.3, np.mean(yy)-0.2, np.mean(yy)+0.2])
+else:
+  ax.axis([-1.6, 1.6, -1.1, 1.1])
+  
+plt.hold(True)
 
 # table
-plt.plot( [-1.5, -1.5, 1.5, 1.5, -1.5], [-1., 1., 1., -1., -1.], '-k')
+ax.plot( [-1.5, -1.5, 1.5, 1.5, -1.5], [-1., 1., 1., -1., -1.], '-k')
+
 
 # beacons
 for obj in lrfsim.objects:
@@ -132,9 +138,6 @@ for obj in lrfsim.objects:
     ax.plot( [obj.A[0,0], obj.B[0,0]], [obj.A[1,0], obj.B[1,0]], '-g')
     ax.plot( [obj.A[0,0], obj.B[0,0]], [obj.A[1,0], obj.B[1,0]], 'dg')
     
-if params.visu_cfg["zoom"]:
-  ax.axis([np.mean(xx)-0.3, np.mean(xx)+0.3, np.mean(yy)-0.2, np.mean(yy)+0.2])
-
 
 if params.visu_cfg["arrowTrue"]:
   xArrowBeg = xx[0]
@@ -168,11 +171,7 @@ yOldEstim = kfloc.X[1,0]
 if params.visu_cfg["arrowInit"] and params.visu_cfg["arrowTrue"]:
   ax.plot( [kfloc.X[0,0], xx[0]], [kfloc.X[1,0], yy[0]], ':k' )
       
-  
-if params.visu_cfg["zoom"]:
-  ax.axis([np.mean(xx)-0.3, np.mean(xx)+0.3, np.mean(yy)-0.2, np.mean(yy)+0.2])
-else:
-  ax.axis([-1.6, 1.6, -1.1, 1.1])
+
 plt.title("time: 0.0")
 plt.draw()
   
@@ -186,6 +185,7 @@ if params.visu_cfg["save"]:
       os.remove(os.path.join(dirName, f))
   
   plt.savefig(os.path.join(dirName, "0_0.000" + ".png"))
+  
 
 #===============================================================================
 # En avant !
