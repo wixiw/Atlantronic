@@ -11,6 +11,13 @@ from geometry_msgs.msg import PoseWithCovarianceStamped
 from std_srvs.srv import *
 from arp_rlu.srv import *
 
+import numpy as np
+import matplotlib
+matplotlib.use('GTKCairo')
+import matplotlib.pyplot as plt
+from matplotlib.collections import PatchCollection
+import matplotlib.patches as mpatches
+
 import math
 import KFLocalizator
 import params_KFLocalizator_Node as params
@@ -36,6 +43,10 @@ class KFLocalizatorNode():
     
     self.scan = None
     self.odovel = None
+    
+    self.fig = plt.figure(1)
+    plt.ioff()
+    plt.hold(True)
     
     self.time = rospy.Time.now()
     rospy.loginfo("start time is %f", self.time.to_sec())
@@ -86,13 +97,13 @@ class KFLocalizatorNode():
       
   def callbackScan(self, data):
     self.scan = Scan(len(data.ranges))
-    for i, (r, intensity) in enumerate(zip(data.ranges, data.intensities)):
+    for i, r in enumerate(data.ranges):
       if r <= data.range_max and r >= data.range_min:
         self.scan.range[i] = r
       else:
         self.scan.range[i] = 0.
       self.scan.theta[i] = data.angle_min + i*data.angle_increment
-      self.scan.tt[i]    = data.header.stamp + i*data.time_increment
+      self.scan.tt[i]    = data.header.stamp.to_sec() + i*data.time_increment
       
   
   def update(self, req):
@@ -103,7 +114,7 @@ class KFLocalizatorNode():
     self.time = self.time + rospy.Duration.from_sec(0.01)
     currentT = self.time.to_sec()
     
-    rospy.loginfo(rospy.get_name() + " updating... [time: %f]", currentT)      
+    rospy.loginfo(rospy.get_name() + " updating... [time: %f]", currentT)
     self.kfloc.newScan(currentT, self.scan)
     
     self.publishPose()
@@ -136,7 +147,60 @@ class KFLocalizatorNode():
     p.pose.covariance[31] = estim[1].covariance[1,2]
     p.pose.covariance[35] = estim[1].covariance[2,2]
     self.pub.publish(p)
+    self.plot(self.scan, estim)
 
+  def plot(self, scan_, estim_):
+    x = estim_[1].xRobot
+    y = estim_[1].yRobot
+    h = estim_[1].hRobot
+    
+    self.fig.clear()
+    ax = plt.subplot(111, aspect='equal')
+    
+    # table
+    ax.plot( [-1.5, -1.5, 1.5, 1.5, -1.5], [-1., 1., 1., -1., -1.], '-k')
+    
+    xArrowBeg = x
+    yArrowBeg = y
+    xArrowEnd = 0.1 * np.cos(h)
+    yArrowEnd = 0.1 * np.sin(h)
+    arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.01, alpha=0.3, color="blue")
+    ax.add_patch(arrow)
+    
+#    rospy.loginfo("nb of beacons: %d", len(self.kfloc.scanproc.trueBeacons))
+    for obj in self.kfloc.scanproc.trueBeacons:
+      border = np.arange( 0.0, 2 * np.pi, np.pi / 100.)
+      xBalls = np.cos(border) * obj.radius + obj.xCenter
+      yBalls = np.sin(border) * obj.radius + obj.yCenter
+#      rospy.loginfo("xBeacon=%f  yBeacon=%f  nbPoints=%s", obj.xCenter, obj.yCenter, str(xBalls.shape))
+      ax.plot( xBalls, yBalls, '-g')
+    
+    if scan_ is not None:
+      # scan (ray and impacts)
+      N = scan_.range.shape[0]
+#      rospy.loginfo("N : %d", N)
+#      rospy.loginfo("min(scan_.theta): %f", np.min(scan_.theta))
+#      rospy.loginfo("max(scan_.theta): %f", np.max(scan_.theta))
+#      rospy.loginfo("min(scan_.range): %f", np.min(scan_.range))
+#      rospy.loginfo("max(scan_.range): %f", np.max(scan_.range))
+#      rospy.loginfo("min(scan_.tt): %f", np.min(scan_.tt))
+#      rospy.loginfo("max(scan_.tt): %f", np.max(scan_.tt))
+      for i in range(N):
+        if scan_.range[-1-i] > 0.:
+          xImpact = x + np.cos(h + scan_.theta[-1-i]) * scan_.range[-1-i]
+          yImpact = y + np.sin(h + scan_.theta[-1-i]) * scan_.range[-1-i]
+          ax.plot( [xImpact] , [yImpact], 'xb' )
+          ax.plot( [x, xImpact] , [y, yImpact], '--b' )
+        ax.plot( [x] , [y], 'ob' )
+        
+      # borders
+      ax.plot( [x, x + np.cos(h + np.min(scan_.theta))], 
+                [y, y + np.sin(h + np.min(scan_.theta))], '-m')
+      ax.plot( [x, x + np.cos(h + np.max(scan_.theta))], 
+                [y, y + np.sin(h + np.max(scan_.theta))], '-m')
+    
+    ax.axis([-1.9, 1.9, -1.4, 1.4])
+    plt.show()
 
 if __name__ == '__main__':
   try:

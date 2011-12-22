@@ -9,7 +9,6 @@ sys.path.append( "./src/KFLocalizator/PyMockup" )
 import numpy as np
 import matplotlib
 matplotlib.use('GTKCairo')
-
 import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
 import matplotlib.patches as mpatches

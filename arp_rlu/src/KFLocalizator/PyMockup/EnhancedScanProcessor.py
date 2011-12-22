@@ -13,9 +13,9 @@ from BaseClasses import *
 class EnhancedScanProcessor:
   def __init__(self):
     self.trueBeacons = []
-    self.trueBeacons.append(Circle(x =  1.5, y =  0.0))
-    self.trueBeacons.append(Circle(x = -1.5, y =  1.0))
-    self.trueBeacons.append(Circle(x = -1.5, y = -1.0))
+    self.trueBeacons.append(Circle(x =  1.5, y =  0.0, r = 0.04))
+    self.trueBeacons.append(Circle(x = -1.5, y =  1.0, r = 0.04))
+    self.trueBeacons.append(Circle(x = -1.5, y = -1.0, r = 0.04))
     self.refSmallLength = 2.0
     self.refBigLength = math.sqrt(10)
     
