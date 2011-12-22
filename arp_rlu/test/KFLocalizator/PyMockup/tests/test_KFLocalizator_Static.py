@@ -244,7 +244,7 @@ for k in range(params.simu_cfg["Nscans"]):
       ov.vx = random.normalvariate(0., params.simu_cfg["sigmaTransOdoVelocity"])
       ov.vy = random.normalvariate(0., params.simu_cfg["sigmaTransOdoVelocity"])
       ov.vh = random.normalvariate(0., params.simu_cfg["sigmaRotOdoVelocity"])
-      kfloc.newOdoVelocity(t, ov)
+      kfloc.newOdoVelocity(t, ov, params.kf_cfg["sigmaTransOdoVelocity"], params.kf_cfg["sigmaTransOdoVelocity"], params.kf_cfg["sigmaRotOdoVelocity"])
     time = time + odoDurationInSec
     
     #===============================================================================

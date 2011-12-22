@@ -8,14 +8,15 @@ import random
 
 from KalmanFilter import *
 from BaseClasses import *
-from EnhancedScanProcessor import *
+#from EnhancedScanProcessor import *
+from ScanProcessor import *
 
 class KFLocalizator:
   def __init__(self):
     self.buffer = []
     
-#    self.scanproc = ScanProcessor()
-    self.scanproc = EnhancedScanProcessor()
+    self.scanproc = ScanProcessor()
+#    self.scanproc = EnhancedScanProcessor()
     self.givePerfectLRFMeasures = False
     
     # mean state estimate
@@ -146,6 +147,7 @@ class KFLocalizator:
   
   
   def newScan(self, currentTime, scan):
+    self.scanproc.setScan(scan)
     
     # back in the past
     duration = 681. * 0.1 / 1024.
@@ -163,8 +165,8 @@ class KFLocalizator:
     self.P = covars[0]
     rospy.loginfo("back in the past : covars:\n%s",repr(covars[0]))
     
-    
-    self.scanproc.do(scan, tt, xx, yy, hh)
+    self.scanproc.findCluster(tt, xx, yy, hh)
+#    self.scanproc.do(scan, tt, xx, yy, hh)
     
     
 #    print "========================================="
