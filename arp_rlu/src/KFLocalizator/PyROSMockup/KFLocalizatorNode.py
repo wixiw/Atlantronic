@@ -15,27 +15,33 @@ import math
 import KFLocalizator
 import params_KFLocalizator_Node as params
 from BaseClasses import OdoVelocity
+from Scan import Scan
 
 class KFLocalizatorNode():
     
   def __init__(self):
-    rospy.init_node('KFLocalizator', anonymous=True)
-    rospy.Subscriber("/scan", LaserScan, self.update)
-    rospy.Subscriber("/odovelocity", TwistWithCovarianceStamped, self.predict)
+    rospy.init_node('KFLocalizator')
+    
+    rospy.Subscriber("/scan", LaserScan, self.callbackScan)
+    rospy.Subscriber("/odovelocity", TwistWithCovarianceStamped, self.callbackOdo)
+    
     self.pub = rospy.Publisher("/KFLocalizator/pose", PoseWithCovarianceStamped)
-    rospy.Service('start', Empty, self.start)
-    rospy.Service('stop', Empty, self.stop)
+    
     rospy.Service('initialize', KFLocInit, self.cb_Init)
+    rospy.Service('update', Empty, self.update)
+    rospy.Service('predict', Empty, self.predict)
       
     self.kfloc = KFLocalizator.KFLocalizator()
-    self.run = False
     self.initialize(0., 0., 0.)
-    rospy.loginfo(rospy.get_name() + " is running")
-    rospy.spin()
     
-    self.simulateTime = True
+    self.scan = None
+    self.odovel = None
+    
     self.time = rospy.Time.now()
-    self.numberOfPrediction = 0
+    rospy.loginfo("start time is %f", self.time.to_sec())
+    
+    rospy.loginfo(rospy.get_name() + " is running")
+    
     
   def initialize(self, initialXPosition, initialYPosition, initialHeading):
     self.kfloc.initialize(rospy.get_time(),100,
@@ -49,82 +55,68 @@ class KFLocalizatorNode():
     self.kfloc.threshold = params.kf_cfg["iekf_cfg"]["threshold"]
     self.kfloc.scanproc.maxDistance = params.kf_cfg["scanproc_cfg"]["maxDistance"]
     self.kfloc.scanproc.thresholdRange = params.kf_cfg["scanproc_cfg"]["thresholdRange"]
+    
+    
+  def callbackOdo(self, data):
+    self.odovel = OdoVelocity()
+    self.odovel.vx = data.twist.twist.linear.x
+    self.odovel.vy = data.twist.twist.linear.y
+    self.odovel.vh = data.twist.twist.angular.z
+    self.sigmaXOdo = data.twist.covariance[ 0]
+    self.sigmaYOdo = data.twist.covariance[ 7]
+    self.sigmaHOdo = data.twist.covariance[35]
 
-  def predict(self, data):
-    if not self.run or self.isRunning:
-      return
-    self.isRunning = True
+
+  def predict(self, req):
+    if self.odovel is None:
+      rospy.logerr("I did not received odo velocity yet")
+      return EmptyResponse()
     
-    rospy.loginfo(rospy.get_name() + " predicting...")
+    self.time = self.time + rospy.Duration.from_sec(0.01)
+    currentT = self.time.to_sec()
     
-    if self.simulateTime:
-      self.time = self.time + rospy.Duration.from_sec(0.01)
-      currentT = self.time.to_sec()
-      self.numberOfPrediction = self.numberOfPrediction + 1
-    else:
-      currentT = data.header.stamp.to_sec()
-      
-    ov = OdoVelocity()
-    ov.vx = data.twist.twist.linear.x
-    ov.vy = data.twist.twist.linear.y
-    ov.vh = data.twist.twist.angular.z
-    sigmaXOdo_ = data.twist.covariance[ 0]
-    sigmaYOdo_ = data.twist.covariance[ 7]
-    sigmaHOdo_ = data.twist.covariance[35]
-    self.kfloc.newOdoVelocity(currentT, ov, sigmaXOdo_, sigmaYOdo_, sigmaHOdo_)
+    rospy.loginfo(rospy.get_name() + " predicting... [time: %f]", currentT)
+    self.kfloc.newOdoVelocity(currentT, self.odovel, self.sigmaXOdo, self.sigmaYOdo, self.sigmaHOdo)
+    
     self.publishPose()
     
-    rospy.loginfo(rospy.get_name() + " predict OK")
-    self.isRunning = False
+    rospy.loginfo(rospy.get_name() + " predict OK\n")
+    return EmptyResponse()
       
-  def update(self, data):
-    if not self.run or self.isRunning:
-      return
-    self.isRunning = True
-    
-    rospy.loginfo(rospy.get_name() + " updating...")
-    
-    if self.simulateTime:
-      self.time = self.time + rospy.Duration.from_sec(0.01)
-      currentT = self.time.to_sec()
-      if self.numberOfPrediction < 10:
-        return
-      else:
-        self.numberOfPrediction = 0
-    else:
-      currentT = data.header.stamp.to_sec()
-    
-    # convert LaserScan into Scan
-    scan = Scan(len(data.ranges))
+      
+  def callbackScan(self, data):
+    self.scan = Scan(len(data.ranges))
     for i, (r, intensity) in enumerate(zip(data.ranges, data.intensities)):
       if r <= data.range_max and r >= data.range_min:
-        scan.range[i] = r
+        self.scan.range[i] = r
       else:
-        scan.range[i] = 0.
-      scan.theta[i] = data.angle_min + i*data.angle_increment
-      scan.tt[i]    = data.header.stamp + i*data.time_increment
+        self.scan.range[i] = 0.
+      self.scan.theta[i] = data.angle_min + i*data.angle_increment
+      self.scan.tt[i]    = data.header.stamp + i*data.time_increment
       
-    self.kfloc.newScan(currentT, scan)
+  
+  def update(self, req):
+    if self.scan is None:
+      rospy.logerr("I did not received scan yet")
+      return EmptyResponse()
+    
+    self.time = self.time + rospy.Duration.from_sec(0.01)
+    currentT = self.time.to_sec()
+    
+    rospy.loginfo(rospy.get_name() + " updating... [time: %f]", currentT)      
+    self.kfloc.newScan(currentT, self.scan)
     
     self.publishPose()
-    rospy.loginfo(rospy.get_name() + " update OK")
-    self.isRunning = False
-      
-  def start(self, req):
-    self.run = True
-    self.isRunning = False
-    rospy.loginfo(rospy.get_name() + " start!")
-    return EmptyResponse()
     
-  def stop(self, req):
-    self.run = False
-    rospy.loginfo(rospy.get_name() + " stop!")
+    rospy.loginfo(rospy.get_name() + " update OK\n")
     return EmptyResponse()
+      
       
   def cb_Init(self, req):
     self.initialize(req.x, req.y, req.h)
     rospy.loginfo(rospy.get_name() + " initialized with x=" + str(req.x) + " y=" + str(req.y) + " h=" + str(req.h))
     return KFLocInitResponse(True)
+  
   
   def publishPose(self):
     estim = self.kfloc.getBestEstimate()
@@ -145,7 +137,9 @@ class KFLocalizatorNode():
     p.pose.covariance[35] = estim[1].covariance[2,2]
     self.pub.publish(p)
 
+
 if __name__ == '__main__':
   try:
     KFLocalizatorNode()
+    rospy.spin()
   except rospy.ROSInterruptException: pass
