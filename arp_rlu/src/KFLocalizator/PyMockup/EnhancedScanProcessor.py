@@ -321,7 +321,7 @@ class EnhancedScanProcessor:
     yBeacon = None
     range = None
     theta = None
-    if self.beacons == []:
+    if self.trueBeacons == []:
       rospy.logwarn("No beacon registred")
       return (xBeacon, yBeacon, range, theta)
     if len(self.foundBeacons) < 2:
@@ -333,10 +333,16 @@ class EnhancedScanProcessor:
         minDist = np.min(dist)
         iMin = np.argmin(dist)
         if minDist < 0.5:
-          xBeacon = self.beacons[iMin].xCenter
-          yBeacon = self.beacons[iMin].yCenter
+          xBeacon = self.trueBeacons[iMin].xCenter
+          yBeacon = self.trueBeacons[iMin].yCenter
           range  = o.range
           theta  = (o.thetaEnd + o.thetaBeg) / 2.
+#          rospy.loginfo("==== Time %f", time)
+#          rospy.loginfo("dist=%s", str(dist))
+#          rospy.loginfo("iMin=%d with minDist=%f", iMin, minDist)
+#          rospy.loginfo("xBeacon=%f  yBeacon=%f",xBeacon, yBeacon)
+#          rospy.loginfo("xCenter=%f  yCenter=%f",o.xCenter, o.yCenter)
+#          rospy.loginfo("range=%f  theta=%f", range, theta)
         else:
           rospy.logwarn("the targeted beacon is too far !")
     return (xBeacon, yBeacon, range, theta)

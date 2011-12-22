@@ -2,9 +2,8 @@
 import sys
 sys.path.append( "../../../../src/KFLocalizator/PyMockup" )
 
-import logging
-logging.basicConfig(level=logging.INFO)
-log = logging.getLogger('main')
+import roslib; roslib.load_manifest('arp_rlu')
+import rospy
 
 import numpy as np
 import random
@@ -44,8 +43,8 @@ graine_ = random.randint(0,1000)
 
 
 random.seed(graine)
-log.info("graine pour la position réelle :%d", graine)
-log.info("graine pour la simulation :%d", graine_)
+rospy.loginfo("graine pour la position réelle :%d", graine)
+rospy.loginfo("graine pour la simulation :%d", graine_)
 
 
 #===============================================================================
@@ -54,13 +53,13 @@ log.info("graine pour la simulation :%d", graine_)
 kfloc = KFLocalizator()
 trueX = random.uniform( -1.3, 1.3)
 trueY = random.uniform( -0.8, 0.8)
-trueH = random.uniform( -2. * np.pi, 2. * np.pi)
+trueH = random.uniform( -np.pi, np.pi)
 
 random.seed(graine_)
 
 initialXPosition = trueX + random.normalvariate(0., params.simu_cfg["sigmaInitialPosition"])
 initialYPosition = trueY + random.normalvariate(0., params.simu_cfg["sigmaInitialPosition"])
-initialHeading = trueH + random.normalvariate(0., params.simu_cfg["sigmaInitialHeading"])
+initialHeading = betweenMinusPiAndPlusPi(trueH + random.normalvariate(0., params.simu_cfg["sigmaInitialHeading"]))
 kfloc.initialize(0.0,
                  100,
                  initialXPosition, 
@@ -87,7 +86,7 @@ lrfsim.sigma = params.simu_cfg["sigmaLRF"]
 #===============================================================================
 # Positionnement des balises
 #===============================================================================
-radius = 0.05
+radius = 0.04
 obj1 = Circle()
 obj1.xCenter = 1.5
 obj1.yCenter = 0.
@@ -95,55 +94,16 @@ obj1.radius = radius
 lrfsim.objects.append(obj1)
 obj2 = Circle()
 obj2.xCenter = -1.5
-obj2.yCenter = -1.
+obj2.yCenter = 1.
 obj2.radius = radius
 lrfsim.objects.append(obj2)
 obj3 = Circle()
 obj3.xCenter = -1.5
-obj3.yCenter = 1.
+obj3.yCenter = -1.
 obj3.radius = radius
 lrfsim.objects.append(obj3)
 
-#l = 0.4
-#kfloc.scanproc.clusterParams.maxStddev = l
-#lrfsim.objects = []
-#sgmt1 = Segment(x=1.5, y=0., h=0., l=l)
-#lrfsim.objects.append(sgmt1)
-#sgmt2 = Segment(x=-1.5, y=1., h=3*np.pi/4., l=l)
-#lrfsim.objects.append(sgmt2)
-#sgmt3 = Segment(x=-1.5, y=-1., h=-3*np.pi/4., l=l)
-#lrfsim.objects.append(sgmt3)
 
-#===============================================================================
-#obj4 = Circle()
-#obj4.xCenter = -1.5
-#obj4.yCenter = 0.
-#obj4.radius = radius
-#lrfsim.objects.append(obj4)
-#obj5 = Circle()
-#obj5.xCenter = 1.5
-#obj5.yCenter = 1.
-#obj5.radius = radius
-#lrfsim.objects.append(obj5)
-#obj6 = Circle()
-#obj6.xCenter = 1.5
-#obj6.yCenter = -1.
-#obj6.radius = radius
-#lrfsim.objects.append(obj6)
-# 
-#obj7 = Circle()
-#obj7.xCenter = 0.
-#obj7.yCenter = 1.
-#obj7.radius = radius
-#lrfsim.objects.append(obj7)
-#obj8 = Circle()
-#obj8.xCenter = 0.
-#obj8.yCenter = -1.
-#obj8.radius = radius
-#lrfsim.objects.append(obj8)
-#===============================================================================
-
-kfloc.setBeacons( lrfsim.objects )
 
 
 #===============================================================================
@@ -204,27 +164,27 @@ plt.draw()
 
 time = 0.
 
-log.info("=======================")
-log.info("Position réelle :")
-log.info("  xPosition: %f", trueX)
-log.info("  yPosition: %f", trueY)
-log.info("  hPosition: %f", trueH)
+rospy.loginfo("=======================")
+rospy.loginfo("Position réelle :")
+rospy.loginfo("  xPosition: %f", trueX)
+rospy.loginfo("  yPosition: %f", trueY)
+rospy.loginfo("  hPosition: %f", trueH)
 
-log.info("=======================")
-log.info("Etat initial :")
-log.info("  xPosition: %f", initialXPosition)
-log.info("  yPosition: %f", initialYPosition)
-log.info("  hPosition: %f", initialHeading)
-log.info("  vx: %f", 0.)
-log.info("  vy: %f", 0.)
-log.info("  vz: %f", 0.)
+rospy.loginfo("=======================")
+rospy.loginfo("Etat initial :")
+rospy.loginfo("  xPosition: %f", initialXPosition)
+rospy.loginfo("  yPosition: %f", initialYPosition)
+rospy.loginfo("  hPosition: %f", initialHeading)
+rospy.loginfo("  vx: %f", 0.)
+rospy.loginfo("  vy: %f", 0.)
+rospy.loginfo("  vz: %f", 0.)
 
     
-log.info("erreur statique sur l'état initial (t = %f) :", time)
-log.info("  sur x (en mm): %f", (initialXPosition - trueX) * 1000.)
-log.info("  sur y (en mm): %f", (initialYPosition - trueY) * 1000.)
-log.info("  en cap (deg) : %f", betweenMinusPiAndPlusPi( initialHeading - trueH ) *180./np.pi)
-log.info("covariance : \n%s", repr(kfloc.P))
+rospy.loginfo("erreur statique sur l'état initial (t = %f) :", time)
+rospy.loginfo("  sur x (en mm): %f", (initialXPosition - trueX) * 1000.)
+rospy.loginfo("  sur y (en mm): %f", (initialYPosition - trueY) * 1000.)
+rospy.loginfo("  en cap (deg) : %f", betweenMinusPiAndPlusPi( initialHeading - trueH ) *180./np.pi)
+rospy.loginfo("covariance : \n%s", repr(kfloc.P))
 
 xOld = initialXPosition
 yOld = initialYPosition
@@ -232,9 +192,9 @@ yOld = initialYPosition
 time = 0.01
 
 for k in range(params.simu_cfg["Nscans"]):
-    log.info("==============================================")
-    log.info("==============================================")
-    log.info(" TOUR %d", k)
+    rospy.loginfo("==============================================")
+    rospy.loginfo("==============================================")
+    rospy.loginfo(" TOUR %d", k)
     #===============================================================================
     # On reste sur place quelques sec
     #===============================================================================
@@ -251,7 +211,7 @@ for k in range(params.simu_cfg["Nscans"]):
     # Estimee odo avant le scan
     #===============================================================================
     estim1 = kfloc.getBestEstimate()
-    log.info("=======================")
+    rospy.loginfo("=======================")
     #print "Estimee via odo (t =",estim1[0],"): "
     #print "  xPosition:", estim1[1].xRobot
     #print "  yPosition:", estim1[1].yRobot
@@ -262,11 +222,11 @@ for k in range(params.simu_cfg["Nscans"]):
     # print "Covariance avant le scan :"
     # print estim1[1].covariance
     
-    log.info( "erreur statique apres les odos :")
-    log.info( "  sur x (en mm): %f", (estim1[1].xRobot - trueX) * 1000.)
-    log.info( "  sur y (en mm): %f", (estim1[1].yRobot - trueY) * 1000.)
-    log.info( "  en cap (deg) : %f", betweenMinusPiAndPlusPi( estim1[1].hRobot - trueH ) *180./np.pi)
-    log.info("covariance :\n%s", repr(estim1[1].covariance))    
+    rospy.loginfo( "erreur statique apres les odos :")
+    rospy.loginfo( "  sur x (en mm): %f", (estim1[1].xRobot - trueX) * 1000.)
+    rospy.loginfo( "  sur y (en mm): %f", (estim1[1].yRobot - trueY) * 1000.)
+    rospy.loginfo( "  en cap (deg) : %f", betweenMinusPiAndPlusPi( estim1[1].hRobot - trueH ) *180./np.pi)
+    rospy.loginfo("covariance :\n%s", repr(estim1[1].covariance))    
     
     duration = 681. * 0.1 / 1024.
     
@@ -292,12 +252,12 @@ for k in range(params.simu_cfg["Nscans"]):
     #===============================================================================
     estims = kfloc.getLastEstimates()
     for estim2 in estims[:-1]:
-      log.debug( "-----------------------")
-      log.debug( "  Erreur statique post update (t = %f): ", estim2[0])
-      log.debug( "    sur x (en mm): %f", (estim2[1].xRobot - trueX) * 1000.)
-      log.debug( "    sur y (en mm): %f", (estim2[1].yRobot - trueY) * 1000.)
-      log.debug( "    en cap (deg) : %f", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./np.pi)
-      log.debug("covariance :\n%s", repr(estim2[1].covariance))
+      rospy.loginfo( "-----------------------")
+      rospy.loginfo( "  Erreur statique post update (t = %f): ", estim2[0])
+      rospy.loginfo( "    sur x (en mm): %f", (estim2[1].xRobot - trueX) * 1000.)
+      rospy.loginfo( "    sur y (en mm): %f", (estim2[1].yRobot - trueY) * 1000.)
+      rospy.loginfo( "    en cap (deg) : %f", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./np.pi)
+      rospy.loginfo("covariance :\n%s", repr(estim2[1].covariance))
 
       if params.visu_cfg["intermediary_arrow"]:    
         xArrowBeg = estim2[1].xRobot
@@ -318,7 +278,7 @@ for k in range(params.simu_cfg["Nscans"]):
       
       
     estim2 = kfloc.getBestEstimate()
-    log.info( "=======================")
+    rospy.loginfo( "=======================")
     #print "Estimée via scan (t =",estim2[0],"): "
     #print "  xPosition:", estim2[1].xRobot
     #print "  yPosition:", estim2[1].yRobot
@@ -328,11 +288,11 @@ for k in range(params.simu_cfg["Nscans"]):
     #print "  vz:", estim2[1].velHRobot
     #print "Covariance apres le scan :"
     #print estim2[1].covariance )
-    log.info( "Erreur statique après scan :")
-    log.info( "  sur x (en mm): %f", (estim2[1].xRobot - trueX) * 1000.)
-    log.info( "  sur y (en mm): %f", (estim2[1].yRobot - trueY) * 1000.)
-    log.info( "  en cap (deg) : %f", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./np.pi)
-    log.info("covariance :\n%s", repr(estim2[1].covariance))
+    rospy.loginfo( "Erreur statique après scan :")
+    rospy.loginfo( "  sur x (en mm): %f", (estim2[1].xRobot - trueX) * 1000.)
+    rospy.loginfo( "  sur y (en mm): %f", (estim2[1].yRobot - trueY) * 1000.)
+    rospy.loginfo( "  en cap (deg) : %f", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./np.pi)
+    rospy.loginfo("covariance :\n%s", repr(estim2[1].covariance))
 
     xArrowBeg = estim2[1].xRobot
     yArrowBeg = estim2[1].yRobot
@@ -366,8 +326,8 @@ for k in range(params.simu_cfg["Nscans"]):
       ax.plot( [trueX, trueX + np.cos(trueH + max(scan.theta))], [trueY, trueY + np.sin(trueH + max(scan.theta))], '-m')
     
 
-log.info("graine pour la position réelle :%d", graine)
-log.info("graine pour la simulation :%d", graine_)
+rospy.loginfo("graine pour la position réelle :%d", graine)
+rospy.loginfo("graine pour la simulation :%d", graine_)
 
 if params.visu_cfg["zoom"]:
   ax.axis([trueX-0.2, trueX+0.2, trueY-0.15, trueY+0.15])
