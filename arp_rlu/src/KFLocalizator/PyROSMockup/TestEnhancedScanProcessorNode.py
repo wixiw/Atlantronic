@@ -5,13 +5,11 @@ import rospy
 import sys
 sys.path.append( "./src/KFLocalizator/PyMockup" )
 
-import logging
-logging.basicConfig(level=logging.DEBUG)
-
 
 import numpy as np
 import matplotlib
-#matplotlib.use("cairo")
+matplotlib.use('GTKCairo')
+
 import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
 import matplotlib.patches as mpatches
@@ -35,6 +33,8 @@ class TestEnhancedScanProcessor():
     self.stop = False
     self.tt = []
     
+#    plt.ioff()
+    self.fig = plt.figure(1)
     plt.ioff()
       
     self.scanproc = EnhancedScanProcessor.EnhancedScanProcessor()
@@ -56,7 +56,6 @@ class TestEnhancedScanProcessor():
     
       
   def do(self, req):
-    log = logging.getLogger('do')
     self.stop = True
     
     tt = self.tt
@@ -104,8 +103,9 @@ class TestEnhancedScanProcessor():
       rospy.loginfo("Object [%d]  x:%f - y:%f with apparent radius:%f", i, o.xCenter, o.yCenter, o.radius)
     
     # clear
-#    plt.clf()
-    ax = plt.subplot(111, aspect='equal')
+    self.fig.clear()
+    plt.subplot(111, aspect='equal')
+    
     # table
     plt.plot( [-1.5, -1.5, 1.5, 1.5, -1.5], [-1., 1., 1., -1., -1.], '-k')
     # scan (ray and impacts)
@@ -121,13 +121,13 @@ class TestEnhancedScanProcessor():
       yArrowBeg = yy[-1-i]
       xArrowEnd = 0.07 * np.cos(hh[-1-i] + self.scan.theta[-1-i])
       yArrowEnd = 0.07 * np.sin(hh[-1-i] + self.scan.theta[-1-i])
-      arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.005, alpha = 0.1, color="grey")
+#      arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.005, alpha = 0.1, color="grey")
 #      plt.add_patch(arrow)
     # borders
-    plt.plot( [xx[-N], xx[-N] + np.cos(hh[-N] + np.min(self.scan.theta))], 
-                   [yy[-N], yy[-N] + np.sin(hh[-N] + np.min(self.scan.theta))], '-m')
-    plt.plot( [xx[-1], xx[-1] + np.cos(hh[-1] + np.max(self.scan.theta))], 
-                   [yy[-1], yy[-1] + np.sin(hh[-1] + np.max(self.scan.theta))], '-m')
+#    plt.plot( [xx[-N], xx[-N] + np.cos(hh[-N] + np.min(self.scan.theta))], 
+#                   [yy[-N], yy[-N] + np.sin(hh[-N] + np.min(self.scan.theta))], '-m')
+#    plt.plot( [xx[-1], xx[-1] + np.cos(hh[-1] + np.max(self.scan.theta))], 
+#                   [yy[-1], yy[-1] + np.sin(hh[-1] + np.max(self.scan.theta))], '-m')
     # axis
     plt.axis([-1.9, 1.9, -1.4, 1.4])
     plt.show()
