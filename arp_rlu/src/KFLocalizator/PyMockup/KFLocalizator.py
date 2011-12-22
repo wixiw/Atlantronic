@@ -1,4 +1,7 @@
 # coding=utf-8
+import roslib; roslib.load_manifest('arp_rlu')
+import rospy
+
 import numpy as np
 import math
 import random
@@ -143,7 +146,6 @@ class KFLocalizator:
   
   
   def newScan(self, currentTime, scan):
-    log = logging.getLogger('newScan')
     
     # back in the past
     duration = 681. * 0.1 / 1024.
@@ -159,7 +161,7 @@ class KFLocalizator:
                     [yy[0]], 
                     [hh[0]]])
     self.P = covars[0]
-    log.debug("back in the past : covars:\n%s",repr(covars[0]))
+    rospy.loginfo("back in the past : covars:\n%s",repr(covars[0]))
     
     
     self.scanproc.do(scan, tt, xx, yy, hh)
@@ -168,14 +170,14 @@ class KFLocalizator:
 #    print "========================================="
     nbVisibleBeacons = 0
     
-    log.debug("=======================")
-    log.debug("nb of detected clusters: %d", len(self.scanproc.objects))
-    log.debug("objects :")
+    rospy.loginfo("=======================")
+    rospy.loginfo("nb of detected clusters: %d", len(self.scanproc.objects))
+    rospy.loginfo("objects :")
     for o in self.scanproc.objects:
-      log.debug(" " + o.__str__())
+      rospy.loginfo(" " + o.__str__())
       
     if len(self.scanproc.objects) < 2:
-      log.info("Only one beacon has been seen")
+      rospy.loginfo("Only one beacon has been seen")
     # loop on time 
     for i in range(len(tt)):
       t = tt[i]
@@ -212,38 +214,38 @@ class KFLocalizator:
                        self.sigmaLaserAngle**2))
           
           
-          log.debug("---")
-          log.debug("mesure : Y.r= %f  Y.theta= %f", r, theta)
-          log.debug("simulée pre update: IM.r= %f  IM.theta= %f", IM[0,0], IM[1,0])
-          log.debug("Y[0] - IM[0]= %f", (Y[0,0] - IM[0,0])*1000.)
+          rospy.loginfo("---")
+          rospy.loginfo("mesure : Y.r= %f  Y.theta= %f", r, theta)
+          rospy.loginfo("simulée pre update: IM.r= %f  IM.theta= %f", IM[0,0], IM[1,0])
+          rospy.loginfo("Y[0] - IM[0]= %f", (Y[0,0] - IM[0,0])*1000.)
             
-#          log.debug( "-----------------------")
-#          log.debug( "Estimée pre update:")
-#          log.debug( "  sur x (en m):%f", self.X[0,0] )
-#          log.debug( "  sur y (en m):%f", self.X[1,0] )
-#          log.debug( "  en cap (deg) :%f", betweenMinusPiAndPlusPi(self.X[2,0]) * 180./np.pi)
+#          rospy.loginfo( "-----------------------")
+#          rospy.loginfo( "Estimée pre update:")
+#          rospy.loginfo( "  sur x (en m):%f", self.X[0,0] )
+#          rospy.loginfo( "  sur y (en m):%f", self.X[1,0] )
+#          rospy.loginfo( "  en cap (deg) :%f", betweenMinusPiAndPlusPi(self.X[2,0]) * 180./np.pi)
 
 
 #          (self.X, self.P, K,IM,IS) = ekf_update(self.X, self.P, Y, J(self.X), R, IM)
-          log.debug("covariance pre update: \n%s", repr(self.P))
+          rospy.loginfo("covariance pre update: \n%s", repr(self.P))
           (self.X, self.P, K,IM,IS, k) = iekf_update(self.X, self.P, Y, J, R, IM, self.Nit, self.threshold)
-          log.debug("covariance post update: \n%s", repr(self.P))
+          rospy.loginfo("covariance post update: \n%s", repr(self.P))
           
           
           IM = np.zeros((2,1))
           IM[0,0] = np.sqrt((self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
           IM[1,0] = betweenMinusPiAndPlusPi(math.atan2(yBeacon - self.X[1,0], xBeacon - self.X[0,0]) -  self.X[2,0])
-          log.debug("simulée post update: IM.r= %f  IM.theta= %f", IM[0,0], IM[1,0])
-          log.debug("Y[0] - IM[0]= %f", (Y[0,0] - IM[0,0])*1000.)
+          rospy.loginfo("simulée post update: IM.r= %f  IM.theta= %f", IM[0,0], IM[1,0])
+          rospy.loginfo("Y[0] - IM[0]= %f", (Y[0,0] - IM[0,0])*1000.)
           
-#          log.debug( "-----------------------")
-#          log.debug( "Estimée post update:")
-#          log.debug( "  sur x (en m):%f", self.X[0,0] )
-#          log.debug( "  sur y (en m):%f", self.X[1,0] )
-#          log.debug( "  en cap (deg) :%f", betweenMinusPiAndPlusPi(self.X[2,0]) * 180./np.pi)
+#          rospy.loginfo( "-----------------------")
+#          rospy.loginfo( "Estimée post update:")
+#          rospy.loginfo( "  sur x (en m):%f", self.X[0,0] )
+#          rospy.loginfo( "  sur y (en m):%f", self.X[1,0] )
+#          rospy.loginfo( "  en cap (deg) :%f", betweenMinusPiAndPlusPi(self.X[2,0]) * 180./np.pi)
           
           nbVisibleBeacons = nbVisibleBeacons + 1
-          log.debug("xBeacon: %f  yBeacon: %f  hBeacon: %s", xBeacon, yBeacon, str(hBeacon))
+          rospy.loginfo("xBeacon: %f  yBeacon: %f  hBeacon: %s", xBeacon, yBeacon, str(hBeacon))
           
           estim = Estimate()
           estim.xRobot = self.X[0,0]
@@ -258,7 +260,7 @@ class KFLocalizator:
       ov.vh = vvh[i]
       self.predict(t, ov, dt)
     
-    log.debug("  ==> %d beacons have been seen", nbVisibleBeacons)
+    rospy.loginfo("  ==> %d beacons have been seen", nbVisibleBeacons)
       
     estim = Estimate()
     estim.xRobot = self.X[0,0]

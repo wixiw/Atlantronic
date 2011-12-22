@@ -26,7 +26,7 @@ import EnhancedScanProcessor
 class TestEnhancedScanProcessor():
     
   def __init__(self):
-    rospy.init_node('TestEnhancedScanProcessor', anonymous=True)
+    rospy.init_node('TestEnhancedScanProcessor')
     rospy.Subscriber("/scan", LaserScan, self.callbackScan)
     rospy.Service('/TestEnhancedScanProcessor/do', KFLocInit, self.do)
     
@@ -39,7 +39,6 @@ class TestEnhancedScanProcessor():
       
     self.scanproc = EnhancedScanProcessor.EnhancedScanProcessor()
     rospy.loginfo(rospy.get_name() + " is running")
-    rospy.spin()
 
   def callbackScan(self, data):
     if self.stop:
@@ -101,35 +100,37 @@ class TestEnhancedScanProcessor():
     rospy.loginfo("Nb recognized beacons after cleaning: %d", len(self.scanproc.foundBeacons))
     for i,o in enumerate(self.scanproc.foundBeacons):
       rospy.loginfo("Object [%d]  x:%f - y:%f with apparent radius:%f", i, o.xCenter, o.yCenter, o.radius)
+      
+    rospy.logdebug("bite")
     
     # clear
     self.fig.clear()
-    plt.subplot(111, aspect='equal')
+    ax = plt.subplot(111, aspect='equal')
     
     # table
-    plt.plot( [-1.5, -1.5, 1.5, 1.5, -1.5], [-1., 1., 1., -1., -1.], '-k')
+    ax.plot( [-1.5, -1.5, 1.5, 1.5, -1.5], [-1., 1., 1., -1., -1.], '-k')
     # scan (ray and impacts)
     for i in range(N):
       if self.scan.range[-1-i] > 0.:
         xImpact = xx[-1-i] + np.cos(hh[-1-i] + self.scan.theta[-1-i]) * self.scan.range[-1-i]
         yImpact = yy[-1-i] + np.sin(hh[-1-i] + self.scan.theta[-1-i]) * self.scan.range[-1-i]
-        plt.plot( [xImpact] , [yImpact], 'xb' )
-        plt.plot( [xx[-1-i], xImpact] , [yy[-1-i], yImpact], '--b' )
-      plt.plot( [xx[-1-i]] , [yy[-1-i]], 'ob' )
+        ax.plot( [xImpact] , [yImpact], 'xb' )
+        ax.plot( [xx[-1-i], xImpact] , [yy[-1-i], yImpact], '--b' )
+      ax.plot( [xx[-1-i]] , [yy[-1-i]], 'ob' )
     for i in range(0, N, 10):
       xArrowBeg = xx[-1-i]
       yArrowBeg = yy[-1-i]
       xArrowEnd = 0.07 * np.cos(hh[-1-i] + self.scan.theta[-1-i])
       yArrowEnd = 0.07 * np.sin(hh[-1-i] + self.scan.theta[-1-i])
-#      arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.005, alpha = 0.1, color="grey")
-#      plt.add_patch(arrow)
+      arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.005, alpha = 0.1, color="grey")
+      ax.add_patch(arrow)
     # borders
-#    plt.plot( [xx[-N], xx[-N] + np.cos(hh[-N] + np.min(self.scan.theta))], 
-#                   [yy[-N], yy[-N] + np.sin(hh[-N] + np.min(self.scan.theta))], '-m')
-#    plt.plot( [xx[-1], xx[-1] + np.cos(hh[-1] + np.max(self.scan.theta))], 
-#                   [yy[-1], yy[-1] + np.sin(hh[-1] + np.max(self.scan.theta))], '-m')
+    ax.plot( [xx[-N], xx[-N] + np.cos(hh[-N] + np.min(self.scan.theta))], 
+              [yy[-N], yy[-N] + np.sin(hh[-N] + np.min(self.scan.theta))], '-m')
+    ax.plot( [xx[-1], xx[-1] + np.cos(hh[-1] + np.max(self.scan.theta))], 
+              [yy[-1], yy[-1] + np.sin(hh[-1] + np.max(self.scan.theta))], '-m')
     # axis
-    plt.axis([-1.9, 1.9, -1.4, 1.4])
+    ax.axis([-1.9, 1.9, -1.4, 1.4])
     plt.show()
     
     self.stop = False
@@ -138,4 +139,5 @@ class TestEnhancedScanProcessor():
 if __name__ == '__main__':
   try:
     TestEnhancedScanProcessor()
+    rospy.spin()
   except rospy.ROSInterruptException: pass

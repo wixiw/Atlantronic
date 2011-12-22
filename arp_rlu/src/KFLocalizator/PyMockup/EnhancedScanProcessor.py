@@ -1,8 +1,11 @@
 # coding=utf-8
+import roslib; roslib.load_manifest('arp_rlu')
+import rospy
+
 import numpy as np
 import math
 import random
-import logging
+
 
 import BaseMethods
 from BaseClasses import *
@@ -148,19 +151,18 @@ class EnhancedScanProcessor:
         
         
   def associateClusters(self):
-    log = logging.getLogger('associateClusters')
     n = len(self.objects)
     self.foundBeacons = []
     if n == 0:
-      log.debug("0 candidates => 0 beacons found")
+      rospy.loginfo("0 candidates => 0 beacons found")
     elif n == 1:
-      log.debug("1 candidate")
+      rospy.loginfo("1 candidate")
       self.foundBeacons = self.__recognizeOneObject(self.oneObjectParams, self.objects[0])
     elif n == 2:
-      log.debug("2 candidates")
+      rospy.loginfo("2 candidates")
       fb = self.__recognizeTwoObjects(self.twoObjectsParams, self.objects[0], self.objects[1])
       if len(fb) == 0:
-#        log.debug("fail to find segment => switch to recognizeOneObject")
+#        rospy.loginfo("fail to find segment => switch to recognizeOneObject")
         fb1 = self.__recognizeOneObject(self.oneObjectParams, self.objects[0])
         fb2 = self.__recognizeOneObject(self.oneObjectParams, self.objects[1])
         self.foundBeacons.extend(fb1)
@@ -168,10 +170,10 @@ class EnhancedScanProcessor:
       else:
         self.foundBeacons = fb
     else: # n >= 3:
-      log.debug("3 or more candidates")
+      rospy.loginfo("3 or more candidates")
       fb = self.__recognizeTreeOrMoreObjects(self.treeObjectsParams, self.objects)
       if len(fb) == 0:
-#        log.debug("fail to find triangle or segment => switch to recognizeOneObject")
+#        rospy.loginfo("fail to find triangle or segment => switch to recognizeOneObject")
         for o in self.objects:
           fb = self.__recognizeOneObject(self.oneObjectParams, o)
           alreadyInFb = False
@@ -186,32 +188,30 @@ class EnhancedScanProcessor:
         self.foundBeacons = fb
         
   def cleanResults(self):
-#    log = logging.getLogger('cleanResults')
-#    log.debug("********* Cleaning *********")
+#    rospy.loginfo("********* Cleaning *********")
     for b in self.trueBeacons:
-#      log.debug('beacon (%f,%f)', b.xCenter, b.yCenter)
+#      rospy.loginfo('beacon (%f,%f)', b.xCenter, b.yCenter)
       dist = []
       nb = 0
       for i,f in enumerate(self.foundBeacons):
         d = math.sqrt((b.xCenter - f.xCenter)**2 + (b.yCenter - f.yCenter)**2)
-#        log.debug('  object[%d] (%f,%f)  d:%f',i , f.xCenter, f.yCenter, d)
+#        rospy.loginfo('  object[%d] (%f,%f)  d:%f',i , f.xCenter, f.yCenter, d)
         if d < 0.5:
           dist.append(d)
           nb= nb+1
         else:
           dist.append(float('+inf'))
-#      log.debug("=> dist=%s", str(dist))
+#      rospy.loginfo("=> dist=%s", str(dist))
       if nb > 1:
-#        log.debug("nb > 1")
-#        log.debug("argmin(dist):%d",np.argmin(dist))
+#        rospy.loginfo("nb > 1")
+#        rospy.loginfo("argmin(dist):%d",np.argmin(dist))
         for i in range(len(self.foundBeacons)-1, -1, -1):
-#          log.debug("i:%d  d:%f",i, dist[i])
+#          rospy.loginfo("i:%d  d:%f",i, dist[i])
           if dist[i] < 0.5 and i != np.argmin(dist):
-#            log.debug("pop(%d)",i)
+#            rospy.loginfo("pop(%d)",i)
             self.foundBeacons.pop(i)
 
   def __recognizeOneObject(self, params, o):
-    log = logging.getLogger('recognizeOneObject')
     fb = []
     minDist = float('+inf')
     bestBeacon = None
@@ -222,66 +222,64 @@ class EnhancedScanProcessor:
         minDist = d
     if minDist < params["maxDistance"]:
       fb.append(o)
-#      log.debug("one object (%f,%f) near beacon (%f,%f) with distance %f (against %f)", o.xCenter, o.yCenter, bestBeacon.xCenter, bestBeacon.yCenter, minDist, params["maxDistance"])
+#      rospy.loginfo("one object (%f,%f) near beacon (%f,%f) with distance %f (against %f)", o.xCenter, o.yCenter, bestBeacon.xCenter, bestBeacon.yCenter, minDist, params["maxDistance"])
 #    else:
-#      log.debug("one object (%f,%f) is too far from nearest beacon (%f,%f) with distance %f (against %f)=> 0 beacons found", o.xCenter, o.yCenter, bestBeacon.xCenter, bestBeacon.yCenter, minDist, params["maxDistance"])
+#      rospy.loginfo("one object (%f,%f) is too far from nearest beacon (%f,%f) with distance %f (against %f)=> 0 beacons found", o.xCenter, o.yCenter, bestBeacon.xCenter, bestBeacon.yCenter, minDist, params["maxDistance"])
     return fb
   
   
   def __recognizeTwoObjects(self, params, o1, o2):
-    log = logging.getLogger('recognizeTwoObjects')
     fb = []
     L = math.sqrt( (o1.xCenter - o2.xCenter)**2 + (o1.yCenter - o2.yCenter)**2 )
     if math.fabs(L - self.refSmallLength) < params["maxSmallSegmentVariation"]:
-      log.debug("small segment has been found")
+      rospy.loginfo("small segment has been found")
       fb1 = self.__recognizeOneObject(params, o1)
       fb2 = self.__recognizeOneObject(params, o2)
       if len(fb1) == 1 and len(fb2) == 1:
         fb.append(fb1[0])
         fb.append(fb2[0])
-#        log.debug("2 beacons found forming small segment")
+#        rospy.loginfo("2 beacons found forming small segment")
         return fb
       else:
-        log.debug("at least one beacon is too far from is target beacon")
+        rospy.loginfo("at least one beacon is too far from is target beacon")
         return []
     elif math.fabs(L - self.refBigLength) < params["maxBigSegmentVariation"]:
-      log.debug("big segment has been found")
+      rospy.loginfo("big segment has been found")
       fb1 = self.__recognizeOneObject(params, o1)
       fb2 = self.__recognizeOneObject(params, o2)
       if len(fb1) == 1 and len(fb2) == 1:
         fb.append(fb1[0])
         fb.append(fb2[0])
-        log.debug("big segment has been found")
+        rospy.loginfo("big segment has been found")
         return fb
       else:
-#        log.debug("at least one beacon is too far from is target beacon")
+#        rospy.loginfo("at least one beacon is too far from is target beacon")
         return []
     else:
-#      log.debug("no segment recognized : (%f,%f) & (%f,%f) width L=%f against %f or %f", o1.xCenter, o1.yCenter, o2.xCenter, o2.yCenter, L, self.refSmallLength, self.refBigLength)
+#      rospy.loginfo("no segment recognized : (%f,%f) & (%f,%f) width L=%f against %f or %f", o1.xCenter, o1.yCenter, o2.xCenter, o2.yCenter, L, self.refSmallLength, self.refBigLength)
       return []
   
   
   def __recognizeTreeOrMoreObjects(self, params, oo):
-    log = logging.getLogger('recognizeTreeOrMoreObjects')
     fb = []
     bestComb = None
     bestQuality = 0.
     combs = BaseMethods.enumerateCombinations(range(len(oo)),3)
     for comb in combs:
       quality = self.__evalCombination(oo, comb)
-#      log.debug("eval comb %s => quality is %f", str(comb), quality)
+#      rospy.loginfo("eval comb %s => quality is %f", str(comb), quality)
       if quality > bestQuality:
-#        log.debug("best quality !")
+#        rospy.loginfo("best quality !")
         bestComb = comb
         bestQuality = quality
     if bestQuality < 1. / params["maxTriangleVariation"]:
-#      log.debug("Unable to recognize triangle in candidates : quality incorrect (%f against %f) => we try recognizeTwoObjects", bestQuality, 1. / params["maxTriangleVariation"])
+#      rospy.loginfo("Unable to recognize triangle in candidates : quality incorrect (%f against %f) => we try recognizeTwoObjects", bestQuality, 1. / params["maxTriangleVariation"])
       combs = BaseMethods.enumerateCombinations(range(len(oo)),2)
-#      log.debug("combinations to be tryed:")
+#      rospy.loginfo("combinations to be tryed:")
 #      for c in combs:
-#        log.debug("  (%d,%d)", c[0], c[1])
+#        rospy.loginfo("  (%d,%d)", c[0], c[1])
       for comb in combs:
-#        log.debug("considering (%d,%d)", comb[0], comb[1])
+#        rospy.loginfo("considering (%d,%d)", comb[0], comb[1])
         vv = self.__recognizeTwoObjects(self.twoObjectsParams, oo[comb[0]], oo[comb[1]])
         alreadyInFb = False
         for v in vv:
@@ -293,7 +291,7 @@ class EnhancedScanProcessor:
             fb.append(v)
       return fb
     else:
-      log.info("Triangle found in candidates (quality: %f  against %f)", bestQuality, 1. / params["maxTriangleVariation"])
+      rospy.loginfo("Triangle found in candidates (quality: %f  against %f)", bestQuality, 1. / params["maxTriangleVariation"])
       fb.append(oo[bestComb[0]])
       fb.append(oo[bestComb[1]])
       fb.append(oo[bestComb[2]])
@@ -301,7 +299,6 @@ class EnhancedScanProcessor:
     
     
   def __evalCombination(self, oo, comb):
-    log = logging.getLogger('__evalCombination')
     A = np.array( [[oo[comb[0]].xCenter],[oo[comb[0]].yCenter]] )
     B = np.array( [[oo[comb[1]].xCenter],[oo[comb[1]].yCenter]] )
     C = np.array( [[oo[comb[2]].xCenter],[oo[comb[2]].yCenter]] )
@@ -320,13 +317,12 @@ class EnhancedScanProcessor:
     
     
   def getBeacons(self, time):
-    log = logging.getLogger('getBeacons')
     xBeacon = None
     yBeacon = None
     range = None
     theta = None
     if self.beacons == []:
-      log.warning("No beacon registred")
+      rospy.logwarn("No beacon registred")
       return (xBeacon, yBeacon, range, theta)
     if len(self.foundBeacons) < 2:
       return (xBeacon, yBeacon, range, theta)
@@ -342,7 +338,7 @@ class EnhancedScanProcessor:
           range  = o.range
           theta  = (o.thetaEnd + o.thetaBeg) / 2.
         else:
-          log.warning("the targeted beacon is too far !")
+          rospy.logwarn("the targeted beacon is too far !")
     return (xBeacon, yBeacon, range, theta)
 
   def getTrueBeacons(self, index):
