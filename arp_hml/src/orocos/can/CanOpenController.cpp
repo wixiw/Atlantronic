@@ -10,6 +10,7 @@
 
 #include "CanOpenController.hpp"
 #include "orocos/can/wrappers/can_festival_ARD_master_wrapper.hpp"
+#include "math/math.hpp"
 
 using namespace arp_hml;
 using namespace arp_core;
@@ -93,7 +94,9 @@ CanOpenController::CanOpenController(const std::string& name) :
     addOperation("ooResetSdoBuffers", &CanOpenController::ooResetSdoBuffers,
             this, OwnThread) .doc(
             "This operation allows to reset all the SDO emission lines. It should be use with care as it is a very intrusive behavior.");
-
+    addOperation("coSendPdo", &CanOpenController::coSendPdo,
+            this, ClientThread) .doc("This operation allows anyone in the application to send a PDO. The PDO is automatically built from mapping information (you are so supposed to have updated the dico first).").arg(
+            "pdoNumber","Number of the PDO in the dictionnay");
     /**
      * Others
      */
@@ -418,6 +421,8 @@ bool CanOpenController::coWriteInRemoteDico(CanDicoEntry dicoEntry)
         //check received SDO
         UNS32 abortCode;
         EnterMutex();
+        timespec begin, end;
+        clock_gettime(CLOCK_MONOTONIC, &begin);
         writeResult = getWriteResultNetworkDict(&CanARD_Data, dicoEntry.nodeId,
                 &abortCode);
         LeaveMutex();
@@ -435,6 +440,7 @@ bool CanOpenController::coWriteInRemoteDico(CanDicoEntry dicoEntry)
             /* Finalise last SDO transfer with this node */
             EnterMutex();
             closeSDOtransfer(&CanARD_Data, dicoEntry.nodeId, SDO_CLIENT);
+            clock_gettime(CLOCK_MONOTONIC, &end);
             LeaveMutex();
         }
         else
@@ -507,6 +513,25 @@ void CanOpenController::ooResetSdoBuffers()
     EnterMutex();
     resetSDO(&CanARD_Data);
     LeaveMutex();
+}
+
+bool CanOpenController::coSendPdo(int pdoNumber)
+{
+    Message pdo;
+    memset(&pdo, 0, sizeof(pdo));
+
+    EnterMutex();
+    if (buildPDO (&CanARD_Data, pdoNumber, &pdo))
+    {
+        cerr << "build PDO faild  " << endl;
+        return 0;
+    }
+    CanARD_Data.PDO_status[pdoNumber].last_message = pdo;
+    canSend (CanARD_Data.canHandle, &pdo);
+
+    LeaveMutex();
+
+    return true;
 }
 
 bool CanOpenController::ooSetSyncPeriod(double period)

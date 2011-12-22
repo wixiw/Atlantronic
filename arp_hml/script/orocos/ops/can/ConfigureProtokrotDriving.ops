@@ -3,7 +3,7 @@ require("print");
 attrScriptRes=true;
 //set motor  current  in mA
 //print.log(Info,"configure  max current");
-//sdo = CanDicoEntry(,0x2301,1,81,0,1);
+//sdo = CanDicoEntry(,0x2301,1,0x81,0,1);
 //coWriteInRemoteDico(sdo);
 //sdo = CanDicoEntry(,0x2301,2,200,0,4);
 //coWriteInRemoteDico(sdo);

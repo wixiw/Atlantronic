@@ -91,6 +91,11 @@ namespace arp_hml
         void ooResetSdoBuffers();
 
         /**
+         * Use this operation to send a PDO
+         */
+        bool coSendPdo(int pdoNumber);
+
+        /**
          * define a new period for SYNC object
          * param : periode in s.
          */
