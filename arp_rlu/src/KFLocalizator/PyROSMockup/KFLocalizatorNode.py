@@ -22,6 +22,7 @@ import math
 import KFLocalizator
 import params_KFLocalizator_Node as params
 from BaseClasses import OdoVelocity
+from BaseMethods import getEllipseParametersFromEstimate
 from Scan import Scan
 
 class KFLocalizatorNode():
@@ -37,6 +38,10 @@ class KFLocalizatorNode():
     rospy.Service('initialize', KFLocInit, self.cb_Init)
     rospy.Service('update', Empty, self.update)
     rospy.Service('predict', Empty, self.predict)
+    rospy.Service('doOneStep', Empty, self.doOneStep)
+    
+    self.time = rospy.Time.now()
+    rospy.loginfo("start time is %f", self.time.to_sec())
       
     self.kfloc = KFLocalizator.KFLocalizator()
     self.initialize(0., 0., 0.)
@@ -44,18 +49,19 @@ class KFLocalizatorNode():
     self.scan = None
     self.odovel = None
     
-    self.fig = plt.figure(1)
+    self.lastScanTime = rospy.Time.from_sec(0.)
+    self.lastOdoTime = rospy.Time.from_sec(0.)
+    
+    self.fig = plt.figure(figsize=(20,10))
     plt.ioff()
     plt.hold(True)
-    
-    self.time = rospy.Time.now()
-    rospy.loginfo("start time is %f", self.time.to_sec())
     
     rospy.loginfo(rospy.get_name() + " is running")
     
     
   def initialize(self, initialXPosition, initialYPosition, initialHeading):
-    self.kfloc.initialize(rospy.get_time(),100,
+    self.kfloc.initialize(self.time.to_sec(),
+                          100,
                           initialXPosition, 
                           initialYPosition, 
                           initialHeading, 
@@ -76,11 +82,12 @@ class KFLocalizatorNode():
     self.sigmaXOdo = data.twist.covariance[ 0]
     self.sigmaYOdo = data.twist.covariance[ 7]
     self.sigmaHOdo = data.twist.covariance[35]
+    self.lastOdoTime = rospy.Time.now()
 
 
   def predict(self, req):
-    if self.odovel is None:
-      rospy.logerr("I did not received odo velocity yet")
+    if rospy.Time.now() - self.lastOdoTime > rospy.Duration(1.):
+      rospy.logerr("I did not received odo velocity yet or odo is too old")
       return EmptyResponse()
     
     self.time = self.time + rospy.Duration.from_sec(0.01)
@@ -89,9 +96,10 @@ class KFLocalizatorNode():
     rospy.loginfo(rospy.get_name() + " predicting... [time: %f]", currentT)
     self.kfloc.newOdoVelocity(currentT, self.odovel, self.sigmaXOdo, self.sigmaYOdo, self.sigmaHOdo)
     
-    self.publishPose()
+    estim = self.kfloc.getBestEstimate()
+    rospy.loginfo(rospy.get_name() + " predict OK : x=%f  y=%f  h=%f\n", estim[1].xRobot, estim[1].yRobot, estim[1].hRobot)
     
-    rospy.loginfo(rospy.get_name() + " predict OK\n")
+    self.publishPose()
     return EmptyResponse()
       
       
@@ -104,22 +112,35 @@ class KFLocalizatorNode():
         self.scan.range[i] = 0.
       self.scan.theta[i] = data.angle_min + i*data.angle_increment
       self.scan.tt[i]    = data.header.stamp.to_sec() + i*data.time_increment
+    
+    self.lastScanTime = rospy.Time.now()
       
   
   def update(self, req):
-    if self.scan is None:
-      rospy.logerr("I did not received scan yet")
+    if rospy.Time.now() - self.lastScanTime > rospy.Duration(1.):
+      rospy.logerr("I did not received scan yet or scan is too old")
       return EmptyResponse()
+    
+    s = self.scan.copy()
     
     self.time = self.time + rospy.Duration.from_sec(0.01)
     currentT = self.time.to_sec()
     
     rospy.loginfo(rospy.get_name() + " updating... [time: %f]", currentT)
-    self.kfloc.newScan(currentT, self.scan)
+    self.kfloc.newScan(currentT, s)
     
     self.publishPose()
     
-    rospy.loginfo(rospy.get_name() + " update OK\n")
+    estim = self.kfloc.getBestEstimate()
+    rospy.loginfo(rospy.get_name() + " update OK : x=%f  y=%f  h=%f\n", estim[1].xRobot, estim[1].yRobot, estim[1].hRobot)
+    self.plot(s, estim)
+    
+    return EmptyResponse()
+  
+  def doOneStep(self, req):
+    for i in range(9):
+      self.predict(req)
+    self.update(req)
     return EmptyResponse()
       
       
@@ -147,7 +168,6 @@ class KFLocalizatorNode():
     p.pose.covariance[31] = estim[1].covariance[1,2]
     p.pose.covariance[35] = estim[1].covariance[2,2]
     self.pub.publish(p)
-    self.plot(self.scan, estim)
 
   def plot(self, scan_, estim_):
     x = estim_[1].xRobot
@@ -166,6 +186,15 @@ class KFLocalizatorNode():
     yArrowEnd = 0.1 * np.sin(h)
     arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.01, alpha=0.3, color="blue")
     ax.add_patch(arrow)
+    
+    xy, width, height, angle = getEllipseParametersFromEstimate(estim_[1])
+    ellipse = mpatches.Ellipse(xy, width, height, angle, alpha=0.1, color="blue")
+    ax.add_patch(ellipse)
+    
+    circ = plt.Circle((x, y), radius=0.005, ec="magenta", fc="none")
+    ax.add_patch(circ)
+    circ = plt.Circle((x, y), radius=0.025, ec="magenta", fc="none")
+    ax.add_patch(circ)
     
 #    rospy.loginfo("nb of beacons: %d", len(self.kfloc.scanproc.trueBeacons))
     for obj in self.kfloc.scanproc.trueBeacons:
@@ -190,8 +219,7 @@ class KFLocalizatorNode():
           xImpact = x + np.cos(h + scan_.theta[-1-i]) * scan_.range[-1-i]
           yImpact = y + np.sin(h + scan_.theta[-1-i]) * scan_.range[-1-i]
           ax.plot( [xImpact] , [yImpact], 'xb' )
-          ax.plot( [x, xImpact] , [y, yImpact], '--b' )
-        ax.plot( [x] , [y], 'ob' )
+#          ax.plot( [x, xImpact] , [y, yImpact], '--b' )
         
       # borders
       ax.plot( [x, x + np.cos(h + np.min(scan_.theta))], 

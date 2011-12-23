@@ -143,6 +143,7 @@ class KFLocalizator:
     vvy = interp1d(tt, tt_, vvy_)
     vvh = interp1d(tt, tt_, vvh_)
     covars = interpMatrix(tt, tt_, covars_)
+    covars = np.maximum(covars, np.zeros_like(covars) )
     return (tt, xx, yy, hh, vvx, vvy, vvh, covars)
   
   
