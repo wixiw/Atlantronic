@@ -22,7 +22,7 @@ import math
 import KFLocalizator
 import params_KFLocalizator_Node as params
 from BaseClasses import OdoVelocity, Estimate
-from BaseMethods import getEllipseParametersFromEstimate
+from BaseMethods import getEllipseParametersFromEstimate, betweenMinusPiAndPlusPi
 from Scan import Scan
 
 import LaserOnlyLocalizator
@@ -74,6 +74,7 @@ class KFLocalizatorNode():
     self.kfloc.threshold = params.kf_cfg["iekf_cfg"]["threshold"]
     self.kfloc.scanproc.maxDistance = params.kf_cfg["scanproc_cfg"]["maxDistance"]
     self.kfloc.scanproc.thresholdRange = params.kf_cfg["scanproc_cfg"]["thresholdRange"]
+    self.prevEstim = self.kfloc.getBestEstimate()
     
     
   def callbackOdo(self, data):
@@ -135,6 +136,12 @@ class KFLocalizatorNode():
     
     estim = self.kfloc.getBestEstimate()
     rospy.loginfo(rospy.get_name() + " update OK : x=%f  y=%f  h=%f\n", estim[1].xRobot, estim[1].yRobot, estim[1].hRobot)
+    
+    deltaX = (estim[1].xRobot - self.prevEstim[1].xRobot) * 1000.
+    deltaY = (estim[1].yRobot - self.prevEstim[1].yRobot) * 1000.
+    deltaH = betweenMinusPiAndPlusPi((estim[1].hRobot - self.prevEstim[1].hRobot) *180./np.pi)
+    self.prevEstim = estim
+    rospy.loginfo(rospy.get_name() + " you moved (mm & deg): dx=%f  dy=%f  dh=%f\n", deltaX, deltaY, deltaH)
     self.plot(s, estim[1])
     
     return EmptyResponse()
