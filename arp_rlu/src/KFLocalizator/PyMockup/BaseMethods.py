@@ -46,6 +46,9 @@ def pca(x):
   return means, np.sqrt(values), vectors
 
 def getEllipseParametersFromEstimate(estim):
+  if estim.covariance is None:
+    xy = (estim.xRobot, estim.yRobot)
+    return xy, 0., 0., 0.
   cov = estim.covariance[0:2, 0:2]
   values, vectors = np.linalg.eig( cov )
   stddev = np.sqrt(values)

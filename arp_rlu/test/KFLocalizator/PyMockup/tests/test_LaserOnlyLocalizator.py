@@ -1,11 +1,11 @@
 # coding=utf-8
+import roslib; roslib.load_manifest('arp_rlu')
+import rospy
+
 import sys
 sys.path.append( "../../../../src/KFLocalizator/PyMockup" )
 
 import random
-import logging
-logging.basicConfig(level=logging.DEBUG)
-log = logging.getLogger('main')
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -26,13 +26,10 @@ x = random.uniform( -1.3, 1.3)
 y = random.uniform( -0.8, 0.8)
 h = random.uniform( 0., 2. * np.pi)
 
-x = -1.2
-y = 0.
-h = 0.
 
-log.info("true x=%f",x)
-log.info("true y=%f",y)
-log.info("true h=%f",h)
+rospy.loginfo("true x=%f",x)
+rospy.loginfo("true y=%f",y)
+rospy.loginfo("true h=%f",h)
 
 tt = np.arange( 0.0, 0.1, 0.1 / 1024.)
 xx = np.ones_like(tt) * x
@@ -43,7 +40,7 @@ hh = np.ones_like(tt) * h
 lrfsim = LRFSimulator.LRFSimulator()
 lrfsim.sigma = 0.01
 
-radius = 0.05
+radius = 0.04
 obj1 = Circle()
 obj1.xCenter = 1.5
 obj1.yCenter = 0.
@@ -51,12 +48,12 @@ obj1.radius = radius
 lrfsim.objects.append(obj1)
 obj2 = Circle()
 obj2.xCenter = -1.5
-obj2.yCenter = -1.
+obj2.yCenter = 1.
 obj2.radius = radius
 lrfsim.objects.append(obj2)
 obj3 = Circle()
 obj3.xCenter = -1.5
-obj3.yCenter = 1.
+obj3.yCenter = -1.
 obj3.radius = radius
 lrfsim.objects.append(obj3)
 
@@ -78,9 +75,9 @@ for i in range(nbObjects):
       penetration = penetration or (np.linalg.norm( np.array( [ [obj.xCenter - x_], [obj.yCenter - y_] ] )) < obj.radius)
   lrfsim.objects.append(obj)
   
-log.info("Nb of objects :%d", len(lrfsim.objects))
+rospy.loginfo("Nb of objects :%d", len(lrfsim.objects))
 for o in lrfsim.objects:
-  log.info("x:%f - y:%f - r:%f", o.xCenter, o.yCenter, o.radius)
+  rospy.loginfo("x:%f - y:%f - r:%f", o.xCenter, o.yCenter, o.radius)
   
   
 #===============================================================================

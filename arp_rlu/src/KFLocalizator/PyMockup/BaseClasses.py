@@ -61,10 +61,10 @@ class FoundObject(Object):
 
 
 class Estimate:
-  def __init__(self):
-    self.xRobot = None
-    self.yRobot = None
-    self.hRobot = None
+  def __init__(self, x = None, y = None, h = None):
+    self.xRobot = x
+    self.yRobot = y
+    self.hRobot = h
     self.velXRobot = None
     self.velYRobot = None
     self.velHRobot = None

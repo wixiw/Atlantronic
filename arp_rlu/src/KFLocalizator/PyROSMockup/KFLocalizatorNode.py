@@ -21,9 +21,11 @@ import matplotlib.patches as mpatches
 import math
 import KFLocalizator
 import params_KFLocalizator_Node as params
-from BaseClasses import OdoVelocity
+from BaseClasses import OdoVelocity, Estimate
 from BaseMethods import getEllipseParametersFromEstimate
 from Scan import Scan
+
+import LaserOnlyLocalizator
 
 class KFLocalizatorNode():
     
@@ -36,6 +38,7 @@ class KFLocalizatorNode():
     self.pub = rospy.Publisher("/KFLocalizator/pose", PoseWithCovarianceStamped)
     
     rospy.Service('initialize', KFLocInit, self.cb_Init)
+    rospy.Service('autoInit', Empty, self.cb_AutoInit)
     rospy.Service('update', Empty, self.update)
     rospy.Service('predict', Empty, self.predict)
     rospy.Service('doOneStep', Empty, self.doOneStep)
@@ -52,7 +55,6 @@ class KFLocalizatorNode():
     self.lastScanTime = rospy.Time.from_sec(0.)
     self.lastOdoTime = rospy.Time.from_sec(0.)
     
-    self.fig = plt.figure(figsize=(20,10))
     plt.ioff()
     plt.hold(True)
     
@@ -133,7 +135,7 @@ class KFLocalizatorNode():
     
     estim = self.kfloc.getBestEstimate()
     rospy.loginfo(rospy.get_name() + " update OK : x=%f  y=%f  h=%f\n", estim[1].xRobot, estim[1].yRobot, estim[1].hRobot)
-    self.plot(s, estim)
+    self.plot(s, estim[1])
     
     return EmptyResponse()
   
@@ -148,6 +150,30 @@ class KFLocalizatorNode():
     self.initialize(req.x, req.y, req.h)
     rospy.loginfo(rospy.get_name() + " initialized with x=" + str(req.x) + " y=" + str(req.y) + " h=" + str(req.h))
     return KFLocInitResponse(True)
+  
+  
+  def cb_AutoInit(self, req):
+    rospy.loginfo(rospy.get_name() + " try auto initialization...")
+    
+    if rospy.Time.now() - self.lastScanTime > rospy.Duration(1.):
+      rospy.logerr("I did not received scan yet or scan is too old\n")
+      return EmptyResponse()
+    s = self.scan.copy()
+    
+    lol = LaserOnlyLocalizator.LaserOnlyLocalizator()
+    if not lol.process(s):
+      rospy.loginfo(rospy.get_name() + " auto initialization failed\n")
+      self.plot(s, Estimate(0., 0., 0.))
+      return EmptyResponse()
+    
+    estim = lol.getEstimate()
+    x = estim.xRobot
+    y = estim.yRobot
+    h = estim.hRobot
+    self.initialize(x, y, h)
+    rospy.loginfo(rospy.get_name() + " initialized with x=" + str(x) + " y=" + str(y) + " h=" + str(h) + "\n")
+    self.plot(s, estim)
+    return EmptyResponse()
   
   
   def publishPose(self):
@@ -170,11 +196,10 @@ class KFLocalizatorNode():
     self.pub.publish(p)
 
   def plot(self, scan_, estim_):
-    x = estim_[1].xRobot
-    y = estim_[1].yRobot
-    h = estim_[1].hRobot
+    x = estim_.xRobot
+    y = estim_.yRobot
+    h = estim_.hRobot
     
-    self.fig.clear()
     ax = plt.subplot(111, aspect='equal')
     
     # table
@@ -187,7 +212,7 @@ class KFLocalizatorNode():
     arrow = plt.Arrow(xArrowBeg, yArrowBeg, xArrowEnd, yArrowEnd, width=0.01, alpha=0.3, color="blue")
     ax.add_patch(arrow)
     
-    xy, width, height, angle = getEllipseParametersFromEstimate(estim_[1])
+    xy, width, height, angle = getEllipseParametersFromEstimate(estim_)
     ellipse = mpatches.Ellipse(xy, width, height, angle, alpha=0.1, color="blue")
     ax.add_patch(ellipse)
     
@@ -227,7 +252,7 @@ class KFLocalizatorNode():
       ax.plot( [x, x + np.cos(h + np.max(scan_.theta))], 
                 [y, y + np.sin(h + np.max(scan_.theta))], '-m')
     
-    ax.axis([-1.9, 1.9, -1.4, 1.4])
+    ax.axis([-2.1, 2.1, -1.5, 1.5])
     plt.show()
 
 if __name__ == '__main__':

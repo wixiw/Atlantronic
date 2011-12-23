@@ -1,8 +1,10 @@
 # coding=utf-8
+import roslib; roslib.load_manifest('arp_rlu')
+import rospy
+
 import numpy as np
 import math
 import random
-import logging
 
 import PointCloud
 import clusterize
@@ -10,22 +12,17 @@ import ransac
 import BaseClasses
 import BaseMethods
 
+import EnhancedScanProcessor
+
 class LaserOnlyLocalizator:
   def __init__(self):
     self.reset()
     
-    self.medianFilterWidth = 3
+    self.scanproc = EnhancedScanProcessor.EnhancedScanProcessor()
     
-    self.clusterParams = clusterize.ClusterizeParams()
-    self.clusterParams.kmeansMaxIt = 10
-    self.clusterParams.kmeansDispThreshold = 0.01
-    self.clusterParams.minNbPoints = 4
-    self.clusterParams.maxStddev = 0.1
-    
-    self.refBigLength = math.sqrt( 10 )
-    self.refSmallLength = 2.
-    
-    self.qualityThreshold = 1. / 0.20
+#    self.refSmallLength = 2.0
+#    self.refBigLength = math.sqrt(10)
+#    self.qualityThreshold = 1. / 0.20
     
     self.trueA = np.array([ [1.5], [0.] ])
     self.trueB = np.array([ [-1.5], [1.] ])
@@ -35,36 +32,55 @@ class LaserOnlyLocalizator:
     self.estimate = BaseClasses.Estimate()
   
   def process(self, scan_):
-    log = logging.getLogger('process')
       
     self.reset()
     
     scan = scan_.copy()
-    log.debug("Do MedianFiltering")
-    scan.doMedianFiltering(self.medianFilterWidth)
-    log.debug("   MedianFiltering done")
     
-    log.debug("Compute cartesian scan")
-    pc = PointCloud.PointCloud()
-    pc.fromScan(scan, [scan.tt[0]], [0], [0], [0])
-    log.debug("   cartesian scan computed")
+    tt = np.zeros_like(scan.range)
+    xx = np.zeros_like(scan.range)
+    yy = np.zeros_like(scan.range)
+    hh = np.zeros_like(scan.range)
     
-    log.debug("Do Clusterize")
-    vPC = clusterize.clusterize(pc, self.clusterParams)
-    log.debug("   Clusterize done")
+    self.scanproc.setScan(scan)
+    self.scanproc.findClusters(tt, xx, yy, hh)
+    self.scanproc.filterClusters()
+    candidates = self.scanproc.objects
     
-    if len(vPC) < 3:
-      log.warning("Less than 3 valid clusters found")
-      return
+    if len(candidates) < 3:
+      rospy.logwarn("Less than 3 candidates found")
+      return False
+    rospy.loginfo("Objects detected : %d", len(candidates))
     
-    log.debug("Objects detected : %d", len(vPC))
+    foundBeacons = self.scanproc.recognizeTreeOrMoreObjects(self.scanproc.treeObjectsParams, candidates)
+    foundBeacons = self.scanproc.cleanResults(foundBeacons)
+    if len(foundBeacons) < 3:
+      rospy.logwarn("Triangle not found in candidates")
+      return False
     
+    p = self.__identifyTriangle(foundBeacons)
+    if p == []:
+      rospy.logwarn("Unable to identify triangle in found beacons")
+      return False
+    A = self.__findCenter(foundBeacons[p[0]])
+    B = self.__findCenter(foundBeacons[p[1]])
+    C = self.__findCenter(foundBeacons[p[2]])
+    rospy.loginfo("First beacon is %s", str(A.transpose()))
+    rospy.loginfo("Second beacon is %s", str(B.transpose()))
+    rospy.loginfo("Third beacon is %s", str(C.transpose()))
+    
+    self.estimate = self.__computeEstimateFromTriangle(A, B, C)
+    rospy.loginfo("LaserOnlyLocalizator estimate is : x=%f  y=%f  h=%f", self.estimate.xRobot, self.estimate.yRobot, self.estimate.hRobot)
+    return True
+  
+  def __findTriangle(self, candidates):
     # find beacons in candidates
+    rospy.loginfo("Try to find triangle in candidates...")
     bestComb = None
     bestQuality = None
-    combs = BaseMethods.enumerateCombinations(range(len(vPC)),3)
+    combs = BaseMethods.enumerateCombinations(range(len(candidates)),3)
     for comb in combs:
-      quality = self.__evalCombination(vPC, comb)
+      quality = self.__evalCombination(candidates, comb)
       if bestComb is None:
         bestComb = comb
         bestQuality = quality
@@ -72,31 +88,54 @@ class LaserOnlyLocalizator:
         if quality > bestQuality:
           bestComb = comb
           bestQuality = quality
-          
     
-    log.debug("Best combination is %s with quality=%f", str(bestComb), bestQuality)
+    rospy.loginfo("Best combination is %s with quality=%f", str(bestComb), bestQuality)
           
     if bestQuality < self.qualityThreshold:
-      log.warning("Unable to recognize beacons in clusters : quality incorrect")
-      return
+      rospy.logwarn("Unable to recognize triangle in clusters : quality incorrect")
+      bestComb = None
+      bestQuality = None
+      
+    return bestComb, bestQuality
     
-    p = self.__identifyBeacons(vPC, bestComb)
-    if p == []:
-      log.warning("Unable to recognize beacons in clusters : identification failed")
-      return
-    A = self.__findCenter(vPC[bestComb[p[0]]])
-    B = self.__findCenter(vPC[bestComb[p[1]]])
-    C = self.__findCenter(vPC[bestComb[p[2]]])
-    log.debug("First beacon is \n%s", str(A))
-    log.debug("Second beacon is \n%s", str(B))
-    log.debug("Third beacon is \n%s", str(C))
     
-    self.estimate = self.__computeEstimate(A, B, C)
-    log.debug("estimate is : x=%f  y=%f  h=%f", self.estimate.xRobot, self.estimate.yRobot, self.estimate.hRobot)
-    return
-    
-  def __computeEstimate(self, A,B,C):
-    log = logging.getLogger('computeEstimate')
+  def __identifyTriangle(self, candidates):
+    perms = BaseMethods.enumeratePermutations(range(3))
+#    rospy.loginfo("Eval all permutations \n%s", str(perms))
+    for p in perms:
+#      rospy.loginfo("p = %s", str(p))
+      A = self.__findCenter(candidates[p[0]])
+      B = self.__findCenter(candidates[p[1]])
+      C = self.__findCenter(candidates[p[2]])
+#      rospy.loginfo("A =\n%s", str(A))
+#      rospy.loginfo("B =\n%s", str(B))
+#      rospy.loginfo("C =\n%s", str(C))
+      bary = (A + B + C) / 3.
+#      rospy.loginfo("bary =\n%s", str(bary))
+      vA = np.vstack( (A - bary, np.array([[0]])) ).reshape((3,))
+      vB = np.vstack( (B - bary, np.array([[0]])) ).reshape((3,))
+      vC = np.vstack( (C - bary, np.array([[0]])) ).reshape((3,))
+#      rospy.loginfo("vA =\n%s", str(vA))
+#      rospy.loginfo("vB =\n%s", str(vB))
+#      rospy.loginfo("vC =\n%s", str(vC))
+      # check order
+      if np.cross(vA, vB)[2] < 0:
+#        rospy.loginfo("np.cross(vA, vB)[2] < 0")
+        continue
+      if np.cross(vB, vC)[2] < 0:
+#        rospy.loginfo("np.cross(vB, vC)[2] < 0")
+        continue
+      if np.cross(vC, vA)[2] < 0:
+#        rospy.loginfo("np.cross(vC, vA)[2] < 0")
+        continue
+      # check if first beacon is first PC
+      if np.linalg.norm(C - B) > (self.scanproc.refBigLength + self.scanproc.refSmallLength) / 2.:
+        continue
+      return p
+    return []
+  
+  
+  def __computeEstimateFromTriangle(self, A,B,C):
     bary = (A + B + C) / 3.
     trueBary = ( self.trueA + self.trueB + self.trueC ) / 3.
     nC = np.cross( np.vstack( (B - A, np.array([[0]]))).reshape(3,) , np.array([0.,0.,1.]) ) 
@@ -128,49 +167,12 @@ class LaserOnlyLocalizator:
     # todo : compute better covariance
     
     return estim
-    
-  def __identifyBeacons(self, vPC, bestComb):
-    log = logging.getLogger('identifyBeacons')
-    perms = BaseMethods.enumeratePermutations(range(3))
-#    log.debug("Eval all permutations \n%s", str(perms))
-    for p in perms:
-#      log.debug("p = %s", str(p))
-      A = self.__findCenter(vPC[bestComb[p[0]]])
-      B = self.__findCenter(vPC[bestComb[p[1]]])
-      C = self.__findCenter(vPC[bestComb[p[2]]])
-#      log.debug("A =\n%s", str(A))
-#      log.debug("B =\n%s", str(B))
-#      log.debug("C =\n%s", str(C))
-      bary = (A + B + C) / 3.
-#      log.debug("bary =\n%s", str(bary))
-      vA = np.vstack( (A - bary, np.array([[0]])) ).reshape((3,))
-      vB = np.vstack( (B - bary, np.array([[0]])) ).reshape((3,))
-      vC = np.vstack( (C - bary, np.array([[0]])) ).reshape((3,))
-#      log.debug("vA =\n%s", str(vA))
-#      log.debug("vB =\n%s", str(vB))
-#      log.debug("vC =\n%s", str(vC))
-      # check order
-      if np.cross(vA, vB)[2] < 0:
-#        log.debug("np.cross(vA, vB)[2] < 0")
-        continue
-      if np.cross(vB, vC)[2] < 0:
-#        log.debug("np.cross(vB, vC)[2] < 0")
-        continue
-      if np.cross(vC, vA)[2] < 0:
-#        log.debug("np.cross(vC, vA)[2] < 0")
-        continue
-      # check if first beacon is first PC
-      if np.linalg.norm(C - B) > (self.refBigLength + self.refSmallLength) / 2.:
-        continue
-      return p
-    return []
           
         
-  def __evalCombination(self, vPC, comb):
-    log = logging.getLogger('__evalCombination')
-    A = self.__findCenter(vPC[comb[0]])
-    B = self.__findCenter(vPC[comb[1]])
-    C = self.__findCenter(vPC[comb[2]])
+  def __evalCombination(self, candidates, comb):
+    A = self.__findCenter(candidates[comb[0]])
+    B = self.__findCenter(candidates[comb[1]])
+    C = self.__findCenter(candidates[comb[2]])
     ll = []
     ll.append( np.linalg.norm(B - A) )
     ll.append( np.linalg.norm(C - A) )
@@ -178,15 +180,15 @@ class LaserOnlyLocalizator:
     maxll = np.max(ll)
     medll = BaseMethods.getMedian(ll)
     minll = np.min(ll)
-#    log.debug("max lenght = %f",maxll)
-#    log.debug("med lenght = %f",medll)
-#    log.debug("min lenght = %f",minll)
+#    rospy.loginfo("max lenght = %f",maxll)
+#    rospy.loginfo("med lenght = %f",medll)
+#    rospy.loginfo("min lenght = %f",minll)
     invquality = (maxll - self.refBigLength)**2 + (medll - self.refBigLength)**2 + (minll - self.refSmallLength)**2 
     return 1./ invquality
       
       
-  def __findCenter(self, pc):
-    return np.mean(pc.points[0:2,0:], 1).reshape((2,1))
+  def __findCenter(self, candidate):
+    return np.array([[candidate.xCenter],[candidate.yCenter]])
   
   
   def getEstimate(self):
