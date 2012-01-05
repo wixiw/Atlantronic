@@ -51,7 +51,7 @@ namespace arp_hml
 
         /**
          * Run the drive. Call this every cycle
-         * You should not derivate this normally
+         * You should not derivate this normally.
          */
         virtual void run();
 

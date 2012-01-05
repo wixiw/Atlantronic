@@ -25,7 +25,7 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         propInvertDriveDirection(false),
         propReductorValue(14),
         propEncoderResolution(3000),
-        propMaximalTorque(1.0),
+        propMaximalTorque(0.5),
         m_faulhaberCommandTodo(false),
         m_oldPositionMeasure(0),
         m_isMotorBlocked(false)
@@ -35,6 +35,7 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
     addAttribute("attrPeriod",attrPeriod);
     addAttribute("attrBlockingDelay",attrBlockingDelay);
     addAttribute("attrIncrementalOdometer",attrIncrementalOdometer);
+    addAttribute("attrFaulhaberCommandPdoIndex",attrFaulhaberCommandPdoIndex);
 
     addProperty("propInvertDriveDirection",propInvertDriveDirection)
     	.doc("Is true when you when to invert the speed command and feedback of the motor softly");
@@ -75,9 +76,12 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         .doc(" Is true when the propMaximalTorque has been reached for more propBlockingTorqueTimeout");
 
     addOperation("ooEnableDrive", &Faulhaber3268Bx4::enableDrive,this, OwnThread )
-        .doc("");
+        .doc("Activate the power on the motor. Without a speed command it acts as a brake. Returns false if the component is not running.");
     addOperation("ooDisableDrive", &Faulhaber3268Bx4::disableDrive,this, OwnThread )
-        .doc("");
+        .doc("disable power on the motor, this is a freewheel mode. Returns false if the component is not running.");
+    addOperation("ooLimitCurrent", &Faulhaber3268Bx4::ooLimitCurrent,this, OwnThread )
+        .doc("Limit the current given to the motor. Should be greather then 0.2A and lower than 10A. Returns false if the motor are not disabled or the component is not running.")
+        .arg("currentValue","in A");
     addOperation("ooFaulhaberCmd", &Faulhaber3268Bx4::ooFaulhaberCmd,this, OwnThread )
         .doc("");
     addOperation("ooSetOperationMode", &Faulhaber3268Bx4::ooSetOperationMode,this, OwnThread )
@@ -146,13 +150,50 @@ bool Faulhaber3268Bx4::checkProperties()
 
 bool Faulhaber3268Bx4::configureHook()
 {
-    bool res = init();
-    if( res == true )
-    {
-        res = CanOpenNode::configureHook();
+    int numberOfPdo = 0 ;
+    int i = 0;
 
+    if( !init() )
+        goto fail;
+
+    if( !CanOpenNode::configureHook() )
+        goto fail;
+
+
+    //on recherche dans la liste des PDO l'index du PDO de la commande Faulhaber pour pouvoir l'envoyer directement dans certains modes de fonctionnement
+    if( CanARD_Data.lastIndex == NULL || CanARD_Data.firstIndex == NULL )
+    {
+        LOG(Error) << "The Dictionnary seems to be corrupted ! Index reference are NULL." << endlog();
+        goto fail;
     }
-	return res;
+    numberOfPdo = CanARD_Data.lastIndex->PDO_TRS_MAP - CanARD_Data.firstIndex->PDO_TRS_MAP;
+    if( numberOfPdo <= 0 )
+    {
+        LOG(Error) << "The Dictionnary seems to be corrupted ! Number of PDO should be positive." << endlog();
+        goto fail;
+    }
+    for( i = 0 ; i< numberOfPdo ; i++ )
+    {
+        if( CanARD_Data.PDO_status[i].last_message.cob_id == 0x300 + propNodeId )
+        {
+            attrFaulhaberCommandPdoIndex = i;
+            break;
+        }
+    }
+    //si on est là, on n'a pas trouvé.
+    if( i == numberOfPdo )
+    {
+        LOG(Error) << "Failed to find Faulhaber Command PDO number among " << numberOfPdo << " tested index. Check your dictionnary." << endlog();
+        goto fail;
+    }
+
+
+    goto success;
+
+    fail:
+	    return false;
+	success:
+	    return true;
 }
 
 void Faulhaber3268Bx4::updateHook()
@@ -229,33 +270,73 @@ void Faulhaber3268Bx4::setOutputs()
 
 void Faulhaber3268Bx4::runSpeed()
 {
-	//conversion de rad/s sur la roue, vers RPM sur l'axe moteur
-	UNS32 speed = m_speedCommand*propReductorValue*RAD_S_TO_RPM;
-	//inversion de polarité soft
-	if( propInvertDriveDirection )
-	{
-		speed = -speed;
-	}
+    // The submodes are not called is the motor is not powered
+    if( outDriveEnable.getLastWrittenValue() )
+    {
+        //conversion de rad/s sur la roue, vers RPM sur l'axe moteur
+        UNS32 speed = m_speedCommand*propReductorValue*RAD_S_TO_RPM;
 
-    EnterMutex();
-	*m_faulhaberCommand = F_CMD_V;
-	*m_faulhaberCommandParameter = speed;
-    LeaveMutex();
+        //inversion de polarité soft
+        if( propInvertDriveDirection )
+        {
+            speed = -speed;
+        }
+
+        EnterMutex();
+        *m_faulhaberCommand = F_CMD_V;
+        *m_faulhaberCommandParameter = speed;
+        LeaveMutex();
+    /*
+        usleep(500);
+
+        //TODO gain de conversion...
+        UNS32 torque = m_torqueCommand/propReductorValue*NM_TO_A*1000;
+        EnterMutex();
+        *m_faulhaberCommand = F_CMD_LPC;
+        *m_faulhaberCommandParameter = torque;
+        LeaveMutex();*/
+    }
 }
 
 void Faulhaber3268Bx4::runTorque()
 {
-	//TODO WLA Faulhaber3268Bx4 implémenter control en torque
+    // The submodes are not called is the motor is not powered
+    if( outDriveEnable.getLastWrittenValue() )
+    {
+        //TODO WLA Faulhaber3268Bx4 implémenter control en torque
+    }
 }
 
 void Faulhaber3268Bx4::runPosition()
 {
-	//TODO WLA Faulhaber3268Bx4 implémenter control en position
+    // The submodes are not called is the motor is not powered
+    if( outDriveEnable.getLastWrittenValue() )
+    {
+        //conversion de rad/s sur la roue, vers RPM sur l'axe moteur
+        UNS32 position = m_positionCommand*propReductorValue*RAD_S_TO_RPM;
+
+        EnterMutex();
+        *m_faulhaberCommand = F_CMD_LA;
+        *m_faulhaberCommandParameter = position;
+        LeaveMutex();
+        m_coSendPdo(attrFaulhaberCommandPdoIndex);
+
+        usleep(500);
+
+        EnterMutex();
+        *m_faulhaberCommand = F_CMD_M;
+        *m_faulhaberCommandParameter = 0;
+        LeaveMutex();
+    }
 }
 
 void Faulhaber3268Bx4::runHoming()
 {
-	//TODO WLA Faulhaber3268Bx4 implémenter control homing
+    // The submodes are not called is the motor is not powered
+    if( outDriveEnable.getLastWrittenValue() )
+    {
+        //TODO WLA Faulhaber3268Bx4 implémenter control homing
+    }
 }
 
 void Faulhaber3268Bx4::runOther()
@@ -277,7 +358,7 @@ void Faulhaber3268Bx4::runOther()
 		}
 		else
 		{
-			LOG(Info) << "faulhaber " << (int) m_faulhaberScriptCommand << " command succeed with return "<< m_faulhaberCommandReturnParameter << endlog();
+			LOG(Info) << "faulhaber " << (int) m_faulhaberScriptCommand << " command succeed with return "<< *m_faulhaberCommandReturnParameter << endlog();
 			m_faulhaberCommandTodo = false;
 		}
 	}
@@ -427,7 +508,7 @@ bool Faulhaber3268Bx4::setOperationMode(ArdMotorItf::operationMode_t operationMo
 	if( isRunning() )
 	{
 		//pour le moment les seuls modes accessibles sont speed et other=faulhaber command
-		if( ArdMotorItf::SPEED_CONTROL == operationMode || ArdMotorItf::OTHER == operationMode)
+		if( ArdMotorItf::SPEED_CONTROL == operationMode || ArdMotorItf::OTHER == operationMode || ArdMotorItf::POSITION_CONTROL == operationMode)
 			ArdMotorItf::setOperationMode(operationMode);
 		else
 			res = false;
@@ -488,20 +569,54 @@ bool Faulhaber3268Bx4::init()
 
 void Faulhaber3268Bx4::enableDrive()
 {
-	ArdMotorItf::setOperationMode(ArdMotorItf::OTHER);
-	m_faulhaberScriptCommand = F_CMD_EN;
-	m_faulhaberScriptCommandParam = 0;
-	m_faulhaberCommandTodo = true;
+    if( !isRunning() )
+    {
+        LOG(Error) << "Failed to limitCurrent because the component is not running" << endlog();
+    }
+    else
+    {
+        ArdMotorItf::setOperationMode(ArdMotorItf::OTHER);
+        m_faulhaberScriptCommand = F_CMD_EN;
+        m_faulhaberScriptCommandParam = 0;
+        m_faulhaberCommandTodo = true;
+    }
 }
 
 void Faulhaber3268Bx4::disableDrive()
 {
-	ArdMotorItf::setOperationMode(ArdMotorItf::OTHER);
-	m_faulhaberScriptCommand = F_CMD_DI;
-	m_faulhaberScriptCommandParam = 0;
-	m_faulhaberCommandTodo = true;
+    if( !isRunning() )
+    {
+        LOG(Error) << "Failed to limitCurrent because the component is not running" << endlog();
+    }
+    else
+    {
+        ArdMotorItf::setOperationMode(ArdMotorItf::OTHER);
+        m_faulhaberScriptCommand = F_CMD_DI;
+        m_faulhaberScriptCommandParam = 0;
+        m_faulhaberCommandTodo = true;
+    }
 }
 
+bool Faulhaber3268Bx4::ooLimitCurrent(double ampValue)
+{
+    if( outDriveEnable.getLastWrittenValue() )
+    {
+        LOG(Error) << "Failed to limitCurrent because the drive are not disabled (this limitation is not HW dependent, it's an ARD choice)" << endlog();
+        return false;
+    }
+
+    if( !isRunning() )
+    {
+        LOG(Error) << "Failed to limitCurrent because the component is not running" << endlog();
+        return false;
+    }
+
+    ArdMotorItf::setOperationMode(ArdMotorItf::OTHER);
+    m_faulhaberScriptCommand = F_CMD_LPC;
+    m_faulhaberScriptCommandParam = (UNS32) ampValue*1000;
+    m_faulhaberCommandTodo = true;
+    return true;
+}
 
 bool Faulhaber3268Bx4::reset()
 {

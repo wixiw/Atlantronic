@@ -73,6 +73,8 @@ namespace arp_hml
         double attrBlockingDelay;
         /** brut value of the odometer */
         int attrIncrementalOdometer;
+        /** index of the Faulhaber Command PDO */
+        int attrFaulhaberCommandPdoIndex;
 
         /** Is true when you when to invert the speed command and feedback of the motor softly **/
         bool propInvertDriveDirection;
@@ -113,14 +115,11 @@ namespace arp_hml
         OutputPort<bool> outMaxTorqueTimeout;
 
         /**
-         * Enable motors to move
+         * Limits the torque on the motor via a current limitation.
+         * @param ampValue : the maximal current that the motor can require in A. Should be in ]0.2;10[
+         * @return true when the change will be done, false if something prevents the change (like if the motor is not disabled or component not running)
          */
-        void ooEnableDrive();
-
-        /**
-         * Enable motors to move
-         */
-        void ooDisableDrive();
+        bool ooLimitCurrent(double ampValue);
 
         /**
          * Allows to send faulhaber commands in command line
@@ -184,6 +183,8 @@ namespace arp_hml
         bool stopWatchdog();
         bool isInError();
         unsigned int getError();
+
+
         void runSpeed();
         void runTorque();
         void runPosition();
@@ -206,6 +207,16 @@ namespace arp_hml
         ///send a speed command
         static const int F_CMD_V = 0x93;
 
+        ///limit the maximal current
+        static const int F_CMD_LPC = 0x81;
+        ///limit the continous current
+        static const int F_CMD_LCC = 0x80;
+
+        ///launch positioning
+        static const int F_CMD_M = 0x3C;
+        ///load an absolute position target
+        static const int F_CMD_LA = 0xB4;
+
         /*
          * Faulhaber return codes should be clear
          */
@@ -217,6 +228,10 @@ namespace arp_hml
         static const int F_RET_CMD_UNAVAILABLE = -8;
         static const int F_RET_FLASH_DEFECT = -13;
 
+
+
+        /** Use this to convert Nm to A*/
+        static const double NM_TO_A = 1;
 
     protected:
 

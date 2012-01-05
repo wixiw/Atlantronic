@@ -40,9 +40,9 @@ void UbiquitySimul::loopEncoder()
     attrOdometers.odo_left_driving = attrCurrentCmd.v_left_driving;
     attrOdometers.odo_right_driving = attrCurrentCmd.v_right_driving;
     attrOdometers.odo_rear_driving = attrCurrentCmd.v_rear_driving;
-    attrOdometers.odo_left_steering = attrCurrentCmd.v_left_steering;
-    attrOdometers.odo_right_steering = attrCurrentCmd.v_right_steering;
-    attrOdometers.odo_rear_steering = attrCurrentCmd.v_rear_steering;
+    attrOdometers.odo_left_steering = attrCurrentCmd.p_left_steering;
+    attrOdometers.odo_right_steering = attrCurrentCmd.p_right_steering;
+    attrOdometers.odo_rear_steering = attrCurrentCmd.p_rear_steering;
     attrOdometers.time = arp_math::getTime();
     outOdometryMeasures.write(attrOdometers);
 }

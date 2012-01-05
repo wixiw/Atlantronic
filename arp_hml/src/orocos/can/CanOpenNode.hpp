@@ -113,6 +113,11 @@ namespace arp_hml
         OperationCaller<bool(CanDicoEntry,int*)> m_coReadInRemoteDico;
 
         /**
+         * handler on a CanOpenController operation to send a PDO from its COB ID
+         */
+        OperationCaller<bool(int)> m_coSendPdo;
+
+        /**
          * use this operation in deployment to register the node into the CanOpenController
          */
         bool coRegister();

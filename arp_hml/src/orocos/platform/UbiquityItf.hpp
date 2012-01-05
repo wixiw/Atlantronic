@@ -159,7 +159,7 @@ namespace arp_hml
         InputPort<double> inRearSteeringPosition;
         InputPort<double> inRearSteeringPositionTime;
 
-        /** Value of the traction speeds in rad/s on the wheel axe **/
+        /** Value of the traction speeds in rad/s on the reductor output **/
         InputPort<double> inLeftDrivingSpeedMeasure;
         InputPort<double> inRightDrivingSpeedMeasure;
         InputPort<double> inRearDrivingSpeedMeasure;
@@ -191,13 +191,23 @@ namespace arp_hml
         InputPort<bool> inRightSteeringBlocked;
         InputPort<bool> inRearSteeringBlocked;
 
-        /** Speed command for the motors in rad/s on the wheel axe **/
+        /** Speed command for the motors in rad/s on the reductor output axe **/
         OutputPort<double> outLeftDrivingSpeedCmd;
         OutputPort<double> outRightDrivingSpeedCmd;
         OutputPort<double> outRearDrivingSpeedCmd;
-        OutputPort<double> outLeftSteeringSpeedCmd;
-        OutputPort<double> outRightSteeringSpeedCmd;
-        OutputPort<double> outRearSteeringSpeedCmd;
+
+        /** Position command for the motors in rad on the reductor output axe **/
+        OutputPort<double> outLeftSteeringPositionCmd;
+        OutputPort<double> outRightSteeringPositionCmd;
+        OutputPort<double> outRearSteeringPositionCmd;
+
+        /** Torque command for the motors in Nm on the reductor output axe **/
+        OutputPort<double> outLeftDrivingTorqueCmd;
+        OutputPort<double> outRightDrivingTorqueCmd;
+        OutputPort<double> outRearDrivingTorqueCmd;
+        OutputPort<double> outLeftSteeringTorqueCmd;
+        OutputPort<double> outRightSteeringTorqueCmd;
+        OutputPort<double> outRearSteeringTorqueCmd;
 
         /** Woodhead connectivity **/
         InputPort<bool> inWoodheadInConnected;

@@ -134,17 +134,31 @@ UbiquityItf::UbiquityItf(const std::string& name):
             .doc("Rear steering motor is blocked");
 
     addPort("outLeftDrivingSpeedCmd",outLeftDrivingSpeedCmd)
-            .doc("Speed command for the left driving motor in rad/s on the wheel axe");
+            .doc("Speed command for the left driving motor in rad/s on the reductor output");
     addPort("outRightDrivingSpeedCmd",outRightDrivingSpeedCmd)
-            .doc("Speed command for the right driving motor in rad/s on the wheel axe");
+            .doc("Speed command for the right driving motor in rad/s on the reductor output");
     addPort("outRearDrivingSpeedCmd",outRearDrivingSpeedCmd)
-            .doc("Speed command for the rear driving motor in rad/s on the wheel axe");
-    addPort("outLeftSteeringSpeedCmd",outLeftSteeringSpeedCmd)
-            .doc("Speed command for the left steering motor in rad/s on the wheel axe");
-    addPort("outRightSteeringSpeedCmd",outRightSteeringSpeedCmd)
-            .doc("Speed command for the right steering motor in rad/s on the wheel axe");
-    addPort("outRearSteeringSpeedCmd",outRearSteeringSpeedCmd)
-            .doc("Speed command for the rear steering motor in rad/s on the wheel axe");
+            .doc("Speed command for the rear driving motor in rad/s on the reductor output");
+
+    addPort("outLeftSteeringPositionCmd",outLeftSteeringPositionCmd)
+            .doc("Position command for the left steering motor in rad/s on the reductor output");
+    addPort("outRightSteeringPositionCmd",outRightSteeringPositionCmd)
+            .doc("Position command for the right steering motor in rad/s on the reductor output");
+    addPort("outRearSteeringPositionCmd",outRearSteeringPositionCmd)
+            .doc("Position command for the rear steering motor in rad/s on the reductor output");
+
+    addPort("outLeftDrivingTorqueCmd",outLeftDrivingTorqueCmd)
+        .doc("Torque command for the left driving motor in Nm on the reductor output");
+    addPort("outRightDrivingTorqueCmd",outRightDrivingTorqueCmd)
+        .doc("Torque command for the right driving motor in Nm on the reductor output");
+    addPort("outRearDrivingTorqueCmd",outRearDrivingTorqueCmd)
+        .doc("Torque command for the rear driving motor in Nm on the reductor output");
+    addPort("outLeftSteeringTorqueCmd",outLeftSteeringTorqueCmd)
+        .doc("Torque command for the left steering motor in Nm on the reductor output");
+    addPort("outRightSteeringTorqueCmd",outRightSteeringTorqueCmd)
+        .doc("Torque command for the right steering motor in Nm on the reductor output");
+    addPort("outRearSteeringTorqueCmd",outRearSteeringTorqueCmd)
+        .doc("Torque command for the rear steering motor in Nm on the reductor output");
 
     addOperation("coGetCoreVersion",&UbiquityItf::coGetCoreVersion, this, ClientThread)
     		.doc("Returns a string containing Core version");
@@ -261,9 +275,9 @@ void UbiquityItf::writeOmniCmd()
             attrCurrentCmd.v_left_driving = 0;
             attrCurrentCmd.v_right_driving = 0;
             attrCurrentCmd.v_rear_driving = 0;
-            attrCurrentCmd.v_left_steering = 0;
-            attrCurrentCmd.v_right_steering = 0;
-            attrCurrentCmd.v_rear_steering = 0;
+            attrCurrentCmd.p_left_steering = 0;
+            attrCurrentCmd.p_right_steering = 0;
+            attrCurrentCmd.p_rear_steering = 0;
     	}
     }
     else
@@ -276,18 +290,18 @@ void UbiquityItf::writeOmniCmd()
             attrCurrentCmd.v_left_driving = 0;
             attrCurrentCmd.v_right_driving = 0;
             attrCurrentCmd.v_rear_driving = 0;
-            attrCurrentCmd.v_left_steering = 0;
-            attrCurrentCmd.v_right_steering = 0;
-            attrCurrentCmd.v_rear_steering = 0;
+            attrCurrentCmd.p_left_steering = 0;
+            attrCurrentCmd.p_right_steering = 0;
+            attrCurrentCmd.p_rear_steering = 0;
         }
     }
 
     outLeftDrivingSpeedCmd.write(attrCurrentCmd.v_left_driving);
     outRightDrivingSpeedCmd.write(attrCurrentCmd.v_right_driving);
     outRearDrivingSpeedCmd.write(attrCurrentCmd.v_rear_driving);
-    outLeftSteeringSpeedCmd.write(attrCurrentCmd.v_left_steering);
-    outRightSteeringSpeedCmd.write(attrCurrentCmd.v_right_steering);
-    outRearSteeringSpeedCmd.write(attrCurrentCmd.v_rear_steering);
+    outLeftSteeringPositionCmd.write(attrCurrentCmd.p_left_steering);
+    outRightSteeringPositionCmd.write(attrCurrentCmd.p_right_steering);
+    outRearSteeringPositionCmd.write(attrCurrentCmd.p_rear_steering);
 }
 
 void UbiquityItf::readOdometers()
@@ -424,25 +438,28 @@ void UbiquityItf::readSpeed()
 	double leftDrivingSpeed = 0.0;
 	double rightDrivingSpeed = 0.0;
 	double rearDrivingSpeed = 0.0;
-    double leftSteeringSpeed = 0.0;
-    double rightSteeringSpeed = 0.0;
-    double rearSteeringSpeed = 0.0;
+
+    double leftSteeringPosition = 0.0;
+    double rightSteeringPosition = 0.0;
+    double rearSteeringPosition = 0.0;
 
 	OmniCommand speedMeasure;
 	if( NoData != inLeftDrivingSpeedMeasure.readNewest(leftDrivingSpeed)
 	 && NoData != inRightDrivingSpeedMeasure.readNewest(rightDrivingSpeed)
 	 && NoData != inRearDrivingSpeedMeasure.readNewest(rearDrivingSpeed)
-	 && NoData != inLeftSteeringSpeedMeasure.readNewest(leftSteeringSpeed)
-     && NoData != inRightSteeringSpeedMeasure.readNewest(rightSteeringSpeed)
-     && NoData != inRearSteeringSpeedMeasure.readNewest(rearSteeringSpeed)
+
+	 && NoData != inLeftSteeringPosition.readNewest(leftSteeringPosition)
+     && NoData != inRightSteeringPosition.readNewest(rightSteeringPosition)
+     && NoData != inRearSteeringPosition.readNewest(rearSteeringPosition)
 	)
 	{
 		speedMeasure.v_left_driving = leftDrivingSpeed;
 		speedMeasure.v_right_driving = rightDrivingSpeed;
 		speedMeasure.v_rear_driving = rearDrivingSpeed;
-        speedMeasure.v_left_steering = leftSteeringSpeed;
-        speedMeasure.v_right_steering = rightSteeringSpeed;
-        speedMeasure.v_rear_steering = rearSteeringSpeed;
+
+        speedMeasure.p_left_steering = leftSteeringPosition;
+        speedMeasure.p_right_steering = rightSteeringPosition;
+        speedMeasure.p_rear_steering = rearSteeringPosition;
 		outOmniSpeedMeasure.write(speedMeasure);
 	}
 }

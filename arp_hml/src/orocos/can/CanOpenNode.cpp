@@ -277,10 +277,11 @@ bool CanOpenNode::connectOperations()
 {
     bool res = true;
 
-    res &= getOperation(propCanOpenControllerName, "ooRegisterNewNode",       m_ooRegister);
-    res &= getOperation(propCanOpenControllerName, "ooUnregisterNode",       m_ooUnregister);
-    res &= getOperation(propCanOpenControllerName, "coWriteInRemoteDico",     m_coWriteInRemoteDico);
-    res &= getOperation(propCanOpenControllerName, "coReadInRemoteDico",      m_coReadInRemoteDico);
+    res &= getOperation(propCanOpenControllerName, "ooRegisterNewNode",         m_ooRegister);
+    res &= getOperation(propCanOpenControllerName, "ooUnregisterNode",          m_ooUnregister);
+    res &= getOperation(propCanOpenControllerName, "coWriteInRemoteDico",       m_coWriteInRemoteDico);
+    res &= getOperation(propCanOpenControllerName, "coReadInRemoteDico",        m_coReadInRemoteDico);
+    res &= getOperation(propCanOpenControllerName, "coSendPdo",                 m_coSendPdo);
 
     return res;
 }
