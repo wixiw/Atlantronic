@@ -6,7 +6,8 @@
 /**************************************************************************/
 /* Declaration of mapped variables                                        */
 /**************************************************************************/
-UNS8 Woodhead_outputs = 0x0;		/* Mapped at index 0x2050, subindex 0x01 */
+UNS8 WoodheadIn_inputs = 0x0;		/* Mapped at index 0x2050, subindex 0x01 */
+UNS8 WoodheadOut_outputs = 0x0;		/* Mapped at index 0x2060, subindex 0x01 */
 INTEGER32 LeftSteering_MeasuredSpeed = 0x0;		/* Mapped at index 0x2210, subindex 0x01 */
 UNS16 LeftSteering_Ds402State = 0x0;		/* Mapped at index 0x2210, subindex 0x02 */
 INTEGER32 LeftSteering_MeasuredPosition = 0x0;		/* Mapped at index 0x2210, subindex 0x03 */
@@ -1052,6 +1053,32 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, uint16, sizeof (UNS16), (void*)&CanARD_obj1806_Event_Timer }
                      };
 
+/* index 0x1807 :   Transmit PDO 8 Parameter. */
+                    UNS8 CanARD_highestSubIndex_obj1807 = 5; /* number of subindex - 1*/
+                    UNS32 CanARD_obj1807_COB_ID_used_by_PDO = 0x306;	/* 774 */
+                    UNS8 CanARD_obj1807_Transmission_Type = 0x1;	/* 1 */
+                    UNS16 CanARD_obj1807_Inhibit_Time = 0x0;	/* 0 */
+                    UNS8 CanARD_obj1807_Compatibility_Entry = 0x0;	/* 0 */
+                    UNS16 CanARD_obj1807_Event_Timer = 0x0;	/* 0 */
+                    ODCallback_t CanARD_Index1807_callbacks[] = 
+                     {
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                     };
+                    subindex CanARD_Index1807[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj1807 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1807_COB_ID_used_by_PDO },
+                       { RW, uint8, sizeof (UNS8), (void*)&CanARD_obj1807_Transmission_Type },
+                       { RW, uint16, sizeof (UNS16), (void*)&CanARD_obj1807_Inhibit_Time },
+                       { RW, uint8, sizeof (UNS8), (void*)&CanARD_obj1807_Compatibility_Entry },
+                       { RW, uint16, sizeof (UNS16), (void*)&CanARD_obj1807_Event_Timer }
+                     };
+
 /* index 0x1A00 :   Transmit PDO 1 Mapping. */
                     UNS8 CanARD_highestSubIndex_obj1A00 = 2; /* number of subindex - 1*/
                     UNS32 CanARD_obj1A00[] = 
@@ -1150,9 +1177,21 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1A06[1] }
                      };
 
-/* index 0x2050 :   Mapped variable Woodhead */
+/* index 0x1A07 :   Transmit PDO 8 Mapping. */
+                    UNS8 CanARD_highestSubIndex_obj1A07 = 1; /* number of subindex - 1*/
+                    UNS32 CanARD_obj1A07[] = 
+                    {
+                      0x0	/* 0 */
+                    };
+                    subindex CanARD_Index1A07[] = 
+                     {
+                       { RW, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj1A07 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1A07[0] }
+                     };
+
+/* index 0x2050 :   Mapped variable WoodheadIn */
                     UNS8 CanARD_highestSubIndex_obj2050 = 1; /* number of subindex - 1*/
-                    ODCallback_t Woodhead_callbacks[] = 
+                    ODCallback_t WoodheadIn_callbacks[] = 
                      {
                        NULL,
                        NULL,
@@ -1160,7 +1199,15 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                     subindex CanARD_Index2050[] = 
                      {
                        { RO, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj2050 },
-                       { RW, uint8, sizeof (UNS8), (void*)&Woodhead_outputs }
+                       { RW, uint8, sizeof (UNS8), (void*)&WoodheadIn_inputs }
+                     };
+
+/* index 0x2060 :   Mapped variable WoodheadOut */
+                    UNS8 CanARD_highestSubIndex_obj2060 = 1; /* number of subindex - 1*/
+                    subindex CanARD_Index2060[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj2060 },
+                       { RW, uint8, sizeof (UNS8), (void*)&WoodheadOut_outputs }
                      };
 
 /* index 0x2210 :   Mapped variable LeftSteering */
@@ -1404,6 +1451,7 @@ const indextable CanARD_objdict[] =
   { (subindex*)CanARD_Index1804,sizeof(CanARD_Index1804)/sizeof(CanARD_Index1804[0]), 0x1804},
   { (subindex*)CanARD_Index1805,sizeof(CanARD_Index1805)/sizeof(CanARD_Index1805[0]), 0x1805},
   { (subindex*)CanARD_Index1806,sizeof(CanARD_Index1806)/sizeof(CanARD_Index1806[0]), 0x1806},
+  { (subindex*)CanARD_Index1807,sizeof(CanARD_Index1807)/sizeof(CanARD_Index1807[0]), 0x1807},
   { (subindex*)CanARD_Index1A00,sizeof(CanARD_Index1A00)/sizeof(CanARD_Index1A00[0]), 0x1A00},
   { (subindex*)CanARD_Index1A01,sizeof(CanARD_Index1A01)/sizeof(CanARD_Index1A01[0]), 0x1A01},
   { (subindex*)CanARD_Index1A02,sizeof(CanARD_Index1A02)/sizeof(CanARD_Index1A02[0]), 0x1A02},
@@ -1411,7 +1459,9 @@ const indextable CanARD_objdict[] =
   { (subindex*)CanARD_Index1A04,sizeof(CanARD_Index1A04)/sizeof(CanARD_Index1A04[0]), 0x1A04},
   { (subindex*)CanARD_Index1A05,sizeof(CanARD_Index1A05)/sizeof(CanARD_Index1A05[0]), 0x1A05},
   { (subindex*)CanARD_Index1A06,sizeof(CanARD_Index1A06)/sizeof(CanARD_Index1A06[0]), 0x1A06},
+  { (subindex*)CanARD_Index1A07,sizeof(CanARD_Index1A07)/sizeof(CanARD_Index1A07[0]), 0x1A07},
   { (subindex*)CanARD_Index2050,sizeof(CanARD_Index2050)/sizeof(CanARD_Index2050[0]), 0x2050},
+  { (subindex*)CanARD_Index2060,sizeof(CanARD_Index2060)/sizeof(CanARD_Index2060[0]), 0x2060},
   { (subindex*)CanARD_Index2210,sizeof(CanARD_Index2210)/sizeof(CanARD_Index2210[0]), 0x2210},
   { (subindex*)CanARD_Index2220,sizeof(CanARD_Index2220)/sizeof(CanARD_Index2220[0]), 0x2220},
   { (subindex*)CanARD_Index2230,sizeof(CanARD_Index2230)/sizeof(CanARD_Index2230[0]), 0x2230},
@@ -1484,20 +1534,23 @@ const indextable * CanARD_scanIndexOD (UNS16 wIndex, UNS32 * errorCode, ODCallba
 		case 0x1804: i = 56;*callbacks = CanARD_Index1804_callbacks; break;
 		case 0x1805: i = 57;*callbacks = CanARD_Index1805_callbacks; break;
 		case 0x1806: i = 58;*callbacks = CanARD_Index1806_callbacks; break;
-		case 0x1A00: i = 59;break;
-		case 0x1A01: i = 60;break;
-		case 0x1A02: i = 61;break;
-		case 0x1A03: i = 62;break;
-		case 0x1A04: i = 63;break;
-		case 0x1A05: i = 64;break;
-		case 0x1A06: i = 65;break;
-		case 0x2050: i = 66;*callbacks = Woodhead_callbacks; break;
-		case 0x2210: i = 67;*callbacks = LeftSteering_callbacks; break;
-		case 0x2220: i = 68;*callbacks = RightSteering_callbacks; break;
-		case 0x2230: i = 69;*callbacks = RearSteering_callbacks; break;
-		case 0x2310: i = 70;*callbacks = LeftDriving_callbacks; break;
-		case 0x2320: i = 71;*callbacks = RightDriving_callbacks; break;
-		case 0x2330: i = 72;*callbacks = RearDriving_callbacks; break;
+		case 0x1807: i = 59;*callbacks = CanARD_Index1807_callbacks; break;
+		case 0x1A00: i = 60;break;
+		case 0x1A01: i = 61;break;
+		case 0x1A02: i = 62;break;
+		case 0x1A03: i = 63;break;
+		case 0x1A04: i = 64;break;
+		case 0x1A05: i = 65;break;
+		case 0x1A06: i = 66;break;
+		case 0x1A07: i = 67;break;
+		case 0x2050: i = 68;*callbacks = WoodheadIn_callbacks; break;
+		case 0x2060: i = 69;break;
+		case 0x2210: i = 70;*callbacks = LeftSteering_callbacks; break;
+		case 0x2220: i = 71;*callbacks = RightSteering_callbacks; break;
+		case 0x2230: i = 72;*callbacks = RearSteering_callbacks; break;
+		case 0x2310: i = 73;*callbacks = LeftDriving_callbacks; break;
+		case 0x2320: i = 74;*callbacks = RightDriving_callbacks; break;
+		case 0x2330: i = 75;*callbacks = RearDriving_callbacks; break;
 		default:
 			*errorCode = OD_NO_SUCH_OBJECT;
 			return NULL;
@@ -1511,7 +1564,7 @@ const indextable * CanARD_scanIndexOD (UNS16 wIndex, UNS32 * errorCode, ODCallba
  * Even if no pdoTransmit are defined, at least one entry is computed
  * for compilations issues.
  */
-s_PDO_status CanARD_PDO_status[7] = {s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer};
+s_PDO_status CanARD_PDO_status[8] = {s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer};
 
 const quick_index CanARD_firstIndex = {
   6, /* SDO_SVR */
@@ -1519,7 +1572,7 @@ const quick_index CanARD_firstIndex = {
   14, /* PDO_RCV */
   33, /* PDO_RCV_MAP */
   52, /* PDO_TRS */
-  59 /* PDO_TRS_MAP */
+  60 /* PDO_TRS_MAP */
 };
 
 const quick_index CanARD_lastIndex = {
@@ -1527,8 +1580,8 @@ const quick_index CanARD_lastIndex = {
   13, /* SDO_CLT */
   32, /* PDO_RCV */
   51, /* PDO_RCV_MAP */
-  58, /* PDO_TRS */
-  65 /* PDO_TRS_MAP */
+  59, /* PDO_TRS */
+  67 /* PDO_TRS_MAP */
 };
 
 const UNS16 CanARD_ObjdictSize = sizeof(CanARD_objdict)/sizeof(CanARD_objdict[0]); 

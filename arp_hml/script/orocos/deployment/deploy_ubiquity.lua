@@ -11,6 +11,7 @@ Deployer:import("arp_hml");
 dofile("script/orocos/deployment/ubiquity/can_deployer.lua");
 dofile("script/orocos/deployment/ubiquity/motor_deployer.lua");
 dofile("script/orocos/deployment/ubiquity/io_deployer.lua");
+dofile("script/orocos/deployment/ubiquity/joystick_deployer.lua");
 dofile("script/orocos/deployment/ubiquity/hml_itf_deployer.lua");
 
 print("... load components")
@@ -19,6 +20,8 @@ print("... ...motor")
 MotorDeployer:load()
 print("... ...io")
 IoDeployer:load()
+print("... ...joystick")
+JoystickDeployer:load()
 print("... ...hmi")
 HmlItfDeployer:load()
 
@@ -26,12 +29,14 @@ print("... connect components")
 CanDeployer:connect()
 MotorDeployer:connect()
 IoDeployer:connect()
+JoystickDeployer:connect()
 HmlItfDeployer:connect()
 
 print("... start components")
 CanDeployer:start()
 MotorDeployer:start()
 IoDeployer:start()
+JoystickDeployer:start()
 HmlItfDeployer:start()
 
 print("fin déploiment arp_hml")
