@@ -9,6 +9,7 @@ configure_file(
   )
   message("[+] configure version.h")
 
+add_subdirectory(components)
 add_subdirectory(math)
 add_subdirectory(plugin)
 add_subdirectory(taskcontexts)
