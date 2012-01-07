@@ -81,14 +81,15 @@ namespace arp_core
         /** Callback de Déconfiguration */
         virtual void cleanupHook();
 
+        /** Defini si le composant est autorisé à logger. Publique pour que les services puissent y accéder */
+        bool propEnableLog;
+
     protected:
 
         /** Nom du script à charger automatiquement, si vide on ne charge rien snas erreur */
         string propAutoLoadScript;
         /** Nom de la machine à états à charger automatiquement, si vide on ne charge rien snas erreur */
         string propAutoLoadStateMachines;
-        /** Defini si le composant est autorisé à logger */
-        bool propEnableLog;
 
         /**Chemin vers le project */
         string attrProjectRootPath;

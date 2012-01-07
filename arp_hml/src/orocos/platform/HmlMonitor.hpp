@@ -9,6 +9,7 @@
 #define HML_MONITOR_HPP_
 
 #include <components/Monitor.hpp>
+#include "PowerManager.hpp"
 
 using namespace RTT;
 using namespace arp_core;
@@ -61,7 +62,8 @@ namespace arp_hml
         vector<TaskContext*> m_monitoredBusList;
 
 
-
+        /** Interface de scripting Orocos (ods,ops) */
+        PowerManager m_power;
     };
 }
 

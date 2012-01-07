@@ -8,13 +8,15 @@
 #include <rtt/Component.hpp>
 #include "HmlMonitor.hpp"
 
+
 using namespace arp_hml;
 using namespace arp_core;
 
 ORO_LIST_COMPONENT_TYPE( arp_hml::HmlMonitor )
 
 HmlMonitor::HmlMonitor(const std::string& name) :
-    Monitor(name)
+    Monitor(name),
+    m_power(*this)
 {
     attrProjectRootPath = ros::package::getPath("arp_hml");
 
@@ -50,6 +52,9 @@ bool HmlMonitor::configureHook()
     //configure normal monitored components
     res &= Monitor::configureHook();
 
+    //configure power addon
+    m_power.configure();
+
     return res;
 }
 
@@ -84,6 +89,9 @@ void HmlMonitor::updateHook()
     {
         error();
     }
+
+    //manage power on motors
+    m_power.update();
 }
 
 

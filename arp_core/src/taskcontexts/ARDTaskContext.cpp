@@ -16,9 +16,9 @@ using namespace base;
 
 ARDTaskContext::ARDTaskContext(const std::string& name, const std::string projectRootPath) :
     TaskContext(name, PreOperational),
+    propEnableLog(true),
     propAutoLoadScript(""),
     propAutoLoadStateMachines(""),
-    propEnableLog(true),
     attrProjectRootPath(projectRootPath),
     attrPropertyPath("script/orocos/conf"),
     attrScriptPath("script/orocos/ops"),
