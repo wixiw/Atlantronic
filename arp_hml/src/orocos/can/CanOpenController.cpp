@@ -172,6 +172,11 @@ bool CanOpenController::startHook()
                 << endlog();
         res = false;
     }
+    else
+    {
+        LOG(Info) << propBusName << " NMT Master in Operationnal state" << endlog();
+        usleep(0.100 * 1E6);
+    }
 
     return res;
 }

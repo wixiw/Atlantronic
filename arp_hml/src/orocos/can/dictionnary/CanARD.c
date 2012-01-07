@@ -1181,7 +1181,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                     UNS8 CanARD_highestSubIndex_obj1A07 = 1; /* number of subindex - 1*/
                     UNS32 CanARD_obj1A07[] = 
                     {
-                      0x0	/* 0 */
+                      0x20600108	/* 543162632 */
                     };
                     subindex CanARD_Index1A07[] = 
                      {

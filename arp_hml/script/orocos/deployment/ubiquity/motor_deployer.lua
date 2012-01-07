@@ -34,55 +34,12 @@ function MotorDeployer:connect()
 	Deployer:addPeer("RearSteering", "Can1");
 	Deployer:addPeer("Reporting", "RearSteering")
 
-	--Deployer:connect("LeftDriving.inSpeedCmd", "Hml.outLeftDrivingSpeedCmd",cp);
-	--Deployer:connect("RightDriving.inSpeedCmd", "Hml.outRightDrivingSpeedCmd",cp);
-	--Deployer:connect("RearDriving.inSpeedCmd", "Hml.outRearDrivingSpeedCmd",cp);
-	--Deployer:connect("LeftSteering.inPositionCmd", "Hml.outLeftSteeringPositionCmd",cp);
-	--Deployer:connect("RightSteering.inPositionCmd", "Hml.outRightSteeringPositionCmd",cp);
-	--Deployer:connect("RearSteering.inPositionCmd", "Hml.outRearSteeringPositionCmd",cp);
-
-	Deployer:connect("RearDriving.inSpeedCmd", "Joystick.outY1",cp);
-	Deployer:connect("RearSteering.inPositionCmd", "Joystick.outX2",cp);
-end
-
-function MotorDeployer:start()
-	--LeftDriving = Deployer:getPeer("LeftDriving")
-	--RightDriving = Deployer:getPeer("RightDriving")
-	RearDriving = Deployer:getPeer("RearDriving")
-	--LeftSteering = Deployer:getPeer("LeftSteering")
-	--RightSteering = Deployer:getPeer("RightSteering")
-	RearSteering = Deployer:getPeer("RearSteering")
-
-	--LeftDriving:configure()
-	--RightDriving:configure()
-	RearDriving:configure()
-	--LeftSteering:configure()
-	--RightSteering:configure()
-	RearSteering:configure()
-
-	RearDriving:ooSleep(1);
-
-	--LeftDriving:start()
-	--RightDriving:start()
-	RearDriving:start()
-	--LeftSteering:start()
-	--RightSteering:start()
-	RearSteering:start()
-
-	RearDriving:ooSleep(1);
-
-	--Definition des couples
-	--TODO WLA post coupe faire mieux
-	RearDriving:ooSetOperationMode("other");
-	RearSteering:ooSetOperationMode("other");
-
-	RearDriving:ooFaulhaberCmd(0x81,RearDriving:getProperty("propMaximalTorque"):get()*1000); 
-	RearSteering:ooFaulhaberCmd(0x81,RearSteering:getProperty("propMaximalTorque"):get()*1000);
-
-	RearDriving:ooSleep(1);
-
-	RearDriving:ooSetOperationMode("speed");
-	RearSteering:ooSetOperationMode("speed");
+	--Deployer:connect("LeftDriving.inSpeedCmd", "RosHmlItf.outLeftDrivingSpeedCmd",cp);
+	--Deployer:connect("RightDriving.inSpeedCmd", "RosHmlItf.outRightDrivingSpeedCmd",cp);
+	Deployer:connect("RearDriving.inSpeedCmd", "RosHmlItf.outRearDrivingSpeedCmd",cp);
+	--Deployer:connect("LeftSteering.inPositionCmd", "RosHmlItf.outLeftSteeringPositionCmd",cp);
+	--Deployer:connect("RightSteering.inPositionCmd", "RosHmlItf.outRightSteeringPositionCmd",cp);
+	Deployer:connect("RearSteering.inPositionCmd", "RosHmlItf.outRearSteeringPositionCmd",cp);
 end
 
 

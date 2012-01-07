@@ -1,13 +1,13 @@
 /*
- * Woodhead.hpp
+ * WoodheadIn.hpp
  *
  *  Created on: 29 Apr. 2011
  *      Author: wla
  */
 
 
-#ifndef WOODHEAD_HPP_
-#define WOODHEAD_HPP_
+#ifndef WOODHEAD_IN_HPP_
+#define WOODHEAD_IN_HPP_
 
 //include orocos
 #include "orocos/can/CanOpenNode.hpp"
@@ -18,10 +18,10 @@ using namespace arp_core;
 namespace arp_hml
 {
 
-    class Woodhead : public CanOpenNode
+    class WoodheadIn : public CanOpenNode
     {
     public:
-    	Woodhead(const std::string& name);
+    	WoodheadIn(const std::string& name);
     	bool configureHook();
     	void updateHook();
 
@@ -35,7 +35,7 @@ namespace arp_hml
     	OutputPort<bool> outBit7;
     	OutputPort<bool> outBit8;
 
-    	UNS8* m_outputs;
+    	UNS8* m_inputs;
 
     	virtual bool checkInputsPorts();
 
