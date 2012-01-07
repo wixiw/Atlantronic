@@ -63,12 +63,12 @@ namespace arp_core
          * @param peerName : the name of the Orocos component that needs to be monitored
          * @return true if success, false if the peer to monitor is not in the peer list.
          */
-        bool addMonitoredPeer(std::string peerName );
+        virtual bool addMonitoredPeer(std::string peerName );
 
         /**
          * display the list of monitored peers
          */
-        void displayMonitoredPeers();
+        virtual void displayMonitoredPeers();
 
     protected:
         /** List of peers to monitor */

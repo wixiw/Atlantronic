@@ -204,7 +204,7 @@ bool Monitor::addMonitoredPeer(std::string peerName )
 void Monitor::displayMonitoredPeers()
 {
     cout << endl;
-    cout << "Liste of monitored peers : " << endl;
+    cout << "List of monitored peers : " << endl;
     cout << endl;
 
     vector<TaskContext*>::iterator i;
