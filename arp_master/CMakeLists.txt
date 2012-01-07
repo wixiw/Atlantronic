@@ -32,13 +32,9 @@ configure_ard_project()
 # end of ARD specific
 ###
 
-#orocos specific
-configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/orocos-arp_master.pc.in ${CMAKE_CURRENT_BINARY_DIR}/orocos-arp_master-${OROCOS_TARGET}.pc @ONLY)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/orocos-arp_master-${OROCOS_TARGET}.pc DESTINATION  lib/pkgconfig )
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/manifest.xml DESTINATION  lib/orocos/arp_core )
 #
-# Provided 'uninstall' target
+# generate orocos package
 #
-orocos_uninstall_target()
+orocos_generate_package()
 
 
