@@ -55,16 +55,9 @@ namespace arp_hml
         OutputPort<bool> outSteeringEnable;
         OutputPort<bool> outEnable;
 
+        /** */
         ARDTaskContext& m_owner;
 
-        /** */
-        bool m_tractionEnableOperationInProgress;
-        /** */
-        bool m_directionEnableOperationInProgress;
-        /** */
-        bool m_tractionDisableOperationInProgress;
-        /** */
-        bool m_directionDisableOperationInProgress;
 
         /** Pointer on the LeftDrive ooEnableDrive Operation**/
         OperationCaller<void(void)> m_ooEnableLeftDriving;
@@ -93,35 +86,33 @@ namespace arp_hml
         OperationCaller<void(void)> m_ooDisableRearSteering;
 
 
-        /**
-         *
-         */
-        bool enableTraction();
+        /** Pointer in the Left driving ooSetOperationMode Operation **/
+        OperationCaller<bool(string)> m_ooSetLeftDrivingOperationMode;
+        /** Pointer in the Right driving ooSetOperationMode Operation **/
+        OperationCaller<bool(string)> m_ooSetRightDrivingOperationMode;
+        /** Pointer in the Right driving ooSetOperationMode Operation **/
+        OperationCaller<bool(string)> m_ooSetRearDrivingOperationMode;
+        /** Pointer in the Left steering ooSetOperationMode Operation **/
+        OperationCaller<bool(string)> m_ooSetLeftSteeringOperationMode;
+        /** Pointer in the Right steering ooSetOperationMode Operation **/
+        OperationCaller<bool(string)> m_ooSetRightSteeringOperationMode;
+        /** Pointer in the Right steering ooSetOperationMode Operation **/
+        OperationCaller<bool(string)> m_ooSetRearSteeringOperationMode;
 
         /**
          *
          */
-        bool enableDirection();
+        bool ooSetDrivingMotorPower(bool powerOn, double timeout);
 
         /**
          *
          */
-        bool enablePower();
+        bool ooSetSteeringMotorPower(bool powerOn, double timeout);
 
         /**
          *
          */
-        bool disableTraction();
-
-        /**
-         *
-         */
-        bool disableDirection();
-
-        /**
-         *
-         */
-        bool disablePower();
+        bool ooSetMotorPower(bool powerOn, double timeout);
 
         /**
          *

@@ -84,6 +84,32 @@ namespace arp_core
         /** Defini si le composant est autorisé à logger. Publique pour que les services puissent y accéder */
         bool propEnableLog;
 
+        /** Allows a component to connect easily to an other component's operation */
+        template<class CommandT>
+        bool getOperation(string component, string operation, OperationCaller<CommandT>& reference)
+        {
+            bool res = true;
+
+            TaskContext* taskContext = getPeer(component);
+            if ( taskContext == NULL )
+            {
+                LOG(Error)  << "getOperation : failed to find peer " << component << endlog();
+                res = false;
+            }
+            else
+            {
+                reference = taskContext->getOperation(operation);
+                //TODO WLA je ne sais pas comment on check que le get a reussi !
+//                if( reference. )
+//                {
+//                    LOG(Error)  << "getOperation : " << component << "." << operation << " is not available" << endlog();
+//                    res = false;
+//                }
+            }
+
+            return res;
+        }
+
     protected:
 
         /** Nom du script à charger automatiquement, si vide on ne charge rien snas erreur */
@@ -111,32 +137,6 @@ namespace arp_core
         /** Logger */
         // TODO WLA OCL::logging::Category* logger;
         Logger::In logger;
-
-        /** Allows a component to connect easily to an other component's operation */
-        template<class CommandT>
-        bool getOperation(string component, string operation, OperationCaller<CommandT>& reference)
-        {
-            bool res = true;
-
-            TaskContext* taskContext = getPeer(component);
-            if ( taskContext == NULL )
-            {
-                LOG(Error)  << "getOperation : failed to find peer " << component << endlog();
-                res = false;
-            }
-            else
-            {
-                reference = taskContext->getOperation(operation);
-                //TODO WLA je ne sais pas comment on check que le get a reussi !
-//                if( reference. )
-//                {
-//                    LOG(Error)  << "getOperation : " << component << "." << operation << " is not available" << endlog();
-//                    res = false;
-//                }
-            }
-
-            return res;
-        }
 
         /**
          * Check if the properties have correct values. This function may be override in components

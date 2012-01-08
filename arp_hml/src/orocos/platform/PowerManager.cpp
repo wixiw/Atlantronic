@@ -11,11 +11,7 @@ using namespace arp_core;
 
 PowerManager::PowerManager(ARDTaskContext& owner):
     propRequireCompleteHardware(false),
-    m_owner(owner),
-    m_tractionEnableOperationInProgress(false),
-    m_directionEnableOperationInProgress(false),
-    m_tractionDisableOperationInProgress(false),
-    m_directionDisableOperationInProgress(false)
+    m_owner(owner)
 {
     m_owner.addProperty("propRequireCompleteHardware", propRequireCompleteHardware)
         .doc("Decide weather complete hardware must be present or not");
@@ -40,19 +36,20 @@ PowerManager::PowerManager(ARDTaskContext& owner):
     m_owner.addPort("outEnable",outEnable)
             .doc("All device are soft enabled");
 
-    m_owner.addOperation("ooEnableTraction", &PowerManager::enableTraction, this, OwnThread)
-            .doc("");
-    m_owner.addOperation("ooEnableDirection", &PowerManager::enableDirection, this, OwnThread)
-            .doc("");
-    m_owner.addOperation("ooEnablePower", &PowerManager::enablePower, this, OwnThread)
-            .doc("");
+    m_owner.addOperation("ooSetDrivingMotorPower", &PowerManager::ooSetDrivingMotorPower, this, OwnThread)
+            .doc("")
+            .arg("","")
+            .arg("","");
+    m_owner.addOperation("ooSetSteeringMotorPower", &PowerManager::ooSetSteeringMotorPower, this, OwnThread)
+            .doc("")
+            .arg("","")
+            .arg("","");
 
-    m_owner.addOperation("ooDisableTraction", &PowerManager::disableTraction, this, OwnThread)
-            .doc("");
-    m_owner.addOperation("ooDisableDirection", &PowerManager::disableDirection, this, OwnThread)
-            .doc("");
-    m_owner.addOperation("ooDisablePower", &PowerManager::disablePower, this, OwnThread)
-            .doc("");
+    m_owner.addOperation("ooSetMotorPower", &PowerManager::ooSetMotorPower, this, OwnThread)
+            .doc("")
+            .arg("","")
+            .arg("","");
+
 }
 
 //------------------------------------------------------------------------------------------------------------------
@@ -70,58 +67,44 @@ bool PowerManager::configure()
 bool PowerManager::getPeersOperations()
 {
     bool res = true;
-/*
+
     //we test the peer existence, because in some cases we don't care in case of incomplete hardware
-    if( getOwner()->hasPeer("LeftDriving") || propRequireCompleteHardware )
+    if( m_owner.hasPeer("LeftDriving") || propRequireCompleteHardware )
     {
-        res &= getOperation("LeftDriving",      "ooEnableDrive",        m_ooEnableLeftDriving);
+        res &= m_owner.getOperation("LeftDriving",      "ooEnableDrive",        m_ooEnableLeftDriving);
+        res &= m_owner.getOperation("LeftDriving",      "ooDisableDrive",       m_ooDisableLeftDriving);
+        res &= m_owner.getOperation("LeftDriving" ,     "ooSetOperationMode",   m_ooSetLeftDrivingOperationMode);
     }
-    if( getOwner()->hasPeer("RightDriving") || propRequireCompleteHardware )
+    if( m_owner.hasPeer("RightDriving") || propRequireCompleteHardware )
     {
-        res &= getOperation("RightDriving",     "ooEnableDrive",        m_ooEnableRightDriving);
+        res &= m_owner.getOperation("RightDriving",     "ooEnableDrive",        m_ooEnableRightDriving);
+        res &= m_owner.getOperation("RightDriving",     "ooDisableDrive",       m_ooDisableRightDriving);
+        res &= m_owner.getOperation("RightDriving",     "ooSetOperationMode",   m_ooSetRightDrivingOperationMode);
     }
-    if( getOwner()->hasPeer("RearDriving") || propRequireCompleteHardware )
+    if( m_owner.hasPeer("RearDriving") || propRequireCompleteHardware )
     {
-        res &= getOperation("RearDriving",      "ooEnableDrive",        m_ooEnableRearDriving);
+        res &= m_owner.getOperation("RearDriving",      "ooEnableDrive",        m_ooEnableRearDriving);
+        res &= m_owner.getOperation("RearDriving",      "ooDisableDrive",       m_ooDisableRearDriving);
+        res &= m_owner.getOperation("RearDriving",      "ooSetOperationMode",   m_ooSetRearDrivingOperationMode);
     }
-    if( getOwner()->hasPeer("LeftSteering") || propRequireCompleteHardware )
+    if( m_owner.hasPeer("LeftSteering") || propRequireCompleteHardware )
     {
-        res &= getOperation("LeftSteering",     "ooEnableDrive",        m_ooEnableLeftSteering);
+        res &= m_owner.getOperation("LeftSteering",     "ooEnableDrive",        m_ooEnableLeftSteering);
+        res &= m_owner.getOperation("LeftSteering",     "ooDisableDrive",       m_ooDisableLeftSteering);
+        res &= m_owner.getOperation("LeftSteering" ,    "ooSetOperationMode",   m_ooSetLeftSteeringOperationMode);
     }
-    if( getOwner()->hasPeer("RightSteering") || propRequireCompleteHardware )
+    if( m_owner.hasPeer("RightSteering") || propRequireCompleteHardware )
     {
-        res &= getOperation("RightSteering",    "ooEnableDrive",        m_ooEnableRightSteering);
+        res &= m_owner.getOperation("RightSteering",    "ooEnableDrive",        m_ooEnableRightSteering);
+        res &= m_owner.getOperation("RightSteering",    "ooDisableDrive",       m_ooDisableRightSteering);
+        res &= m_owner.getOperation("RightSteering",    "ooSetOperationMode",   m_ooSetRightSteeringOperationMode);
     }
-    if( getOwner()->hasPeer("RearSteering") || propRequireCompleteHardware )
+    if( m_owner.hasPeer("RearSteering") || propRequireCompleteHardware )
     {
-        res &= getOperation("RearSteering",     "ooEnableDrive",        m_ooEnableRearSteering);
+        res &= m_owner.getOperation("RearSteering",     "ooEnableDrive",        m_ooEnableRearSteering);
+        res &= m_owner.getOperation("RearSteering",     "ooDisableDrive",       m_ooDisableRearSteering);
+        res &= m_owner.getOperation("RearSteering",     "ooSetOperationMode",   m_ooSetRearSteeringOperationMode);
     }
-
-
-    if( getOwner()->hasPeer("LeftDriving") || propRequireCompleteHardware )
-    {
-        res &= getOperation("LeftDriving",      "ooDisableDrive",       m_ooDisableLeftDriving);
-    }
-    if( getOwner()->hasPeer("RightDriving") || propRequireCompleteHardware )
-    {
-        res &= getOperation("RightDriving",     "ooDisableDrive",       m_ooDisableRightDriving);
-    }
-    if( getOwner()->hasPeer("RearDriving") || propRequireCompleteHardware )
-    {
-        res &= getOperation("RearDriving",      "ooDisableDrive",       m_ooDisableRearDriving);
-    }
-    if( getOwner()->hasPeer("LeftSteering") || propRequireCompleteHardware )
-    {
-        res &= getOperation("LeftSteering",     "ooDisableDrive",       m_ooDisableLeftSteering);
-    }
-    if( getOwner()->hasPeer("RightSteering") || propRequireCompleteHardware )
-    {
-        res &= getOperation("RightSteering",    "ooDisableDrive",       m_ooDisableRightSteering);
-    }
-    if( getOwner()->hasPeer("RearSteering") || propRequireCompleteHardware )
-    {
-        res &= getOperation("RearSteering",     "ooDisableDrive",       m_ooDisableRearSteering);
-    }*/
 
     return res;
 }
@@ -135,9 +118,6 @@ void PowerManager::update()
     bool rightSteeringEnable = false;
     bool rearSteeringEnable = false;
 
-    bool tractionEnable = false;
-    bool directionEnable = false;
-
     inLeftDrivingEnable.readNewest(leftDrivingEnable);
     inRightDrivingEnable.readNewest(rightDrivingEnable);
     inRearDrivingEnable.readNewest(rearDrivingEnable);
@@ -145,119 +125,152 @@ void PowerManager::update()
     inRightSteeringEnable.readNewest(rightSteeringEnable);
     inRearSteeringEnable.readNewest(rearSteeringEnable);
 
-    tractionEnable = leftDrivingEnable && rightDrivingEnable && rearDrivingEnable;
-    directionEnable = leftSteeringEnable && rightSteeringEnable && rearSteeringEnable;
-
-    outDrivingEnable.write(tractionEnable);
-    outSteeringEnable.write(directionEnable);
-    outEnable.write( tractionEnable && directionEnable );
+    outDrivingEnable.write( leftDrivingEnable && rightDrivingEnable && rearDrivingEnable );
+    outSteeringEnable.write( leftSteeringEnable && rightSteeringEnable && rearSteeringEnable );
+    outEnable.write( outDrivingEnable.getLastWrittenValue() && outSteeringEnable.getLastWrittenValue() );
 }
-
 
 //-----------------------------------------------------
 
-bool PowerManager::enableTraction()
+bool PowerManager::ooSetDrivingMotorPower(bool powerOn, double timeout)
 {
-    if( m_tractionEnableOperationInProgress )
+    double chrono = 0.0;
+    bool leftDrivingEnableTmp;
+    bool rightDrivingEnableTmp;
+    bool rearDrivingEnableTmp;
+    bool enable = outDrivingEnable.getLastWrittenValue();
+
+    //Envoit de la commande d'enable
+    if( powerOn )
     {
-        LOGS(Info) << "Can't Enable Traction, an operation is already in progress on traction" << endlog();
-        return false;
+        if( enable )
+        {
+            LOGS(Info) << "ooSetDrivingMotorPower : you are trying to power the drive but they are already powered !" << endlog();
+        }
+        else
+        {
+            m_ooEnableLeftDriving();
+            m_ooEnableRightDriving();
+            m_ooEnableRearDriving();
+        }
+    }
+    else
+    {
+        if( enable )
+        {
+            m_ooDisableLeftDriving();
+            m_ooDisableRightDriving();
+            m_ooDisableRearDriving();
+        }
+        else
+        {
+            LOGS(Info) << "ooSetDrivingMotorPower : you are trying to unpower the drive but they are already unpowered !" << endlog();
+        }
     }
 
-    m_tractionEnableOperationInProgress = true;
-    LOGS(Info) << "Enable Traction required" << endlog();
-
-    if( m_ooEnableLeftDriving.ready() )
-        m_ooEnableLeftDriving();
-    if( m_ooEnableRightDriving.ready() )
-        m_ooEnableRightDriving();
-    if( m_ooEnableRearDriving.ready() )
-        m_ooEnableRearDriving();
-
-    return true;
-}
-
-bool PowerManager::enableDirection()
-{
-    if( m_directionEnableOperationInProgress )
+    //Attente de confirmation de l'action :
+    whileTimeout(inLeftDrivingEnable.readNewest(leftDrivingEnableTmp) != NoData && leftDrivingEnableTmp!=powerOn
+            && inRightDrivingEnable.readNewest(rightDrivingEnableTmp) != NoData && rightDrivingEnableTmp!=powerOn
+            && inRearDrivingEnable.readNewest(rearDrivingEnableTmp) != NoData && rearDrivingEnableTmp!=powerOn
+            , timeout, 0.050);
+    IfWhileTimeoutExpired(timeout)
     {
-        LOGS(Info) << "Can't Enable Direction, an operation is already in progress on direction" << endlog();
-        return false;
+        LOGS(Error) << "ooSetDrivingMotorPower : motor didn't switch power as required, timeout is over." << endlog();
+        goto failed;
     }
 
-    m_directionEnableOperationInProgress = true;
-    LOGS(Info) << "Enable Direction required" << endlog();
+    //remise ne mode vitesse des moteurs
+    if( m_ooSetLeftDrivingOperationMode("speed") == false
+     || m_ooSetRightDrivingOperationMode("speed") == false
+     || m_ooSetRearDrivingOperationMode("speed") == false
+     )
+    {
+        LOGS(Error) << "ooSetDrivingMotorPower : could not switch back to speed mode." << endlog();
+        goto failed;
+    }
 
-    if( m_ooEnableLeftSteering.ready() )
-        m_ooEnableLeftSteering();
-    if( m_ooEnableRightSteering.ready() )
-        m_ooEnableRightSteering();
-    if( m_ooEnableRearSteering.ready() )
-        m_ooEnableRearSteering();
+    LOGS(Info) << "ooSetDrivingMotorPower : Motors power switched to " << powerOn << " properly." << endlog();
+    goto success;
 
-    return true;
+    failed:
+        return false;
+    success:
+        return true;
 }
 
-bool PowerManager::enablePower()
+bool PowerManager::ooSetSteeringMotorPower(bool powerOn, double timeout)
+{
+    double chrono = 0.0;
+    bool leftSteeringEnableTmp;
+    bool rightSteeringEnableTmp;
+    bool rearSteeringEnableTmp;
+    bool enable = outSteeringEnable.getLastWrittenValue();
+
+    //Envoit de la commande d'enable
+    if( powerOn )
+    {
+        if( enable )
+        {
+            LOGS(Info) << "ooSetSteeringMotorPower : you are trying to power the drive but they are already powered !" << endlog();
+        }
+        else
+        {
+            m_ooEnableLeftSteering();
+            m_ooEnableRightSteering();
+            m_ooEnableRearSteering();
+        }
+    }
+    else
+    {
+        if( enable )
+        {
+            m_ooDisableLeftSteering();
+            m_ooDisableRightSteering();
+            m_ooDisableRearSteering();
+        }
+        else
+        {
+            LOGS(Info) << "ooSetSteeringMotorPower : you are trying to unpower the drive but they are already unpowered !" << endlog();
+        }
+    }
+
+    //Attente de confirmation de l'action :
+    whileTimeout(inLeftSteeringEnable.readNewest(leftSteeringEnableTmp) != NoData && leftSteeringEnableTmp!=powerOn
+            && inRightSteeringEnable.readNewest(rightSteeringEnableTmp) != NoData && rightSteeringEnableTmp!=powerOn
+            && inRearSteeringEnable.readNewest(rearSteeringEnableTmp) != NoData && rearSteeringEnableTmp!=powerOn
+            , timeout, 0.050);
+    IfWhileTimeoutExpired(timeout)
+    {
+        LOGS(Error) << "ooSetSteeringMotorPower : motor didn't switch power as required, timeout is over." << endlog();
+        goto failed;
+    }
+
+    //remise ne mode position des moteurs
+    if( m_ooSetLeftSteeringOperationMode("position") == false
+    || m_ooSetRightSteeringOperationMode("position") == false
+    || m_ooSetRearSteeringOperationMode("position") == false
+    )
+    {
+        LOGS(Error) << "ooSetSteeringMotorPower : could not switch back to position mode." << endlog();
+        goto failed;
+    }
+
+    LOGS(Info) << "ooSetSteeringMotorPower : Motors power switched to " << powerOn << " properly." << endlog();
+    goto success;
+
+    failed:
+        return false;
+    success:
+        return true;
+}
+
+
+bool PowerManager::ooSetMotorPower(bool powerOn, double timeout)
 {
     bool res = true;
 
-    res &= enableTraction();
-    res &= enableDirection();
+    res &= ooSetDrivingMotorPower( powerOn, timeout );
+    res &= ooSetSteeringMotorPower( powerOn, timeout );
 
-    return true;
+    return res;
 }
-
-bool PowerManager::disableTraction()
-{
-    if( m_tractionDisableOperationInProgress )
-    {
-        LOGS(Info) << "Can't Disable Traction, an operation is already in progress on traction" << endlog();
-        return false;
-    }
-
-    m_tractionDisableOperationInProgress = true;
-    LOGS(Info) << "Disable Traction required" << endlog();
-
-    if( m_ooDisableLeftDriving.ready() )
-        m_ooDisableLeftDriving();
-    if( m_ooDisableRightDriving.ready() )
-        m_ooDisableRightDriving();
-    if( m_ooDisableRearDriving.ready() )
-        m_ooDisableRearDriving();
-
-    return true;
-}
-
-bool PowerManager::disableDirection()
-{
-    if( m_directionDisableOperationInProgress )
-    {
-        LOGS(Info) << "Can't Disable Direction, an operation is already in progress on direction" << endlog();
-        return false;
-    }
-
-    m_directionDisableOperationInProgress = true;
-    LOGS(Info) << "Disable Direction required" << endlog();
-
-    if( m_ooDisableLeftSteering.ready() )
-        m_ooDisableLeftSteering();
-    if( m_ooDisableRightSteering.ready() )
-        m_ooDisableRightSteering();
-    if( m_ooDisableRearSteering.ready() )
-        m_ooDisableRearSteering();
-
-    return true;
-}
-
-bool PowerManager::disablePower()
-{
-    bool res = true;
-
-    res &= disableTraction();
-    res &= disableDirection();
-
-    return true;
-}
-
-
