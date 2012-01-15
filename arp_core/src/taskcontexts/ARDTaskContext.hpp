@@ -143,12 +143,14 @@ namespace arp_core
          */
         virtual bool checkProperties();
 
-        /**
+        /*
+         * DEPRECATED : this job is done by the monitoring component
+         *
          * Check if the input ports have been connected
          * It gets all the input ports automatically and check if they are connected
          * If this is undesired behavior please override the function
          */
-        virtual bool checkInputsPorts();
+        //virtual bool checkInputsPorts();
 
         /**
          * Reset the component in doing in chain : stop();cleanup();configure();start()

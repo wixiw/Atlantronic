@@ -6,6 +6,8 @@
  */
 #include <ros/package.h>
 #include <rtt/Component.hpp>
+#include <rtt/base/InputPortInterface.hpp>
+
 #include "Monitor.hpp"
 
 using namespace arp_core;
@@ -51,6 +53,8 @@ bool Monitor::configureHook()
             res &= tc->configure();
         }
     }
+
+    res &= checkPortConnection();
 
     return res;
 }
@@ -224,4 +228,36 @@ void Monitor::displayMonitoredPeers()
 
     cout << "------------------------" << endl;
     cout << endl;
+}
+
+bool Monitor::checkPortConnection()
+{
+    bool res = true;
+
+    vector<TaskContext*>::iterator i;
+    for ( i = m_monitoredList.begin() ; i != m_monitoredList.end() ; i++ )
+    {
+        TaskContext* tc = (*i);
+
+        if( tc == NULL )
+        {
+            cout << "m_monitoredList should not contain null values ! (checkPortConnection)" << endl;
+        }
+        else
+        {
+            RTT::DataFlowInterface::Ports ports = tc->ports()->getPorts();
+            RTT::DataFlowInterface::Ports::iterator p;
+            for( p = ports.begin() ; p != ports.end() ; p++ )
+            {
+                base::PortInterface* port = (*p);
+                if( dynamic_cast< RTT::base::InputPortInterface*>(port) != 0 && port->connected() == false )
+                {
+                    LOG(Error)  << "checkPortConnection : " << tc->getName() << "." << port->getName() << " is not connected !" << endlog();
+                    res &= false;
+                }
+            }
+        }
+    }
+
+    return res;
 }

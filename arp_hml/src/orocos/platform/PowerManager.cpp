@@ -11,10 +11,14 @@ using namespace arp_core;
 
 PowerManager::PowerManager(ARDTaskContext& owner):
     propRequireCompleteHardware(false),
+    propCanRequestTimeout(2.0),
     m_owner(owner)
 {
     m_owner.addProperty("propRequireCompleteHardware", propRequireCompleteHardware)
         .doc("Decide weather complete hardware must be present or not");
+
+    m_owner.addProperty("propCanRequestTimeout", propCanRequestTimeout)
+        .doc("Timeout when sending a command on the CAN, in s");
 
     m_owner.addPort("inLeftDrivingEnable",inLeftDrivingEnable)
             .doc("Left driving soft enable state");
@@ -38,16 +42,12 @@ PowerManager::PowerManager(ARDTaskContext& owner):
 
     m_owner.addOperation("ooSetDrivingMotorPower", &PowerManager::ooSetDrivingMotorPower, this, OwnThread)
             .doc("")
-            .arg("","")
             .arg("","");
     m_owner.addOperation("ooSetSteeringMotorPower", &PowerManager::ooSetSteeringMotorPower, this, OwnThread)
             .doc("")
-            .arg("","")
             .arg("","");
-
     m_owner.addOperation("ooSetMotorPower", &PowerManager::ooSetMotorPower, this, OwnThread)
             .doc("")
-            .arg("","")
             .arg("","");
 
 }
@@ -132,7 +132,7 @@ void PowerManager::update()
 
 //-----------------------------------------------------
 
-bool PowerManager::ooSetDrivingMotorPower(bool powerOn, double timeout)
+bool PowerManager::ooSetDrivingMotorPower(bool powerOn)
 {
     double chrono = 0.0;
     bool leftDrivingEnableTmp;
@@ -169,11 +169,11 @@ bool PowerManager::ooSetDrivingMotorPower(bool powerOn, double timeout)
     }
 
     //Attente de confirmation de l'action :
-    whileTimeout(inLeftDrivingEnable.readNewest(leftDrivingEnableTmp) != NoData && leftDrivingEnableTmp!=powerOn
-            && inRightDrivingEnable.readNewest(rightDrivingEnableTmp) != NoData && rightDrivingEnableTmp!=powerOn
-            && inRearDrivingEnable.readNewest(rearDrivingEnableTmp) != NoData && rearDrivingEnableTmp!=powerOn
-            , timeout, 0.050);
-    IfWhileTimeoutExpired(timeout)
+    whileTimeout(inLeftDrivingEnable.readNewest(leftDrivingEnableTmp) == NoData && leftDrivingEnableTmp!=powerOn
+            && inRightDrivingEnable.readNewest(rightDrivingEnableTmp) == NoData && rightDrivingEnableTmp!=powerOn
+            && inRearDrivingEnable.readNewest(rearDrivingEnableTmp) == NoData && rearDrivingEnableTmp!=powerOn
+            , propCanRequestTimeout, 0.050);
+    IfWhileTimeoutExpired(propCanRequestTimeout)
     {
         LOGS(Error) << "ooSetDrivingMotorPower : motor didn't switch power as required, timeout is over." << endlog();
         goto failed;
@@ -198,7 +198,7 @@ bool PowerManager::ooSetDrivingMotorPower(bool powerOn, double timeout)
         return true;
 }
 
-bool PowerManager::ooSetSteeringMotorPower(bool powerOn, double timeout)
+bool PowerManager::ooSetSteeringMotorPower(bool powerOn)
 {
     double chrono = 0.0;
     bool leftSteeringEnableTmp;
@@ -235,11 +235,11 @@ bool PowerManager::ooSetSteeringMotorPower(bool powerOn, double timeout)
     }
 
     //Attente de confirmation de l'action :
-    whileTimeout(inLeftSteeringEnable.readNewest(leftSteeringEnableTmp) != NoData && leftSteeringEnableTmp!=powerOn
-            && inRightSteeringEnable.readNewest(rightSteeringEnableTmp) != NoData && rightSteeringEnableTmp!=powerOn
-            && inRearSteeringEnable.readNewest(rearSteeringEnableTmp) != NoData && rearSteeringEnableTmp!=powerOn
-            , timeout, 0.050);
-    IfWhileTimeoutExpired(timeout)
+    whileTimeout(inLeftSteeringEnable.readNewest(leftSteeringEnableTmp) == NoData && leftSteeringEnableTmp!=powerOn
+            && inRightSteeringEnable.readNewest(rightSteeringEnableTmp) == NoData && rightSteeringEnableTmp!=powerOn
+            && inRearSteeringEnable.readNewest(rearSteeringEnableTmp) == NoData && rearSteeringEnableTmp!=powerOn
+            , propCanRequestTimeout, 0.050);
+    IfWhileTimeoutExpired(propCanRequestTimeout)
     {
         LOGS(Error) << "ooSetSteeringMotorPower : motor didn't switch power as required, timeout is over." << endlog();
         goto failed;
@@ -265,12 +265,12 @@ bool PowerManager::ooSetSteeringMotorPower(bool powerOn, double timeout)
 }
 
 
-bool PowerManager::ooSetMotorPower(bool powerOn, double timeout)
+bool PowerManager::ooSetMotorPower(bool powerOn)
 {
     bool res = true;
 
-    res &= ooSetDrivingMotorPower( powerOn, timeout );
-    res &= ooSetSteeringMotorPower( powerOn, timeout );
+    res &= ooSetDrivingMotorPower( powerOn );
+    res &= ooSetSteeringMotorPower( powerOn );
 
     return res;
 }

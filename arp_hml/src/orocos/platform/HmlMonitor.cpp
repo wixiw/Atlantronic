@@ -31,6 +31,9 @@ bool HmlMonitor::configureHook()
 {
     bool res = true ;
 
+    //configure normal monitored components
+    res &= Monitor::configureHook();
+
     //configure and start bus monitored components
     vector<TaskContext*>::iterator i;
     for ( i = m_monitoredBusList.begin() ; i != m_monitoredBusList.end() ; i++ )
@@ -49,9 +52,6 @@ bool HmlMonitor::configureHook()
         }
     }
 
-    //configure normal monitored components
-    res &= Monitor::configureHook();
-
     //configure power addon
     m_power.configure();
 
@@ -61,8 +61,8 @@ bool HmlMonitor::configureHook()
 void HmlMonitor::updateHook()
 {
     Monitor::updateHook();
-    bool someoneIsNotRunning = false;
 
+    bool someoneIsNotRunning = false;
     vector<TaskContext*>::iterator i;
     for ( i = m_monitoredBusList.begin() ; i != m_monitoredBusList.end() ; i++ )
     {

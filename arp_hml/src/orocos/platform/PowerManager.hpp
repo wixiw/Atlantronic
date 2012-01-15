@@ -42,6 +42,9 @@ namespace arp_hml
         /** Decide weather complete hardware must be present or not */
         bool propRequireCompleteHardware;
 
+        /** Timeout when sending a command on the CAN, in s */
+        bool propCanRequestTimeout;
+
         /** Drive soft enable state **/
         InputPort<bool> inLeftDrivingEnable;
         InputPort<bool> inRightDrivingEnable;
@@ -102,17 +105,17 @@ namespace arp_hml
         /**
          *
          */
-        bool ooSetDrivingMotorPower(bool powerOn, double timeout);
+        bool ooSetDrivingMotorPower(bool powerOn);
 
         /**
          *
          */
-        bool ooSetSteeringMotorPower(bool powerOn, double timeout);
+        bool ooSetSteeringMotorPower(bool powerOn);
 
         /**
          *
          */
-        bool ooSetMotorPower(bool powerOn, double timeout);
+        bool ooSetMotorPower(bool powerOn);
 
         /**
          *

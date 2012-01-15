@@ -8,7 +8,6 @@
 #include "ARDTaskContext.hpp"
 #include <iostream>
 #include <fstream>
-#include <rtt/base/InputPortInterface.hpp>
 
 using namespace arp_core;
 using namespace RTT;
@@ -234,25 +233,25 @@ bool ARDTaskContext::checkProperties()
     return true;
 }
 
-bool ARDTaskContext::checkInputsPorts()
-{
-    bool res = true;
-    DataFlowInterface::Ports portsVector = ports()->getPorts();
-    DataFlowInterface::Ports::iterator it;
-    string name;
-
-    for(it = portsVector.begin(); it != portsVector.end(); it++)
-    {
-        if( dynamic_cast<InputPortInterface*>(*it) != 0 && (*it)->connected() == false )
-        {
-            LOG(Error)  << "checkInputsPorts : " << (*it)->getName() << " is not connected !" << endlog();
-            res &= false;
-        }
-
-    }
-
-    return res;
-}
+//bool ARDTaskContext::checkInputsPorts()
+//{
+//    bool res = true;
+//    DataFlowInterface::Ports portsVector = ports()->getPorts();
+//    DataFlowInterface::Ports::iterator it;
+//    string name;
+//
+//    for(it = portsVector.begin(); it != portsVector.end(); it++)
+//    {
+//        if( dynamic_cast<InputPortInterface*>(*it) != 0 && (*it)->connected() == false )
+//        {
+//            LOG(Error)  << "checkInputsPorts : " << (*it)->getName() << " is not connected !" << endlog();
+//            res &= false;
+//        }
+//
+//    }
+//
+//    return res;
+//}
 
 bool ARDTaskContext::coReset()
 {

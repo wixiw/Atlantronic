@@ -15,7 +15,8 @@
 using namespace arp_hml;
 using namespace arp_core;
 
-ORO_CREATE_COMPONENT( arp_hml::CanOpenController)
+ORO_CREATE_COMPONENT_LIBRARY()
+ORO_LIST_COMPONENT_TYPE( arp_hml::CanOpenController)
 
 CanOpenController::CanOpenController(const std::string& name) :
             HmlTaskContext(name),

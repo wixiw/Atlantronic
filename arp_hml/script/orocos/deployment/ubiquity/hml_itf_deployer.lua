@@ -13,13 +13,15 @@ end
 
 
 function HmlItfDeployer:connectOneMotor(name)
-	Deployer:addPeer("RosHmlItf", name)
-	Deployer:connect("RosHmlItf.in"..name.."Position", name..".outMeasuredPosition",cp)
-	Deployer:connect("RosHmlItf.in"..name.."PositionTime", name..".outMeasuredPositionTime",cp)
-	Deployer:connect("RosHmlItf.in"..name.."Enable", name..".outDriveEnable",cp)
-	Deployer:connect("RosHmlItf.in"..name.."SpeedMeasure", name..".outComputedSpeed",cp)
-	Deployer:connect("RosHmlItf.in"..name.."Blocked", name..".outMaxTorqueTimeout",cp)
-	Deployer:connect("RosHmlItf.in"..name.."Connected", name..".outConnected",cp)
+	--Deployer:addPeer("RosHmlItf", name)
+	--Deployer:connect("RosHmlItf.in"..name.."Position", name..".outMeasuredPosition",cp)
+	--Deployer:connect("RosHmlItf.in"..name.."PositionTime", name..".outMeasuredPositionTime",cp)
+	--Deployer:connect("RosHmlItf.in"..name.."Enable", name..".outDriveEnable",cp)
+	--Deployer:connect("RosHmlItf.in"..name.."SpeedMeasure", name..".outComputedSpeed",cp)
+	--Deployer:connect("RosHmlItf.in"..name.."Blocked", name..".outMaxTorqueTimeout",cp)
+	--Deployer:connect("RosHmlItf.in"..name.."Connected", name..".outConnected",cp)
+
+	Deployer:connect("HmlMonitor.in"..name.."Enable", name..".outDriveEnable",cp)
 end
 
 

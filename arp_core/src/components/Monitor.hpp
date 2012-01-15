@@ -32,7 +32,9 @@ namespace arp_core
 
         /**
          * Configure all peers previously registered by the addMonitoredPeer command
-         * The configuration is done in the order in which elements where inserted
+         * The configuration is done in the order in which elements where inserted.
+         *
+         * It also checks that all input ports of registered peers are connected.
          */
         virtual bool configureHook();
 
@@ -73,6 +75,9 @@ namespace arp_core
     protected:
         /** List of peers to monitor */
         vector<TaskContext*> m_monitoredList;
+
+        /** Use this fucntion to check that all input port of registered components are connected */
+        bool checkPortConnection();
 
 
 
