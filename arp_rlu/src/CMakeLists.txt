@@ -19,4 +19,6 @@ add_subdirectory(ReLocalizator)
 add_subdirectory(objectfinder)
 add_subdirectory(LaserCalibrator)
 
+add_subdirectory(KFLocalizator)
+
 ###################################################################################################################  
