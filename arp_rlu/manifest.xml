@@ -7,7 +7,7 @@
     <url>http://88.191.124.77/redmine/projects/positionnnement/wiki</url>
     <depend package="rtt" />
     <depend package="arp_core" />
-    <depend package="arp_hml" />
+    <!-- <depend package="arp_hml" /> -->
     <depend package="std_srvs" />
     <depend package="std_msgs" />
     <depend package="tf" />
@@ -15,5 +15,6 @@
     <depend package="roscpp"/>
     <depend package="sensor_msgs"/>
     <depend package="geometry_msgs"/>
+    <depend package="bfl"/>
 </package>
 
