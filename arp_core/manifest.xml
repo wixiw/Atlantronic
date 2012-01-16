@@ -11,7 +11,9 @@
     <depend package="rosbuild" />
 	<depend package="roscpp"/>
 	<export>
-		<cpp cflags="-I${prefix}/src" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -larp_core -lrt -larp_core-math -larp_core-timer -L${prefix}/lib/orocos/gnulinux -larp_core-components-gnulinux"/>
+		<!-- pas besoin de plus, la toolchain orocos gere les export autrement avec pkgconfig (*.pc)
+		    vu que Orocos gere bien on le laisse faire, le jour on quelqu'un sans orocos en aura besoin on pourra utiliser
+			le tag "os" des manifext ROS. -->
 		<rosbuild cmake_directory="${prefix}/cmake"/>
 	</export>
     
