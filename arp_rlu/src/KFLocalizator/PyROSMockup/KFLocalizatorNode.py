@@ -135,13 +135,13 @@ class KFLocalizatorNode():
     self.publishPose()
     
     estim = self.kfloc.getBestEstimate()
-    rospy.loginfo(rospy.get_name() + " update OK : x=%f  y=%f  h=%f\n", estim[1].xRobot, estim[1].yRobot, estim[1].hRobot)
+    rospy.loginfo(rospy.get_name() + " update OK : x=%f  y=%f  h=%f\n", estim[1].xRobot, estim[1].yRobot, betweenMinusPiAndPlusPi(estim[1].hRobot)*180./np.pi)
     
     deltaX = (estim[1].xRobot - self.prevEstim[1].xRobot) * 1000.
     deltaY = (estim[1].yRobot - self.prevEstim[1].yRobot) * 1000.
-    deltaH = betweenMinusPiAndPlusPi((estim[1].hRobot - self.prevEstim[1].hRobot) *180./np.pi)
+    deltaH = betweenMinusPiAndPlusPi(estim[1].hRobot - self.prevEstim[1].hRobot ) *180./np.pi
     self.prevEstim = estim
-    rospy.loginfo(rospy.get_name() + " you moved (mm & deg): dx=%f  dy=%f  dh=%f\n", deltaX, deltaY, deltaH)
+    rospy.loginfo(rospy.get_name() + " you moved (mm & deg): dx=%f  dy=%f  dh=%f\n", deltaX, deltaY, betweenMinusPiAndPlusPi(deltaH)*180./np.pi)
     self.plot(s, estim[1])
     
     return EmptyResponse()
@@ -155,7 +155,7 @@ class KFLocalizatorNode():
       
   def cb_Init(self, req):
     self.initialize(req.x, req.y, req.h)
-    rospy.loginfo(rospy.get_name() + " initialized with x=" + str(req.x) + " y=" + str(req.y) + " h=" + str(req.h))
+    rospy.loginfo(rospy.get_name() + " initialized with x=" + str(req.x) + " y=" + str(req.y) + " h=" + str(betweenMinusPiAndPlusPi(req.h)*180./np.pi) )
     return KFLocInitResponse(True)
   
   
@@ -178,7 +178,7 @@ class KFLocalizatorNode():
     y = estim.yRobot
     h = estim.hRobot
     self.initialize(x, y, h)
-    rospy.loginfo(rospy.get_name() + " initialized with x=" + str(x) + " y=" + str(y) + " h=" + str(h) + "\n")
+    rospy.loginfo(rospy.get_name() + " initialized with x=" + str(x) + " y=" + str(y) + " h=" + str(betweenMinusPiAndPlusPi(h)*180./np.pi) + "\n")
     self.plot(s, estim)
     return EmptyResponse()
   
