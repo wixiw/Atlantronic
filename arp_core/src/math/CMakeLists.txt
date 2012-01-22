@@ -1,7 +1,7 @@
 ###################################################################################################################
 #    EDIT BELOW THIS LINE AND UNTIL NEXT LINE FOR A NEW PROJECT
 
-#orocos_library(arp_core-math math.cpp)
+orocos_library(arp_core-math math.cpp)
 rosbuild_add_library(arp_core-math math.cpp)
 
 ###################################################################################################################
