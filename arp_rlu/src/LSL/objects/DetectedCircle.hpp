@@ -9,6 +9,8 @@
 #define _ARP_RLU_LSL_DETECTEDCIRCLE_HPP_
 
 #include <math/math.hpp>
+#include "DetectedObject.hpp"
+#include "Circle.hpp"
 
 namespace arp_rlu
 {
@@ -16,7 +18,7 @@ namespace arp_rlu
 namespace lsl
 {
 
-class DetectedCircle
+class DetectedCircle : public Circle, public DetectedObject
 {
     public:
         DetectedCircle();

@@ -14,6 +14,8 @@ using namespace Eigen;
 using namespace lsl;
 
 DetectedCircle::DetectedCircle()
+ : DetectedObject()
+ , Circle()
 {
 }
 
