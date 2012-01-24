@@ -1,4 +1,4 @@
-runScript("/opt/ros/ard/arp_core/script/orocos/deployment/deploy_arp_core.ops");
+runScript("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.ops");
 print.log(Warning, "Début déploiment arp_hml");
 
 import("arp_hml");
