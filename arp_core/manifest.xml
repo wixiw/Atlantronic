@@ -12,7 +12,7 @@
 	<depend package="roscpp"/>
 	<export>
 		<!--<cpp os="xenomai" cflags="-I${prefix}/src" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -larp_core-xenomai -lrt -larp_core-math -larp_core-timer -L${prefix}/lib/orocos/gnulinux -larp_core-components-gnulinux"/>-->
-		<cpp os="gnulinux" cflags="-I${prefix}/src" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -larp_core-gnulinux -lrt -larp_core-math -larp_core-timer -L${prefix}/lib/orocos/gnulinux -larp_core-components-gnulinux"/>
+		<cpp os="gnulinux" cflags="-I${prefix}/src" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -larp_core-gnulinux -lrt -larp_core-math-gnulinux -larp_core-timer -L${prefix}/lib/orocos/gnulinux -larp_core-components-gnulinux"/>
 		<rosbuild cmake_directory="${prefix}/cmake"/>
 	</export>
     
