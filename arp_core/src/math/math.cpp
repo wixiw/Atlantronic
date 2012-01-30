@@ -5,7 +5,7 @@
  *      Author: MOU
  */
 
-#include "math.hpp"
+#include <math/math.hpp>
 
 namespace arp_math
 {

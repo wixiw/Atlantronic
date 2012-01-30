@@ -11,7 +11,7 @@
 #define EIGEN_DONT_ALIGN
 #define EIGEN_DONT_VECTORIZE
 #include <Eigen/Core>
-#include "Geometry.hpp"
+#include <Eigen/Geometry>
 
 //a supprimer quand tout le mode aura switché a betweenMinusPiAndPlusPi
 #define normalizeAngle betweenMinusPiAndPlusPi
