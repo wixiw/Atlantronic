@@ -8,7 +8,8 @@
 #ifndef _ARP_RLU_LSL_POLARCROP_HPP_
 #define _ARP_RLU_LSL_POLARCROP_HPP_
 
-#include <math/math.hpp>
+#include <math/core>
+
 #include "LSL/LaserScan.hpp"
 
 namespace arp_rlu
@@ -25,6 +26,11 @@ class PolarCrop
         public:
             Params();
             std::string getInfo();
+
+            Eigen::VectorXd minRange;
+            Eigen::VectorXd maxRange;
+            Eigen::VectorXd minTheta;
+            Eigen::VectorXd maxTheta;
         };
 
     public:

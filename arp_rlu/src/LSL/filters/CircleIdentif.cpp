@@ -7,6 +7,8 @@
 
 #include "CircleIdentif.hpp"
 
+#include <exceptions/NotImplementedException.hpp>
+
 using namespace arp_math;
 using namespace arp_rlu;
 using namespace std;
@@ -25,8 +27,18 @@ std::string CircleIdentif::Params::getInfo()
     return ss.str();
 }
 
-LaserScan CircleIdentif::apply(const LaserScan & raw, const Params & p)
+DetectedCircle CircleIdentif::apply(const DetectedObject & raw, const Params & p)
 {
-    LaserScan out = raw;
+    throw NotImplementedException();
+
+    DetectedCircle out;
     return out;
+}
+
+std::vector<DetectedCircle> CircleIdentif::apply(const std::vector<DetectedObject> & raws, const Params & p)
+{
+    throw NotImplementedException();
+
+    std::vector<DetectedCircle> outs;
+    return outs;
 }

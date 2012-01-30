@@ -8,7 +8,7 @@
 #ifndef _ARP_RLU_LSL_CIRCLE_HPP_
 #define _ARP_RLU_LSL_CIRCLE_HPP_
 
-#include <math/math.hpp>
+#include <math/core>
 
 namespace arp_rlu
 {
@@ -20,10 +20,22 @@ class Circle
 {
     public:
         Circle();
-        ~Circle();
+        Circle(double _x, double _y, double _r);
+        Circle(arp_math::Vector2 _pos, double _r);
+
+        double x() const;
+        double y() const;
+        double r() const;
+        void x(double);
+        void y(double);
+        void r(double);
+        arp_math::Vector2 getPosition() const;
+        void setPosition(arp_math::Vector2);
 
 
     protected:
+        double radius;
+        arp_math::Vector2 cartesianPosition;
 
 };
 

@@ -8,7 +8,7 @@
 #ifndef _ARP_RLU_LSL_LASERSCAN_HPP_
 #define _ARP_RLU_LSL_LASERSCAN_HPP_
 
-#include <math/math.hpp>
+#include <math/core>
 
 namespace arp_rlu
 {
@@ -22,6 +22,13 @@ class LaserScan
         LaserScan();
         ~LaserScan();
 
+        unsigned int getSize() const;
+        bool computeCartesianData(Eigen::VectorXd tt, Eigen::VectorXd xx, Eigen::VectorXd yy, Eigen::VectorXd hh);
+        void setPolarData(Eigen::MatrixXd data);
+        Eigen::MatrixXd getPolarData() const;
+        Eigen::MatrixXd getCartesianData() const;
+        bool areCartesianDataAvailaible();
+        bool cleanUp();
 
     protected:
 

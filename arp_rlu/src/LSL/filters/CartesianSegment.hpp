@@ -8,7 +8,8 @@
 #ifndef _ARP_RLU_LSL_CARTESIANSEGMENT_HPP_
 #define _ARP_RLU_LSL_CARTESIANSEGMENT_HPP_
 
-#include <math/math.hpp>
+#include <math/core>
+
 #include "LSL/LaserScan.hpp"
 
 namespace arp_rlu
@@ -25,6 +26,11 @@ class CartesianSegment
         public:
             Params();
             std::string getInfo();
+
+            unsigned int kmeansMaxIterations;
+            double kmeansDispThres;
+            unsigned int minNbPoints;
+            double maxStddev;
         };
 
     public:

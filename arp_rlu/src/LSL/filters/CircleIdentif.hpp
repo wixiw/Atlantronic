@@ -8,8 +8,13 @@
 #ifndef _ARP_RLU_LSL_CIRCLEIDENTIF_HPP_
 #define _ARP_RLU_LSL_CIRCLEIDENTIF_HPP_
 
-#include <math/math.hpp>
-#include "LSL/LaserScan.hpp"
+#include <math/core>
+
+#include <vector>
+
+#include <LSL/LaserScan.hpp>
+#include <LSL/objects/DetectedObject.hpp>
+#include <LSL/objects/DetectedCircle.hpp>
 
 namespace arp_rlu
 {
@@ -28,8 +33,8 @@ class CircleIdentif
         };
 
     public:
-        static LaserScan apply(const LaserScan &, const Params & p = Params());
-
+        static DetectedCircle apply(const DetectedObject &, const Params & p = Params());
+        static std::vector<DetectedCircle> apply(const std::vector<DetectedObject> &, const Params & p = Params());
 
     protected:
 
