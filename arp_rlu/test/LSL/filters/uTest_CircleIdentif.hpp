@@ -16,8 +16,8 @@ BOOST_AUTO_TEST_SUITE( unittest_CircleIdentif )
 
 BOOST_AUTO_TEST_CASE( Test_1 )
 {
-    lsl::LaserScan rawScan;
-    lsl::LaserScan filtScan = lsl::CircleIdentif::apply(rawScan);
+    lsl::DetectedObject rawObject;
+    lsl::DetectedCircle recoCircle = lsl::CircleIdentif::apply(rawObject);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
