@@ -8,8 +8,9 @@
 #ifndef _ARP_RLU_KFL_BAYESIANWRAPPER_HPP_
 #define _ARP_RLU_KFL_BAYESIANWRAPPER_HPP_
 
-#include <math/math.hpp>
-#include "KFLVariables.hpp"
+#include <math/core>
+
+#include <KFL/KFLVariables.hpp>
 
 namespace arp_rlu
 {
@@ -20,7 +21,11 @@ namespace kfl
 class BayesianWrapper
 {
     public:
-        virtual void init() = 0;
+        virtual void init(double t, KFLStateVar , KFLStateCov ) = 0;
+        virtual void predict(double dt, KFLSysInput ) = 0;
+        virtual void update(KFLMeasVar, KFLMeasCov, KFLMeasTarget) = 0;
+        virtual KFLStateVar getEstimate() const = 0;
+        virtual KFLStateCov getCovariance() const = 0;
 };
 
 } // namespace kfl

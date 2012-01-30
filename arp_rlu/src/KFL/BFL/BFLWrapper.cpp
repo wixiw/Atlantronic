@@ -5,7 +5,9 @@
  *      Author: Boris
  */
 
-#include "BFLWrapper.hpp"
+#include <KFL/BFL/BFLWrapper.hpp>
+
+#include <exceptions/NotImplementedException.hpp>
 
 // BFL includes
 #include <filter/extendedkalmanfilter.h>
@@ -17,14 +19,37 @@ using namespace Eigen;
 using namespace kfl;
 
 BFLWrapper::BFLWrapper()
-    : BayesianWrapper()
+: BayesianWrapper()
 {
+    ;
 }
 
-BFLWrapper::~BFLWrapper()
+void BFLWrapper::init(double t, KFLStateVar statevariable, KFLStateCov statecovariance)
 {
+    throw NotImplementedException();
+    return;
 }
 
-void BFLWrapper::init()
+void BFLWrapper::predict(double dt, KFLSysInput sinp)
 {
+    throw NotImplementedException();
+    return;
+}
+
+void BFLWrapper::update(KFLMeasVar mvar, KFLMeasCov mcov, KFLMeasTarget mtar)
+{
+    throw NotImplementedException();
+    return;
+}
+
+KFLStateVar BFLWrapper::getEstimate() const
+{
+    throw NotImplementedException();
+    return KFLStateVar();
+}
+
+KFLStateCov BFLWrapper::getCovariance() const
+{
+    throw NotImplementedException();
+    return KFLStateCov();
 }

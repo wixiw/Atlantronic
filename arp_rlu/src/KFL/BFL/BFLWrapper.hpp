@@ -9,7 +9,7 @@
 #define _ARP_RLU_KFL_BFLWRAPPER_HPP_
 
 #include <math/math.hpp>
-#include "KFL/BayesianWrapper.hpp"
+#include <KFL/BayesianWrapper.hpp>
 
 namespace arp_rlu
 {
@@ -20,10 +20,13 @@ namespace kfl
 class BFLWrapper : BayesianWrapper
 {
     public:
-        BFLWrapper();
-        ~BFLWrapper();
+    BFLWrapper();
 
-        void init();
+    void init(double t, KFLStateVar, KFLStateCov);
+    void predict(double dt, KFLSysInput );
+    void update(KFLMeasVar, KFLMeasCov, KFLMeasTarget);
+    KFLStateVar getEstimate() const;
+    KFLStateCov getCovariance() const;
 
 
     protected:

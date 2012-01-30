@@ -7,11 +7,15 @@
 
 #include "KFLocalizator.hpp"
 
+#include <exceptions/NotImplementedException.hpp>
+
 using namespace arp_math;
 using namespace arp_rlu;
 using namespace std;
 using namespace Eigen;
 using namespace kfl;
+
+#include <KFL/BFL/BFLWrapper.hpp>
 
 KFLocalizator::Params::Params()
 {
@@ -20,8 +24,14 @@ KFLocalizator::Params::Params()
 std::string KFLocalizator::Params::getInfo()
 {
     std::stringstream ss;
-    ss << "KFLocalizator params :" << std::endl;
-    //ss << " [*] width: " << width << std::endl;
+    ss << "KFLocalizator Params :" << std::endl;
+    ss << " [*] bufferSize: " << bufferSize << std::endl;
+    ss << "****************************" << std::endl;
+    ss << initParams.getInfo();
+    ss << "****************************" << std::endl;
+    ss << iekfParams.getInfo();
+    ss << "****************************" << std::endl;
+    ss << procParams.getInfo();
     return ss.str();
 }
 
@@ -33,7 +43,11 @@ std::string KFLocalizator::InitParams::getInfo()
 {
     std::stringstream ss;
     ss << "KFLocalizator InitParams :" << std::endl;
-    //ss << " [*] width: " << width << std::endl;
+    ss << " [*] x    : " << initialPose.x() << " (m)" << std::endl;
+    ss << " [*] y    : " << initialPose.y() << " (m)" << std::endl;
+    ss << " [*] h    : " << rad2deg(initialPose.h()) << " (deg)" << std::endl;
+    ss << " [*] date : " << initialPose.date() << " (s)" << std::endl;
+    ss << " [*] cov  : " << initialPose.cov() << std::endl;
     return ss.str();
 }
 
@@ -45,14 +59,76 @@ std::string KFLocalizator::IEKFParams::getInfo()
 {
     std::stringstream ss;
     ss << "KFLocalizator IEKFParams :" << std::endl;
-    //ss << " [*] width: " << width << std::endl;
+    ss << " [*] defaultOdoVelTransSigma : " << defaultOdoVelTransSigma << std::endl;
+    ss << " [*] defaultOdoVelRotSigma   : " << defaultOdoVelRotSigma << std::endl;
+    ss << " [*] defaultLaserRangeSigma  : " << defaultLaserRangeSigma << std::endl;
+    ss << " [*] defaultLaserThetaSigma  : " << defaultLaserThetaSigma << std::endl;
+    ss << " [*] iekfMaxIt               : " << iekfMaxIt << std::endl;
     return ss.str();
 }
 
 KFLocalizator::KFLocalizator()
+ : params()
+ , beaconDetector()
+ , baysesian(NULL)
 {
+     ;
 }
 
 KFLocalizator::~KFLocalizator()
 {
 }
+
+void KFLocalizator::setParams(KFLocalizator::Params)
+{
+    throw NotImplementedException();
+}
+
+bool KFLocalizator::setParams(KFLocalizator::InitParams)
+{
+    throw NotImplementedException();
+    return false;
+}
+
+void KFLocalizator::setParams(KFLocalizator::IEKFParams)
+{
+    throw NotImplementedException();
+    return;
+}
+
+void KFLocalizator::setParams(BeaconDetector::Params)
+{
+    throw NotImplementedException();
+    return;
+}
+
+bool KFLocalizator::initialize()
+{
+    throw NotImplementedException();
+    return false;
+}
+
+bool KFLocalizator::newOdoVelocity(double time, arp_math::Twist2D odoVel)
+{
+    throw NotImplementedException();
+    return false;
+}
+
+bool KFLocalizator::newScan(double time, lsl::LaserScan scan)
+{
+    throw NotImplementedException();
+    return false;
+}
+
+arp_math::EstimatedPose2D KFLocalizator::getPose2D()
+{
+    throw NotImplementedException();
+    return arp_math::EstimatedPose2D();
+}
+
+arp_math::EstimatedTwist2D KFLocalizator::getTwist2D()
+{
+    throw NotImplementedException();
+    return arp_math::EstimatedTwist2D();
+}
+

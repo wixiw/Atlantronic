@@ -8,7 +8,10 @@
 #ifndef _ARP_RLU_KFL_KFLOCALIZATOR_HPP_
 #define _ARP_RLU_KFL_KFLOCALIZATOR_HPP_
 
-#include <math/math.hpp>
+#include <math/core>
+
+#include <KFL/BeaconDetector.hpp>
+#include <KFL/BayesianWrapper.hpp>
 
 namespace arp_rlu
 {
@@ -18,30 +21,62 @@ namespace kfl
 
 class KFLocalizator
 {
-    class InitParams
-    {
-        InitParams();
-        std::string getInfo();
-    };
+    public:
+        class InitParams
+        {
+            public:
+                InitParams();
+                std::string getInfo();
 
-    class IEKFParams
-    {
-        IEKFParams();
-        std::string getInfo();
-    };
+                arp_math::EstimatedPose2D initialPose;
+        };
 
-    class Params
-    {
-        Params();
-        std::string getInfo();
-    };
+        class IEKFParams
+        {
+            public:
+                IEKFParams();
+                std::string getInfo();
+
+                double defaultOdoVelTransSigma;
+                double defaultOdoVelRotSigma;
+                double defaultLaserRangeSigma;
+                double defaultLaserThetaSigma;
+                unsigned int iekfMaxIt;
+        };
+
+        class Params
+        {
+            public:
+                Params();
+                std::string getInfo();
+
+                unsigned int bufferSize;
+                kfl::KFLocalizator::InitParams initParams;
+                kfl::KFLocalizator::IEKFParams iekfParams;
+                kfl::BeaconDetector::Params procParams;
+        };
 
     public:
         KFLocalizator();
         ~KFLocalizator();
 
+        void setParams(KFLocalizator::Params);
+        bool setParams(KFLocalizator::InitParams);
+        void setParams(KFLocalizator::IEKFParams);
+        void setParams(BeaconDetector::Params);
+        bool initialize();
+        bool newOdoVelocity(double time, arp_math::Twist2D odoVel);
+        bool newScan(double time, lsl::LaserScan scan);
+        arp_math::EstimatedPose2D getPose2D();
+        arp_math::EstimatedTwist2D getTwist2D();
+
 
     protected:
+        KFLocalizator::Params params;
+        BeaconDetector beaconDetector;
+        BayesianWrapper * baysesian;
+
+
 
 };
 
