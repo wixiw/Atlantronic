@@ -3,6 +3,6 @@
 
 rosbuild_add_boost_directories()
 rosbuild_add_executable(uTest_KFL.ard  uTest_KFL.cpp)
-target_link_libraries(uTest_KFL.ard kfl)
+target_link_libraries(uTest_KFL.ard kfl lsl)
 
 ###################################################################################################################
