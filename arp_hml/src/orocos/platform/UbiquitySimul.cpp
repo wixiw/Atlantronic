@@ -14,7 +14,7 @@ using namespace arp_hml;
 ORO_LIST_COMPONENT_TYPE( arp_hml::UbiquitySimul )
 
 UbiquitySimul::UbiquitySimul(const std::string& name):
-UbiquityItf(name)
+RosHmlItf(name)
 {
 }
 

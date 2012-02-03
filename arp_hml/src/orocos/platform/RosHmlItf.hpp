@@ -1,5 +1,5 @@
 /*
- * UbiquityItf.hpp
+ * RosHmlItf.hpp
  *
  *  Created on: 03 Oct 2011
  *      Author: wla
@@ -8,26 +8,32 @@
  *  having a synthetic (and somehow synchronized) view of the current HML. This one is for UbiquityItf, the second ARD's robot,
  *  which is a nice omni-drive robot.
  *
- *  Everything that comes in HML must go througth it
- *  Everything that goes outside HML must go througth it.
+ *  Everything that comes in HML from outside of Orocos must go througth it
+ *  Everything that goes outside HML from outside Oof rocos must go througth it.
  *  It's HML Bigbrother.
  *
- *  Everything that is dependant on the Ubiquity platform must come here !
- *  Everything that needs an information dependant on Ubiquity platform must get it from here !
+ *  It is allowed to connect directly from Orocos to Hml component since composites components doesn't exsits yet.
+ *  The HmlMonitor is another part of the Interface, espacially for the Orocos world.
+ *
  */
 
-#ifndef UBIQUITYITF_HPP_
-#define UBIQUITYITF_HPP_
+#ifndef ROSHMLITF_HPP_
+#define ROSHMLITF_HPP_
 
 #include "orocos/taskcontexts/HmlTaskContext.hpp"
+#include <sys/time.h>
+#include "ros/ros.h"
+//pour les ports
 #include <arp_core/OmniCommand.h>
 #include <arp_core/OmniOdo.h>
 #include <arp_core/Start.h>
 #include <std_msgs/Bool.h>
+//pour les services
 #include <arp_hml/SetMotorPower.h>
+#include <arp_hml/SetDrivingMotorPower.h>
+#include <arp_hml/SetSteeringMotorPower.h>
 #include <arp_hml/ResetHml.h>
-#include <sys/time.h>
-#include "ros/ros.h"
+#include <arp_hml/GetVersion.h>
 
 using namespace arp_core;
 using namespace arp_hml;
@@ -36,10 +42,10 @@ using namespace std_msgs;
 namespace arp_hml
 {
 
-    class UbiquityItf: public HmlTaskContext
+    class RosHmlItf: public HmlTaskContext
     {
     public:
-    	UbiquityItf(const std::string& name);
+    	RosHmlItf(const std::string& name);
 
     protected:
 
@@ -53,29 +59,6 @@ namespace arp_hml
 
         /** Maximal delay beetween 2 received Differential commands. If this delay is overrun, a speed of 0 is sent on each motor. In s **/
         double propSpeedCmdMaxDelay;
-
-        /**
-         * Returns a string containing Core version
-         */
-        string coGetCoreVersion();
-        /**
-         * Returns a string containing HML version
-         */
-        string coGetHmlVersion();
-
-        /**
-         * Defines if motor are powered or not.
-         * @param poserOn : when set to true motor is powered and ready to move. If a null speed is provided, the motor is locked
-         * as if brakes where enabled. When set to false there is no power in the motor which means that the motor is free to any move.
-         * @param timeout : maximal time to wait for completion
-         * @return : true if succeed on both motor. Failed if one or both have failed.
-         */
-        bool ooSetMotorPower(bool powerOn, double timeout);
-
-        /**
-         * Reset Can Nodes
-         */
-        bool ooResetHml();
 
         /**
          * Get enableDrive and disableDrive operation on motors
@@ -98,20 +81,40 @@ namespace arp_hml
 
         /** node handle to store the service advertiser srvSetMotorPower**/
         ros::ServiceServer m_srvSetMotorPower;
+        /** node handle to store the service advertiser srvSetMotorPower**/
+        ros::ServiceServer m_srvSetDrivingMotorPower;
+        /** node handle to store the service advertiser srvSetMotorPower**/
+        ros::ServiceServer m_srvSetSteeringMotorPower;
 
         /** node handle to store the service advertiser srvResetHml**/
         ros::ServiceServer m_srvResetHml;
+        /** node handle to store the service advertiser srvResetHml**/
+        ros::ServiceServer m_srvGetVersion;
 
         /**
-         * ROS wrapper on the ooSetPowerMotor operation
+         * ROS wrapper on the HmlMonitor.ooSetPowerMotor operation
          */
         bool srvSetMotorPower(SetMotorPower::Request& req, SetMotorPower::Response& res);
 
         /**
-         * ROS wrapper on the ooResetHml operation
+         * ROS wrapper on the ooSetPowerMotor operation
+         */
+        bool srvSetDrivingMotorPower(SetDrivingMotorPower::Request& req, SetDrivingMotorPower::Response& res);
+
+        /**
+         * ROS wrapper on the ooSetPowerMotor operation
+         */
+        bool srvSetSteeringMotorPower(SetSteeringMotorPower::Request& req, SetSteeringMotorPower::Response& res);
+
+        /**
+         * ROS wrapper on the HmlMonitor.ooResetHml operation
          */
         bool srvResetHml(ResetHml::Request& req, ResetHml::Response& res);
 
+        /**
+         * ROS wrapper on the HmlMonitor.coGethmlVersion operation
+         */
+        bool srvGetVersion(GetVersion::Request& req, GetVersion::Response& res);
 
 /*****************************************************************
  *  Interface with OUTSIDE (master, ODS, RLU)
@@ -132,8 +135,10 @@ namespace arp_hml
         /** Is true when HML thinks the emergency stop button is active **/
         OutputPort<Bool> outEmergencyStop;
 
-        /** Is true when the 2 drives are enabled. Since this port is false, drive speed are forced to 0**/
-        OutputPort<Bool> outDriveEnable;
+        /** Output of Enable value of motors to publish to Ros **/
+        OutputPort<Bool> outDrivingMotorsEnable;
+        OutputPort<Bool> outSteeringMotorsEnable;
+        OutputPort<Bool> outMotorsEnable;
 
         /** Is true when wheel are blocked */
         OutputPort<Bool> outWheelBlocked;
@@ -145,7 +150,7 @@ namespace arp_hml
         /** HW value of the start switch. It is true when the start is in **/
         InputPort<bool> inIoStart;
 
-        /** Value of the traction odometers in rad on the wheel axe **/
+        /** Value of the odometers in rad on the wheel axe **/
         InputPort<double> inLeftDrivingPosition;
         InputPort<double> inLeftDrivingPositionTime;
         InputPort<double> inRightDrivingPosition;
@@ -159,7 +164,7 @@ namespace arp_hml
         InputPort<double> inRearSteeringPosition;
         InputPort<double> inRearSteeringPositionTime;
 
-        /** Value of the traction speeds in rad/s on the reductor output **/
+        /** Speed Value of the odometers in rad on the wheel axe **/
         InputPort<double> inLeftDrivingSpeedMeasure;
         InputPort<double> inRightDrivingSpeedMeasure;
         InputPort<double> inRearDrivingSpeedMeasure;
@@ -167,21 +172,10 @@ namespace arp_hml
         InputPort<double> inRightSteeringSpeedMeasure;
         InputPort<double> inRearSteeringSpeedMeasure;
 
-        /** Drive soft enable state **/
-        InputPort<bool> inLeftDrivingEnable;
-        InputPort<bool> inRightDrivingEnable;
-        InputPort<bool> inRearDrivingEnable;
-        InputPort<bool> inLeftSteeringEnable;
-        InputPort<bool> inRightSteeringEnable;
-        InputPort<bool> inRearSteeringEnable;
-
-        /** drive connectivity **/
-        InputPort<bool> inLeftDrivingConnected;
-        InputPort<bool> inRightDrivingConnected;
-        InputPort<bool> inRearDrivingConnected;
-        InputPort<bool> inLeftSteeringConnected;
-        InputPort<bool> inRightSteeringConnected;
-        InputPort<bool> inRearSteeringConnected;
+        /** Input of Enable value of motors to publish to Ros **/
+        InputPort<bool> inDrivingMotorsEnable;
+        InputPort<bool> inSteeringMotorsEnable;
+        InputPort<bool> inMotorsEnable;
 
         /** Blocage roue */
         InputPort<bool> inLeftDrivingBlocked;
@@ -209,9 +203,6 @@ namespace arp_hml
         OutputPort<double> outRightSteeringTorqueCmd;
         OutputPort<double> outRearSteeringTorqueCmd;
 
-        /** Woodhead connectivity **/
-        InputPort<bool> inWoodheadInConnected;
-        InputPort<bool> inWoodheadOutConnected;
 
 /**************************************************************
  * Internals
@@ -228,67 +219,22 @@ protected:
         /** Is true when only one of the 2 speed has been received */
         bool m_receivedPartialPosition;
 
-        /** Pointer on the LeftDrive ooEnableDrive Operation**/
-        OperationCaller<void(void)> m_ooEnableLeftDriving;
-        /** Pointer on the RightDriveooEnableDrive Operation**/
-        OperationCaller<void(void)> m_ooEnableRigthtDriving;
-        /** Pointer on the RearDrive ooEnableDrive Operation**/
-        OperationCaller<void(void)> m_ooEnableRearDriving;
-        /** Pointer on the Left Turret ooEnableDrive Operation**/
-        OperationCaller<void(void)> m_ooEnableLeftSteering;
-        /** Pointer on the Right Turret ooEnableDrive Operation**/
-        OperationCaller<void(void)> m_ooEnableRigthtSteering;
-        /** Pointer on the Rear Turret ooEnableDrive Operation**/
-        OperationCaller<void(void)> m_ooEnableRearSteering;
-
-        /** Pointer on the LeftDrive ooDisableDrive Operation**/
-        OperationCaller<void(void)> m_ooDisableLeftDriving;
-        /** Pointer on the Right ooDisableDrive Operation**/
-        OperationCaller<void(void)> m_ooDisableRightDriving;
-        /** Pointer on the RearDrive ooDisableDrive Operation**/
-        OperationCaller<void(void)> m_ooDisableRearDriving;
-        /** Pointer on the Left Turret ooDisableDrive Operation**/
-        OperationCaller<void(void)> m_ooDisableLeftSteering;
-        /** Pointer on the Right Turret ooDisableDrive Operation**/
-        OperationCaller<void(void)> m_ooDisableRightSteering;
-        /** Pointer on the Rear Turret ooDisableDrive Operation**/
-        OperationCaller<void(void)> m_ooDisableRearSteering;
-
-        /** Pointer in the Left driving ooSetOperationMode Operation **/
-        OperationCaller<bool(string)> m_ooSetLeftDrivingOperationMode;
-        /** Pointer in the Right driving ooSetOperationMode Operation **/
-        OperationCaller<bool(string)> m_ooSetRightDrivingOperationMode;
-        /** Pointer in the Right driving ooSetOperationMode Operation **/
-        OperationCaller<bool(string)> m_ooSetRearDrivingOperationMode;
-        /** Pointer in the Left steering ooSetOperationMode Operation **/
-        OperationCaller<bool(string)> m_ooSetLeftSteeringOperationMode;
-        /** Pointer in the Right steering ooSetOperationMode Operation **/
-        OperationCaller<bool(string)> m_ooSetRightSteeringOperationMode;
-        /** Pointer in the Right steering ooSetOperationMode Operation **/
-        OperationCaller<bool(string)> m_ooSetRearSteeringOperationMode;
-
-        /** Pointer in the Woodhead 8 out coReset Operation**/
-        OperationCaller<bool(void)> m_coResetWoodheadOut;
-        /** Pointer in the Woodhead 8 in coReset Operation**/
-        OperationCaller<bool(void)> m_coResetWoodheadIn;
-        /** Pointer in the LeftDriving coReset Operation **/
-        OperationCaller<bool(void)> m_coResetLeftDriving;
-        /** Pointer in the RightDriving coReset Operation **/
-        OperationCaller<bool(void)> m_coResetRightDriving;
-        /** Pointer in the RearDriving coReset Operation **/
-        OperationCaller<bool(void)> m_coResetRearDriving;
-        /** Pointer in the LeftSteering coReset Operation **/
-        OperationCaller<bool(void)> m_coResetLeftSteering;
-        /** Pointer in the RightSteering coReset Operation **/
-        OperationCaller<bool(void)> m_coResetRightSteering;
-        /** Pointer in the RearSteering coReset Operation **/
-        OperationCaller<bool(void)> m_coResetRearSteering;
+        /** Pointer on the HmlMonitor ooSetMotorPower Operation**/
+        OperationCaller<bool(bool)> m_ooSetMotorPower;
+        /** Pointer on the HmlMonitor ooSetDrivingMotorPower Operation**/
+        OperationCaller<bool(bool)> m_ooSetDrivingMotorPower;
+        /** Pointer on the HmlMonitor ooSetSteeringMotorPower Operation**/
+        OperationCaller<bool(bool)> m_ooSetSteeringMotorPower;
+        /** Pointer on the HmlMonitor ooResetHml Operation**/
+        OperationCaller<bool(void)> m_ooResetHml;
+        /** Pointer on the HmlMonitor coGetVersion Operation**/
+        OperationCaller<string(void)> m_coGetVersion;
 
         /**
          * Get the differential command speed for both motor and dispatch it to them
          * If the 2 motors are not enabled, a null speed is forced
          */
-        void writeOmniCmd();
+        //void writeOmniCmd();
 
         /**
          * Read the odometers value and publish them together to outside
@@ -301,7 +247,7 @@ protected:
         void readStart();
 
         /**
-         * Read the drive enable value and merge the information for outside
+         * Read the drive enable value from HmlMonitor and publish them to Ros
          */
         void readDriveEnable();
 
@@ -319,6 +265,16 @@ protected:
          * Read if wheel are blocked
          */
         void readWheelBlocked();
+
+        /**
+         * create the Orocos interface (creation of ports, commands, attributes, ...)
+         */
+        void createOrocosInterface();
+
+        /**
+         * create the ROS interface (creation of services, topics,...)
+         */
+        void createRosInterface();
     };
 
 }

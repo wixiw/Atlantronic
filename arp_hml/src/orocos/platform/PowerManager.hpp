@@ -31,12 +31,14 @@ namespace arp_hml
         PowerManager(ARDTaskContext& c);
 
         /**
+         * Get all motors operations
          */
-        virtual bool configure();
+        virtual bool configureHook();
 
         /**
+         * Get information from all motors
          */
-        virtual void update();
+        virtual void updateHook();
 
     protected:
         /** Decide weather complete hardware must be present or not */
@@ -53,10 +55,21 @@ namespace arp_hml
         InputPort<bool> inRightSteeringEnable;
         InputPort<bool> inRearSteeringEnable;
 
+        /** CAN Connectivity */
+        InputPort<bool> inLeftDrivingConnected;
+        InputPort<bool> inRightDrivingConnected;
+        InputPort<bool> inRearDrivingConnected;
+        InputPort<bool> inLeftSteeringConnected;
+        InputPort<bool> inRightSteeringConnected;
+        InputPort<bool> inRearSteeringConnected;
+        InputPort<bool> inWoodheadInConnected;
+        InputPort<bool> inWoodheadOutConnected;
+
         /**PowerManagement synthesis */
         OutputPort<bool> outDrivingEnable;
         OutputPort<bool> outSteeringEnable;
         OutputPort<bool> outEnable;
+        OutputPort<bool> outEmergencyStop;
 
         /** */
         ARDTaskContext& m_owner;
@@ -103,24 +116,40 @@ namespace arp_hml
         OperationCaller<bool(string)> m_ooSetRearSteeringOperationMode;
 
         /**
-         *
+         * Read and merge information about motor power
+         */
+        void readDriveEnable();
+
+        /**
+         * Read and merge information to detect the emergencyStop
+         */
+        void readConnectivity();
+
+        /**
+         * Use this to connect local handlers to all peer component operations.
+         */
+        bool getPeersOperations();
+
+        /**
+         * Manage power on F=left, rigth and rear driving motors
+         * @param powerOn : set to true to activate power (wheelBlocked), false for freewheel
+         * @return true when the power is on, on all the *3* motors ! So it'll fail on incomplete hardware setup
          */
         bool ooSetDrivingMotorPower(bool powerOn);
 
         /**
-         *
+         * Manage  power on F=left, rigth and rear driving motors
+         * @param powerOn : set to true to activate power (wheelBlocked), false for freewheel
+         * @return true when the power is on, on all the *3* motors ! So it'll fail on incomplete hardware setup
          */
         bool ooSetSteeringMotorPower(bool powerOn);
 
         /**
-         *
+         * Call ooSetDrivingMotorPower and ooSetSteeringMotorPower
+         * @param powerOn : set to true to activate power (wheelBlocked), false for freewheel
+         * @return true when both ooSetSteeringMotorPower and ooSetDrivingMotorPower returned true.
          */
         bool ooSetMotorPower(bool powerOn);
-
-        /**
-         *
-         */
-        bool getPeersOperations();
     };
 }
 

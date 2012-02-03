@@ -7,7 +7,7 @@
 #include <ros/package.h>
 #include <rtt/Component.hpp>
 #include "HmlMonitor.hpp"
-
+#include "arp_hml_version.h"
 
 using namespace arp_hml;
 using namespace arp_core;
@@ -23,6 +23,10 @@ HmlMonitor::HmlMonitor(const std::string& name) :
     addOperation("ooAddHmlBusMonitoredPeer", &HmlMonitor::addHmlBusMonitoredPeer, this, OwnThread)
             .doc("Add a peer to the bus monitored list. This list is different because those components are configured and start before the others")
             .arg("peerName","Name of the bus peer to add to the list");
+    addOperation("coGetHmlVersion",&HmlMonitor::coGetHmlVersion, this, ClientThread)
+            .doc("Returns a string containing HML version");
+    addOperation("ooResetHml",&HmlMonitor::ooResetHml, this, OwnThread)
+        .doc("Ask all cane node to reset. Could be usefull after an emergency stop");
 }
 
 //------------------------------------------------------------------------------------------------------------------
@@ -53,7 +57,18 @@ bool HmlMonitor::configureHook()
     res &= Monitor::configureHook();
 
     //configure power addon
-    m_power.configure();
+    m_power.configureHook();
+
+    //get operation to reset hml
+    res &= getOperation("WoodheadOut",      "coReset",  m_coResetWoodheadOut);
+    res &= getOperation("WoodheadIn",       "coReset",  m_coResetWoodheadIn);
+    res &= getOperation("LeftDriving",      "coReset",  m_coResetLeftDriving);
+    res &= getOperation("RightDriving",     "coReset",  m_coResetRightDriving);
+    res &= getOperation("RearDriving",      "coReset",  m_coResetRearDriving);
+    res &= getOperation("LeftSteering",     "coReset",  m_coResetLeftSteering);
+    res &= getOperation("RightSteering",    "coReset",  m_coResetRightSteering);
+    res &= getOperation("RearSteering",     "coReset",  m_coResetRearSteering);
+
 
     return res;
 }
@@ -91,7 +106,7 @@ void HmlMonitor::updateHook()
     }
 
     //manage power on motors
-    m_power.update();
+    m_power.updateHook();
 }
 
 
@@ -190,4 +205,23 @@ void HmlMonitor::displayHmlMonitoredPeers()
     }
 
     HmlMonitor::displayHmlMonitoredPeers();
+}
+
+string HmlMonitor::coGetHmlVersion()
+{
+    return ARP_HML_VERSION;
+}
+
+bool HmlMonitor::ooResetHml()
+{
+    bool res = true;
+    res &= m_coResetWoodheadOut();
+    res &= m_coResetWoodheadIn();
+    res &= m_coResetLeftDriving();
+    res &= m_coResetRightDriving();
+    res &= m_coResetRearDriving();
+    res &= m_coResetLeftSteering();
+    res &= m_coResetRightSteering();
+    res &= m_coResetRearSteering();
+    return false;
 }

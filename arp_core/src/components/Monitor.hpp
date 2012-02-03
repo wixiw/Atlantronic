@@ -72,6 +72,11 @@ namespace arp_core
          */
         virtual void displayMonitoredPeers();
 
+        /**
+         * Returns a string containing Core version
+         */
+        string coGetCoreVersion();
+
     protected:
         /** List of peers to monitor */
         vector<TaskContext*> m_monitoredList;

@@ -15,7 +15,7 @@
 namespace arp_hml
 {
 
-    class UbiquitySimul: public UbiquityItf
+    class UbiquitySimul: public RosHmlItf
     {
     public:
         UbiquitySimul(const std::string& name);

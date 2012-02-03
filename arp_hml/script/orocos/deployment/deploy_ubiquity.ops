@@ -1,6 +1,6 @@
 loadService ("Deployer","Lua")
 Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua")
 //TODO c'est un workaround, je prefererai que ce soit dans arp_core
-dot.comp_args="style=filled,width=5,height=3.5" 
+//dot.comp_args="style=filled,width=5,height=3.5" 
 Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity.lua")
-dot.generate()
+//dot.generate()

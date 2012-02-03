@@ -33,6 +33,24 @@ PowerManager::PowerManager(ARDTaskContext& owner):
     m_owner.addPort("inRearSteeringEnable",inRearSteeringEnable)
             .doc("Rear steering soft enable state");
 
+
+    m_owner.addPort("inLeftDrivingConnected",inLeftDrivingConnected)
+            .doc("Left driveing connectivity");
+    m_owner.addPort("inRightDrivingConnected",inRightDrivingConnected)
+             .doc("Right driving connectivity");
+    m_owner.addPort("inRearDrivingConnected",inRearDrivingConnected)
+             .doc("Rear driving connectivity");
+    m_owner.addPort("inLeftSteeringConnected",inLeftSteeringConnected)
+            .doc("Left steering connectivity");
+    m_owner.addPort("inRightSteeringConnected",inRightSteeringConnected)
+             .doc("Right steering connectivity");
+    m_owner.addPort("inRearSteeringConnected",inRearSteeringConnected)
+             .doc("Rear steering connectivity");
+    m_owner.addPort("inWoodheadInConnected",inWoodheadInConnected)
+             .doc("Input Woodhead connectivity");
+    m_owner.addPort("inWoodheadOutConnected",inWoodheadOutConnected)
+             .doc("Output Woodhead connectivity");
+
     m_owner.addPort("outDrivingEnable",outDrivingEnable)
             .doc("Driving soft enable state");
     m_owner.addPort("outSteeringEnable",outSteeringEnable)
@@ -54,7 +72,7 @@ PowerManager::PowerManager(ARDTaskContext& owner):
 
 //------------------------------------------------------------------------------------------------------------------
 
-bool PowerManager::configure()
+bool PowerManager::configureHook()
 {
     bool res = true ;
 
@@ -109,7 +127,13 @@ bool PowerManager::getPeersOperations()
     return res;
 }
 
-void PowerManager::update()
+void PowerManager::updateHook()
+{
+    readDriveEnable();
+    readConnectivity();
+}
+
+void PowerManager::readDriveEnable()
 {
     bool leftDrivingEnable = false;
     bool rightDrivingEnable = false;
@@ -128,6 +152,33 @@ void PowerManager::update()
     outDrivingEnable.write( leftDrivingEnable && rightDrivingEnable && rearDrivingEnable );
     outSteeringEnable.write( leftSteeringEnable && rightSteeringEnable && rearSteeringEnable );
     outEnable.write( outDrivingEnable.getLastWrittenValue() && outSteeringEnable.getLastWrittenValue() );
+}
+
+void PowerManager::readConnectivity()
+{
+    bool leftDrivingConnectivity = false;
+    bool rightDrivingConnectivity = false;
+    bool rearDrivingConnectivity = false;
+    bool leftSteeringConnectivity = false;
+    bool rightSteeringConnectivity = false;
+    bool rearSteeringConnectivity = false;
+    bool woodheadOConnectivity = false;
+    bool woodheadIConnectivity = false;
+    bool emergency;
+
+    inLeftDrivingConnected.readNewest(leftDrivingConnectivity);
+    inRightDrivingConnected.readNewest(rightDrivingConnectivity);
+    inRearDrivingConnected.readNewest(rearDrivingConnectivity);
+    inLeftSteeringConnected.readNewest(leftSteeringConnectivity);
+    inRightSteeringConnected.readNewest(rightSteeringConnectivity);
+    inRearSteeringConnected.readNewest(rearSteeringConnectivity);
+    inWoodheadOutConnected.readNewest(woodheadOConnectivity);
+    inWoodheadInConnected.readNewest(woodheadIConnectivity);
+
+    emergency = !leftDrivingConnectivity && !rightDrivingConnectivity && !rearDrivingConnectivity
+                    && !leftSteeringConnectivity && !rightSteeringConnectivity && !rearSteeringConnectivity
+                    && !woodheadOConnectivity && !woodheadIConnectivity;
+    outEmergencyStop.write(emergency);
 }
 
 //-----------------------------------------------------

@@ -57,6 +57,18 @@ namespace arp_hml
          */
         virtual void displayHmlMonitoredPeers();
 
+        /**
+         * Returns a string containing HML version
+         */
+        string coGetHmlVersion();
+
+        /**
+         * Send a reset node to all Can nodes.
+         * TODO this is a workaround, Can1 should be abble to do it alone
+         */
+        bool ooResetHml();
+
+
     protected:
         /** List of peers to monitor */
         vector<TaskContext*> m_monitoredBusList;
@@ -64,6 +76,23 @@ namespace arp_hml
 
         /** Interface de scripting Orocos (ods,ops) */
         PowerManager m_power;
+
+        /** Pointer in the Woodhead 8 out coReset Operation**/
+        OperationCaller<bool(void)> m_coResetWoodheadOut;
+        /** Pointer in the Woodhead 8 in coReset Operation**/
+        OperationCaller<bool(void)> m_coResetWoodheadIn;
+        /** Pointer in the LeftDriving coReset Operation **/
+        OperationCaller<bool(void)> m_coResetLeftDriving;
+        /** Pointer in the RightDriving coReset Operation **/
+        OperationCaller<bool(void)> m_coResetRightDriving;
+        /** Pointer in the RearDriving coReset Operation **/
+        OperationCaller<bool(void)> m_coResetRearDriving;
+        /** Pointer in the LeftSteering coReset Operation **/
+        OperationCaller<bool(void)> m_coResetLeftSteering;
+        /** Pointer in the RightSteering coReset Operation **/
+        OperationCaller<bool(void)> m_coResetRightSteering;
+        /** Pointer in the RearSteering coReset Operation **/
+        OperationCaller<bool(void)> m_coResetRearSteering;
     };
 }
 

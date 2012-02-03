@@ -9,6 +9,7 @@
 #include <rtt/base/InputPortInterface.hpp>
 
 #include "Monitor.hpp"
+#include "arp_core_version.h"
 
 using namespace arp_core;
 
@@ -24,8 +25,8 @@ Monitor::Monitor(const std::string& name) :
 
     addOperation("coDisplayMonitoredPeers", &Monitor::displayMonitoredPeers, this, ClientThread)
                .doc("Display the list of peers");
-
-
+    addOperation("coGetCoreVersion",&Monitor::coGetCoreVersion, this, ClientThread)
+            .doc("Returns a string containing Core version");
 }
 
 Monitor::~Monitor()
@@ -260,4 +261,9 @@ bool Monitor::checkPortConnection()
     }
 
     return res;
+}
+
+string Monitor::coGetCoreVersion()
+{
+    return ARP_CORE_VERSION;
 }
