@@ -12,8 +12,8 @@
 #include <boost/shared_ptr.hpp>
 #include <std_msgs/Bool.h>
 
-#include <math/Geometry.hpp>
-#include <math/math.hpp>
+//arp_math
+#include <math/core>
 
 #include <arp_core/Pose.h>
 #include <arp_core/Velocity.h>
