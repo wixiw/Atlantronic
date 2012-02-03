@@ -1,0 +1,10 @@
+<package>
+    <description brief="A.R.P. web hmi">
+        This package contains all that is required to interface ROS and OROCOS with a web browser
+    </description>
+    <author>ARD, http://team-ard.com</author>
+    <license>BSD</license>
+    <url>http://team-ard.com</url>
+    <depend package="arp_core" />
+</package>
+
