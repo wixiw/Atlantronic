@@ -445,7 +445,7 @@ bool Faulhaber3268Bx4::ooSetOperationMode(std::string mode)
 	{
 		if( setOperationMode(getModeFromString(mode)) )
 		{
-			LOG(Info) << "switch to " << mode <<" mode" << endl;
+			LOG(Info) << "switch to " << mode <<" mode" << endlog();
 			res = true;
 		}
 		else
