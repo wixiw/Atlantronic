@@ -12,6 +12,7 @@
 using namespace arp_hml;
 using namespace arp_core;
 
+ORO_CREATE_COMPONENT_LIBRARY()
 ORO_LIST_COMPONENT_TYPE( arp_hml::HmlMonitor )
 
 HmlMonitor::HmlMonitor(const std::string& name) :
