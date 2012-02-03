@@ -239,7 +239,7 @@ void CanOpenNode::stopHook()
     //envoit de la requête de reset au noeud
     outRequestNmtState.write(StopNode);
     //mise à jour de l'état NMT
-    whileTimeout( inNmtState.readNewest(attrCurrentNMTState)!= NoData && attrCurrentNMTState != Stopped, propNmtTimeout, 0.001 )
+    whileTimeout( inNmtState.readNewest(attrCurrentNMTState)!= NoData && attrCurrentNMTState != ::Stopped, propNmtTimeout, 0.001 )
     //si le timeout est explosé c'est que ça a foiré
     IfWhileTimeoutExpired(propNmtTimeout)
     {
