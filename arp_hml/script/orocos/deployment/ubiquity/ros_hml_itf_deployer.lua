@@ -32,24 +32,16 @@ function RosHmlItfDeployer:connect()
 	Deployer:connect("RosHmlItf.inIoStart", "WoodheadIn.outBit1",cp)
 
 --connexion ROS
-	cpRos.name_id="/Ubiquity/omnidirectional_command"
-	Deployer:stream("RosHmlItf.inOmniCmd",cpRos)
-	cpRos.name_id="/Ubiquity/odo"
-	Deployer:stream("RosHmlItf.outOdometryMeasures",cpRos)
-	cpRos.name_id="/Ubiquity/omnidirectional_measure"
-	Deployer:stream("RosHmlItf.outOmniSpeedMeasure",cpRos)
+	
+	Deployer:stream("RosHmlItf.inOmniCmd",ros:topic("/Ubiquity/omnidirectional_command"))
+	Deployer:stream("RosHmlItf.outOdometryMeasures",ros:topic("/Ubiquity/odo"))
+	Deployer:stream("RosHmlItf.outOmniSpeedMeasure",ros:topic("/Ubiquity/omnidirectional_measure"))
 
-	cpRos.name_id="/Ubiquity/driving_power"
-	Deployer:stream("RosHmlItf.outDrivingMotorsEnable",cpRos)
-	cpRos.name_id="/Ubiquity/steering_power"
-	Deployer:stream("RosHmlItf.outSteeringMotorsEnable",cpRos)
-	cpRos.name_id="/Ubiquity/motor_power"
-	Deployer:stream("RosHmlItf.outMotorsEnable",cpRos)
+	Deployer:stream("RosHmlItf.outDrivingMotorsEnable",ros:topic("/Ubiquity/driving_power"))
+	Deployer:stream("RosHmlItf.outSteeringMotorsEnable",ros:topic("/Ubiquity/steering_power"))
+	Deployer:stream("RosHmlItf.outMotorsEnable",ros:topic("/Ubiquity/motor_power"))
 
-	cpRos.name_id="/Ubiquity/wheel_blocked"
-	Deployer:stream("RosHmlItf.outWheelBlocked",cpRos)
-	cpRos.name_id="/Ubiquity/emergency_stop"
-	Deployer:stream("RosHmlItf.outEmergencyStop",cpRos)
-	cpRos.name_id="/Ubiquity/start"
-	Deployer:stream("RosHmlItf.outIoStart",cpRos)
+	Deployer:stream("RosHmlItf.outWheelBlocked",ros:topic("/Ubiquity/wheel_blocked"))
+	Deployer:stream("RosHmlItf.outEmergencyStop",ros:topic("/Ubiquity/emergency_stop"))
+	Deployer:stream("RosHmlItf.outIoStart",ros:topic("/Ubiquity/start"))
 end

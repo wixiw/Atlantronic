@@ -6,8 +6,7 @@
 -- Comp1:connect()
 
 cp=rtt.Variable("ConnPolicy")
-cpRos=rtt.Variable("ConnPolicy")
-cpRos.transport=3
+ros=rtt.provides("ros")
 
 ComposantDeployer = 
 {

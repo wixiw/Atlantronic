@@ -54,8 +54,8 @@ function HmlMonitorDeployer:connect()
 	--HmlMonitorDeployer:addToMonitor("RightSteering")
 	HmlMonitorDeployer:addToMonitor("RearSteering")
 
-	HmlMonitorDeployer:addToMonitor("WoodheadIn")
-	HmlMonitorDeployer:addToMonitor("WoodheadOut")
+	--HmlMonitorDeployer:addToMonitor("WoodheadIn")
+	--HmlMonitorDeployer:addToMonitor("WoodheadOut")
 
 	HmlMonitorDeployer:addToMonitor("RosHmlItf")
 end
