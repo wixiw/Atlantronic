@@ -20,8 +20,8 @@ UbiquityItf(name)
 
 bool UbiquitySimul::configureHook()
 {
-    bool res = true;
-    return HmlTaskContext::configureHook();
+    bool res = HmlTaskContext::configureHook();
+    return res;
 }
 
 void UbiquitySimul::updateHook()
