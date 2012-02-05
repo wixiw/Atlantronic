@@ -31,7 +31,7 @@ PROJECT_NAME           = arp_rlu
 # This could be handy for archiving the generated documentation or
 # if some version control system is used.
 
-PROJECT_NUMBER         = 10.0.0
+PROJECT_NUMBER         = 12.0.0
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute)
 # base path where the generated documentation will be put.
@@ -60,7 +60,7 @@ CREATE_SUBDIRS         = NO
 # Polish, Portuguese, Romanian, Russian, Serbian, Serbian-Cyrilic, Slovak,
 # Slovene, Spanish, Swedish, Ukrainian, and Vietnamese.
 
-OUTPUT_LANGUAGE        = English
+OUTPUT_LANGUAGE        = French
 
 # If the BRIEF_MEMBER_DESC tag is set to YES (the default) Doxygen will
 # include brief member descriptions after the members that are listed in
@@ -581,7 +581,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = src test
+INPUT                  = src/LSL src/KFL
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
