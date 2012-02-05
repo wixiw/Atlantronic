@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_SUITE( unittest_PolarSegment )
 BOOST_AUTO_TEST_CASE( Test_1 )
 {
     lsl::LaserScan rawScan;
-    lsl::LaserScan filtScan = lsl::PolarSegment::apply(rawScan);
+    std::vector<lsl::LaserScan> objects = lsl::PolarSegment::apply(rawScan);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

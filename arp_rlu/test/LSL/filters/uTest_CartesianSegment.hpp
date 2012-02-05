@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_SUITE( unittest_CartesianSegment )
 BOOST_AUTO_TEST_CASE( Test_1 )
 {
     lsl::LaserScan rawScan;
-    lsl::LaserScan filtScan = lsl::CartesianSegment::apply(rawScan);
+    std::vector<lsl::LaserScan> objects = lsl::CartesianSegment::apply(rawScan);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
