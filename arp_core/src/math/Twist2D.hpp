@@ -13,10 +13,10 @@
 namespace arp_math
 {
 
-/** \ingroup ARPMath
+/** \ingroup arp_math
  * \nonstableyet
  *
- * \class Twist2
+ * \class Twist2D
  *
  * \brief Torseur cinématique du robot
  *
@@ -33,8 +33,10 @@ class Twist2D
         Twist2D(Vector2 _vitesseTranslation = Vector2(0, 0),
                 double _vitesseRotation = 0);
 
-        Twist2D(double _vx = 0.,
-                double _vy = 0.,
+        /** Constructeur secondaire.
+         * Il permet d'initialiser les vitesses avec 3 double. */
+        Twist2D(double _vx,
+                double _vy,
                 double _vh = 0);
 
         /** \returns la vitesse de translation selon l'axe x en m/s */

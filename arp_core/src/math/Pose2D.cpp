@@ -50,19 +50,24 @@ double Pose2D::h() const
     return positionRotation.angle();
 }
 
+double Pose2D::angle() const
+{
+    return positionRotation.angle();
+}
+
 /*Displacement Pose2D::displacement()
      {
      return Displacement(this->getMatrix4());
      }*/
 
-/* TODO BMO eigen 3 compilation problem */
-//Eigen::Matrix<double,3,3> Pose2D::matrix3()
-//{
-//	Eigen::Matrix<double,3,3> mat = Eigen::Matrix<double,3,3>::Identity();
-//	mat.corner(Eigen::TopLeft,2,2) = this->rotation2().toRotationMatrix();
-//	mat.corner(Eigen::TopRight,2,1) = this->translation();
-//	return mat;
-//}
+Eigen::Matrix<double,3,3> Pose2D::matrix3()
+{
+	Eigen::Matrix<double,3,3> mat = Eigen::Matrix<double,3,3>::Identity();
+	mat.topLeftCorner(2,2) = this->orientation().toRotationMatrix();
+	mat.topRightCorner(2,1) = this->translation();
+	return mat;
+}
+
 //Eigen::Matrix<double,4,4> Pose2D::matrix4()
 //{
 //	Eigen::Matrix<double,4,4> mat = Eigen::Matrix<double,4,4>::Identity();
@@ -92,6 +97,11 @@ void Pose2D::y(double _y)
 }
 
 void Pose2D::h(double _heading)
+{
+    positionRotation = Rotation2(_heading);
+}
+
+void Pose2D::angle(double _heading)
 {
     positionRotation = Rotation2(_heading);
 }

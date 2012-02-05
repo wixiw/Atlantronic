@@ -56,8 +56,11 @@ class Pose2D
         /** \returns la composante y de la partie translation en m */
         double y() const;
 
-        /** \returns un double image du cap en radians */
+        /** \returns un double image du cap en radians (idem angle() )*/
         double h() const;
+
+        /** \returns un double image du cap en radians (idem h() )*/
+        double angle() const;
 
         /** \returns la matrice homogène 3x3. Le bloc haut gauche est constitué de la matrice orthogonale 2x2
          * de la rotation. Le vecteur colonne 2x1 du bloc haut droit est constitué du vecteur translation */
@@ -82,9 +85,13 @@ class Pose2D
          * \param double correspondant à la seconde composante de la partie translation en m */
         void y(double _y);
 
-        /** Permet de modifier l'angle de la partie rotation.
+        /** Permet de modifier l'angle de la partie rotation (idem angle(double) ).
          * \param double correspondant à l'angle de la partie rotation en radians */
         void h(double _heading);
+
+        /** Permet de modifier l'angle de la partie rotation (idem h(double) ).
+         * \param double correspondant à l'angle de la partie rotation en radians */
+        void angle(double _heading);
 
         /** Permet de calculer l'inverse de la Pose2D.
          * La Pose2D inverse a un vecteur translation et un angle opposés à ceux initiaux.
