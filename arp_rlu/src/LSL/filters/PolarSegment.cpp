@@ -28,10 +28,10 @@ std::string PolarSegment::Params::getInfo()
     return ss.str();
 }
 
-LaserScan PolarSegment::apply(const LaserScan & raw, const Params & p)
+std::vector<LaserScan> PolarSegment::apply(const LaserScan & raw, const Params & p)
 {
     throw NotImplementedException();
 
-    LaserScan out = raw;
+    std::vector<LaserScan> out;
     return out;
 }

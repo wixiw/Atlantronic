@@ -34,10 +34,10 @@ std::string CartesianSegment::Params::getInfo()
     return ss.str();
 }
 
-LaserScan CartesianSegment::apply(const LaserScan & raw, const Params & p)
+std::vector<LaserScan> CartesianSegment::apply(const LaserScan & raw, const Params & p)
 {
     throw NotImplementedException();
 
-    LaserScan out = raw;
+    std::vector<LaserScan> out;
     return out;
 }

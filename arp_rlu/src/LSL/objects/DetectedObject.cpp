@@ -16,41 +16,55 @@ using namespace Eigen;
 using namespace lsl;
 
 DetectedObject::DetectedObject()
+: associatedScan(LaserScan())
+, apparentRange(0.)
+, apparentTheta(0.)
+, cartMean(0.)
+, cartStddev(0.)
 {
 }
 
-DetectedObject::~DetectedObject()
+
+DetectedObject::DetectedObject(const DetectedObject & d)
+: associatedScan(d.getScan())
+, apparentRange(d.getApparentRange())
+, apparentTheta(d.getApparentTheta())
+, cartMean(d.getCartesianMean())
+, cartStddev(d.getCartesianStddev())
 {
 }
 
-void DetectedObject::setScan(lsl::LaserScan)
+void DetectedObject::setScan(lsl::LaserScan ls)
 {
-    throw NotImplementedException();
+    associatedScan = ls;
+    computeStatistics();
     return;
+}
+
+
+LaserScan DetectedObject::getScan() const
+{
+    return associatedScan;
 }
 
 Vector2 DetectedObject::getCartesianMean() const
 {
-    throw NotImplementedException();
-    return Vector2();
+    return cartMean;
 }
 
 Vector2 DetectedObject::getCartesianStddev() const
 {
-    throw NotImplementedException();
-    return Vector2();
+    return cartStddev;
 }
 
 double DetectedObject::getApparentRange() const
 {
-    throw NotImplementedException();
-    return -1.;
+    return apparentRange;
 }
 
 double DetectedObject::getApparentTheta() const
 {
-    throw NotImplementedException();
-    return -1.;
+    return apparentTheta;
 }
 
 void DetectedObject::computeStatistics()

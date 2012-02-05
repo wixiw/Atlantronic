@@ -18,10 +18,19 @@ namespace arp_rlu
 
 namespace lsl
 {
-
+/** \ingroup lsl
+ * \nonstableyet
+ *
+ * \class DetectedCircle
+ *
+ * \brief DetectedCircle correspond à la fois à un DetectedObject et à un Circle.
+ */
 class DetectedCircle : public Circle, public DetectedObject
 {
     public:
+        /**
+         * Constructeur par défault qui appelle les constructeurs par défault de Circle et de DetectedObject.
+         */
         DetectedCircle();
 
 };

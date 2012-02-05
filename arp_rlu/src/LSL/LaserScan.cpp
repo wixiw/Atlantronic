@@ -16,10 +16,12 @@ using namespace Eigen;
 using namespace lsl;
 
 LaserScan::LaserScan()
+: data(Eigen::MatrixXd::Zero(3,0))
 {
 }
 
-LaserScan::~LaserScan()
+LaserScan::LaserScan(const LaserScan & ls)
+: data(ls.getPolarData())
 {
 }
 
@@ -53,7 +55,12 @@ Eigen::MatrixXd LaserScan::getCartesianData() const
     return Eigen::MatrixXd(3,0);
 }
 
-bool LaserScan::areCartesianDataAvailaible()
+Eigen::VectorXd LaserScan::getTimeData() const
+{
+    return Eigen::VectorXd(0);
+}
+
+bool LaserScan::areCartesianDataAvailable()
 {
     throw NotImplementedException();
     return false;

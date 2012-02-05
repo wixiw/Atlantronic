@@ -18,21 +18,53 @@ namespace arp_rlu
 namespace lsl
 {
 
+/** \ingroup lsl
+ * \nonstableyet
+ *
+ * \class MedianFilter
+ *
+ * \brief MedianFilter est un filtre médian sur le range (donnée polaire de distance).
+ *
+ */
 class MedianFilter
 {
     public:
+        /** \ingroup lsl
+         * \nonstableyet
+         *
+         * \class Params
+         *
+         * \brief MedianFilter::Params rassemble les paramètres du filtre MedianFilter.
+         *
+         */
         class Params
         {
         public:
+            /** Constructeur par défault.
+             *  Il initialise des paramètres classiques non-stupides :\n
+             *  width = 3.
+             */
             Params();
+
+            /**
+             * Permet de formatter les paramètres en un message lisible.
+             */
             std::string getInfo();
 
+            /**
+             * Largeur du filtre (en nombre de points).\n
+             * Cette largeur peut être paire ou impaire.
+             */
             unsigned int width;
         };
 
     public:
-        static LaserScan apply(const LaserScan &, const Params & p = Params());
-
+        /** Applique le filtre sur un scan
+         * \param ls scan d'origine
+         * \param p paramètres du filtre
+         * \return LaserScan filtré
+         */
+        static LaserScan apply(const LaserScan & ls, const Params & p = Params());
 
     protected:
 

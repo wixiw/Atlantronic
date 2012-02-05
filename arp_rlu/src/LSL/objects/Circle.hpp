@@ -15,22 +15,84 @@ namespace arp_rlu
 
 namespace lsl
 {
-
+/** \ingroup lsl
+ * \nonstableyet
+ *
+ * \class Circle
+ *
+ * \brief Circle représente un cercle, à savoir une position dans le plan et un rayon.
+ *
+ */
 class Circle
 {
     public:
+        /** Constructeur par défault.\n
+         *  Il initialise le cercle au centre du repère avec un rayon nul.
+         */
         Circle();
-        Circle(double _x, double _y, double _r);
-        Circle(arp_math::Vector2 _pos, double _r);
 
+        /** Constructeur via des doubles.\n
+         *  Il initialise le cercle à partir de trois double.\n
+         *  \params _x définit la position selon l'axe x\n
+         *  \params _x définit la position selon l'axe h\n
+         *  \params _r définit le rayon (valeur par défault = 1.)
+         */
+        Circle(double _x, double _y, double _r = 1.);
+
+        /** Constructeur via un Vector2 et un double.\n
+         *  Il initialise le cercle à partir de trois double.\n
+         *  \params _pos définit la position du centre\n
+         *  \params _r définit le rayon (valeur par défault = 1.)
+         */
+        Circle(arp_math::Vector2 _pos, double _r = 1.);
+
+        /**
+         * Permet d'accéder à la position selon d'axe x en mètre
+         * \return position selon l'axe x en mètre
+         */
         double x() const;
+
+        /**
+         * Permet d'accéder à la position selon d'axe y en mètre
+         * \return position selon l'axe y en mètre
+         */
         double y() const;
+
+        /**
+         * Permet d'accéder au rayon en mètre
+         * \return le rayon en mètre
+         */
         double r() const;
-        void x(double);
-        void y(double);
-        void r(double);
+
+        /**
+         * Permet de modifier la position selon d'axe x
+         * \param position selon l'axe x en mètre
+         */
+        void x(double _x);
+
+        /**
+         * Permet de modifier la position selon d'axe y
+         * \param position selon l'axe y en mètre
+         */
+        void y(double _y);
+
+        /**
+         * Permet de modifier le rayon
+         * \param rayon en mètre
+         */
+        void r(double _r);
+
+        /**
+         * Permet d'accéder à la position du centre du cercle sous forme d'un Vector2
+         * \return position du centre du cercle
+         */
         arp_math::Vector2 getPosition() const;
-        void setPosition(arp_math::Vector2);
+
+        /**
+         * Permet de modifier la position du centre du cercle
+         * \param _pos position du centre du cercle
+         */
+        void setPosition(arp_math::Vector2 _pos);
 
 
     protected:
