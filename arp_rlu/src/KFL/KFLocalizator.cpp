@@ -70,13 +70,15 @@ std::string KFLocalizator::IEKFParams::getInfo()
 KFLocalizator::KFLocalizator()
  : params()
  , beaconDetector()
- , baysesian(NULL)
+ , bayesian(NULL)
 {
      ;
 }
 
 KFLocalizator::~KFLocalizator()
 {
+    if(bayesian)
+        delete bayesian;
 }
 
 void KFLocalizator::setParams(KFLocalizator::Params)

@@ -16,13 +16,86 @@ namespace arp_rlu
 namespace kfl
 {
 
+/**
+ * \ingroup kfl
+ * \nonstableyet
+ *
+ * \struct KFLStateVar
+ *
+ * \brief KFLStateVar est le type de variable d'état de KFL.
+ *
+ * Il s'agit d'un vecteur 3 :\n
+ * La première coordonnée est la position selon l'axe X (en m).\n
+ * La deuxième coordonnée est la position selon l'axe Y (en m).\n
+ * La troisième coordonnée est l'angle autour de l'axe Z (en rad).\n
+ */
 typedef Eigen::Vector3d           KFLStateVar;
+
+/**
+ * \ingroup kfl
+ * \nonstableyet
+ *
+ * \struct KFLStateCov
+ *
+ * \brief KFLStateCov est la covariance associée à la variable d'état KFLStateVar.
+ *
+ * Il s'agit d'une matrice 3x3
+ */
 typedef Eigen::Matrix<double,3,3> KFLStateCov;
 
+/**
+ * \ingroup kfl
+ * \nonstableyet
+ *
+ * \struct KFLMeasVar
+ *
+ * \brief KFLMeasVar est le type de variable de mesure de KFL.
+ *
+ * Il s'agit d'un vecteur 2 :\n
+ * La première coordonnée est la distance (range) en polaire en m.\n
+ * La seconde coordonnée est l'angle (theta) en polaire en rad.\n
+ */
 typedef Eigen::Vector2d           KFLMeasVar;
+
+/**
+ * \ingroup kfl
+ * \nonstableyet
+ *
+ * \struct KFLMeasCov
+ *
+ * \brief KFLMeasCov est la covariance associée à la variable de mesure KFLMeasVar.
+ *
+ * Il s'agit d'une matrice 2x2
+ */
 typedef Eigen::Matrix<double,2,2> KFLMeasCov;
 
+/**
+ * \ingroup kfl
+ * \nonstableyet
+ *
+ * \struct KFLSysInput
+ *
+ * \brief KFLSysInput est le type de variable d'entrée de KFL.
+ *
+ * Il s'agit d'un vecteur 3 :\n
+ * La première coordonnée est la vitesse linéaire selon l'axe X (en m/s).\n
+ * La deuxième coordonnée est la vitesse linéaire selon l'axe Y (en m/s).\n
+ * La troisième coordonnée est la vitesse de rotation autour de l'axe Z (en rad/s).\n
+ */
 typedef Eigen::Vector3d           KFLSysInput;
+
+/**
+ * \ingroup kfl
+ * \nonstableyet
+ *
+ * \struct KFLMeasTarget
+ *
+ * \brief KFLMeasTarget est le type de cible pour KFL : un point du plan que la mesure observe (balise).
+ *
+ * Il s'agit d'un vecteur 2 :\n
+ * La première coordonnée est la position de la cible selon l'axe X (en m).\n
+ * La seconde coordonnée est la position de la cible selon l'axe Y (en m).\n
+ */
 typedef Eigen::Vector2d           KFLMeasTarget;
 
 

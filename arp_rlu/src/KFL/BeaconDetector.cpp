@@ -55,7 +55,7 @@ void BeaconDetector::setRefecencedBeacons(std::vector<lsl::Circle> beacons)
     return;
 }
 
-bool BeaconDetector::getBeacon(double t, std::pair<lsl::Circle, Eigen::Vector3d > & p)
+bool BeaconDetector::getBeacon(double t, lsl::Circle & target, Eigen::Vector2d & meas)
 {
     throw NotImplementedException();
     return false;
