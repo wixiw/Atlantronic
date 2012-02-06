@@ -1,0 +1,4 @@
+/* ARD arp_core main deployment file */
+loadService ("Deployer","Lua")
+Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua")
+Lua.exec_file("/opt/ard/arp_ihm/script/orocos/deployment/deploy_arp_ihm.lua")

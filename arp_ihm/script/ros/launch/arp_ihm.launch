@@ -1,0 +1,4 @@
+<!-- ARD arp_ihm main launch file -->
+<launch>
+	<node name="" pkg="ocl" type="deployer-gnulinux" args="-s $(find )/script/orocos/deployment/deploy_arp_ihm.ops --" output="screen"/>
+</launch>
