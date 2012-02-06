@@ -6,6 +6,7 @@ print("début déploiment arp_core")
 
 -- chargement des librairies contenants les composants d'arp_core
 Deployer:import("arp_core");
+Deployer:import("rtt_rosnode");
 
 -- chargement du composant de reporting
 print("loading Reporting component...")
