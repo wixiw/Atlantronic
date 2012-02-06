@@ -61,14 +61,22 @@ bool HmlMonitor::configureHook()
     m_power.configureHook();
 
     //get operation to reset hml
-    res &= getOperation("WoodheadOut",      "coReset",  m_coResetWoodheadOut);
-    res &= getOperation("WoodheadIn",       "coReset",  m_coResetWoodheadIn);
-    res &= getOperation("LeftDriving",      "coReset",  m_coResetLeftDriving);
-    res &= getOperation("RightDriving",     "coReset",  m_coResetRightDriving);
-    res &= getOperation("RearDriving",      "coReset",  m_coResetRearDriving);
-    res &= getOperation("LeftSteering",     "coReset",  m_coResetLeftSteering);
-    res &= getOperation("RightSteering",    "coReset",  m_coResetRightSteering);
-    res &= getOperation("RearSteering",     "coReset",  m_coResetRearSteering);
+//    if( hasPeer("WoodheadOut") || m_power.propRequireCompleteHardware )
+//        res &= getOperation("WoodheadOut",      "coReset",  m_coResetWoodheadOut);
+//    if( hasPeer("WoodheadIn") || m_power.propRequireCompleteHardware )
+//        res &= getOperation("WoodheadIn",       "coReset",  m_coResetWoodheadIn);
+//    if( hasPeer("LeftDriving") || m_power.propRequireCompleteHardware )
+//        res &= getOperation("LeftDriving",      "coReset",  m_coResetLeftDriving);
+//    if( hasPeer("RightDriving") || m_power.propRequireCompleteHardware )
+//        res &= getOperation("RightDriving",     "coReset",  m_coResetRightDriving);
+    if( hasPeer("RearDriving") || m_power.propRequireCompleteHardware )
+        res &= getOperation("RearDriving",      "coReset",  m_coResetRearDriving);
+//    if( hasPeer("LeftSteering") || m_power.propRequireCompleteHardware )
+//        res &= getOperation("LeftSteering",     "coReset",  m_coResetLeftSteering);
+//    if( hasPeer("RightSteering") || m_power.propRequireCompleteHardware )
+//        res &= getOperation("RightSteering",    "coReset",  m_coResetRightSteering);
+    if( hasPeer("RearSteering") || m_power.propRequireCompleteHardware )
+        res &= getOperation("RearSteering",     "coReset",  m_coResetRearSteering);
 
 
     return res;

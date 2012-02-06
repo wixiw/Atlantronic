@@ -40,9 +40,10 @@ namespace arp_hml
          */
         virtual void updateHook();
 
-    protected:
         /** Decide weather complete hardware must be present or not */
         bool propRequireCompleteHardware;
+
+    protected:
 
         /** Timeout when sending a command on the CAN, in s */
         bool propCanRequestTimeout;

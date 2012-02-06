@@ -2,10 +2,11 @@ dofile("/opt/ard/arp_core/script/orocos/deployment/component_deployer_object.lua
 
 
 HmlMonitorDeployer = ComposantDeployer:new()
+me = "HmlMonitor"
 
 function HmlMonitorDeployer:load()
-	Deployer:loadComponent("HmlMonitor","arp_hml::HmlMonitor")
-	Deployer:setActivity("HmlMonitor",0.100,10,1)
+	Deployer:loadComponent(me, "arp_hml::HmlMonitor")
+	Deployer:setActivity(me, 0.100, 10, 1)
 end
 
 
@@ -16,17 +17,26 @@ end
 
 
 function HmlMonitorDeployer:addToMonitor(name)
-	HmlMonitor = Deployer:getPeer("HmlMonitor")
-	Deployer:addPeer("HmlMonitor", name)
+	HmlMonitor = Deployer:getPeer(me)
+	Deployer:addPeer(me, name)
 	HmlMonitor:ooAddMonitoredPeer (name)
 	Deployer:removePeer (name)
 end
 
 function HmlMonitorDeployer:addToBusMonitor(name)
-	HmlMonitor = Deployer:getPeer("HmlMonitor")
-	Deployer:addPeer("HmlMonitor", name)
+	HmlMonitor = Deployer:getPeer(me)
+	Deployer:addPeer(me, name)
 	HmlMonitor:ooAddHmlBusMonitoredPeer(name)
 	Deployer:removePeer (name)
+end
+
+
+function HmlMonitorDeployer:registerToSql()
+	OrocosSqlMonitor = Deployer:getPeer("OrocosSqlBridge")
+	Deployer:addPeer("OrocosSqlBridge",me)
+	OrocosSqlMonitor:ooRegisterBoolPort(me,"outDrivingEnable")
+	OrocosSqlMonitor:ooRegisterBoolPort(me,"outEnable")
+	OrocosSqlMonitor:ooRegisterBoolPort(me,"outSteeringEnable")
 end
 
 
@@ -58,10 +68,13 @@ function HmlMonitorDeployer:connect()
 	--HmlMonitorDeployer:addToMonitor("WoodheadOut")
 
 	HmlMonitorDeployer:addToMonitor("RosHmlItf")
+
+--connection a SQL pour l'ihm
+	HmlMonitorDeployer:registerToSql();
 end
 
 function HmlMonitorDeployer:start()
-	HmlMonitor = Deployer:getPeer("HmlMonitor")
+	HmlMonitor = Deployer:getPeer(me)
 	HmlMonitor:configure()
 
 	HmlMonitor:start()
