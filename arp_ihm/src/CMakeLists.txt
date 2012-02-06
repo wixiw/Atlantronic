@@ -1,0 +1,1 @@
+add_subdirectory(orocos_sql_bridge)
