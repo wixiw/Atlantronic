@@ -66,8 +66,8 @@ bool LaserScan::areCartesianDataAvailable()
     return false;
 }
 
-bool LaserScan::cleanUp()
+unsigned int  LaserScan::cleanUp(double epsilon)
 {
     throw NotImplementedException();
-    return false;
+    return 0;
 }

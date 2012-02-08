@@ -33,12 +33,14 @@ namespace lsl
 class LaserScan
 {
     public:
-        /** Constructeur par défault.
-         *  Il construit un scan vide.
+        /** Constructeur par défault.\n
+         *  Il construit un scan vide :
+         *  l'attribut data est une matrice (3,0)
          */
         LaserScan();
 
-        /** Constructeur par copy.
+        /** Constructeur par copy.\n
+         * A la sortie, les données polaires (et éventuellement cartésiennes) des deux scans sont identiques.
          */
         LaserScan(const LaserScan &);
 
@@ -55,18 +57,21 @@ class LaserScan
          * \param hh un vecteur de taille P. Il contient les orientations du repère polaire par rapport au repère de référence.
          * \returns Vrai si le calcul c'est bien passé et Faux sinon
          * \remarks Les 4 vecteurs doivent impérativement être de même taille.
-         * Ils correspondent à des poses du repère polaire par rapport au repère cartésien.*/
+         * Ils correspondent à des poses du repère polaire par rapport au repère cartésien.\n
+         * P n'est pas forcément égal à N le nombre de points polaires. Une interpolation temporelle est réalisée.
+         * \remarks A la sortie, la matrice data contient 5 lignes.*/
         bool computeCartesianData(Eigen::VectorXd tt, Eigen::VectorXd xx, Eigen::VectorXd yy, Eigen::VectorXd hh);
 
 
         /** Permet de modifier les données polaires du scan.
-         * \param data Une matrice de taille (3,N) avec N le nombre de points dans le scan.\n
+         * \param d Une matrice de taille (3,N) avec N le nombre de points dans le scan.\n
          * La première ligne correspond à la date en seconde d'acquisition des points.\n
          * La deuxième ligne correspond à r, la distance du point à l'origine du repère polaire.\n
          * La troisième ligne correspond à theta, l'angle en radian du vecteur (origine -> point)
          * par rapport à l'axe de référence du repère polaire.\n
-         * \remarks Les données cartésiennes qui auraient été précédemment calculées ne sont plus disponibles.\n*/
-        void setPolarData(Eigen::MatrixXd data);
+         * \remarks Les données cartésiennes qui auraient été précédemment calculées ne sont plus disponibles.
+         * \remarks A la sortie, la matrice data est de taille (3,N)*/
+        void setPolarData(Eigen::MatrixXd d);
 
         /** Permet d'accéder aux coodonnées polaires des points du scan
          * \returns Une matrice de taille (3,N) avec N le nombre de points dans le scan.\n
@@ -82,7 +87,7 @@ class LaserScan
          * La première ligne correspond à la date en seconde d'acquisition des points. \n
          * La deuxième ligne correspond aux coordonnées selon l'axe x du repère de référence. \n
          * La troisième ligne correspond aux coordonnées selon l'axe y du repère de référence. \n
-         * \remarks Si le scan est vide, la matrice renvoyée est de taille (3,0)*/
+         * \remarks Si le scan est vide ou que les données cartésiennes ne sont pas disponibles, la matrice renvoyée est de taille (3,0)*/
         Eigen::MatrixXd getCartesianData() const;
 
         /** Permet d'accéder aux coordonnées cartésiennes des points du scan.
@@ -91,13 +96,15 @@ class LaserScan
         Eigen::VectorXd getTimeData() const;
 
         /** Permet de savoir si les données cartésiennes sont disponibles, c'est à dire si elles ont été calculées.
-         * \returns Vrai si les données sont disponibles et Faux sinon.*/
+         * \returns Vrai si les données sont disponibles et Faux sinon.
+         * \remarks En pratique, le test consiste à vérifier si la matrice data a 3 ou 5 lignes.*/
         bool areCartesianDataAvailable();
 
-        /** Permet de retirer les points de rayon nul.
-         * \returns Vrai s'il y avait effectivement quelque chose à nettoyer.
+        /** Permet de retirer les points de rayon nul (à epsilon près).
+         * \returns Le nombre de points retirés.
+         * \remarks L'ordre des points n'est pas modifié. Seuls certains sont retirés du scan.
          */
-        bool cleanUp();
+        unsigned int cleanUp(double epsilon = 1E-6);
 
     protected:
         Eigen::MatrixXd data;
