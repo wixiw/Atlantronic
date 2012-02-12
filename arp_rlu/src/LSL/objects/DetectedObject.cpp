@@ -34,6 +34,17 @@ DetectedObject::DetectedObject(const DetectedObject & d)
 {
 }
 
+
+DetectedObject::DetectedObject(const LaserScan & ls)
+: associatedScan(ls)
+, apparentRange(0.)
+, apparentTheta(0.)
+, cartMean(0.)
+, cartStddev(0.)
+{
+    this->computeStatistics();
+}
+
 void DetectedObject::setScan(lsl::LaserScan ls)
 {
     associatedScan = ls;

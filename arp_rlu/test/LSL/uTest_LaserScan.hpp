@@ -136,10 +136,10 @@ BOOST_AUTO_TEST_CASE( computeCartesianData_2 )
         BOOST_CHECK_EQUAL(cdata(0,j),d(0,j));
     }
 
-    BOOST_CHECK_CLOSE( 1.0, cdata(0,0), 1.f); BOOST_CHECK( abs(cdata(1,0)) < 0.00001f);
-    BOOST_CHECK( abs(cdata(0,1)) < 0.00001f); BOOST_CHECK_CLOSE( 0.5, cdata(1,1), 1.f);
-    BOOST_CHECK_CLOSE(-2.0, cdata(0,2), 1.f); BOOST_CHECK( abs(cdata(1,2)) < 0.00001f);
-    BOOST_CHECK( abs(cdata(0,3)) < 0.00001f); BOOST_CHECK_CLOSE(-3.0, cdata(1,3), 1.1f);
+    BOOST_CHECK_CLOSE( 1.0, cdata(1,0), 1.f); BOOST_CHECK( abs(cdata(2,0)) < 0.00001f);
+    BOOST_CHECK( abs(cdata(1,1)) < 0.00001f); BOOST_CHECK_CLOSE( 0.5, cdata(2,1), 1.f);
+    BOOST_CHECK_CLOSE(-2.0, cdata(1,2), 1.f); BOOST_CHECK( abs(cdata(2,2)) < 0.00001f);
+    BOOST_CHECK( abs(cdata(1,3)) < 0.00001f); BOOST_CHECK_CLOSE(-3.0, cdata(2,3), 1.1f);
 }
 
 BOOST_AUTO_TEST_CASE( setPolarData_1 )

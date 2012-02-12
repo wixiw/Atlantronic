@@ -34,13 +34,23 @@ class DetectedObject
 {
     public:
         /** Constructeur par défault.
-         *  Il construit un DetectedObject vide.
+         *  Il construit un DetectedObject vide :\n
+         *  * le scan associé est vide\n
+         *  * la range apparent vaut 0.\n
+         *  * le theta apparent vaut 0.\n
+         *  * le centre de gravité est en (0., 0.)\n
+         *  * la déviation standard vaut 0.
          */
         DetectedObject();
 
-        /** Constructeur par copy.
+        /** Constructeur par copie.
         */
         DetectedObject(const DetectedObject &);
+
+        /** Constructeur par scan.\n
+         * Les statistiques de l'objet sont calculées immédiatement.
+        */
+        DetectedObject(const LaserScan & ls);
 
         /**
          * Modifie le scan associe à l'objet.
@@ -89,6 +99,7 @@ class DetectedObject
         /**
          * Calcule les statistiques de la portion de scan associée à l'objet.\n
          * En particulier : le centre de gravité, l'écart type, les coordonnées polaires du centre de gravité.
+         * \remarks Cette méthode à appelée à chaque fois que le scan est changé.
          */
         void computeStatistics();
 };
