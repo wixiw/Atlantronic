@@ -20,8 +20,7 @@
 #include <arp_ods/SetVMax.h>
 #include <arp_core/Velocity.h>
 #include <arp_core/Pose.h>
-#include <math/Geometry.hpp>
-#include <math/math.hpp>
+#include <math/core>
 #include <std_msgs/Bool.h>
 
 #include "orders/orders.h"
