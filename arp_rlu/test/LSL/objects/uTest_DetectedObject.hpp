@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE( Constructor_copy )
     Eigen::MatrixXd pdata = obj2.getScan().getPolarData();
 
     BOOST_CHECK_EQUAL( pdata.rows(), 3);
-    BOOST_CHECK_EQUAL( pdata.cols(), N);
+    BOOST_CHECK_EQUAL( pdata.cols(), 4);
 
     for (int i=0; i<pdata.rows(); ++i) {
         for (int j=0; j<pdata.cols(); ++j) {
@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE( Constructor_scan )
     Eigen::MatrixXd pdata = obj.getScan().getPolarData();
 
     BOOST_CHECK_EQUAL( pdata.rows(), 3);
-    BOOST_CHECK_EQUAL( pdata.cols(), N);
+    BOOST_CHECK_EQUAL( pdata.cols(), 4);
 
     for (int i=0; i<pdata.rows(); ++i) {
         for (int j=0; j<pdata.cols(); ++j) {
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE( setScan )
     Eigen::MatrixXd pdata = obj.getScan().getPolarData();
 
     BOOST_CHECK_EQUAL( pdata.rows(), 3);
-    BOOST_CHECK_EQUAL( pdata.cols(), N);
+    BOOST_CHECK_EQUAL( pdata.cols(), 4);
 
     for (int i=0; i<pdata.rows(); ++i) {
         for (int j=0; j<pdata.cols(); ++j) {
@@ -178,7 +178,7 @@ BOOST_AUTO_TEST_CASE( getScan )
     Eigen::MatrixXd pdata = obj.getScan().getPolarData();
 
     BOOST_CHECK_EQUAL( pdata.rows(), 3);
-    BOOST_CHECK_EQUAL( pdata.cols(), N);
+    BOOST_CHECK_EQUAL( pdata.cols(), 4);
 
     for (int i=0; i<pdata.rows(); ++i) {
         for (int j=0; j<pdata.cols(); ++j) {
