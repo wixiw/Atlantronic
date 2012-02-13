@@ -4,4 +4,4 @@
     	*.c* 
     )  
     
-orocos_library(arp_ods-taskcontexts ${source_files})
+orocos_component(arp_ods-taskcontexts ${source_files})
