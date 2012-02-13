@@ -30,6 +30,8 @@ namespace arp_hml
         /** */
         PowerManager(ARDTaskContext& c);
 
+        virtual ~PowerManager();
+
         /**
          * Get all motors operations
          */
@@ -40,13 +42,11 @@ namespace arp_hml
          */
         virtual void updateHook();
 
-        /** Decide weather complete hardware must be present or not */
-        bool propRequireCompleteHardware;
-
     protected:
 
         /** Timeout when sending a command on the CAN, in s */
         bool propCanRequestTimeout;
+        Property<bool>* m_propRequireCompleteHardware;
 
         /** Drive soft enable state **/
         InputPort<bool> inLeftDrivingEnable;
@@ -104,17 +104,9 @@ namespace arp_hml
 
 
         /** Pointer in the Left driving ooSetOperationMode Operation **/
-        OperationCaller<bool(string)> m_ooSetLeftDrivingOperationMode;
-        /** Pointer in the Right driving ooSetOperationMode Operation **/
-        OperationCaller<bool(string)> m_ooSetRightDrivingOperationMode;
-        /** Pointer in the Right driving ooSetOperationMode Operation **/
-        OperationCaller<bool(string)> m_ooSetRearDrivingOperationMode;
+        OperationCaller<bool(string)> m_ooSetDrivingOperationMode;
         /** Pointer in the Left steering ooSetOperationMode Operation **/
-        OperationCaller<bool(string)> m_ooSetLeftSteeringOperationMode;
-        /** Pointer in the Right steering ooSetOperationMode Operation **/
-        OperationCaller<bool(string)> m_ooSetRightSteeringOperationMode;
-        /** Pointer in the Right steering ooSetOperationMode Operation **/
-        OperationCaller<bool(string)> m_ooSetRearSteeringOperationMode;
+        OperationCaller<bool(string)> m_ooSetSteeringOperationMode;
 
         /**
          * Read and merge information about motor power

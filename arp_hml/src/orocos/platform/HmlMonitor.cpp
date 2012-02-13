@@ -15,11 +15,16 @@ using namespace arp_core;
 ORO_CREATE_COMPONENT_LIBRARY()
 ORO_LIST_COMPONENT_TYPE( arp_hml::HmlMonitor )
 
-HmlMonitor::HmlMonitor(const std::string& name) :
+HmlMonitor::HmlMonitor(const std::string& name):
     Monitor(name),
-    m_power(*this)
+    propRequireCompleteHardware(false),
+    m_powerManager(*this),
+    m_stateManager(*this)
 {
     attrProjectRootPath = ros::package::getPath("arp_hml");
+
+    addProperty("propRequireCompleteHardware", propRequireCompleteHardware)
+        .doc("Decide weather complete hardware must be present or not");
 
     addOperation("ooAddHmlBusMonitoredPeer", &HmlMonitor::addHmlBusMonitoredPeer, this, OwnThread)
             .doc("Add a peer to the bus monitored list. This list is different because those components are configured and start before the others")
@@ -58,24 +63,27 @@ bool HmlMonitor::configureHook()
     res &= Monitor::configureHook();
 
     //configure power addon
-    m_power.configureHook();
+    m_powerManager.configureHook();
+    //configure motor state addon
+    m_stateManager.configureHook();
+
 
     //get operation to reset hml
-//    if( hasPeer("WoodheadOut") || m_power.propRequireCompleteHardware )
+//    if( hasPeer("WoodheadOut") || propRequireCompleteHardware )
 //        res &= getOperation("WoodheadOut",      "coReset",  m_coResetWoodheadOut);
-//    if( hasPeer("WoodheadIn") || m_power.propRequireCompleteHardware )
+//    if( hasPeer("WoodheadIn") || propRequireCompleteHardware )
 //        res &= getOperation("WoodheadIn",       "coReset",  m_coResetWoodheadIn);
-//    if( hasPeer("LeftDriving") || m_power.propRequireCompleteHardware )
+//    if( hasPeer("LeftDriving") || propRequireCompleteHardware )
 //        res &= getOperation("LeftDriving",      "coReset",  m_coResetLeftDriving);
 //    if( hasPeer("RightDriving") || m_power.propRequireCompleteHardware )
 //        res &= getOperation("RightDriving",     "coReset",  m_coResetRightDriving);
-    if( hasPeer("RearDriving") || m_power.propRequireCompleteHardware )
+    if( hasPeer("RearDriving") || propRequireCompleteHardware )
         res &= getOperation("RearDriving",      "coReset",  m_coResetRearDriving);
-//    if( hasPeer("LeftSteering") || m_power.propRequireCompleteHardware )
+//    if( hasPeer("LeftSteering") || propRequireCompleteHardware )
 //        res &= getOperation("LeftSteering",     "coReset",  m_coResetLeftSteering);
-//    if( hasPeer("RightSteering") || m_power.propRequireCompleteHardware )
+//    if( hasPeer("RightSteering") || propRequireCompleteHardware )
 //        res &= getOperation("RightSteering",    "coReset",  m_coResetRightSteering);
-    if( hasPeer("RearSteering") || m_power.propRequireCompleteHardware )
+    if( hasPeer("RearSteering") || propRequireCompleteHardware )
         res &= getOperation("RearSteering",     "coReset",  m_coResetRearSteering);
 
 
@@ -115,7 +123,9 @@ void HmlMonitor::updateHook()
     }
 
     //manage power on motors
-    m_power.updateHook();
+    m_powerManager.updateHook();
+    //manage motor mode of operation
+    m_stateManager.updateHook();
 }
 
 

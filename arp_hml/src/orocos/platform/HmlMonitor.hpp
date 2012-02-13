@@ -10,6 +10,7 @@
 
 #include <components/Monitor.hpp>
 #include "PowerManager.hpp"
+#include "StateManager.hpp"
 
 using namespace RTT;
 using namespace arp_core;
@@ -68,14 +69,13 @@ namespace arp_hml
          */
         bool ooResetHml();
 
+        /** Decide weather complete hardware must be present or not */
+        bool propRequireCompleteHardware;
 
     protected:
         /** List of peers to monitor */
         vector<TaskContext*> m_monitoredBusList;
 
-
-        /** Interface de scripting Orocos (ods,ops) */
-        PowerManager m_power;
 
         /** Pointer in the Woodhead 8 out coReset Operation**/
         OperationCaller<bool(void)> m_coResetWoodheadOut;
@@ -93,6 +93,9 @@ namespace arp_hml
         OperationCaller<bool(void)> m_coResetRightSteering;
         /** Pointer in the RearSteering coReset Operation **/
         OperationCaller<bool(void)> m_coResetRearSteering;
+
+        PowerManager m_powerManager;
+        StateManager m_stateManager;
     };
 }
 

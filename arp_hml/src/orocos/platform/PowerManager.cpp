@@ -10,13 +10,9 @@ using namespace arp_hml;
 using namespace arp_core;
 
 PowerManager::PowerManager(ARDTaskContext& owner):
-    propRequireCompleteHardware(false),
     propCanRequestTimeout(2.0),
     m_owner(owner)
 {
-    m_owner.addProperty("propRequireCompleteHardware", propRequireCompleteHardware)
-        .doc("Decide weather complete hardware must be present or not");
-
     m_owner.addProperty("propCanRequestTimeout", propCanRequestTimeout)
         .doc("Timeout when sending a command on the CAN, in s");
 
@@ -70,14 +66,30 @@ PowerManager::PowerManager(ARDTaskContext& owner):
 
 }
 
+PowerManager::~PowerManager()
+{
+
+}
+
 //------------------------------------------------------------------------------------------------------------------
 
 bool PowerManager::configureHook()
 {
-    bool res = true ;
+    bool res = true;
+    base::PropertyBase* property;
 
-    //get ppers operations to show a simplier interface to the outside world
-    res &= getPeersOperations();
+    property= m_owner.getProperty("propRequireCompleteHardware");
+    m_propRequireCompleteHardware = dynamic_cast< RTT::Property<bool>*>(property);
+    if( property == NULL || m_propRequireCompleteHardware == NULL )
+    {
+        LOGS(Error) << "Failed to get propRequireCompleteHardware property" << endlog();
+        res = false;
+    }
+    else
+    {
+        //get ppers operations to show a simplier interface to the outside world
+        res &= getPeersOperations();
+    }
 
     return res;
 }
@@ -87,42 +99,39 @@ bool PowerManager::getPeersOperations()
     bool res = true;
 
     //we test the peer existence, because in some cases we don't care in case of incomplete hardware
-    if( m_owner.hasPeer("LeftDriving") || propRequireCompleteHardware )
+    if( m_owner.hasPeer("LeftDriving") || m_propRequireCompleteHardware->get() )
     {
         res &= m_owner.getOperation("LeftDriving",      "ooEnableDrive",        m_ooEnableLeftDriving);
         res &= m_owner.getOperation("LeftDriving",      "ooDisableDrive",       m_ooDisableLeftDriving);
-        res &= m_owner.getOperation("LeftDriving" ,     "ooSetOperationMode",   m_ooSetLeftDrivingOperationMode);
     }
-    if( m_owner.hasPeer("RightDriving") || propRequireCompleteHardware )
+    if( m_owner.hasPeer("RightDriving") || m_propRequireCompleteHardware->get() )
     {
         res &= m_owner.getOperation("RightDriving",     "ooEnableDrive",        m_ooEnableRightDriving);
         res &= m_owner.getOperation("RightDriving",     "ooDisableDrive",       m_ooDisableRightDriving);
-        res &= m_owner.getOperation("RightDriving",     "ooSetOperationMode",   m_ooSetRightDrivingOperationMode);
     }
-    if( m_owner.hasPeer("RearDriving") || propRequireCompleteHardware )
+    if( m_owner.hasPeer("RearDriving") || m_propRequireCompleteHardware->get() )
     {
         res &= m_owner.getOperation("RearDriving",      "ooEnableDrive",        m_ooEnableRearDriving);
         res &= m_owner.getOperation("RearDriving",      "ooDisableDrive",       m_ooDisableRearDriving);
-        res &= m_owner.getOperation("RearDriving",      "ooSetOperationMode",   m_ooSetRearDrivingOperationMode);
     }
-    if( m_owner.hasPeer("LeftSteering") || propRequireCompleteHardware )
+    if( m_owner.hasPeer("LeftSteering") || m_propRequireCompleteHardware->get() )
     {
         res &= m_owner.getOperation("LeftSteering",     "ooEnableDrive",        m_ooEnableLeftSteering);
         res &= m_owner.getOperation("LeftSteering",     "ooDisableDrive",       m_ooDisableLeftSteering);
-        res &= m_owner.getOperation("LeftSteering" ,    "ooSetOperationMode",   m_ooSetLeftSteeringOperationMode);
     }
-    if( m_owner.hasPeer("RightSteering") || propRequireCompleteHardware )
+    if( m_owner.hasPeer("RightSteering") || m_propRequireCompleteHardware->get() )
     {
         res &= m_owner.getOperation("RightSteering",    "ooEnableDrive",        m_ooEnableRightSteering);
         res &= m_owner.getOperation("RightSteering",    "ooDisableDrive",       m_ooDisableRightSteering);
-        res &= m_owner.getOperation("RightSteering",    "ooSetOperationMode",   m_ooSetRightSteeringOperationMode);
     }
-    if( m_owner.hasPeer("RearSteering") || propRequireCompleteHardware )
+    if( m_owner.hasPeer("RearSteering") || m_propRequireCompleteHardware->get() )
     {
         res &= m_owner.getOperation("RearSteering",     "ooEnableDrive",        m_ooEnableRearSteering);
         res &= m_owner.getOperation("RearSteering",     "ooDisableDrive",       m_ooDisableRearSteering);
-        res &= m_owner.getOperation("RearSteering",     "ooSetOperationMode",   m_ooSetRearSteeringOperationMode);
     }
+
+    res &= m_owner.getOperation("HmlMonitor",     "ooSetDrivingOperationMode",   m_ooSetDrivingOperationMode);
+    res &= m_owner.getOperation("HmlMonitor",     "ooSetSteeringOperationMode",   m_ooSetSteeringOperationMode);
 
     return res;
 }
@@ -231,16 +240,11 @@ bool PowerManager::ooSetDrivingMotorPower(bool powerOn)
     }
 
     //remise ne mode vitesse des moteurs
-    if( m_ooSetLeftDrivingOperationMode("speed") == false
-     || m_ooSetRightDrivingOperationMode("speed") == false
-     || m_ooSetRearDrivingOperationMode("speed") == false
-     )
+    if( m_ooSetDrivingOperationMode("speed") == false )
     {
-        LOGS(Error) << "ooSetDrivingMotorPower : could not switch back to speed mode." << endlog();
+        LOGS(Error) << "m_ooSetDrivingOperationMode : could not switch back to speed mode." << endlog();
         goto failed;
     }
-
-    LOGS(Info) << "ooSetDrivingMotorPower : Motors power switched to " << powerOn << " properly." << endlog();
     goto success;
 
     failed:
@@ -297,16 +301,11 @@ bool PowerManager::ooSetSteeringMotorPower(bool powerOn)
     }
 
     //remise ne mode position des moteurs
-    if( m_ooSetLeftSteeringOperationMode("position") == false
-    || m_ooSetRightSteeringOperationMode("position") == false
-    || m_ooSetRearSteeringOperationMode("position") == false
-    )
+    if( m_ooSetSteeringOperationMode("position") == false )
     {
         LOGS(Error) << "ooSetSteeringMotorPower : could not switch back to position mode." << endlog();
         goto failed;
     }
-
-    LOGS(Info) << "ooSetSteeringMotorPower : Motors power switched to " << powerOn << " properly." << endlog();
     goto success;
 
     failed:
