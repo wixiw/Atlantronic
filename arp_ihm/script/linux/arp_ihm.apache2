@@ -7,7 +7,8 @@
 		AllowOverride None
 	</Directory>
 	<Directory /opt/ard/arp_ihm/src/www>
-		Options Indexes FollowSymLinks MultiViews
+		AddHandler cgi-script .cgi .pl
+		Options Indexes FollowSymLinks MultiViews +ExecCGI
 		AllowOverride None
 		Order allow,deny
 		allow from all
