@@ -69,20 +69,35 @@ void WoodheadOut::updateHook()
     UNS8 inputs = 0;
     bool tmpRead;
 
+    tmpRead = false;
     inBit1.readNewest(tmpRead);
     inputs += tmpRead;
+
+    tmpRead = false;
     inBit2.readNewest(tmpRead);
     inputs += tmpRead<<1;
+
+    tmpRead = false;
     inBit3.readNewest(tmpRead);
     inputs += tmpRead<<2;
+
+    tmpRead = false;
     inBit4.readNewest(tmpRead);
     inputs += tmpRead<<3;
+
+    tmpRead = false;
     inBit5.readNewest(tmpRead);
     inputs += tmpRead<<4;
+
+    tmpRead = false;
     inBit6.readNewest(tmpRead);
     inputs += tmpRead<<5;
+
+    tmpRead = false;
     inBit7.readNewest(tmpRead);
     inputs += tmpRead<<6;
+
+    tmpRead = false;
     inBit8.readNewest(tmpRead);
     inputs += tmpRead<<7;
 

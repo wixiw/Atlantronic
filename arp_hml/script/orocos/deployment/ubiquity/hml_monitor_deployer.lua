@@ -2,7 +2,7 @@ dofile("/opt/ard/arp_core/script/orocos/deployment/component_deployer_object.lua
 
 
 HmlMonitorDeployer = ComposantDeployer:new()
-me = "HmlMonitor"
+local me = "HmlMonitor"
 
 function HmlMonitorDeployer:load()
 	Deployer:loadComponent(me, "arp_hml::HmlMonitor")
@@ -32,11 +32,13 @@ end
 
 
 function HmlMonitorDeployer:registerToSql()
+	--[[
 	OrocosSqlMonitor = Deployer:getPeer("OrocosSqlBridge")
 	Deployer:addPeer("OrocosSqlBridge",me)
 	OrocosSqlMonitor:ooRegisterBoolPort(me,"outDrivingEnable")
 	OrocosSqlMonitor:ooRegisterBoolPort(me,"outEnable")
 	OrocosSqlMonitor:ooRegisterBoolPort(me,"outSteeringEnable")
+	--]]
 end
 
 
@@ -71,6 +73,8 @@ function HmlMonitorDeployer:connect()
 
 --connection a SQL pour l'ihm
 	HmlMonitorDeployer:registerToSql();
+	
+	--HmlMonitorDeployer:check("HmlMonitor")
 end
 
 function HmlMonitorDeployer:start()

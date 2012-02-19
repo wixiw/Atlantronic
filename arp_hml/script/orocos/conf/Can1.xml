@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE properties SYSTEM "cpf.dtd">
 <properties>
-  <simple name="propNodeId" type="long"><description>in decimal</description><value>2</value></simple>
-  <simple name="propPdoMaxAwaitedDelay" type="double"><description> in s </description><value>0.004</value></simple>
+  <simple name="propNodeId" type="long">
+  	<description>in decimal</description>
+  	<value>2</value>
+  </simple>
+  <simple name="propPdoMaxAwaitedDelay" type="double">
+  	<description> in s </description>
+  	<value>0.004</value>
+  </simple>
+  <simple name="propBusName" type="string">
+  	<description></description>
+  	<value>can1</value>
+  </simple>
 </properties>

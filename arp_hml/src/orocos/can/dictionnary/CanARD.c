@@ -284,6 +284,19 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, uint8, sizeof (UNS8), (void*)&CanARD_obj1286_Node_ID_of_the_SDO_Server }
                      };
 
+/* index 0x1287 :   Client SDO 8 Parameter. */
+                    UNS8 CanARD_highestSubIndex_obj1287 = 3; /* number of subindex - 1*/
+                    UNS32 CanARD_obj1287_COB_ID_Client_to_Server_Transmit_SDO = 0x606;	/* 1542 */
+                    UNS32 CanARD_obj1287_COB_ID_Server_to_Client_Receive_SDO = 0x586;	/* 1414 */
+                    UNS8 CanARD_obj1287_Node_ID_of_the_SDO_Server = 0x6;	/* 6 */
+                    subindex CanARD_Index1287[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj1287 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1287_COB_ID_Client_to_Server_Transmit_SDO },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1287_COB_ID_Server_to_Client_Receive_SDO },
+                       { RW, uint8, sizeof (UNS8), (void*)&CanARD_obj1287_Node_ID_of_the_SDO_Server }
+                     };
+
 /* index 0x1400 :   Receive PDO 1 Parameter. */
                     UNS8 CanARD_highestSubIndex_obj1400 = 5; /* number of subindex - 1*/
                     UNS32 CanARD_obj1400_COB_ID_used_by_PDO = 0x1A1;	/* 417 */
@@ -1055,7 +1068,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 /* index 0x1807 :   Transmit PDO 8 Parameter. */
                     UNS8 CanARD_highestSubIndex_obj1807 = 5; /* number of subindex - 1*/
-                    UNS32 CanARD_obj1807_COB_ID_used_by_PDO = 0x306;	/* 774 */
+                    UNS32 CanARD_obj1807_COB_ID_used_by_PDO = 0x206;	/* 518 */
                     UNS8 CanARD_obj1807_Transmission_Type = 0x1;	/* 1 */
                     UNS16 CanARD_obj1807_Inhibit_Time = 0x0;	/* 0 */
                     UNS8 CanARD_obj1807_Compatibility_Entry = 0x0;	/* 0 */
@@ -1406,6 +1419,7 @@ const indextable CanARD_objdict[] =
   { (subindex*)CanARD_Index1284,sizeof(CanARD_Index1284)/sizeof(CanARD_Index1284[0]), 0x1284},
   { (subindex*)CanARD_Index1285,sizeof(CanARD_Index1285)/sizeof(CanARD_Index1285[0]), 0x1285},
   { (subindex*)CanARD_Index1286,sizeof(CanARD_Index1286)/sizeof(CanARD_Index1286[0]), 0x1286},
+  { (subindex*)CanARD_Index1287,sizeof(CanARD_Index1287)/sizeof(CanARD_Index1287[0]), 0x1287},
   { (subindex*)CanARD_Index1400,sizeof(CanARD_Index1400)/sizeof(CanARD_Index1400[0]), 0x1400},
   { (subindex*)CanARD_Index1401,sizeof(CanARD_Index1401)/sizeof(CanARD_Index1401[0]), 0x1401},
   { (subindex*)CanARD_Index1402,sizeof(CanARD_Index1402)/sizeof(CanARD_Index1402[0]), 0x1402},
@@ -1489,68 +1503,69 @@ const indextable * CanARD_scanIndexOD (UNS16 wIndex, UNS32 * errorCode, ODCallba
 		case 0x1284: i = 11;break;
 		case 0x1285: i = 12;break;
 		case 0x1286: i = 13;break;
-		case 0x1400: i = 14;break;
-		case 0x1401: i = 15;break;
-		case 0x1402: i = 16;break;
-		case 0x1403: i = 17;break;
-		case 0x1404: i = 18;break;
-		case 0x1405: i = 19;break;
-		case 0x1406: i = 20;break;
-		case 0x1407: i = 21;break;
-		case 0x1408: i = 22;break;
-		case 0x1409: i = 23;break;
-		case 0x140A: i = 24;break;
-		case 0x140B: i = 25;break;
-		case 0x140C: i = 26;break;
-		case 0x140D: i = 27;break;
-		case 0x140E: i = 28;break;
-		case 0x140F: i = 29;break;
-		case 0x1410: i = 30;break;
-		case 0x1411: i = 31;break;
-		case 0x1412: i = 32;break;
-		case 0x1600: i = 33;break;
-		case 0x1601: i = 34;break;
-		case 0x1602: i = 35;break;
-		case 0x1603: i = 36;break;
-		case 0x1604: i = 37;break;
-		case 0x1605: i = 38;break;
-		case 0x1606: i = 39;break;
-		case 0x1607: i = 40;break;
-		case 0x1608: i = 41;break;
-		case 0x1609: i = 42;break;
-		case 0x160A: i = 43;break;
-		case 0x160B: i = 44;break;
-		case 0x160C: i = 45;break;
-		case 0x160D: i = 46;break;
-		case 0x160E: i = 47;break;
-		case 0x160F: i = 48;break;
-		case 0x1610: i = 49;break;
-		case 0x1611: i = 50;break;
-		case 0x1612: i = 51;break;
-		case 0x1800: i = 52;*callbacks = CanARD_Index1800_callbacks; break;
-		case 0x1801: i = 53;*callbacks = CanARD_Index1801_callbacks; break;
-		case 0x1802: i = 54;*callbacks = CanARD_Index1802_callbacks; break;
-		case 0x1803: i = 55;*callbacks = CanARD_Index1803_callbacks; break;
-		case 0x1804: i = 56;*callbacks = CanARD_Index1804_callbacks; break;
-		case 0x1805: i = 57;*callbacks = CanARD_Index1805_callbacks; break;
-		case 0x1806: i = 58;*callbacks = CanARD_Index1806_callbacks; break;
-		case 0x1807: i = 59;*callbacks = CanARD_Index1807_callbacks; break;
-		case 0x1A00: i = 60;break;
-		case 0x1A01: i = 61;break;
-		case 0x1A02: i = 62;break;
-		case 0x1A03: i = 63;break;
-		case 0x1A04: i = 64;break;
-		case 0x1A05: i = 65;break;
-		case 0x1A06: i = 66;break;
-		case 0x1A07: i = 67;break;
-		case 0x2050: i = 68;*callbacks = WoodheadIn_callbacks; break;
-		case 0x2060: i = 69;break;
-		case 0x2210: i = 70;*callbacks = LeftSteering_callbacks; break;
-		case 0x2220: i = 71;*callbacks = RightSteering_callbacks; break;
-		case 0x2230: i = 72;*callbacks = RearSteering_callbacks; break;
-		case 0x2310: i = 73;*callbacks = LeftDriving_callbacks; break;
-		case 0x2320: i = 74;*callbacks = RightDriving_callbacks; break;
-		case 0x2330: i = 75;*callbacks = RearDriving_callbacks; break;
+		case 0x1287: i = 14;break;
+		case 0x1400: i = 15;break;
+		case 0x1401: i = 16;break;
+		case 0x1402: i = 17;break;
+		case 0x1403: i = 18;break;
+		case 0x1404: i = 19;break;
+		case 0x1405: i = 20;break;
+		case 0x1406: i = 21;break;
+		case 0x1407: i = 22;break;
+		case 0x1408: i = 23;break;
+		case 0x1409: i = 24;break;
+		case 0x140A: i = 25;break;
+		case 0x140B: i = 26;break;
+		case 0x140C: i = 27;break;
+		case 0x140D: i = 28;break;
+		case 0x140E: i = 29;break;
+		case 0x140F: i = 30;break;
+		case 0x1410: i = 31;break;
+		case 0x1411: i = 32;break;
+		case 0x1412: i = 33;break;
+		case 0x1600: i = 34;break;
+		case 0x1601: i = 35;break;
+		case 0x1602: i = 36;break;
+		case 0x1603: i = 37;break;
+		case 0x1604: i = 38;break;
+		case 0x1605: i = 39;break;
+		case 0x1606: i = 40;break;
+		case 0x1607: i = 41;break;
+		case 0x1608: i = 42;break;
+		case 0x1609: i = 43;break;
+		case 0x160A: i = 44;break;
+		case 0x160B: i = 45;break;
+		case 0x160C: i = 46;break;
+		case 0x160D: i = 47;break;
+		case 0x160E: i = 48;break;
+		case 0x160F: i = 49;break;
+		case 0x1610: i = 50;break;
+		case 0x1611: i = 51;break;
+		case 0x1612: i = 52;break;
+		case 0x1800: i = 53;*callbacks = CanARD_Index1800_callbacks; break;
+		case 0x1801: i = 54;*callbacks = CanARD_Index1801_callbacks; break;
+		case 0x1802: i = 55;*callbacks = CanARD_Index1802_callbacks; break;
+		case 0x1803: i = 56;*callbacks = CanARD_Index1803_callbacks; break;
+		case 0x1804: i = 57;*callbacks = CanARD_Index1804_callbacks; break;
+		case 0x1805: i = 58;*callbacks = CanARD_Index1805_callbacks; break;
+		case 0x1806: i = 59;*callbacks = CanARD_Index1806_callbacks; break;
+		case 0x1807: i = 60;*callbacks = CanARD_Index1807_callbacks; break;
+		case 0x1A00: i = 61;break;
+		case 0x1A01: i = 62;break;
+		case 0x1A02: i = 63;break;
+		case 0x1A03: i = 64;break;
+		case 0x1A04: i = 65;break;
+		case 0x1A05: i = 66;break;
+		case 0x1A06: i = 67;break;
+		case 0x1A07: i = 68;break;
+		case 0x2050: i = 69;*callbacks = WoodheadIn_callbacks; break;
+		case 0x2060: i = 70;break;
+		case 0x2210: i = 71;*callbacks = LeftSteering_callbacks; break;
+		case 0x2220: i = 72;*callbacks = RightSteering_callbacks; break;
+		case 0x2230: i = 73;*callbacks = RearSteering_callbacks; break;
+		case 0x2310: i = 74;*callbacks = LeftDriving_callbacks; break;
+		case 0x2320: i = 75;*callbacks = RightDriving_callbacks; break;
+		case 0x2330: i = 76;*callbacks = RearDriving_callbacks; break;
 		default:
 			*errorCode = OD_NO_SUCH_OBJECT;
 			return NULL;
@@ -1569,19 +1584,19 @@ s_PDO_status CanARD_PDO_status[8] = {s_PDO_status_Initializer,s_PDO_status_Initi
 const quick_index CanARD_firstIndex = {
   6, /* SDO_SVR */
   7, /* SDO_CLT */
-  14, /* PDO_RCV */
-  33, /* PDO_RCV_MAP */
-  52, /* PDO_TRS */
-  60 /* PDO_TRS_MAP */
+  15, /* PDO_RCV */
+  34, /* PDO_RCV_MAP */
+  53, /* PDO_TRS */
+  61 /* PDO_TRS_MAP */
 };
 
 const quick_index CanARD_lastIndex = {
   6, /* SDO_SVR */
-  13, /* SDO_CLT */
-  32, /* PDO_RCV */
-  51, /* PDO_RCV_MAP */
-  59, /* PDO_TRS */
-  67 /* PDO_TRS_MAP */
+  14, /* SDO_CLT */
+  33, /* PDO_RCV */
+  52, /* PDO_RCV_MAP */
+  60, /* PDO_TRS */
+  68 /* PDO_TRS_MAP */
 };
 
 const UNS16 CanARD_ObjdictSize = sizeof(CanARD_objdict)/sizeof(CanARD_objdict[0]); 

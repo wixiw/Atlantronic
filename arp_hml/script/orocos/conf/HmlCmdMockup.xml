@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "cpf.dtd">
+<properties>
+
+ 	<simple name="propAutoLoadStateMachines" type="string">
+ 	 	<description></description>
+ 	 	<value>IoOutSelfTest</value>
+ 	 </simple>
+</properties>

@@ -84,6 +84,8 @@ namespace arp_hml
         int propEncoderResolution;
         /** Maximal Torque allowed in Amps*/
         double propMaximalTorque;
+        /** Maximal delay beetween 2 commands to consider someone is still giving coherent orders*/
+        double propInputsTimeout;
 
         /** Command to be used in position mode. It must be provided in rad on the reductor's output.
          * It is not available yet. */
@@ -258,6 +260,10 @@ namespace arp_hml
         double m_oldPositionMeasure;
         /** Time of last speed computation */
         double m_oldPositionMeasureTime;
+        /** Last speed command received */
+        double m_oldSpeedCommandTime;
+        /** Last torque command received */
+        double m_oldTorqueCommandTime;
         /** is motor blocked */
         bool m_isMotorBlocked;
 
@@ -267,9 +273,6 @@ namespace arp_hml
         void setOutputs();
         /** Read informations from the motor captors (position and current) */
         void readCaptors();
-
-        /** Derivated to disabled checking on some unused ports */
-        virtual bool checkInputsPorts();
 
         /** Derivated to check personnal properties */
         virtual bool checkProperties();

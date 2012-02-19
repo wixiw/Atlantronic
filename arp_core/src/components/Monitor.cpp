@@ -55,8 +55,6 @@ bool Monitor::configureHook()
         }
     }
 
-    res &= checkPortConnection();
-
     return res;
 }
 

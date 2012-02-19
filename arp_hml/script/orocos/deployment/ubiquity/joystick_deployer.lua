@@ -11,6 +11,8 @@ end
 
 function JoystickDeployer:connect()
 	--Deployer:addPeer("Reporting", "Joystick");
+	
+	--JoystickDeployer:check("Joystick")
 end
 
 function JoystickDeployer:start()

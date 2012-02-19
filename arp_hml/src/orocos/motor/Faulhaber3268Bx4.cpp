@@ -26,6 +26,7 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         propReductorValue(14),
         propEncoderResolution(3000),
         propMaximalTorque(0.5),
+        propInputsTimeout(1.0),
         m_faulhaberCommandTodo(false),
         m_oldPositionMeasure(0),
         m_isMotorBlocked(false)
@@ -45,7 +46,8 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
     	.doc("Encoder resolution in point by rev");
     addProperty("propMaximalTorque",propMaximalTorque)
         .doc("Maximal Torque allowed in Amps");
-
+    addProperty("propInputsTimeout",propInputsTimeout)
+            .doc("Maximal delay beetween 2 commands to consider someone is still giving coherent orders, in s");
 
     addPort("inSpeedCmd",inSpeedCmd)
             .doc("Command to be used in position mode. It must be provided in rad on the reductor's output. It is not available yet.");
@@ -105,22 +107,7 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
 
     ArdMotorItf::setOperationMode(ArdMotorItf::SPEED_CONTROL);
     outDriveEnable.write(false);
-    timespec now;
-    clock_gettime(CLOCK_MONOTONIC, &now);
-    m_oldPositionMeasureTime = now.tv_sec + (double)(now.tv_nsec)/1E9;
-}
-
-bool Faulhaber3268Bx4::checkInputsPorts()
-{
-	bool res = true;
-
-    if( inSpeedCmd.connected() == false )
-    {
-    	res = false;
-    	LOG(Error) << "failed to configure : inSpeedCommand is not connected" << endlog();
-    }
-
-    return res;
+    m_oldPositionMeasureTime = getTime();
 }
 
 bool Faulhaber3268Bx4::checkProperties()
@@ -218,9 +205,16 @@ void Faulhaber3268Bx4::getInputs()
 {
 	//read last speed command
     double speedCmd = 0;
-    if( inSpeedCmd.readNewest(speedCmd) != NoData )
+    if( inSpeedCmd.read(speedCmd) == NewData )
     {
     	ArdMotorItf::setSpeedCmd(speedCmd);
+    	m_oldSpeedCommandTime = attrSyncTime;
+    }
+    //if we did not get a speed command since a time, we assume a 0 cmd for security reasons
+    //if we did not get a speed command since a time, we assume a 0 cmd for security reasons
+    else if(attrSyncTime - m_oldSpeedCommandTime > propInputsTimeout)
+    {
+        ArdMotorItf::setSpeedCmd(0);
     }
 
     //read last position command
@@ -232,9 +226,15 @@ void Faulhaber3268Bx4::getInputs()
 
     //read last torque command
     double torqueCmd = 0;
-    if( inTorqueCmd.readNewest(torqueCmd) != NoData )
+    if( inTorqueCmd.read(torqueCmd) == NewData )
     {
     	ArdMotorItf::setTorqueCmd(torqueCmd);
+    	m_oldTorqueCommandTime = attrSyncTime;
+    }
+    //if we did not get a speed command since a time, we assume a 0 cmd for security reasons
+    else if(attrSyncTime - m_oldTorqueCommandTime > propInputsTimeout)
+    {
+        ArdMotorItf::setTorqueCmd(0);
     }
 }
 

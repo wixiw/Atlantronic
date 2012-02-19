@@ -1,0 +1,268 @@
+/**
+ * Allume toutes les LED pour les éteind en boucle
+ */
+StateMachine FastBlink
+{
+    var bool start = false;
+    var bool stop = false;
+    var int outputs = 00;
+    
+    initial state black 
+    {
+           entry 
+           {
+				outBit01.write(false);
+				outBit02.write(false);
+				outBit03.write(false);
+				outBit04.write(false);
+				outBit05.write(false);
+				outBit06.write(false);
+				outBit07.write(false);
+				outBit08.write(false);
+           }
+           
+           transitions 
+           { 
+                if true then select blink;
+           }
+    }
+ 
+    state blink 
+    {
+			entry
+			{
+				outputs = 0xFF;
+				outBit01.write(true);
+				outBit02.write(true);
+				outBit03.write(true);
+				outBit04.write(true);
+				outBit05.write(true);
+				outBit06.write(true);
+				outBit07.write(true);
+				outBit08.write(true);
+			}
+			
+           run 
+           {
+
+           }
+           
+           transitions 
+           { 
+                if true then select black;
+           }
+    }
+    
+    final state truc
+    {
+    	entry{}
+    }
+    
+}
+
+/**
+ * Allume successivement les différentes LED une par une
+ */
+StateMachine OneBlink 
+{
+    var bool start = false;
+    var bool stop = false;
+    var int outputs = 00;
+    
+    initial state black 
+    {
+           entry 
+           {
+				outBit01.write(false);
+				outBit02.write(false);
+				outBit03.write(false);
+				outBit04.write(false);
+				outBit05.write(false);
+				outBit06.write(false);
+				outBit07.write(false);
+				outBit08.write(false);
+           }
+           
+           transitions 
+           { 
+                if true then select one;
+           }
+    }
+ 
+    state one 
+    {
+			entry
+			{
+				outputs = 0xFF;
+				outBit01.write(true);
+				outBit02.write(false);
+				outBit03.write(false);
+				outBit04.write(false);
+				outBit05.write(false);
+				outBit06.write(false);
+				outBit07.write(false);
+				outBit08.write(false);
+			}
+           
+           transitions 
+           { 
+                if true then select two;
+           }
+    }
+    
+    state two 
+    {
+			entry
+			{
+				outputs = 0xFF;
+				outBit01.write(false);
+				outBit02.write(true);
+				outBit03.write(false);
+				outBit04.write(false);
+				outBit05.write(false);
+				outBit06.write(false);
+				outBit07.write(false);
+				outBit08.write(false);
+			}
+           
+           transitions 
+           { 
+                if true then select three;
+           }
+    }
+    
+    state three 
+    {
+			entry
+			{
+				outputs = 0xFF;
+				outBit01.write(false);
+				outBit02.write(false);
+				outBit03.write(true);
+				outBit04.write(false);
+				outBit05.write(false);
+				outBit06.write(false);
+				outBit07.write(false);
+				outBit08.write(false);
+			}
+           
+           transitions 
+           { 
+                if true then select four;
+           }
+    }
+    
+    state four 
+    {
+			entry
+			{
+				outputs = 0xFF;
+				outBit01.write(false);
+				outBit02.write(false);
+				outBit03.write(false);
+				outBit04.write(true);
+				outBit05.write(false);
+				outBit06.write(false);
+				outBit07.write(false);
+				outBit08.write(false);
+			}
+           
+           transitions 
+           { 
+                if true then select five;
+           }
+    }
+    
+    state five 
+    {
+			entry
+			{
+				outputs = 0xFF;
+				outBit01.write(false);
+				outBit02.write(false);
+				outBit03.write(false);
+				outBit04.write(false);
+				outBit05.write(true);
+				outBit06.write(false);
+				outBit07.write(false);
+				outBit08.write(false);
+			}
+           
+           transitions 
+           { 
+                if true then select six;
+           }
+    }
+    
+    state six 
+    {
+			entry
+			{
+				outputs = 0xFF;
+				outBit01.write(false);
+				outBit02.write(false);
+				outBit03.write(false);
+				outBit04.write(false);
+				outBit05.write(false);
+				outBit06.write(true);
+				outBit07.write(false);
+				outBit08.write(false);
+			}
+           
+           transitions 
+           { 
+                if true then select seven;
+           }
+    }
+    
+    state seven 
+    {
+			entry
+			{
+				outputs = 0xFF;
+				outBit01.write(false);
+				outBit02.write(false);
+				outBit03.write(false);
+				outBit04.write(false);
+				outBit05.write(false);
+				outBit06.write(false);
+				outBit07.write(true);
+				outBit08.write(false);
+			}
+           
+           transitions 
+           { 
+                if true then select eigth;
+           }
+    }
+    
+    state eigth 
+    {
+			entry
+			{
+				outputs = 0xFF;
+				outBit01.write(false);
+				outBit02.write(false);
+				outBit03.write(false);
+				outBit04.write(false);
+				outBit05.write(false);
+				outBit06.write(false);
+				outBit07.write(false);
+				outBit08.write(true);
+			}
+           
+           transitions 
+           { 
+                if true then select black;
+           }
+    }
+    
+    final state truc
+    {
+    	entry{}
+    }
+    
+}
+
+//RootMachine FastBlink ioOutSelfTest
+RootMachine OneBlink ioOutSelfTest
