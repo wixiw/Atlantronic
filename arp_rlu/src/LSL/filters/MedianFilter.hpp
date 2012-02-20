@@ -10,6 +10,7 @@
 
 #include <math/core>
 
+#include "LSL/filters/ParamsInterface.hpp"
 #include "LSL/LaserScan.hpp"
 
 namespace arp_rlu
@@ -18,10 +19,12 @@ namespace arp_rlu
 namespace lsl
 {
 
-/** \ingroup lsl
- * \nonstableyet
- *
- * \class MedianFilter
+/*!
+ *  \addtogroup lsl
+ *  @{
+ */
+
+/** \class MedianFilter
  *
  * \brief MedianFilter est un filtre médian sur le range (donnée polaire de distance).
  *
@@ -30,16 +33,14 @@ class MedianFilter
 {
     public:
         /** \ingroup lsl
-         * \nonstableyet
-         *
          * \class Params
          *
          * \brief MedianFilter::Params rassemble les paramètres du filtre MedianFilter.
          *
          */
-        class Params
+        class Params : ParamsInterface
         {
-        public:
+            public:
             /** Constructeur par défault.
              *  Il initialise des paramètres classiques non-stupides :\n
              *  width = 3.
@@ -50,6 +51,12 @@ class MedianFilter
              * Permet de formatter les paramètres en un message lisible.
              */
             std::string getInfo();
+
+            /**
+             * Permet de vérifier que les paramètres sont consistants.\n
+             * * width != 0
+             */
+            bool checkConsistency();
 
             /**
              * Largeur du filtre (en nombre de points).\n
@@ -67,10 +74,14 @@ class MedianFilter
         static LaserScan apply(const LaserScan & ls, const Params & p = Params());
 
     protected:
+        static double getMedian(const Eigen::VectorXd &);
 
 };
 
+/*! @} End of Doxygen Groups*/
+
 } // namespace lsl
+
 } // namespace arp_rlu
 
 #endif /* _ARP_RLU_LSL_MEDIANFILTER_HPP_ */

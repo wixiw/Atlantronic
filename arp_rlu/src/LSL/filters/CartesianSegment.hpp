@@ -10,6 +10,7 @@
 
 #include <math/core>
 
+#include "LSL/filters/ParamsInterface.hpp"
 #include "LSL/LaserScan.hpp"
 #include <vector>
 
@@ -19,10 +20,12 @@ namespace arp_rlu
 namespace lsl
 {
 
-/** \ingroup lsl
- * \nonstableyet
- *
- * \class CartesianSegment
+/*!
+ *  \addtogroup lsl
+ *  @{
+ */
+
+/** \class CartesianSegment
  *
  * \brief CartesianSegment est un filtre qui permet de segmenter un scan en plusieurs éléments consistants d'un point de vue statistique.
  *
@@ -33,16 +36,14 @@ class CartesianSegment
 {
     public:
         /** \ingroup lsl
-         * \nonstableyet
-         *
          * \class Params
          *
          * \brief CartesianSegment::Params rassemble les paramètres du filtre CartesianSegment.
          *
          */
-        class Params
+        class Params : ParamsInterface
         {
-        public:
+            public:
             /** Constructeur par défault.
              *  Il initialise des paramètres classiques non-stupides :\n
              *  kmeansMaxIterations = 10
@@ -56,6 +57,16 @@ class CartesianSegment
              * Permet de formatter les paramètres en un message lisible.
              */
             std::string getInfo();
+
+            /**
+             * Permet de vérifier que les paramètres sont consistants.\n
+             * A savoir : \n
+             * * kmeansMaxIterations > 0\n
+             * * kmeansDispThres > 0.0\n
+             * * minNbPoints > 0\n
+             * * maxStddev > 0.
+             */
+            bool checkConsistency();
 
             /**
              * Nombre d'itération maximum pour l'algo k-means.
@@ -88,12 +99,25 @@ class CartesianSegment
          */
         static std::vector<LaserScan> apply(const LaserScan &, const Params & p = Params());
 
+        /** Applique l'algorithme k-moyenne sur le LaserScan avec deux graines.
+         * \param ls scan d'origine
+         * \param p paramètres du filtre
+         * \return paire de LaserScan (correspondant aux deux graines)
+         * \remarks Cette méthode est publique seulement à des fins d'unittesting.
+         * Il n'est pas recommandé de l'utiliser depuis l'extérieur. Utiliser plutôt la méthode apply
+         * qui est bien plus adaptée aux besoins hauts niveaux.
+         */
+        static std::pair<LaserScan, LaserScan> kMeans(const LaserScan & s, const Params & p = Params());
+
 
     protected:
 
 };
 
+/*! @} End of Doxygen Groups*/
+
 } // namespace lsl
+
 } // namespace arp_rlu
 
 #endif /* _ARP_RLU_LSL_CARTESIANSEGMENT_HPP_ */

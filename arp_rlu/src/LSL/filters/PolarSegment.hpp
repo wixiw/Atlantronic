@@ -10,6 +10,7 @@
 
 #include <math/core>
 
+#include "LSL/filters/ParamsInterface.hpp"
 #include "LSL/LaserScan.hpp"
 #include <vector>
 
@@ -19,10 +20,12 @@ namespace arp_rlu
 namespace lsl
 {
 
-/** \ingroup lsl
- * \nonstableyet
- *
- * \class PolarSegment
+/*!
+ *  \addtogroup lsl
+ *  @{
+ */
+
+/** \class PolarSegment
  *
  * \brief PolarSegment est un filtre qui permet de segmenter un scan en plusieurs éléments consistants.
  *
@@ -34,14 +37,13 @@ class PolarSegment
 {
     public:
         /** \ingroup lsl
-         * \nonstableyet
          *
          * \class Params
          *
          * \brief PolarSegment::Params rassemble les paramètres du filtre PolarSegment.
          *
          */
-        class Params
+        class Params : ParamsInterface
         {
         public:
             /** Constructeur par défault.
@@ -54,6 +56,13 @@ class PolarSegment
              * Permet de formatter les paramètres en un message lisible.
              */
             std::string getInfo();
+
+            /**
+             * Permet de vérifier que les paramètres sont consistants.\n
+             * A savoir :\n
+             * * rangeThres est positif
+             */
+            bool checkConsistency();
 
             /**
              * Seuil de distance en mètre.
@@ -74,7 +83,10 @@ class PolarSegment
 
 };
 
+/*! @} End of Doxygen Groups*/
+
 } // namespace lsl
+
 } // namespace arp_rlu
 
 #endif /* _ARP_RLU_LSL_POLARSEGMENT_HPP_ */

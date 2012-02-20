@@ -15,10 +15,13 @@ namespace arp_rlu
 
 namespace lsl
 {
-/** \ingroup lsl
- * \nonstableyet
- *
- * \class Circle
+
+/*!
+ *  \addtogroup lsl
+ *  @{
+ */
+
+/** \class Circle
  *
  * \brief Circle représente un cercle, à savoir une position dans le plan et un rayon.
  *
@@ -33,16 +36,16 @@ class Circle
 
         /** Constructeur via des doubles.\n
          *  Il initialise le cercle à partir de trois double.\n
-         *  \params _x définit la position selon l'axe x\n
-         *  \params _x définit la position selon l'axe h\n
-         *  \params _r définit le rayon (valeur par défault = 1.)
+         *  \param _x définit la position selon l'axe x\n
+         *  \param _x définit la position selon l'axe h\n
+         *  \param _r définit le rayon (valeur par défault = 1.)
          */
         Circle(double _x, double _y, double _r = 1.);
 
         /** Constructeur via un Vector2 et un double.\n
          *  Il initialise le cercle à partir de trois double.\n
-         *  \params _pos définit la position du centre\n
-         *  \params _r définit le rayon (valeur par défault = 1.)
+         *  \param _pos définit la position du centre\n
+         *  \param _r définit le rayon (valeur par défault = 1.)
          */
         Circle(arp_math::Vector2 _pos, double _r = 1.);
 
@@ -96,12 +99,15 @@ class Circle
 
 
     protected:
-        double radius;
         arp_math::Vector2 cartesianPosition;
+        double radius;
 
 };
 
+/*! @} End of Doxygen Groups*/
+
 } // namespace lsl
+
 } // namespace arp_rlu
 
 #endif /* _ARP_RLU_LSL_CIRCLE_HPP_ */

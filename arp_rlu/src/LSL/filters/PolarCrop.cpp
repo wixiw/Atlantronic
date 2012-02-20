@@ -16,10 +16,11 @@ using namespace Eigen;
 using namespace lsl;
 
 PolarCrop::Params::Params()
-: minRange()
-, maxRange()
-, minTheta()
-, maxTheta()
+: ParamsInterface()
+, minRange(0.1 * VectorXd::Ones(1))
+, maxRange(10.0 * VectorXd::Ones(1))
+, minTheta(-PI)
+, maxTheta(PI)
 {
 }
 
@@ -33,13 +34,15 @@ std::string PolarCrop::Params::getInfo()
     ss << " [*] maxRange size     : " << maxRange.size() << std::endl;
     ss << " [*] maxRange minCoeff : " << maxRange.minCoeff() << " (m)"<< std::endl;
     ss << " [*] maxRange maxCoeff : " << maxRange.maxCoeff() << " (m)"<< std::endl;
-    ss << " [*] minTheta size     : " << minTheta.size() << std::endl;
-    ss << " [*] minTheta minCoeff : " << rad2deg(minTheta.minCoeff()) << " (deg)"<< std::endl;
-    ss << " [*] minTheta maxCoeff : " << rad2deg(minTheta.maxCoeff()) << " (deg)"<< std::endl;
-    ss << " [*] maxTheta size     : " << maxTheta.size() << std::endl;
-    ss << " [*] maxTheta minCoeff : " << rad2deg(maxTheta.minCoeff()) << " (deg)"<< std::endl;
-    ss << " [*] maxTheta maxCoeff : " << rad2deg(maxTheta.maxCoeff()) << " (deg)"<< std::endl;
+    ss << " [*] minTheta : " << rad2deg(minTheta) << " (deg)"<< std::endl;
+    ss << " [*] maxTheta : " << rad2deg(maxTheta) << " (deg)"<< std::endl;
     return ss.str();
+}
+
+bool PolarCrop::Params::checkConsistency()
+{
+    throw NotImplementedException();
+    return false;
 }
 
 LaserScan PolarCrop::apply(const LaserScan & raw, const Params & p)

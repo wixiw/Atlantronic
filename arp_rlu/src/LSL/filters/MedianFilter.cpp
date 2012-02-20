@@ -28,10 +28,23 @@ std::string MedianFilter::Params::getInfo()
     return ss.str();
 }
 
+bool MedianFilter::Params::checkConsistency()
+{
+    throw NotImplementedException();
+    return false;
+}
+
 LaserScan MedianFilter::apply(const LaserScan & raw, const Params & p)
 {
     throw NotImplementedException();
 
     LaserScan out = raw;
     return out;
+}
+
+
+double MedianFilter::getMedian(const Eigen::VectorXd & raw)
+{
+    throw NotImplementedException();
+    return 0.;
 }

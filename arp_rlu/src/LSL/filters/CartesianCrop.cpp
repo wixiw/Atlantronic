@@ -34,6 +34,12 @@ std::string CartesianCrop::Params::getInfo()
     return ss.str();
 }
 
+bool CartesianCrop::Params::checkConsistency()
+{
+    throw NotImplementedException();
+    return false;
+}
+
 LaserScan CartesianCrop::apply(const LaserScan & raw, const Params & p)
 {
     throw NotImplementedException();

@@ -16,6 +16,8 @@ using namespace Eigen;
 using namespace lsl;
 
 CircleIdentif::Params::Params()
+: radius(0.04)
+, rangeDelta(0.034)
 {
 }
 
@@ -23,8 +25,15 @@ std::string CircleIdentif::Params::getInfo()
 {
     std::stringstream ss;
     ss << "CircleIdentif params :" << std::endl;
-    //ss << " [*] width: " << width << std::endl;
+    ss << " [*] radius: " << radius << " (m)" << std::endl;
+    ss << " [*] rangeDelta: " << rangeDelta << " (m)" << std::endl;
     return ss.str();
+}
+
+bool CircleIdentif::Params::checkConsistency()
+{
+    throw NotImplementedException();
+    return false;
 }
 
 DetectedCircle CircleIdentif::apply(const DetectedObject & raw, const Params & p)

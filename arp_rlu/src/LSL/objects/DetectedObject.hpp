@@ -15,13 +15,16 @@
 namespace arp_rlu
 {
 
+
 namespace lsl
 {
 
-/** \ingroup lsl
- * \nonstableyet
- *
- * \class DetectedObject
+/*!
+ *  \addtogroup lsl
+ *  @{
+ */
+
+/** \class DetectedObject
  *
  * \brief DetectedObject correspond à un objet détecté, c'est à dire à une portion de scan qui correspond à un objet particulier.
  *
@@ -103,8 +106,11 @@ class DetectedObject
          */
         void computeStatistics();
 };
+/*! @} End of Doxygen Groups*/
 
 } // namespace lsl
+
+
 } // namespace arp_rlu
 
 #endif /* _ARP_RLU_LSL_DETECTEDOBJECT_HPP_ */

@@ -12,6 +12,7 @@
 
 #include <vector>
 
+#include "LSL/filters/ParamsInterface.hpp"
 #include <LSL/LaserScan.hpp>
 #include <LSL/objects/DetectedObject.hpp>
 #include <LSL/objects/DetectedCircle.hpp>
@@ -22,10 +23,12 @@ namespace arp_rlu
 namespace lsl
 {
 
-/** \ingroup lsl
- * \nonstableyet
- *
- * \class CircleIdentif
+/*!
+ *  \addtogroup lsl
+ *  @{
+ */
+
+/** \class CircleIdentif
  *
  * \brief CircleIdentif est un filtre qui permet de déterminer les paramètres d'un cercle approchant un DetectedObject.
  *
@@ -34,16 +37,14 @@ class CircleIdentif
 {
     public:
         /** \ingroup lsl
-         * \nonstableyet
-         *
          * \class Params
          *
          * \brief CircleIdentif::Params rassemble les paramètres du filtre CircleIdentif.
          *
          */
-        class Params
+        class Params : ParamsInterface
         {
-        public:
+            public:
             /** Constructeur par défault.
              *  Il initialise des paramètres classiques non-stupides :\n
              */
@@ -53,6 +54,26 @@ class CircleIdentif
              * Permet de formatter les paramètres en un message lisible.
              */
             std::string getInfo();
+
+            /**
+             * Permet de vérifier que les paramètres sont consistants.\n
+             * A savoir : \n
+             * * radius > 0. \n
+             * * rangeDelta < radius
+             */
+            bool checkConsistency();
+
+            /**
+             * Rayon du cercle que l'on cherche.\n
+             * Valeur par défault : 0.04m
+             */
+            double radius;
+
+            /**
+             * Offset statistique entre le centre de gravité du scan et le centre du cercle.\n
+             * Valeur par défault : 85 pourcents du rayon (donc pour un rayon de 4cm : 0.034m)
+             */
+            double rangeDelta;
         };
 
     public:
@@ -75,7 +96,10 @@ class CircleIdentif
 
 };
 
+/*! @} End of Doxygen Groups*/
+
 } // namespace lsl
+
 } // namespace arp_rlu
 
 #endif /* _ARP_RLU_LSL_CIRCLEIDENTIF_HPP_ */

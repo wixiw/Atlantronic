@@ -16,8 +16,12 @@ namespace arp_rlu
 namespace lsl
 {
 
-/** \ingroup lsl
- * \nonstableyet
+/*!
+ *  \addtogroup lsl
+ *  @{
+ */
+
+/**
  *
  * \class LaserScan
  *
@@ -33,6 +37,7 @@ namespace lsl
 class LaserScan
 {
     public:
+        //@{
         /** Constructeur par défault.\n
          *  Il construit un scan vide :
          *  l'attribut data est une matrice (3,0)
@@ -43,6 +48,7 @@ class LaserScan
          * A la sortie, les données polaires (et éventuellement cartésiennes) des deux scans sont identiques.
          */
         LaserScan(const LaserScan &);
+        //@}
 
         /** Permet d'obtenir la taille du scan, c'est à dire le nombre de points qui le compose.
          * \returns la taille du scan
@@ -63,6 +69,7 @@ class LaserScan
         bool computeCartesianData(Eigen::VectorXd tt, Eigen::VectorXd xx, Eigen::VectorXd yy, Eigen::VectorXd hh);
 
 
+        //@{
         /** Permet de modifier les données polaires du scan.
          * \param d Une matrice de taille (3,N) avec N le nombre de points dans le scan.\n
          * La première ligne correspond à la date en seconde d'acquisition des points.\n
@@ -94,6 +101,7 @@ class LaserScan
          * \returns Un vecteur de taille N avec N le nombre de points dans le scan.\n
          * Il correspond à la date d'acquisition en seconde des points du scan. */
         Eigen::VectorXd getTimeData() const;
+        //@}
 
         /** Permet de savoir si les données cartésiennes sont disponibles, c'est à dire si elles ont été calculées.
          * \returns Vrai si les données sont disponibles et Faux sinon.
@@ -111,7 +119,11 @@ class LaserScan
 
 };
 
+/*! @} End of Doxygen Groups*/
+
 } // namespace lsl
+
+
 } // namespace arp_rlu
 
 #endif /* _ARP_RLU_LSL_LASERSCAN_HPP_ */

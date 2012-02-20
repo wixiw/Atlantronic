@@ -18,10 +18,13 @@ namespace arp_rlu
 
 namespace lsl
 {
-/** \ingroup lsl
- * \nonstableyet
- *
- * \class DetectedCircle
+
+/*!
+ *  \addtogroup lsl
+ *  @{
+ */
+
+/** \class DetectedCircle
  *
  * \brief DetectedCircle correspond à la fois à un DetectedObject et à un Circle.
  */
@@ -35,7 +38,10 @@ class DetectedCircle : public Circle, public DetectedObject
 
 };
 
+/*! @} End of Doxygen Groups*/
+
 } // namespace lsl
+
 } // namespace arp_rlu
 
 #endif /* _ARP_RLU_LSL_DETECTEDCIRCLE_HPP_ */

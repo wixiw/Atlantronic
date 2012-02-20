@@ -10,6 +10,7 @@
 
 #include <math/core>
 
+#include "LSL/filters/ParamsInterface.hpp"
 #include "LSL/LaserScan.hpp"
 
 namespace arp_rlu
@@ -18,10 +19,12 @@ namespace arp_rlu
 namespace lsl
 {
 
-/** \ingroup lsl
- * \nonstableyet
- *
- * \class CartesianCrop
+/*!
+ *  \addtogroup lsl
+ *  @{
+ */
+
+/** \class CartesianCrop
  *
  * \brief CartesianCrop est un filtre qui supprime les points qui dépassent de bornes
  * définies en cartésien.
@@ -31,14 +34,12 @@ class CartesianCrop
 {
     public:
         /** \ingroup lsl
-         * \nonstableyet
-         *
          * \class Params
          *
          * \brief CartesianCrop::Params rassemble les paramètres du filtre CartesianCrop.
          *
          */
-        class Params
+        class Params : ParamsInterface
         {
         public:
             /** Constructeur par défault.
@@ -54,6 +55,14 @@ class CartesianCrop
              * Permet de formatter les paramètres en un message lisible.
              */
             std::string getInfo();
+
+            /**
+             * Permet de vérifier que les paramètres sont consistants.\n
+             * A savoir :\n
+             * * minX < maxX \n
+             * * minY < maxY
+             */
+            bool checkConsistency();
 
             double minX;
             double maxX;
@@ -73,7 +82,10 @@ class CartesianCrop
 
 };
 
+/*! @} End of Doxygen Groups*/
+
 } // namespace lsl
+
 } // namespace arp_rlu
 
 #endif /* _ARP_RLU_LSL_CARTESIANCROP_HPP_ */

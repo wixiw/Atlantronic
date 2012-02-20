@@ -34,10 +34,25 @@ std::string CartesianSegment::Params::getInfo()
     return ss.str();
 }
 
+bool CartesianSegment::Params::checkConsistency()
+{
+    throw NotImplementedException();
+    return false;
+}
+
 std::vector<LaserScan> CartesianSegment::apply(const LaserScan & raw, const Params & p)
 {
     throw NotImplementedException();
 
     std::vector<LaserScan> out;
+    return out;
+}
+
+
+std::pair<LaserScan, LaserScan> CartesianSegment::kMeans(const LaserScan & s, const Params & p)
+{
+    throw NotImplementedException();
+
+    std::pair<LaserScan, LaserScan> out = make_pair(LaserScan(), LaserScan());
     return out;
 }

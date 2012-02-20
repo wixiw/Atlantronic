@@ -28,6 +28,12 @@ std::string PolarSegment::Params::getInfo()
     return ss.str();
 }
 
+bool PolarSegment::Params::checkConsistency()
+{
+    throw NotImplementedException();
+    return false;
+}
+
 std::vector<LaserScan> PolarSegment::apply(const LaserScan & raw, const Params & p)
 {
     throw NotImplementedException();
