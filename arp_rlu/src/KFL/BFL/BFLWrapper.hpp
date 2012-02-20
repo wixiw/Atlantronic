@@ -17,7 +17,6 @@ namespace arp_rlu
 namespace kfl
 {
 /** \ingroup kfl
- * \nonstableyet
  *
  * \class BFLWrapper
  *

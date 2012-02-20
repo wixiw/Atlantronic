@@ -29,7 +29,6 @@ namespace kfl
 {
 
 /** \ingroup kfl
- * \nonstableyet
  *
  * \class BeaconDetector
  *
@@ -41,7 +40,6 @@ class BeaconDetector
 {
     public:
         /** \ingroup kfl
-         * \nonstableyet
          *
          * \class Params
          *

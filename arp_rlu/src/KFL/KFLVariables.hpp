@@ -16,9 +16,12 @@ namespace arp_rlu
 namespace kfl
 {
 
+/*!
+ *  \addtogroup kfl
+ *  @{
+ */
+
 /**
- * \ingroup kfl
- * \nonstableyet
  *
  * \struct KFLStateVar
  *
@@ -32,8 +35,6 @@ namespace kfl
 typedef Eigen::Vector3d           KFLStateVar;
 
 /**
- * \ingroup kfl
- * \nonstableyet
  *
  * \struct KFLStateCov
  *
@@ -44,8 +45,6 @@ typedef Eigen::Vector3d           KFLStateVar;
 typedef Eigen::Matrix<double,3,3> KFLStateCov;
 
 /**
- * \ingroup kfl
- * \nonstableyet
  *
  * \struct KFLMeasVar
  *
@@ -58,8 +57,6 @@ typedef Eigen::Matrix<double,3,3> KFLStateCov;
 typedef Eigen::Vector2d           KFLMeasVar;
 
 /**
- * \ingroup kfl
- * \nonstableyet
  *
  * \struct KFLMeasCov
  *
@@ -70,8 +67,6 @@ typedef Eigen::Vector2d           KFLMeasVar;
 typedef Eigen::Matrix<double,2,2> KFLMeasCov;
 
 /**
- * \ingroup kfl
- * \nonstableyet
  *
  * \struct KFLSysInput
  *
@@ -85,8 +80,6 @@ typedef Eigen::Matrix<double,2,2> KFLMeasCov;
 typedef Eigen::Vector3d           KFLSysInput;
 
 /**
- * \ingroup kfl
- * \nonstableyet
  *
  * \struct KFLMeasTarget
  *
@@ -98,6 +91,9 @@ typedef Eigen::Vector3d           KFLSysInput;
  */
 typedef Eigen::Vector2d           KFLMeasTarget;
 
+
+
+/*! @} End of Doxygen Groups*/
 
 } // namespace kfl
 } // namespace arp_rlu

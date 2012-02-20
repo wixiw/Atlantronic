@@ -19,7 +19,6 @@ namespace arp_rlu
 namespace kfl
 {
 /** \ingroup kfl
- * \nonstableyet
  *
  * \class KFLocalizator
  *
@@ -34,7 +33,6 @@ class KFLocalizator
 {
     public:
         /** \ingroup kfl
-         * \nonstableyet
          *
          * \class InitParams
          *
@@ -66,7 +64,6 @@ class KFLocalizator
         };
 
         /** \ingroup kfl
-         * \nonstableyet
          *
          * \class IEKFParams
          *
@@ -125,7 +122,6 @@ class KFLocalizator
 
 
         /** \ingroup kfl
-         * \nonstableyet
          *
          * \class Params
          *
