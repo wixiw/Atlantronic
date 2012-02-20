@@ -17,9 +17,9 @@ void serialize(Archive& a,  ::arp_core::OmniCommand_<ContainerAllocator>  & m, u
     a & make_nvp("v_left_driving",m.v_left_driving);
     a & make_nvp("v_right_driving",m.v_right_driving);
     a & make_nvp("v_rear_driving",m.v_rear_driving);
-    a & make_nvp("p_left_steering",m.p_left_steering);
-    a & make_nvp("p_right_steering",m.p_right_steering);
-    a & make_nvp("p_rear_steering",m.p_rear_steering);
+    a & make_nvp("v_left_steering",m.v_left_steering);
+    a & make_nvp("v_right_steering",m.v_right_steering);
+    a & make_nvp("v_rear_steering",m.v_rear_steering);
 }
 
 } // namespace serialization

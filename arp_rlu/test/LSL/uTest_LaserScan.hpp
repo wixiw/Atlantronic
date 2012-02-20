@@ -142,6 +142,71 @@ BOOST_AUTO_TEST_CASE( computeCartesianData_2 )
     BOOST_CHECK( abs(cdata(1,3)) < 0.00001f); BOOST_CHECK_CLOSE(-3.0, cdata(2,3), 1.1f);
 }
 
+BOOST_AUTO_TEST_CASE( computeCartesianData_3 )
+{
+    lsl::LaserScan obj;
+
+    Eigen::MatrixXd d(3, 4);
+    d.row(0) << 1.0,  1.01  , 1.02 ,  1.03  ;
+    d.row(1) << 0. ,  PI/2. ,   PI , -PI/2. ;
+    d.row(2) << 1.0,   0.5  ,  2.0 ,   3.0  ;
+    obj.setPolarData(d);
+
+    Eigen::VectorXd tt = d.row(0);
+    Eigen::VectorXd xx(4); xx << 0.0, 1.0, 0.0, -1.0;
+    Eigen::VectorXd yy(4); yy << 0.0, 0.0, 1.0, -1.0;
+    Eigen::VectorXd hh = Eigen::VectorXd::Zero(4);
+
+    obj.computeCartesianData(tt, xx, yy, hh);
+
+    Eigen::MatrixXd cdata = obj.getCartesianData();
+
+    BOOST_CHECK_EQUAL( cdata.rows(), 3 );
+    BOOST_CHECK_EQUAL( cdata.cols(), 4 );
+
+    for (int j=0; j<cdata.cols(); ++j) {
+        BOOST_CHECK_EQUAL(cdata(0,j),d(0,j));
+    }
+
+    BOOST_CHECK_CLOSE( 1.0, cdata(1,0), 1.f); BOOST_CHECK_CLOSE( 0.0, cdata(2,0), 1.f);
+    BOOST_CHECK_CLOSE( 1.0, cdata(1,1), 1.f); BOOST_CHECK_CLOSE( 0.5, cdata(2,1), 1.f);
+    BOOST_CHECK_CLOSE(-2.0, cdata(1,2), 1.f); BOOST_CHECK_CLOSE( 1.0, cdata(2,2), 1.f);
+    BOOST_CHECK_CLOSE(-1.0, cdata(1,3), 1.f); BOOST_CHECK_CLOSE(-4.0, cdata(2,3), 1.f);
+}
+
+
+BOOST_AUTO_TEST_CASE( computeCartesianData_4 )
+{
+    lsl::LaserScan obj;
+
+    Eigen::MatrixXd d(3, 4);
+    d.row(0) << 1.0,  1.01  , 1.02 ,  1.03  ;
+    d.row(1) << 0. ,  PI/2. ,   PI , -PI/2. ;
+    d.row(2) << 1.0,   0.5  ,  2.0 ,   3.0  ;
+    obj.setPolarData(d);
+
+    Eigen::VectorXd tt = d.row(0);
+    Eigen::VectorXd xx = Eigen::VectorXd::Zero(4);
+    Eigen::VectorXd yy = Eigen::VectorXd::Zero(4);
+    Eigen::VectorXd hh(4); hh << 0.0, PI/2., -PI/2, PI;
+
+    obj.computeCartesianData(tt, xx, yy, hh);
+
+    Eigen::MatrixXd cdata = obj.getCartesianData();
+
+    BOOST_CHECK_EQUAL( cdata.rows(), 3 );
+    BOOST_CHECK_EQUAL( cdata.cols(), 4 );
+
+    for (int j=0; j<cdata.cols(); ++j) {
+        BOOST_CHECK_EQUAL(cdata(0,j),d(0,j));
+    }
+
+    BOOST_CHECK_CLOSE( 1.0, cdata(1,0), 1.f); BOOST_CHECK_CLOSE( 0.0, cdata(2,0), 1.f);
+    BOOST_CHECK_CLOSE(-0.5, cdata(1,1), 1.f); BOOST_CHECK_CLOSE( 0.0, cdata(2,1), 1.f);
+    BOOST_CHECK_CLOSE( 0.0, cdata(1,2), 1.f); BOOST_CHECK_CLOSE( 2.0, cdata(2,2), 1.f);
+    BOOST_CHECK_CLOSE( 0.0, cdata(1,3), 1.f); BOOST_CHECK_CLOSE( 3.0, cdata(2,3), 1.f);
+}
+
 BOOST_AUTO_TEST_CASE( setPolarData_1 )
 {
     lsl::LaserScan obj;
