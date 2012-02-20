@@ -17,8 +17,9 @@ using namespace lsl;
 
 Circle::Circle()
 : cartesianPosition(0., 0.)
-, radius(1.)
+, radius(0.)
 {
+    ;
 }
 
 Circle::Circle(double _x, double _y, double _r)
@@ -57,7 +58,7 @@ void Circle::x(double _x)
 
 void Circle::y(double _y)
 {
-    cartesianPosition[0] = _y;
+    cartesianPosition[1] = _y;
 }
 
 void Circle::r(double _r)

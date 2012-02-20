@@ -18,8 +18,8 @@
 
 namespace arp_math
 {
-    typedef Eigen::Matrix<double, 2, 1> Vector2;
-    typedef Eigen::Matrix<double, 3, 1> Vector3;
+    typedef Eigen::Vector2d Vector2;
+    typedef Eigen::Vector3d Vector3;
     typedef Eigen::Rotation2D<double> Rotation2;
 
     const double PI = std::acos(-1.0);

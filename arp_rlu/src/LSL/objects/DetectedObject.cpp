@@ -19,8 +19,8 @@ DetectedObject::DetectedObject()
 : associatedScan(LaserScan())
 , apparentRange(0.)
 , apparentTheta(0.)
-, cartMean(0.)
-, cartStddev(0.)
+, cartMean(Vector2::Zero())
+, cartStddev(Vector2::Zero())
 {
 }
 

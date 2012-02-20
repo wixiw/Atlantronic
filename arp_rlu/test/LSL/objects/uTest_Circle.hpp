@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE( Constructor_y )
 
     BOOST_CHECK_EQUAL( obj.y(),  2.);
 
-    obj.x(10.);
+    obj.y(10.);
 
     BOOST_CHECK_EQUAL( obj.y(), 10.);
 }
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE( Constructor_r )
 
     BOOST_CHECK_EQUAL( obj.r(),  3.);
 
-    obj.x(10.);
+    obj.r(10.);
 
     BOOST_CHECK_EQUAL( obj.r(), 10.);
 }

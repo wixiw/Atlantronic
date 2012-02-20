@@ -57,6 +57,7 @@ Eigen::MatrixXd LaserScan::getCartesianData() const
 
 Eigen::VectorXd LaserScan::getTimeData() const
 {
+    throw NotImplementedException();
     return Eigen::VectorXd(0);
 }
 

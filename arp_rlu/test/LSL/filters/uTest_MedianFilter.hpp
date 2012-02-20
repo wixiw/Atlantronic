@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE( N8_w5 )
 {
     lsl::LaserScan rawScan;
 
-    MatrixXd raw = MatrixXd::Random(3,3);
+    MatrixXd raw = MatrixXd::Random(3,8);
     raw.row(1) << 3., -1, 5, 8., 4., 7., 5., 6.;
     rawScan.setPolarData(raw);
 
