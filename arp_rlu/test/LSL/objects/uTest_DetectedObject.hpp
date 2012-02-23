@@ -20,6 +20,7 @@ BOOST_AUTO_TEST_CASE( Constructor_default )
 
     BOOST_CHECK_EQUAL( obj.getApparentRange(), 0.);
     BOOST_CHECK_EQUAL( obj.getApparentTheta(), 0.);
+    BOOST_CHECK_EQUAL( obj.getApparentTime(), 0.);
 
     arp_math::Vector2 m = obj.getCartesianMean();
     arp_math::Vector2 s = obj.getCartesianStddev();
@@ -35,7 +36,7 @@ BOOST_AUTO_TEST_CASE( Constructor_default )
     BOOST_CHECK_EQUAL( ls.getSize(), 0);
     BOOST_CHECK_EQUAL( pdata.rows(), 3);
     BOOST_CHECK_EQUAL( pdata.cols(), 0);
-    BOOST_CHECK_EQUAL( cdata.rows(), 3);
+    BOOST_CHECK_EQUAL( cdata.rows(), 6);
     BOOST_CHECK_EQUAL( cdata.cols(), 0);
 
 }
@@ -43,12 +44,13 @@ BOOST_AUTO_TEST_CASE( Constructor_default )
 BOOST_AUTO_TEST_CASE( Constructor_copy )
 {
     Eigen::MatrixXd d = MatrixXd::Random(3, 4);
-    d.row(1) << 0. , M_PI/2., M_PI , -M_PI/2.;
-    d.row(2) << 1.0,   0.5  ,  2.0 ,    3.0  ;
+    d.row(0) << 0.1 ,  0.2  ,  0.3  ,    0.4  ;
+    d.row(1) << 1.0,   0.5  ,  2.0 ,    3.0  ;
+    d.row(2) << 0. , M_PI/2., M_PI , -M_PI/2.;
     lsl::LaserScan ls;
     ls.setPolarData(d);
 
-    Eigen::VectorXd tt = Eigen::VectorXd::Zero(4);
+    Eigen::VectorXd tt = d.row(0);
     Eigen::VectorXd xx = Eigen::VectorXd::Zero(4);
     Eigen::VectorXd yy = Eigen::VectorXd::Zero(4);
     Eigen::VectorXd hh = Eigen::VectorXd::Zero(4);
@@ -61,11 +63,12 @@ BOOST_AUTO_TEST_CASE( Constructor_copy )
 
     BOOST_CHECK_CLOSE( obj2.getApparentRange(), 0.67314560089181297, 1.f);
     BOOST_CHECK_CLOSE( obj2.getApparentTheta(), -1.9513027039072615, 1.f);
+    BOOST_CHECK_CLOSE( obj2.getApparentTime(), 0.2, 1.f);
 
     arp_math::Vector2 m = obj2.getCartesianMean();
     arp_math::Vector2 s = obj2.getCartesianStddev();
-    BOOST_CHECK_EQUAL( m(0), -0.25);
-    BOOST_CHECK_EQUAL( m(1), -0.625);
+    BOOST_CHECK_CLOSE( m(0), -0.25, 1.f);
+    BOOST_CHECK_CLOSE( m(1), -0.625, 1.f);
     BOOST_CHECK_CLOSE( s(0), 1.08972474, 1.f);
     BOOST_CHECK_CLOSE( s(1), 1.38631706, 1.f);
 
@@ -84,12 +87,13 @@ BOOST_AUTO_TEST_CASE( Constructor_copy )
 BOOST_AUTO_TEST_CASE( Constructor_scan )
 {
     Eigen::MatrixXd d = MatrixXd::Random(3, 4);
-    d.row(1) << 0. , M_PI/2., M_PI , -M_PI/2.;
-    d.row(2) << 1.0,   0.5  ,  2.0 ,    3.0  ;
+    d.row(0) << 0.1 ,  0.2  , 0.3  ,    0.4  ;
+    d.row(1) << 1.0,   0.5  ,  2.0 ,    3.0  ;
+    d.row(2) << 0. , M_PI/2., M_PI , -M_PI/2.;
     lsl::LaserScan ls;
     ls.setPolarData(d);
 
-    Eigen::VectorXd tt = Eigen::VectorXd::Zero(4);
+    Eigen::VectorXd tt = d.row(0);
     Eigen::VectorXd xx = Eigen::VectorXd::Zero(4);
     Eigen::VectorXd yy = Eigen::VectorXd::Zero(4);
     Eigen::VectorXd hh = Eigen::VectorXd::Zero(4);
@@ -99,11 +103,12 @@ BOOST_AUTO_TEST_CASE( Constructor_scan )
 
     BOOST_CHECK_CLOSE( obj.getApparentRange(), 0.67314560089181297, 1.f);
     BOOST_CHECK_CLOSE( obj.getApparentTheta(), -1.9513027039072615, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentTime(), 0.2, 1.f);
 
     arp_math::Vector2 m = obj.getCartesianMean();
     arp_math::Vector2 s = obj.getCartesianStddev();
-    BOOST_CHECK_EQUAL( m(0), -0.25);
-    BOOST_CHECK_EQUAL( m(1), -0.625);
+    BOOST_CHECK_CLOSE( m(0), -0.25, 1.f);
+    BOOST_CHECK_CLOSE( m(1), -0.625, 1.f);
     BOOST_CHECK_CLOSE( s(0), 1.08972474, 1.f);
     BOOST_CHECK_CLOSE( s(1), 1.38631706, 1.f);
 
@@ -122,12 +127,13 @@ BOOST_AUTO_TEST_CASE( Constructor_scan )
 BOOST_AUTO_TEST_CASE( setScan )
 {
     Eigen::MatrixXd d = MatrixXd::Random(3, 4);
-    d.row(1) << 0. , M_PI/2., M_PI , -M_PI/2.;
-    d.row(2) << 1.0,   0.5  ,  2.0 ,    3.0  ;
+    d.row(0) << 0.1 ,  0.2  , 0.3  ,    0.4  ;
+    d.row(1) << 1.0,   0.5  ,  2.0 ,    3.0  ;
+    d.row(2) << 0. , M_PI/2., M_PI , -M_PI/2.;
     lsl::LaserScan ls;
     ls.setPolarData(d);
 
-    Eigen::VectorXd tt = Eigen::VectorXd::Zero(4);
+    Eigen::VectorXd tt = d.row(0);
     Eigen::VectorXd xx = Eigen::VectorXd::Zero(4);
     Eigen::VectorXd yy = Eigen::VectorXd::Zero(4);
     Eigen::VectorXd hh = Eigen::VectorXd::Zero(4);
@@ -138,11 +144,12 @@ BOOST_AUTO_TEST_CASE( setScan )
 
     BOOST_CHECK_CLOSE( obj.getApparentRange(), 0.67314560089181297, 1.f);
     BOOST_CHECK_CLOSE( obj.getApparentTheta(), -1.9513027039072615, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentTime(), 0.2, 1.f);
 
     arp_math::Vector2 m = obj.getCartesianMean();
     arp_math::Vector2 s = obj.getCartesianStddev();
-    BOOST_CHECK_EQUAL( m(0), -0.25);
-    BOOST_CHECK_EQUAL( m(1), -0.625);
+    BOOST_CHECK_CLOSE( m(0), -0.25, 1.f);
+    BOOST_CHECK_CLOSE( m(1), -0.625, 1.f);
     BOOST_CHECK_CLOSE( s(0), 1.08972474, 1.f);
     BOOST_CHECK_CLOSE( s(1), 1.38631706, 1.f);
 
@@ -161,12 +168,13 @@ BOOST_AUTO_TEST_CASE( setScan )
 BOOST_AUTO_TEST_CASE( getScan )
 {
     Eigen::MatrixXd d = MatrixXd::Random(3, 4);
-    d.row(1) << 0. , M_PI/2., M_PI , -M_PI/2.;
-    d.row(2) << 1.0,   0.5  ,  2.0 ,    3.0  ;
+    d.row(0) << 0.1 ,  0.2  , 0.3  ,    0.4  ;
+    d.row(1) << 1.0,   0.5  ,  2.0 ,    3.0  ;
+    d.row(2) << 0. , M_PI/2., M_PI , -M_PI/2.;
     lsl::LaserScan ls;
     ls.setPolarData(d);
 
-    Eigen::VectorXd tt = Eigen::VectorXd::Zero(4);
+    Eigen::VectorXd tt = d.row(0);
     Eigen::VectorXd xx = Eigen::VectorXd::Zero(4);
     Eigen::VectorXd yy = Eigen::VectorXd::Zero(4);
     Eigen::VectorXd hh = Eigen::VectorXd::Zero(4);
@@ -190,12 +198,13 @@ BOOST_AUTO_TEST_CASE( getScan )
 BOOST_AUTO_TEST_CASE( getCartesianMean )
 {
     Eigen::MatrixXd d = MatrixXd::Random(3, 4);
-    d.row(1) << 0. , M_PI/2., M_PI , -M_PI/2.;
-    d.row(2) << 1.0,   0.5  ,  2.0 ,    3.0  ;
+    d.row(0) << 0.1 ,  0.2  , 0.3  ,    0.4  ;
+    d.row(1) << 1.0,   0.5  ,  2.0 ,    3.0  ;
+    d.row(2) << 0. , M_PI/2., M_PI , -M_PI/2.;
     lsl::LaserScan ls;
     ls.setPolarData(d);
 
-    Eigen::VectorXd tt = Eigen::VectorXd::Zero(4);
+    Eigen::VectorXd tt = d.row(0);
     Eigen::VectorXd xx = Eigen::VectorXd::Zero(4);
     Eigen::VectorXd yy = Eigen::VectorXd::Zero(4);
     Eigen::VectorXd hh = Eigen::VectorXd::Zero(4);
@@ -205,19 +214,20 @@ BOOST_AUTO_TEST_CASE( getCartesianMean )
     obj.setScan(ls);
 
     arp_math::Vector2 m = obj.getCartesianMean();
-    BOOST_CHECK_EQUAL( m(0), -0.25);
-    BOOST_CHECK_EQUAL( m(1), -0.625);
+    BOOST_CHECK_CLOSE( m(0), -0.25, 1.f);
+    BOOST_CHECK_CLOSE( m(1), -0.625, 1.f);
 }
 
 BOOST_AUTO_TEST_CASE( getCartesianStddev )
 {
     Eigen::MatrixXd d = MatrixXd::Random(3, 4);
-    d.row(1) << 0. , M_PI/2., M_PI , -M_PI/2.;
-    d.row(2) << 1.0,   0.5  ,  2.0 ,    3.0  ;
+    d.row(0) << 0.1 ,  0.2  , 0.3  ,    0.4  ;
+    d.row(1) << 1.0,   0.5  ,  2.0 ,    3.0  ;
+    d.row(2) << 0. , M_PI/2., M_PI , -M_PI/2.;
     lsl::LaserScan ls;
     ls.setPolarData(d);
 
-    Eigen::VectorXd tt = Eigen::VectorXd::Zero(4);
+    Eigen::VectorXd tt = d.row(0);
     Eigen::VectorXd xx = Eigen::VectorXd::Zero(4);
     Eigen::VectorXd yy = Eigen::VectorXd::Zero(4);
     Eigen::VectorXd hh = Eigen::VectorXd::Zero(4);
@@ -233,12 +243,13 @@ BOOST_AUTO_TEST_CASE( getCartesianStddev )
 BOOST_AUTO_TEST_CASE( getApparentRange )
 {
     Eigen::MatrixXd d = MatrixXd::Random(3, 4);
-    d.row(1) << 0. , M_PI/2., M_PI , -M_PI/2.;
-    d.row(2) << 1.0,   0.5  ,  2.0 ,    3.0  ;
+    d.row(0) << 0.1 ,  0.2  , 0.3  ,    0.4  ;
+    d.row(1) << 1.0,   0.5  ,  2.0 ,    3.0  ;
+    d.row(2) << 0. , M_PI/2., M_PI , -M_PI/2.;
     lsl::LaserScan ls;
     ls.setPolarData(d);
 
-    Eigen::VectorXd tt = Eigen::VectorXd::Zero(4);
+    Eigen::VectorXd tt = d.row(0);
     Eigen::VectorXd xx = Eigen::VectorXd::Zero(4);
     Eigen::VectorXd yy = Eigen::VectorXd::Zero(4);
     Eigen::VectorXd hh = Eigen::VectorXd::Zero(4);
@@ -253,12 +264,13 @@ BOOST_AUTO_TEST_CASE( getApparentRange )
 BOOST_AUTO_TEST_CASE( getApparentTheta )
 {
     Eigen::MatrixXd d = MatrixXd::Random(3, 4);
-    d.row(1) << 0. , M_PI/2., M_PI , -M_PI/2.;
-    d.row(2) << 1.0,   0.5  ,  2.0 ,    3.0  ;
+    d.row(0) << 0.1 ,  0.2  , 0.3  ,    0.4  ;
+    d.row(1) << 1.0,   0.5  ,  2.0 ,    3.0  ;
+    d.row(2) << 0. , M_PI/2., M_PI , -M_PI/2.;
     lsl::LaserScan ls;
     ls.setPolarData(d);
 
-    Eigen::VectorXd tt = Eigen::VectorXd::Zero(4);
+    Eigen::VectorXd tt = d.row(0);
     Eigen::VectorXd xx = Eigen::VectorXd::Zero(4);
     Eigen::VectorXd yy = Eigen::VectorXd::Zero(4);
     Eigen::VectorXd hh = Eigen::VectorXd::Zero(4);
@@ -270,15 +282,37 @@ BOOST_AUTO_TEST_CASE( getApparentTheta )
     BOOST_CHECK_CLOSE( obj.getApparentTheta(), -1.9513027039072615, 1.f);
 }
 
-BOOST_AUTO_TEST_CASE( computeStatistics )
+BOOST_AUTO_TEST_CASE( getApparentTime )
 {
     Eigen::MatrixXd d = MatrixXd::Random(3, 4);
-    d.row(1) << 0. , M_PI/2., M_PI , -M_PI/2.;
-    d.row(2) << 1.0,   0.5  ,  2.0 ,    3.0  ;
+    d.row(0) << 0.1 ,  0.2  , 0.3  ,    0.4  ;
+    d.row(1) << 1.0,   0.5  ,  2.0 ,    3.0  ;
+    d.row(2) << 0. , M_PI/2., M_PI , -M_PI/2.;
     lsl::LaserScan ls;
     ls.setPolarData(d);
 
-    Eigen::VectorXd tt = Eigen::VectorXd::Zero(4);
+    Eigen::VectorXd tt = d.row(0);
+    Eigen::VectorXd xx = Eigen::VectorXd::Zero(4);
+    Eigen::VectorXd yy = Eigen::VectorXd::Zero(4);
+    Eigen::VectorXd hh = Eigen::VectorXd::Zero(4);
+    ls.computeCartesianData(tt, xx, yy, hh);
+
+    lsl::DetectedObject obj;
+    obj.setScan(ls);
+
+    BOOST_CHECK_CLOSE( obj.getApparentTime(), 0.2, 1.f);
+}
+
+BOOST_AUTO_TEST_CASE( computeStatistics_1 )
+{
+    Eigen::MatrixXd d = MatrixXd::Random(3, 4);
+    d.row(0) << 0.1 ,  0.2  , 0.3  ,    0.4  ;
+    d.row(1) << 1.0,   0.5  ,  2.0 ,    3.0  ;
+    d.row(2) << 0. , M_PI/2., M_PI , -M_PI/2.;
+    lsl::LaserScan ls;
+    ls.setPolarData(d);
+
+    Eigen::VectorXd tt = d.row(0);
     Eigen::VectorXd xx = Eigen::VectorXd::Zero(4);
     Eigen::VectorXd yy = Eigen::VectorXd::Zero(4);
     Eigen::VectorXd hh = Eigen::VectorXd::Zero(4);
@@ -289,11 +323,36 @@ BOOST_AUTO_TEST_CASE( computeStatistics )
 
     BOOST_CHECK_CLOSE( obj.getApparentRange(), 0.67314560089181297, 1.f);
     BOOST_CHECK_CLOSE( obj.getApparentTheta(), -1.9513027039072615, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentTime(), 0.2, 1.f);
 
     arp_math::Vector2 m = obj.getCartesianMean();
     arp_math::Vector2 s = obj.getCartesianStddev();
-    BOOST_CHECK_EQUAL( m(0), -0.25);
-    BOOST_CHECK_EQUAL( m(1), -0.625);
+    BOOST_CHECK_CLOSE( m(0), -0.25 , 1.f);
+    BOOST_CHECK_CLOSE( m(1), -0.625, 1.f);
+    BOOST_CHECK_CLOSE( s(0), 1.08972474, 1.f);
+    BOOST_CHECK_CLOSE( s(1), 1.38631706, 1.f);
+}
+
+BOOST_AUTO_TEST_CASE( computeStatistics_2 )
+{
+    Eigen::MatrixXd d = MatrixXd::Random(3, 4);
+    d.row(0) << 0.1 ,  0.2  , 0.3  ,    0.4  ;
+    d.row(1) << 1.0,   0.5  ,  2.0 ,    3.0  ;
+    d.row(2) << 0. , M_PI/2., M_PI , -M_PI/2.;
+    lsl::LaserScan ls;
+    ls.setPolarData(d);
+
+    lsl::DetectedObject obj;
+    obj.setScan(ls);
+
+    BOOST_CHECK_CLOSE( obj.getApparentRange(), 0.67314560089181297, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentTheta(), -1.9513027039072615, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentTime(), 0.2, 1.f);
+
+    arp_math::Vector2 m = obj.getCartesianMean();
+    arp_math::Vector2 s = obj.getCartesianStddev();
+    BOOST_CHECK_CLOSE( m(0), -0.25, 1.f);
+    BOOST_CHECK_CLOSE( m(1), -0.625, 1.f);
     BOOST_CHECK_CLOSE( s(0), 1.08972474, 1.f);
     BOOST_CHECK_CLOSE( s(1), 1.38631706, 1.f);
 }

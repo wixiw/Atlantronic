@@ -18,3 +18,9 @@ DetectedCircle::DetectedCircle()
  , DetectedObject()
 {
 }
+
+DetectedCircle::DetectedCircle(const DetectedObject & ls)
+ : Circle()
+ , DetectedObject(ls)
+{
+}

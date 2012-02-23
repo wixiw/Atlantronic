@@ -5,9 +5,9 @@
  *      Author: Boris
  */
 
-#include "DetectedObject.hpp"
+#include <iostream>
 
-#include <exceptions/NotImplementedException.hpp>
+#include "DetectedObject.hpp"
 
 using namespace arp_math;
 using namespace arp_rlu;
@@ -19,6 +19,7 @@ DetectedObject::DetectedObject()
 : associatedScan(LaserScan())
 , apparentRange(0.)
 , apparentTheta(0.)
+, apparentTime(0.)
 , cartMean(Vector2::Zero())
 , cartStddev(Vector2::Zero())
 {
@@ -29,6 +30,7 @@ DetectedObject::DetectedObject(const DetectedObject & d)
 : associatedScan(d.getScan())
 , apparentRange(d.getApparentRange())
 , apparentTheta(d.getApparentTheta())
+, apparentTime(d.getApparentTime())
 , cartMean(d.getCartesianMean())
 , cartStddev(d.getCartesianStddev())
 {
@@ -39,8 +41,9 @@ DetectedObject::DetectedObject(const LaserScan & ls)
 : associatedScan(ls)
 , apparentRange(0.)
 , apparentTheta(0.)
-, cartMean(0.)
-, cartStddev(0.)
+, apparentTime(0.)
+, cartMean(Vector2::Zero())
+, cartStddev(Vector2::Zero())
 {
     this->computeStatistics();
 }
@@ -78,8 +81,42 @@ double DetectedObject::getApparentTheta() const
     return apparentTheta;
 }
 
+double DetectedObject::getApparentTime() const
+{
+    return apparentTime;
+}
+
 void DetectedObject::computeStatistics()
 {
-    throw NotImplementedException();
+    unsigned int n = associatedScan.getSize();
+    if( n == 0 )
+    {
+        return;
+    }
+
+    if(!associatedScan.areCartesianDataAvailable())
+    {
+        associatedScan.computeCartesianData();
+    }
+
+    Eigen::MatrixXd cartdata = associatedScan.getCartesianData();
+
+    double xMean = arp_math::mean(cartdata.row(1));
+    double yMean = arp_math::mean(cartdata.row(2));
+    double xStddev = arp_math::stddev(cartdata.row(1));
+    double yStddev = arp_math::stddev(cartdata.row(2));
+
+    cartMean = Vector2(xMean, yMean);
+    cartStddev = Vector2(xStddev, yStddev);
+
+    apparentTime = cartdata(0,(int)(n-1)/2);
+
+    double xMed = cartdata(3,(int)(n-1)/2);
+    double yMed = cartdata(4,(int)(n-1)/2);
+    double hMed = cartdata(5,(int)(n-1)/2);
+
+    apparentRange = sqrt( (xMean-xMed)*(xMean-xMed) + (yMean-yMed)*(yMean-yMed) );
+    apparentTheta = betweenMinusPiAndPlusPi( atan2( yMean-yMed, xMean-xMed ) );
+
     return;
 }

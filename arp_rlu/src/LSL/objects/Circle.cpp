@@ -17,7 +17,7 @@ using namespace lsl;
 
 Circle::Circle()
 : cartesianPosition(0., 0.)
-, radius(0.)
+, radius(1.)
 {
     ;
 }

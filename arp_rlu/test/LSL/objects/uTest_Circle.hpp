@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE( Constructor_default_1 )
 
     BOOST_CHECK_EQUAL( obj.x(), 0.);
     BOOST_CHECK_EQUAL( obj.y(), 0.);
-    BOOST_CHECK_EQUAL( obj.r(), 0.);
+    BOOST_CHECK_EQUAL( obj.r(), 1.);
 }
 
 BOOST_AUTO_TEST_CASE( Constructor_double_1 )

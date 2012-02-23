@@ -42,7 +42,7 @@ class DetectedObject
          *  * la range apparent vaut 0.\n
          *  * le theta apparent vaut 0.\n
          *  * le centre de gravité est en (0., 0.)\n
-         *  * la déviation standard vaut 0.
+         *  * la déviation standard vaut (0., 0.)
          */
         DetectedObject();
 
@@ -61,6 +61,8 @@ class DetectedObject
          * \remarks Cette méthode fait appel à la méthode calcul de statistique.
          * ainsi, juste après avoir utilisé setScan, il est possible d'accéder
          * aux données statistiques de l'objet ainsi qu'à sa mesure apparente.
+         * \remarks Si les données cartésiennes ne sont pas présentes dans le scan,
+         * elles sont calculées via des paramètres par défault : (x,y,h) = (0,0,0)
          */
         void setScan(lsl::LaserScan ls);
 
@@ -71,31 +73,41 @@ class DetectedObject
 
         /**
          * Permet d'obtenir le centre de gravité de l'objet (ie le centre de gravité de la portion de scan associée à l'objet)
+         * \remarks le repère de référence est le repère cartésien général (la table), pas le repère du scan
          */
         arp_math::Vector2 getCartesianMean() const;
 
         /**
          * Permet d'obtenir l'écart type de l'objet (ie l'écart type de la portion de scan associée à l'objet)
+         * \remarks le repère de référence est le repère cartésien général (la table), pas le repère du scan
          */
         arp_math::Vector2 getCartesianStddev() const;
 
         /**
          * Permet d'obtenir la distance à l'origine du polaire de l'objet.\n
          * Il s'agit des coordonnées polaires du centre de gravité de la portion de scan associée à l'objet.
+         * \remarks le repère de référence est le repère du scan, pas le repère cartésien global (table)
          */
         double getApparentRange() const;
 
         /**
          * Permet d'obtenir l'angle par rapport à l'axe de référence du repère du polaire de l'objet.\n
          * Il s'agit des coordonnées polaires du centre de gravité de la portion de scan associée à l'objet.
+         * \remarks le repère de référence est le repère du scan, pas le repère cartésien global (table)
          */
         double getApparentTheta() const;
+
+        /**
+         * Permet d'obtenir la date en seconde pour laquelle les valeurs apparentRange et apparentTheta sont valables.
+         */
+        double getApparentTime() const;
 
 
     protected:
         lsl::LaserScan associatedScan;
         double apparentRange;
         double apparentTheta;
+        double apparentTime;
         arp_math::Vector2 cartMean;
         arp_math::Vector2 cartStddev;
 

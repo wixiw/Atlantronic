@@ -31,10 +31,16 @@ namespace lsl
 class DetectedCircle : public Circle, public DetectedObject
 {
     public:
-        /**
-         * Constructeur par défault qui appelle les constructeurs par défault de Circle et de DetectedObject.
-         */
-        DetectedCircle();
+    /**
+     * Constructeur par défault qui appelle les constructeurs par défault de Circle et de DetectedObject.
+     */
+    DetectedCircle();
+
+    /**
+     * Constructeur s'appuyant sur un DetectedObject.\n
+     * Les membres relatifs au Circle sont initialisés par défault.
+     */
+    DetectedCircle(const DetectedObject & ls);
 
 };
 
