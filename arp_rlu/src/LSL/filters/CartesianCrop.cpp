@@ -34,7 +34,7 @@ std::string CartesianCrop::Params::getInfo()
     return ss.str();
 }
 
-bool CartesianCrop::Params::checkConsistency()
+bool CartesianCrop::Params::checkConsistency() const
 {
     throw NotImplementedException();
     return false;

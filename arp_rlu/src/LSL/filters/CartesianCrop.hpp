@@ -62,7 +62,7 @@ class CartesianCrop
              * * minX < maxX \n
              * * minY < maxY
              */
-            bool checkConsistency();
+            bool checkConsistency() const;
 
             double minX;
             double maxX;
