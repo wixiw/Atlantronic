@@ -36,14 +36,53 @@ std::string CartesianCrop::Params::getInfo()
 
 bool CartesianCrop::Params::checkConsistency() const
 {
-    throw NotImplementedException();
-    return false;
+    if( maxX < minX )
+        return false;
+    if( maxY < minY )
+        return false;
+    return true;
 }
 
 LaserScan CartesianCrop::apply(const LaserScan & raw, const Params & p)
 {
-    throw NotImplementedException();
+    if( !p.checkConsistency() )
+    {
+        return raw;
+    }
 
-    LaserScan out = raw;
+    if( !raw.areCartesianDataAvailable() )
+    {
+        return raw;
+    }
+
+    MatrixXd rawPolarData = raw.getPolarData();
+    MatrixXd rawCartesianData = raw.getCartesianData();
+    unsigned int N = 0;
+    for(int i = 0 ; i < rawCartesianData.cols() ; i++)
+    {
+        if( rawCartesianData(1,i) <= p.maxX && p.minX <= rawCartesianData(1,i)
+                && rawCartesianData(2,i) <= p.maxY && p.minY <= rawCartesianData(2,i) )
+        {
+            N++;
+        }
+    }
+
+    MatrixXd newCartesianData = MatrixXd::Zero(6,N);
+    MatrixXd newPolarData = MatrixXd::Zero(3,N);
+    unsigned int k = 0;
+    for (int i = 0; i < rawCartesianData.cols() ; i++)
+    {
+        if( rawCartesianData(1,i) <= p.maxX && p.minX <= rawCartesianData(1,i)
+                && rawCartesianData(2,i) <= p.maxY && p.minY <= rawCartesianData(2,i) )
+        {
+            newCartesianData.col(k) = rawCartesianData.col(i);
+            newPolarData.col(k) = rawPolarData.col(i);
+            k++;
+        }
+    }
+
+    LaserScan out;
+    out.setPolarData(newPolarData);
+    out.computeCartesianData(newCartesianData.row(0), newCartesianData.row(3), newCartesianData.row(4), newCartesianData.row(5));
     return out;
 }

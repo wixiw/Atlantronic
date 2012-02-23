@@ -75,6 +75,8 @@ class CartesianCrop
          * \param ls scan d'origine
          * \param p paramètres du filtre
          * \return LaserScan filtré
+         * \remarks Si les paramètres sont inconsistants, le filtre renvoie le scan initial.
+         * \remarks si les données cartésiennes ne sont pas disponible, le filtre renvoie le scan initial.
          */
         static LaserScan apply(const LaserScan &, const Params & p = Params());
 

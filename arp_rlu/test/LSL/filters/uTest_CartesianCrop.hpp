@@ -54,24 +54,33 @@ BOOST_AUTO_TEST_CASE( Test_1 )
 
     rawScan.setPolarData(d);
 
-    Eigen::VectorXd tt = Eigen::VectorXd::Zero(4);
-    Eigen::VectorXd xx = Eigen::VectorXd::Zero(4);
-    Eigen::VectorXd yy = Eigen::VectorXd::Zero(4);
-    Eigen::VectorXd hh = Eigen::VectorXd::Zero(4);
+    Eigen::VectorXd tt = d.row(0);
+    Eigen::VectorXd xx = Eigen::VectorXd::Zero(5);
+    Eigen::VectorXd yy = Eigen::VectorXd::Zero(5);
+    Eigen::VectorXd hh = Eigen::VectorXd::Zero(5);
     rawScan.computeCartesianData(tt, xx, yy, hh);
+
+    MatrixXd cart = rawScan.getCartesianData();
 
     lsl::LaserScan filtScan = lsl::CartesianCrop::apply(rawScan);
 
-    MatrixXd filt = filtScan.getPolarData();
+    MatrixXd polarFilt = filtScan.getPolarData();
+    MatrixXd cartFilt = filtScan.getCartesianData();
 
     VectorXi ifilt = VectorXi(3);
     ifilt << 0, 1, 4;
-    BOOST_CHECK_EQUAL( filt.cols(), ifilt.size() );
+    BOOST_CHECK_EQUAL( polarFilt.cols(), ifilt.size() );
     for(int n = 0 ; n < ifilt.size() ; n++)
     {
-        BOOST_CHECK_EQUAL( filt(0,n), d(0,ifilt(n)) );
-        BOOST_CHECK_EQUAL( filt(1,n), d(1,ifilt(n)) );
-        BOOST_CHECK_EQUAL( filt(2,n), d(2,ifilt(n)) );
+        BOOST_CHECK_EQUAL( polarFilt(0,n), d(0,ifilt(n)) );
+        BOOST_CHECK_EQUAL( polarFilt(1,n), d(1,ifilt(n)) );
+        BOOST_CHECK_EQUAL( polarFilt(2,n), d(2,ifilt(n)) );
+
+        BOOST_CHECK_EQUAL( cartFilt(1,n), cart(1,ifilt(n)) );
+        BOOST_CHECK_EQUAL( cartFilt(2,n), cart(2,ifilt(n)) );
+        BOOST_CHECK_EQUAL( cartFilt(3,n), cart(3,ifilt(n)) );
+        BOOST_CHECK_EQUAL( cartFilt(4,n), cart(4,ifilt(n)) );
+        BOOST_CHECK_EQUAL( cartFilt(5,n), cart(5,ifilt(n)) );
     }
 }
 
@@ -85,11 +94,13 @@ BOOST_AUTO_TEST_CASE( Test_2 )
 
     rawScan.setPolarData(d);
 
-    Eigen::VectorXd tt = Eigen::VectorXd::Zero(4);
-    Eigen::VectorXd xx = Eigen::VectorXd::Zero(4);
-    Eigen::VectorXd yy = Eigen::VectorXd::Zero(4);
-    Eigen::VectorXd hh = Eigen::VectorXd::Zero(4);
+    Eigen::VectorXd tt = d.row(0);
+    Eigen::VectorXd xx = Eigen::VectorXd::Zero(5);
+    Eigen::VectorXd yy = Eigen::VectorXd::Zero(5);
+    Eigen::VectorXd hh = Eigen::VectorXd::Zero(5);
     rawScan.computeCartesianData(tt, xx, yy, hh);
+
+    MatrixXd cart = rawScan.getCartesianData();
 
     lsl::CartesianCrop::Params p;
     p.minX = -1.0;
@@ -98,16 +109,23 @@ BOOST_AUTO_TEST_CASE( Test_2 )
     p.maxY = 0.1;
     lsl::LaserScan filtScan = lsl::CartesianCrop::apply(rawScan, p);
 
-    MatrixXd filt = filtScan.getPolarData();
+    MatrixXd polarFilt = filtScan.getPolarData();
+    MatrixXd cartFilt = filtScan.getCartesianData();
 
     VectorXi ifilt = VectorXi(2);
     ifilt << 0, 1;
-    BOOST_CHECK_EQUAL( filt.cols(), ifilt.size() );
+    BOOST_CHECK_EQUAL( polarFilt.cols(), ifilt.size() );
     for(int n = 0 ; n < ifilt.size() ; n++)
     {
-        BOOST_CHECK_EQUAL( filt(0,n), d(0,ifilt(n)) );
-        BOOST_CHECK_EQUAL( filt(1,n), d(1,ifilt(n)) );
-        BOOST_CHECK_EQUAL( filt(2,n), d(2,ifilt(n)) );
+        BOOST_CHECK_EQUAL( polarFilt(0,n), d(0,ifilt(n)) );
+        BOOST_CHECK_EQUAL( polarFilt(1,n), d(1,ifilt(n)) );
+        BOOST_CHECK_EQUAL( polarFilt(2,n), d(2,ifilt(n)) );
+
+        BOOST_CHECK_EQUAL( cartFilt(1,n), cart(1,ifilt(n)) );
+        BOOST_CHECK_EQUAL( cartFilt(2,n), cart(2,ifilt(n)) );
+        BOOST_CHECK_EQUAL( cartFilt(3,n), cart(3,ifilt(n)) );
+        BOOST_CHECK_EQUAL( cartFilt(4,n), cart(4,ifilt(n)) );
+        BOOST_CHECK_EQUAL( cartFilt(5,n), cart(5,ifilt(n)) );
     }
 }
 
@@ -121,11 +139,13 @@ BOOST_AUTO_TEST_CASE( Test_3 )
 
     rawScan.setPolarData(d);
 
-    Eigen::VectorXd tt = Eigen::VectorXd::Zero(4);
-    Eigen::VectorXd xx = Eigen::VectorXd::Zero(4);
-    Eigen::VectorXd yy = Eigen::VectorXd::Zero(4);
-    Eigen::VectorXd hh = Eigen::VectorXd::Zero(4);
+    Eigen::VectorXd tt = d.row(0);
+    Eigen::VectorXd xx = Eigen::VectorXd::Zero(5);
+    Eigen::VectorXd yy = Eigen::VectorXd::Zero(5);
+    Eigen::VectorXd hh = Eigen::VectorXd::Zero(5);
     rawScan.computeCartesianData(tt, xx, yy, hh);
+
+    MatrixXd cart = rawScan.getCartesianData();
 
     lsl::CartesianCrop::Params p;
     p.minX = 0.5;
@@ -134,16 +154,23 @@ BOOST_AUTO_TEST_CASE( Test_3 )
     p.maxY = 1.0;
     lsl::LaserScan filtScan = lsl::CartesianCrop::apply(rawScan, p);
 
-    MatrixXd filt = filtScan.getPolarData();
+    MatrixXd polarFilt = filtScan.getPolarData();
+    MatrixXd cartFilt = filtScan.getCartesianData();
 
     VectorXi ifilt = VectorXi(2);
     ifilt << 1, 2;
-    BOOST_CHECK_EQUAL( filt.cols(), ifilt.size() );
+    BOOST_CHECK_EQUAL( polarFilt.cols(), ifilt.size() );
     for(int n = 0 ; n < ifilt.size() ; n++)
     {
-        BOOST_CHECK_EQUAL( filt(0,n), d(0,ifilt(n)) );
-        BOOST_CHECK_EQUAL( filt(1,n), d(1,ifilt(n)) );
-        BOOST_CHECK_EQUAL( filt(2,n), d(2,ifilt(n)) );
+        BOOST_CHECK_EQUAL( polarFilt(0,n), d(0,ifilt(n)) );
+        BOOST_CHECK_EQUAL( polarFilt(1,n), d(1,ifilt(n)) );
+        BOOST_CHECK_EQUAL( polarFilt(2,n), d(2,ifilt(n)) );
+
+        BOOST_CHECK_EQUAL( cartFilt(1,n), cart(1,ifilt(n)) );
+        BOOST_CHECK_EQUAL( cartFilt(2,n), cart(2,ifilt(n)) );
+        BOOST_CHECK_EQUAL( cartFilt(3,n), cart(3,ifilt(n)) );
+        BOOST_CHECK_EQUAL( cartFilt(4,n), cart(4,ifilt(n)) );
+        BOOST_CHECK_EQUAL( cartFilt(5,n), cart(5,ifilt(n)) );
     }
 }
 
