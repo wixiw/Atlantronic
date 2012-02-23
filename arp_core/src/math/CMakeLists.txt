@@ -12,6 +12,7 @@ rosbuild_add_library(arp_core-math math.cpp
                                    Twist2D.cpp 
                                    EstimatedPose2D.cpp
                                    EstimatedTwist2D.cpp
-                                   Interpolator.cpp)
+                                   Interpolator.cpp
+                                   Stats.cpp)
 
 ###################################################################################################################

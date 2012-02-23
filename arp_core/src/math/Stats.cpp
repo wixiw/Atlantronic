@@ -1,0 +1,75 @@
+/*
+ * Stats.cpp
+ *
+ *  Created on: 23 February 2012
+ *      Author: Boris
+ */
+
+#include "Stats.hpp"
+#include <exceptions/NotImplementedException.hpp>
+
+using namespace Eigen;
+
+namespace arp_math
+{
+
+double mean(const Eigen::VectorXd & v)
+{
+    if(v.size() == 0)
+    {
+        return 0.;
+    }
+    else
+    {
+        return v.sum() / v.size();
+    }
+}
+
+double stddev(const Eigen::VectorXd & v)
+{
+    if(v.size() == 0)
+    {
+        return 0.;
+    }
+    else
+    {
+        double m = arp_math::mean(v);
+        double s = 0.;
+        for (unsigned int i = 0; i < v.size(); i++)
+        {
+            s += (m - v(i)) * (m - v(i));
+        }
+        return sqrt(s / v.size());
+    }
+}
+
+double median(const Eigen::VectorXd & v)
+{
+    Eigen::VectorXd m = v;
+    unsigned int n = m.size();
+    if( n == 0 )
+        return 0.;
+
+    if( n == 1 )
+        return m(0);
+
+    bool no_change;
+    do
+    {
+        no_change = true;
+        for(unsigned int j = 0; j < n-1 ; j++)
+        {
+            if(m(j) > m(j+1))
+            {
+                double tmp = m(j+1);
+                m(j+1) = m(j);
+                m(j) = tmp;
+                no_change = false;
+            }
+        }
+    }while(!no_change);
+
+    return m((unsigned int)((n-1) / 2));
+}
+
+}
