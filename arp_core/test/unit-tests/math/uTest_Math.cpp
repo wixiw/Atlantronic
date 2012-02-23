@@ -13,3 +13,4 @@
 #include "uTest_Pose2D.hpp"
 #include "uTest_Twist2D.hpp"
 #include "uTest_Math.hpp"
+#include "uTest_Interpolator.hpp"

@@ -3,3 +3,4 @@
 #include <math/Twist2D.hpp>
 #include <math/EstimatedPose2D.hpp>
 #include <math/EstimatedTwist2D.hpp>
+#include <math/Interpolator.hpp>
