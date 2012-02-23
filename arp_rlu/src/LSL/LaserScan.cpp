@@ -26,9 +26,9 @@ LaserScan::LaserScan(const LaserScan & ls)
     if(ls.areCartesianDataAvailable())
     {
         Eigen::MatrixXd cart = ls.getCartesianData();
-        Eigen::MatrixXd newdata = Eigen::MatrixXd::Zero(5,cart.cols());
+        Eigen::MatrixXd newdata = Eigen::MatrixXd::Zero(8,cart.cols());
         newdata.topRows(3) = data;
-        newdata.bottomRows(2) = cart.bottomRows(2);
+        newdata.bottomRows(5) = cart.bottomRows(5);
         data = newdata;
     }
 }
@@ -75,12 +75,15 @@ bool LaserScan::computeCartesianData(Eigen::VectorXd ttc, Eigen::VectorXd xxc, E
         return false;
     }
 
-    Eigen::MatrixXd newdata(5, n);
+    Eigen::MatrixXd newdata(8, n);
     newdata.topRows(3) = data.topRows(3);
     for(int i = 0; i < n; i++)
     {
         newdata(3, i) = xx[i] + data(1, i) * cos(data(2, i) + hh[i]);
         newdata(4, i) = yy[i] + data(1, i) * sin(data(2, i) + hh[i]);
+        newdata(5, i) = xx[i];
+        newdata(6, i) = yy[i];
+        newdata(7, i) = hh[i];
     }
     data = newdata;
     return true;
@@ -104,10 +107,10 @@ Eigen::MatrixXd LaserScan::getPolarData() const
 Eigen::MatrixXd LaserScan::getCartesianData() const
 {
     if(!this->areCartesianDataAvailable())
-        return Eigen::MatrixXd::Zero(3,0);
-    Eigen::MatrixXd cart = Eigen::MatrixXd::Zero(3,data.cols());
+        return Eigen::MatrixXd::Zero(6,0);
+    Eigen::MatrixXd cart = Eigen::MatrixXd::Zero(6,data.cols());
     cart.topRows(1) = data.topRows(1);
-    cart.bottomRows(2) = data.bottomRows(2);
+    cart.bottomRows(5) = data.bottomRows(5);
     return cart;
 }
 
@@ -118,7 +121,7 @@ Eigen::VectorXd LaserScan::getTimeData() const
 
 bool LaserScan::areCartesianDataAvailable() const
 {
-    return (data.rows() == 5);
+    return (data.rows() == 8);
 }
 
 unsigned int  LaserScan::cleanUp(double epsilon)

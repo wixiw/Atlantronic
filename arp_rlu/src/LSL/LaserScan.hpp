@@ -29,6 +29,7 @@ namespace lsl
  *
  * Un scan peut être par exemple issu d'une mesure d'un LRF (Hokuyo etc...)
  * Il correspond à un ensemble de point dans un plan polaire. Sa dimension est donc de 1.5D.\n
+ * De plus, un scan est attaché à une notion d'acquition séquentielle. Un champ de date est associée à chaque point et ses dates doivent être croissantes.
  * Un LaserScan est donc d'abord définit dans un repère polaire. il est ensuite possible de calculer
  * les coordonnées des points dans le repère cartésien associé. \n
  *
@@ -76,12 +77,16 @@ class LaserScan
         //@{
         /** Permet de modifier les données polaires du scan.
          * \param d Une matrice de taille (3,N) avec N le nombre de points dans le scan.\n
-         * La première ligne correspond à la date en seconde d'acquisition des points.\n
+         * La première ligne correspond à la date en seconde d'acquisition des points. Ces dates DOIVENT être croissantes.\n
          * La deuxième ligne correspond à r, la distance du point à l'origine du repère polaire.\n
          * La troisième ligne correspond à theta, l'angle en radian du vecteur (origine -> point)
          * par rapport à l'axe de référence du repère polaire.\n
          * \remarks Les données cartésiennes qui auraient été précédemment calculées ne sont plus disponibles.
-         * \remarks A la sortie, la matrice data est de taille (3,N)*/
+         * \remarks A la sortie, la matrice data est de taille (3,N)
+         * \warning Il n'y a pas de vérification que les dates données sont bien croissantes. C'est à l'utilisateur de s'en assurer.
+         * Si ce n'est pas le cas, certain algorithme utilisant le scan pourraient avoir des performances franchement détériorées
+         * (ie renvoyer n'importe quoi).
+         * */
         void setPolarData(Eigen::MatrixXd d);
 
         /** Permet d'accéder aux coodonnées polaires des points du scan
@@ -94,11 +99,14 @@ class LaserScan
         Eigen::MatrixXd getPolarData() const;
 
         /** Permet d'accéder aux coordonnées cartésiennes des points du scan.
-         * \returns Une matrice de taille (3,N) avec N le nombre de points dans le scan.\n
+         * \returns Une matrice de taille (6,N) avec N le nombre de points dans le scan.\n
          * La première ligne correspond à la date en seconde d'acquisition des points. \n
          * La deuxième ligne correspond aux coordonnées selon l'axe x du repère de référence. \n
          * La troisième ligne correspond aux coordonnées selon l'axe y du repère de référence. \n
-         * \remarks Si le scan est vide ou que les données cartésiennes ne sont pas disponibles, la matrice renvoyée est de taille (3,0)*/
+         * La quatrième ligne correspond aux coordonnées selon l'axe x de l'origine polaire dans le repère de référence. \n
+         * La cinquième ligne correspond aux coordonnées selon l'axe y de l'origine polaire dans le repère de référence. \n
+         * La sixième ligne correspond la rotation autour de l'axe z de l'origine polaire par rapport au repère de référence. \n
+         * \remarks Si le scan est vide ou que les données cartésiennes ne sont pas disponibles, la matrice renvoyée est de taille (6,0)*/
         Eigen::MatrixXd getCartesianData() const;
 
         /** Permet d'accéder aux coordonnées cartésiennes des points du scan.
@@ -119,6 +127,19 @@ class LaserScan
         unsigned int cleanUp(double epsilon = 1E-6);
 
     protected:
+        /**
+         * Une matrice de taille (3,N) ou (8,N) avec N le nombre de points dans le scan.\n
+         * La matrice fait (3,N) quand les données cartésiennes n'ont pas été calculées.\n
+         * Elle fait (8,N) quand les données cartésiennes ont été calculées.\n
+         * La première ligne correspond à la date en seconde d'acquisition des points.\n
+         * La deuxième ligne correspond à r, la distance du point à l'origine du repère polaire.\n
+         * La troisième ligne correspond à theta, l'angle en radian du vecteur (origine -> point)\n
+         * La quatrième ligne correspond aux coordonnées selon l'axe x du point dans le repère de référence. \n
+         * La cinquième ligne correspond aux coordonnées selon l'axe y du point dans le repère de référence. \n
+         * La sixième ligne correspond aux coordonnées selon l'axe x de l'origine polaire dans le repère de référence. \n
+         * La septième ligne correspond aux coordonnées selon l'axe y de l'origine polaire dans le repère de référence. \n
+         * La huitième ligne correspond la rotation autour de l'axe z de l'origine polaire par rapport au repère de référence. \n
+         */
         Eigen::MatrixXd data;
 
 };

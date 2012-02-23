@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE( Constructor_Default_1 )
 
     BOOST_CHECK_EQUAL( pdata.rows(), 3);
     BOOST_CHECK_EQUAL( pdata.cols(), 0);
-    BOOST_CHECK_EQUAL( cdata.rows(), 3);
+    BOOST_CHECK_EQUAL( cdata.rows(), 6);
     BOOST_CHECK_EQUAL( cdata.cols(), 0);
 }
 
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE( Constructor_Copy_1 )
 
     BOOST_CHECK_EQUAL( pdata2.rows(), 3);
     BOOST_CHECK_EQUAL( pdata2.cols(), 0);
-    BOOST_CHECK_EQUAL( cdata2.rows(), 3);
+    BOOST_CHECK_EQUAL( cdata2.rows(), 6);
     BOOST_CHECK_EQUAL( cdata2.cols(), 0);
 }
 
@@ -97,12 +97,7 @@ BOOST_AUTO_TEST_CASE( computeCartesianData_EmptyScan )
     // test scan vide
     lsl::LaserScan obj;
 
-    Eigen::VectorXd tt = Eigen::VectorXd::Zero(0);
-    Eigen::VectorXd xx = Eigen::VectorXd::Zero(0);
-    Eigen::VectorXd yy = Eigen::VectorXd::Zero(0);
-    Eigen::VectorXd hh = Eigen::VectorXd::Zero(0);
-
-    bool res = obj.computeCartesianData(tt, xx, yy, hh);
+    bool res = obj.computeCartesianData();
 
     BOOST_CHECK( !res );
 }
@@ -117,22 +112,21 @@ BOOST_AUTO_TEST_CASE( computeCartesianData_1 )
     d.row(2) << 0. , M_PI/2., M_PI , -M_PI/2.;
     obj.setPolarData(d);
 
-    Eigen::VectorXd tt = Eigen::VectorXd::Zero(0);
-    Eigen::VectorXd xx = Eigen::VectorXd::Zero(0);
-    Eigen::VectorXd yy = Eigen::VectorXd::Zero(0);
-    Eigen::VectorXd hh = Eigen::VectorXd::Zero(0);
-
-    bool res = obj.computeCartesianData(tt, xx, yy, hh);
+    bool res = obj.computeCartesianData();
 
     BOOST_CHECK( res );
 
     Eigen::MatrixXd cdata = obj.getCartesianData();
 
-    BOOST_CHECK_EQUAL( cdata.rows(), 3 );
+    BOOST_CHECK_EQUAL( cdata.rows(), 6 );
     BOOST_CHECK_EQUAL( cdata.cols(), 4 );
 
     for (int j=0; j<cdata.cols(); ++j) {
         BOOST_CHECK_EQUAL(cdata(0,j),d(0,j));
+
+        BOOST_CHECK_EQUAL(cdata(3,j),0.0);
+        BOOST_CHECK_EQUAL(cdata(4,j),0.0);
+        BOOST_CHECK_EQUAL(cdata(5,j),0.0);
     }
 
     BOOST_CHECK_CLOSE( 1.0, cdata(1,0), 1.f); BOOST_CHECK( abs(cdata(2,0)) < 0.00001f);
@@ -164,17 +158,22 @@ BOOST_AUTO_TEST_CASE( computeCartesianData_2 )
 
     Eigen::MatrixXd cdata = obj.getCartesianData();
 
-    BOOST_CHECK_EQUAL( cdata.rows(), 3 );
+    BOOST_CHECK_EQUAL( cdata.rows(), 6 );
     BOOST_CHECK_EQUAL( cdata.cols(), 4 );
 
     for (int j=0; j<cdata.cols(); ++j) {
         BOOST_CHECK_EQUAL(cdata(0,j),d(0,j));
+
+        BOOST_CHECK_EQUAL(cdata(3,j),0.0);
+        BOOST_CHECK_EQUAL(cdata(4,j),0.0);
+        BOOST_CHECK_EQUAL(cdata(5,j),0.0);
     }
 
     BOOST_CHECK_CLOSE( 1.0, cdata(1,0), 1.f); BOOST_CHECK( abs(cdata(2,0)) < 0.00001f);
     BOOST_CHECK( abs(cdata(1,1)) < 0.00001f); BOOST_CHECK_CLOSE( 0.5, cdata(2,1), 1.f);
     BOOST_CHECK_CLOSE(-2.0, cdata(1,2), 1.f); BOOST_CHECK( abs(cdata(2,2)) < 0.00001f);
     BOOST_CHECK( abs(cdata(1,3)) < 0.00001f); BOOST_CHECK_CLOSE(-3.0, cdata(2,3), 1.1f);
+
 }
 
 BOOST_AUTO_TEST_CASE( computeCartesianData_3 )
@@ -198,7 +197,7 @@ BOOST_AUTO_TEST_CASE( computeCartesianData_3 )
 
     Eigen::MatrixXd cdata = obj.getCartesianData();
 
-    BOOST_CHECK_EQUAL( cdata.rows(), 3 );
+    BOOST_CHECK_EQUAL( cdata.rows(), 6 );
     BOOST_CHECK_EQUAL( cdata.cols(), 4 );
 
     for (int j=0; j<cdata.cols(); ++j) {
@@ -209,6 +208,11 @@ BOOST_AUTO_TEST_CASE( computeCartesianData_3 )
     BOOST_CHECK_CLOSE( 1.0, cdata(1,1), 1.f); BOOST_CHECK_CLOSE( 0.5, cdata(2,1), 1.f);
     BOOST_CHECK_CLOSE(-2.0, cdata(1,2), 1.f); BOOST_CHECK_CLOSE( 1.0, cdata(2,2), 1.f);
     BOOST_CHECK_CLOSE(-1.0, cdata(1,3), 1.f); BOOST_CHECK_CLOSE(-4.0, cdata(2,3), 1.f);
+
+    BOOST_CHECK_CLOSE( 0.0, cdata(3,0), 1.f); BOOST_CHECK_CLOSE( 0.0, cdata(4,0), 1.f); BOOST_CHECK_CLOSE( 0.0, cdata(5,0), 1.f);
+    BOOST_CHECK_CLOSE( 1.0, cdata(3,1), 1.f); BOOST_CHECK_CLOSE( 0.0, cdata(4,1), 1.f); BOOST_CHECK_CLOSE( 0.0, cdata(5,1), 1.f);
+    BOOST_CHECK_CLOSE( 0.0, cdata(3,2), 1.f); BOOST_CHECK_CLOSE( 1.0, cdata(4,2), 1.f); BOOST_CHECK_CLOSE( 0.0, cdata(5,2), 1.f);
+    BOOST_CHECK_CLOSE(-1.0, cdata(3,3), 1.f); BOOST_CHECK_CLOSE(-1.0, cdata(4,3), 1.f); BOOST_CHECK_CLOSE( 0.0, cdata(5,3), 1.f);
 }
 
 
@@ -233,7 +237,7 @@ BOOST_AUTO_TEST_CASE( computeCartesianData_4 )
 
     Eigen::MatrixXd cdata = obj.getCartesianData();
 
-    BOOST_CHECK_EQUAL( cdata.rows(), 3 );
+    BOOST_CHECK_EQUAL( cdata.rows(), 6 );
     BOOST_CHECK_EQUAL( cdata.cols(), 4 );
 
     for (int j=0; j<cdata.cols(); ++j) {
@@ -244,6 +248,11 @@ BOOST_AUTO_TEST_CASE( computeCartesianData_4 )
     BOOST_CHECK_CLOSE( cdata(1,1),-0.5, 1.f); BOOST_CHECK( abs(cdata(2,1)) < 0.00001f);
     BOOST_CHECK( abs(cdata(1,2)) < 0.00001f); BOOST_CHECK_CLOSE( cdata(2,2), 2.0, 1.f);
     BOOST_CHECK( abs(cdata(1,3)) < 0.00001f); BOOST_CHECK_CLOSE( cdata(2,3), 3.0, 1.f);
+
+    BOOST_CHECK_CLOSE( 0.0, cdata(3,0), 1.f); BOOST_CHECK_CLOSE( 0.0, cdata(4,0), 1.f); BOOST_CHECK_CLOSE( 0.0  , cdata(5,0), 1.f);
+    BOOST_CHECK_CLOSE( 0.0, cdata(3,1), 1.f); BOOST_CHECK_CLOSE( 0.0, cdata(4,1), 1.f); BOOST_CHECK_CLOSE( PI/2., cdata(5,1), 1.f);
+    BOOST_CHECK_CLOSE( 0.0, cdata(3,2), 1.f); BOOST_CHECK_CLOSE( 0.0, cdata(4,2), 1.f); BOOST_CHECK_CLOSE(-PI/2., cdata(5,2), 1.f);
+    BOOST_CHECK_CLOSE( 0.0, cdata(3,3), 1.f); BOOST_CHECK_CLOSE( 0.0, cdata(4,3), 1.f); BOOST_CHECK_CLOSE(  PI  , cdata(5,3), 1.f);
 }
 
 BOOST_AUTO_TEST_CASE( setPolarData_1 )
@@ -303,7 +312,7 @@ BOOST_AUTO_TEST_CASE( getCartesianData_1 )
 
     Eigen::MatrixXd cdata = obj.getCartesianData();
 
-    BOOST_CHECK_EQUAL( cdata.rows(), 3);
+    BOOST_CHECK_EQUAL( cdata.rows(), 6);
     BOOST_CHECK_EQUAL( cdata.cols(), 0);
 }
 
@@ -325,13 +334,16 @@ BOOST_AUTO_TEST_CASE( getCartesianData_2 )
 
     Eigen::MatrixXd cdata = obj.getCartesianData();
 
-    BOOST_CHECK_EQUAL( cdata.rows(), 3);
+    BOOST_CHECK_EQUAL( cdata.rows(), 6);
     BOOST_CHECK_EQUAL( cdata.cols(), 6);
 
     for (int j=0; j<cdata.cols(); ++j) {
         BOOST_CHECK_EQUAL(cdata(0,j), d(0,j) );
         BOOST_CHECK_EQUAL(cdata(1,j), d(1,j) * std::cos( d(2,j) ) );
         BOOST_CHECK_EQUAL(cdata(2,j), d(1,j) * std::sin( d(2,j) ) );
+        BOOST_CHECK_EQUAL(cdata(3,j), 0.0 );
+        BOOST_CHECK_EQUAL(cdata(4,j), 0.0 );
+        BOOST_CHECK_EQUAL(cdata(5,j), 0.0 );
     }
 }
 
@@ -366,11 +378,12 @@ BOOST_AUTO_TEST_CASE( areCartesianDataAvailable_1 )
 {
     // test cartesian data available
     lsl::LaserScan obj;
-    unsigned int N = rand() % 1000 + 1 ;
+    unsigned int N = 6 ;
     Eigen::MatrixXd d = Eigen::MatrixXd::Random(3,N);
+    d.row(0) << 0.1, 0.2, 0.3, 0.4, 0.5, 0.6;
     obj.setPolarData(d);
 
-    Eigen::VectorXd tt = Eigen::VectorXd::Zero(N);
+    Eigen::VectorXd tt = d.row(0);
     Eigen::VectorXd xx = Eigen::VectorXd::Zero(N);
     Eigen::VectorXd yy = Eigen::VectorXd::Zero(N);
     Eigen::VectorXd hh = Eigen::VectorXd::Zero(N);
@@ -410,12 +423,9 @@ BOOST_AUTO_TEST_CASE( cleanUp_1 )
     unsigned int n = obj.cleanUp();
 
     Eigen::MatrixXd pdata = obj.getPolarData();
-    Eigen::MatrixXd cdata = obj.getCartesianData();
 
     BOOST_CHECK_EQUAL( pdata.rows(), 3);
     BOOST_CHECK_EQUAL( pdata.cols(), 0);
-    BOOST_CHECK_EQUAL( cdata.rows(), 3);
-    BOOST_CHECK_EQUAL( cdata.cols(), 0);
 
     BOOST_CHECK_EQUAL( n, 0 );
 }
