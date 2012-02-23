@@ -60,7 +60,7 @@ class PolarSegment
             /**
              * Permet de vérifier que les paramètres sont consistants.\n
              * A savoir :\n
-             * * rangeThres est positif
+             * * rangeThres doit être strictement positif
              */
             bool checkConsistency() const;
 
@@ -75,6 +75,7 @@ class PolarSegment
          * \param ls scan d'origine
          * \param p paramètres du filtre
          * \return vecteur de LaserScan
+         * \remarks Si les paramètres sont inconsistants, le filtre renvoie un vecteur contenant seulement le scan initial.
          */
         static std::vector<LaserScan> apply(const LaserScan &, const Params & p = Params());
 

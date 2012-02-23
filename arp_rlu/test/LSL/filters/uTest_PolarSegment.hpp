@@ -21,6 +21,7 @@ BOOST_AUTO_TEST_CASE( Test_DefaultParams_1 )
     d.row(0) <<   1.00,  1.01,  1.02,  1.03,  1.04,  1.05,  1.06,  1.07,  1.08,  1.09 ;
     d.row(1) <<   0.50,  0.51,  0.52,  0.53,  0.54,  0.55,  0.56,  0.57,  0.58,  0.59 ;
     d.row(2) <<   0.00,  0.01,  0.02,  0.03,  0.04,  0.05,  0.06,  0.07,  0.08,  0.09 ;
+    rawScan.setPolarData(d);
 
     std::vector<lsl::LaserScan> objects = lsl::PolarSegment::apply(rawScan);
 
@@ -44,6 +45,7 @@ BOOST_AUTO_TEST_CASE( Test_DefaultParams_2 )
     d.row(0) <<   1.00,  1.01,  1.02,  1.03,  1.04,  1.05,  1.06,  1.07,  1.08,  1.09 ;
     d.row(1) <<   0.50,  0.51,  0.52,  0.53,  0.64,  0.61,  0.58,  0.53,  0.50,  0.49 ;
     d.row(2) <<   0.00,  0.01,  0.02,  0.03,  0.04,  0.05,  0.06,  0.07,  0.08,  0.09 ;
+    rawScan.setPolarData(d);
 
     MatrixXd d1 = d.leftCols(4);
     MatrixXd d2 = d.rightCols(6);
@@ -80,6 +82,7 @@ BOOST_AUTO_TEST_CASE( Test_DefaultParams_3 )
     d.row(0) <<   1.00,  1.01,  1.02,  1.03,  1.04,  1.05,  1.06,  1.07,  1.08,  1.09 ;
     d.row(1) <<   0.50,  0.51,  0.51,  0.41,  0.42,  0.41,  0.58,  0.53,  0.50,  0.49 ;
     d.row(2) <<   0.00,  0.01,  0.02,  0.03,  0.04,  0.05,  0.06,  0.07,  0.08,  0.09 ;
+    rawScan.setPolarData(d);
 
     MatrixXd d1 = d.leftCols(3);
     MatrixXd d2 = d.block(0, 3, 3, 3);
@@ -109,7 +112,7 @@ BOOST_AUTO_TEST_CASE( Test_DefaultParams_3 )
         }
     }
 
-    MatrixXd pdata3 = objects[3].getPolarData();
+    MatrixXd pdata3 = objects[2].getPolarData();
     BOOST_CHECK_EQUAL(pdata3.cols(), d3.cols());
     for (int i=0; i<pdata3.rows(); ++i)
     {
@@ -127,6 +130,7 @@ BOOST_AUTO_TEST_CASE( Test_OtherParams_1 )
     d.row(0) <<   1.00,  1.01,  1.02,  1.03,  1.04,  1.05,  1.06,  1.07,  1.08,  1.09 ;
     d.row(1) <<   0.50,  0.51,  0.52,  0.53,  0.54,  0.73,  0.56,  0.73,  0.78,  0.79 ;
     d.row(2) <<   0.00,  0.01,  0.02,  0.03,  0.04,  0.05,  0.06,  0.07,  0.08,  0.09 ;
+    rawScan.setPolarData(d);
 
     lsl::PolarSegment::Params p;
     p.rangeThres = 0.2;
@@ -152,6 +156,7 @@ BOOST_AUTO_TEST_CASE( Test_OtherParams_2 )
     d.row(0) <<   1.00,  1.01,  1.02,  1.03,  1.04,  1.05,  1.06,  1.07,  1.08,  1.09 ;
     d.row(1) <<   0.50,  0.51,  0.52,  0.53,  0.54,  0.75,  0.73,  0.64,  0.78,  0.79 ;
     d.row(2) <<   0.00,  0.01,  0.02,  0.03,  0.04,  0.05,  0.06,  0.07,  0.08,  0.09 ;
+    rawScan.setPolarData(d);
 
     MatrixXd d1 = d.leftCols(5);
     MatrixXd d2 = d.rightCols(5);
