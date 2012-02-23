@@ -56,7 +56,7 @@ class MedianFilter
              * Permet de vérifier que les paramètres sont consistants.\n
              * les paramètres sont toujours consistants. Renvoie Vrai.
              */
-            bool checkConsistency();
+            bool checkConsistency() const;
 
             /**
              * Largeur du filtre (en nombre de points).\n

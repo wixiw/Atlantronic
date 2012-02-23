@@ -37,7 +37,7 @@ class ParamsInterface
         /**
          * Permet de vérifier que les paramètres sont consistants.
          */
-        virtual bool checkConsistency() = 0;
+        virtual bool checkConsistency() const = 0;
 
 };
 

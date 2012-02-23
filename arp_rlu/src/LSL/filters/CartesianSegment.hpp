@@ -66,7 +66,7 @@ class CartesianSegment
              * * minNbPoints > 0\n
              * * maxStddev > 0.
              */
-            bool checkConsistency();
+            bool checkConsistency() const;
 
             /**
              * Nombre d'itération maximum pour l'algo k-means.

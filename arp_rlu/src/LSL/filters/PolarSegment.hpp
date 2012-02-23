@@ -62,7 +62,7 @@ class PolarSegment
              * A savoir :\n
              * * rangeThres est positif
              */
-            bool checkConsistency();
+            bool checkConsistency() const;
 
             /**
              * Seuil de distance en mètre.

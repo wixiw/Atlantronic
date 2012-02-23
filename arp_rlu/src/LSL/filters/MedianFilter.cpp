@@ -27,7 +27,7 @@ std::string MedianFilter::Params::getInfo()
     return ss.str();
 }
 
-bool MedianFilter::Params::checkConsistency()
+bool MedianFilter::Params::checkConsistency() const
 {
     return true;
 }

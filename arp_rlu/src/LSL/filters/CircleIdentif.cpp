@@ -30,7 +30,7 @@ std::string CircleIdentif::Params::getInfo()
     return ss.str();
 }
 
-bool CircleIdentif::Params::checkConsistency()
+bool CircleIdentif::Params::checkConsistency() const
 {
     throw NotImplementedException();
     return false;

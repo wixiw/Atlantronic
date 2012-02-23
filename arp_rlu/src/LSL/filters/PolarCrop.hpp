@@ -59,11 +59,12 @@ class PolarCrop
             /**
              * Permet de vérifier que les paramètres sont consistants.\n
              * A savoir :\n
+             * * minRange ou maxRange est de taille nulle \n
              * * minRange et maxRange contiennent des valeurs non-négatives \n
              * * minRange < maxRange pour chaque élément \n
              * * minTheta < maxTheta
              */
-            bool checkConsistency();
+            bool checkConsistency() const;
 
             /**
              * Range minimal.\n
@@ -97,6 +98,7 @@ class PolarCrop
          * \param ls scan d'origine
          * \param p paramètres du filtre
          * \return LaserScan filtré
+         * \remarks Si les paramètres sont inconsistants, le filtre renvoie le scan initial.
          */
         static LaserScan apply(const LaserScan &, const Params & p = Params());
 

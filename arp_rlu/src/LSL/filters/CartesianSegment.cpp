@@ -34,7 +34,7 @@ std::string CartesianSegment::Params::getInfo()
     return ss.str();
 }
 
-bool CartesianSegment::Params::checkConsistency()
+bool CartesianSegment::Params::checkConsistency() const
 {
     throw NotImplementedException();
     return false;

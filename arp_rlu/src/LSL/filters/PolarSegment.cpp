@@ -28,7 +28,7 @@ std::string PolarSegment::Params::getInfo()
     return ss.str();
 }
 
-bool PolarSegment::Params::checkConsistency()
+bool PolarSegment::Params::checkConsistency() const
 {
     throw NotImplementedException();
     return false;

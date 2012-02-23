@@ -61,7 +61,7 @@ class CircleIdentif
              * * radius > 0. \n
              * * rangeDelta < radius
              */
-            bool checkConsistency();
+            bool checkConsistency() const;
 
             /**
              * Rayon du cercle que l'on cherche.\n
