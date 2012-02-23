@@ -73,8 +73,6 @@ class MedianFilter
          */
         static LaserScan apply(const LaserScan & ls, const Params & p = Params());
 
-    protected:
-        static double getMedian(const Eigen::VectorXd &);
 
 };
 

@@ -42,9 +42,3 @@ LaserScan MedianFilter::apply(const LaserScan & raw, const Params & p)
     return out;
 }
 
-
-double MedianFilter::getMedian(const Eigen::VectorXd & raw)
-{
-    throw NotImplementedException();
-    return 0.;
-}
