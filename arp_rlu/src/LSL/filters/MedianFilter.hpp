@@ -54,13 +54,14 @@ class MedianFilter
 
             /**
              * Permet de vérifier que les paramètres sont consistants.\n
-             * * width != 0
+             * les paramètres sont toujours consistants. Renvoie Vrai.
              */
             bool checkConsistency();
 
             /**
              * Largeur du filtre (en nombre de points).\n
-             * Cette largeur peut être paire ou impaire.
+             * Cette largeur peut être paire ou impaire ou nulle.\n
+             * Si elle est nulle, le filtre ne fait rien.
              */
             unsigned int width;
         };

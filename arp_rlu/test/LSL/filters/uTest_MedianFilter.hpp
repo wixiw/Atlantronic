@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE( test_checkConsistency )
     BOOST_CHECK( p.checkConsistency() );
 
     p.width = 0;
-    BOOST_CHECK( !(p.checkConsistency()) );
+    BOOST_CHECK( p.checkConsistency() );
 }
 
 BOOST_AUTO_TEST_CASE( N3_w3 )
@@ -65,12 +65,12 @@ BOOST_AUTO_TEST_CASE( N8_w4 )
     BOOST_CHECK_EQUAL( filt.row(2), raw.row(2) );
 
     BOOST_CHECK_EQUAL( filt(1,0), 3. );
-    BOOST_CHECK_EQUAL( filt(1,1), 3. );
-    BOOST_CHECK_EQUAL( filt(1,2), 5. );
-    BOOST_CHECK_EQUAL( filt(1,3), 5. );
-    BOOST_CHECK_EQUAL( filt(1,4), 7. );
-    BOOST_CHECK_EQUAL( filt(1,5), 5. );
-    BOOST_CHECK_EQUAL( filt(1,6), 6. );
+    BOOST_CHECK_EQUAL( filt(1,1), 3. );  // 3., -1, 5, 8.
+    BOOST_CHECK_EQUAL( filt(1,2), 4. );  // -1, 5, 8., 4.
+    BOOST_CHECK_EQUAL( filt(1,3), 5. );  // 5, 8., 4., 7.
+    BOOST_CHECK_EQUAL( filt(1,4), 5. );  // 8., 4., 7., 5.
+    BOOST_CHECK_EQUAL( filt(1,5), 5. );  // 4., 7., 5., 6.
+    BOOST_CHECK_EQUAL( filt(1,6), 5. );
     BOOST_CHECK_EQUAL( filt(1,7), 6. );
 }
 
