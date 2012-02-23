@@ -23,52 +23,123 @@ LaserScan::LaserScan()
 LaserScan::LaserScan(const LaserScan & ls)
 : data(ls.getPolarData())
 {
+    if(ls.areCartesianDataAvailable())
+    {
+        Eigen::MatrixXd cart = ls.getCartesianData();
+        Eigen::MatrixXd newdata = Eigen::MatrixXd::Zero(5,cart.cols());
+        newdata.topRows(3) = data;
+        newdata.bottomRows(2) = cart.bottomRows(2);
+        data = newdata;
+    }
 }
 
 unsigned int LaserScan::getSize() const
 {
-    throw NotImplementedException();
-    return 0;
+    return data.cols();
 }
 
-bool LaserScan::computeCartesianData(Eigen::VectorXd tt, Eigen::VectorXd xx, Eigen::VectorXd yy, Eigen::VectorXd hh)
+bool LaserScan::computeCartesianData(Eigen::VectorXd ttc, Eigen::VectorXd xxc, Eigen::VectorXd yyc, Eigen::VectorXd hhc)
 {
-    throw NotImplementedException();
-    return false;
+    Eigen::VectorXd tt = getTimeData();
+    int n = tt.size();
+    if (n == 0)
+    {
+        return false;
+    }
+
+    if( ttc.size() != xxc.size() ||
+            ttc.size() != yyc.size() ||
+            ttc.size() != hhc.size() )
+    {
+        return false;
+    }
+
+    Eigen::VectorXd xx;
+    Eigen::VectorXd yy;
+    Eigen::VectorXd hh;
+    if( ttc.size() == 0 )
+    {
+        xx.setZero(n);
+        yy.setZero(n);
+        hh.setZero(n);
+    }
+    else
+    {
+        xx = Interpolator::transInterp(tt, ttc, xxc);
+        yy = Interpolator::transInterp(tt, ttc, yyc);
+        hh = Interpolator::rotInterp(tt, ttc, hhc);
+    }
+
+    if( xx.size() != n || hh.size() != n || hh.size() != n )
+    {
+        return false;
+    }
+
+    Eigen::MatrixXd newdata(5, n);
+    newdata.topRows(3) = data.topRows(3);
+    for(int i = 0; i < n; i++)
+    {
+        newdata(3, i) = xx[i] + data(1, i) * cos(data(2, i) + hh[i]);
+        newdata(4, i) = yy[i] + data(1, i) * sin(data(2, i) + hh[i]);
+    }
+    data = newdata;
+    return true;
 }
 
-void LaserScan::setPolarData(Eigen::MatrixXd data)
+void LaserScan::setPolarData(Eigen::MatrixXd data_)
 {
-    throw NotImplementedException();
+    data = data_;
     return;
 }
 
 Eigen::MatrixXd LaserScan::getPolarData() const
 {
-    throw NotImplementedException();
-    return Eigen::MatrixXd(3,0);;
+    if(getSize() == 0)
+    {
+        return Eigen::MatrixXd::Zero(3,0);
+    }
+    return data.topRows(3);
 }
 
 Eigen::MatrixXd LaserScan::getCartesianData() const
 {
-    throw NotImplementedException();
-    return Eigen::MatrixXd(3,0);
+    if(!this->areCartesianDataAvailable())
+        return Eigen::MatrixXd::Zero(3,0);
+    Eigen::MatrixXd cart = Eigen::MatrixXd::Zero(3,data.cols());
+    cart.topRows(1) = data.topRows(1);
+    cart.bottomRows(2) = data.bottomRows(2);
+    return cart;
 }
 
 Eigen::VectorXd LaserScan::getTimeData() const
 {
-    throw NotImplementedException();
-    return Eigen::VectorXd(0);
+    return data.row(0);
 }
 
-bool LaserScan::areCartesianDataAvailable()
+bool LaserScan::areCartesianDataAvailable() const
 {
-    throw NotImplementedException();
-    return false;
+    return (data.rows() == 5);
 }
 
 unsigned int  LaserScan::cleanUp(double epsilon)
 {
-    throw NotImplementedException();
-    return 0;
+    unsigned int N = 0;
+    for(int i = 0 ; i < data.cols() ; i++)
+    {
+        if(data(1,i) > epsilon)
+            N++;
+    }
+    Eigen::MatrixXd newdata(data.rows(), N);
+    unsigned int k = 0;
+    for(int i = 0 ; i < data.cols() ; i++)
+    {
+        if(data(1,i) > epsilon)
+        {
+            newdata.col(k) = data.col(i);
+            k++;
+        }
+    }
+    N = data.cols() - N;
+    data = newdata;
+    return N;
 }

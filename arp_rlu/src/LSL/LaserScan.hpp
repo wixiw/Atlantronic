@@ -57,16 +57,20 @@ class LaserScan
 
         /** Calcule les coordonnées cartésiennes à partir des données polaires et de la position
          * du repère polaire par rapport au repère de référence.
-         * \param tt un vecteur de taille P. Il contient des temps en secondes. C'est temps doivent être croissants.
-         * \param xx un vecteur de taille P. Il contient les positions selon x de l'origine du repère polaire dans le repère de référence.
-         * \param yy un vecteur de taille P. Il contient les positions selon y de l'origine du repère polaire dans le repère de référence.
-         * \param hh un vecteur de taille P. Il contient les orientations du repère polaire par rapport au repère de référence.
+         * \param ttc un vecteur de taille P. Il contient des temps en secondes. C'est temps doivent être croissants.
+         * \param xxc un vecteur de taille P. Il contient les positions selon x de l'origine du repère polaire dans le repère de référence.
+         * \param yyc un vecteur de taille P. Il contient les positions selon y de l'origine du repère polaire dans le repère de référence.
+         * \param hhc un vecteur de taille P. Il contient les orientations du repère polaire par rapport au repère de référence.
          * \returns Vrai si le calcul c'est bien passé et Faux sinon
-         * \remarks Les 4 vecteurs doivent impérativement être de même taille.
-         * Ils correspondent à des poses du repère polaire par rapport au repère cartésien.\n
+         * \remarks Les 4 vecteurs correspondent à des poses du repère polaire par rapport au repère cartésien.\n
          * P n'est pas forcément égal à N le nombre de points polaires. Une interpolation temporelle est réalisée.
-         * \remarks A la sortie, la matrice data contient 5 lignes.*/
-        bool computeCartesianData(Eigen::VectorXd tt, Eigen::VectorXd xx, Eigen::VectorXd yy, Eigen::VectorXd hh);
+         * \remarks Les 4 vecteurs doivent être de même taille, sinon le calcul n'est pas effectué et la méthode renvoie faux.
+         * \remarks Si les 4 vecteurs sont de taille nul, la repère polaire du scan est considéré comme aligné sur le repère cartésien.
+         * \remarks A la sortie, si le calcul s'est bien passé, la matrice data contient 5 lignes.*/
+        bool computeCartesianData(Eigen::VectorXd ttc = Eigen::VectorXd(0),
+                                 Eigen::VectorXd xxc = Eigen::VectorXd(0),
+                                 Eigen::VectorXd yyc = Eigen::VectorXd(0),
+                                 Eigen::VectorXd hhc = Eigen::VectorXd(0));
 
 
         //@{
@@ -106,7 +110,7 @@ class LaserScan
         /** Permet de savoir si les données cartésiennes sont disponibles, c'est à dire si elles ont été calculées.
          * \returns Vrai si les données sont disponibles et Faux sinon.
          * \remarks En pratique, le test consiste à vérifier si la matrice data a 3 ou 5 lignes.*/
-        bool areCartesianDataAvailable();
+        bool areCartesianDataAvailable() const;
 
         /** Permet de retirer les points de rayon nul (à epsilon près).
          * \returns Le nombre de points retirés.
