@@ -58,8 +58,8 @@ namespace arp_hml
         /** CAN adress of the node */
         nodeID_t propNodeId;
 
-        /** Timeout before considering a node is not responding to a NMT request (in ms) */
-        int propNmtTimeout;
+        /** Timeout before considering a node is not responding to a NMT request (in s) */
+        double propNmtTimeout;
 
         /** name of the CanOpenController this component will connect*/
         string propCanOpenControllerName;

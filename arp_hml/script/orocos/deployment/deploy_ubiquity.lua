@@ -1,4 +1,7 @@
 require("rttlib")
+require("rfsm")
+require("rfsm_rtt")
+
 rttlib.color=true
 Deployer = rtt.getTC()
 print("====================")

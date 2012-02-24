@@ -12,42 +12,43 @@ CYAN="\\033[1;36m"
 
 
 #CORE
-rosrun arp_core uTest_Core_Math.ard
+rosrun arp_core uTest.sh
 if [ $? != 0 ]; then
-    echo -e $ROUGE "[!] Test failed !"  $NORMAL
+    echo -e $ROUGE "[!] Test arp_core failed !"  $NORMAL
     exit 1
 fi
 
 #HML
+rosrun arp_hml uTest.sh
+if [ $? != 0 ]; then
+    echo -e $ROUGE "[!] Test arp_hml failed !"  $NORMAL
+    exit 1
+fi
+
+#IHM
+rosrun arp_ihm uTest.sh
+if [ $? != 0 ]; then
+    echo -e $ROUGE "[!] Test arp_ihm failed !"  $NORMAL
+    exit 1
+fi
 
 #ODS
-rosrun arp_ods uTest_orders.ard
+rosrun arp_ods uTest.sh
 if [ $? != 0 ]; then
-    echo -e $ROUGE "[!] Test failed !"  $NORMAL
+    echo -e $ROUGE "[!] Test arp_ods failed !"  $NORMAL
     exit 1
 fi
 
 #RLU 
-rosrun arp_rlu uTest_CornerDetector.ard 
+rosrun arp_rlu uTest.sh
 if [ $? != 0 ]; then
-    echo -e $ROUGE "[!] Test failed !"  $NORMAL
-    exit 1
-fi
-rosrun arp_rlu uTest_ObjectFinder.ard
-if [ $? != 0 ]; then
-    echo -e $ROUGE "[!] Test failed !"  $NORMAL
-    exit 1
-fi
-rosrun arp_rlu uTest_LaserToolbox.ard
-if [ $? != 0 ]; then
-    echo -e $ROUGE "[!] Test failed !"  $NORMAL
-    exit 1
-fi
-rosrun arp_rlu uTest_ReLocalizator.ard
-if [ $? != 0 ]; then
-    echo -e $ROUGE "[!] Test failed !"  $NORMAL
+    echo -e $ROUGE "[!] Test arp_rlu failed !"  $NORMAL
     exit 1
 fi
 
 #Master
-
+rosrun arp_master uTest.sh
+if [ $? != 0 ]; then
+    echo -e $ROUGE "[!] Test arp_master failed !"  $NORMAL
+    exit 1
+fi

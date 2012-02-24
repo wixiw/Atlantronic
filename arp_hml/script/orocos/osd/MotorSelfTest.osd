@@ -1,0 +1,45 @@
+/**
+ * Realise un cycling des moteurs
+ */
+StateMachine MotorCycling
+{
+    initial state black 
+    {
+           entry 
+           {
+				HmlMonitor.ooSetMotorPower(true)
+           }
+           
+           transitions 
+           { 
+                if true then select blink;
+           }
+    }
+ 
+    state blink 
+    {
+			entry
+			{
+			}
+			
+           run 
+           {
+
+           }
+           
+           transitions 
+           { 
+                if true then select black;
+           }
+    }
+    
+    final state truc
+    {
+    	entry{}
+    }
+    
+}
+
+
+//RootMachine FastBlink ioOutSelfTest
+RootMachine MotorCycling ioOutSelfTest

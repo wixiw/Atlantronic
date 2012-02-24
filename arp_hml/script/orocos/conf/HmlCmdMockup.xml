@@ -4,6 +4,7 @@
 
  	<simple name="propAutoLoadStateMachines" type="string">
  	 	<description></description>
- 	 	<value>IoOutSelfTest</value>
+ 	 	<!--<value>IoOutSelfTest</value>-->
+ 	 	<value>MotorSelfTest</value>
  	 </simple>
 </properties>

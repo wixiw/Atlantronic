@@ -155,8 +155,8 @@ bool CanOpenController::configureHook()
             res = false;
         }
     }
-	//TODO est ce necessaire ?
-    usleep(2 * 1E6);
+
+    usleep(1.000 * 1E6);
 
     return res;
 }
