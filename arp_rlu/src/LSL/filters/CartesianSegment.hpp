@@ -96,6 +96,9 @@ class CartesianSegment
          * \param ls scan d'origine
          * \param p paramètres du filtre
          * \return vecteur de LaserScan
+         * \remarks Si les paramètres sont inconsistants, le filtre renvoie un vecteur ne contentant que le scan initial.
+         * \remarks Si les données cartésiennes ne sont pas disponible, le filtre renvoie un vecteur ne contentant que le scan initial.
+         * \remarks Si le scan a une taille inférieure à p.minNbPoints, le filtre renvoie un vecteur vide.
          */
         static std::vector<LaserScan> apply(const LaserScan &, const Params & p = Params());
 
