@@ -32,22 +32,32 @@ std::string CircleIdentif::Params::getInfo()
 
 bool CircleIdentif::Params::checkConsistency() const
 {
-    throw NotImplementedException();
-    return false;
+    if(radius <= 0.)
+        return false;
+    if( rangeDelta > radius )
+        return false;
+    return true;
 }
 
 DetectedCircle CircleIdentif::apply(const DetectedObject & raw, const Params & p)
 {
-    throw NotImplementedException();
+    DetectedCircle out(raw);
 
-    DetectedCircle out;
+
+    out.r(p.radius);
+
+
+
     return out;
 }
 
 std::vector<DetectedCircle> CircleIdentif::apply(const std::vector<DetectedObject> & raws, const Params & p)
 {
-    throw NotImplementedException();
 
     std::vector<DetectedCircle> outs;
+    for(int i = 0 ; i < raws.size() ; i++)
+    {
+        outs.push_back( CircleIdentif::apply(raws[i], p) );
+    }
     return outs;
 }

@@ -320,7 +320,6 @@ BOOST_AUTO_TEST_CASE( getCartesianData_2 )
 {
     // test scan rempli aléatoirement
     lsl::LaserScan obj;
-    unsigned int N = 6 ;
     Eigen::MatrixXd d = Eigen::MatrixXd::Random(3,6);
     d.row(0) << 0.0, 0.1, 0.2, 0.3, 0.4, 0.5;
     obj.setPolarData(d);

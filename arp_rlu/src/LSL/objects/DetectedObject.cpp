@@ -86,6 +86,16 @@ double DetectedObject::getApparentTime() const
     return apparentTime;
 }
 
+Vector2 DetectedObject::getApparentPointOfView() const
+{
+    return apparentPoV;
+}
+
+double DetectedObject::getApparentAngleOfView() const
+{
+    return apparentAoV;
+}
+
 void DetectedObject::computeStatistics()
 {
     unsigned int n = associatedScan.getSize();
@@ -110,13 +120,14 @@ void DetectedObject::computeStatistics()
     cartStddev = Vector2(xStddev, yStddev);
 
     apparentTime = cartdata(0,(int)(n-1)/2);
-
     double xMed = cartdata(3,(int)(n-1)/2);
     double yMed = cartdata(4,(int)(n-1)/2);
     double hMed = cartdata(5,(int)(n-1)/2);
+    apparentPoV = Vector2(xMed, yMed);
+    apparentAoV = hMed;
 
     apparentRange = sqrt( (xMean-xMed)*(xMean-xMed) + (yMean-yMed)*(yMean-yMed) );
-    apparentTheta = betweenMinusPiAndPlusPi( atan2( yMean-yMed, xMean-xMed ) );
+    apparentTheta = betweenMinusPiAndPlusPi( atan2( yMean-yMed, xMean-xMed ) - hMed );
 
     return;
 }
