@@ -44,10 +44,10 @@ class CartesianCrop
         public:
             /** Constructeur par défault.
              *  Il initialise des paramètres classiques non-stupides :\n
-             *  minX = -1.5 \n
-             *  maxX =  1.5 \n
-             *  minY = -1.0 \n
-             *  maxY = -1.0 \n
+             *  \li minX = -1.5 \n
+             *  \li maxX =  1.5 \n
+             *  \li minY = -1.0 \n
+             *  \li maxY = -1.0 \n
              */
             Params();
 
@@ -59,8 +59,8 @@ class CartesianCrop
             /**
              * Permet de vérifier que les paramètres sont consistants.\n
              * A savoir :\n
-             * * minX < maxX \n
-             * * minY < maxY
+             * \li minX < maxX \n
+             * \li minY < maxY
              */
             bool checkConsistency() const;
 
@@ -72,11 +72,11 @@ class CartesianCrop
 
     public:
         /** Applique le filtre sur un scan
-         * \param ls scan d'origine
-         * \param p paramètres du filtre
+         * \param[in] ls scan d'origine
+         * \param[in] p paramètres du filtre
          * \return LaserScan filtré
          * \remarks Si les paramètres sont inconsistants, le filtre renvoie le scan initial.
-         * \remarks si les données cartésiennes ne sont pas disponible, le filtre renvoie le scan initial.
+         * \remarks Si les données cartésiennes ne sont pas disponibles, le filtre renvoie le scan initial.
          */
         static LaserScan apply(const LaserScan &, const Params & p = Params());
 

@@ -110,25 +110,25 @@ bool KFLocalizator::initialize()
     return false;
 }
 
-bool KFLocalizator::newOdoVelocity(double time, arp_math::Twist2D odoVel)
+bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D odoVel)
 {
     throw NotImplementedException();
     return false;
 }
 
-bool KFLocalizator::newScan(double time, lsl::LaserScan scan)
+bool KFLocalizator::newScan(lsl::LaserScan scan)
 {
     throw NotImplementedException();
     return false;
 }
 
-arp_math::EstimatedPose2D KFLocalizator::getPose2D()
+arp_math::EstimatedPose2D KFLocalizator::getLastEstimatedPose2D()
 {
     throw NotImplementedException();
     return arp_math::EstimatedPose2D();
 }
 
-arp_math::EstimatedTwist2D KFLocalizator::getTwist2D()
+arp_math::EstimatedTwist2D KFLocalizator::getLastEstimatedTwist2D()
 {
     throw NotImplementedException();
     return arp_math::EstimatedTwist2D();

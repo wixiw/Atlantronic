@@ -44,10 +44,10 @@ class PolarCrop
             public:
             /** Constructeur par défault.
              *  Il initialise des paramètres classiques non-stupides :\n
-             *  minRange = 0.1 * Eigen::Ones(1)\n
-             *  maxRange = 10.0 * Eigen::Ones(1)\n
-             *  minTheta = -pi\n
-             *  maxTheta = pi\n
+             *  \li minRange = 0.1 * Eigen::Ones(1)\n
+             *  \li maxRange = 10.0 * Eigen::Ones(1)\n
+             *  \li minTheta = -pi\n
+             *  \li maxTheta = pi\n
              */
             Params();
 
@@ -59,10 +59,10 @@ class PolarCrop
             /**
              * Permet de vérifier que les paramètres sont consistants.\n
              * A savoir :\n
-             * * minRange ou maxRange est de taille nulle \n
-             * * minRange et maxRange contiennent des valeurs non-négatives \n
-             * * minRange < maxRange pour chaque élément \n
-             * * minTheta < maxTheta
+             * \li minRange ou maxRange est de taille nulle \n
+             * \li minRange et maxRange contiennent des valeurs non-négatives \n
+             * \li minRange < maxRange pour chaque élément \n
+             * \li minTheta < maxTheta
              */
             bool checkConsistency() const;
 
@@ -95,12 +95,12 @@ class PolarCrop
 
     public:
         /** Applique le filtre sur un scan
-         * \param ls scan d'origine
-         * \param p paramètres du filtre
+         * \param[in] ls scan d'origine
+         * \param[in] p paramètres du filtre
          * \return LaserScan filtré
          * \remarks Si les paramètres sont inconsistants, le filtre renvoie le scan initial.
          */
-        static LaserScan apply(const LaserScan &, const Params & p = Params());
+        static LaserScan apply(const LaserScan & ls, const Params & p = Params());
 
 
     protected:

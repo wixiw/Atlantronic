@@ -49,7 +49,7 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
     return false;
 }
 
-void BeaconDetector::setRefecencedBeacons(std::vector<lsl::Circle> beacons)
+void BeaconDetector::setReferencedBeacons(std::vector<lsl::Circle> beacons)
 {
     throw NotImplementedException();
     return;

@@ -19,7 +19,7 @@ namespace kfl
 {
 /** \ingroup kfl
  *
- * \class BayesianWrapper
+ * \interface BayesianWrapper
  *
  * \brief Cette classe abstraite regroupe les appels à un framework de filtrage bayésien.
  *

@@ -43,7 +43,7 @@ class MedianFilter
             public:
             /** Constructeur par défault.
              *  Il initialise des paramètres classiques non-stupides :\n
-             *  width = 3.
+             *  \li width = 3.
              */
             Params();
 
@@ -68,8 +68,8 @@ class MedianFilter
 
     public:
         /** Applique le filtre sur un scan
-         * \param ls scan d'origine
-         * \param p paramètres du filtre
+         * \param[in] ls scan d'origine
+         * \param[in] p paramètres du filtre
          * \return LaserScan filtré
          */
         static LaserScan apply(const LaserScan & ls, const Params & p = Params());

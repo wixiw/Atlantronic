@@ -35,6 +35,15 @@ namespace kfl
  * \brief BeaconDetector est la classe qui concentre les traitements de scan pour KFL.
  *
  * C'est cette classe qui utilise BFL pour extraire la mesure des balises.
+ *
+ *  Le cycle de vie standard est :
+ *  -# construction du BeaconDetector
+ *  -# choix des paramètres de traitement de scan via la méthode \ref setParams
+ *  -# référencement des balises présentes sur le terrain via la méthode \ref setReferencedBeacons
+ *  -# traitement d'un scan via la méthode \ref process
+ *  -# récupération des résultats via de multiples appels à la méthode \ref getBeacon
+ *  -# nouveau traitement de scan via la méthode \ref process etc...
+ *  -# destruction du BeaconDetector
  */
 class BeaconDetector
 {
@@ -48,13 +57,13 @@ class BeaconDetector
          */
         class Params
         {
-        public:
+            public:
             /** Constructeur par défault.
              *  Il initialise des paramètres classiques non-stupides :\n
-             *  mfp => voir contructeur par défault de lsl::MedianFilter::Params \n
-             *  pcp => voir contructeur par défault de lsl::PolarCrop::Params \n
-             *  ccp => voir contructeur par défault de lsl::CartesianCrop::Params \n
-             *  psp => voir contructeur par défault de lsl::PolarSegment::Params \n
+             *  mfp => voir constructeur par défault de lsl::MedianFilter::Params \n
+             *  pcp => voir constructeur par défault de lsl::PolarCrop::Params \n
+             *  ccp => voir constructeur par défault de lsl::CartesianCrop::Params \n
+             *  psp => voir constructeur par défault de lsl::PolarSegment::Params \n
              */
             Params();
 
@@ -86,7 +95,7 @@ class BeaconDetector
 
     public:
         /**
-         * Constructeur par défault qui initialise les paramètres avec les valeurs par défault.
+         * Constructeur par défault qui initialise les paramètres avec les valeurs par défault non-stupides.
          */
         BeaconDetector();
 
@@ -96,14 +105,14 @@ class BeaconDetector
         ~BeaconDetector();
 
         /**
-         * Cette méthode
-         * \param ls le Scan à traiter
-         * \param tt un vecteur de taille P. Il contient des temps en secondes. C'est temps doivent être croissants.
-         * \param xx un vecteur de taille P. Il contient les positions selon x de l'origine du scan dans le repère de référence.
-         * \param yy un vecteur de taille P. Il contient les positions selon y de l'origine du scan dans le repère de référence.
-         * \param hh un vecteur de taille P. Il contient les orientations du repère du scan par rapport au repère de référence.
-         * \remarks Les 4 vecteurs doivent impérativement être de même taille.
-         * Ils correspondent à des poses du repère du scan par rapport au repère cartésien de référence.\n
+         * Cette méthode permet de réaliser le traitement du scan.
+         * \param[in] ls le Scan à traiter
+         * \param[in] tt un vecteur de taille P. Il contient des temps en secondes. Ces temps DOIVENT être croissants.
+         * \param[in] xx un vecteur de taille P. Il contient les positions selon l'axe x de l'origine du scan dans le repère de référence.
+         * \param[in] yy un vecteur de taille P. Il contient les positions selon l'axe y de l'origine du scan dans le repère de référence.
+         * \param[in] hh un vecteur de taille P. Il contient les orientations du repère du scan par rapport au repère de référence.
+         * \pre Les 4 vecteurs tt, xx, yy et hh doivent impérativement être de même taille.
+         * \remarks Les 4 vecteurs correspondent à des poses du repère du scan par rapport au repère cartésien de référence.\n
          * Ils servent à redresser le scan quand le LRF a bougé pendant l'acquisition.
          * \return Vrai si le traitement s'est bien passé et Faux sinon.
          */
@@ -112,20 +121,20 @@ class BeaconDetector
         /**
          * \param beacons un vecteur de cercles qui correspond aux balises référencées.
          */
-        void setRefecencedBeacons(std::vector<lsl::Circle> beacons);
+        void setReferencedBeacons(std::vector<lsl::Circle> beacons);
 
         /**
          * Permet pour une date donnée de savoir si une balise est vue et de connaitre la quelle ainsi que sa mesure.
-         * \param t la date à considérer.
-         * \param target est un paramètre de sortie qui indique la balise qui est observée.
-         * \param meas est un paramètre de sortie qui indique la mesure (en polaire) de la balise observée.\n
+         * \param[in] t la date à considérer.
+         * \param[out] target indique la balise qui est observée.
+         * \param[out] meas indique la mesure (en polaire) de la balise observée.\n
          * Le premier élément correspond au range r, le second à l'angle theta.
          */
         bool getBeacon(double t, lsl::Circle & target, Eigen::Vector2d & meas);
 
         /**
          * Permet de modifier les paramètres de traitement de scan.
-         * \param paramètres sous la forme d'un kfl::BeaconDetector::Params
+         * \param[in] paramètres sous la forme d'un kfl::BeaconDetector::Params
          */
         void setParams(kfl::BeaconDetector::Params);
 

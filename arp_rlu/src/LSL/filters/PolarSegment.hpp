@@ -48,7 +48,7 @@ class PolarSegment
         public:
             /** Constructeur par défault.
              *  Il initialise des paramètres classiques non-stupides :\n
-             *  rangeThres = 0.08
+             *  \li rangeThres = 0.08
              */
             Params();
 
@@ -60,7 +60,7 @@ class PolarSegment
             /**
              * Permet de vérifier que les paramètres sont consistants.\n
              * A savoir :\n
-             * * rangeThres doit être strictement positif
+             * \li rangeThres doit être strictement positif
              */
             bool checkConsistency() const;
 
@@ -72,8 +72,8 @@ class PolarSegment
 
     public:
         /** Applique le filtre sur un scan
-         * \param ls scan d'origine
-         * \param p paramètres du filtre
+         * \param[in] ls scan d'origine
+         * \param[in] p paramètres du filtre
          * \return vecteur de LaserScan
          * \remarks Si les paramètres sont inconsistants, le filtre renvoie un vecteur contenant seulement le scan initial.
          */

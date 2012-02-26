@@ -211,38 +211,27 @@ class KFLocalizator
 
         /**
          * Cette méthode sert à donner au localisateur une nouvelle mesure odo.
-         * \param time date en seconde de la mesure odo
-         * \param odoVel la mesure odo sous forme d'un Twist2D
-         * \remarks Si le Twist2D s'avère être un EstimatedTwist2D (test via un dynamic_cast),
-         * les valeurs de covariance de l'EstimatedTwist2D sont utilisées en lieu et place des valeurs
-         * spécifiée par iekfParams.
-         * \remarks En revanche, si le Twist2D s'avère être un EstimatedTwist2D, la date
-         * utilisée par le localisateur est bien celle spécifiée en premier argument et non celle spécifiée
-         * dans le EstimatedTwist2D.
+         * \param[in] odoVel la mesure odo sous forme d'une estimation de Twist2D. Cette estimation est datée.
          */
-        bool newOdoVelocity(double time, arp_math::Twist2D odoVel);
+        bool newOdoVelocity(arp_math::EstimatedTwist2D odoVel);
 
         /**
          * Cette méthode sert à donner au localisateur une nouvelle mesure laser.
-         * \param time date en seconde correspondant à la dernière mesure du scan laser
-         * \param scan la mesure laser sous forme d'un LaserScan
-         * \remarks La date utilisée pour la mise à jour provient non pas du premier argument
-         * mais du champ de date du LaserScan. La date spécifiée dans le premier argument est
-         * seulement utilisé pour identifier la partie du buffer à utiliser.
+         * \param[in] scan la mesure laser sous forme d'un LaserScan. Le scan est daté.
          */
-        bool newScan(double time, lsl::LaserScan scan);
+        bool newScan(lsl::LaserScan scan);
 
         /**
-         * Permet d'accéder à la dernière (et donc la meilleure) estimée de position.
+         * Permet d'accéder à la dernière estimée de position.
          * \return EstimatedPose2D
          */
-        arp_math::EstimatedPose2D getPose2D();
+        arp_math::EstimatedPose2D getLastEstimatedPose2D();
 
         /**
-         * Permet d'accéder à la dernière (et donc la meilleure) estimée de vitesse.
+         * Permet d'accéder à la dernière estimée de vitesse.
          * \return EstimatedTwist2D
          */
-        arp_math::EstimatedTwist2D getTwist2D();
+        arp_math::EstimatedTwist2D getLastEstimatedTwist2D();
 
 
     protected:
