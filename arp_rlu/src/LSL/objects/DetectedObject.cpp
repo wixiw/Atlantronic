@@ -17,9 +17,11 @@ using namespace lsl;
 
 DetectedObject::DetectedObject()
 : associatedScan(LaserScan())
-, apparentRange(0.)
-, apparentTheta(0.)
-, apparentTime(0.)
+, apparentCartMeanRange(0.)
+, apparentCartMeanTheta(0.)
+, apparentCartMeanTime(0.)
+, apparentPoV(Vector2::Zero())
+, apparentAoV(0.)
 , cartMean(Vector2::Zero())
 , cartStddev(Vector2::Zero())
 {
@@ -28,20 +30,25 @@ DetectedObject::DetectedObject()
 
 DetectedObject::DetectedObject(const DetectedObject & d)
 : associatedScan(d.getScan())
-, apparentRange(d.getApparentRange())
-, apparentTheta(d.getApparentTheta())
-, apparentTime(d.getApparentTime())
+, apparentCartMeanRange(d.getApparentCartesianMeanRange())
+, apparentCartMeanTheta(d.getApparentCartesianMeanTheta())
+, apparentCartMeanTime(d.getApparentCartesianMeanTime())
+, apparentPoV(d.getApparentPointOfView())
+, apparentAoV(d.getApparentAngleOfView())
 , cartMean(d.getCartesianMean())
 , cartStddev(d.getCartesianStddev())
 {
+    this->computeStatistics();
 }
 
 
 DetectedObject::DetectedObject(const LaserScan & ls)
 : associatedScan(ls)
-, apparentRange(0.)
-, apparentTheta(0.)
-, apparentTime(0.)
+, apparentCartMeanRange(0.)
+, apparentCartMeanTheta(0.)
+, apparentCartMeanTime(0.)
+, apparentPoV(Vector2::Zero())
+, apparentAoV(0.)
 , cartMean(Vector2::Zero())
 , cartStddev(Vector2::Zero())
 {
@@ -71,19 +78,19 @@ Vector2 DetectedObject::getCartesianStddev() const
     return cartStddev;
 }
 
-double DetectedObject::getApparentRange() const
+double DetectedObject::getApparentCartesianMeanRange() const
 {
-    return apparentRange;
+    return apparentCartMeanRange;
 }
 
-double DetectedObject::getApparentTheta() const
+double DetectedObject::getApparentCartesianMeanTheta() const
 {
-    return apparentTheta;
+    return apparentCartMeanTheta;
 }
 
-double DetectedObject::getApparentTime() const
+double DetectedObject::getApparentCartesianMeanTime() const
 {
-    return apparentTime;
+    return apparentCartMeanTime;
 }
 
 Vector2 DetectedObject::getApparentPointOfView() const
@@ -119,15 +126,15 @@ void DetectedObject::computeStatistics()
     cartMean = Vector2(xMean, yMean);
     cartStddev = Vector2(xStddev, yStddev);
 
-    apparentTime = cartdata(0,(int)(n-1)/2);
+    apparentCartMeanTime = cartdata(0,(int)(n-1)/2);
     double xMed = cartdata(3,(int)(n-1)/2);
     double yMed = cartdata(4,(int)(n-1)/2);
     double hMed = cartdata(5,(int)(n-1)/2);
     apparentPoV = Vector2(xMed, yMed);
     apparentAoV = hMed;
 
-    apparentRange = sqrt( (xMean-xMed)*(xMean-xMed) + (yMean-yMed)*(yMean-yMed) );
-    apparentTheta = betweenMinusPiAndPlusPi( atan2( yMean-yMed, xMean-xMed ) - hMed );
+    apparentCartMeanRange = sqrt( (xMean-xMed)*(xMean-xMed) + (yMean-yMed)*(yMean-yMed) );
+    apparentCartMeanTheta = betweenMinusPiAndPlusPi( atan2( yMean-yMed, xMean-xMed ) - hMed );
 
     return;
 }

@@ -18,9 +18,9 @@ BOOST_AUTO_TEST_CASE( Constructor_default )
 {
     lsl::DetectedObject obj;
 
-    BOOST_CHECK_EQUAL( obj.getApparentRange(), 0.);
-    BOOST_CHECK_EQUAL( obj.getApparentTheta(), 0.);
-    BOOST_CHECK_EQUAL( obj.getApparentTime(), 0.);
+    BOOST_CHECK_EQUAL( obj.getApparentCartesianMeanRange(), 0.);
+    BOOST_CHECK_EQUAL( obj.getApparentCartesianMeanTheta(), 0.);
+    BOOST_CHECK_EQUAL( obj.getApparentCartesianMeanTime(), 0.);
 
     arp_math::Vector2 m = obj.getCartesianMean();
     arp_math::Vector2 s = obj.getCartesianStddev();
@@ -61,9 +61,9 @@ BOOST_AUTO_TEST_CASE( Constructor_copy )
 
     lsl::DetectedObject obj2(obj1);
 
-    BOOST_CHECK_CLOSE( obj2.getApparentRange(), 0.67314560089181297, 1.f);
-    BOOST_CHECK_CLOSE( obj2.getApparentTheta(), -1.9513027039072615, 1.f);
-    BOOST_CHECK_CLOSE( obj2.getApparentTime(), 0.2, 1.f);
+    BOOST_CHECK_CLOSE( obj2.getApparentCartesianMeanRange(), 0.67314560089181297, 1.f);
+    BOOST_CHECK_CLOSE( obj2.getApparentCartesianMeanTheta(), -1.9513027039072615, 1.f);
+    BOOST_CHECK_CLOSE( obj2.getApparentCartesianMeanTime(), 0.2, 1.f);
 
     arp_math::Vector2 m = obj2.getCartesianMean();
     arp_math::Vector2 s = obj2.getCartesianStddev();
@@ -101,9 +101,9 @@ BOOST_AUTO_TEST_CASE( Constructor_scan )
 
     lsl::DetectedObject obj(ls);
 
-    BOOST_CHECK_CLOSE( obj.getApparentRange(), 0.67314560089181297, 1.f);
-    BOOST_CHECK_CLOSE( obj.getApparentTheta(), -1.9513027039072615, 1.f);
-    BOOST_CHECK_CLOSE( obj.getApparentTime(), 0.2, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanRange(), 0.67314560089181297, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanTheta(), -1.9513027039072615, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanTime(), 0.2, 1.f);
 
     arp_math::Vector2 m = obj.getCartesianMean();
     arp_math::Vector2 s = obj.getCartesianStddev();
@@ -142,9 +142,9 @@ BOOST_AUTO_TEST_CASE( setScan )
     lsl::DetectedObject obj;
     obj.setScan(ls);
 
-    BOOST_CHECK_CLOSE( obj.getApparentRange(), 0.67314560089181297, 1.f);
-    BOOST_CHECK_CLOSE( obj.getApparentTheta(), -1.9513027039072615, 1.f);
-    BOOST_CHECK_CLOSE( obj.getApparentTime(), 0.2, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanRange(), 0.67314560089181297, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanTheta(), -1.9513027039072615, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanTime(), 0.2, 1.f);
 
     arp_math::Vector2 m = obj.getCartesianMean();
     arp_math::Vector2 s = obj.getCartesianStddev();
@@ -240,7 +240,7 @@ BOOST_AUTO_TEST_CASE( getCartesianStddev )
     BOOST_CHECK_CLOSE( s(1), 1.38631706, 1.f);
 }
 
-BOOST_AUTO_TEST_CASE( getApparentRange )
+BOOST_AUTO_TEST_CASE( getApparentCartesianMeanRange )
 {
     Eigen::MatrixXd d = MatrixXd::Random(3, 4);
     d.row(0) << 0.1 ,  0.2  , 0.3  ,    0.4  ;
@@ -258,10 +258,10 @@ BOOST_AUTO_TEST_CASE( getApparentRange )
     lsl::DetectedObject obj;
     obj.setScan(ls);
 
-    BOOST_CHECK_CLOSE( obj.getApparentRange(), 0.67314560089181297, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanRange(), 0.67314560089181297, 1.f);
 }
 
-BOOST_AUTO_TEST_CASE( getApparentTheta )
+BOOST_AUTO_TEST_CASE( getApparentCartesianMeanTheta )
 {
     Eigen::MatrixXd d = MatrixXd::Random(3, 4);
     d.row(0) << 0.1 ,  0.2  , 0.3  ,    0.4  ;
@@ -279,10 +279,10 @@ BOOST_AUTO_TEST_CASE( getApparentTheta )
     lsl::DetectedObject obj;
     obj.setScan(ls);
 
-    BOOST_CHECK_CLOSE( obj.getApparentTheta(), -1.9513027039072615, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanTheta(), -1.9513027039072615, 1.f);
 }
 
-BOOST_AUTO_TEST_CASE( getApparentTime )
+BOOST_AUTO_TEST_CASE( getApparentCartesianMeanTime )
 {
     Eigen::MatrixXd d = MatrixXd::Random(3, 4);
     d.row(0) << 0.1 ,  0.2  , 0.3  ,    0.4  ;
@@ -300,7 +300,7 @@ BOOST_AUTO_TEST_CASE( getApparentTime )
     lsl::DetectedObject obj;
     obj.setScan(ls);
 
-    BOOST_CHECK_CLOSE( obj.getApparentTime(), 0.2, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanTime(), 0.2, 1.f);
 }
 
 BOOST_AUTO_TEST_CASE( getApparentPointOfView )
@@ -365,9 +365,9 @@ BOOST_AUTO_TEST_CASE( computeStatistics_1 )
     lsl::DetectedObject obj;
     obj.setScan(ls);
 
-    BOOST_CHECK_CLOSE( obj.getApparentRange(), 0.67314560089181297, 1.f);
-    BOOST_CHECK_CLOSE( obj.getApparentTheta(), -1.9513027039072615, 1.f);
-    BOOST_CHECK_CLOSE( obj.getApparentTime(), 0.2, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanRange(), 0.67314560089181297, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanTheta(), -1.9513027039072615, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanTime(), 0.2, 1.f);
 
     arp_math::Vector2 m = obj.getCartesianMean();
     arp_math::Vector2 s = obj.getCartesianStddev();
@@ -389,9 +389,9 @@ BOOST_AUTO_TEST_CASE( computeStatistics_2 )
     lsl::DetectedObject obj;
     obj.setScan(ls);
 
-    BOOST_CHECK_CLOSE( obj.getApparentRange(), 0.67314560089181297, 1.f);
-    BOOST_CHECK_CLOSE( obj.getApparentTheta(), -1.9513027039072615, 1.f);
-    BOOST_CHECK_CLOSE( obj.getApparentTime(), 0.2, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanRange(), 0.67314560089181297, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanTheta(), -1.9513027039072615, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanTime(), 0.2, 1.f);
 
     arp_math::Vector2 m = obj.getCartesianMean();
     arp_math::Vector2 s = obj.getCartesianStddev();
@@ -419,9 +419,9 @@ BOOST_AUTO_TEST_CASE( computeStatistics_3 )
     lsl::DetectedObject obj;
     obj.setScan(ls);
 
-    BOOST_CHECK_CLOSE( obj.getApparentRange(), 0.67314560089181297, 1.f);
-    BOOST_CHECK_CLOSE( obj.getApparentTheta(), -2.761086276477428, 1.f);
-    BOOST_CHECK_CLOSE( obj.getApparentTime(), 0.2, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanRange(), 0.67314560089181297, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanTheta(), -2.761086276477428, 1.f);
+    BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanTime(), 0.2, 1.f);
     arp_math::Vector2 pov = obj.getApparentPointOfView();
     BOOST_CHECK_EQUAL( pov.x(), 1.0);
     BOOST_CHECK_EQUAL( pov.y(),-1.0);

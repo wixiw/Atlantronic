@@ -5,6 +5,7 @@
  *      Author: Boris
  */
 
+
 #include "CircleIdentif.hpp"
 
 #include <exceptions/NotImplementedException.hpp>
@@ -42,11 +43,19 @@ bool CircleIdentif::Params::checkConsistency() const
 DetectedCircle CircleIdentif::apply(const DetectedObject & raw, const Params & p)
 {
     DetectedCircle out(raw);
-
-
     out.r(p.radius);
 
+    Vector2 pov = raw.getApparentPointOfView();
+    double aov = raw.getApparentAngleOfView();
+    double acmr = raw.getApparentCartesianMeanRange();
+    double acmt = raw.getApparentCartesianMeanTheta();
 
+    out.x( pov(0) + (acmr + p.rangeDelta) * cos(aov + acmt) );
+    out.y( pov(1) + (acmr + p.rangeDelta) * sin(aov + acmt) );
+
+    out.setApparentCenterRange(acmr + p.rangeDelta);
+    out.setApparentCenterTheta(acmt);
+    out.setApparentCenterTime( raw.getApparentCartesianMeanTime() );
 
     return out;
 }

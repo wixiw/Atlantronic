@@ -42,6 +42,49 @@ class DetectedCircle : public Circle, public DetectedObject
      */
     DetectedCircle(const DetectedObject & ls);
 
+    /**
+     * Permet d'obtenir la distance entre centre du cercle et l'origine du repère polaire.\n
+     * Il s'agit des coordonnées polaires du centre du cercle.
+     * \remarks le repère de référence est le repère polaire du scan, pas le repère cartésien global (table)
+     */
+    double getApparentCenterRange() const;
+
+    /**
+     * Permet d'obtenir l'angle par rapport à l'axe de référence du repère du polaire de l'objet.\n
+     * Il s'agit des coordonnées polaires du centre du cercle.
+     * \remarks le repère de référence est le repère polaire du scan, pas le repère cartésien global (table)
+     */
+    double getApparentCenterTheta() const;
+
+    /**
+     * Permet d'obtenir la date en seconde pour laquelle les valeurs apparentCenterRange et apparentCenterTheta sont valables.
+     */
+    double getApparentCenterTime() const;
+
+    /**
+     * Permet de définir la distance entre centre du cercle et l'origine du repère polaire.\n
+     * Il s'agit des coordonnées polaires du centre du cercle.
+     * \remarks le repère de référence est le repère polaire du scan, pas le repère cartésien global (table)
+     */
+    void setApparentCenterRange( double );
+
+    /**
+     * Permet de définir l'angle par rapport à l'axe de référence du repère du polaire de l'objet.\n
+     * Il s'agit des coordonnées polaires du centre du cercle.
+     * \remarks le repère de référence est le repère polaire du scan, pas le repère cartésien global (table)
+     */
+    void setApparentCenterTheta( double );
+
+    /**
+     * Permet de définir la date en seconde pour laquelle les valeurs apparentCenterRange et apparentCenterTheta sont valables.
+     */
+    void setApparentCenterTime( double );
+
+    protected:
+    double apparentCenterRange;
+    double apparentCenterTheta;
+    double apparentCenterTime;
+
 };
 
 /*! @} End of Doxygen Groups*/

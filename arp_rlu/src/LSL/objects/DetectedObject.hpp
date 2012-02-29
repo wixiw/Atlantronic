@@ -88,19 +88,19 @@ class DetectedObject
          * Il s'agit des coordonnées polaires du centre de gravité de la portion de scan associée à l'objet.
          * \remarks le repère de référence est le repère du scan, pas le repère cartésien global (table)
          */
-        double getApparentRange() const;
+        double getApparentCartesianMeanRange() const;
 
         /**
          * Permet d'obtenir l'angle par rapport à l'axe de référence du repère du polaire de l'objet.\n
          * Il s'agit des coordonnées polaires du centre de gravité de la portion de scan associée à l'objet.
          * \remarks le repère de référence est le repère du scan, pas le repère cartésien global (table)
          */
-        double getApparentTheta() const;
+        double getApparentCartesianMeanTheta() const;
 
         /**
          * Permet d'obtenir la date en seconde pour laquelle les valeurs apparentRange et apparentTheta sont valables.
          */
-        double getApparentTime() const;
+        double getApparentCartesianMeanTime() const;
 
         /**
          * Permet d'obtenir la position d'où est vue l'objet.
@@ -119,9 +119,9 @@ class DetectedObject
 
     protected:
         lsl::LaserScan associatedScan;
-        double apparentRange;
-        double apparentTheta;
-        double apparentTime;
+        double apparentCartMeanRange;
+        double apparentCartMeanTheta;
+        double apparentCartMeanTime;
         arp_math::Vector2 apparentPoV;
         double apparentAoV;
         arp_math::Vector2 cartMean;

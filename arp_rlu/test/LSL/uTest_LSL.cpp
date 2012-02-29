@@ -21,5 +21,5 @@
 #include "filters/uTest_CartesianCrop.hpp"
 #include "filters/uTest_PolarSegment.hpp"
 #include "filters/uTest_CartesianSegment.hpp"
-//#include "filters/uTest_CircleIdentif.hpp"
+#include "filters/uTest_CircleIdentif.hpp"
 

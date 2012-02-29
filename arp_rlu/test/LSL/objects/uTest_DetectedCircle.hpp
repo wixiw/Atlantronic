@@ -18,9 +18,13 @@ BOOST_AUTO_TEST_CASE( Constructor_default )
 {
     lsl::DetectedCircle obj;
 
-    BOOST_CHECK_EQUAL( obj.getApparentRange(), 0.);
-    BOOST_CHECK_EQUAL( obj.getApparentTheta(), 0.);
-    BOOST_CHECK_EQUAL( obj.getApparentTime(), 0.);
+    BOOST_CHECK_EQUAL( obj.getApparentCartesianMeanRange(), 0.);
+    BOOST_CHECK_EQUAL( obj.getApparentCartesianMeanTheta(), 0.);
+    BOOST_CHECK_EQUAL( obj.getApparentCartesianMeanTime(), 0.);
+
+    BOOST_CHECK_EQUAL( obj.getApparentCenterRange(), 0.);
+    BOOST_CHECK_EQUAL( obj.getApparentCenterTheta(), 0.);
+    BOOST_CHECK_EQUAL( obj.getApparentCenterTime(), 0.);
 
     arp_math::Vector2 m = obj.getCartesianMean();
     arp_math::Vector2 s = obj.getCartesianStddev();
@@ -64,16 +68,24 @@ BOOST_AUTO_TEST_CASE( Constructor_copy_DetectedObject )
 
     lsl::DetectedCircle dcircle(obj);
 
-    BOOST_CHECK_CLOSE( obj.getApparentRange(), 0.67314560089181297, 1.f);
-    BOOST_CHECK_CLOSE( obj.getApparentTheta(), -2.761086276477428, 1.f);
-    BOOST_CHECK_CLOSE( obj.getApparentTime(), 0.2, 1.f);
-    arp_math::Vector2 pov = obj.getApparentPointOfView();
-    BOOST_CHECK_EQUAL( pov.x(), 1.0);
-    BOOST_CHECK_EQUAL( pov.y(),-1.0);
-    BOOST_CHECK_EQUAL( obj.getApparentAngleOfView(), PI);
+    dcircle.setApparentCenterRange(1.0);
+    dcircle.setApparentCenterTheta(-2.0);
+    dcircle.setApparentCenterTime(10.0);
 
-    arp_math::Vector2 m = obj.getCartesianMean();
-    arp_math::Vector2 s = obj.getCartesianStddev();
+    BOOST_CHECK_CLOSE( dcircle.getApparentCartesianMeanRange(), 0.67314560089181297, 1.f);
+    BOOST_CHECK_CLOSE( dcircle.getApparentCartesianMeanTheta(), -2.761086276477428, 1.f);
+    BOOST_CHECK_CLOSE( dcircle.getApparentCartesianMeanTime(), 0.2, 1.f);
+    arp_math::Vector2 pov = dcircle.getApparentPointOfView();
+    BOOST_CHECK_CLOSE( pov.x(), 1.0, 1.f);
+    BOOST_CHECK_CLOSE( pov.y(),-1.0, 1.f);
+    BOOST_CHECK_CLOSE( dcircle.getApparentAngleOfView(), PI, 1.f);
+
+    BOOST_CHECK_CLOSE( dcircle.getApparentCenterRange(), 1., 1.f);
+    BOOST_CHECK_CLOSE( dcircle.getApparentCenterTheta(), -2., 1.f);
+    BOOST_CHECK_CLOSE( dcircle.getApparentCenterTime(), 10., 1.f);
+
+    arp_math::Vector2 m = dcircle.getCartesianMean();
+    arp_math::Vector2 s = dcircle.getCartesianStddev();
     BOOST_CHECK_CLOSE( m(0), 1.625 , 1.f);
     BOOST_CHECK_CLOSE( m(1), -0.75, 1.f);
     BOOST_CHECK_CLOSE( s(0), 1.38631706, 1.f);
