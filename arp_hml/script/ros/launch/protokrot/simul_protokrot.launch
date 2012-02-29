@@ -1,7 +1,7 @@
 <!-- Use this file to simulate the Protokrot platform hardware when you don't have access to the hardwares -->
 <launch>
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
-	<include file="$(find arp_hml)/script/ros/launch/geometry_protokrot.launch"/>
+	<include file="$(find arp_hml)/script/ros/launch/protokrot/geometry_protokrot.launch"/>
 	<node name="PhysicsSimu"     pkg="arp_hml"  type="PhysicsSimuNode"     args="" output="screen"/>
 	<node name="HmlGraphics"     pkg="arp_hml"  type="HmlGraphicsNode"     args="" output="screen" launch-prefix="nice"/>
 </launch>

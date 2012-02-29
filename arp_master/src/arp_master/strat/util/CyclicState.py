@@ -119,10 +119,10 @@ class CyclicState(smach.StateMachine):
         self.setMotorPower_srv=rospy.ServiceProxy("Protokrot/setMotorPower",SetMotorPower)
     
     def enableDrive(self):
-        self.setMotorPower_srv(True,2.0)
+        self.setMotorPower_srv(True)
         
     def disableDrive(self):
-        self.setMotorPower_srv(False,2.0)
+        self.setMotorPower_srv(False)
         
     def setVMax(self,v):
         self.setVMax_srv(v,False)

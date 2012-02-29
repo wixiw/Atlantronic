@@ -1,7 +1,7 @@
 <!--  Use this file de deploy the real platform "Protokrot" hardware -->
 <launch>
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
-	<include file="$(find arp_hml)/script/ros/launch/geometry_protokrot.launch"/>
+	<include file="$(find arp_hml)/script/ros/launch/protokrot/geometry_protokrot.launch"/>
 	
 	<remap from="scan" to="front_scan" />
 	<node name="FrontHokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="true" output="screen">
