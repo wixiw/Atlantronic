@@ -2,18 +2,19 @@
 #    EDIT BELOW THIS LINE AND UNTIL NEXT LINE FOR A NEW PROJECT
 
 
-rosbuild_add_library(lsl LaserScan.cpp
+rosbuild_add_library(lsl Logger.cpp
+                         LaserScan.cpp 
 
                          objects/DetectedObject.cpp
                          objects/Circle.cpp
                          objects/DetectedCircle.cpp
                          
-                         filters/MedianFilter.cpp
-                         filters/CartesianCrop.cpp
-                         filters/PolarCrop.cpp
-                         filters/CartesianSegment.cpp
+                         filters/MedianFilter.cpp 
+                         filters/PolarCrop.cpp 
+                         filters/CartesianCrop.cpp 
                          filters/PolarSegment.cpp
-                         filters/CircleIdentif.cpp)
+                         filters/CartesianSegment.cpp
+                         filters/CircleIdentif.cpp )
             
 
 ###################################################################################################################
