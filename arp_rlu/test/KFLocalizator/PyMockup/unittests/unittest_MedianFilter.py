@@ -13,6 +13,7 @@ import BaseMethods
 class TestMedianFilter(unittest.TestCase):
   def setUp(self):
     pass
+  
 
   def testGetMedian(self):
     mf = MedianFilter(3)

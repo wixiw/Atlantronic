@@ -4,6 +4,8 @@ from abc import ABCMeta
 import logging
 import BaseMethods
 
+import json
+
 class MedianFilter:
   def __init__(self, W):
     self.W = W
@@ -60,4 +62,33 @@ class Scan:
   def doMedianFiltering(self, width):
     mf = MedianFilter(width)
     self.range = mf.compute(self.range)
+    
+  def export(self, filename):
+    dict = {}
+    dict["type"] = "Scan"
+    dict["size"] = len(self.tt)
+    dict["tt"] = reduce(lambda  x,y: x + " " + str(y),  list(self.tt)[1:], str(list(self.tt)[0]))
+    dict["range"] = reduce(lambda  x,y: x + " " + str(y),  list(self.range)[1:], str(list(self.range)[0]))
+    dict["theta"] = reduce(lambda  x,y: x + " " + str(y),  list(self.theta)[1:], str(list(self.theta)[0]))
+    
+    output = open(filename, mode='w')
+    output.write(json.dumps(dict,indent=2,sort_keys=True))
+    output.close()
+    
+  def load(self, filename):
+    input = open(filename,mode='r')
+    dict = json.loads(input.read())
+    input.close()
+    
+    assert("type" in dict)
+    assert(dict["type"] == "Scan")
+    assert("size" in dict and "tt" in dict and "range" in dict and "theta" in dict)
+    N = dict["size"]
+    self.tsync = 0.
+    self.tbeg  = 0.
+    self.tend  = 0.
+    self.tt = np.array([ float(x) for x in dict["tt"].split()] )
+    self.range = np.array([ float(x) for x in dict["range" ].split()] )
+    self.theta = np.array([ float(x) for x in dict["theta" ].split()] )
+    
   
