@@ -7,12 +7,15 @@
 
 #include "MedianFilter.hpp"
 
+#include "LSL/Logger.hpp"
+
 
 using namespace arp_math;
 using namespace arp_rlu;
 using namespace std;
 using namespace Eigen;
 using namespace lsl;
+using namespace arp_core::log;
 
 MedianFilter::Params::Params()
 : width(3)
@@ -37,11 +40,13 @@ LaserScan MedianFilter::apply(const LaserScan & raw, const Params & p)
     MatrixXd rawData = raw.getPolarData();
     if( rawData.cols() == 0 )
     {
+        Log( NOTICE ) << "MedianFilter::apply" << " - " << "LaserScan is empty => Return raw LaserScan";
         return LaserScan();
     }
 
     if( p.width == 0 )
     {
+        Log( NOTICE ) << "MedianFilter::apply" << " - " << "p.width == 0 => Return raw LaserScan";
         return raw;
     }
 

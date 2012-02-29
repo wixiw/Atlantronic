@@ -7,6 +7,8 @@
 
 #include "CartesianCrop.hpp"
 
+#include "LSL/Logger.hpp"
+
 #include <exceptions/NotImplementedException.hpp>
 
 using namespace arp_math;
@@ -14,6 +16,7 @@ using namespace arp_rlu;
 using namespace std;
 using namespace Eigen;
 using namespace lsl;
+using namespace arp_core::log;
 
 CartesianCrop::Params::Params()
 : minX(-1.5)
@@ -37,9 +40,15 @@ std::string CartesianCrop::Params::getInfo()
 bool CartesianCrop::Params::checkConsistency() const
 {
     if( maxX < minX )
+    {
+        Log( NOTICE ) << "CartesianCrop::Params::checkConsistency" << " - " << "inconsistent parameters (maxX < minX)";
         return false;
+    }
     if( maxY < minY )
+    {
+        Log( NOTICE ) << "CartesianCrop::Params::checkConsistency" << " - " << "inconsistent parameters (maxY < minY)";
         return false;
+    }
     return true;
 }
 
@@ -47,11 +56,13 @@ LaserScan CartesianCrop::apply(const LaserScan & raw, const Params & p)
 {
     if( !p.checkConsistency() )
     {
+        Log( ERROR ) << "CartesianCrop::apply" << " - " << "Parameters are not consistent => Return raw LaserScan";
         return raw;
     }
 
     if( !raw.areCartesianDataAvailable() )
     {
+        Log( ERROR ) << "CartesianCrop::apply" << " - " << "cartesian data are not available => Return raw LaserScan";
         return raw;
     }
 

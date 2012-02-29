@@ -9,11 +9,14 @@
 
 #include "DetectedObject.hpp"
 
+#include "LSL/Logger.hpp"
+
 using namespace arp_math;
 using namespace arp_rlu;
 using namespace std;
 using namespace Eigen;
 using namespace lsl;
+using namespace arp_core::log;
 
 DetectedObject::DetectedObject()
 : associatedScan(LaserScan())
@@ -108,11 +111,13 @@ void DetectedObject::computeStatistics()
     unsigned int n = associatedScan.getSize();
     if( n == 0 )
     {
+        Log( WARN ) << "DetectedObject::computeStatistics" << " - " << "LaserScan is empty => Return";
         return;
     }
 
     if(!associatedScan.areCartesianDataAvailable())
     {
+        Log( NOTICE ) << "DetectedObject::computeStatistics" << " - " << "cartesian data are not available => compute it with trivial position";
         associatedScan.computeCartesianData();
     }
 

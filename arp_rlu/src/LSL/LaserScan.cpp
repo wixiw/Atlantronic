@@ -7,6 +7,8 @@
 
 #include "LaserScan.hpp"
 
+#include "LSL/Logger.hpp"
+
 #include <exceptions/NotImplementedException.hpp>
 
 using namespace arp_math;
@@ -14,6 +16,7 @@ using namespace arp_rlu;
 using namespace std;
 using namespace Eigen;
 using namespace lsl;
+using namespace arp_core::log;
 
 LaserScan::LaserScan()
 : data(Eigen::MatrixXd::Zero(3,0))
@@ -44,6 +47,7 @@ bool LaserScan::computeCartesianData(Eigen::VectorXd ttc, Eigen::VectorXd xxc, E
     int n = tt.size();
     if (n == 0)
     {
+        Log( WARN ) << "LaserScan::computeCartesianData" << " - " << "LaserScan is empty => Return false";
         return false;
     }
 
@@ -51,6 +55,7 @@ bool LaserScan::computeCartesianData(Eigen::VectorXd ttc, Eigen::VectorXd xxc, E
             ttc.size() != yyc.size() ||
             ttc.size() != hhc.size() )
     {
+        Log( ERROR ) << "LaserScan::computeCartesianData" << " - " << "ttc, xxc, yyc and hhc do not have same lenght => Return false";
         return false;
     }
 
@@ -59,6 +64,7 @@ bool LaserScan::computeCartesianData(Eigen::VectorXd ttc, Eigen::VectorXd xxc, E
     Eigen::VectorXd hh;
     if( ttc.size() == 0 )
     {
+        Log( INFO ) << "LaserScan::computeCartesianData" << " - " << "ttc is empty => using zero-vector for xx, yy and hh";
         xx.setZero(n);
         yy.setZero(n);
         hh.setZero(n);
@@ -72,6 +78,7 @@ bool LaserScan::computeCartesianData(Eigen::VectorXd ttc, Eigen::VectorXd xxc, E
 
     if( xx.size() != n || hh.size() != n || hh.size() != n )
     {
+        Log( ERROR ) << "LaserScan::computeCartesianData" << " - " << "Error seems occured during interpolation => Return false";
         return false;
     }
 
@@ -99,6 +106,7 @@ Eigen::MatrixXd LaserScan::getPolarData() const
 {
     if(getSize() == 0)
     {
+        Log( NOTICE ) << "LaserScan::getPolarData" << " - " << "LaserScan is empty => Return MatrixXd::Zero(3,0)";
         return Eigen::MatrixXd::Zero(3,0);
     }
     return data.topRows(3);
@@ -107,7 +115,10 @@ Eigen::MatrixXd LaserScan::getPolarData() const
 Eigen::MatrixXd LaserScan::getCartesianData() const
 {
     if(!this->areCartesianDataAvailable())
+    {
+        Log( NOTICE ) << "LaserScan::getCartesianData" << " - " << "cartesian data are not available => Return MatrixXd::Zero(6,0)";
         return Eigen::MatrixXd::Zero(6,0);
+    }
     Eigen::MatrixXd cart = Eigen::MatrixXd::Zero(6,data.cols());
     cart.topRows(1) = data.topRows(1);
     cart.bottomRows(5) = data.bottomRows(5);

@@ -9,6 +9,8 @@
 
 #include "CartesianSegment.hpp"
 
+#include "LSL/Logger.hpp"
+
 #include <exceptions/NotImplementedException.hpp>
 
 using namespace arp_math;
@@ -16,6 +18,7 @@ using namespace arp_rlu;
 using namespace std;
 using namespace Eigen;
 using namespace lsl;
+using namespace arp_core::log;
 
 CartesianSegment::Params::Params()
 : kmeansMaxIterations(10)
@@ -39,13 +42,25 @@ std::string CartesianSegment::Params::getInfo()
 bool CartesianSegment::Params::checkConsistency() const
 {
     if(kmeansMaxIterations == 0)
+    {
+        Log( NOTICE ) << "CartesianSegment::Params::checkConsistency" << " - " << "inconsistent parameters (kmeansMaxIterations == 0)";
         return false;
+    }
     if(kmeansDispThres <= 0.)
+    {
+        Log( NOTICE ) << "CartesianSegment::Params::checkConsistency" << " - " << "inconsistent parameters (kmeansDispThres <= 0.)";
         return false;
+    }
     if(minNbPoints == 0)
+    {
+        Log( NOTICE ) << "CartesianSegment::Params::checkConsistency" << " - " << "inconsistent parameters (minNbPoints == 0)";
         return false;
+    }
     if(maxStddev <= 0.)
+    {
+        Log( NOTICE ) << "CartesianSegment::Params::checkConsistency" << " - " << "inconsistent parameters (maxStddev <= 0.)";
         return false;
+    }
     return true;
 }
 
@@ -53,18 +68,21 @@ std::vector<LaserScan> CartesianSegment::apply(const LaserScan & raw, const Para
 {
     if(!params.checkConsistency())
     {
+        Log( ERROR ) << "CartesianSegment::apply" << " - " << "Parameters are not consistent => Return 1-sized vector containing raw";
         std::vector<LaserScan> out;
         out.push_back(raw);
         return out;
     }
     if(!raw.areCartesianDataAvailable())
     {
+        Log( ERROR ) << "CartesianSegment::apply" << " - " << "cartesian data are not available => Return 1-sized vector containing raw";
         std::vector<LaserScan> out;
         out.push_back(raw);
         return out;
     }
     if(raw.getSize() < params.minNbPoints)
     {
+        Log( DEBUG ) << "CartesianSegment::apply" << " - " << "raw.getSize() < params.minNbPoints => Return empty vector";
         std::vector<LaserScan> out;
         return out;
     }
@@ -82,6 +100,7 @@ std::vector<LaserScan> CartesianSegment::apply(const LaserScan & raw, const Para
 
     if (stddev < params.maxStddev)
     {
+        Log( DEBUG ) << "CartesianSegment::apply" << " - " << "stddev < params.maxStddev => Return 1-sized vector containing raw";
         std::vector<LaserScan> out;
         out.push_back(raw);
         return out;
@@ -103,14 +122,17 @@ std::pair<LaserScan, LaserScan> CartesianSegment::kMeans(const LaserScan & s, co
 {
     if(!p.checkConsistency())
     {
+        Log( ERROR ) << "CartesianSegment::kMeans" << " - " << "Parameters are not consistent => Return make_pair(raw, LaserScan())";
         return make_pair(s, LaserScan());
     }
     if(!s.areCartesianDataAvailable())
     {
+        Log( ERROR ) << "CartesianSegment::kMeans" << " - " << "Cartesian data are not available => Return make_pair(raw, LaserScan())";
         return make_pair(s, LaserScan());
     }
     if(s.getSize()< 2)
     {
+        Log( DEBUG ) << "CartesianSegment::kMeans" << " - " << "s.getSize()< 2 => Return make_pair(raw, LaserScan())";
         return make_pair(s, LaserScan());
     }
 
@@ -181,6 +203,7 @@ std::pair<LaserScan, LaserScan> CartesianSegment::kMeans(const LaserScan & s, co
     }
     if (nbIt == p.kmeansMaxIterations)
     {
+        Log( DEBUG ) << "CartesianSegment::kMeans" << " - " << "Number max of iterations reached => Return make_pair(raw, LaserScan())";
         return std::make_pair(s, LaserScan());
     }
 

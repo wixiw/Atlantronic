@@ -9,6 +9,8 @@
 
 #include "PolarCrop.hpp"
 
+#include "LSL/Logger.hpp"
+
 #include <exceptions/NotImplementedException.hpp>
 
 using namespace arp_math;
@@ -16,6 +18,7 @@ using namespace arp_rlu;
 using namespace std;
 using namespace Eigen;
 using namespace lsl;
+using namespace arp_core::log;
 
 PolarCrop::Params::Params()
 : ParamsInterface()
@@ -44,24 +47,42 @@ std::string PolarCrop::Params::getInfo()
 bool PolarCrop::Params::checkConsistency() const
 {
     if( minRange.size() == 0 )
+    {
+        Log( NOTICE ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters (minRange.size() == 0)";
         return false;
+    }
     if( maxRange.size() == 0 )
+    {
+        Log( NOTICE ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters (maxRange.size() == 0)";
         return false;
+    }
     if( minRange.minCoeff() < 0.)
+    {
+        Log( NOTICE ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters (minRange.minCoeff() < 0.)";
         return false;
+    }
     if( maxRange.minCoeff() < 0.)
+    {
+        Log( NOTICE ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters (maxRange.minCoeff() < 0.)";
         return false;
+    }
     if( maxRange.size() > 1 )
     {
         if( minRange.size() > 1 )
         {
             if( (maxRange - minRange).minCoeff() < 0.)
+            {
+                Log( NOTICE ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters ( (maxRange - minRange).minCoeff() < 0. )";
                 return false;
+            }
         }
         else
         {
             if( maxRange.minCoeff() - minRange[0] < 0.)
+            {
+                Log( NOTICE ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters ( maxRange.minCoeff() - minRange[0] < 0. )";
                 return false;
+            }
         }
     }
     else
@@ -69,16 +90,25 @@ bool PolarCrop::Params::checkConsistency() const
         if( minRange.size() > 1 )
         {
             if( maxRange[0] - minRange.minCoeff() < 0.)
+            {
+                Log( NOTICE ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters ( maxRange[0] - minRange.minCoeff() < 0. )";
                 return false;
+            }
         }
         else
         {
             if( maxRange[0] - minRange[0] < 0.)
+            {
+                Log( NOTICE ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters ( maxRange[0] - minRange[0] < 0. )";
                 return false;
+            }
         }
     }
     if( minTheta > maxTheta )
+    {
+        Log( NOTICE ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters ( minTheta > maxTheta )";
         return false;
+    }
     return true;
 }
 
@@ -86,22 +116,14 @@ LaserScan PolarCrop::apply(const LaserScan & raw, const Params & p)
 {
     if( !p.checkConsistency() )
     {
+        Log( ERROR ) << "PolarCrop::apply" << " - " << "Parameters are not consistent => Return raw LaserScan";
         return raw;
     }
 
     MatrixXd rawData = raw.getPolarData();
     if( rawData.cols() == 0 )
     {
-        return raw;
-    }
-
-    if( p.maxRange.size() == 0 )
-    {
-        return raw;
-    }
-
-    if( p.minRange.size() == 0 )
-    {
+        Log( NOTICE ) << "PolarCrop::apply" << " - " << "LaserScan is empty => Return raw LaserScan";
         return raw;
     }
 
@@ -119,6 +141,7 @@ LaserScan PolarCrop::apply(const LaserScan & raw, const Params & p)
 
     if( maxRanges.size() != rawData.cols() )
     {
+        Log( WARN ) << "PolarCrop::apply" << " - " << "maxRanges.size() != rawData.cols() => Return raw LaserScan";
         return raw;
     }
 
@@ -126,12 +149,14 @@ LaserScan PolarCrop::apply(const LaserScan & raw, const Params & p)
     {
         if( maxRanges(i) < minRanges(i) )
         {
+            Log( WARN ) << "PolarCrop::apply" << " - " << "maxRanges(i) < minRanges(i) => Return raw LaserScan";
             return raw;
         }
     }
 
     if( minRanges.size() != rawData.cols() )
     {
+        Log( WARN ) << "PolarCrop::apply" << " - " << "minRanges.size() != rawData.cols() => Return raw LaserScan";
         return raw;
     }
 

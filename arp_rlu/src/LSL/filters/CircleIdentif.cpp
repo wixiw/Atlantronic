@@ -8,6 +8,8 @@
 
 #include "CircleIdentif.hpp"
 
+#include "LSL/Logger.hpp"
+
 #include <exceptions/NotImplementedException.hpp>
 
 using namespace arp_math;
@@ -15,6 +17,7 @@ using namespace arp_rlu;
 using namespace std;
 using namespace Eigen;
 using namespace lsl;
+using namespace arp_core::log;
 
 CircleIdentif::Params::Params()
 : radius(0.04)
@@ -34,14 +37,26 @@ std::string CircleIdentif::Params::getInfo()
 bool CircleIdentif::Params::checkConsistency() const
 {
     if(radius <= 0.)
+    {
+        Log( NOTICE ) << "CircleIdentif::Params::checkConsistency" << " - " << "inconsistent parameters (radius <= 0.)";
         return false;
+    }
     if( rangeDelta > radius )
+    {
+        Log( NOTICE ) << "CircleIdentif::Params::checkConsistency" << " - " << "inconsistent parameters (rangeDelta > radius)";
         return false;
+    }
     return true;
 }
 
 DetectedCircle CircleIdentif::apply(const DetectedObject & raw, const Params & p)
 {
+    if( !p.checkConsistency() )
+    {
+        Log( ERROR ) << "CircleIdentif::apply" << " - " << "Parameters are not consistent => Return DetectedCircle()";
+        return DetectedCircle();
+    }
+
     DetectedCircle out(raw);
     out.r(p.radius);
 
@@ -62,7 +77,11 @@ DetectedCircle CircleIdentif::apply(const DetectedObject & raw, const Params & p
 
 std::vector<DetectedCircle> CircleIdentif::apply(const std::vector<DetectedObject> & raws, const Params & p)
 {
-
+    if( !p.checkConsistency() )
+    {
+        Log( ERROR ) << "CircleIdentif::apply (vector version)" << " - " << "Parameters are not consistent => Return empty std::vector<DetectedCircle>";
+        return std::vector<DetectedCircle>();
+    }
     std::vector<DetectedCircle> outs;
     for(int i = 0 ; i < raws.size() ; i++)
     {
