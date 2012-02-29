@@ -15,6 +15,7 @@ add_subdirectory(plugin)
 add_subdirectory(taskcontexts)
 add_subdirectory(timer)
 add_subdirectory(logger)
+add_subdirectory(tools)
 
 ####################################################################################################################
 
