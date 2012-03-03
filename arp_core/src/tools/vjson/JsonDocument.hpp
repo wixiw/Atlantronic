@@ -9,6 +9,7 @@
 #define _ARP_CORE_TOOLS_JSONDOCUMENT_HPP_
 
 #include <vector>
+#include <string>
 #include <stdio.h>
 
 #include "tools/vjson/json.h"
@@ -34,7 +35,17 @@ class JsonDocument
         {
             return mRoot;
         }
+
+        std::vector< std::string > getChildNames( json_value* value );
+        std::vector< json_type > getChildTypes( json_value* value );
+        json_value* getChild( json_value* value, std::string name );
+        json_value* getChild( json_value* value, unsigned int index );
+
+        int getIntegerData(json_value * value);
+        float getFloatData(json_value * value);
+        std::string getStringData(json_value * value);
 };
+
 
 }
 
