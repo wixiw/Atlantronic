@@ -8,7 +8,6 @@ import smach_msgs
 
 from Inputs import Inputs
 from Data import Data
-
 from CyclicState import CyclicState
 
 #you should derivate this class when you want to create a preemptive state
