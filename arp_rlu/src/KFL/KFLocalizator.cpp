@@ -7,6 +7,8 @@
 
 #include "KFLocalizator.hpp"
 
+#include "KFL/Logger.hpp"
+
 #include <exceptions/NotImplementedException.hpp>
 
 using namespace arp_math;
@@ -14,6 +16,7 @@ using namespace arp_rlu;
 using namespace std;
 using namespace Eigen;
 using namespace kfl;
+using namespace arp_core::log;
 
 #include <KFL/BFL/BFLWrapper.hpp>
 

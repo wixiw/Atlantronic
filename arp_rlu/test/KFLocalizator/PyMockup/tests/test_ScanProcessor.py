@@ -2,6 +2,8 @@
 import sys
 sys.path.append( "../../../../src/KFLocalizator/PyMockup" )
 
+import json
+
 import random
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -39,6 +41,18 @@ x = random.uniform( -1.3, 1.3)
 y = random.uniform( -0.8, 0.8)
 h = random.uniform( 0., 2. * np.pi)
 
+## on simplifie
+#ax = 0.
+#ay = 0.
+#ah = 0.
+#vx = 0.
+#vy = 0.
+#vh = 0.
+#x = 0.
+#y = 0.
+#h = 0.
+
+
 tt = np.arange( 0.0, 0.1, 0.1 / 1024.)
 xx = tt**2 * ax + tt * vx + x
 yy = tt**2 * ay + tt * vy + y
@@ -55,7 +69,7 @@ lrfsim.sigma = 0.01
 #===============================================================================
 # add objects
 #===============================================================================
-nbObjects = 10
+nbObjects = 4
 lrfsim.objects = []
 for i in range(nbObjects):
   obj = Circle()
@@ -70,6 +84,28 @@ for i in range(nbObjects):
       y_ = yy[i]
       penetration = penetration or (np.linalg.norm( np.array( [ [obj.xCenter - x_], [obj.yCenter - y_] ] )) < obj.radius)
   lrfsim.objects.append(obj)
+  
+beacons = []
+b1 = Circle()
+b1.radius  = 0.04
+b1.xCenter = -1.5
+b1.yCenter = 1.0
+lrfsim.objects.append(b1)
+beacons.append(b1)
+
+b2 = Circle()
+b2.radius  = 0.04
+b2.xCenter = -1.5
+b2.yCenter = -1.0
+lrfsim.objects.append(b2)
+beacons.append(b2)
+
+b3 = Circle()
+b3.radius  = 0.04
+b3.xCenter = 1.5
+b3.yCenter = 0.0
+lrfsim.objects.append(b3)
+beacons.append(b3)
   
 log.info("Nb of objects :%d", len(lrfsim.objects))
 for o in lrfsim.objects:
@@ -91,14 +127,60 @@ scanproc.setScan(scan)
 scanproc.findCluster(tt[-N:], xx[-N:], yy[-N:], hh[-N:])
 
 # Beacons
-scanproc.beacons = lrfsim.objects
+scanproc.beacons = beacons
 
+dictResults = {}
+dictResults["nbObjects"] = len(scanproc.objects)
 log.info("################################")
 log.info("Nb found clusters : %d", len(scanproc.objects))
-for o in scanproc.objects:
+for i, o in enumerate(scanproc.objects):
   log.info("Object:")
   log.info("  x:%f - y:%f - r:%f", o.xCenter, o.yCenter, o.radius)
+  d = {}
+  d["xCenter"] = o.xCenter
+  d["yCenter"] = o.yCenter
+  d["radius"] = o.radius
+  dictResults["obj_" + str(i)] = d
 
+
+xpIndex = 5
+
+#export traj
+dictTraj = {}
+dictTraj["type"] = "trajectory"
+dictTraj["size"] = N
+dictTraj["tt"] = list(tt[-N:])
+dictTraj["xx"] = list(xx[-N:])
+dictTraj["yy"] = list(yy[-N:])
+dictTraj["hh"] = list(hh[-N:])
+output = open("./traj_"+str(xpIndex)+".json", mode='w')
+output.write(json.dumps(dictTraj,indent=2,sort_keys=True))
+output.close()
+
+#export scan
+scan.export("./scan_"+str(xpIndex)+".json")
+
+# export results
+output = open("./results_"+str(xpIndex)+".json", mode='w')
+output.write(json.dumps(dictResults,indent=2,sort_keys=True))
+output.close()
+
+# export measures
+dictMeas = {}
+nbMeas = 0
+for t in list(tt):
+  (xBeacon, yBeacon, rangeMeas, thetaMeas) = scanproc.getBeacons(t)
+  if xBeacon is not None:
+    dictMeas["meas_"+str(nbMeas)] = {}
+    dictMeas["meas_"+str(nbMeas)]["xBeacon"] = xBeacon
+    dictMeas["meas_"+str(nbMeas)]["yBeacon"] = yBeacon
+    dictMeas["meas_"+str(nbMeas)]["range"] = rangeMeas
+    dictMeas["meas_"+str(nbMeas)]["theta"] = thetaMeas
+    nbMeas = nbMeas + 1
+dictMeas["nbMeas"] = nbMeas   
+output = open("./meas_"+str(xpIndex)+".json", mode='w')
+output.write(json.dumps(dictMeas,indent=2,sort_keys=True))
+output.close()
 
 
 #===============================================================================

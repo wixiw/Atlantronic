@@ -15,10 +15,12 @@
 
 #include "LSL/LaserScan.hpp"
 #include "LSL/objects/Circle.hpp"
+#include "LSL/objects/DetectedCircle.hpp"
 #include "LSL/filters/MedianFilter.hpp"
 #include "LSL/filters/PolarCrop.hpp"
 #include "LSL/filters/CartesianCrop.hpp"
 #include "LSL/filters/PolarSegment.hpp"
+#include "LSL/filters/CircleIdentif.hpp"
 
 
 
@@ -64,13 +66,23 @@ class BeaconDetector
              *  pcp => voir constructeur par défault de lsl::PolarCrop::Params \n
              *  ccp => voir constructeur par défault de lsl::CartesianCrop::Params \n
              *  psp => voir constructeur par défault de lsl::PolarSegment::Params \n
+             *  cip => voir constructeur par défault de lsl::CircleIdentif::Params \n
+             *  dist2beaconThres = 0.7
              */
             Params();
 
             /**
              * Permet de formatter les paramètres en un message lisible.
              */
-            std::string getInfo();
+            std::string getInfo() const;
+
+            /**
+             * Permet de vérifier que les paramètres sont consistants.\n
+             * A savoir :\n
+             * \li chaque sous-groupe de paramètres est consistant.
+             * \li maxDistance2NearestReferencedBeacon > 0.
+             */
+            bool checkConsistency() const;
 
             /**
              * Paramètres pour la première étape du traitement, à savoir un filtrage médian.
@@ -88,9 +100,19 @@ class BeaconDetector
             lsl::CartesianCrop::Params ccp;
 
             /**
-             * Paramètres pour la quatrième étape, celle qui consiste à identifier les balises potentielles dans le scan.
+             * Paramètres pour la quatrième étape, celle qui consiste à identifier des clusters de mesures succeptibles d'être des balises.
              */
             lsl::PolarSegment::Params psp;
+
+            /**
+             * Paramètres pour la cinquième étape, celle qui consiste à identifier les clusters comme étant des cercles.
+             */
+            lsl::CircleIdentif::Params cip;
+
+            /**
+             * Distance maximale à une balise référencée
+             */
+            double maxDistance2NearestReferencedBeacon;
         };
 
     public:
@@ -124,13 +146,20 @@ class BeaconDetector
         void setReferencedBeacons(std::vector<lsl::Circle> beacons);
 
         /**
-         * Permet pour une date donnée de savoir si une balise est vue et de connaitre la quelle ainsi que sa mesure.
+         * Permet pour une date donnée de savoir si une balise est vue et de connaitre laquelle ainsi que sa mesure.
          * \param[in] t la date à considérer.
          * \param[out] target indique la balise qui est observée.
          * \param[out] meas indique la mesure (en polaire) de la balise observée.\n
          * Le premier élément correspond au range r, le second à l'angle theta.
          */
         bool getBeacon(double t, lsl::Circle & target, Eigen::Vector2d & meas);
+
+        /**
+         * Permet de récupérer tous les cercles détectés.
+         * \remark Cette méthode est surtout pratique pour le débug.\n
+         * Elle évite d'avoir à appelée N fois la méthode \ref getBeacon
+         */
+        std::vector< lsl::DetectedCircle > getDetectedCircles();
 
         /**
          * Permet de modifier les paramètres de traitement de scan.
@@ -144,6 +173,32 @@ class BeaconDetector
          * Cette méthode réinitialise les résultats.
          */
         void reset();
+
+        /**
+         * Paramètres du BeaconDetector
+         */
+        BeaconDetector::Params params;
+
+        /**
+         * Les balises candidates.\n
+         * Elles n'ont pas (encore) été appariées aux balises référencées.
+         */
+        std::vector< lsl::DetectedCircle > detectedCircles;
+
+        /**
+         * Vecteur de bool qui indique si la balise référente a déjà été attribuée.
+         */
+        std::vector< bool > referencedBeaconUsed;
+
+        /**
+         * Balises référencées
+         */
+        std::vector<lsl::Circle> referencedBeacons;
+
+        /**
+         * Temps mini entre deux mesures du scan
+         */
+        double deltaTime;
 
 };
 

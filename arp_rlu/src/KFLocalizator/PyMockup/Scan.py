@@ -67,9 +67,9 @@ class Scan:
     dict = {}
     dict["type"] = "Scan"
     dict["size"] = len(self.tt)
-    dict["tt"] = reduce(lambda  x,y: x + " " + str(y),  list(self.tt)[1:], str(list(self.tt)[0]))
-    dict["range"] = reduce(lambda  x,y: x + " " + str(y),  list(self.range)[1:], str(list(self.range)[0]))
-    dict["theta"] = reduce(lambda  x,y: x + " " + str(y),  list(self.theta)[1:], str(list(self.theta)[0]))
+    dict["tt"] = list(self.tt) #reduce(lambda  x,y: x + " " + str(y),  list(self.tt)[1:], str(list(self.tt)[0]))
+    dict["range"] = list(self.range) #reduce(lambda  x,y: x + " " + str(y),  list(self.range)[1:], str(list(self.range)[0]))
+    dict["theta"] = list(self.theta) #reduce(lambda  x,y: x + " " + str(y),  list(self.theta)[1:], str(list(self.theta)[0]))
     
     output = open(filename, mode='w')
     output.write(json.dumps(dict,indent=2,sort_keys=True))
@@ -87,8 +87,18 @@ class Scan:
     self.tsync = 0.
     self.tbeg  = 0.
     self.tend  = 0.
-    self.tt = np.array([ float(x) for x in dict["tt"].split()] )
-    self.range = np.array([ float(x) for x in dict["range" ].split()] )
-    self.theta = np.array([ float(x) for x in dict["theta" ].split()] )
+    self.tt = np.array(dict["tt"]) #np.array([ float(x) for x in dict["tt"].split()] )
+    self.range = np.array(dict["range"]) #np.array([ float(x) for x in dict["range" ].split()] )
+    self.theta = np.array(dict["theta"]) #np.array([ float(x) for x in dict["theta" ].split()] )
+    self.xx = None
+    self.yy = None
+    self.hh = None
+    if "xx" in dict:
+      self.xx = np.array(dict["xx"])
+    if "yy" in dict:
+      self.yy = np.array(dict["yy"])
+    if "hh" in dict:
+      self.hh = np.array(dict["hh"])
+      
     
   

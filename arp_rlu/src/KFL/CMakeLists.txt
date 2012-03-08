@@ -2,7 +2,8 @@
 #    EDIT BELOW THIS LINE AND UNTIL NEXT LINE FOR A NEW PROJECT
 
 
-rosbuild_add_library(kfl KFLocalizator.cpp
+rosbuild_add_library(kfl Logger.cpp
+                         KFLocalizator.cpp
                          BeaconDetector.cpp
                          BFL/BFLWrapper.cpp
                          BFL/BFLSysConditionalPdf.cpp
