@@ -47,13 +47,15 @@ class CircleIdentif
             public:
             /** Constructeur par défault.
              *  Il initialise des paramètres classiques non-stupides :\n
+             *  \li radius = 0.04
+             *  \li rangeDelta = 0.034
              */
             Params();
 
             /**
              * Permet de formatter les paramètres en un message lisible.
              */
-            std::string getInfo();
+            std::string getInfo() const;
 
             /**
              * Permet de vérifier que les paramètres sont consistants.\n

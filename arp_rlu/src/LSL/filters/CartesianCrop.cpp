@@ -26,7 +26,7 @@ CartesianCrop::Params::Params()
 {
 }
 
-std::string CartesianCrop::Params::getInfo()
+std::string CartesianCrop::Params::getInfo() const
 {
     std::stringstream ss;
     ss << "CartesianCrop params :" << std::endl;

@@ -1,7 +1,7 @@
 /*
  * Logger.cpp
  *
- *  Created on: 29 February 2012
+ *  Created on: 5 mars 2012
  *      Author: Boris
  */
 

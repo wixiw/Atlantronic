@@ -25,7 +25,7 @@ PolarSegment::Params::Params()
 {
 }
 
-std::string PolarSegment::Params::getInfo()
+std::string PolarSegment::Params::getInfo() const
 {
     std::stringstream ss;
     ss << "PolarSegment params :" << std::endl;
@@ -43,20 +43,20 @@ bool PolarSegment::Params::checkConsistency() const
     return true;
 }
 
-std::vector<LaserScan> PolarSegment::apply(const LaserScan & raw, const Params & p)
+std::vector<DetectedObject> PolarSegment::apply(const LaserScan & raw, const Params & p)
 {
-    std::vector<LaserScan> out;
+    std::vector<DetectedObject> out;
     if( !p.checkConsistency() )
     {
-        Log( ERROR ) << "PolarSegment::apply" << " - " << "Parameters are not consistent => Return 1-sized vector containing raw";
-        out.push_back(raw);
+        Log( ERROR ) << "PolarSegment::apply" << " - " << "Parameters are not consistent => Return 1-sized vector containing DetectedObject(raw)";
+        out.push_back(DetectedObject(raw));
         return out;
     }
 
     if(raw.getSize() < 2 )
     {
-        Log( NOTICE ) << "PolarSegment::apply" << " - " << "Less than two points in LaserScan => Return 1-sized vector containing raw";
-        out.push_back(raw);
+        Log( NOTICE ) << "PolarSegment::apply" << " - " << "Less than two points in LaserScan => Return 1-sized vector containing DetectedObject(raw)";
+        out.push_back(DetectedObject(raw));
         return out;
     }
 
@@ -64,10 +64,11 @@ std::vector<LaserScan> PolarSegment::apply(const LaserScan & raw, const Params &
     MatrixXd rawPolar = raw.getPolarData();
     bool b = raw.areCartesianDataAvailable();
     MatrixXd rawCartesian = raw.getCartesianData();
-    int index = 0;
-    for(int i = 1 ; i < raw.getSize() ; i++)
+    unsigned int index = 0;
+    double deltaTheta = (rawPolar.block(2,1,1,raw.getSize()-1) - rawPolar.block(2,0,1,raw.getSize()-1)).minCoeff();
+    for(unsigned int i = 1 ; i < raw.getSize() ; i++)
     {
-        if( abs(rawPolar(1,i) - rawPolar(1,i-1)) > p.rangeThres )
+        if( abs(rawPolar(1,i) - rawPolar(1,i-1)) > p.rangeThres || rawPolar(2,i) - rawPolar(2,i-1) > 1.5*deltaTheta )
         {
             LaserScan ls;
             ls.setPolarData( rawPolar.block(0, index, 3, i-index) );
@@ -76,7 +77,7 @@ std::vector<LaserScan> PolarSegment::apply(const LaserScan & raw, const Params &
             {
                 ls.computeCartesianData( rawCartesian.row(0), rawCartesian.row(3), rawCartesian.row(4), rawCartesian.row(5) );
             }
-            out.push_back(ls);
+            out.push_back(DetectedObject(ls));
         }
     }
     LaserScan ls;
@@ -85,6 +86,6 @@ std::vector<LaserScan> PolarSegment::apply(const LaserScan & raw, const Params &
     {
         ls.computeCartesianData( rawCartesian.row(0), rawCartesian.row(3), rawCartesian.row(4), rawCartesian.row(5) );
     }
-    out.push_back(ls);
+    out.push_back(DetectedObject(ls));
     return out;
 }

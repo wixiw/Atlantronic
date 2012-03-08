@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_SUITE( unittest_dummy )
 BOOST_AUTO_TEST_CASE( testdummy )
 {
 //  arp_rlu::lsl::Logger::InitNull("uT_LSL", DEBUG);
-  arp_rlu::lsl::Logger::InitConsole("uT_LSL", DEBUG);
+  arp_rlu::lsl::Logger::InitConsole("uT_LSL", ERROR);
 //  arp_rlu::lsl::Logger::InitFile("uT_LSL", DEBUG);
 
 //  arp_rlu::lsl::Log( FATAL )  << "fatal";
@@ -41,18 +41,18 @@ BOOST_AUTO_TEST_CASE( testdummy )
 }
 BOOST_AUTO_TEST_SUITE_END()
 
-//#include "uTest_LaserScan.hpp"
-//
-//#include "objects/uTest_DetectedObject.hpp"
-//#include "objects/uTest_Circle.hpp"
-//#include "objects/uTest_DetectedCircle.hpp"
-//
-//#include "filters/uTest_MedianFilter.hpp"
-//#include "filters/uTest_PolarCrop.hpp"
-//#include "filters/uTest_CartesianCrop.hpp"
-//#include "filters/uTest_PolarSegment.hpp"
-//#include "filters/uTest_CartesianSegment.hpp"
-//#include "filters/uTest_CircleIdentif.hpp"
+#include "uTest_LaserScan.hpp"
+
+#include "objects/uTest_DetectedObject.hpp"
+#include "objects/uTest_Circle.hpp"
+#include "objects/uTest_DetectedCircle.hpp"
+
+#include "filters/uTest_MedianFilter.hpp"
+#include "filters/uTest_PolarCrop.hpp"
+#include "filters/uTest_CartesianCrop.hpp"
+#include "filters/uTest_PolarSegment.hpp"
+#include "filters/uTest_CartesianSegment.hpp"
+#include "filters/uTest_CircleIdentif.hpp"
 
 #include "tools/uTest_JsonScanParser.hpp"
 

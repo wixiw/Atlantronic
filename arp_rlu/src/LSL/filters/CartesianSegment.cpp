@@ -28,7 +28,7 @@ CartesianSegment::Params::Params()
 {
 }
 
-std::string CartesianSegment::Params::getInfo()
+std::string CartesianSegment::Params::getInfo() const
 {
     std::stringstream ss;
     ss << "CartesianSegment params :" << std::endl;
@@ -64,26 +64,26 @@ bool CartesianSegment::Params::checkConsistency() const
     return true;
 }
 
-std::vector<LaserScan> CartesianSegment::apply(const LaserScan & raw, const Params & params)
+std::vector<DetectedObject> CartesianSegment::apply(const LaserScan & raw, const Params & params)
 {
     if(!params.checkConsistency())
     {
-        Log( ERROR ) << "CartesianSegment::apply" << " - " << "Parameters are not consistent => Return 1-sized vector containing raw";
-        std::vector<LaserScan> out;
-        out.push_back(raw);
+        Log( ERROR ) << "CartesianSegment::apply" << " - " << "Parameters are not consistent => Return 1-sized vector containing DetectedObject(raw)";
+        std::vector<DetectedObject> out;
+        out.push_back(DetectedObject(raw));
         return out;
     }
     if(!raw.areCartesianDataAvailable())
     {
-        Log( ERROR ) << "CartesianSegment::apply" << " - " << "cartesian data are not available => Return 1-sized vector containing raw";
-        std::vector<LaserScan> out;
-        out.push_back(raw);
+        Log( ERROR ) << "CartesianSegment::apply" << " - " << "cartesian data are not available => Return 1-sized vector containing DetectedObject(raw)";
+        std::vector<DetectedObject> out;
+        out.push_back(DetectedObject(raw));
         return out;
     }
     if(raw.getSize() < params.minNbPoints)
     {
         Log( DEBUG ) << "CartesianSegment::apply" << " - " << "raw.getSize() < params.minNbPoints => Return empty vector";
-        std::vector<LaserScan> out;
+        std::vector<DetectedObject> out;
         return out;
     }
 
@@ -101,16 +101,16 @@ std::vector<LaserScan> CartesianSegment::apply(const LaserScan & raw, const Para
     if (stddev < params.maxStddev)
     {
         Log( DEBUG ) << "CartesianSegment::apply" << " - " << "stddev < params.maxStddev => Return 1-sized vector containing raw";
-        std::vector<LaserScan> out;
-        out.push_back(raw);
+        std::vector<DetectedObject> out;
+        out.push_back(DetectedObject(raw));
         return out;
     }
 
     std::pair<LaserScan, LaserScan> pp = kMeans(raw, params);
 
-    std::vector<LaserScan> out;
+    std::vector<DetectedObject> out;
     out = CartesianSegment::apply(pp.first, params);
-    std::vector<LaserScan> right = CartesianSegment::apply(pp.second, params);
+    std::vector<DetectedObject> right = CartesianSegment::apply(pp.second, params);
 
     out.insert(out.end(), right.begin(), right.end());
 

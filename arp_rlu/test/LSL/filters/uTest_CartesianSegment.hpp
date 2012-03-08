@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE( Test_kMeans_FivePoints )
 BOOST_AUTO_TEST_CASE( Test_Apply_Empty )
 {
     lsl::LaserScan rawScan;
-    std::vector<lsl::LaserScan> objects = lsl::CartesianSegment::apply(rawScan);
+    std::vector<lsl::DetectedObject> objects = lsl::CartesianSegment::apply(rawScan);
 
     BOOST_CHECK_EQUAL( objects.size(), 1 );
 }
@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_CASE( Test_Apply_NoCartesian )
     MatrixXd d = MatrixXd::Random(3,4);
     rawScan.setPolarData(d);
 
-    std::vector<lsl::LaserScan> objects = lsl::CartesianSegment::apply(rawScan);
+    std::vector<lsl::DetectedObject> objects = lsl::CartesianSegment::apply(rawScan);
 
     BOOST_CHECK_EQUAL( objects.size(), 1 );
 }
@@ -144,7 +144,7 @@ BOOST_AUTO_TEST_CASE( Test_Apply_MinPoints )
     rawScan.setPolarData(d);
     rawScan.computeCartesianData();
 
-    std::vector<lsl::LaserScan> objects = lsl::CartesianSegment::apply(rawScan);
+    std::vector<lsl::DetectedObject> objects = lsl::CartesianSegment::apply(rawScan);
 
     BOOST_CHECK_EQUAL( objects.size(), 0 );
 }
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE( Test_Apply_1 )
     rawScan.setPolarData(d);
     rawScan.computeCartesianData();
 
-    std::vector<lsl::LaserScan> objects = lsl::CartesianSegment::apply(rawScan);
+    std::vector<lsl::DetectedObject> objects = lsl::CartesianSegment::apply(rawScan);
 
     BOOST_CHECK_EQUAL( objects.size(), 1 );
 }
@@ -172,7 +172,7 @@ BOOST_AUTO_TEST_CASE( Test_Apply_2 )
     rawScan.setPolarData(d);
     rawScan.computeCartesianData();
 
-    std::vector<lsl::LaserScan> objects = lsl::CartesianSegment::apply(rawScan);
+    std::vector<lsl::DetectedObject> objects = lsl::CartesianSegment::apply(rawScan);
 
     BOOST_CHECK_EQUAL( objects.size(), 3 );
 }

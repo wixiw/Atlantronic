@@ -54,7 +54,7 @@ class CartesianCrop
             /**
              * Permet de formatter les paramètres en un message lisible.
              */
-            std::string getInfo();
+            std::string getInfo() const;
 
             /**
              * Permet de vérifier que les paramètres sont consistants.\n

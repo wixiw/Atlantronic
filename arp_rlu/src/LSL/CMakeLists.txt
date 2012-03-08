@@ -14,7 +14,9 @@ rosbuild_add_library(lsl Logger.cpp
                          filters/CartesianCrop.cpp 
                          filters/PolarSegment.cpp
                          filters/CartesianSegment.cpp
-                         filters/CircleIdentif.cpp )
+                         filters/CircleIdentif.cpp 
+                         
+                         tools/JsonScanParser.cpp )
             
 
 ###################################################################################################################

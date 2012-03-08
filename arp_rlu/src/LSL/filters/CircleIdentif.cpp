@@ -25,7 +25,7 @@ CircleIdentif::Params::Params()
 {
 }
 
-std::string CircleIdentif::Params::getInfo()
+std::string CircleIdentif::Params::getInfo() const
 {
     std::stringstream ss;
     ss << "CircleIdentif params :" << std::endl;
@@ -83,7 +83,7 @@ std::vector<DetectedCircle> CircleIdentif::apply(const std::vector<DetectedObjec
         return std::vector<DetectedCircle>();
     }
     std::vector<DetectedCircle> outs;
-    for(int i = 0 ; i < raws.size() ; i++)
+    for(unsigned int i = 0 ; i < raws.size() ; i++)
     {
         outs.push_back( CircleIdentif::apply(raws[i], p) );
     }

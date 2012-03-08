@@ -12,6 +12,7 @@
 
 #include "LSL/filters/ParamsInterface.hpp"
 #include "LSL/LaserScan.hpp"
+#include "LSL/objects/DetectedObject.hpp"
 #include <vector>
 
 namespace arp_rlu
@@ -55,7 +56,7 @@ class PolarSegment
             /**
              * Permet de formatter les paramètres en un message lisible.
              */
-            std::string getInfo();
+            std::string getInfo() const;
 
             /**
              * Permet de vérifier que les paramètres sont consistants.\n
@@ -74,10 +75,10 @@ class PolarSegment
         /** Applique le filtre sur un scan
          * \param[in] ls scan d'origine
          * \param[in] p paramètres du filtre
-         * \return vecteur de LaserScan
+         * \return vecteur de DetectedObject
          * \remarks Si les paramètres sont inconsistants, le filtre renvoie un vecteur contenant seulement le scan initial.
          */
-        static std::vector<LaserScan> apply(const LaserScan &, const Params & p = Params());
+        static std::vector<DetectedObject> apply(const LaserScan &, const Params & p = Params());
 
 
     protected:

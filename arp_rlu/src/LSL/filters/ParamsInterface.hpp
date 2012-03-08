@@ -32,7 +32,7 @@ class ParamsInterface
         /**
          * Permet de formatter les paramètres en un message lisible.
          */
-        virtual std::string getInfo() = 0;
+        virtual std::string getInfo() const = 0;
 
         /**
          * Permet de vérifier que les paramètres sont consistants.

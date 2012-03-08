@@ -12,6 +12,7 @@
 
 #include "LSL/filters/ParamsInterface.hpp"
 #include "LSL/LaserScan.hpp"
+#include "LSL/objects/DetectedObject.hpp"
 #include <vector>
 
 namespace arp_rlu
@@ -56,7 +57,7 @@ class CartesianSegment
             /**
              * Permet de formatter les paramètres en un message lisible.
              */
-            std::string getInfo();
+            std::string getInfo() const;
 
             /**
              * Permet de vérifier que les paramètres sont consistants.\n
@@ -95,17 +96,17 @@ class CartesianSegment
         /** Applique le filtre sur un scan
          * \param ls scan d'origine
          * \param p paramètres du filtre
-         * \return vecteur de LaserScan
-         * \remarks Si les paramètres sont inconsistants, le filtre renvoie un vecteur ne contentant que le scan initial.
-         * \remarks Si les données cartésiennes ne sont pas disponible, le filtre renvoie un vecteur ne contentant que le scan initial.
+         * \return vecteur de \ref DetectedObject
+         * \remarks Si les paramètres sont inconsistants, le filtre renvoie un vecteur ne contentant qu'un seul \ref DetectedObject correspondant au scan initial.
+         * \remarks Si les données cartésiennes ne sont pas disponible, le filtre renvoie un vecteur ne contentant qu'un seul \ref DetectedObject correspondant au scan initial.
          * \remarks Si le scan a une taille inférieure à p.minNbPoints, le filtre renvoie un vecteur vide.
          */
-        static std::vector<LaserScan> apply(const LaserScan &, const Params & p = Params());
+        static std::vector<DetectedObject> apply(const LaserScan &, const Params & p = Params());
 
         /** Applique l'algorithme k-moyenne sur le LaserScan avec deux graines.
          * \param ls scan d'origine
          * \param p paramètres du filtre
-         * \return paire de LaserScan (correspondant aux deux graines)
+         * \return paire de \ref LaserScan (correspondant aux deux graines)
          * \remarks Cette méthode est publique seulement à des fins d'unittesting.
          * Il n'est pas recommandé de l'utiliser depuis l'extérieur. Utiliser plutôt la méthode apply
          * qui est bien plus adaptée aux besoins hauts niveaux.

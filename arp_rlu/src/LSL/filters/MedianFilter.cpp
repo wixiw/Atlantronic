@@ -22,7 +22,7 @@ MedianFilter::Params::Params()
 {
 }
 
-std::string MedianFilter::Params::getInfo()
+std::string MedianFilter::Params::getInfo() const
 {
     std::stringstream ss;
     ss << "MedianFilter params :" << std::endl;

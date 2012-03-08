@@ -23,11 +23,11 @@ BOOST_AUTO_TEST_CASE( Test_DefaultParams_1 )
     d.row(2) <<   0.00,  0.01,  0.02,  0.03,  0.04,  0.05,  0.06,  0.07,  0.08,  0.09 ;
     rawScan.setPolarData(d);
 
-    std::vector<lsl::LaserScan> objects = lsl::PolarSegment::apply(rawScan);
+    std::vector<lsl::DetectedObject> objects = lsl::PolarSegment::apply(rawScan);
 
     BOOST_CHECK_EQUAL(objects.size(), 1);
 
-    MatrixXd pdata = objects[0].getPolarData();
+    MatrixXd pdata = objects[0].getScan().getPolarData();
     BOOST_CHECK_EQUAL(pdata.cols(), d.cols());
     for (int i=0; i<pdata.rows(); ++i)
     {
@@ -50,11 +50,11 @@ BOOST_AUTO_TEST_CASE( Test_DefaultParams_2 )
     MatrixXd d1 = d.leftCols(4);
     MatrixXd d2 = d.rightCols(6);
 
-    std::vector<lsl::LaserScan> objects = lsl::PolarSegment::apply(rawScan);
+    std::vector<lsl::DetectedObject> objects = lsl::PolarSegment::apply(rawScan);
 
     BOOST_CHECK_EQUAL(objects.size(), 2);
 
-    MatrixXd pdata1 = objects[0].getPolarData();
+    MatrixXd pdata1 = objects[0].getScan().getPolarData();
     BOOST_CHECK_EQUAL(pdata1.cols(), d1.cols());
     for (int i=0; i<pdata1.rows(); ++i)
     {
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE( Test_DefaultParams_2 )
         }
     }
 
-    MatrixXd pdata2 = objects[1].getPolarData();
+    MatrixXd pdata2 = objects[1].getScan().getPolarData();
     BOOST_CHECK_EQUAL(pdata2.cols(), d2.cols());
     for (int i=0; i<pdata2.rows(); ++i)
     {
@@ -88,11 +88,11 @@ BOOST_AUTO_TEST_CASE( Test_DefaultParams_3 )
     MatrixXd d2 = d.block(0, 3, 3, 3);
     MatrixXd d3 = d.rightCols(4);
 
-    std::vector<lsl::LaserScan> objects = lsl::PolarSegment::apply(rawScan);
+    std::vector<lsl::DetectedObject> objects = lsl::PolarSegment::apply(rawScan);
 
     BOOST_CHECK_EQUAL(objects.size(), 3);
 
-    MatrixXd pdata1 = objects[0].getPolarData();
+    MatrixXd pdata1 = objects[0].getScan().getPolarData();
     BOOST_CHECK_EQUAL(pdata1.cols(), d1.cols());
     for (int i=0; i<pdata1.rows(); ++i)
     {
@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE( Test_DefaultParams_3 )
         }
     }
 
-    MatrixXd pdata2 = objects[1].getPolarData();
+    MatrixXd pdata2 = objects[1].getScan().getPolarData();
     BOOST_CHECK_EQUAL(pdata2.cols(), d2.cols());
     for (int i=0; i<pdata2.rows(); ++i)
     {
@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE( Test_DefaultParams_3 )
         }
     }
 
-    MatrixXd pdata3 = objects[2].getPolarData();
+    MatrixXd pdata3 = objects[2].getScan().getPolarData();
     BOOST_CHECK_EQUAL(pdata3.cols(), d3.cols());
     for (int i=0; i<pdata3.rows(); ++i)
     {
@@ -134,11 +134,11 @@ BOOST_AUTO_TEST_CASE( Test_OtherParams_1 )
 
     lsl::PolarSegment::Params p;
     p.rangeThres = 0.2;
-    std::vector<lsl::LaserScan> objects = lsl::PolarSegment::apply(rawScan, p);
+    std::vector<lsl::DetectedObject> objects = lsl::PolarSegment::apply(rawScan, p);
 
     BOOST_CHECK_EQUAL(objects.size(), 1);
 
-    MatrixXd pdata = objects[0].getPolarData();
+    MatrixXd pdata = objects[0].getScan().getPolarData();
     BOOST_CHECK_EQUAL(pdata.cols(), d.cols());
     for (int i=0; i<pdata.rows(); ++i)
     {
@@ -163,9 +163,9 @@ BOOST_AUTO_TEST_CASE( Test_OtherParams_2 )
 
     lsl::PolarSegment::Params p;
     p.rangeThres = 0.2;
-    std::vector<lsl::LaserScan> objects = lsl::PolarSegment::apply(rawScan, p);
+    std::vector<lsl::DetectedObject> objects = lsl::PolarSegment::apply(rawScan, p);
 
-    MatrixXd pdata1 = objects[0].getPolarData();
+    MatrixXd pdata1 = objects[0].getScan().getPolarData();
     BOOST_CHECK_EQUAL(pdata1.cols(), d1.cols());
     for (int i=0; i<pdata1.rows(); ++i)
     {
@@ -175,7 +175,7 @@ BOOST_AUTO_TEST_CASE( Test_OtherParams_2 )
         }
     }
 
-    MatrixXd pdata2 = objects[1].getPolarData();
+    MatrixXd pdata2 = objects[1].getScan().getPolarData();
     BOOST_CHECK_EQUAL(pdata2.cols(), d2.cols());
     for (int i=0; i<pdata2.rows(); ++i)
     {

@@ -29,7 +29,7 @@ PolarCrop::Params::Params()
 {
 }
 
-std::string PolarCrop::Params::getInfo()
+std::string PolarCrop::Params::getInfo() const
 {
     std::stringstream ss;
     ss << "PolarCrop params :" << std::endl;
