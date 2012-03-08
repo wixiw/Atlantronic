@@ -8,6 +8,8 @@
 
 #include "tools/vjson/JsonDocument.hpp"
 
+#include <iostream>
+
 namespace vjson
 {
 
@@ -46,6 +48,8 @@ bool JsonDocument::parse(const char *filename)
 std::vector< std::string > JsonDocument::getChildNames( json_value* value )
 {
     std::vector< std::string > out;
+    if(!value)
+        return out;
     for (json_value *it = value->first_child; it; it = it->next_sibling)
     {
         std::string childName;
@@ -59,6 +63,8 @@ std::vector< std::string > JsonDocument::getChildNames( json_value* value )
 std::vector< json_type > JsonDocument::getChildTypes( json_value* value )
 {
     std::vector< json_type > out;
+    if(!value)
+        return out;
     for (json_value *it = value->first_child; it; it = it->next_sibling)
     {
         out.push_back(it->type);
@@ -68,6 +74,8 @@ std::vector< json_type > JsonDocument::getChildTypes( json_value* value )
 
 json_value* JsonDocument::getChild( json_value* value, std::string childName )
 {
+    if(!value)
+        return NULL;
     for (json_value *it = value->first_child; it; it = it->next_sibling)
     {
         std::string itName;
@@ -81,6 +89,8 @@ json_value* JsonDocument::getChild( json_value* value, std::string childName )
 
 json_value* JsonDocument::getChild( json_value* value, unsigned int index )
 {
+    if(!value)
+        return NULL;
     unsigned int i = 0;
     for (json_value *it = value->first_child; it; it = it->next_sibling, i++)
     {
@@ -92,6 +102,8 @@ json_value* JsonDocument::getChild( json_value* value, unsigned int index )
 
 int JsonDocument::getIntegerData(json_value * value)
 {
+    if(!value)
+        return 0;
     if(value->type == JSON_INT)
     {
         return value->int_value;
@@ -101,6 +113,8 @@ int JsonDocument::getIntegerData(json_value * value)
 
 float JsonDocument::getFloatData(json_value * value)
 {
+    if(!value)
+        return 0.;
     if(value->type == JSON_FLOAT)
     {
         return value->float_value;
@@ -110,6 +124,8 @@ float JsonDocument::getFloatData(json_value * value)
 
 std::string JsonDocument::getStringData(json_value * value)
 {
+    if(!value)
+        return std::string();
     if(value->type == JSON_STRING)
     {
         return value->string_value;
