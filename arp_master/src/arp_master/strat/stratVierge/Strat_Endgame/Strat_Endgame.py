@@ -21,17 +21,20 @@ from arp_master.strat.stratVierge.util.UtilARD import *
 
 from math import *
 
-class Uninitialisation(smach.StateMachine):
+class Endgame(PreemptiveStateMachine):
     def __init__(self):
-        smach.StateMachine.__init__(self,outcomes=['endUninitialisation'])
+        PreemptiveStateMachine.__init__(self,outcomes=['endEndgame'])
         with self:
-            smach.StateMachine.add('UninitialisationState',
-                      UninitialisationState(),
-                      transitions={'ok':'endUninitialisation'})
-      
-class UninitialisationState(CyclicState):
-    def __init__(self):
-        CyclicState.__init__(self, outcomes=['ok'])
+            PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
+                                             EndMatchPreempter(0),
+                                             transitions={'endMatch':'endEndgame'})
+            
+            PreemptiveStateMachine.add('FinalDrop',
+                      FinalDrop(),
+                      transitions={'succeeded':'endEndgame','aborted':'FinalDrop'})
+            self.setInitialState('FinalDrop')
 
-    def executeTransitions(self):
-        return 'ok'     
+class FinalDrop(CyclicActionState):
+    def createAction(self):
+        self.cap(pi/2)
+            

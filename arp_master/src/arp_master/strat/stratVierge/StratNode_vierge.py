@@ -7,26 +7,18 @@ import smach
 import smach_ros
 import smach_msgs
 
-# import the definition of the messages
-from arp_core.msg import Obstacle
-from arp_core.msg import StartColor
-from arp_core.msg import Start
-
 #import the main state machines substates     
 from arp_master.strat.stratVierge.Strat_Initialisation import Strat_Initialisation
 from arp_master.strat.stratVierge.Strat_StartSequence import Strat_StartSequence
 from arp_master.strat.stratVierge.Strat_Opening import Strat_Opening
-
-
-from arp_master.strat.stratD import Strat_Middlegame_D
-from arp_master.strat.stratD import Strat_Endgame_D
-from arp_master.strat.sillyWalk import Strat_Uninitialisation
+from arp_master.strat.stratVierge.Strat_Middlegame import Strat_Middlegame
+from arp_master.strat.stratVierge.Strat_Endgame import Strat_Endgame
+from arp_master.strat.stratVierge.Strat_Uninitialisation import Strat_Uninitialisation
 
 #import utility classes
 from arp_master.strat.stratVierge.util.Inputs import Inputs
 from arp_master.strat.stratVierge.util.Data import Data
 from arp_master.strat.stratVierge.util.TableVierge import *
-
 
 
 ###########################  TEMPORAL BEHAVIOR
@@ -59,10 +51,6 @@ class StratNode_vierge():
         # execute the state machine
         sm.execute()
         
-
-    
-    
-    
     
 ############################## MAIN STATE MACHINE CREATION
 class MainStateMachine(smach.StateMachine):
@@ -75,13 +63,12 @@ class MainStateMachine(smach.StateMachine):
                                    transitions={'gogogo':'Opening','problem':'end'})
             smach.StateMachine.add('Opening', Strat_Opening.Opening(),
                                     transitions={'endOpening':'Middlegame','problem':'Middlegame'})
-            smach.StateMachine.add('Middlegame', Strat_Middlegame_D.Middlegame_D(),
+            smach.StateMachine.add('Middlegame', Strat_Middlegame.Middlegame(),
                                     transitions={'endMiddlegame':'Endgame'})
-            smach.StateMachine.add('Endgame', Strat_Endgame_D.Endgame_D(),
+            smach.StateMachine.add('Endgame', Strat_Endgame.Endgame(),
                                     transitions={'endEndgame':'Uninitialisation'})
             smach.StateMachine.add('Uninitialisation', Strat_Uninitialisation.Uninitialisation(),
                                     transitions={'endUninitialisation':'end'})
-
 
    
 ########################## EXECUTABLE 
