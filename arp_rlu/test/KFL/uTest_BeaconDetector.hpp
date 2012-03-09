@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_SUITE( unittest_BeaconDetector )
 BOOST_AUTO_TEST_CASE( load_traj_1 )
 {
     vjson::JsonDocument docTraj;
-    BOOST_CHECK( docTraj.parse("../ressource/unittest/traj_1.json") );
+    BOOST_CHECK( docTraj.parse("../ressource/unittest/KFL/BeaconDetector/traj_1.json") );
     unsigned int n = docTraj.getIntegerData( docTraj.getChild( docTraj.root(), "size") );
     Eigen::VectorXd tt = Eigen::VectorXd::Zero(n);
     Eigen::VectorXd xx = Eigen::VectorXd::Zero(n);
@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE( load_traj_1 )
 
 BOOST_AUTO_TEST_CASE( load_scan_1 )
 {
-    arp_rlu::lsl::JsonScanParser parser("../ressource/unittest/scan_1.json");
+    arp_rlu::lsl::JsonScanParser parser("../ressource/unittest/KFL/BeaconDetector/scan_1.json");
     lsl::LaserScan ls;
     bool res = parser.getScan(ls);
     BOOST_CHECK(res);
@@ -52,13 +52,13 @@ BOOST_AUTO_TEST_CASE( load_scan_1 )
 BOOST_AUTO_TEST_CASE( load_results_1 )
 {
     vjson::JsonDocument docResults;
-    BOOST_CHECK( docResults.parse("../ressource/unittest/results_1.json") );
+    BOOST_CHECK( docResults.parse("../ressource/unittest/KFL/BeaconDetector/results_1.json") );
 }
 
 BOOST_AUTO_TEST_CASE( test_DetectedCircle_1 )
 {
     vjson::JsonDocument docTraj;
-    BOOST_CHECK( docTraj.parse("../ressource/unittest/traj_1.json") );
+    BOOST_CHECK( docTraj.parse("../ressource/unittest/KFL/BeaconDetector/traj_1.json") );
     unsigned int n = docTraj.getIntegerData( docTraj.getChild( docTraj.root(), "size") );
     Eigen::VectorXd tt = Eigen::VectorXd::Zero(n);
     Eigen::VectorXd xx = Eigen::VectorXd::Zero(n);
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE( test_DetectedCircle_1 )
         hh[i] = docTraj.getFloatData( docTraj.getChild( docTraj.getChild(docTraj.root(), "hh") , i ) );
     }
 
-    arp_rlu::lsl::JsonScanParser parser("../ressource/unittest/scan_1.json");
+    arp_rlu::lsl::JsonScanParser parser("../ressource/unittest/KFL/BeaconDetector/scan_1.json");
     lsl::LaserScan ls;
     bool res = parser.getScan(ls);
     BOOST_CHECK(res);
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE( test_DetectedCircle_1 )
     std::vector< DetectedCircle > vdc = obj.getDetectedCircles();
 
     vjson::JsonDocument docResults;
-    BOOST_CHECK( docResults.parse("../ressource/unittest/results_1.json") );
+    BOOST_CHECK( docResults.parse("../ressource/unittest/KFL/BeaconDetector/results_1.json") );
 
     unsigned int nbObjects = docResults.getIntegerData( docResults.getChild( docResults.root(), "nbObjects") );
 
@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE( test_DetectedCircle_1 )
 BOOST_AUTO_TEST_CASE( test_DetectedCircle_2 )
 {
     vjson::JsonDocument docTraj;
-    BOOST_CHECK( docTraj.parse("../ressource/unittest/traj_2.json") );
+    BOOST_CHECK( docTraj.parse("../ressource/unittest/KFL/BeaconDetector/traj_2.json") );
     unsigned int n = docTraj.getIntegerData( docTraj.getChild( docTraj.root(), "size") );
     Eigen::VectorXd tt = Eigen::VectorXd::Zero(n);
     Eigen::VectorXd xx = Eigen::VectorXd::Zero(n);
@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE( test_DetectedCircle_2 )
         hh[i] = docTraj.getFloatData( docTraj.getChild( docTraj.getChild(docTraj.root(), "hh") , i ) );
     }
 
-    arp_rlu::lsl::JsonScanParser parser("../ressource/unittest/scan_2.json");
+    arp_rlu::lsl::JsonScanParser parser("../ressource/unittest/KFL/BeaconDetector/scan_2.json");
     lsl::LaserScan ls;
     bool res = parser.getScan(ls);
     BOOST_CHECK(res);
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE( test_DetectedCircle_2 )
     std::vector< DetectedCircle > vdc = obj.getDetectedCircles();
 
     vjson::JsonDocument docResults;
-    BOOST_CHECK( docResults.parse("../ressource/unittest/results_2.json") );
+    BOOST_CHECK( docResults.parse("../ressource/unittest/KFL/BeaconDetector/results_2.json") );
 
     unsigned int nbObjects = docResults.getIntegerData( docResults.getChild( docResults.root(), "nbObjects") );
 
@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE( test_DetectedCircle_2 )
 BOOST_AUTO_TEST_CASE( test_DetectedCircle_3 )
 {
     vjson::JsonDocument docTraj;
-    BOOST_CHECK( docTraj.parse("../ressource/unittest/traj_3.json") );
+    BOOST_CHECK( docTraj.parse("../ressource/unittest/KFL/BeaconDetector/traj_3.json") );
     unsigned int n = docTraj.getIntegerData( docTraj.getChild( docTraj.root(), "size") );
     Eigen::VectorXd tt = Eigen::VectorXd::Zero(n);
     Eigen::VectorXd xx = Eigen::VectorXd::Zero(n);
@@ -173,7 +173,7 @@ BOOST_AUTO_TEST_CASE( test_DetectedCircle_3 )
         hh[i] = docTraj.getFloatData( docTraj.getChild( docTraj.getChild(docTraj.root(), "hh") , i ) );
     }
 
-    arp_rlu::lsl::JsonScanParser parser("../ressource/unittest/scan_3.json");
+    arp_rlu::lsl::JsonScanParser parser("../ressource/unittest/KFL/BeaconDetector/scan_3.json");
     lsl::LaserScan ls;
     bool res = parser.getScan(ls);
     BOOST_CHECK(res);
@@ -187,7 +187,7 @@ BOOST_AUTO_TEST_CASE( test_DetectedCircle_3 )
     std::vector< DetectedCircle > vdc = obj.getDetectedCircles();
 
     vjson::JsonDocument docResults;
-    BOOST_CHECK( docResults.parse("../ressource/unittest/results_3.json") );
+    BOOST_CHECK( docResults.parse("../ressource/unittest/KFL/BeaconDetector/results_3.json") );
 
     unsigned int nbObjects = docResults.getIntegerData( docResults.getChild( docResults.root(), "nbObjects") );
 
@@ -211,7 +211,7 @@ BOOST_AUTO_TEST_CASE( test_DetectedCircle_3 )
 BOOST_AUTO_TEST_CASE( test_DetectedCircle_4 )
 {
     vjson::JsonDocument docTraj;
-    BOOST_CHECK( docTraj.parse("../ressource/unittest/traj_4.json") );
+    BOOST_CHECK( docTraj.parse("../ressource/unittest/KFL/BeaconDetector/traj_4.json") );
     unsigned int n = docTraj.getIntegerData( docTraj.getChild( docTraj.root(), "size") );
     Eigen::VectorXd tt = Eigen::VectorXd::Zero(n);
     Eigen::VectorXd xx = Eigen::VectorXd::Zero(n);
@@ -225,7 +225,7 @@ BOOST_AUTO_TEST_CASE( test_DetectedCircle_4 )
         hh[i] = docTraj.getFloatData( docTraj.getChild( docTraj.getChild(docTraj.root(), "hh") , i ) );
     }
 
-    arp_rlu::lsl::JsonScanParser parser("../ressource/unittest/scan_4.json");
+    arp_rlu::lsl::JsonScanParser parser("../ressource/unittest/KFL/BeaconDetector/scan_4.json");
     lsl::LaserScan ls;
     bool res = parser.getScan(ls);
     BOOST_CHECK(res);
@@ -246,7 +246,7 @@ BOOST_AUTO_TEST_CASE( test_DetectedCircle_4 )
     std::vector< DetectedCircle > vdc = obj.getDetectedCircles();
 
     vjson::JsonDocument docResults;
-    BOOST_CHECK( docResults.parse("../ressource/unittest/results_4.json") );
+    BOOST_CHECK( docResults.parse("../ressource/unittest/KFL/BeaconDetector/results_4.json") );
 
     unsigned int nbObjects = docResults.getIntegerData( docResults.getChild( docResults.root(), "nbObjects") );
 
@@ -293,7 +293,7 @@ BOOST_AUTO_TEST_CASE( test_DetectedCircle_4 )
 
 
     vjson::JsonDocument docMeas;
-    BOOST_CHECK( docMeas.parse("../ressource/unittest/meas_4.json") );
+    BOOST_CHECK( docMeas.parse("../ressource/unittest/KFL/BeaconDetector/meas_4.json") );
 
     unsigned int nbMeas = docMeas.getIntegerData( docMeas.getChild( docMeas.root(), "nbMeas") );
     BOOST_CHECK_EQUAL(measures.size(), nbMeas);
@@ -330,7 +330,7 @@ BOOST_AUTO_TEST_CASE( test_DetectedCircle_4 )
 BOOST_AUTO_TEST_CASE( test_DetectedCircle_5 )
 {
     vjson::JsonDocument docTraj;
-    BOOST_CHECK( docTraj.parse("../ressource/unittest/traj_5.json") );
+    BOOST_CHECK( docTraj.parse("../ressource/unittest/KFL/BeaconDetector/traj_5.json") );
     unsigned int n = docTraj.getIntegerData( docTraj.getChild( docTraj.root(), "size") );
     Eigen::VectorXd tt = Eigen::VectorXd::Zero(n);
     Eigen::VectorXd xx = Eigen::VectorXd::Zero(n);
@@ -344,7 +344,7 @@ BOOST_AUTO_TEST_CASE( test_DetectedCircle_5 )
         hh[i] = docTraj.getFloatData( docTraj.getChild( docTraj.getChild(docTraj.root(), "hh") , i ) );
     }
 
-    arp_rlu::lsl::JsonScanParser parser("../ressource/unittest/scan_5.json");
+    arp_rlu::lsl::JsonScanParser parser("../ressource/unittest/KFL/BeaconDetector/scan_5.json");
     lsl::LaserScan ls;
     bool res = parser.getScan(ls);
     BOOST_CHECK(res);
@@ -365,7 +365,7 @@ BOOST_AUTO_TEST_CASE( test_DetectedCircle_5 )
     std::vector< DetectedCircle > vdc = obj.getDetectedCircles();
 
     vjson::JsonDocument docResults;
-    BOOST_CHECK( docResults.parse("../ressource/unittest/results_5.json") );
+    BOOST_CHECK( docResults.parse("../ressource/unittest/KFL/BeaconDetector/results_5.json") );
 
     unsigned int nbObjects = docResults.getIntegerData( docResults.getChild( docResults.root(), "nbObjects") );
 
@@ -412,7 +412,7 @@ BOOST_AUTO_TEST_CASE( test_DetectedCircle_5 )
 
 
     vjson::JsonDocument docMeas;
-    BOOST_CHECK( docMeas.parse("../ressource/unittest/meas_5.json") );
+    BOOST_CHECK( docMeas.parse("../ressource/unittest/KFL/BeaconDetector/meas_5.json") );
 
     unsigned int nbMeas = docMeas.getIntegerData( docMeas.getChild( docMeas.root(), "nbMeas") );
     BOOST_CHECK_EQUAL(measures.size(), nbMeas);

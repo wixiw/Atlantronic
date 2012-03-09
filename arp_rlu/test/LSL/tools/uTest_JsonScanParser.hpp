@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_SUITE( unittest_JsonScanParser )
 
 BOOST_AUTO_TEST_CASE( test_Scan_Parsing )
 {
-    arp_rlu::lsl::JsonScanParser parser("../ressource/unittest/scan.json");
+    arp_rlu::lsl::JsonScanParser parser("../ressource/unittest/BFL/JsonScanParser/scan.json");
 
     lsl::LaserScan ls;
     bool res = parser.getScan(ls);
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE( test_Scan_Parsing )
 
 BOOST_AUTO_TEST_CASE( test_Scan_Writing )
 {
-    arp_rlu::lsl::JsonScanParser parser("../ressource/unittest/scan.json");
+    arp_rlu::lsl::JsonScanParser parser("../ressource/unittest/BFL/JsonScanParser/scan.json");
 
     lsl::LaserScan scan;
     bool res = parser.getScan(scan);
