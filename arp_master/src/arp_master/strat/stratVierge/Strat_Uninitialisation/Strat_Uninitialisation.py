@@ -13,8 +13,6 @@ from arp_master.strat.stratVierge.util.Data import Data
 from arp_master.strat.stratVierge.util.EndMatchPreempter import EndMatchPreempter
 from arp_master.strat.stratVierge.util.PreemptiveStateMachine import PreemptiveStateMachine
 from arp_master.strat.stratVierge.util.PreemptiveCyclicState import PreemptiveCyclicState
-from arp_master.strat.stratVierge.util.ObstaclePreempter import FrontObstaclePreempter
-from arp_master.strat.stratVierge.util.ObstaclePreempter import RearObstaclePreempter
 from arp_master.strat.stratVierge.util.WaiterState import WaiterState
 from arp_master.strat.stratVierge.util.TableVierge import *
 from arp_master.strat.stratVierge.util.UtilARD import *
