@@ -84,27 +84,24 @@ KFLocalizator::~KFLocalizator()
         delete bayesian;
 }
 
-void KFLocalizator::setParams(KFLocalizator::Params)
+void KFLocalizator::setParams(KFLocalizator::Params p)
 {
-    throw NotImplementedException();
+    params = p;
 }
 
-bool KFLocalizator::setParams(KFLocalizator::InitParams)
+void KFLocalizator::setParams(KFLocalizator::InitParams p)
 {
-    throw NotImplementedException();
-    return false;
+    params.initParams = p;
 }
 
-void KFLocalizator::setParams(KFLocalizator::IEKFParams)
+void KFLocalizator::setParams(KFLocalizator::IEKFParams p)
 {
-    throw NotImplementedException();
-    return;
+    params.iekfParams = p;
 }
 
-void KFLocalizator::setParams(BeaconDetector::Params)
+void KFLocalizator::setParams(BeaconDetector::Params p)
 {
-    throw NotImplementedException();
-    return;
+    params.procParams = p;
 }
 
 bool KFLocalizator::initialize()

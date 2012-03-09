@@ -6,6 +6,7 @@
  */
 
 
+#include "KFL/Logger.hpp"
 #include "LSL/Logger.hpp"
 
 using namespace arp_core::log;
@@ -18,19 +19,23 @@ using namespace arp_core::log;
 BOOST_AUTO_TEST_SUITE( unittest_dummy )
 BOOST_AUTO_TEST_CASE( testdummy )
 {
-//  arp_rlu::lsl::Logger::InitNull("uT_KFL", DEBUG);
-  arp_rlu::lsl::Logger::InitConsole("uT_KFL", ERROR);
-//  arp_rlu::lsl::Logger::InitFile("uT_KFL", DEBUG);
+//  arp_rlu::kfl::Logger::InitNull("uT_KFL", DEBUG);
+  arp_rlu::kfl::Logger::InitConsole("uT_KFL", DEBUG);
+//  arp_rlu::kfl::Logger::InitFile("uT_KFL", DEBUG);
 
-//  arp_rlu::lsl::Log( FATAL )  << "fatal";
-//  arp_rlu::lsl::Log( EMERG )  << "emerg";
-//  arp_rlu::lsl::Log( ALERT )  << "alert";
-//  arp_rlu::lsl::Log( CRIT )   << "crit";
-//  arp_rlu::lsl::Log( ERROR )  << "error";
-//  arp_rlu::lsl::Log( WARN )   << "warn";
-//  arp_rlu::lsl::Log( NOTICE ) << "notice";
-//  arp_rlu::lsl::Log( INFO )   << "info";
-//  arp_rlu::lsl::Log( DEBUG )  << "debug";
+  //  arp_rlu::lsl::Logger::InitNull("uT_KFL", ERROR);
+  arp_rlu::lsl::Logger::InitConsole("uT_KFL", ERROR);
+  //  arp_rlu::lsl::Logger::InitFile("uT_KFL", ERROR);
+
+//  arp_rlu::kfl::Log( FATAL )  << "fatal";
+//  arp_rlu::kfl::Log( EMERG )  << "emerg";
+//  arp_rlu::kfl::Log( ALERT )  << "alert";
+//  arp_rlu::kfl::Log( CRIT )   << "crit";
+//  arp_rlu::kfl::Log( ERROR )  << "error";
+//  arp_rlu::kfl::Log( WARN )   << "warn";
+//  arp_rlu::kfl::Log( NOTICE ) << "notice";
+//  arp_rlu::kfl::Log( INFO )   << "info";
+//  arp_rlu::kfl::Log( DEBUG )  << "debug";
 
 //  boost::unit_test::unit_test_log.set_threshold_level( boost::unit_test::log_successful_tests );
 //  boost::unit_test::unit_test_log.set_threshold_level( boost::unit_test::log_messages );
@@ -48,5 +53,5 @@ BOOST_AUTO_TEST_SUITE_END()
 //#include "BFL/uTest_BFLSysConditionalPdf.hpp"
 //#include "BFL/uTest_BFLMeasConditionalPdf.hpp"
 //
-//#include "uTest_KFLocalizator.hpp"
+#include "uTest_KFLocalizator.hpp"
 

@@ -1,6 +1,8 @@
 # coding=utf-8
-import sys
+import sys, os
 sys.path.append( "../../../../src/KFLocalizator/PyMockup" )
+
+import json
 
 import roslib; roslib.load_manifest('arp_rlu')
 import rospy
@@ -17,6 +19,8 @@ from LRFSimulator import *
 import params_KFLocalizator_Static as params
 
 np.set_printoptions(precision=4)
+
+xpIndex = 1
 
 graine = random.randint(0,1000)
 graine_ = random.randint(0,1000)
@@ -158,6 +162,46 @@ ax.add_patch(circ)
 
 plt.draw()
 
+
+#===============================================================================
+# Export de la position initiale
+#===============================================================================
+dictInitPos = {}
+dictInitPos["trueX"] = trueX
+dictInitPos["trueY"] = trueY
+dictInitPos["trueH"] = trueH
+dictInitPos["initialXPosition"] = initialXPosition
+dictInitPos["initialYPosition"] = initialYPosition
+dictInitPos["initialHPosition"] = initialHeading
+if not os.path.exists("static_"+ str(xpIndex)):
+  os.mkdir("static_"+ str(xpIndex))
+output = open("./static_"+ str(xpIndex) + "/initial_position.json", mode='w')
+output.write(json.dumps(dictInitPos,indent=2,sort_keys=True))
+output.close()
+
+#===============================================================================
+# Export des paramètres du KFLocalizator
+#===============================================================================
+dictKFParams = {}
+dictKFParams["sigmaInitialPosition"] = params.simu_cfg["sigmaInitialPosition"]
+dictKFParams["sigmaInitialHeading"] = params.simu_cfg["sigmaInitialHeading"]
+dictKFParams["sigmaTransOdoVelocity"] = params.kf_cfg["sigmaTransOdoVelocity"]
+dictKFParams["sigmaRotOdoVelocity"] = params.kf_cfg["sigmaRotOdoVelocity"]
+dictKFParams["sigmaLaserRange"] = params.kf_cfg["sigmaLaserRange"]
+dictKFParams["sigmaLaserAngle"] = params.kf_cfg["sigmaLaserAngle"]
+dictKFParams["iekf_Nit"] = params.kf_cfg["iekf_cfg"]["Nit"]
+dictKFParams["iekf_xThreshold"] = params.kf_cfg["iekf_cfg"]["threshold"][0,0]
+dictKFParams["iekf_yThreshold"] = params.kf_cfg["iekf_cfg"]["threshold"][1,0]
+dictKFParams["iekf_hThreshold"] = params.kf_cfg["iekf_cfg"]["threshold"][2,0]
+dictKFParams["beacondetector_maxDistance"] = params.kf_cfg["scanproc_cfg"]["maxDistance"]
+dictKFParams["beacondetector_rangeThreshold"] = params.kf_cfg["scanproc_cfg"]["thresholdRange"]
+if not os.path.exists("static_"+ str(xpIndex)):
+  os.mkdir("static_"+ str(xpIndex))
+output = open("./static_"+ str(xpIndex) + "/kfl_params.json", mode='w')
+output.write(json.dumps(dictKFParams,indent=2,sort_keys=True))
+output.close()
+
+
 #===============================================================================
 # En avant !
 #===============================================================================
@@ -204,7 +248,36 @@ for k in range(params.simu_cfg["Nscans"]):
       ov.vx = random.normalvariate(0., params.simu_cfg["sigmaTransOdoVelocity"])
       ov.vy = random.normalvariate(0., params.simu_cfg["sigmaTransOdoVelocity"])
       ov.vh = random.normalvariate(0., params.simu_cfg["sigmaRotOdoVelocity"])
+      
+      dictOdo = {}
+      dictOdo["t"] = t
+      dictOdo["vx"] = ov.vx
+      dictOdo["vy"] = ov.vy
+      dictOdo["vh"] = ov.vh
+      if not os.path.exists("static_"+ str(xpIndex)):
+        os.mkdir("static_"+ str(xpIndex))
+      output = open("./static_"+ str(xpIndex) + "/t_" + str(t) + "_odo.json", mode='w')
+      output.write(json.dumps(dictOdo,indent=2,sort_keys=True))
+      output.close()
+      
       kfloc.newOdoVelocity(t, ov, params.kf_cfg["sigmaTransOdoVelocity"], params.kf_cfg["sigmaTransOdoVelocity"], params.kf_cfg["sigmaRotOdoVelocity"])
+      
+      estimOdo = kfloc.getBestEstimate()
+      dictEstim = {}
+      dictEstim["t"] = estimOdo[0]
+      dictEstim["x"] = estimOdo[1].xRobot
+      dictEstim["y"] = estimOdo[1].yRobot
+      dictEstim["h"] = estimOdo[1].hRobot
+      dictEstim["covariance"] = {}
+      dictEstim["covariance"]["raw_0"] = [estimOdo[1].covariance[0,0], estimOdo[1].covariance[0,1], estimOdo[1].covariance[0,2]]
+      dictEstim["covariance"]["raw_1"] = [estimOdo[1].covariance[1,0], estimOdo[1].covariance[1,1], estimOdo[1].covariance[1,2]]
+      dictEstim["covariance"]["raw_2"] = [estimOdo[1].covariance[2,0], estimOdo[1].covariance[2,1], estimOdo[1].covariance[2,2]]
+      if not os.path.exists("static_"+ str(xpIndex)):
+        os.mkdir("static_"+ str(xpIndex))
+      output = open("./static_"+ str(xpIndex) + "/t_" + str(t) + "_odo_estimate.json", mode='w')
+      output.write(json.dumps(dictEstim,indent=2,sort_keys=True))
+      output.close()
+      
     time = time + odoDurationInSec
     
     #===============================================================================
@@ -246,6 +319,10 @@ for k in range(params.simu_cfg["Nscans"]):
     
     
     kfloc.newScan(time, scan)
+    
+    if not os.path.exists("static_"+ str(xpIndex)):
+        os.mkdir("static_"+ str(xpIndex))
+    scan.export("./static_"+ str(xpIndex) + "/t_" + str(time) + "_scan.json")
     
     #===============================================================================
     # Estimee apres le scan
@@ -293,6 +370,21 @@ for k in range(params.simu_cfg["Nscans"]):
     rospy.loginfo( "  sur y (en mm): %f", (estim2[1].yRobot - trueY) * 1000.)
     rospy.loginfo( "  en cap (deg) : %f", betweenMinusPiAndPlusPi( estim2[1].hRobot - trueH ) *180./np.pi)
     rospy.loginfo("covariance :\n%s", repr(estim2[1].covariance))
+    
+    dictEstim = {}
+    dictEstim["t"] = estim2[0]
+    dictEstim["x"] = estim2[1].xRobot
+    dictEstim["y"] = estim2[1].yRobot
+    dictEstim["h"] = estim2[1].hRobot
+    dictEstim["covariance"] = {}
+    dictEstim["covariance"]["raw_0"] = [estim2[1].covariance[0,0], estim2[1].covariance[0,1], estim2[1].covariance[0,2]]
+    dictEstim["covariance"]["raw_1"] = [estim2[1].covariance[1,0], estim2[1].covariance[1,1], estim2[1].covariance[1,2]]
+    dictEstim["covariance"]["raw_2"] = [estim2[1].covariance[2,0], estim2[1].covariance[2,1], estim2[1].covariance[2,2]]
+    if not os.path.exists("static_"+ str(xpIndex)):
+      os.mkdir("static_"+ str(xpIndex))
+    output = open("./static_"+ str(xpIndex) + "/t_" + str(time) + "_scan_estimate.json", mode='w')
+    output.write(json.dumps(dictEstim,indent=2,sort_keys=True))
+    output.close()
 
     xArrowBeg = estim2[1].xRobot
     yArrowBeg = estim2[1].yRobot

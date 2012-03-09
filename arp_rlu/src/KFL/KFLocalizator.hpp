@@ -191,7 +191,7 @@ class KFLocalizator
         /**
          * Modification des paramètres d'initialisation
          */
-        bool setParams(KFLocalizator::InitParams);
+        void setParams(KFLocalizator::InitParams);
 
         /**
          * Modification des paramètres relatifs au filtre de kalman.
