@@ -17,6 +17,7 @@ using namespace Eigen;
 using namespace arp_rlu;
 using namespace std;
 using namespace lsl;
+using namespace kfl;
 using namespace arp_core::log;
 
 

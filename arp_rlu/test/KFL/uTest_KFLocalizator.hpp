@@ -46,9 +46,9 @@ BOOST_AUTO_TEST_CASE( Static_1 )
     float sigmaLaserRange       = docParams.getFloatData( docParams.getChild( docParams.root(), "sigmaLaserRange") );
     float sigmaLaserAngle       = docParams.getFloatData( docParams.getChild( docParams.root(), "sigmaLaserAngle") );
     int iekf_Nit                = docParams.getIntegerData( docParams.getChild( docParams.root(), "iekf_Nit") );
-    float iekf_xThreshold       = docParams.getFloatData( docParams.getChild( docParams.root(), "iekf_xThreshold") );
-    float iekf_yThreshold       = docParams.getFloatData( docParams.getChild( docParams.root(), "iekf_yThreshold") );
-    float iekf_hThreshold       = docParams.getFloatData( docParams.getChild( docParams.root(), "iekf_hThreshold") );
+    //    float iekf_xThreshold       = docParams.getFloatData( docParams.getChild( docParams.root(), "iekf_xThreshold") );
+    //    float iekf_yThreshold       = docParams.getFloatData( docParams.getChild( docParams.root(), "iekf_yThreshold") );
+    //    float iekf_hThreshold       = docParams.getFloatData( docParams.getChild( docParams.root(), "iekf_hThreshold") );
     float maxDistance           = docParams.getFloatData( docParams.getChild( docParams.root(), "beacondetector_maxDistance") );
     float rangeThreshold        = docParams.getFloatData( docParams.getChild( docParams.root(), "beacondetector_rangeThreshold") );
 
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE( Static_1 )
     initParams.initialPose.date(time);
 
     obj.setParams(initParams);
-    //    BOOST_CHECK(obj.initialize());
+//    BOOST_CHECK(obj.initialize());
 
 
 

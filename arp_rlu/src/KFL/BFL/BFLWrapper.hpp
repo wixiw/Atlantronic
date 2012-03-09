@@ -22,13 +22,9 @@ namespace kfl
  *
  * \brief Cette classe implémente l'interface BayesianWrapper à l'aide de la BFL.
  */
-class BFLWrapper : BayesianWrapper
+class BFLWrapper : public BayesianWrapper
 {
     public:
-    /**
-     * Constructeur par défault
-     */
-    BFLWrapper();
 
     /**
      * Initialise le filtrage bayésien.
@@ -65,8 +61,6 @@ class BFLWrapper : BayesianWrapper
      */
     KFLStateCov getCovariance() const;
 
-
-    protected:
 
 };
 

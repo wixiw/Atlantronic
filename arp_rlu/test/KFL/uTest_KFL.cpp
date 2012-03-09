@@ -7,7 +7,6 @@
 
 
 #include "KFL/Logger.hpp"
-#include "LSL/Logger.hpp"
 
 using namespace arp_core::log;
 
@@ -22,10 +21,6 @@ BOOST_AUTO_TEST_CASE( testdummy )
 //  arp_rlu::kfl::Logger::InitNull("uT_KFL", DEBUG);
   arp_rlu::kfl::Logger::InitConsole("uT_KFL", DEBUG);
 //  arp_rlu::kfl::Logger::InitFile("uT_KFL", DEBUG);
-
-  //  arp_rlu::lsl::Logger::InitNull("uT_KFL", ERROR);
-  arp_rlu::lsl::Logger::InitConsole("uT_KFL", ERROR);
-  //  arp_rlu::lsl::Logger::InitFile("uT_KFL", ERROR);
 
 //  arp_rlu::kfl::Log( FATAL )  << "fatal";
 //  arp_rlu::kfl::Log( EMERG )  << "emerg";

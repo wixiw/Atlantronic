@@ -7,6 +7,8 @@
 
 #include <KFL/BFL/BFLWrapper.hpp>
 
+#include "KFL/Logger.hpp"
+
 #include <exceptions/NotImplementedException.hpp>
 
 // BFL includes
@@ -17,12 +19,8 @@ using namespace arp_rlu;
 using namespace std;
 using namespace Eigen;
 using namespace kfl;
+using namespace arp_core::log;
 
-BFLWrapper::BFLWrapper()
-: BayesianWrapper()
-{
-    ;
-}
 
 void BFLWrapper::init(double t, KFLStateVar statevariable, KFLStateCov statecovariance)
 {

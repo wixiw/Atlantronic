@@ -13,6 +13,8 @@
 #include <KFL/BeaconDetector.hpp>
 #include <KFL/BayesianWrapper.hpp>
 
+#include <boost/circular_buffer.hpp>
+
 namespace arp_rlu
 {
 
@@ -42,25 +44,25 @@ class KFLocalizator
         class InitParams
         {
             public:
-                /** Constructeur par défault.
-                 *  Il initialise des paramètres classiques non-stupides :\n
-                 *  (x,y,h) = (0., 0., 0.)\n
-                 *  t = now()\n
-                 *  cov = diag( [0.1, 0.1, 0.01] )
-                 */
-                InitParams();
+            /** Constructeur par défault.
+             *  Il initialise des paramètres classiques non-stupides :\n
+             *  (x,y,h) = (0., 0., 0.)\n
+             *  t = now()\n
+             *  cov = diag( [0.1, 0.1, 0.01] )
+             */
+            InitParams();
 
-                /**
-                 * Permet de formatter les paramètres en un message lisible.
-                 */
-                std::string getInfo();
+            /**
+             * Permet de formatter les paramètres en un message lisible.
+             */
+            std::string getInfo();
 
-                /**
-                 * La pose initiale.\n
-                 * Il s'agit d'une pose estimée : outre la position x,y,h elle comprend un temps et
-                 * une matrice de covariance (représentant la confiance).
-                 */
-                arp_math::EstimatedPose2D initialPose;
+            /**
+             * La pose initiale.\n
+             * Il s'agit d'une pose estimée : outre la position x,y,h elle comprend un temps et
+             * une matrice de covariance (représentant la confiance).
+             */
+            arp_math::EstimatedPose2D initialPose;
         };
 
         /** \ingroup kfl
@@ -134,10 +136,11 @@ class KFLocalizator
             public:
                 /** Constructeur par défault.
                  *  Il initialise des paramètres classiques non-stupides :\n
-                 *  bufferSize = 100\n
-                 *  initParams => voir KFLocalizator::InitParams() \n
-                 *  iekfParams => voir KFLocalizator::InitParams() \n
-                 *  procParams => voir BeaconDetector::Params() \n
+                 *  \li bufferSize = 100\n
+                 *  \li referencedBeacons contient 3 balises
+                 *  \li initParams => voir KFLocalizator::InitParams() \n
+                 *  \li iekfParams => voir KFLocalizator::IEKFParams() \n
+                 *  \li procParams => voir BeaconDetector::Params() \n
                  */
                 Params();
 
@@ -155,6 +158,11 @@ class KFLocalizator
                  * bufferSize doit être supérieur à Tscan/Todo.
                  */
                 unsigned int bufferSize;
+
+                /**
+                 * Position des balises (circulaires) sur la table
+                 */
+                std::vector< lsl::Circle > referencedBeacons;
 
                 /**
                  * Paramètres relatifs à l'initialisation de la localisation (position initiale etc...)
@@ -250,6 +258,18 @@ class KFLocalizator
          */
         BayesianWrapper * bayesian;
 
+        /**
+         * Buffer circulaire stockant les estimations de Pose et de Twist
+         */
+        boost::circular_buffer< std::pair< arp_math::EstimatedPose2D, arp_math::EstimatedTwist2D > > circularBuffer;
+
+    protected:
+        /**
+         * Mets à jour le buffer circulaire
+         * \param[in] date de l'estimation car la boite à outil BFL n'a pas à connaitre l'heure
+         * \param[in] la vitesse si elle est connue
+         */
+        void updateBuffer(const double date, const arp_math::EstimatedTwist2D & t = arp_math::EstimatedTwist2D());
 
 
 };

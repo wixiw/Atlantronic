@@ -29,6 +29,7 @@ namespace kfl
 class BayesianWrapper
 {
     public:
+
         /**
          * Initialise le filtrage bayésien.
          * \param t la date d'origine
@@ -39,7 +40,7 @@ class BayesianWrapper
 
         /**
          * Réalise la prédiction : simulation du système
-         * \param dt âge de la dernière estimée
+         * \param dt age de la dernière estimée
          * \param i variable d'entrée correspondant à une vitesse
          */
         virtual void predict(double dt, KFLSysInput i) = 0;
