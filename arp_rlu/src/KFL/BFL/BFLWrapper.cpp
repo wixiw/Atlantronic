@@ -22,13 +22,13 @@ using namespace kfl;
 using namespace arp_core::log;
 
 
-void BFLWrapper::init(double t, KFLStateVar statevariable, KFLStateCov statecovariance)
+void BFLWrapper::init(KFLStateVar statevariable, KFLStateCov statecovariance)
 {
     throw NotImplementedException();
     return;
 }
 
-void BFLWrapper::predict(double dt, KFLSysInput sinp)
+void BFLWrapper::predict(KFLSysInput input)
 {
     throw NotImplementedException();
     return;

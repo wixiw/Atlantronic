@@ -28,18 +28,16 @@ class BFLWrapper : public BayesianWrapper
 
     /**
      * Initialise le filtrage bayésien.
-     * \param t la date d'origine
      * \param v l'état initial
      * \param c la covariance de l'état initial
      */
-    void init(double t, KFLStateVar, KFLStateCov);
+    void init(KFLStateVar, KFLStateCov);
 
     /**
      * Réalise la prédiction : simulation du système
-     * \param dt âge de la dernière estimée
-     * \param i variable d'entrée correspondant à une vitesse
+     * \param i variable d'entrée correspondant à une commande
      */
-    void predict(double dt, KFLSysInput );
+    void predict( KFLSysInput );
 
     /**
      * Réalise la confrontation aux mesures
@@ -60,6 +58,10 @@ class BFLWrapper : public BayesianWrapper
      * \return la covariance de la dernière estimée
      */
     KFLStateCov getCovariance() const;
+
+    protected:
+    KFLStateVar var;
+    KFLStateCov cov;
 
 
 };

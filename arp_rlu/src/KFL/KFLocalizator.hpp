@@ -266,11 +266,16 @@ class KFLocalizator
     protected:
         /**
          * Mets à jour le buffer circulaire
-         * \param[in] date de l'estimation car la boite à outil BFL n'a pas à connaitre l'heure
+         * \param[in] date de l'estimation car la boite à outil BFL ne connait pas l'heure
          * \param[in] la vitesse si elle est connue
          */
         void updateBuffer(const double date, const arp_math::EstimatedTwist2D & t = arp_math::EstimatedTwist2D());
 
+        /**
+         * Vide le buffer circulaire de toutes les estimées postérieures à une certaine date
+         * \param[in] date La date en question
+         */
+        void popBufferUntilADate(const double date);
 
 };
 

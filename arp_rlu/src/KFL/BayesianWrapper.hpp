@@ -32,18 +32,17 @@ class BayesianWrapper
 
         /**
          * Initialise le filtrage bayésien.
-         * \param t la date d'origine
          * \param v l'état initial
          * \param c la covariance de l'état initial
          */
-        virtual void init(double t, KFLStateVar v, KFLStateCov c) = 0;
+        virtual void init(KFLStateVar v, KFLStateCov c) = 0;
 
         /**
          * Réalise la prédiction : simulation du système
          * \param dt age de la dernière estimée
          * \param i variable d'entrée correspondant à une vitesse
          */
-        virtual void predict(double dt, KFLSysInput i) = 0;
+        virtual void predict(KFLSysInput i) = 0;
 
         /**
          * Réalise la confrontation aux mesures

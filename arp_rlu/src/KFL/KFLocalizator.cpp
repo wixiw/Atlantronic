@@ -144,7 +144,7 @@ bool KFLocalizator::initialize()
     KFLStateCov initStateCov;
     initStateCov = params.initParams.initialPose.cov();
 
-    bayesian->init(initDate, initStateVar, initStateCov);
+    bayesian->init(initStateVar, initStateCov);
 
     updateBuffer(initDate);
     return true;
@@ -166,12 +166,14 @@ bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D odoVel)
         return false;
     }
 
-    KFLSysInput input;
-    input(0) = odoVel.vx();
-    input(1) = odoVel.vy();
-    input(2) = odoVel.vh();
+    double dt = odoVel.date() - lastEstim.date();
 
-    bayesian->predict( odoVel.date() - lastEstim.date(), input );
+    KFLSysInput input;
+    input(0) = dt * odoVel.vx();
+    input(1) = dt * odoVel.vy();
+    input(2) = dt * odoVel.vh();
+
+    bayesian->predict( input );
 
     updateBuffer(odoVel.date(), odoVel);
     return true;
@@ -181,54 +183,87 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
 {
     if(circularBuffer.empty())
     {
-        Log( ERROR ) << "KFLocalizator::newScan - Internal Circular Buffer is empty (maybe you forgot to initialize) => return false";
+        Log( ERROR ) << "KFLocalizator::newScan - Internal Circular Buffer is empty (maybe you forgot to initialize it) => return false";
         return false;
     }
 
     if(params.referencedBeacons.empty())
     {
-        Log( ERROR ) << "KFLocalizator::newScan - No Beacon referenced => return false";
+        Log( ERROR ) << "KFLocalizator::newScan - No referenced Beacon (maybe you forgot to reference them) => return false";
         return false;
     }
 
+    if(scan.getSize() == 0)
+    {
+        Log( WARN ) << "KFLocalizator::newScan - Scan is empty => return false";
+        return false;
+    }
+
+    if(circularBuffer.front().first.date() >= scan.getTimeData()(0))
+    {
+        Log( WARN ) << "KFLocalizator::newScan - Not enough history in circular buffer => return false";
+        return false;
+    }
+
+    //***************************************
+    // back to the past
     Eigen::VectorXd ttFromBuffer(circularBuffer.size());
     Eigen::VectorXd xxFromBuffer(circularBuffer.size());
     Eigen::VectorXd yyFromBuffer(circularBuffer.size());
     Eigen::VectorXd hhFromBuffer(circularBuffer.size());
+    Eigen::Array< Eigen::Matrix3d, Dynamic, 1 > covFromBuffer(circularBuffer.size());
     Eigen::VectorXd vxFromBuffer(circularBuffer.size());
     Eigen::VectorXd vyFromBuffer(circularBuffer.size());
     Eigen::VectorXd vhFromBuffer(circularBuffer.size());
-    Eigen::Array< Eigen::Matrix3d, Dynamic, 1 > covFromBuffer(circularBuffer.size());
     for( unsigned int i = 0 ; i < circularBuffer.size() ; i++ )
     {
-        ttFromBuffer(i) = circularBuffer[i].first.date();
-        xxFromBuffer(i) = circularBuffer[i].first.x();
-        yyFromBuffer(i) = circularBuffer[i].first.y();
-        hhFromBuffer(i) = circularBuffer[i].first.h();
-        vxFromBuffer(i) = circularBuffer[i].second.vx();
-        vyFromBuffer(i) = circularBuffer[i].second.vy();
-        vhFromBuffer(i) = circularBuffer[i].second.vh();
+        ttFromBuffer(i)  = circularBuffer[i].first.date();
+        xxFromBuffer(i)  = circularBuffer[i].first.x();
+        yyFromBuffer(i)  = circularBuffer[i].first.y();
+        hhFromBuffer(i)  = circularBuffer[i].first.h();
+        covFromBuffer(i) = circularBuffer[i].first.cov();
+        vxFromBuffer(i)  = circularBuffer[i].second.vx();
+        vyFromBuffer(i)  = circularBuffer[i].second.vy();
+        vhFromBuffer(i)  = circularBuffer[i].second.vh();
     }
 
     Eigen::VectorXd tt = scan.getTimeData();
+    Eigen::VectorXd xx = Interpolator::transInterp(tt, ttFromBuffer, xxFromBuffer);
+    Eigen::VectorXd yy = Interpolator::transInterp(tt, ttFromBuffer, yyFromBuffer);
+    Eigen::VectorXd hh = Interpolator::rotInterp(tt, ttFromBuffer, hhFromBuffer);
+    Eigen::Array< Eigen::Matrix3d, Dynamic, 1 > covs = Interpolator::covInterp(tt, ttFromBuffer, covFromBuffer, 1.e-6, Eigen::Vector3d(1.e-9,1.e-9,1.e-9));
+    Eigen::VectorXd vx = Interpolator::transInterp(tt, ttFromBuffer, vxFromBuffer);
+    Eigen::VectorXd vy = Interpolator::transInterp(tt, ttFromBuffer, vyFromBuffer);
+    Eigen::VectorXd vh = Interpolator::transInterp(tt, ttFromBuffer, vhFromBuffer); // transInterp and not rotInterp because vh is not borned
+
+    popBufferUntilADate(tt(0));
+
+    if(circularBuffer.empty())
+    {
+        Log( CRIT ) << "KFLocalizator::newScan - Internal Circular Buffer is empty after \"back to the past\" operation => return false";
+        return false;
+    }
+    //***************************************
 
 
-
-//    beaconDetector.process(scan, tt, xx, yy, hh);
+    beaconDetector.process(scan, tt, xx, yy, hh);
 
     for(unsigned int i = 0 ; i < scan.getSize() ; i++)
     {
         lsl::Circle target;
         Eigen::Vector2d meas;
-        double t = tt(i);
-        if( beaconDetector.getBeacon( t, target, meas) )
+        if( beaconDetector.getBeacon( tt(i), target, meas) )
         {
             KFLMeasVar m;
             KFLMeasCov c;
             KFLMeasTarget t;
+            // TODO : ici définir m, c et t
             bayesian->update(m, c, t);
         }
+        // TODO : ici faire la prediction avec un dt adéquat
     }
+
+    KFLocalizator::updateBuffer(tt(tt.size()-1), EstimatedTwist2D(vx(tt.size()-1), vy(tt.size()-1), vh(tt.size()-1)));
 
     return false;
 }
@@ -266,5 +301,20 @@ void KFLocalizator::updateBuffer(const double date, const EstimatedTwist2D & tw)
     estimPose.cov( estimStateCov );
 
     circularBuffer.push_back( std::make_pair(estimPose, tw) );
+}
+
+void KFLocalizator::popBufferUntilADate(const double date)
+{
+    while(circularBuffer.empty())
+    {
+        if( circularBuffer.back().first.date() >= date )
+        {
+            circularBuffer.pop_back();
+        }
+        else
+        {
+            return;
+        }
+    }
 }
 
