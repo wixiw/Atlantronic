@@ -110,6 +110,81 @@ Eigen::VectorXd Interpolator::rotInterp(Eigen::VectorXd tt,
     return ret;
 }
 
+Eigen::Array< Eigen::Matrix3d, Dynamic, 1 > Interpolator::covInterp(Eigen::VectorXd  tt,
+        Eigen::VectorXd ttc,
+        Eigen::Array< Eigen::Matrix3d, Dynamic, 1 > covc,
+        double epsilon,
+        Eigen::Vector3d minimum)
+{
+    // ttc & yyc have different sizes
+    if(ttc.size() != covc.size())
+    {
+        return Eigen::Array< Eigen::Matrix3d, Dynamic, 1 >(0);
+    }
+
+    // N = 0
+    if(ttc.size() == 0)
+    {
+        return Eigen::Array< Eigen::Matrix3d, Dynamic, 1 >(0);
+    }
+
+    // N = 1
+    if(ttc.size() == 1)
+    {
+        Eigen::Array< Eigen::Matrix3d, Dynamic, 1 > ret(tt.size());
+        for(unsigned int k = 0 ; k<tt.size() ; k++)
+        {
+            ret(k) = covc(0);
+        }
+        return ret;
+    }
+
+    // P = 0
+    if(tt.size() == 0)
+    {
+        return Eigen::Array< Eigen::Matrix3d, Dynamic, 1 >(0);
+    }
+
+    // N > 1 & P > 0
+    Eigen::Array< Eigen::Matrix3d, Dynamic, 1 > ret(tt.size());
+    for(unsigned int k = 0 ; k<tt.size() ; k++)
+    {
+        int index = find(tt[k], ttc);
+        if(index < 0)
+        {
+            ret[k] = covc[0].array() - (ttc[0]-tt[k])*(covc[1].array()-covc[0].array())/(ttc[1]-ttc[0]);
+        }
+        else if(index == ttc.size()-1)
+        {
+            ret[k] = covc[index].array() + (tt[k]-ttc[index])*(covc[index].array()-covc[index-1].array())/(ttc[index]-ttc[index-1]);
+        }
+        else
+        {
+            ret[k] = covc[index].array() + (tt[k]-ttc[index])*(covc[index+1].array()-covc[index].array())/(ttc[index+1]-ttc[index]);
+        }
+        for(unsigned int i = 0 ; i < 3 ; i++)
+        {
+            for(unsigned int j = i ; j < 3 ; j++)
+            {
+                if(i == j)
+                {
+                    if(ret[k](j,i) < epsilon)
+                    {
+                        ret[k](j,i) = exp(ret[k](j,i) / (epsilon-minimum(i)) + log(epsilon-minimum(i)) - (epsilon/(epsilon-minimum(i)))) + minimum(i);
+                    }
+                }
+                else
+                {
+                    double m = (ret[k](i,j) + ret[k](j,i)) / 2.;
+                    ret[k](i,j) = m > 0. ? m : 0.;
+                    ret[k](j,i) = ret[k](i,j);
+                }
+            }
+        }
+    }
+    return ret;
+}
+
 int Interpolator::find(double t, Eigen::VectorXd ttc)
 {
     // N = 0
