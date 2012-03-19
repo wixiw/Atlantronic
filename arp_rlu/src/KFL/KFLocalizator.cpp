@@ -14,7 +14,6 @@
 using namespace arp_math;
 using namespace arp_rlu;
 using namespace std;
-using namespace Eigen;
 using namespace kfl;
 using namespace arp_core::log;
 
@@ -32,7 +31,7 @@ KFLocalizator::Params::Params()
     referencedBeacons.push_back( lsl::Circle(-1.5,-1., 0.04 ) );
 }
 
-std::string KFLocalizator::Params::getInfo()
+std::string KFLocalizator::Params::getInfo() const
 {
     std::stringstream ss;
     ss << "KFLocalizator Params :" << std::endl;
@@ -56,10 +55,17 @@ std::string KFLocalizator::Params::getInfo()
 }
 
 KFLocalizator::InitParams::InitParams()
+: initialPose(0., 0., 0.)
 {
+    Eigen::Matrix<double,3,3> covariance = Eigen::Matrix<double,3,3>::Identity();
+    covariance(0,0) = 0.1;
+    covariance(1,1) = 0.1;
+    covariance(2,2) = 0.01;
+    initialPose.cov( covariance );
+    initialPose.date( -1. );
 }
 
-std::string KFLocalizator::InitParams::getInfo()
+std::string KFLocalizator::InitParams::getInfo() const
 {
     std::stringstream ss;
     ss << "KFLocalizator InitParams :" << std::endl;
@@ -72,10 +78,16 @@ std::string KFLocalizator::InitParams::getInfo()
 }
 
 KFLocalizator::IEKFParams::IEKFParams()
+: defaultOdoVelTransSigma(0.001)
+, defaultOdoVelRotSigma(0.01)
+, defaultLaserRangeSigma(0.005)
+, defaultLaserThetaSigma(0.05)
+, iekfMaxIt(10)
+, iekfInnovationMin(0.00015)
 {
 }
 
-std::string KFLocalizator::IEKFParams::getInfo()
+std::string KFLocalizator::IEKFParams::getInfo() const
 {
     std::stringstream ss;
     ss << "KFLocalizator IEKFParams :" << std::endl;
@@ -144,7 +156,8 @@ bool KFLocalizator::initialize()
     KFLStateCov initStateCov;
     initStateCov = params.initParams.initialPose.cov();
 
-    bayesian->init(initStateVar, initStateCov);
+    BFLWrapper::FilterParams params = BFLWrapper::FilterParams();
+    bayesian->init(initStateVar, initStateCov, params);
 
     updateBuffer(initDate);
     return true;
@@ -173,7 +186,7 @@ bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D odoVel)
     input(1) = dt * odoVel.vy();
     input(2) = dt * odoVel.vh();
 
-    bayesian->predict( input );
+    bayesian->predict( input, dt );
 
     updateBuffer(odoVel.date(), odoVel);
     return true;
@@ -211,7 +224,7 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
     Eigen::VectorXd xxFromBuffer(circularBuffer.size());
     Eigen::VectorXd yyFromBuffer(circularBuffer.size());
     Eigen::VectorXd hhFromBuffer(circularBuffer.size());
-    Eigen::Array< Eigen::Matrix3d, Dynamic, 1 > covFromBuffer(circularBuffer.size());
+    Eigen::Array< Eigen::Matrix3d, Eigen::Dynamic, 1 > covFromBuffer(circularBuffer.size());
     Eigen::VectorXd vxFromBuffer(circularBuffer.size());
     Eigen::VectorXd vyFromBuffer(circularBuffer.size());
     Eigen::VectorXd vhFromBuffer(circularBuffer.size());
@@ -231,7 +244,7 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
     Eigen::VectorXd xx = Interpolator::transInterp(tt, ttFromBuffer, xxFromBuffer);
     Eigen::VectorXd yy = Interpolator::transInterp(tt, ttFromBuffer, yyFromBuffer);
     Eigen::VectorXd hh = Interpolator::rotInterp(tt, ttFromBuffer, hhFromBuffer);
-    Eigen::Array< Eigen::Matrix3d, Dynamic, 1 > covs = Interpolator::covInterp(tt, ttFromBuffer, covFromBuffer, 1.e-6, Eigen::Vector3d(1.e-9,1.e-9,1.e-9));
+    Eigen::Array< Eigen::Matrix3d, Eigen::Dynamic, 1 > covs = Interpolator::covInterp(tt, ttFromBuffer, covFromBuffer, 1.e-6, Eigen::Vector3d(1.e-9,1.e-9,1.e-9));
     Eigen::VectorXd vx = Interpolator::transInterp(tt, ttFromBuffer, vxFromBuffer);
     Eigen::VectorXd vy = Interpolator::transInterp(tt, ttFromBuffer, vyFromBuffer);
     Eigen::VectorXd vh = Interpolator::transInterp(tt, ttFromBuffer, vhFromBuffer); // transInterp and not rotInterp because vh is not borned
@@ -254,9 +267,9 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
         Eigen::Vector2d meas;
         if( beaconDetector.getBeacon( tt(i), target, meas) )
         {
-            KFLMeasVar m;
-            KFLMeasCov c;
-            KFLMeasTarget t;
+            KFLMeasVar m = KFLMeasVar::Zero();
+            KFLMeasCov c = KFLMeasCov::Identity();
+            KFLMeasTarget t = KFLMeasTarget::Zero();
             // TODO : ici définir m, c et t
             bayesian->update(m, c, t);
         }

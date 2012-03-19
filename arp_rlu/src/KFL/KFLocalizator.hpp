@@ -46,16 +46,16 @@ class KFLocalizator
             public:
             /** Constructeur par défault.
              *  Il initialise des paramètres classiques non-stupides :\n
-             *  (x,y,h) = (0., 0., 0.)\n
-             *  t = now()\n
-             *  cov = diag( [0.1, 0.1, 0.01] )
+             *  \li (x,y,h) = (0., 0., 0.)
+             *  \li t = -1.
+             *  \li cov = diag( [0.1, 0.1, 0.01] )
              */
             InitParams();
 
             /**
              * Permet de formatter les paramètres en un message lisible.
              */
-            std::string getInfo();
+            std::string getInfo() const;
 
             /**
              * La pose initiale.\n
@@ -78,18 +78,19 @@ class KFLocalizator
             public:
                 /** Constructeur par défault.
                  *  Il initialise des paramètres classiques non-stupides :\n
-                 *  defaultOdoVelTransSigma = \n
-                 *  defaultOdoVelRotSigma = \n
-                 *  defaultLaserRangeSigma = \n
-                 *  defaultLaserThetaSigma = \n
-                 *  iekfMaxIt = \n
+                 *  \li defaultOdoVelTransSigma = 0.001
+                 *  \li defaultOdoVelRotSigma = 0.01
+                 *  \li defaultLaserRangeSigma = 0.005
+                 *  \li defaultLaserThetaSigma = 0.05
+                 *  \li iekfMaxIt = 10
+                 *  \li iekfInnovationMin = 0.00015
                  */
                 IEKFParams();
 
                 /**
                  * Permet de formatter les paramètres en un message lisible.
                  */
-                std::string getInfo();
+                std::string getInfo() const;
 
                 /**
                  * La précision estimée de la vitesse de translation odo en m/s.\n
@@ -120,6 +121,12 @@ class KFLocalizator
                  * Au delà de ce nombre d'itérations, même si l'estimée n'a pas convergé, l'algo rend la dernière estimée.
                  */
                 unsigned int iekfMaxIt;
+
+                /**
+                 * L'innovation minimale désirée pour le IEKF.\n
+                 * Il s'agit de la norme au carré de l'innovation minimale.
+                 */
+                double iekfInnovationMin;
         };
 
 
@@ -136,18 +143,18 @@ class KFLocalizator
             public:
                 /** Constructeur par défault.
                  *  Il initialise des paramètres classiques non-stupides :\n
-                 *  \li bufferSize = 100\n
+                 *  \li bufferSize = 100
                  *  \li referencedBeacons contient 3 balises
-                 *  \li initParams => voir KFLocalizator::InitParams() \n
-                 *  \li iekfParams => voir KFLocalizator::IEKFParams() \n
-                 *  \li procParams => voir BeaconDetector::Params() \n
+                 *  \li initParams => voir KFLocalizator::InitParams()
+                 *  \li iekfParams => voir KFLocalizator::IEKFParams()
+                 *  \li procParams => voir BeaconDetector::Params()
                  */
                 Params();
 
                 /**
                  * Permet de formatter les paramètres en un message lisible.
                  */
-                std::string getInfo();
+                std::string getInfo() const;
 
                 /**
                  * Taille du buffer interne.\n

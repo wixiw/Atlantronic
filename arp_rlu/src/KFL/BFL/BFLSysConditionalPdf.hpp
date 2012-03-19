@@ -13,7 +13,8 @@
 #include "KFL/KFLVariables.hpp"
 
 // BFL includes
-//#include <pdf/conditionalpdf.h>
+#include <wrappers/matrix/matrix_wrapper.h>
+#include <pdf/linearanalyticconditionalgaussian.h>
 
 
 namespace arp_rlu
@@ -22,14 +23,11 @@ namespace arp_rlu
 namespace kfl
 {
 
-class BFLSysConditionalPdf
+class BFLSysConditionalPdf : public BFL::LinearAnalyticConditionalGaussian
 {
     public:
-        BFLSysConditionalPdf();
+        BFLSysConditionalPdf( const std::vector< MatrixWrapper::Matrix > &ratio, const BFL::Gaussian &additiveNoise);
         ~BFLSysConditionalPdf();
-
-
-    protected:
 
 };
 

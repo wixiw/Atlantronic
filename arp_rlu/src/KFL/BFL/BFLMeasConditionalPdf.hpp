@@ -10,17 +10,24 @@
 
 #include <math/math.hpp>
 
+// BFL includes
+#include <wrappers/matrix/matrix_wrapper.h>
+#include <pdf/analyticconditionalgaussian_additivenoise.h>
+
 namespace arp_rlu
 {
 
 namespace kfl
 {
 
-class BFLMeasConditionalPdf
+class BFLMeasConditionalPdf : public BFL::AnalyticConditionalGaussianAdditiveNoise
 {
     public:
-        BFLMeasConditionalPdf();
-        ~BFLMeasConditionalPdf();
+        BFLMeasConditionalPdf(const BFL::Gaussian& additiveNoise);
+        virtual ~BFLMeasConditionalPdf();
+
+        virtual MatrixWrapper::ColumnVector    ExpectedValueGet() const;
+        virtual MatrixWrapper::Matrix          dfGet(unsigned int i) const;
 
 
     protected:
