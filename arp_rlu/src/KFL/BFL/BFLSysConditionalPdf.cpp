@@ -7,12 +7,10 @@
 
 #include "BFLSysConditionalPdf.hpp"
 
-using namespace arp_math;
 using namespace arp_rlu;
-using namespace std;
 using namespace kfl;
 
-BFLSysConditionalPdf::BFLSysConditionalPdf( const vector< MatrixWrapper::Matrix > &ratio, const BFL::Gaussian &additiveNoise)
+BFLSysConditionalPdf::BFLSysConditionalPdf( const std::vector< MatrixWrapper::Matrix > &ratio, const BFL::Gaussian &additiveNoise)
 : BFL::LinearAnalyticConditionalGaussian(ratio, additiveNoise)
 {
 }

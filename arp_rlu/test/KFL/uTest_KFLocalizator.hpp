@@ -11,7 +11,6 @@
 #include "KFL/Logger.hpp"
 
 using namespace arp_math;
-using namespace Eigen;
 using namespace arp_rlu;
 using namespace std;
 using namespace kfl;

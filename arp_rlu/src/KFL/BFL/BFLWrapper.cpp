@@ -21,13 +21,42 @@ using namespace std;
 using namespace kfl;
 using namespace arp_core::log;
 
+BFLWrapper::PredictParams::PredictParams()
+: BayesianWrapper::PredictParams()
+, odoVelXSigma(0.001)
+, odoVelYSigma(0.001)
+, odoVelHSigma(0.01)
+{
+}
+
+std::string BFLWrapper::PredictParams::getInfo() const
+{
+    std::stringstream ss;
+    ss << "BFLWrapper PredictParams :" << std::endl;
+    ss << " [*] odoVelXSigma : " << odoVelXSigma << std::endl;
+    ss << " [*] odoVelYSigma : " << odoVelYSigma << std::endl;
+    ss << " [*] odoVelHSigma : " << odoVelHSigma << std::endl;
+    return ss.str();
+}
+
+BFLWrapper::UpdateParams::UpdateParams()
+: BayesianWrapper::UpdateParams()
+, laserRangeSigma(0.005)
+, laserThetaSigma(0.05)
+{
+}
+
+std::string BFLWrapper::UpdateParams::getInfo() const
+{
+    std::stringstream ss;
+    ss << "BFLWrapper UpdateParams :" << std::endl;
+    ss << " [*] laserRangeSigma : " << laserRangeSigma << std::endl;
+    ss << " [*] laserThetaSigma : " << laserThetaSigma << std::endl;
+    return ss.str();
+}
 
 BFLWrapper::FilterParams::FilterParams()
 : BayesianWrapper::FilterParams()
-, defaultOdoVelTransSigma(0.001)
-, defaultOdoVelRotSigma(0.01)
-, defaultLaserRangeSigma(0.005)
-, defaultLaserThetaSigma(0.05)
 , iekfMaxIt(10)
 , iekfInnovationMin(0.00015)
 {
@@ -37,11 +66,8 @@ std::string BFLWrapper::FilterParams::getInfo() const
 {
     std::stringstream ss;
     ss << "BFLWrapper FilterParams :" << std::endl;
-    ss << " [*] defaultOdoVelTransSigma : " << defaultOdoVelTransSigma << std::endl;
-    ss << " [*] defaultOdoVelRotSigma   : " << defaultOdoVelRotSigma << std::endl;
-    ss << " [*] defaultLaserRangeSigma  : " << defaultLaserRangeSigma << std::endl;
-    ss << " [*] defaultLaserThetaSigma  : " << defaultLaserThetaSigma << std::endl;
-    ss << " [*] iekfMaxIt               : " << iekfMaxIt << std::endl;
+    ss << " [*] iekfMaxIt         : " << iekfMaxIt << std::endl;
+    ss << " [*] iekfInnovationMin : " << iekfInnovationMin << std::endl;
     return ss.str();
 }
 
@@ -58,6 +84,7 @@ BFLWrapper::BFLWrapper()
 
 void BFLWrapper::init(const KFLStateVar & statevariable, const KFLStateCov & statecovariance, BayesianWrapper::FilterParams & p)
 {
+    BFLWrapper::FilterParams params;
     try {
         params = dynamic_cast< BFLWrapper::FilterParams & >(p);
     }
@@ -123,10 +150,10 @@ void BFLWrapper::init(const KFLStateVar & statevariable, const KFLStateCov & sta
     measNoiseMu(2) = 0.;
 
     MatrixWrapper::SymmetricMatrix measNoiseCov(2);
-    measNoiseCov(1,1) = params.defaultLaserRangeSigma;
+    measNoiseCov(1,1) = 1.0;
     measNoiseCov(1,2) = 0.0;
     measNoiseCov(2,1) = 0.0;
-    measNoiseCov(2,2) = params.defaultLaserThetaSigma;
+    measNoiseCov(2,2) = 1.0;
 
     BFL::Gaussian measUncertainty(measNoiseMu, measNoiseCov);
 
@@ -151,8 +178,7 @@ void BFLWrapper::init(const KFLStateVar & statevariable, const KFLStateCov & sta
     priorNoiseCov(3,2) = statecovariance(2,1);
     priorNoiseCov(3,3) = statecovariance(2,2);
 
-    BFL::Gaussian prior(measNoiseMu, measNoiseCov);
-
+    BFL::Gaussian prior(priorNoiseMu, priorNoiseCov);
 
     innovationCheck = new BFL::InnovationCheck( params.iekfInnovationMin );
     filter = new BFL::IteratedExtendedKalmanFilter(&prior, params.iekfMaxIt, innovationCheck);
@@ -160,11 +186,21 @@ void BFLWrapper::init(const KFLStateVar & statevariable, const KFLStateCov & sta
     return;
 }
 
-void BFLWrapper::predict( const KFLSysInput & input , double dt )
+void BFLWrapper::predict( const KFLSysInput & input , double dt, BayesianWrapper::PredictParams & p )
 {
     if(sysPdf==NULL || sysModel==NULL || measPdf==NULL || measModel==NULL || innovationCheck==NULL || filter==NULL)
     {
         Log( ERROR ) << "BFLWrapper::predict - BFLWrapper has not been initialized => return";
+        return;
+    }
+
+    BFLWrapper::PredictParams predictParams;
+    try {
+        predictParams = dynamic_cast< BFLWrapper::PredictParams & >(p);
+    }
+    catch(...)
+    {
+        Log( ERROR ) << "BFLWrapper::predict - BayesianWrapper::PredictParams argument is not a BFLWrapper::PredictParams => return";
         return;
     }
 
@@ -190,15 +226,20 @@ void BFLWrapper::predict( const KFLSysInput & input , double dt )
     KFLStateVar w  = eigensolver.eigenvalues();
     KFLStateCov v  = eigensolver.eigenvectors();
 
+//    Log( DEBUG ) << "BFLWrapper::predict - eigenvalues=" << w.transpose();
+//    Log( DEBUG ) << "BFLWrapper::predict - eigenvectors=\n" << v;
+
     KFLStateVar Q_;
-    Q_(0) = sqrt(w(0)) + dt * params.defaultOdoVelTransSigma;
-    Q_(1) = sqrt(w(1)) + dt * params.defaultOdoVelTransSigma;
-    Q_(2) = sqrt(w(2)) + dt * params.defaultOdoVelRotSigma;
+    Q_(0) = sqrt(w(0)) + dt * predictParams.odoVelXSigma;
+    Q_(1) = sqrt(w(1)) + dt * predictParams.odoVelYSigma;
+    Q_(2) = sqrt(w(2)) + dt * predictParams.odoVelHSigma;
     KFLStateVar Q2;
     Q2(0) = Q_(0)*Q_(0) - w(0);
     Q2(1) = Q_(1)*Q_(1) - w(1);
     Q2(2) = Q_(2)*Q_(2) - w(2);
     KFLStateCov Q = v * Q2.asDiagonal() * v.transpose();
+
+//    Log( DEBUG ) << "BFLWrapper::predict - Q=\n" << Q;
 
     MatrixWrapper::SymmetricMatrix sysNoiseCov(3);
     sysNoiseCov(1,1) = Q(0,0);
@@ -221,13 +262,30 @@ void BFLWrapper::predict( const KFLSysInput & input , double dt )
     return;
 }
 
-void BFLWrapper::update( const KFLMeasVar & mvar, const KFLMeasTarget & mtar)
+void BFLWrapper::update( const KFLMeasVar & mvar, const KFLMeasTarget & mtar, BayesianWrapper::UpdateParams & p)
 {
     if(sysPdf==NULL || sysModel==NULL || measPdf==NULL || measModel==NULL || innovationCheck==NULL || filter==NULL)
     {
         Log( ERROR ) << "BFLWrapper::predict - BFLWrapper has not been initialized => return";
         return;
     }
+
+    BFLWrapper::UpdateParams updateParams;
+    try {
+        updateParams = dynamic_cast< BFLWrapper::UpdateParams & >(p);
+    }
+    catch(...)
+    {
+        Log( ERROR ) << "BFLWrapper::update - BayesianWrapper::UpdateParams argument is not a BFLWrapper::UpdateParams => return";
+        return;
+    }
+
+    MatrixWrapper::SymmetricMatrix measNoiseCov(2);
+    measNoiseCov(1,1) = updateParams.laserRangeSigma;
+    measNoiseCov(1,2) = 0.0;
+    measNoiseCov(2,1) = 0.0;
+    measNoiseCov(2,2) = updateParams.laserThetaSigma;
+    measPdf->AdditiveNoiseSigmaSet(measNoiseCov);
 
     MatrixWrapper::ColumnVector z(2);
     z(1) = mvar(0);
@@ -244,7 +302,7 @@ KFLStateVar BFLWrapper::getEstimate() const
 {
     if(sysPdf==NULL || sysModel==NULL || measPdf==NULL || measModel==NULL || innovationCheck==NULL || filter==NULL)
     {
-        Log( ERROR ) << "BFLWrapper::predict - BFLWrapper has not been initialized => return KFLStateVar::Zero";
+        Log( ERROR ) << "BFLWrapper::getEstimate - BFLWrapper has not been initialized => return KFLStateVar::Zero";
         return KFLStateVar::Zero();
     }
 
@@ -262,7 +320,7 @@ KFLStateCov BFLWrapper::getCovariance() const
 {
     if(sysPdf==NULL || sysModel==NULL || measPdf==NULL || measModel==NULL || innovationCheck==NULL || filter==NULL)
     {
-        Log( ERROR ) << "BFLWrapper::predict - BFLWrapper has not been initialized => return KFLStateCov::Identity()";
+        Log( ERROR ) << "BFLWrapper::getCovariance - BFLWrapper has not been initialized => return KFLStateCov::Identity()";
         return KFLStateCov::Identity();
     }
 

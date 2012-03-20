@@ -11,13 +11,15 @@
 
 #include <exceptions/NotImplementedException.hpp>
 
+// BFL include
+#include <KFL/BFL/BFLWrapper.hpp>
+
 using namespace arp_math;
 using namespace arp_rlu;
 using namespace std;
 using namespace kfl;
 using namespace arp_core::log;
 
-#include <KFL/BFL/BFLWrapper.hpp>
 
 KFLocalizator::Params::Params()
 : bufferSize(100)
@@ -156,8 +158,8 @@ bool KFLocalizator::initialize()
     KFLStateCov initStateCov;
     initStateCov = params.initParams.initialPose.cov();
 
-    BFLWrapper::FilterParams params = BFLWrapper::FilterParams();
-    bayesian->init(initStateVar, initStateCov, params);
+    BFLWrapper::FilterParams filterParams;
+    bayesian->init(initStateVar, initStateCov, filterParams);
 
     updateBuffer(initDate);
     return true;
@@ -186,7 +188,12 @@ bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D odoVel)
     input(1) = odoVel.vy();
     input(2) = odoVel.vh();
 
-    bayesian->predict( input, dt );
+
+    BFLWrapper::PredictParams predictParams;
+    predictParams.odoVelXSigma = odoVel.cov()(0,0);
+    predictParams.odoVelYSigma = odoVel.cov()(1,1);
+    predictParams.odoVelHSigma = odoVel.cov()(2,2);
+    bayesian->predict( input, dt, predictParams );
 
     updateBuffer(odoVel.date(), odoVel);
     return true;
@@ -228,16 +235,18 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
     Eigen::VectorXd vxFromBuffer(circularBuffer.size());
     Eigen::VectorXd vyFromBuffer(circularBuffer.size());
     Eigen::VectorXd vhFromBuffer(circularBuffer.size());
+    Eigen::Array< Eigen::Matrix3d, Eigen::Dynamic, 1 > odoCovFromBuffer(circularBuffer.size());
     for( unsigned int i = 0 ; i < circularBuffer.size() ; i++ )
     {
-        ttFromBuffer(i)  = circularBuffer[i].first.date();
-        xxFromBuffer(i)  = circularBuffer[i].first.x();
-        yyFromBuffer(i)  = circularBuffer[i].first.y();
-        hhFromBuffer(i)  = circularBuffer[i].first.h();
-        covFromBuffer(i) = circularBuffer[i].first.cov();
-        vxFromBuffer(i)  = circularBuffer[i].second.vx();
-        vyFromBuffer(i)  = circularBuffer[i].second.vy();
-        vhFromBuffer(i)  = circularBuffer[i].second.vh();
+        ttFromBuffer(i)     = circularBuffer[i].first.date();
+        xxFromBuffer(i)     = circularBuffer[i].first.x();
+        yyFromBuffer(i)     = circularBuffer[i].first.y();
+        hhFromBuffer(i)     = circularBuffer[i].first.h();
+        covFromBuffer(i)    = circularBuffer[i].first.cov();
+        vxFromBuffer(i)     = circularBuffer[i].second.vx();
+        vyFromBuffer(i)     = circularBuffer[i].second.vy();
+        vhFromBuffer(i)     = circularBuffer[i].second.vh();
+        odoCovFromBuffer(i) = circularBuffer[i].second.cov();
     }
 
     Eigen::VectorXd tt = scan.getTimeData();
@@ -248,6 +257,7 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
     Eigen::VectorXd vx = Interpolator::transInterp(tt, ttFromBuffer, vxFromBuffer);
     Eigen::VectorXd vy = Interpolator::transInterp(tt, ttFromBuffer, vyFromBuffer);
     Eigen::VectorXd vh = Interpolator::transInterp(tt, ttFromBuffer, vhFromBuffer); // transInterp and not rotInterp because vh is not borned
+    Eigen::Array< Eigen::Matrix3d, Eigen::Dynamic, 1 > odoCovs = Interpolator::covInterp(tt, ttFromBuffer, odoCovFromBuffer, 1.e-6, Eigen::Vector3d(1.e-9,1.e-9,1.e-9));
 
     popBufferUntilADate(tt(0));
 
@@ -268,15 +278,25 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
         Eigen::Vector2d meas;
         if( beaconDetector.getBeacon( tt(i), target, meas) )
         {
-            bayesian->update(meas, target.getPosition());
+            BFLWrapper::UpdateParams updateParams;
+            updateParams.laserRangeSigma = params.iekfParams.defaultLaserRangeSigma;
+            updateParams.laserThetaSigma = params.iekfParams.defaultLaserThetaSigma;
+            bayesian->update(meas, target.getPosition(), updateParams);
         }
 
-        double dt = tt(i) - tt(i-1);
         KFLSysInput input;
         input(0) = vx(i);
         input(1) = vy(i);
         input(2) = vh(i);
-        bayesian->predict( input, dt );
+
+        double dt = tt(i) - tt(i-1);
+
+        BFLWrapper::PredictParams predictParams;
+        predictParams.odoVelXSigma = odoCovs(i)(0,0);
+        predictParams.odoVelYSigma = odoCovs(i)(1,1);
+        predictParams.odoVelHSigma = odoCovs(i)(2,2);
+
+        bayesian->predict( input, dt, predictParams );
     }
 
     KFLocalizator::updateBuffer(tt(tt.size()-1), EstimatedTwist2D(vx(tt.size()-1), vy(tt.size()-1), vh(tt.size()-1)));
