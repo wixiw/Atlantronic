@@ -182,9 +182,9 @@ bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D odoVel)
     double dt = odoVel.date() - lastEstim.date();
 
     KFLSysInput input;
-    input(0) = dt * odoVel.vx();
-    input(1) = dt * odoVel.vy();
-    input(2) = dt * odoVel.vh();
+    input(0) = odoVel.vx();
+    input(1) = odoVel.vy();
+    input(2) = odoVel.vh();
 
     bayesian->predict( input, dt );
 
@@ -261,19 +261,22 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
 
     beaconDetector.process(scan, tt, xx, yy, hh);
 
-    for(unsigned int i = 0 ; i < scan.getSize() ; i++)
+    // Update
+    for(unsigned int i = 1 ; i < scan.getSize() ; i++)
     {
         lsl::Circle target;
         Eigen::Vector2d meas;
         if( beaconDetector.getBeacon( tt(i), target, meas) )
         {
-            KFLMeasVar m = KFLMeasVar::Zero();
-            KFLMeasCov c = KFLMeasCov::Identity();
-            KFLMeasTarget t = KFLMeasTarget::Zero();
-            // TODO : ici définir m, c et t
-            bayesian->update(m, c, t);
+            bayesian->update(meas, target.getPosition());
         }
-        // TODO : ici faire la prediction avec un dt adéquat
+
+        double dt = tt(i) - tt(i-1);
+        KFLSysInput input;
+        input(0) = vx(i);
+        input(1) = vy(i);
+        input(2) = vh(i);
+        bayesian->predict( input, dt );
     }
 
     KFLocalizator::updateBuffer(tt(tt.size()-1), EstimatedTwist2D(vx(tt.size()-1), vy(tt.size()-1), vh(tt.size()-1)));

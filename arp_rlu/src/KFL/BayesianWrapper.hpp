@@ -64,10 +64,9 @@ class BayesianWrapper
         /**
          * Réalise la confrontation aux mesures
          * \param m la mesure
-         * \param c la covariance de la mesure
-         * \param t la cible mesurée
+         * \param t la cible
          */
-        virtual void update(const KFLMeasVar & m, const KFLMeasCov & c, const KFLMeasTarget & t) = 0;
+        virtual void update(const KFLMeasVar & m, const KFLMeasTarget & t) = 0;
 
         /**
          * Permet d'obtenir la dernière estimée

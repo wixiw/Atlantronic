@@ -11,6 +11,8 @@
 
 #include <exceptions/NotImplementedException.hpp>
 
+#include <Eigen/Eigenvalues>
+
 // BFL includes
 
 using namespace arp_math;
@@ -56,7 +58,6 @@ BFLWrapper::BFLWrapper()
 
 void BFLWrapper::init(const KFLStateVar & statevariable, const KFLStateCov & statecovariance, BayesianWrapper::FilterParams & p)
 {
-    BFLWrapper::FilterParams params;
     try {
         params = dynamic_cast< BFLWrapper::FilterParams & >(p);
     }
@@ -167,11 +168,60 @@ void BFLWrapper::predict( const KFLSysInput & input , double dt )
         return;
     }
 
-    throw NotImplementedException();
+    MatrixWrapper::Matrix B(3,3);
+    B(1,1) = dt;
+    B(1,2) = 0.;
+    B(1,3) = 0.;
+    B(2,1) = 0.;
+    B(2,2) = dt;
+    B(2,3) = 0.;
+    B(3,1) = 0.;
+    B(3,2) = 0.;
+    B(3,3) = dt;
+    sysModel->BSet(B);
+
+    KFLStateCov P_km1 = getCovariance();
+    Eigen::SelfAdjointEigenSolver< KFLStateCov > eigensolver(P_km1);
+    if (eigensolver.info() != Eigen::Success)
+    {
+        Log( ERROR ) << "BFLWrapper::predict - Eigen value solver failed (Matrix not symetric and positive ?) => return";
+        return;
+    }
+    KFLStateVar w  = eigensolver.eigenvalues();
+    KFLStateCov v  = eigensolver.eigenvectors();
+
+    KFLStateVar Q_;
+    Q_(0) = sqrt(w(0)) + dt * params.defaultOdoVelTransSigma;
+    Q_(1) = sqrt(w(1)) + dt * params.defaultOdoVelTransSigma;
+    Q_(2) = sqrt(w(2)) + dt * params.defaultOdoVelRotSigma;
+    KFLStateVar Q2;
+    Q2(0) = Q_(0)*Q_(0) - w(0);
+    Q2(1) = Q_(1)*Q_(1) - w(1);
+    Q2(2) = Q_(2)*Q_(2) - w(2);
+    KFLStateCov Q = v * Q2.asDiagonal() * v.transpose();
+
+    MatrixWrapper::SymmetricMatrix sysNoiseCov(3);
+    sysNoiseCov(1,1) = Q(0,0);
+    sysNoiseCov(1,2) = Q(0,1);
+    sysNoiseCov(1,3) = Q(0,2);
+    sysNoiseCov(2,1) = Q(1,0);
+    sysNoiseCov(2,2) = Q(1,1);
+    sysNoiseCov(2,3) = Q(1,2);
+    sysNoiseCov(3,1) = Q(2,0);
+    sysNoiseCov(3,2) = Q(2,1);
+    sysNoiseCov(3,3) = Q(2,2);
+    sysPdf->AdditiveNoiseSigmaSet(sysNoiseCov);
+
+    MatrixWrapper::ColumnVector u(3);
+    u(1) = input(0);
+    u(2) = input(1);
+    u(3) = input(2);
+    filter->Update(sysModel, u);
+
     return;
 }
 
-void BFLWrapper::update( const KFLMeasVar & mvar, const KFLMeasCov & mcov, const KFLMeasTarget & mtar)
+void BFLWrapper::update( const KFLMeasVar & mvar, const KFLMeasTarget & mtar)
 {
     if(sysPdf==NULL || sysModel==NULL || measPdf==NULL || measModel==NULL || innovationCheck==NULL || filter==NULL)
     {
@@ -179,7 +229,14 @@ void BFLWrapper::update( const KFLMeasVar & mvar, const KFLMeasCov & mcov, const
         return;
     }
 
-    throw NotImplementedException();
+    MatrixWrapper::ColumnVector z(2);
+    z(1) = mvar(0);
+    z(2) = mvar(1);
+    MatrixWrapper::ColumnVector s(2);
+    s(1) = mtar(0);
+    s(2) = mtar(1);
+    filter->Update(measModel, z, s);
+
     return;
 }
 

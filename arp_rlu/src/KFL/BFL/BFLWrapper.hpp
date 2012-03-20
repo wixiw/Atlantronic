@@ -114,10 +114,9 @@ class BFLWrapper : public BayesianWrapper
     /**
      * Réalise la confrontation aux mesures
      * \param m la mesure
-     * \param c la covariance de la mesure
-     * \param t la cible mesurée
+     * \param t la cible
      */
-    void update(const KFLMeasVar & m, const KFLMeasCov & c, const KFLMeasTarget & t);
+    void update(const KFLMeasVar & m, const KFLMeasTarget & t);
 
     /**
      * Permet d'obtenir la dernière estimée
@@ -132,6 +131,7 @@ class BFLWrapper : public BayesianWrapper
     KFLStateCov getCovariance() const;
 
     protected:
+    FilterParams params;
     BFLSysConditionalPdf * sysPdf;
     BFL::LinearAnalyticSystemModelGaussianUncertainty * sysModel;
 
