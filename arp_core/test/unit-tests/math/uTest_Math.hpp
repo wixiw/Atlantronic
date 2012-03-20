@@ -43,6 +43,10 @@ BOOST_AUTO_TEST_CASE( Math_betweenZeroAndTwoPi )
 
 BOOST_AUTO_TEST_CASE( Math_betweenMinusPiAndPlusPi )
 {
+    BOOST_CHECK_EQUAL( betweenMinusPiAndPlusPi(0.), 0. );
+    BOOST_CHECK_EQUAL( betweenMinusPiAndPlusPi(-PI), PI );
+    BOOST_CHECK_EQUAL( betweenMinusPiAndPlusPi( PI), PI );
+
     srand(time(0));
     for(unsigned i = 0; i < 100; i++)
     {

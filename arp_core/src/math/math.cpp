@@ -23,7 +23,7 @@ double betweenMinusPiAndPlusPi(double angle)
     {
         angle = angle - 2 * PI;
     }
-    if (angle < -PI)
+    if (angle <= -PI)
     {
         angle = angle + 2 * PI;
     }
