@@ -182,6 +182,7 @@ void BFLWrapper::init(const KFLStateVar & statevariable, const KFLStateCov & sta
 
     innovationCheck = new BFL::InnovationCheck( params.iekfInnovationMin );
     filter = new BFL::IteratedExtendedKalmanFilter(&prior, params.iekfMaxIt, innovationCheck);
+//    filter = new BFL::IteratedExtendedKalmanFilter(&prior);
 
     return;
 }
@@ -281,18 +282,22 @@ void BFLWrapper::update( const KFLMeasVar & mvar, const KFLMeasTarget & mtar, Ba
     }
 
     MatrixWrapper::SymmetricMatrix measNoiseCov(2);
-    measNoiseCov(1,1) = updateParams.laserRangeSigma;
+    measNoiseCov(1,1) = updateParams.laserRangeSigma*updateParams.laserRangeSigma;
     measNoiseCov(1,2) = 0.0;
     measNoiseCov(2,1) = 0.0;
-    measNoiseCov(2,2) = updateParams.laserThetaSigma;
+    measNoiseCov(2,2) = updateParams.laserThetaSigma*updateParams.laserThetaSigma;
     measPdf->AdditiveNoiseSigmaSet(measNoiseCov);
+//    Log( DEBUG ) << "measNoiseCov:\n" << measNoiseCov;
 
     MatrixWrapper::ColumnVector z(2);
     z(1) = mvar(0);
     z(2) = mvar(1);
-    MatrixWrapper::ColumnVector s(2);
+    MatrixWrapper::ColumnVector s(3);
     s(1) = mtar(0);
     s(2) = mtar(1);
+    s(3) = mvar(1); // dirty but usefull to manage -PI/PI discontinuity in filter update
+//    Log( DEBUG ) << "z:\n" << z;
+//    Log( DEBUG ) << "s:\n" << s;
     filter->Update(measModel, z, s);
 
     return;

@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE( Predict_trans )
     BFLWrapper::PredictParams predictParams;
     predictParams.odoVelXSigma = 0.001;
     predictParams.odoVelYSigma = 0.001;
-    predictParams.odoVelHSigma   = 0.01;
+    predictParams.odoVelHSigma = 0.01;
 
     bayesian.predict( input, dt, predictParams );
 
@@ -357,6 +357,399 @@ BOOST_AUTO_TEST_CASE( Multi_Predict_rot )
         {
             BOOST_CHECK_CLOSE( covariance(i,j), groundCov(i,j), 1.f );
         }
+    }
+}
+
+BOOST_AUTO_TEST_CASE( Update_1 )
+{
+    KFLStateVar groundEstim;
+    groundEstim(0) =  0.0;
+    groundEstim(1) =  0.0;
+    groundEstim(2) =  0.0;
+
+    BFLWrapper bayesian;
+
+    //**********************************************
+    // Initialization
+
+    double sigmaInitialPosition = 0.05;
+    double sigmaInitialHeading = 0.1;
+
+    KFLStateVar initStateVar;
+    initStateVar(0) = groundEstim(0);
+    initStateVar(1) = groundEstim(1);
+    initStateVar(2) = groundEstim(2);
+
+    KFLStateCov initStateCov = KFLStateCov::Zero();
+    initStateCov(0,0) = sigmaInitialPosition*sigmaInitialPosition;
+    initStateCov(1,1) = sigmaInitialPosition*sigmaInitialPosition;
+    initStateCov(2,2) = sigmaInitialHeading*sigmaInitialHeading;
+
+    //    Log( DEBUG ) << "initStateVar=" << initStateVar.transpose();
+    //    Log( DEBUG ) << "initStateCov=\n" << initStateCov;
+
+    BFLWrapper::FilterParams filterParams;
+    filterParams.iekfMaxIt = 10;
+    filterParams.iekfInnovationMin = 0.00015;
+
+    bayesian.init(initStateVar, initStateCov, filterParams);
+
+
+    //**********************************************
+    // Update
+
+    BFLWrapper::UpdateParams updateParams;
+    updateParams.laserRangeSigma = 0.005;
+    updateParams.laserThetaSigma = 0.05;
+
+
+    KFLMeasTarget target;
+    KFLMeasVar meas;
+
+    KFLStateVar estim;
+    KFLStateCov covariance;
+
+    // First update
+    //    Log( DEBUG ) << " ";
+    //    Log( DEBUG ) << "******************************";
+    //    Log( DEBUG ) << "First update";
+    target(0) = 1.5;
+    target(1) = 0.;
+    //    Log( DEBUG ) << "target:\n" << target;
+    meas(0) = sqrt((target(0) - groundEstim(0))*(target(0) - groundEstim(0)) + (target(1) - groundEstim(1))*(target(1) - groundEstim(1)));
+    meas(1) = betweenMinusPiAndPlusPi( atan2(target(1) - groundEstim(1), target(0) - groundEstim(0)) - groundEstim(2));
+    //    Log( DEBUG ) << "meas:\n" << meas;
+    bayesian.update( meas, target, updateParams );
+
+    estim = bayesian.getEstimate();
+    covariance = bayesian.getCovariance();
+    //    Log( DEBUG ) << "estim:\n" << estim;
+    //    Log( DEBUG ) << "covariance:\n" << covariance;
+
+    // Second update
+    //    Log( DEBUG ) << " ";
+    //    Log( DEBUG ) << "******************************";
+    //    Log( DEBUG ) << "Second update";
+    target(0) =  0.;
+    target(1) =  1.;
+    //    Log( DEBUG ) << "target:\n" << target;
+    meas(0) = sqrt((target(0) - groundEstim(0))*(target(0) - groundEstim(0)) + (target(1) - groundEstim(1))*(target(1) - groundEstim(1)));
+    meas(1) = betweenMinusPiAndPlusPi( atan2(target(1) - groundEstim(1), target(0) - groundEstim(0)) - groundEstim(2));
+    //    Log( DEBUG ) << "meas:\n" << meas;
+    bayesian.update( meas, target, updateParams );
+
+    estim = bayesian.getEstimate();
+    covariance = bayesian.getCovariance();
+    //    Log( DEBUG ) << "estim:\n" << estim;
+    //    Log( DEBUG ) << "covariance:\n" << covariance;
+
+    // Third update
+    //    Log( DEBUG ) << " ";
+    //    Log( DEBUG ) << "******************************";
+    //    Log( DEBUG ) << "Third update";
+    target(0) = -1.5;
+    target(1) =  0.;
+    //    Log( DEBUG ) << "target:\n" << target;
+    meas(0) = sqrt((target(0) - groundEstim(0))*(target(0) - groundEstim(0)) + (target(1) - groundEstim(1))*(target(1) - groundEstim(1)));
+    meas(1) = betweenMinusPiAndPlusPi( atan2(target(1) - groundEstim(1), target(0) - groundEstim(0)) - groundEstim(2));
+    //    Log( DEBUG ) << "meas:\n" << meas;
+    bayesian.update( meas, target, updateParams );
+
+    estim = bayesian.getEstimate();
+    covariance = bayesian.getCovariance();
+    //    Log( DEBUG ) << "estim:\n" << estim;
+    //    Log( DEBUG ) << "covariance:\n" << covariance;
+
+    // Third update
+    //    Log( DEBUG ) << " ";
+    //    Log( DEBUG ) << "******************************";
+    //    Log( DEBUG ) << "Fourth update";
+    target(0) =  0.;
+    target(1) = -1.;
+    //    Log( DEBUG ) << "target:\n" << target;
+    meas(0) = sqrt((target(0) - groundEstim(0))*(target(0) - groundEstim(0)) + (target(1) - groundEstim(1))*(target(1) - groundEstim(1)));
+    meas(1) = betweenMinusPiAndPlusPi( atan2(target(1) - groundEstim(1), target(0) - groundEstim(0)) - groundEstim(2));
+    //    Log( DEBUG ) << "meas:\n" << meas;
+    bayesian.update( meas, target, updateParams );
+
+    estim = bayesian.getEstimate();
+    covariance = bayesian.getCovariance();
+    //    Log( DEBUG ) << "estim:\n" << estim;
+    //    Log( DEBUG ) << "covariance:\n" << covariance;
+
+
+    //**********************************************
+    // Results comparison
+
+    estim = bayesian.getEstimate();
+    for(unsigned int i = 0 ; i < 3 ; i++)
+    {
+        BOOST_CHECK_SMALL( estim(i) - groundEstim(i), 0.01 );
+        for(unsigned int j = 0 ; j < 3 ; j++)
+        {
+            if(i == j)
+            {
+                BOOST_CHECK( covariance(i,j) > 1e-5 );
+            }
+            else
+            {
+                BOOST_CHECK_SMALL( covariance(i,j), 1e-16 );
+            }
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE( Update_2 )
+{
+    KFLStateVar groundEstim;
+    groundEstim(0) =  0.0;
+    groundEstim(1) =  0.0;
+    groundEstim(2) =  0.0;
+
+    BFLWrapper bayesian;
+
+    //**********************************************
+    // Initialization
+
+    double sigmaInitialPosition = 0.05;
+    double sigmaInitialHeading = 0.1;
+
+    KFLStateVar initStateVar;
+    initStateVar(0) = groundEstim(0) + 0.05;
+    initStateVar(1) = groundEstim(1) - 0.05;
+    initStateVar(2) = groundEstim(2) - 0.1;
+
+    KFLStateCov initStateCov = KFLStateCov::Zero();
+    initStateCov(0,0) = sigmaInitialPosition*sigmaInitialPosition;
+    initStateCov(1,1) = sigmaInitialPosition*sigmaInitialPosition;
+    initStateCov(2,2) = sigmaInitialHeading*sigmaInitialHeading;
+
+    //    Log( DEBUG ) << "initStateVar=\n" << initStateVar;
+    //    Log( DEBUG ) << "initStateCov=\n" << initStateCov;
+
+    BFLWrapper::FilterParams filterParams;
+    filterParams.iekfMaxIt = 10;
+    filterParams.iekfInnovationMin = 0.00015;
+
+    bayesian.init(initStateVar, initStateCov, filterParams);
+
+
+    //**********************************************
+    // Update
+
+    BFLWrapper::UpdateParams updateParams;
+    updateParams.laserRangeSigma = 0.005;
+    updateParams.laserThetaSigma = 0.05;
+
+
+    KFLMeasTarget target;
+    KFLMeasVar meas;
+
+    KFLStateVar estim;
+    KFLStateCov covariance;
+
+    // First update
+    //    Log( DEBUG ) << " ";
+    //    Log( DEBUG ) << "******************************";
+    //    Log( DEBUG ) << "First update";
+    target(0) = 1.5;
+    target(1) = 0.;
+    //        Log( DEBUG ) << "target:\n" << target;
+    meas(0) = sqrt((target(0) - groundEstim(0))*(target(0) - groundEstim(0)) + (target(1) - groundEstim(1))*(target(1) - groundEstim(1)));
+    meas(1) = betweenMinusPiAndPlusPi( atan2(target(1) - groundEstim(1), target(0) - groundEstim(0)) - groundEstim(2));
+    //        Log( DEBUG ) << "meas:\n" << meas;
+    bayesian.update( meas, target, updateParams );
+
+    estim = bayesian.getEstimate();
+    covariance = bayesian.getCovariance();
+    //    Log( DEBUG ) << "estim:\n" << estim;
+    //    Log( DEBUG ) << "covariance:\n" << covariance;
+
+    // Second update
+    //    Log( DEBUG ) << " ";
+    //        Log( DEBUG ) << "******************************";
+    //        Log( DEBUG ) << "Second update";
+    target(0) =  0.;
+    target(1) =  1.;
+    //        Log( DEBUG ) << "target:\n" << target;
+    meas(0) = sqrt((target(0) - groundEstim(0))*(target(0) - groundEstim(0)) + (target(1) - groundEstim(1))*(target(1) - groundEstim(1)));
+    meas(1) = betweenMinusPiAndPlusPi( atan2(target(1) - groundEstim(1), target(0) - groundEstim(0)) - groundEstim(2));
+    //        Log( DEBUG ) << "meas:\n" << meas;
+    bayesian.update( meas, target, updateParams );
+
+    estim = bayesian.getEstimate();
+    covariance = bayesian.getCovariance();
+    //    Log( DEBUG ) << "estim:\n" << estim;
+    //    Log( DEBUG ) << "covariance:\n" << covariance;
+
+    // Third update
+    //    Log( DEBUG ) << " ";
+    //    Log( DEBUG ) << "******************************";
+    //    Log( DEBUG ) << "Third update";
+    target(0) = -1.5;
+    target(1) =  0.0;
+    //        Log( DEBUG ) << "target:\n" << target;
+    meas(0) = sqrt((target(0) - groundEstim(0))*(target(0) - groundEstim(0)) + (target(1) - groundEstim(1))*(target(1) - groundEstim(1)));
+    meas(1) = betweenMinusPiAndPlusPi( atan2(target(1) - groundEstim(1), target(0) - groundEstim(0)) - groundEstim(2));
+    //        Log( DEBUG ) << "meas:\n" << meas;
+    bayesian.update( meas, target, updateParams );
+
+    estim = bayesian.getEstimate();
+    covariance = bayesian.getCovariance();
+    //    Log( DEBUG ) << "estim:\n" << estim;
+    //    Log( DEBUG ) << "covariance:\n" << covariance;
+
+    // Third update
+    //    Log( DEBUG ) << " ";
+    //    Log( DEBUG ) << "******************************";
+    //    Log( DEBUG ) << "Fourth update";
+    target(0) =  0.;
+    target(1) = -1.;
+    //        Log( DEBUG ) << "target:\n" << target;
+    meas(0) = sqrt((target(0) - groundEstim(0))*(target(0) - groundEstim(0)) + (target(1) - groundEstim(1))*(target(1) - groundEstim(1)));
+    meas(1) = betweenMinusPiAndPlusPi( atan2(target(1) - groundEstim(1), target(0) - groundEstim(0)) - groundEstim(2));
+    //        Log( DEBUG ) << "meas:\n" << meas;
+    bayesian.update( meas, target, updateParams );
+
+    estim = bayesian.getEstimate();
+    covariance = bayesian.getCovariance();
+    //    Log( DEBUG ) << "estim:\n" << estim;
+    //    Log( DEBUG ) << "covariance:\n" << covariance;
+
+
+    //**********************************************
+    // Results comparison
+
+    estim = bayesian.getEstimate();
+    for(unsigned int i = 0 ; i < 3 ; i++)
+    {
+        BOOST_CHECK_SMALL( estim(i) - groundEstim(i), 0.01 );
+        for(unsigned int j = 0 ; j < 3 ; j++)
+        {
+            if(i == j)
+            {
+                BOOST_CHECK( covariance(i,j) > 1e-5 );
+            }
+            else
+            {
+                BOOST_CHECK_SMALL( covariance(i,j), 1e-6 );
+            }
+        }
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE( Update_3 )
+{
+    KFLStateVar groundEstim;
+    groundEstim(0) =  0.5;
+    groundEstim(1) = -0.1;
+    groundEstim(2) =  0.3;
+
+    BFLWrapper bayesian;
+
+    //**********************************************
+    // Initialization
+
+    double sigmaInitialPosition = 0.05;
+    double sigmaInitialHeading = 0.1;
+
+    KFLStateVar initStateVar;
+    initStateVar(0) = groundEstim(0) + 0.05;
+    initStateVar(1) = groundEstim(1) - 0.05;
+    initStateVar(2) = groundEstim(2) + 0.1;
+
+    KFLStateCov initStateCov = KFLStateCov::Zero();
+    initStateCov(0,0) = sigmaInitialPosition*sigmaInitialPosition;
+    initStateCov(1,1) = sigmaInitialPosition*sigmaInitialPosition;
+    initStateCov(2,2) = sigmaInitialHeading*sigmaInitialHeading;
+
+    //    Log( DEBUG ) << "initStateVar=" << initStateVar.transpose();
+    //    Log( DEBUG ) << "initStateCov=\n" << initStateCov;
+
+    BFLWrapper::FilterParams filterParams;
+    filterParams.iekfMaxIt = 10;
+    filterParams.iekfInnovationMin = 0.00015;
+
+    bayesian.init(initStateVar, initStateCov, filterParams);
+
+
+
+    //**********************************************
+    // Update
+
+    BFLWrapper::UpdateParams updateParams;
+    updateParams.laserRangeSigma = 0.005;
+    updateParams.laserThetaSigma = 0.05;
+
+
+    KFLMeasTarget target;
+    KFLMeasVar meas;
+
+    KFLStateVar estim;
+    KFLStateCov covariance;
+
+    // First update
+    //    Log( DEBUG ) << " ";
+    //    Log( DEBUG ) << "******************************";
+    //    Log( DEBUG ) << "First update";
+    target(0) = 1.5;
+    target(1) = 0.;
+    //    Log( DEBUG ) << "target:\n" << target;
+    meas(0) = sqrt((target(0) - groundEstim(0))*(target(0) - groundEstim(0)) + (target(1) - groundEstim(1))*(target(1) - groundEstim(1)));
+    meas(1) = betweenMinusPiAndPlusPi( atan2(target(1) - groundEstim(1), target(0) - groundEstim(0)) - groundEstim(2));
+    //    Log( DEBUG ) << "meas:\n" << meas;
+    bayesian.update( meas, target, updateParams );
+
+    estim = bayesian.getEstimate();
+    covariance = bayesian.getCovariance();
+    //    Log( DEBUG ) << "estim:\n" << estim;
+    //    Log( DEBUG ) << "covariance:\n" << covariance;
+
+    // Second update
+    //    Log( DEBUG ) << " ";
+    //    Log( DEBUG ) << "******************************";
+    //    Log( DEBUG ) << "Second update";
+    target(0) = -1.5;
+    target(1) =  1.;
+    //    Log( DEBUG ) << "target:\n" << target;
+    meas(0) = sqrt((target(0) - groundEstim(0))*(target(0) - groundEstim(0)) + (target(1) - groundEstim(1))*(target(1) - groundEstim(1)));
+    meas(1) = betweenMinusPiAndPlusPi( atan2(target(1) - groundEstim(1), target(0) - groundEstim(0)) - groundEstim(2));
+    //    Log( DEBUG ) << "meas:\n" << meas;
+    bayesian.update( meas, target, updateParams );
+
+    estim = bayesian.getEstimate();
+    covariance = bayesian.getCovariance();
+    //    Log( DEBUG ) << "estim:\n" << estim;
+    //    Log( DEBUG ) << "covariance:\n" << covariance;
+
+    // Third update
+    //    Log( DEBUG ) << " ";
+    //    Log( DEBUG ) << "******************************";
+    //    Log( DEBUG ) << "Third update";
+    target(0) = -1.5;
+    target(1) = -1.;
+    //    Log( DEBUG ) << "target:\n" << target;
+    meas(0) = sqrt((target(0) - groundEstim(0))*(target(0) - groundEstim(0)) + (target(1) - groundEstim(1))*(target(1) - groundEstim(1)));
+    meas(1) = betweenMinusPiAndPlusPi( atan2(target(1) - groundEstim(1), target(0) - groundEstim(0)) - groundEstim(2));
+    //    Log( DEBUG ) << "meas:\n" << meas;
+    bayesian.update( meas, target, updateParams );
+
+    estim = bayesian.getEstimate();
+    covariance = bayesian.getCovariance();
+    //    Log( DEBUG ) << "estim:\n" << estim;
+    //    Log( DEBUG ) << "covariance:\n" << covariance;
+
+
+    //**********************************************
+    // Results comparison
+
+    estim = bayesian.getEstimate();
+    covariance = bayesian.getCovariance();
+
+    for(unsigned int i = 0 ; i < 3 ; i++)
+    {
+        BOOST_CHECK_SMALL( estim(i) - groundEstim(i), 0.01 );
     }
 }
 

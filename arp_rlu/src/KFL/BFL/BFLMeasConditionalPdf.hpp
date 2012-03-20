@@ -29,7 +29,6 @@ class BFLMeasConditionalPdf : public BFL::AnalyticConditionalGaussianAdditiveNoi
         virtual MatrixWrapper::ColumnVector    ExpectedValueGet() const;
         virtual MatrixWrapper::Matrix          dfGet(unsigned int i) const;
 
-
 };
 
 } // namespace kfl

@@ -56,15 +56,6 @@ typedef Eigen::Matrix<double,3,3> KFLStateCov;
  */
 typedef Eigen::Vector2d           KFLMeasVar;
 
-/**
- *
- * \struct KFLMeasCov
- *
- * \brief KFLMeasCov est la covariance associée à la variable de mesure KFLMeasVar.
- *
- * Il s'agit d'une matrice 2x2
- */
-typedef Eigen::Matrix<double,2,2> KFLMeasCov;
 
 /**
  *
