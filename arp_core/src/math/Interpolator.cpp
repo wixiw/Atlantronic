@@ -176,7 +176,8 @@ Eigen::Array< Eigen::Matrix3d, Dynamic, 1 > Interpolator::covInterp(Eigen::Vecto
                 else
                 {
                     double m = (ret[k](i,j) + ret[k](j,i)) / 2.;
-                    ret[k](i,j) = m > 0. ? m : 0.;
+//                    ret[k](i,j) = m > 0. ? m : 0.;
+                    ret[k](i,j) = m;
                     ret[k](j,i) = ret[k](i,j);
                 }
             }

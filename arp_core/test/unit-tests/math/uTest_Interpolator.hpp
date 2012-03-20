@@ -234,7 +234,8 @@ BOOST_AUTO_TEST_CASE( covInterp_N1 )
             for(unsigned int j = i ; j < 3 ; j++)
             {
                 double m = (covc[k](i,j) + covc[k](j,i)) / 2.;
-                covc[k](i,j) = m > 0. ? m : 0.;
+//                covc[k](i,j) = m > 0. ? m : 0.;
+                covc[k](i,j) = m;
                 covc[k](j,i) = covc[k](i,j);
             }
         }
@@ -290,8 +291,8 @@ BOOST_AUTO_TEST_CASE( covInterp_N3_P5_1 )
                     0.0, 3.0, 0.0,
                     1.0, 0.0, 8.0;
 
-    solutions(4) << 1.0, 0.0, 0.0,
-                    0.0, 3.5, 0.0,
+    solutions(4) << 1.0,-0.5, 0.0,
+                   -0.5, 3.5, 0.0,
                     0.0, 0.0,11.0;
 
     Eigen::Array< Eigen::Matrix3d, Eigen::Dynamic, 1 > result = Interpolator::covInterp(tt, ttc, covc, epsilon, minimum);
@@ -309,7 +310,7 @@ BOOST_AUTO_TEST_CASE( covInterp_N3_P5_1 )
                 }
                 else
                 {
-                    BOOST_CHECK( !(result[k](i,j) < 0.) );
+                    BOOST_CHECK_EQUAL( result[k](i,j), result[k](j,i) );
                 }
                 BOOST_CHECK_EQUAL( result[k](i,j), solutions[k](i,j) );
             }

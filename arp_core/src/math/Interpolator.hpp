@@ -66,9 +66,9 @@ class Interpolator
          * Cette interpolation est un peu futtée car elle assure que les covariances résultantes ont bien les propriétés d'une covariance, à savoir qu'elles soient symétriques et strictement positives.\n
          *
          *
-         * Une simple interpolation linéaire sur des coefficients positifs ne suffit pas pour assurer que les coefficients de la matrice résultante soient eux aussi positifs.\n
-         * Pour les termes non diaguonaux, les valeurs sont seuillées à zéro.\n
-         * Pour les termes diaguonaux, les termes nuls ne sont pas acceptables pour une matrice de covariance.\n
+         * Une simple interpolation linéaire sur les coefficients ne suffit pas pour assurer que la matrice résultante est une matrice de covariance.\n
+         * Pour les termes non diagonaux, Il n'y a pas de pb.\n
+         * Pour les termes diagonaux, les termes nuls ne sont pas acceptables pour une matrice de covariance.\n
          * Ainsi, pour ces termes, si l'interpolation linéaire donne une valeur supérieur à epsilon, la valeur est conservée.\n
          * En revanche, si elle donne une valeur inférieure à epsilon, une décroissance exponentielle en \f$y(x) = \exp(\frac{x}{\epsilon-m} + \log(\epsilon-m)-\frac{\epsilon}{\epsilon-m})\f$ est appliquée.\n
          * Cette décroissance assure pour les termes diaguonaux:
