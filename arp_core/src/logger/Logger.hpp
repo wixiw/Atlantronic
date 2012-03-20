@@ -187,6 +187,7 @@ class NullCategory : public Category
 
 class SimpleStreamCategory : public Category
 {
+    protected:
         std::ostream & os;
         std::string name;
         Priority::Value logLevel;
@@ -202,7 +203,7 @@ class SimpleStreamCategory : public Category
         virtual void setName(const std::string n) throw() { name = n; };
         virtual void setLogLevel(Priority::Value level) throw() {logLevel = level;};
 
-        void print(int p, const char * m)
+        virtual void print(int p, const char * m)
         {
             if( p <= logLevel)
             {
@@ -232,6 +233,25 @@ class SimpleStreamCategory : public Category
                 };
 };
 
+class ColorStreamCategory : public SimpleStreamCategory
+{
+    protected:
+        static const char* priorityLevelColors[10];
+    public:
+        ColorStreamCategory(std::ostream &s, const std::string n = "", Priority::Value level = DEBUG)
+        : SimpleStreamCategory(s, n, level)
+        {
+        };
+
+        virtual void print(int p, const char * m)
+        {
+            if( p <= logLevel)
+            {
+                os << priorityLevelColors[p] << name << "(" << priorityLevelNames[p] << ") - " << m << "\033[0m" << std::endl;
+            }
+        }
+};
+
 class Logger
 {
     public:
@@ -241,7 +261,7 @@ class Logger
 class SimpleLogger : public Logger
 {
     public:
-        virtual Category * create(const std::string & name) { return new SimpleStreamCategory(std::cout, name); };
+        virtual Category * create(const std::string & name) { return new ColorStreamCategory(std::cout, name); };
 };
 
 class FileLogger : public Logger
