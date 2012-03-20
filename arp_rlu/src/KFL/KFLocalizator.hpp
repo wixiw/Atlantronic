@@ -34,36 +34,6 @@ namespace kfl
 class KFLocalizator
 {
     public:
-        /** \ingroup kfl
-         *
-         * \class InitParams
-         *
-         * \brief KFLocalizator::InitParams rassemble les paramètres d'initialisation du localisateur.
-         *
-         */
-        class InitParams
-        {
-            public:
-            /** Constructeur par défault.
-             *  Il initialise des paramètres classiques non-stupides :\n
-             *  \li (x,y,h) = (0., 0., 0.)
-             *  \li t = -1.
-             *  \li cov = diag( [0.1, 0.1, 0.01] )
-             */
-            InitParams();
-
-            /**
-             * Permet de formatter les paramètres en un message lisible.
-             */
-            std::string getInfo() const;
-
-            /**
-             * La pose initiale.\n
-             * Il s'agit d'une pose estimée : outre la position x,y,h elle comprend un temps et
-             * une matrice de covariance (représentant la confiance).
-             */
-            arp_math::EstimatedPose2D initialPose;
-        };
 
         /** \ingroup kfl
          *
@@ -172,11 +142,6 @@ class KFLocalizator
                 std::vector< lsl::Circle > referencedBeacons;
 
                 /**
-                 * Paramètres relatifs à l'initialisation de la localisation (position initiale etc...)
-                 */
-                kfl::KFLocalizator::InitParams initParams;
-
-                /**
                  * Paramètres relatifs au filtrage de kalman étendu itératif (niveau de confiance envers le capteurs etc...)
                  */
                 kfl::KFLocalizator::IEKFParams iekfParams;
@@ -204,11 +169,6 @@ class KFLocalizator
         void setParams(KFLocalizator::Params);
 
         /**
-         * Modification des paramètres d'initialisation
-         */
-        void setParams(KFLocalizator::InitParams);
-
-        /**
          * Modification des paramètres relatifs au filtre de kalman.
          */
         void setParams(KFLocalizator::IEKFParams);
@@ -219,10 +179,10 @@ class KFLocalizator
         void setParams(BeaconDetector::Params);
 
         /**
-         * Initialisation de la Localisation.\n
-         * \remarks Les paramètres d'init (InitParams) sont utilisés pour initialiser.
+         * Initialisation de la Localisation.
+         * \param pose la pose et sa covariance
          */
-        bool initialize();
+        bool initialize(const arp_math::EstimatedPose2D & pose);
 
         /**
          * Cette méthode sert à donner au localisateur une nouvelle mesure odo.

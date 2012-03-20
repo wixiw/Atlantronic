@@ -27,14 +27,10 @@ BOOST_AUTO_TEST_CASE( Static_1 )
     kfl::KFLocalizator obj;
 
 
-
     //*******************************************
     //********        Set params        *********
     //*******************************************
 
-    kfl::KFLocalizator::InitParams  initParams;
-    kfl::KFLocalizator::IEKFParams  iekfParams;
-    kfl::BeaconDetector::Params     procParams;
 
     vjson::JsonDocument docParams;
     BOOST_CHECK( docParams.parse("../ressource/unittest/KFL/KFLocalizator/static_1/kfl_params.json") );
@@ -45,25 +41,33 @@ BOOST_AUTO_TEST_CASE( Static_1 )
     float sigmaLaserRange       = docParams.getFloatData( docParams.getChild( docParams.root(), "sigmaLaserRange") );
     float sigmaLaserAngle       = docParams.getFloatData( docParams.getChild( docParams.root(), "sigmaLaserAngle") );
     int iekf_Nit                = docParams.getIntegerData( docParams.getChild( docParams.root(), "iekf_Nit") );
-    //    float iekf_xThreshold       = docParams.getFloatData( docParams.getChild( docParams.root(), "iekf_xThreshold") );
-    //    float iekf_yThreshold       = docParams.getFloatData( docParams.getChild( docParams.root(), "iekf_yThreshold") );
-    //    float iekf_hThreshold       = docParams.getFloatData( docParams.getChild( docParams.root(), "iekf_hThreshold") );
+    float iekf_xThres           = docParams.getFloatData( docParams.getChild( docParams.root(), "iekf_xThreshold") );
+    float iekf_yThres           = docParams.getFloatData( docParams.getChild( docParams.root(), "iekf_yThreshold") );
+    float iekf_hThres           = docParams.getFloatData( docParams.getChild( docParams.root(), "iekf_hThreshold") );
     float maxDistance           = docParams.getFloatData( docParams.getChild( docParams.root(), "beacondetector_maxDistance") );
     float rangeThreshold        = docParams.getFloatData( docParams.getChild( docParams.root(), "beacondetector_rangeThreshold") );
 
-
+    kfl::KFLocalizator::IEKFParams  iekfParams;
     iekfParams.defaultOdoVelTransSigma = sigmaTransOdoVelocity;
     iekfParams.defaultOdoVelRotSigma   = sigmaRotOdoVelocity;
     iekfParams.defaultLaserRangeSigma  = sigmaLaserRange;
     iekfParams.defaultLaserThetaSigma  = sigmaLaserAngle;
     iekfParams.iekfMaxIt               = iekf_Nit;
+    iekfParams.iekfInnovationMin       = sqrt( iekf_xThres*iekf_xThres + iekf_yThres*iekf_yThres + iekf_hThres*iekf_hThres );
 
+    kfl::BeaconDetector::Params     procParams;
     procParams.maxDistance2NearestReferencedBeacon = maxDistance;
     procParams.psp.rangeThres = rangeThreshold;
 
-    obj.setParams(iekfParams);
-    obj.setParams(procParams);
 
+    kfl::KFLocalizator::Params     kfParams;
+    kfParams.bufferSize = 100;
+    kfParams.referencedBeacons.push_back( lsl::Circle( 1.5, 0., 0.04 ) );
+    kfParams.referencedBeacons.push_back( lsl::Circle(-1.5, 1., 0.04 ) );
+    kfParams.iekfParams = iekfParams;
+    kfParams.procParams = procParams;
+
+    obj.setParams(kfParams);
 
 
     //*******************************************
@@ -81,16 +85,18 @@ BOOST_AUTO_TEST_CASE( Static_1 )
     float initialYPosition = docInit.getFloatData( docInit.getChild( docInit.root(), "initialYPosition") );
     float initialHPosition = docInit.getFloatData( docInit.getChild( docInit.root(), "initialHPosition") );
 
-    initParams.initialPose.x(initialXPosition);
-    initParams.initialPose.y(initialYPosition);
-    initParams.initialPose.h(initialHPosition);
+    EstimatedPose2D initialPose;
+    initialPose.x(initialXPosition);
+    initialPose.y(initialYPosition);
+    initialPose.h(initialHPosition);
     Eigen::Matrix3d cov = Eigen::Matrix3d::Identity();
-    cov.diagonal() = Eigen::Vector3d(sigmaInitialPosition, sigmaInitialPosition, sigmaInitialHeading );
-    initParams.initialPose.cov(cov);
-    initParams.initialPose.date(time);
+    cov.diagonal() = Eigen::Vector3d(sigmaInitialPosition*sigmaInitialPosition,
+            sigmaInitialPosition*sigmaInitialPosition,
+            sigmaInitialHeading*sigmaInitialHeading );
+    initialPose.cov(cov);
+    initialPose.date(time);
 
-    obj.setParams(initParams);
-//    BOOST_CHECK(obj.initialize());
+    BOOST_CHECK(obj.initialize(initialPose));
 
 
 
@@ -98,18 +104,18 @@ BOOST_AUTO_TEST_CASE( Static_1 )
     //********          Start           *********
     //*******************************************
 
-    const unsigned int nbScans = 5;
+    const unsigned int nbScans = 1; //5;
     const double odoPeriodInSec = 0.01;
     const double scanPeriodInSec = 0.1;
 
-    time += odoPeriodInSec;
+    unsigned int predictionsinceLastUpdate = 0;
     for(unsigned int k = 0 ; k < nbScans ; k++)
     {
         kfl::Log( DEBUG ) << "==============================================";
         kfl::Log( DEBUG ) << " TOUR " << k << "   [time=" << time << " -> " << time + scanPeriodInSec <<"]";
 
         arp_math::EstimatedPose2D preOdoEstim;
-        //        preOdoEstim = obj.getLastEstimatedPose2D();
+        preOdoEstim = obj.getLastEstimatedPose2D();
 
         kfl::Log( DEBUG ) << "=======================";
         kfl::Log( DEBUG ) << "erreur statique avant les odos [time=" << time << "]:";
@@ -120,16 +126,18 @@ BOOST_AUTO_TEST_CASE( Static_1 )
         kfl::Log( DEBUG ) << "             " << preOdoEstim.cov().row(1);
         kfl::Log( DEBUG ) << "             " << preOdoEstim.cov().row(2);
 
-        for(double t = time ; t < time + scanPeriodInSec ; t += odoPeriodInSec )
+        for(unsigned int predictionInd = 0 ; predictionInd < scanPeriodInSec/odoPeriodInSec ; predictionInd++)
         {
+            time += odoPeriodInSec;
+
             vjson::JsonDocument docOdoVel;
             std::stringstream odoVelFileName;
-            odoVelFileName << "../ressource/unittest/KFL/KFLocalizator/static_1/t_" << t << "_odo.json";
+            odoVelFileName << "../ressource/unittest/KFL/KFLocalizator/static_1/t_" << time << "_odo.json";
             BOOST_CHECK( docOdoVel.parse(odoVelFileName.str().c_str()) );
-            BOOST_CHECK_CLOSE( t , docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "t") ), 1.f);
+            BOOST_CHECK_CLOSE( time , docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "t") ), 1.f);
 
             arp_math::EstimatedTwist2D odoVel;
-            odoVel.date( t );
+            odoVel.date( time );
             odoVel.vx( docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "vx") ) );
             odoVel.vy( docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "vy") ) );
             odoVel.vh( docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "vh") ) );
@@ -137,35 +145,42 @@ BOOST_AUTO_TEST_CASE( Static_1 )
             odoCov.diagonal() = Eigen::Vector3d(sigmaTransOdoVelocity, sigmaTransOdoVelocity, sigmaRotOdoVelocity );
             odoVel.cov( odoCov );
 
-            //            obj.newOdoVelocity(odoVel);
+            kfl::Log( DEBUG ) << "[time=" << time << "]: newOdoVelocity #" << predictionsinceLastUpdate ;
+            obj.newOdoVelocity(odoVel);
+            predictionsinceLastUpdate++;
 
             arp_math::EstimatedPose2D odoEstim;
-            //            odoEstim = obj.getLastEstimatedPose2D();
+            odoEstim = obj.getLastEstimatedPose2D();
 
             vjson::JsonDocument docOdoEstim;
             std::stringstream odoEstimFileName;
-            odoEstimFileName << "../ressource/unittest/KFL/KFLocalizator/static_1/t_" << t << "_odo_estimate.json";
+            odoEstimFileName << "../ressource/unittest/KFL/KFLocalizator/static_1/t_" << time << "_odo_estimate.json";
             BOOST_CHECK( docOdoEstim.parse(odoEstimFileName.str().c_str()) );
-            BOOST_CHECK_CLOSE( t , docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "t")), 1.f );
+            BOOST_CHECK_CLOSE( time , docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "t")), 1.f );
 
-            //            BOOST_CHECK_CLOSE( odoEstim.date() , docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "t")), 1.f);
-            //            BOOST_CHECK_CLOSE( odoEstim.x()    , docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "x")), 1.f);
-            //            BOOST_CHECK_CLOSE( odoEstim.y()    , docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "y")), 1.f);
-            //            BOOST_CHECK_CLOSE( odoEstim.h()    , docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "h")), 1.f);
+            double groudTrueT = docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "t"));
+            double groudTrueX = docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "x"));
+            double groudTrueY = docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "y"));
+            double groudTrueH = docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "h"));
+            BOOST_CHECK_CLOSE( odoEstim.date() , groudTrueT, 1.f);
+            BOOST_CHECK_CLOSE( odoEstim.x()    , groudTrueX, 1.f);
+            BOOST_CHECK_CLOSE( odoEstim.y()    , groudTrueY, 1.f);
+            BOOST_CHECK_CLOSE( odoEstim.h()    , groudTrueH, 1.f);
             for(unsigned int i = 0 ; i < 3 ; i++)
             {
+                std::stringstream rowName;
+                rowName << "row_" << i;
                 for(unsigned int j = 0 ; j < 3 ; j++)
                 {
-                    std::stringstream rowName;
-                    rowName << "row_" << i;
-                    //                    BOOST_CHECK_CLOSE( odoEstim.cov()(i,j), docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.getChild( docOdoEstim.getChild( docOdoEstim.root(), "covariance"), rowName.str()), j )), 1.f);
+                    kfl::Log( NOTICE ) << "check odo covariance (" << i << "," << j << ")";
+                    double cov_i_j = docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.getChild( docOdoEstim.getChild( docOdoEstim.root(), "covariance"), rowName.str()), j ));
+                    BOOST_CHECK_CLOSE( odoEstim.cov()(i,j), cov_i_j, 1.f);
                 }
             }
         }
-        time += scanPeriodInSec;
 
         arp_math::EstimatedPose2D postOdoEstim;
-        //        postOdoEstim = obj.getLastEstimatedPose2D();
+        postOdoEstim = obj.getLastEstimatedPose2D();
 
         kfl::Log( DEBUG ) << "=======================";
         kfl::Log( DEBUG ) << "erreur statique apres les odos [time=" << time << "]:";
@@ -184,10 +199,12 @@ BOOST_AUTO_TEST_CASE( Static_1 )
         lsl::LaserScan scan;
         BOOST_CHECK( scanParser.getScan(scan) );
 
-        //        obj.newScan(scan);
+        kfl::Log( DEBUG ) << "[time=" << time << "]: newScan";
+        obj.newScan(scan);
+        predictionsinceLastUpdate = 0;
 
         arp_math::EstimatedPose2D postScanEstim;
-        //        postScanEstim = obj.getLastEstimatedPose2D();
+        postScanEstim = obj.getLastEstimatedPose2D();
 
         vjson::JsonDocument docScanEstim;
         std::stringstream scanEstimFileName;
@@ -195,17 +212,23 @@ BOOST_AUTO_TEST_CASE( Static_1 )
         BOOST_CHECK( docScanEstim.parse(scanEstimFileName.str().c_str()) );
         BOOST_CHECK_CLOSE( time , docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "t")), 1.f );
 
-        //            BOOST_CHECK_CLOSE( postScanEstim.date() , docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "t")), 1.f);
-        //            BOOST_CHECK_CLOSE( postScanEstim.x()    , docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "x")), 1.f);
-        //            BOOST_CHECK_CLOSE( postScanEstim.y()    , docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "y")), 1.f);
-        //            BOOST_CHECK_CLOSE( postScanEstim.h()    , docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "h")), 1.f);
+        double groundTrueT = docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "t"));
+        double groundTrueX = docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "x"));
+        double groundTrueY = docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "y"));
+        double groundTrueH = docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "h"));
+        BOOST_CHECK_CLOSE( postScanEstim.date() , groundTrueT, 1.f);
+        BOOST_CHECK_CLOSE( postScanEstim.x(), groundTrueX, 1.f);
+        BOOST_CHECK_CLOSE( postScanEstim.y(), groundTrueY, 1.f);
+        BOOST_CHECK_CLOSE( postScanEstim.h(), groundTrueH, 1.f);
         for(unsigned int i = 0 ; i < 3 ; i++)
         {
+            std::stringstream rowName;
+            rowName << "row_" << i;
             for(unsigned int j = 0 ; j < 3 ; j++)
             {
-                std::stringstream rowName;
-                rowName << "row_" << i;
-                //                    BOOST_CHECK_CLOSE( postScanEstim.cov()(i,j), docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.getChild( docScanEstim.getChild( docScanEstim.root(), "covariance"), rowName.str()), j )), 1.f);
+                kfl::Log( NOTICE ) << "check laser covariance (" << i << "," << j << ")";
+                double cov_i_j = docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.getChild( docScanEstim.getChild( docScanEstim.root(), "covariance"), rowName.str()), j ));
+                BOOST_CHECK_CLOSE( postScanEstim.cov()(i,j), cov_i_j, 1.f);
             }
         }
 
@@ -220,7 +243,7 @@ BOOST_AUTO_TEST_CASE( Static_1 )
     }
 
     arp_math::EstimatedPose2D lastEstim;
-    //        lastEstim = obj.getLastEstimatedPose2D();
+    lastEstim = obj.getLastEstimatedPose2D();
 
     //    BOOST_CHECK_SMALL( lastEstim.x() - trueX , 0.01 );
     //    BOOST_CHECK_SMALL( lastEstim.y() - trueY , 0.01 );

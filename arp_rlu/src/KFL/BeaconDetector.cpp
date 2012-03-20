@@ -161,7 +161,7 @@ bool BeaconDetector::getBeacon(double t, lsl::Circle & target, Eigen::Vector2d &
 {
     if(referencedBeacons.size() == 0)
     {
-        Log( NOTICE ) << "BeaconDetector::getBeacon" << " - " << "No beacon registered => return false";
+        Log( ERROR ) << "BeaconDetector::getBeacon" << " - " << "No beacon registered => return false";
         return false;
     }
     if(detectedCircles.size() < 2)

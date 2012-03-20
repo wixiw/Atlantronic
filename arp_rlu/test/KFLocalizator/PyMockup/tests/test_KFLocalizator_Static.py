@@ -233,7 +233,7 @@ rospy.loginfo("covariance : \n%s", repr(kfloc.P))
 xOld = initialXPosition
 yOld = initialYPosition
 
-time = 0.01
+time = 0.0
 
 for k in range(params.simu_cfg["Nscans"]):
     rospy.loginfo("==============================================")
@@ -244,23 +244,25 @@ for k in range(params.simu_cfg["Nscans"]):
     #===============================================================================
     odoDurationInSec = 0.1
     ov = OdoVelocity()
-    for t in np.arange(time, time + odoDurationInSec, 0.01):
+    for i in range(10):
+      time += 0.01
+      
       ov.vx = random.normalvariate(0., params.simu_cfg["sigmaTransOdoVelocity"])
       ov.vy = random.normalvariate(0., params.simu_cfg["sigmaTransOdoVelocity"])
       ov.vh = random.normalvariate(0., params.simu_cfg["sigmaRotOdoVelocity"])
       
       dictOdo = {}
-      dictOdo["t"] = t
+      dictOdo["t"] = time
       dictOdo["vx"] = ov.vx
       dictOdo["vy"] = ov.vy
       dictOdo["vh"] = ov.vh
       if not os.path.exists("static_"+ str(xpIndex)):
         os.mkdir("static_"+ str(xpIndex))
-      output = open("./static_"+ str(xpIndex) + "/t_" + str(t) + "_odo.json", mode='w')
+      output = open("./static_"+ str(xpIndex) + "/t_" + str(time) + "_odo.json", mode='w')
       output.write(json.dumps(dictOdo,indent=2,sort_keys=True))
       output.close()
       
-      kfloc.newOdoVelocity(t, ov, params.kf_cfg["sigmaTransOdoVelocity"], params.kf_cfg["sigmaTransOdoVelocity"], params.kf_cfg["sigmaRotOdoVelocity"])
+      kfloc.newOdoVelocity(time, ov, params.kf_cfg["sigmaTransOdoVelocity"], params.kf_cfg["sigmaTransOdoVelocity"], params.kf_cfg["sigmaRotOdoVelocity"])
       
       estimOdo = kfloc.getBestEstimate()
       dictEstim = {}
@@ -269,16 +271,15 @@ for k in range(params.simu_cfg["Nscans"]):
       dictEstim["y"] = estimOdo[1].yRobot
       dictEstim["h"] = estimOdo[1].hRobot
       dictEstim["covariance"] = {}
-      dictEstim["covariance"]["raw_0"] = [estimOdo[1].covariance[0,0], estimOdo[1].covariance[0,1], estimOdo[1].covariance[0,2]]
-      dictEstim["covariance"]["raw_1"] = [estimOdo[1].covariance[1,0], estimOdo[1].covariance[1,1], estimOdo[1].covariance[1,2]]
-      dictEstim["covariance"]["raw_2"] = [estimOdo[1].covariance[2,0], estimOdo[1].covariance[2,1], estimOdo[1].covariance[2,2]]
+      dictEstim["covariance"]["row_0"] = [estimOdo[1].covariance[0,0], estimOdo[1].covariance[0,1], estimOdo[1].covariance[0,2]]
+      dictEstim["covariance"]["row_1"] = [estimOdo[1].covariance[1,0], estimOdo[1].covariance[1,1], estimOdo[1].covariance[1,2]]
+      dictEstim["covariance"]["row_2"] = [estimOdo[1].covariance[2,0], estimOdo[1].covariance[2,1], estimOdo[1].covariance[2,2]]
       if not os.path.exists("static_"+ str(xpIndex)):
         os.mkdir("static_"+ str(xpIndex))
-      output = open("./static_"+ str(xpIndex) + "/t_" + str(t) + "_odo_estimate.json", mode='w')
+      output = open("./static_"+ str(xpIndex) + "/t_" + str(time) + "_odo_estimate.json", mode='w')
       output.write(json.dumps(dictEstim,indent=2,sort_keys=True))
       output.close()
       
-    time = time + odoDurationInSec
     
     #===============================================================================
     # Estimee odo avant le scan
@@ -377,9 +378,9 @@ for k in range(params.simu_cfg["Nscans"]):
     dictEstim["y"] = estim2[1].yRobot
     dictEstim["h"] = estim2[1].hRobot
     dictEstim["covariance"] = {}
-    dictEstim["covariance"]["raw_0"] = [estim2[1].covariance[0,0], estim2[1].covariance[0,1], estim2[1].covariance[0,2]]
-    dictEstim["covariance"]["raw_1"] = [estim2[1].covariance[1,0], estim2[1].covariance[1,1], estim2[1].covariance[1,2]]
-    dictEstim["covariance"]["raw_2"] = [estim2[1].covariance[2,0], estim2[1].covariance[2,1], estim2[1].covariance[2,2]]
+    dictEstim["covariance"]["row_0"] = [estim2[1].covariance[0,0], estim2[1].covariance[0,1], estim2[1].covariance[0,2]]
+    dictEstim["covariance"]["row_1"] = [estim2[1].covariance[1,0], estim2[1].covariance[1,1], estim2[1].covariance[1,2]]
+    dictEstim["covariance"]["row_2"] = [estim2[1].covariance[2,0], estim2[1].covariance[2,1], estim2[1].covariance[2,2]]
     if not os.path.exists("static_"+ str(xpIndex)):
       os.mkdir("static_"+ str(xpIndex))
     output = open("./static_"+ str(xpIndex) + "/t_" + str(time) + "_scan_estimate.json", mode='w')

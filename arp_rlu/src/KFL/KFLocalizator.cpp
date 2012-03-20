@@ -24,7 +24,6 @@ using namespace arp_core::log;
 KFLocalizator::Params::Params()
 : bufferSize(100)
 , referencedBeacons()
-, initParams(KFLocalizator::InitParams())
 , iekfParams(KFLocalizator::IEKFParams())
 , procParams(BeaconDetector::Params())
 {
@@ -48,34 +47,9 @@ std::string KFLocalizator::Params::getInfo() const
         ss << "" << std::endl;
     }
     ss << "****************************" << std::endl;
-    ss << initParams.getInfo();
-    ss << "****************************" << std::endl;
     ss << iekfParams.getInfo();
     ss << "****************************" << std::endl;
     ss << procParams.getInfo();
-    return ss.str();
-}
-
-KFLocalizator::InitParams::InitParams()
-: initialPose(0., 0., 0.)
-{
-    Eigen::Matrix<double,3,3> covariance = Eigen::Matrix<double,3,3>::Identity();
-    covariance(0,0) = 0.1;
-    covariance(1,1) = 0.1;
-    covariance(2,2) = 0.01;
-    initialPose.cov( covariance );
-    initialPose.date( -1. );
-}
-
-std::string KFLocalizator::InitParams::getInfo() const
-{
-    std::stringstream ss;
-    ss << "KFLocalizator InitParams :" << std::endl;
-    ss << " [*] x    : " << initialPose.x() << " (m)" << std::endl;
-    ss << " [*] y    : " << initialPose.y() << " (m)" << std::endl;
-    ss << " [*] h    : " << rad2deg(initialPose.h()) << " (deg)" << std::endl;
-    ss << " [*] date : " << initialPose.date() << " (s)" << std::endl;
-    ss << " [*] cov  : " << initialPose.cov() << std::endl;
     return ss.str();
 }
 
@@ -98,6 +72,7 @@ std::string KFLocalizator::IEKFParams::getInfo() const
     ss << " [*] defaultLaserRangeSigma  : " << defaultLaserRangeSigma << std::endl;
     ss << " [*] defaultLaserThetaSigma  : " << defaultLaserThetaSigma << std::endl;
     ss << " [*] iekfMaxIt               : " << iekfMaxIt << std::endl;
+    ss << " [*] iekfInnovationMin       : " << iekfInnovationMin << std::endl;
     return ss.str();
 }
 
@@ -122,14 +97,8 @@ void KFLocalizator::setParams(KFLocalizator::Params p)
     params.bufferSize = p.bufferSize;
     params.referencedBeacons = p.referencedBeacons;
     beaconDetector.setReferencedBeacons(params.referencedBeacons);
-    setParams(params.initParams);
     setParams(params.iekfParams);
     setParams(params.procParams);
-}
-
-void KFLocalizator::setParams(KFLocalizator::InitParams p)
-{
-    params.initParams = p;
 }
 
 void KFLocalizator::setParams(KFLocalizator::IEKFParams p)
@@ -143,22 +112,24 @@ void KFLocalizator::setParams(BeaconDetector::Params p)
     beaconDetector.setParams(params.procParams);
 }
 
-bool KFLocalizator::initialize()
+bool KFLocalizator::initialize(const arp_math::EstimatedPose2D & pose)
 {
     circularBuffer.rset_capacity(params.bufferSize);
     circularBuffer.clear();
 
-    double initDate = params.initParams.initialPose.date();
+    double initDate = pose.date();
 
     KFLStateVar initStateVar;
-    initStateVar(0) = params.initParams.initialPose.x();
-    initStateVar(1) = params.initParams.initialPose.y();
-    initStateVar(2) = params.initParams.initialPose.h();
+    initStateVar(0) = pose.x();
+    initStateVar(1) = pose.y();
+    initStateVar(2) = pose.h();
 
     KFLStateCov initStateCov;
-    initStateCov = params.initParams.initialPose.cov();
+    initStateCov = pose.cov();
 
     BFLWrapper::FilterParams filterParams;
+    filterParams.iekfMaxIt = params.iekfParams.iekfMaxIt;
+    filterParams.iekfInnovationMin = params.iekfParams.iekfInnovationMin;
     bayesian->init(initStateVar, initStateCov, filterParams);
 
     updateBuffer(initDate);
@@ -175,9 +146,9 @@ bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D odoVel)
 
     arp_math::EstimatedPose2D lastEstim = circularBuffer.back().first;
 
-    if( lastEstim.date() > odoVel.date() )
+    if( lastEstim.date() >= odoVel.date() )
     {
-        Log( ERROR ) << "KFLocalizator::newOdoVelocity - Last estimation date is posterior than odo velocity date (?!?) => return false";
+        Log( ERROR ) << "KFLocalizator::newOdoVelocity - Last estimation date (" << lastEstim.date() << ") is posterior or same than odo velocity date (" << odoVel.date() << ") => return false";
         return false;
     }
 
@@ -271,7 +242,12 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
 
     beaconDetector.process(scan, tt, xx, yy, hh);
 
+    std::vector< lsl::DetectedCircle > vdc = beaconDetector.getDetectedCircles();
+    Log( DEBUG ) << "KFLocalizator::newScan - " << vdc.size() << " circle(s) detected in scan";
+
+
     // Update
+    unsigned int nbBeaconSeen = 0;
     for(unsigned int i = 1 ; i < scan.getSize() ; i++)
     {
         lsl::Circle target;
@@ -281,7 +257,10 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
             BFLWrapper::UpdateParams updateParams;
             updateParams.laserRangeSigma = params.iekfParams.defaultLaserRangeSigma;
             updateParams.laserThetaSigma = params.iekfParams.defaultLaserThetaSigma;
+            Log( DEBUG ) << "KFLocalizator::newScan - meas=" << meas ;
+            Log( DEBUG ) << "KFLocalizator::newScan - target=" << target.getPosition() ;
             bayesian->update(meas, target.getPosition(), updateParams);
+            nbBeaconSeen++;
         }
 
         KFLSysInput input;
@@ -298,6 +277,7 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
 
         bayesian->predict( input, dt, predictParams );
     }
+    Log( DEBUG ) << "KFLocalizator::newScan - " << nbBeaconSeen << " beacons seen";
 
     KFLocalizator::updateBuffer(tt(tt.size()-1), EstimatedTwist2D(vx(tt.size()-1), vy(tt.size()-1), vh(tt.size()-1)));
 
