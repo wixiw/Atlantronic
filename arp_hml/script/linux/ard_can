@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 ### BEGIN INIT INFO
 # Provides:          ard_can
 # Required-Start:    $remote_fs $syslog
@@ -17,6 +17,7 @@
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="can drivers "
+NAME="ard_can"
 PIDFILE=/var/run/ard_can.pid
 SCRIPTNAME=/etc/init.d/ard_can
 BAUDRATE=1000000
@@ -34,17 +35,21 @@ CAN_OPTS="irq=10,10 mem=0xD0000,0xD0200 ocr=0x5e,0x5e cdr=0,0"
 # and status_of_proc is working.
 . /lib/lsb/init-functions
 
+. /opt/color.sh
+
 #
 # Function that starts the daemon/service
 #
 do_start()
 {
-	if [ $OROCOS_TARGET == "xenomai" ] 
+	if [[ $OROCOS_TARGET == "xenomai" ]] 
 	then
+		cecho yellow "Starting Xenomai can ..."
 		modprobe xeno_can_mem $CAN_OPTS
 		rtcanconfig rtcan0 -b $BAUDRATE -v start
 		rtcanconfig rtcan1 -b $BAUDRATE -v start
 	else
+		cecho yellow "Starting Gnulinux can ..."
 		modprobe sja1000_isa $CAN_OPTS
 	
 		#chargement de l'interface dans ifconfig
@@ -62,10 +67,12 @@ do_start()
 #
 do_stop()
 {
-	if [ $OROCOS_TARGET == "xenomai" ] 
+	if [[ $OROCOS_TARGET == "xenomai" ]] 
 	then
+		cecho yellow "Stopping Gnulinux can ..."
 		rmmod xeno_can_mem xeno_can_sja1000 xeno_can
 	else
+		cecho yellow "Stoppping Gnulinux can ..."
 		rmmod sja1000_isa sja1000 can_dev
 	fi
 }

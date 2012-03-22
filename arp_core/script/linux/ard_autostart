@@ -1,8 +1,8 @@
 #! /bin/sh
 ### BEGIN INIT INFO
 # Provides:          ard_autostart
-# Required-Start:    $remote_fs $syslog $ard_can
-# Required-Stop:     $remote_fs $syslog $ard_can
+# Required-Start:    $remote_fs $syslog ard_can
+# Required-Stop:     $remote_fs $syslog ard_can
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: Example initscript
@@ -83,9 +83,10 @@ do_stop()
 		kill -9 `cat $PIDFILE` 
 		rm -f $PIDFILE
 		return 0
-	else
-		cecho "red" "process are not started !"
-		return 2
+	else if [ -f /opt/conf/MATCH ] ; then 
+			cecho "red" "process are not started !"
+			return 2
+		fi
 	fi
 }
 
