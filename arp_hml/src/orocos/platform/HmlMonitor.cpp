@@ -69,20 +69,20 @@ bool HmlMonitor::configureHook()
 
 
     //get operation to reset hml
-//    if( hasPeer("WoodheadOut") || propRequireCompleteHardware )
-//        res &= getOperation("WoodheadOut",      "coReset",  m_coResetWoodheadOut);
-//    if( hasPeer("WoodheadIn") || propRequireCompleteHardware )
-//        res &= getOperation("WoodheadIn",       "coReset",  m_coResetWoodheadIn);
-//    if( hasPeer("LeftDriving") || propRequireCompleteHardware )
-//        res &= getOperation("LeftDriving",      "coReset",  m_coResetLeftDriving);
-//    if( hasPeer("RightDriving") || m_power.propRequireCompleteHardware )
-//        res &= getOperation("RightDriving",     "coReset",  m_coResetRightDriving);
+    if( hasPeer("WoodheadOut") || propRequireCompleteHardware )
+        res &= getOperation("WoodheadOut",      "coReset",  m_coResetWoodheadOut);
+    if( hasPeer("WoodheadIn") || propRequireCompleteHardware )
+        res &= getOperation("WoodheadIn",       "coReset",  m_coResetWoodheadIn);
+    if( hasPeer("LeftDriving") || propRequireCompleteHardware )
+        res &= getOperation("LeftDriving",      "coReset",  m_coResetLeftDriving);
+    if( hasPeer("RightDriving") || propRequireCompleteHardware )
+        res &= getOperation("RightDriving",     "coReset",  m_coResetRightDriving);
     if( hasPeer("RearDriving") || propRequireCompleteHardware )
         res &= getOperation("RearDriving",      "coReset",  m_coResetRearDriving);
-//    if( hasPeer("LeftSteering") || propRequireCompleteHardware )
-//        res &= getOperation("LeftSteering",     "coReset",  m_coResetLeftSteering);
-//    if( hasPeer("RightSteering") || propRequireCompleteHardware )
-//        res &= getOperation("RightSteering",    "coReset",  m_coResetRightSteering);
+    if( hasPeer("LeftSteering") || propRequireCompleteHardware )
+        res &= getOperation("LeftSteering",     "coReset",  m_coResetLeftSteering);
+    if( hasPeer("RightSteering") || propRequireCompleteHardware )
+        res &= getOperation("RightSteering",    "coReset",  m_coResetRightSteering);
     if( hasPeer("RearSteering") || propRequireCompleteHardware )
         res &= getOperation("RearSteering",     "coReset",  m_coResetRearSteering);
 

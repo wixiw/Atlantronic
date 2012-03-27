@@ -54,13 +54,13 @@ PowerManager::PowerManager(ARDTaskContext& owner):
     m_owner.addPort("outEnable",outEnable)
             .doc("All device are soft enabled");
 
-    m_owner.addOperation("ooSetDrivingMotorPower", &PowerManager::ooSetDrivingMotorPower, this, OwnThread)
+    m_owner.addOperation("coSetDrivingMotorPower", &PowerManager::coSetDrivingMotorPower, this, ClientThread)
             .doc("")
             .arg("","");
-    m_owner.addOperation("ooSetSteeringMotorPower", &PowerManager::ooSetSteeringMotorPower, this, OwnThread)
+    m_owner.addOperation("coSetSteeringMotorPower", &PowerManager::coSetSteeringMotorPower, this, ClientThread)
             .doc("")
             .arg("","");
-    m_owner.addOperation("ooSetMotorPower", &PowerManager::ooSetMotorPower, this, OwnThread)
+    m_owner.addOperation("coSetMotorPower", &PowerManager::coSetMotorPower, this, ClientThread)
             .doc("")
             .arg("","");
 
@@ -192,7 +192,7 @@ void PowerManager::readConnectivity()
 
 //-----------------------------------------------------
 
-bool PowerManager::ooSetDrivingMotorPower(bool powerOn)
+bool PowerManager::coSetDrivingMotorPower(bool powerOn)
 {
     double chrono = 0.0;
     bool leftDrivingEnableTmp;
@@ -206,6 +206,7 @@ bool PowerManager::ooSetDrivingMotorPower(bool powerOn)
         if( enable )
         {
             LOGS(Info) << "ooSetDrivingMotorPower : you are trying to power the drive but they are already powered !" << endlog();
+            goto success;
         }
         else
         {
@@ -225,21 +226,25 @@ bool PowerManager::ooSetDrivingMotorPower(bool powerOn)
         else
         {
             LOGS(Info) << "ooSetDrivingMotorPower : you are trying to unpower the drive but they are already unpowered !" << endlog();
+            goto success;
         }
     }
 
+    chrono = 0.0;
     //Attente de confirmation de l'action :
     whileTimeout(inLeftDrivingEnable.readNewest(leftDrivingEnableTmp) == NoData && leftDrivingEnableTmp!=powerOn
             && inRightDrivingEnable.readNewest(rightDrivingEnableTmp) == NoData && rightDrivingEnableTmp!=powerOn
             && inRearDrivingEnable.readNewest(rearDrivingEnableTmp) == NoData && rearDrivingEnableTmp!=powerOn
-            , propCanRequestTimeout, 0.050);
+            , propCanRequestTimeout, 0.001);
     IfWhileTimeoutExpired(propCanRequestTimeout)
     {
         LOGS(Error) << "ooSetDrivingMotorPower : motor didn't switch power as required, timeout is over." << endlog();
         goto failed;
     }
 
-    //remise ne mode vitesse des moteurs
+    LOGS(Info) << "ooSetSteeringMotorPower : returning to speed mode" << endlog();
+
+    //remise en mode vitesse des moteurs
     if( m_ooSetDrivingOperationMode("speed") == false )
     {
         LOGS(Error) << "m_ooSetDrivingOperationMode : could not switch back to speed mode." << endlog();
@@ -253,7 +258,7 @@ bool PowerManager::ooSetDrivingMotorPower(bool powerOn)
         return true;
 }
 
-bool PowerManager::ooSetSteeringMotorPower(bool powerOn)
+bool PowerManager::coSetSteeringMotorPower(bool powerOn)
 {
     double chrono = 0.0;
     bool leftSteeringEnableTmp;
@@ -289,16 +294,19 @@ bool PowerManager::ooSetSteeringMotorPower(bool powerOn)
         }
     }
 
+    chrono = 0.0;
     //Attente de confirmation de l'action :
     whileTimeout(inLeftSteeringEnable.readNewest(leftSteeringEnableTmp) == NoData && leftSteeringEnableTmp!=powerOn
             && inRightSteeringEnable.readNewest(rightSteeringEnableTmp) == NoData && rightSteeringEnableTmp!=powerOn
             && inRearSteeringEnable.readNewest(rearSteeringEnableTmp) == NoData && rearSteeringEnableTmp!=powerOn
-            , propCanRequestTimeout, 0.050);
+            , propCanRequestTimeout, 0.001);
     IfWhileTimeoutExpired(propCanRequestTimeout)
     {
         LOGS(Error) << "ooSetSteeringMotorPower : motor didn't switch power as required, timeout is over." << endlog();
         goto failed;
     }
+
+    LOGS(Info) << "ooSetSteeringMotorPower : returning to position mode" << endlog();
 
     //remise ne mode position des moteurs
     if( m_ooSetSteeringOperationMode("position") == false )
@@ -315,12 +323,12 @@ bool PowerManager::ooSetSteeringMotorPower(bool powerOn)
 }
 
 
-bool PowerManager::ooSetMotorPower(bool powerOn)
+bool PowerManager::coSetMotorPower(bool powerOn)
 {
     bool res = true;
 
-    res &= ooSetDrivingMotorPower( powerOn );
-    res &= ooSetSteeringMotorPower( powerOn );
+    res &= coSetDrivingMotorPower( powerOn );
+    res &= coSetSteeringMotorPower( powerOn );
 
     return res;
 }

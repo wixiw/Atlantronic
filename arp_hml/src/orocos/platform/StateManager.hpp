@@ -38,7 +38,7 @@ namespace arp_hml
 
             /**
              */
-            bool updateHook();
+            void updateHook();
 
         protected:
 

@@ -41,7 +41,7 @@ bool StateManager::configureHook()
     return res;
 }
 
-bool StateManager::updateHook()
+void StateManager::updateHook()
 {
 
 }
@@ -83,7 +83,7 @@ bool StateManager::getPeersOperations()
 
 bool StateManager::ooSetDrivingOperationMode(const string state)
 {
-    //remise ne mode vitesse des moteurs
+    //remise en mode vitesse des moteurs
     if( m_ooSetLeftDrivingOperationMode(state) == false
      || m_ooSetRightDrivingOperationMode(state) == false
      || m_ooSetRearDrivingOperationMode(state) == false
@@ -93,7 +93,7 @@ bool StateManager::ooSetDrivingOperationMode(const string state)
         goto failed;
     }
 
-    LOGS(Info) << "ooSetDrivingOperationMode : Motors power mode of operation is " << state << endlog();
+    LOGS(Info) << "ooSetDrivingOperationMode : Motors mode of operation is " << state << endlog();
     goto success;
 
 
@@ -115,7 +115,7 @@ bool StateManager::ooSetSteeringOperationMode(const string state)
         goto failed;
     }
 
-    LOGS(Info) << "ooSetSteeringOperationMode : Motors power mode of operation is " << state << " properly." << endlog();
+    LOGS(Info) << "ooSetSteeringOperationMode : Motors mode of operation is " << state << " properly." << endlog();
     goto success;
 
     failed:

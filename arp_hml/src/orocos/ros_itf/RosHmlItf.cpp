@@ -34,9 +34,9 @@ bool RosHmlItf::configureHook()
     bool res = true;
     HmlTaskContext::configureHook();
 
-    res &= getOperation("HmlMonitor" ,  "ooSetMotorPower",          m_ooSetMotorPower);
-    res &= getOperation("HmlMonitor",   "ooSetDrivingMotorPower",   m_ooSetDrivingMotorPower);
-    res &= getOperation("HmlMonitor",   "ooSetSteeringMotorPower",  m_ooSetSteeringMotorPower);
+    res &= getOperation("HmlMonitor" ,  "coSetMotorPower",          m_coSetMotorPower);
+    res &= getOperation("HmlMonitor",   "coSetDrivingMotorPower",   m_coSetDrivingMotorPower);
+    res &= getOperation("HmlMonitor",   "coSetSteeringMotorPower",  m_coSetSteeringMotorPower);
 
     res &= getOperation("HmlMonitor"    , "ooResetHml",  m_ooResetHml);
 
@@ -273,19 +273,19 @@ void RosHmlItf::readWheelBlocked()
 
 bool RosHmlItf::srvSetMotorPower(SetMotorPower::Request& req, SetMotorPower::Response& res)
 {
-    res.success = m_ooSetMotorPower(req.powerOn);
+    res.success = m_coSetMotorPower(req.powerOn);
     return res.success;
 }
 
 bool RosHmlItf::srvSetDrivingMotorPower(SetDrivingMotorPower::Request& req, SetDrivingMotorPower::Response& res)
 {
-    res.success = m_ooSetSteeringMotorPower(req.powerOn);
+    res.success = m_coSetSteeringMotorPower(req.powerOn);
     return res.success;
 }
 
 bool RosHmlItf::srvSetSteeringMotorPower(SetSteeringMotorPower::Request& req, SetSteeringMotorPower::Response& res)
 {
-    res.success = m_ooSetDrivingMotorPower(req.powerOn);
+    res.success = m_coSetDrivingMotorPower(req.powerOn);
     return res.success;
 }
 

@@ -17,7 +17,7 @@
   // Displaying:
   std::ostream& operator<<(std::ostream& os, const enum_nodeState& cd)
   {
-      string name;
+      std::string name;
 
      switch( cd )
      {

@@ -8,6 +8,9 @@
 #ifndef ARDTASKCONTEXT_HPP_
 #define ARDTASKCONTEXT_HPP_
 
+#include <iostream>
+#include <fstream>
+
 //TODO WLA a remettre plus tard, bug Orocos
 //#include <rtt/typekit/Types.hpp>
 #include <rtt/RTT.hpp>
@@ -17,7 +20,7 @@
 #include <rtt/Port.hpp>
 #include <rtt/Logger.hpp>
 
-
+using namespace std;
 using namespace RTT;
 
 namespace arp_core
@@ -33,7 +36,7 @@ namespace arp_core
      * @param sleep : sleeping delay each time function is true in s
      */
     #define whileTimeout(function, timeout, sleep ) \
-    while( function && chrono < timeout )       \
+    while( function && chrono >= 0 && chrono < timeout )       \
     {                                           \
         chrono += sleep;                        \
         usleep(sleep*1E6);                      \
@@ -89,11 +92,21 @@ namespace arp_core
         bool getOperation(string component, string operation, OperationCaller<CommandT>& reference)
         {
             bool res = true;
+            TaskContext* taskContext;
 
-            TaskContext* taskContext = getPeer(component);
+            //si je cherche une operation sur moi c'est facile, sinon je cherche le peer
+            if( getName() == component )
+            {
+                taskContext = this;
+            }
+            else
+            {
+                taskContext = getPeer(component);
+            }
+
             if ( taskContext == NULL )
             {
-                LOG(Error)  << "getOperation : failed to find peer " << component << endlog();
+                LOG(Error)  << "getOperation : failed to find peer " << component  << " (when asking for " << operation << endlog();
                 res = false;
             }
             else

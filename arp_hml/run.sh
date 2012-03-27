@@ -26,7 +26,7 @@ then
 	echo -e $JAUNE "run -s $ROOT_DEPLOYMENT_FILE" $NORMAL
 	gdb `rospack find ocl`/bin/deployer-$OROCOS_TARGET
 else
-	rosrun ocl deployer-$OROCOS_TARGET -s $ROOT_DEPLOYMENT_FILE 2>/dev/null
+	rosrun ocl deployer-$OROCOS_TARGET -s $ROOT_DEPLOYMENT_FILE
 fi
 
 

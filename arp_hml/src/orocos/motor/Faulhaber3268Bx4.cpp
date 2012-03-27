@@ -511,7 +511,10 @@ bool Faulhaber3268Bx4::setOperationMode(ArdMotorItf::operationMode_t operationMo
 		if( ArdMotorItf::SPEED_CONTROL == operationMode || ArdMotorItf::OTHER == operationMode || ArdMotorItf::POSITION_CONTROL == operationMode)
 			ArdMotorItf::setOperationMode(operationMode);
 		else
+		{
+		    LOG(Error) << "This mode is not available for now" << endlog();
 			res = false;
+		}
 	}
 	else
 	{

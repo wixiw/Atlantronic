@@ -220,11 +220,11 @@ protected:
         bool m_receivedPartialPosition;
 
         /** Pointer on the HmlMonitor ooSetMotorPower Operation**/
-        OperationCaller<bool(bool)> m_ooSetMotorPower;
+        OperationCaller<bool(bool)> m_coSetMotorPower;
         /** Pointer on the HmlMonitor ooSetDrivingMotorPower Operation**/
-        OperationCaller<bool(bool)> m_ooSetDrivingMotorPower;
+        OperationCaller<bool(bool)> m_coSetDrivingMotorPower;
         /** Pointer on the HmlMonitor ooSetSteeringMotorPower Operation**/
-        OperationCaller<bool(bool)> m_ooSetSteeringMotorPower;
+        OperationCaller<bool(bool)> m_coSetSteeringMotorPower;
         /** Pointer on the HmlMonitor ooResetHml Operation**/
         OperationCaller<bool(void)> m_ooResetHml;
         /** Pointer on the HmlMonitor coGetVersion Operation**/

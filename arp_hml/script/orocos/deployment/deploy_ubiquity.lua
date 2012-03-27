@@ -1,6 +1,6 @@
 require("rttlib")
-require("rfsm")
-require("rfsm_rtt")
+--require("rfsm")
+--require("rfsm_rtt")
 
 rttlib.color=true
 Deployer = rtt.getTC()
@@ -38,11 +38,11 @@ JoystickDeployer:connect()
 RosHmlItfDeployer:connect()
 HmlCmdMockupDeployer:connect()
 HmlMonitorDeployer:connect()
-
+--[[
 print("... start components")
 JoystickDeployer:start()
 HmlMonitorDeployer:start()
 HmlCmdMockupDeployer:start()
-
+--]]
 print("fin déploiment arp_hml")
 print("====================")

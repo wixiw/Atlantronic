@@ -26,7 +26,7 @@ sdo = CanDicoEntry(propNodeId,0x1802,2,1,0,1);
 attrScriptRes = Can1.coWriteInRemoteDico(sdo);
 if (attrScriptRes==false) then return;
 
-//set mode of operatio of motor   to speed
+//set mode of operation of motor to speed
 print.log(Info,"put in speed mode");
 sdo = CanDicoEntry(propNodeId,0x6060,0,-1,0,1);
 attrScriptRes = Can1.coWriteInRemoteDico(sdo);
@@ -53,26 +53,20 @@ sdo = CanDicoEntry(propNodeId,0x2303,2, 4,0,1);
 attrScriptRes = Can1.coWriteInRemoteDico(sdo);
 if (attrScriptRes==false) then return;
 
-//configure PDO1 of motor   to be send every sync
-print.log(Info, "configure PDO1 to be send every sync");
-sdo = CanDicoEntry(propNodeId,0x1800,2,1,0,1);
-attrScriptRes = Can1.coWriteInRemoteDico(sdo);
-if (attrScriptRes==false) then return;
+
+////configure Node Guarding of motor 
+//print.log(Info, "configure Node Guarding");
+//var int32 period = Can1.propSyncPeriod*1000;
+//sdo = CanDicoEntry(propNodeId,0x100C,0,period,0,2);
+//attrScriptRes = Can1.coWriteInRemoteDico(sdo);
+//if (attrScriptRes==false) then return;
+//sdo = CanDicoEntry(propNodeId,0x100D,0,10,0,1);
+//attrScriptRes = Can1.coWriteInRemoteDico(sdo);
+//if (attrScriptRes==false) then return;
 
 
-//configure Node Guarding of motor 
-print.log(Info, "configure Node Guarding");
-var int32 period = Can1.propSyncPeriod*1000;
-sdo = CanDicoEntry(propNodeId,0x100C,0,period,0,2);
-attrScriptRes = Can1.coWriteInRemoteDico(sdo);
-if (attrScriptRes==false) then return;
-sdo = CanDicoEntry(propNodeId,0x100D,0,10,0,1);
-attrScriptRes = Can1.coWriteInRemoteDico(sdo);
-if (attrScriptRes==false) then return;
-
-
-//configure Fault Reaction of the motor
-print.log(Info, "configure Faulhaber Fault reaction");
-sdo = CanDicoEntry(propNodeId,0x2320,3,0x100,0,2);
-attrScriptRes = Can1.coWriteInRemoteDico(sdo);
-if (attrScriptRes==false) then return;
+////configure Fault Reaction of the motor
+//print.log(Info, "configure Faulhaber Fault reaction");
+//sdo = CanDicoEntry(propNodeId,0x2320,3,0x100,0,2);
+//attrScriptRes = Can1.coWriteInRemoteDico(sdo);
+//if (attrScriptRes==false) then return;

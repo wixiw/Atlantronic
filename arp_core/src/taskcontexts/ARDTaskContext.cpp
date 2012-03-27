@@ -6,8 +6,6 @@
  */
 
 #include "ARDTaskContext.hpp"
-#include <iostream>
-#include <fstream>
 
 using namespace arp_core;
 using namespace RTT;

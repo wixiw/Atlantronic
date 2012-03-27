@@ -17,7 +17,7 @@ using namespace scripting;
 CanOpenNode::CanOpenNode(const std::string& name):
 	HmlTaskContext(name),
     propNodeId(int(0xFF)),
-    propNmtTimeout(1.000),
+    propNmtTimeout(10.000),
     propCanOpenControllerName("Can1"),
     propCanConfigurationScript(""),
     inMasterClock(),
@@ -33,7 +33,7 @@ CanOpenNode::CanOpenNode(const std::string& name):
     addProperty("propNodeId",propNodeId)
         .doc("CAN adress of the node");
     addProperty("propNmtTimeout",propNmtTimeout)
-        .doc("Timeout before considering a node is not responding to a NMT request (in ms)");
+        .doc("Timeout before considering a node is not responding to a NMT request (in s)");
     addProperty("propCanOpenControllerName",propCanOpenControllerName)
         .doc("name of the CanOpenController this component will connect");
     addProperty("propCanConfigurationScript",propCanConfigurationScript)
@@ -183,8 +183,12 @@ bool CanOpenNode::configureHook()
 
 bool CanOpenNode::startHook()
 {
-    bool res = HmlTaskContext::startHook();
     double chrono = 0.0;
+
+    bool res = HmlTaskContext::startHook();
+    if ( res == false )
+        goto failed;
+
     //envoit de la requête de reset au noeud
     outRequestNmtState.write(StartNode);
     //mise à jour de l'état NMT
@@ -200,7 +204,7 @@ bool CanOpenNode::startHook()
     return true;
 
     failed:
-    return res;
+    return false;
 }
 
 
@@ -228,8 +232,9 @@ void CanOpenNode::updateHook()
     //si l'état NMT n'est pas operationnel on peut arreter le composant
     if( attrCurrentNMTState != Operational )
     {
-        LOG(Info) << "Node " << propNodeId << " has switch out of Operationnal mode" << endlog();
-        stop();
+        //TODO a remettre des que possible, probleme de mise en route des 6 moteurs au 27/03/2012
+        //LOG(Error) << "Node " << propNodeId << " has switch out of Operationnal mode" << endlog();
+        //stop();
     }
 }
 

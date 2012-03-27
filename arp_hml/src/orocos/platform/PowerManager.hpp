@@ -45,7 +45,7 @@ namespace arp_hml
     protected:
 
         /** Timeout when sending a command on the CAN, in s */
-        bool propCanRequestTimeout;
+        double propCanRequestTimeout;
         Property<bool>* m_propRequireCompleteHardware;
 
         /** Drive soft enable state **/
@@ -128,21 +128,21 @@ namespace arp_hml
          * @param powerOn : set to true to activate power (wheelBlocked), false for freewheel
          * @return true when the power is on, on all the *3* motors ! So it'll fail on incomplete hardware setup
          */
-        bool ooSetDrivingMotorPower(bool powerOn);
+        bool coSetDrivingMotorPower(bool powerOn);
 
         /**
          * Manage  power on F=left, rigth and rear driving motors
          * @param powerOn : set to true to activate power (wheelBlocked), false for freewheel
          * @return true when the power is on, on all the *3* motors ! So it'll fail on incomplete hardware setup
          */
-        bool ooSetSteeringMotorPower(bool powerOn);
+        bool coSetSteeringMotorPower(bool powerOn);
 
         /**
          * Call ooSetDrivingMotorPower and ooSetSteeringMotorPower
          * @param powerOn : set to true to activate power (wheelBlocked), false for freewheel
          * @return true when both ooSetSteeringMotorPower and ooSetDrivingMotorPower returned true.
          */
-        bool ooSetMotorPower(bool powerOn);
+        bool coSetMotorPower(bool powerOn);
     };
 }
 

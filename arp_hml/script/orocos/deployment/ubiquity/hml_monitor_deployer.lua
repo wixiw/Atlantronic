@@ -45,11 +45,11 @@ end
 function HmlMonitorDeployer:connect()
 
 --connection des ports
-	--HmlMonitorDeployer:connectOneMotor("LeftDriving")
-	--HmlMonitorDeployer:connectOneMotor("RightDriving")
+	HmlMonitorDeployer:connectOneMotor("LeftDriving")
+	HmlMonitorDeployer:connectOneMotor("RightDriving")
 	HmlMonitorDeployer:connectOneMotor("RearDriving")
-	--HmlMonitorDeployer:connectOneMotor("LeftSteering")
-	--HmlMonitorDeployer:connectOneMotor("RightSteering")
+	HmlMonitorDeployer:connectOneMotor("LeftSteering")
+	HmlMonitorDeployer:connectOneMotor("RightSteering")
 	HmlMonitorDeployer:connectOneMotor("RearSteering")
 
 	Deployer:connect("HmlMonitor.inWoodheadInConnected", "WoodheadIn.outConnected",cp)
@@ -59,11 +59,11 @@ function HmlMonitorDeployer:connect()
 
 	HmlMonitorDeployer:addToBusMonitor("Can1")
 
-	--HmlMonitorDeployer:addToMonitor("LeftDriving")
-	--HmlMonitorDeployer:addToMonitor("RightDriving")
+	HmlMonitorDeployer:addToMonitor("LeftDriving")
+	HmlMonitorDeployer:addToMonitor("RightDriving")
 	HmlMonitorDeployer:addToMonitor("RearDriving")
-	--HmlMonitorDeployer:addToMonitor("LeftSteering")
-	--HmlMonitorDeployer:addToMonitor("RightSteering")
+	HmlMonitorDeployer:addToMonitor("LeftSteering")
+	HmlMonitorDeployer:addToMonitor("RightSteering")
 	HmlMonitorDeployer:addToMonitor("RearSteering")
 
 	--HmlMonitorDeployer:addToMonitor("WoodheadIn")
@@ -83,11 +83,11 @@ function HmlMonitorDeployer:start()
 
 	HmlMonitor:start()
 
-	--LeftDriving = HmlMonitor:getPeer("LeftDriving")
-	--RightDriving = HmlMonitor:getPeer("RightDriving")
+	LeftDriving = HmlMonitor:getPeer("LeftDriving")
+	RightDriving = HmlMonitor:getPeer("RightDriving")
 	RearDriving = HmlMonitor:getPeer("RearDriving")
-	--LeftSteering = HmlMonitor:getPeer("LeftSteering")
-	--RightSteering = HmlMonitor:getPeer("RightSteering")
+	LeftSteering = HmlMonitor:getPeer("LeftSteering")
+	RightSteering = HmlMonitor:getPeer("RightSteering")
 	RearSteering = HmlMonitor:getPeer("RearSteering")
 
 	RearDriving:ooSetOperationMode("other");

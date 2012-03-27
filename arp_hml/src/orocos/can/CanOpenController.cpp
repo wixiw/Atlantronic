@@ -415,7 +415,7 @@ bool CanOpenController::coWriteInRemoteDico(CanDicoEntry dicoEntry)
     EnterMutex();
     int writeResult = writeNetworkDict(&CanARD_Data, (UNS8) (dicoEntry.nodeId),
             (UNS16) (dicoEntry.index), (UNS8) (dicoEntry.subindex),
-            dicoEntry.size, dicoEntry.dataType, &(dicoEntry.value));
+            dicoEntry.size, dicoEntry.dataType, &(dicoEntry.value),0);
     LeaveMutex();
 
     if (writeResult == 0xFF)
@@ -472,7 +472,7 @@ bool CanOpenController::coReadInRemoteDico(CanDicoEntry dicoEntry,
     EnterMutex();
     int readResult = readNetworkDict(&CanARD_Data, (UNS8) dicoEntry.nodeId,
             (UNS16) dicoEntry.index, (UNS8) dicoEntry.subindex,
-            (UNS8) dicoEntry.dataType);
+            (UNS8) dicoEntry.dataType,0);
     LeaveMutex();
 
     if (readResult == 0xFF)
