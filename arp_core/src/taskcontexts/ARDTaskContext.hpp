@@ -93,6 +93,7 @@ namespace arp_core
         {
             bool res = true;
             TaskContext* taskContext;
+            OperationInterfacePart* opItf;
 
             //si je cherche une operation sur moi c'est facile, sinon je cherche le peer
             if( getName() == component )
@@ -111,13 +112,16 @@ namespace arp_core
             }
             else
             {
-                reference = taskContext->getOperation(operation);
-                //TODO WLA je ne sais pas comment on check que le get a reussi !
-//                if( reference. )
-//                {
-//                    LOG(Error)  << "getOperation : " << component << "." << operation << " is not available" << endlog();
-//                    res = false;
-//                }
+                opItf = taskContext->getOperation(operation);
+                if( opItf->getLocalOperation() == NULL )
+                {
+                    LOG(Error)  << "getOperation : " << component << "." << operation << " is not available" << endlog();
+                    res = false;
+                }
+                else
+                {
+                    reference = opItf;
+                }
             }
 
             return res;

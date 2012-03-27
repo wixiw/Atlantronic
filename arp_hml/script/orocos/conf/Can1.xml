@@ -11,6 +11,10 @@
   </simple>
   <simple name="propBusName" type="string">
   	<description></description>
-  	<value>can1</value>
+  	<value>can0</value>
+  </simple>
+  <simple name="propSyncPeriod" type="double">
+  	<description></description>
+  	<value>0.01</value>
   </simple>
 </properties>

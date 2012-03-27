@@ -17,17 +17,15 @@ using namespace scripting;
 CanOpenNode::CanOpenNode(const std::string& name):
 	HmlTaskContext(name),
     propNodeId(int(0xFF)),
-    propNmtTimeout(10.000),
+    propNmtTimeout(1.000),
     propCanOpenControllerName("Can1"),
     propCanConfigurationScript(""),
+    propResetFirst(true),
     inMasterClock(),
-    inNmtState(),
-    inBootUpFrame(),
-    outRequestNmtState()
+    inBootUpFrame()
 {
     updateNodeIdCard();
 
-    addAttribute("attrCurrentNMTState",attrCurrentNMTState);
     addAttribute("attrSyncTime", attrSyncTime);
 
     addProperty("propNodeId",propNodeId)
@@ -38,15 +36,13 @@ CanOpenNode::CanOpenNode(const std::string& name):
         .doc("name of the CanOpenController this component will connect");
     addProperty("propCanConfigurationScript",propCanConfigurationScript)
         .doc("this script is executed in the configureHook to set up CAN config values");
+    addProperty("propResetFirst",propResetFirst)
+        .doc("Require a CAN node reset during configure. As the controller is already doing it, it is usually not usefull");
 
     addEventPort("inMasterClock",inMasterClock)
     		.doc("");
-    addPort("inNmtState",inNmtState)
-            .doc("port from which we receive the NMT state of our node from a CanOpenController");
     addPort("inBootUpFrame",inBootUpFrame)
             .doc("port from which we receive the BootUp Frame of our node from a CanOpenController");
-    addPort("outRequestNmtState",outRequestNmtState)
-    		.doc("port in which the component can ask a new nmt state for our node from a CanOpenController");
     addPort("outConnected",outConnected)
             .doc("This port is true when the component thinks the device is disconnected of the network");
 
@@ -60,9 +56,7 @@ void CanOpenNode::updateNodeIdCard()
 {
     m_nodeIdCard.nodeId = propNodeId;
     m_nodeIdCard.task = this;
-    m_nodeIdCard.inNmtState = &inNmtState;
     m_nodeIdCard.inBootUpFrame = &inBootUpFrame;
-    m_nodeIdCard.outRequestNmtState = &outRequestNmtState;
 }
 
 bool CanOpenNode::coRegister()
@@ -138,28 +132,21 @@ bool CanOpenNode::configureHook()
         goto failedUnregister;
     }
 
-    //test des ports d'entrée
-    if( inNmtState.connected()==false )
-    {
-        LOG(Error)  << "failed to configure : input port not connected : inNmtState" << endlog();
-        goto failedUnregister;
-    }
     if( inBootUpFrame.connected()==false )
     {
         LOG(Error)  << "failed to configure : input port not connected : inBootUpFrame" << endlog();
         goto failedUnregister;
     }
 
-
-    //on envoie un reset au node pour être sure de partir sur de bonnes bases
-    if( !resetNode() )
+    //normalement tous les noeuds sont sensés être reset lors du démarrage du controlleur.
+    //en cas de doute, besoin de sécurité, de device ayant déjà réagit, ... il est possible de forcer un nouveau reset
+    if( propResetFirst )
     {
-        LOG(Error)  << "failed to configure : impossible to reset the node" << endlog();
-    	goto failedUnregister;
-    }
-    else
-    {
-        outConnected.write(true);
+        if( !resetNode() )
+        {
+            LOG(Error)  << "failed to configure : impossible to reset the node" << endlog();
+            goto failedUnregister;
+        }
     }
 
     //on envoie les SDO de configuration
@@ -183,24 +170,19 @@ bool CanOpenNode::configureHook()
 
 bool CanOpenNode::startHook()
 {
-    double chrono = 0.0;
-
     bool res = HmlTaskContext::startHook();
     if ( res == false )
         goto failed;
 
-    //envoit de la requête de reset au noeud
-    outRequestNmtState.write(StartNode);
-    //mise à jour de l'état NMT
-    whileTimeout( inNmtState.readNewest(attrCurrentNMTState) != NoData && attrCurrentNMTState != Operational, propNmtTimeout, 0.001 );
-    //si le timeout est explosé c'est que ça a foiré
-    IfWhileTimeoutExpired(propNmtTimeout )
+    //envoit de la requête de start au noeud
+    if( m_coSendNmtCmd(propNodeId, StartNode, propNmtTimeout) == false )
     {
         LOG(Error)  << "startHook : timeout has expired, impossible to get into operational NMT state for node 0x"<< std::hex << propNodeId << endlog();
         goto failed;
     }
 
     LOG(Info) << "CanOpenNode::startHook : done" << endlog();
+    outConnected.write(true);
     return true;
 
     failed:
@@ -218,9 +200,6 @@ void CanOpenNode::updateHook()
 
     HmlTaskContext::updateHook();
 
-    //mise à jour de l'état NMT
-    inNmtState.readNewest(attrCurrentNMTState);
-
     //lecture des bootup
     bool dummy;
     if( inBootUpFrame.read(dummy) == NewData )
@@ -228,47 +207,26 @@ void CanOpenNode::updateHook()
         stop();
         LOG(Info) << "Node " << propNodeId << " has send a boot up frame." << endlog();
     }
-
-    //si l'état NMT n'est pas operationnel on peut arreter le composant
-    if( attrCurrentNMTState != Operational )
-    {
-        //TODO a remettre des que possible, probleme de mise en route des 6 moteurs au 27/03/2012
-        //LOG(Error) << "Node " << propNodeId << " has switch out of Operationnal mode" << endlog();
-        //stop();
-    }
 }
 
 void CanOpenNode::stopHook()
 {
-    double chrono = 0.0;
-    //envoit de la requête de reset au noeud
-    outRequestNmtState.write(StopNode);
-    //mise à jour de l'état NMT
-    whileTimeout( inNmtState.readNewest(attrCurrentNMTState)!= NoData && attrCurrentNMTState != ::Stopped, propNmtTimeout, 0.001 )
-    //si le timeout est explosé c'est que ça a foiré
-    IfWhileTimeoutExpired(propNmtTimeout)
+    //envoit de la requête de stop au noeud
+    if( m_coSendNmtCmd(propNodeId, StopNode, propNmtTimeout) == false )
     {
-    	if(attrCurrentNMTState == Unknown_state )
-    	{
-    	    LOG(Error) << "stopHook : Device disconnected" << endlog();
-    	    outConnected.write(false);
-    	    goto success;
-    	}
-    	else
-    	{
-    	    LOG(Fatal)  << "stopHook : Nmt StopNode request has not been processed by node 0x"<< std::hex << propNodeId << " stalled in state : " << attrCurrentNMTState << endlog();
-    	    goto failed;
-    	}
+        LOG(Error)  << "stopHook : timeout has expired, impossible to get into operational NMT state for node 0x"<< std::hex << propNodeId << endlog();
+        goto failed;
     }
+
 
     HmlTaskContext::stopHook();
     LOG(Info) << "CanOpenNode::stopHook : done" << endlog();
     goto success;
 
     failed:
-    return;
+        return;
     success:
-    return;
+        return;
 }
 
 void CanOpenNode::cleanupHook()
@@ -287,13 +245,13 @@ bool CanOpenNode::connectOperations()
     res &= getOperation(propCanOpenControllerName, "coWriteInRemoteDico",       m_coWriteInRemoteDico);
     res &= getOperation(propCanOpenControllerName, "coReadInRemoteDico",        m_coReadInRemoteDico);
     res &= getOperation(propCanOpenControllerName, "coSendPdo",                 m_coSendPdo);
+    res &= getOperation(propCanOpenControllerName, "coSendNmtCmd",              m_coSendNmtCmd);
 
     return res;
 }
 
 bool CanOpenNode::resetNode()
 {
-    bool res = true;
     bool bootUp;
     double chrono = 0.0;
 
@@ -306,34 +264,27 @@ bool CanOpenNode::resetNode()
     };
 
     //envoit de la requête de reset au noeud
-    outRequestNmtState.write(ResetNode);
+    if( m_coSendNmtCmd(propNodeId, ResetNode, propNmtTimeout) == false )
+    {
+        LOG(Error) << "resetNode : Node 0x" << std::hex << propNodeId << " failed to send the NMT change request" << endlog();
+        goto failed;
+    }
 
     //attente du bootup
     whileTimeout ( inBootUpFrame.read(bootUp) != NewData , propNmtTimeout, 0.050);
     IfWhileTimeoutExpired(propNmtTimeout)
     {
         LOG(Error) << "resetNode : Node 0x" << std::hex << propNodeId << " is waiting for a bootUp frame ..." << endlog();
-        res &= false;
         goto failed;
     }
 
-    //mise à jour de l'état NMT
-    chrono = 0;
-    whileTimeout ( inNmtState.readNewest(attrCurrentNMTState) != NoData && attrCurrentNMTState != Pre_operational, propNmtTimeout, 0.050)
-    IfWhileTimeoutExpired(propNmtTimeout)
-    {
-        LOG(Error)  << "resetNode : timeout has expired, NMT state dispatch don't seem to be ok." << endlog();
-        res &= false;
-        goto failed;
-    }
-
-    if( res )
-        LOG(Info) << "resetNode : success ! "  << endlog();
-
-    return res;
+    LOG(Info) << "resetNode : success ! "  << endlog();
+    goto success;
 
     failed:
         return false;
+    success:
+        return true;
 }
 
 bool CanOpenNode::configureNode()

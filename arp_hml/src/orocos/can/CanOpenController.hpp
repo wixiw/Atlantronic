@@ -92,8 +92,24 @@ namespace arp_hml
 
         /**
          * Use this operation to send a PDO
+         * @param pdoNumber : number of the PDO on the CanFestival table (!! it is *NOT* the COBID !!)
          */
         bool coSendPdo(int pdoNumber);
+
+        /**
+         * Use this operation to emit an NMT state change request for a node.
+         * This operation will do some polling on the NMT state with PDO request
+         * So don't use this operation in operationnal ! (only for booting and configuring).
+         * It's a blocking function.
+         * It will send 2 things :
+         * _ the NMT cmd request with OOO#cmd.nodeId
+         * _ an NMT state reques 700+nodeId#R
+         * and wait for the 700+nodeId#nmtState message to come.
+         * @param nodeId : node ID of the slave node to which we send the request
+         * @param nmtStateCmd : new NMT state in which we would like the node to be
+         * @param timeout : timeout on the polling
+         */
+        bool coSendNmtCmd(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd, double timeout);
 
         /**
          * define a new period for SYNC object
@@ -169,6 +185,15 @@ namespace arp_hml
          * Open the propBusName bus from the CAN driver.
          */
         bool openCanBus();
+
+        /**
+         * Compares an NMT state to a sended NMT command.
+         * The NMT state is get from CanARD_Data.NMTable[nodeId]
+         * @param nmtCmd : the NMT command sended to the slave node
+         * @param nodeId : Id of the node to whoch the command has been sended
+         * @return true is the NMT cmd has been processed
+         */
+        bool isNmtStateChangeDone(enum_DS301_nmtStateRequest nmtCmd, nodeID_t nodeId);
 
         /**
          * Is derivated to disable the autocheck

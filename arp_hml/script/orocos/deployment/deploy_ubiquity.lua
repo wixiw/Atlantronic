@@ -38,11 +38,11 @@ JoystickDeployer:connect()
 RosHmlItfDeployer:connect()
 HmlCmdMockupDeployer:connect()
 HmlMonitorDeployer:connect()
---[[
+
 print("... start components")
-JoystickDeployer:start()
+--JoystickDeployer:start()
 HmlMonitorDeployer:start()
-HmlCmdMockupDeployer:start()
---]]
+--HmlCmdMockupDeployer:start()
+
 print("fin déploiment arp_hml")
 print("====================")

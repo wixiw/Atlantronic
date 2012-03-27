@@ -59,24 +59,18 @@ struct CanNodeIdCard
     CanNodeIdCard():
         nodeId(0),
         task(NULL),
-        inNmtState(NULL),
-        inBootUpFrame(NULL),
-        outRequestNmtState(NULL)
+        inBootUpFrame(NULL)
         {}
 
-    CanNodeIdCard(int nodeId, ARDTaskContext* task, InputPort<enum_nodeState>* inNmtState, InputPort<bool>* inBootUpFrame, OutputPort<enum_DS301_nmtStateRequest>* outRequestNmtState ):
+    CanNodeIdCard(int nodeId, ARDTaskContext* task, InputPort<bool>* inBootUpFrame):
         nodeId(nodeId),
         task(task),
-        inNmtState(inNmtState),
-        inBootUpFrame(inBootUpFrame),
-        outRequestNmtState(outRequestNmtState)
+        inBootUpFrame(inBootUpFrame)
         {}
 
     nodeID_t nodeId;
     ARDTaskContext* task;
-    InputPort<enum_nodeState>* inNmtState;
     InputPort<bool>* inBootUpFrame;
-    OutputPort<enum_DS301_nmtStateRequest>* outRequestNmtState;
 
     /**
      * Use this function to check the data validity of the current CanNodeIdCard
@@ -89,12 +83,8 @@ struct CanNodeIdCard
             res = false;
         if( task == NULL )
             res = false;
-        if( inNmtState == NULL )
-            res = false;
         if( inBootUpFrame == NULL )
             res = false;
-        if( outRequestNmtState == NULL)
-        	res = false;
 
         return res;
     }

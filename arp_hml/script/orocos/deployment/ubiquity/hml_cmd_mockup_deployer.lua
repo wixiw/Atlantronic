@@ -21,11 +21,11 @@ function HmlCmdMockupDeployer:connect()
 	Deployer:addPeer("RosHmlItf", "HmlMonitor")
 
 --connection des ports
-	--HmlCmdMockupDeployer:connectOneMotor("LeftDriving")
-	--HmlCmdMockupDeployer:connectOneMotor("RightDriving")
+	HmlCmdMockupDeployer:connectOneMotor("LeftDriving")
+	HmlCmdMockupDeployer:connectOneMotor("RightDriving")
 	HmlCmdMockupDeployer:connectOneMotor("RearDriving")
-	--HmlCmdMockupDeployer:connectOneMotor("LeftSteering")
-	--HmlCmdMockupDeployer:connectOneMotor("RightSteering")
+	HmlCmdMockupDeployer:connectOneMotor("LeftSteering")
+	HmlCmdMockupDeployer:connectOneMotor("RightSteering")
 	HmlCmdMockupDeployer:connectOneMotor("RearSteering")
 
 	Deployer:connect("WoodheadOut.inBit1",me..".outBit01",cp)

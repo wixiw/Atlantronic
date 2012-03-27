@@ -98,6 +98,9 @@ CanOpenController::CanOpenController(const std::string& name) :
     addOperation("coSendPdo", &CanOpenController::coSendPdo,
             this, ClientThread) .doc("This operation allows anyone in the application to send a PDO. The PDO is automatically built from mapping information (you are so supposed to have updated the dico first).").arg(
             "pdoNumber","Number of the PDO in the dictionnay");
+    addOperation("coSendNmtCmd", &CanOpenController::coSendNmtCmd,
+            this, ClientThread) .doc("This operation allows anyone in the application to request a new slave node NMT state. Take care it is a blocking operation, don't use in operationnal");
+
     /**
      * Others
      */
@@ -204,10 +207,6 @@ void CanOpenController::updateHook()
 
     //wake up slave activities of all registered nodes after a certain amount of time to wait for PDOs
     usleep(propPdoMaxAwaitedDelay*1E6);
-
-    //dispatch bootup frame to the right output port
-    //done after PDO not to mess up the bus
-    m_dispatcher.dispatchNmtState();
 
     outNodesClock.write(syncTime);
 }
@@ -354,6 +353,46 @@ bool CanOpenController::openCanBus()
     return res;
 }
 
+bool CanOpenController::isNmtStateChangeDone(enum_DS301_nmtStateRequest nmtCmd, nodeID_t nodeId)
+{
+    bool res = false;
+    enum_nodeState nmtState;
+
+    EnterMutex();
+    nmtState = CanARD_Data.NMTable[nodeId];
+    LeaveMutex();
+
+    switch( nmtCmd )
+    {
+        case StartNode:
+            if( nmtState == ::Operational)
+                res = true;
+            break;
+        case StopNode:
+            if( nmtState == ::Stopped)
+                res = true;
+            break;
+        case EnterPreOp:
+            if( nmtState == ::Pre_operational)
+                res = true;
+            break;
+        case ResetNode:
+        case ResetComunication:
+            if( nmtState == ::Initialisation ||
+                nmtState == ::Disconnected ||
+                nmtState == ::Connecting ||
+                nmtState == ::Preparing ||
+                nmtState == ::Pre_operational
+                    )
+                res = true;
+            break;
+        case UnknownRequest:
+            break;
+    }
+
+    return res;
+}
+
 bool CanOpenController::coWriteInLocalDico(CanDicoEntry dicoEntry)
 {
     int writeResult;
@@ -366,12 +405,12 @@ bool CanOpenController::coWriteInLocalDico(CanDicoEntry dicoEntry)
     {
         LOG(Error) << "Write failed in 0x" << std::hex << dicoEntry.index
                 << ":0x" << std::hex << dicoEntry.subindex
-                << " with errorcode " << std::hex << writeResult << endl;
+                << " with errorcode " << std::hex << writeResult << endlog();
         goto failed;
     }
 
     LOG(Info) << "Write success in 0x" << std::hex << dicoEntry.index
-            << ":0x" << std::hex << dicoEntry.subindex << endl;
+            << ":0x" << std::hex << dicoEntry.subindex << endlog();
     goto success;
 
     failed: return false;
@@ -395,12 +434,12 @@ bool CanOpenController::coReadInLocalDico(CanDicoEntry& dicoEntry)
     {
         LOG(Error) << "Read failed in 0x" << std::hex << dicoEntry.index
                 << ":0x" << std::hex << dicoEntry.subindex
-                << " with errorcode " << std::hex << readResult << endl;
+                << " with errorcode " << std::hex << readResult << endlog();
         goto failed;
     }
 
     LOG(Info) << "Read success in 0x" << std::hex << dicoEntry.index
-            << ":0x" << std::hex << dicoEntry.subindex << endl;
+            << ":0x" << std::hex << dicoEntry.subindex << endlog();
     goto success;
 
     failed: return false;
@@ -455,7 +494,7 @@ bool CanOpenController::coWriteInRemoteDico(CanDicoEntry dicoEntry)
         {
             LOG(Error) << "Failed to send SDO "<< std::hex << dicoEntry.index<< ":" << std::hex << dicoEntry.subindex << " to node " << std::hex << dicoEntry.nodeId << ": writeResult="
                     << writeResult << " abortCode=" << std::hex << (unsigned int) abortCode
-                    << endl;
+                    << endlog();
             res = false;
         }
     }
@@ -508,7 +547,7 @@ bool CanOpenController::coReadInRemoteDico(CanDicoEntry dicoEntry,
         else
         {
             LOG(Error) << "Failed to read SDO : readResult=" << readResult
-                    << " abortCode=" << (unsigned int) abortCode << endl;
+                    << " abortCode=" << (unsigned int) abortCode << endlog();
             res = false;
         }
     }
@@ -531,7 +570,7 @@ bool CanOpenController::coSendPdo(int pdoNumber)
     EnterMutex();
     if (buildPDO (&CanARD_Data, pdoNumber, &pdo))
     {
-        cerr << "build PDO faild  " << endl;
+        LOG(Error) << "coSendPdo: build PDO " << pdoNumber << " failed" << endlog();
         return 0;
     }
     CanARD_Data.PDO_status[pdoNumber].last_message = pdo;
@@ -540,6 +579,61 @@ bool CanOpenController::coSendPdo(int pdoNumber)
     LeaveMutex();
 
     return true;
+}
+
+bool CanOpenController::coSendNmtCmd(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd, double timeout)
+{
+    int cmdResult = 0;
+    double chrono = 0;
+    if( nodeId <= 0 || nodeId >= 0xFF )
+    {
+        LOG(Error) << "dispatchNmtState : Node 0x" <<  std::hex << nodeId  << " is out of Node ID bounds " << endlog();
+        goto failed;
+    }
+
+    if( nmtStateCmd == UnknownRequest )
+    {
+        LOG(Error) << "coSendNmtCmd :  failed you can not ask for the UnknownRequest" << endlog();
+        goto failed;
+    }
+
+    //send NMT cmd
+    EnterMutex();
+    cmdResult = masterSendNMTstateChange(&CanARD_Data, (UNS8) nodeId, (UNS8) nmtStateCmd);
+    LeaveMutex();
+    if( cmdResult )
+    {
+        LOG(Error) << "coSendNmtCmd : failed to send NMT command 0x" << std::hex << nodeId << "; for command " << nmtStateCmd << endlog();
+        goto failed;
+    }
+
+    //send the NMT state request
+    EnterMutex();
+    cmdResult = masterRequestNodeState (&CanARD_Data, (UNS8) nodeId);
+    LeaveMutex();
+    if( cmdResult )
+    {
+        LOG(Error) << "coSendNmtCmd : failed to send NMT state request 0x" << std::hex << nodeId << " for command " << nmtStateCmd << endlog();
+        goto failed;
+    }
+
+   //polling on the NMT state because CAN Festival is not doing node guarding properly ...
+   whileTimeout( !isNmtStateChangeDone(nmtStateCmd, nodeId) , timeout, 0.010 )
+   //si le timeout est explosé c'est que ça a foiré
+   IfWhileTimeoutExpired(timeout)
+   {
+        LOG(Error) << "coSendNmtCmd : timeout expired " << std::hex << nodeId << " for command" << nmtStateCmd << endlog();
+        goto failed;
+   }
+
+   //here everything is OK.
+   goto success;
+
+    failed:
+        return false;
+    success:
+        return true;
+
 }
 
 bool CanOpenController::ooSetSyncPeriod(double period)

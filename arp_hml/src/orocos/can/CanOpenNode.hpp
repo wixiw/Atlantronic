@@ -49,9 +49,6 @@ namespace arp_hml
 
 
     protected:
-        /** This attribute contains the current NMT status of the node  */
-        e_nodeState attrCurrentNMTState;
-
         /** Last sync time received **/
         double attrSyncTime;
 
@@ -67,25 +64,18 @@ namespace arp_hml
         /** this script is executed in the configureHook to set up CAN config values*/
         string propCanConfigurationScript;
 
+        /** Require a CAN node reset during configure. As the controller is already doing it, it is usually not usefull */
+        bool propResetFirst;
+
         /**
          * Clock port which trigger our activity
          */
         InputPort<timespec> inMasterClock;
 
         /**
-         * port from which we receive the nmt state of our node from a CanOpenController
-         */
-        InputPort<enum_nodeState> inNmtState;
-
-        /**
          * port from which we receive the bootUp frame of our node from a CanOpenController
          */
         InputPort<bool> inBootUpFrame;
-
-        /**
-         * port in which the component can ask a new nmt state for our node from a CanOpenController
-         */
-        OutputPort<enum_DS301_nmtStateRequest> outRequestNmtState;
 
         /**
          * This port is true when the component thinks the device is disconnected of the network
@@ -116,6 +106,11 @@ namespace arp_hml
          * handler on a CanOpenController operation to send a PDO from its COB ID
          */
         OperationCaller<bool(int)> m_coSendPdo;
+
+        /**
+         * handler on a CanOpenController operation to manage NMT state
+         */
+        OperationCaller<bool(nodeID_t, enum_DS301_nmtStateRequest, double)> m_coSendNmtCmd;
 
         /**
          * use this operation in deployment to register the node into the CanOpenController

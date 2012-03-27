@@ -89,9 +89,7 @@ namespace arp_hml
         {
             public:
                 //nodeID_t nodeId;
-                OutputPort<e_nodeState> outNmtState;
                 OutputPort<bool> outBootUp;
-                InputPort<enum_DS301_nmtStateRequest> inRequestNmt;
                 ARDTaskContext* task;
         };
 
