@@ -1,0 +1,45 @@
+/*
+ ARD colors :
+ 	bleu ciel : 		#e8ecf6
+ 	bleu foncé : 		#4a64aa
+ 	gris backgorund : 	#3c404c
+*/
+html {
+	height: 100%;
+	font-family: tahoma;
+	font-size: 25px;
+}
+
+body {
+	height: 100%;
+	margin: auto;
+	background-color: #e8ecf6;
+}
+
+header {
+	color: #e8ecf6;
+	background-image: url("../ressource/topmenu_ard.png");
+	background-repeat: no-repeat;
+	width: 940px;
+	height: 90px;
+	margin-left: 42px;
+	padding-top: 10px;
+	margin-bottom: 50px;
+}
+
+header p
+{
+	margin-left: 50px;
+}
+
+section {
+	color: #4a64aa;
+	width: 940px;
+	margin-left: 42px;
+	margin-top: 20 px;
+}
+
+section p
+{
+	margin-left: 50px;
+}
