@@ -1,8 +1,0 @@
-<!-- Use this file to test the HokuyoManager to switch off LRF when AU is pressed -->
-<launch>
-	<param name="/hokuyo_node/calibrate_time" type="bool" value="false"/>
-	<param name="/hokuyo_node/port" type="string" value="/dev/ttyACM0"/>
-	<node name="HmlGraphics"     pkg="arp_hml"  type="HmlGraphicsNode"     args="" output="screen" launch-prefix="nice"/>
-	<node name="HokuyoManager"     pkg="arp_hml"  type="HokuyoManager"     args="" output="screen"/>
-	<node name="hokuyo_node"     pkg="hokuyo_node"  type="hokuyo_node"     args="" output="screen"/>
-</launch>

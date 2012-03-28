@@ -1,0 +1,48 @@
+<!--  Use this file de deploy the real platform "Ubiquity" hardware -->
+<launch>
+	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
+	<include file="$(find arp_hml)/script/ros/launch/geometry_ubiquity.launch"/>
+  	
+	
+	<remap from="scan" to="top_scan" />
+	<node 	name="TopHokuyo" 
+			pkg="hokuyo_node" 
+			type="hokuyo_node" 
+			respawn="false" 
+			output="screen" 
+			required="false" >
+    	<param name="calibrate_time" type="bool" value="false"/> 
+    	<param name="port" type="string" value="/dev/hokuyo_H0904768"/> 
+  		<param name="intensity" type="bool" value="false"/> 
+  		<param name="frame_id" type="string" value="top_laser" />
+  		<param name="min_ang" type="double" value="-2.08" />
+  		<param name="max_ang" type="double" value="2.08" />
+  	</node> 
+  	
+  	<node 	name="dynamixel_manager" 
+  	  		pkg="dynamixel_controllers" 
+  	  		type="controller_manager.py" 
+  	  		required="false" 
+  	  		output="screen">
+        <rosparam>
+            namespace: dynamixel_manager
+            serial_ports:
+                pan_tilt_port:
+                    port_name: "/dev/ttyS2"
+                    baud_rate: 115200
+                    min_motor_id: 10
+                    max_motor_id: 20
+                    update_rate: 20
+        </rosparam>
+    </node>
+  	
+    
+	<node 	name="ArpHml" 
+			pkg="ocl" 
+			type="deployer-gnulinux" 
+			args="-s $(find arp_hml)/script/orocos/deployment/deploy_ubiquity.ops --" 
+			output="screen"
+			respawn="false"
+			required="true"
+			/>
+</launch>
