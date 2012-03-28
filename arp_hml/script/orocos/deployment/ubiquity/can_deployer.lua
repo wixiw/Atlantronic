@@ -11,8 +11,7 @@ end
 
 function CanDeployer:connect()
 	Deployer:addPeer("Reporting", "Can1");
-	
-		--CanDeployer:check("Can1")
+	CanDeployer:check("Can1")
 end
 
 

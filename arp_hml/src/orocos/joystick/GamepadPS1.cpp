@@ -175,7 +175,7 @@ void GamepadPS1::axisEvent( struct js_event js )
 
 void GamepadPS1::initEvent( struct js_event js )
 {
-    LOG(Info) << "Joystick InitEvent" << endlog();
+    //LOG(Info) << "Joystick InitEvent" << endlog();
 
     outButton1.write(false);
     outButton2.write(false);

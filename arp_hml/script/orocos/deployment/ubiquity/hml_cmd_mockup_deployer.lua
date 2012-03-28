@@ -18,9 +18,8 @@ end
 
 function HmlCmdMockupDeployer:connect()
 	
-	Deployer:addPeer("RosHmlItf", "HmlMonitor")
+	Deployer:addPeer(me, "HmlMonitor")
 
---connection des ports
 	HmlCmdMockupDeployer:connectOneMotor("LeftDriving")
 	HmlCmdMockupDeployer:connectOneMotor("RightDriving")
 	HmlCmdMockupDeployer:connectOneMotor("RearDriving")
@@ -37,14 +36,11 @@ function HmlCmdMockupDeployer:connect()
 	Deployer:connect("WoodheadOut.inBit7",me..".outBit07",cp)
 	Deployer:connect("WoodheadOut.inBit8",me..".outBit08",cp)
 	
-	--HmlCmdMockupDeployer:check("HmlCmdMockup")
+	HmlCmdMockupDeployer:check("HmlCmdMockup")
 end
 
 function HmlCmdMockupDeployer:start()
 	HmlCmdMockup = Deployer:getPeer(me)
 	HmlCmdMockup:configure()
-	HmlCmdMockup:provides("ioOutSelfTest"):activate()
-	HmlCmdMockup:provides("ioOutSelfTest"):automatic()
-	
 	HmlCmdMockup:start()
 end

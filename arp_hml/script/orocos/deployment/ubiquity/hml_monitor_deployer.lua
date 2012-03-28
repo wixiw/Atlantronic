@@ -32,13 +32,11 @@ end
 
 
 function HmlMonitorDeployer:registerToSql()
-	--[[
 	OrocosSqlMonitor = Deployer:getPeer("OrocosSqlBridge")
 	Deployer:addPeer("OrocosSqlBridge",me)
 	OrocosSqlMonitor:ooRegisterBoolPort(me,"outDrivingEnable")
 	OrocosSqlMonitor:ooRegisterBoolPort(me,"outEnable")
 	OrocosSqlMonitor:ooRegisterBoolPort(me,"outSteeringEnable")
-	--]]
 end
 
 
@@ -66,15 +64,16 @@ function HmlMonitorDeployer:connect()
 	HmlMonitorDeployer:addToMonitor("RightSteering")
 	HmlMonitorDeployer:addToMonitor("RearSteering")
 
-	--HmlMonitorDeployer:addToMonitor("WoodheadIn")
-	--HmlMonitorDeployer:addToMonitor("WoodheadOut")
+	HmlMonitorDeployer:addToMonitor("WoodheadIn")
+	HmlMonitorDeployer:addToMonitor("WoodheadOut")
 
-	HmlMonitorDeployer:addToMonitor("RosHmlItf")
+	HmlMonitorDeployer:addToMonitor("Joystick")
 
---connection a SQL pour l'ihm
-	HmlMonitorDeployer:registerToSql();
+	--HmlMonitorDeployer:addToMonitor("RosHmlItf")
+
+	--HmlMonitorDeployer:registerToSql();
 	
-	--HmlMonitorDeployer:check("HmlMonitor")
+	HmlMonitorDeployer:check("HmlMonitor")
 end
 
 function HmlMonitorDeployer:start()

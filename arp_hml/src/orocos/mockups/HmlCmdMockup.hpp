@@ -20,6 +20,10 @@ namespace arp_hml
     public:
         HmlCmdMockup(const std::string& name);
 
+        bool startHook();
+        void stopHook();
+        void cleanupHook();
+
         OutputPort<double> outLeftDrivingSpeedCmd;
         OutputPort<double> outRightDrivingSpeedCmd;
         OutputPort<double> outRearDrivingSpeedCmd;
@@ -52,6 +56,8 @@ namespace arp_hml
 
 
     protected:
+        /** Charge la state machine qui porte le nom du programme si elle existe */
+        bool loadStateMachines();
     };
 
 }

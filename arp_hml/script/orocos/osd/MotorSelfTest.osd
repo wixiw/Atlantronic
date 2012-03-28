@@ -3,16 +3,30 @@
  */
 StateMachine MotorCycling
 {
-    initial state black 
+    initial state setPower 
     {
-
+        entry
+        {
+        	HmlMonitor.coSetMotorPower(true);
+        }
+        
+        transition select truc
     }
 
     final state truc
     {
-    	entry{}
+    	entry
+    	{
+    		outLeftDrivingSpeedCmd.write(10);
+    		outRightDrivingSpeedCmd.write(10);
+    		outRearDrivingSpeedCmd.write(10);
+    		
+    		outLeftSteeringPositionCmd.write(500);
+    		outRightSteeringPositionCmd.write(500);
+    		outRearSteeringPositionCmd.write(500);
+    	}
     }
     
 }
 
-RootMachine MotorCycling MotorCycling
+RootMachine MotorCycling motorCycling

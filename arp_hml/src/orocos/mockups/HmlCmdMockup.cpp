@@ -7,6 +7,7 @@
 
 #include "HmlCmdMockup.hpp"
 #include <rtt/Component.hpp>
+#include <rtt/scripting/StateMachine.hpp>
 
 using namespace arp_hml;
 
@@ -47,3 +48,88 @@ HmlCmdMockup::HmlCmdMockup(const std::string& name):
     addPort("outBit08",outBit08);
 }
 
+bool HmlCmdMockup::loadStateMachines()
+{
+    string path = attrProjectRootPath + "/" + attrStateMachinePath + "/";
+
+    if( HmlTaskContext::loadStateMachines() == false )
+    {
+        goto failed;
+    }
+
+    if( scripting->loadStateMachines(path + "IoOutSelfTest.osd") == false )
+    {
+        goto failed;
+    }
+    if( scripting->loadStateMachines(path + "MotorSelfTest.osd") == false )
+    {
+        goto failed;
+    }
+
+    goto succeed;
+
+    failed:
+        return false;
+    succeed:
+        return true;
+}
+
+bool HmlCmdMockup::startHook()
+{
+    std::vector< std::string > smList = scripting->getStateMachineList();
+    std::vector< std::string >::iterator smName;
+    scripting::StateMachinePtr sm;
+
+    if( HmlTaskContext::startHook() == false )
+    {
+        goto failed;
+    }
+
+    for( smName = smList.begin() ; smName != smList.end() ; smName++ )
+    {
+        if( scripting->activateStateMachine(*smName) == false )
+        {
+            LOG(Error) << "Failed to activate sm " << *smName << "." << endlog();
+            goto failed;
+        }
+        if( scripting->startStateMachine(*smName) == false )
+        {
+            LOG(Error) << "Failed to start sm " << *smName << "." << endlog();
+            goto failed;
+        }
+    }
+
+    goto succeed;
+
+    failed:
+        return false;
+    succeed:
+        return true;
+}
+
+void HmlCmdMockup::stopHook()
+{
+    std::vector< std::string > smList = scripting->getStateMachineList();
+    std::vector< std::string >::iterator smName;
+    scripting::StateMachinePtr sm;
+
+    for( smName = smList.begin() ; smName != smList.end() ; smName++ )
+    {
+        if( scripting->stopStateMachine(*smName) == false )
+        {
+            LOG(Error) << "Failed to stop sm " << *smName << "." << endlog();
+        }
+        if( scripting->deactivateStateMachine(*smName) == false )
+        {
+            LOG(Error) << "Failed to deactivate sm " << *smName << "." << endlog();
+        }
+    }
+
+
+    HmlTaskContext::stopHook();
+}
+
+void HmlCmdMockup::cleanupHook()
+{
+    HmlTaskContext::cleanupHook();
+}

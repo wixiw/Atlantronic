@@ -181,16 +181,14 @@ namespace arp_core
          */
         bool ooWriteProperties();
 
-    private:
-
         /** Charge les plugins du composant, à appeler dans le configureHook */
-        bool loadPlugins();
+        virtual bool loadPlugins();
         /** Charge un fichier de propriété au format xml */
-        bool loadProperties();
+        virtual bool loadProperties();
         /** Charge le script qui porte le nom du composant s'il existe */
-        bool loadPrograms();
+        virtual bool loadPrograms();
         /** Charge la state machine qui porte le nom du programme si elle existe */
-        bool loadStateMachines();
+        virtual bool loadStateMachines();
 
         /** Permet de logger en script */
         bool coLog(LoggerLevel level, string s);

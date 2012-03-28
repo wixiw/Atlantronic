@@ -40,9 +40,8 @@ HmlCmdMockupDeployer:connect()
 HmlMonitorDeployer:connect()
 
 print("... start components")
---JoystickDeployer:start()
 HmlMonitorDeployer:start()
---HmlCmdMockupDeployer:start()
+HmlCmdMockupDeployer:start()
 
 print("fin déploiment arp_hml")
 print("====================")

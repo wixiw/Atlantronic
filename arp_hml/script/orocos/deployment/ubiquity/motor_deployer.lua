@@ -20,7 +20,6 @@ function MotorDeployer:load()
 end
 
 function MotorDeployer:registerToSql(name)
-	--[[
 	OrocosSqlMonitor = Deployer:getPeer("OrocosSqlBridge")
 	Deployer:addPeer("OrocosSqlBridge",name)
 	OrocosSqlMonitor:ooRegisterBoolPort(name,"outConnected")
@@ -29,7 +28,6 @@ function MotorDeployer:registerToSql(name)
 	OrocosSqlMonitor:ooRegisterDoublePort(name,"outComputedSpeed")
 	OrocosSqlMonitor:ooRegisterDoublePort(name,"outMeasuredPosition")
 	OrocosSqlMonitor:ooRegisterDoublePort(name,"outMeasuredTorque")
-	--]]
 end
 
 function MotorDeployer:connect()
@@ -47,12 +45,12 @@ function MotorDeployer:connect()
 	Deployer:addPeer("RearSteering", "Can1");
 	Deployer:addPeer("Reporting", "RearSteering")
 
-	MotorDeployer:registerToSql("LeftDriving")
-	MotorDeployer:registerToSql("RightDriving")
-	MotorDeployer:registerToSql("RearDriving")
-	MotorDeployer:registerToSql("LeftSteering")
-	MotorDeployer:registerToSql("RightSteering")
-	MotorDeployer:registerToSql("RearSteering")
+	--MotorDeployer:registerToSql("LeftDriving")
+	--MotorDeployer:registerToSql("RightDriving")
+	--MotorDeployer:registerToSql("RearDriving")
+	--MotorDeployer:registerToSql("LeftSteering")
+	--MotorDeployer:registerToSql("RightSteering")
+	--MotorDeployer:registerToSql("RearSteering")
 
 	Deployer:connect("LeftDriving.inSpeedCmd", "RosHmlItf.outLeftDrivingSpeedCmd",cp);
 	Deployer:connect("RightDriving.inSpeedCmd", "RosHmlItf.outRightDrivingSpeedCmd",cp);

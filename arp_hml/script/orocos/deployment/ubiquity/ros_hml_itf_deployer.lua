@@ -10,7 +10,7 @@ end
 
 
 function RosHmlItfDeployer:connectOneMotor(name)
-	--Deployer:addPeer("RosHmlItf", name)
+	Deployer:addPeer("RosHmlItf", name)
 	Deployer:connect("RosHmlItf.in"..name.."Position", name..".outMeasuredPosition",cp)
 	Deployer:connect("RosHmlItf.in"..name.."PositionTime", name..".outMeasuredPositionTime",cp)
 	Deployer:connect("RosHmlItf.in"..name.."SpeedMeasure", name..".outComputedSpeed",cp)
@@ -22,11 +22,11 @@ function RosHmlItfDeployer:connect()
 	Deployer:addPeer("RosHmlItf", "HmlMonitor")
 
 --connection des ports
-	--RosHmlItfDeployer:connectOneMotor("LeftDriving")
-	--RosHmlItfDeployer:connectOneMotor("RightDriving")
+	RosHmlItfDeployer:connectOneMotor("LeftDriving")
+	RosHmlItfDeployer:connectOneMotor("RightDriving")
 	RosHmlItfDeployer:connectOneMotor("RearDriving")
-	--RosHmlItfDeployer:connectOneMotor("LeftSteering")
-	--RosHmlItfDeployer:connectOneMotor("RightSteering")
+	RosHmlItfDeployer:connectOneMotor("LeftSteering")
+	RosHmlItfDeployer:connectOneMotor("RightSteering")
 	RosHmlItfDeployer:connectOneMotor("RearSteering")
 
 	Deployer:connect("RosHmlItf.inIoStart", "WoodheadIn.outBit1",cp)

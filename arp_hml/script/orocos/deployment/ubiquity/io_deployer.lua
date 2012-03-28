@@ -18,8 +18,8 @@ function IoDeployer:connect()
 	Deployer:addPeer("WoodheadOut", "Can1")
 	Deployer:addPeer("Reporting", "WoodheadOut")
 	
-	--IoDeployer:check("WoodheadIn")
-	--IoDeployer:check("WoodheadOut")
+	IoDeployer:check("WoodheadIn")
+	IoDeployer:check("WoodheadOut")
 end
 
 
