@@ -1,0 +1,55 @@
+/*
+ ARD colors :
+ 	bleu ciel : 		#e8ecf6
+ 	bleu foncé : 		#4a64aa
+ 	gris backgorund : 	#3c404c
+*/
+html {
+	height: 100%;
+	font-family: tahoma;
+}
+
+body {
+	height: 100%;
+	margin: auto;
+	background-image: url("ressource/Logo-ARD_1024_600.jpg");
+	background-repeat: no-repeat;
+}
+
+header {
+	display: inline-block;
+	vertical-align: top;
+	color: #e8ecf6;
+	background-color: #3c404c;
+	width: 200px;
+	height: 450px;
+	margin-top: 50px;
+	margin-left: 500px;
+	text-align: right;
+	border-radius: 10px;
+	padding-top: 50px;
+}
+
+header p {
+	margin-right: 20px;
+	margin-top: 10px;
+}
+
+nav {
+	display: inline-block;
+	margin-top: 70px;
+	width: 300px;
+}
+
+.bouton {
+	color: #e8ecf6;
+	background-color: #3c404c;
+	border-radius: 10px;
+	font-size: 40px;
+	width: 200px;
+	height: 40px;
+	margin: 20px;
+	text-align: center;
+	padding-top: 10px;
+	padding-bottom: 20px;
+}
