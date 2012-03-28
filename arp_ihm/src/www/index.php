@@ -3,27 +3,28 @@
 <head>
 <meta charset="ISO-8859-1">
 <meta http-equiv="Content-type" content="text/html;charset=ISO-8859-1" />
-<meta name="author" content="Advanced Robotivs Design" />
+<meta name="author" content="Advanced Robotics Design" />
+<meta http-equiv="refresh" content="1;URL='index.php'" />
+<meta HTTP-EQUIV="pragma" CONTENT="no-cache" />
 <link rel="stylesheet" href="ard.css" />
 <title>ARP IHM</title>
 </head>
 <body>
 	<nav>
-		<div class="bouton">Dev</div>
-		<div class="bouton">Self Test</div>
-		<div class="bouton">Manual</div>
-		<div class="bouton">Match A</div>
-		<div class="bouton">Match B</div>
+		<a href="hml/index.php"><div class="bouton">Dev</div></a>
+		<a href="cgi/cgi_wla.cgi"><div class="bouton">Self Test</div></a>
+		<a href="run/run.php"><div class="bouton">Manual</div></a>
+		<a href="run/run.php"><div class="bouton">Match A</div></a>
+		<a href="run/run.php"><div class="bouton">Match B</div></a>
 	</nav>
 	
 	<header>
-		<p>CPU temp : 60°C</p>
-		<p>CPU load : 8%</p>
-		<p>RAM used : 10%</p>
-		<p>DD used : 75%</p>
-		<p>Hokuyo : OK</p>	
-		<p>RS 485 : OK</p>
-		<p>CAN : OK</p>
+		<?php echo "<p>CPU temp :".exec('sensors | grep Core | cut -c14-21')."</p>"; ?>
+		<p></p>
+		<?php echo "<p>".exec('uname -r')."</p>"; ?>
+		<?php echo "<p>".exec('cat /opt/ros/ard-version')."</p>"; ?>
+		<?php echo "<p>".exec('/opt/ros_addons/orocos_toolchain/ocl/bin/deployer-gnulinux --version')."</p>"; ?>
+		
 	</header>
 	
 

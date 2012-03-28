@@ -107,6 +107,7 @@ then
 	scp /opt/ros/setup.bash root@$2:/opt/ros
 	scp /opt/ros/setup.sh root@$2:/opt/ros
 	scp /opt/ros_addons/env.sh root@$2:/opt/ros_addons
+	scp /opt/ros/ard-version root@$2:/opt/ros
 else
 	if [ -d /opt/ard/$stack ] ; then
 		rsync  -avzh `rospack find $package_name` root@$2:`rosstack find ard` \
