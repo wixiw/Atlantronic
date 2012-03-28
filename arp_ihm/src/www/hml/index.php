@@ -13,9 +13,6 @@
 </head>
 
 <body><h1>You are on the HML view of Ubiquity !</h1>
-<p>This is the HML working view</br>
-It contains all hardware related information<br/>
-<br/>
 <img src="../ressource/hml/HML_view.jpg"/>
 </p>
 
@@ -55,4 +52,6 @@ It contains all hardware related information<br/>
 		</td>
 	</tr>
 </table>
+
+<a href="../index.php">_____________go back !</a>
 </body></html>

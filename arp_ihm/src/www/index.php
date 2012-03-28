@@ -11,11 +11,11 @@
 </head>
 <body>
 	<nav>
-		<a href="hml/index.php"><div class="bouton">Dev</div></a>
-		<a href="cgi/cgi_wla.cgi"><div class="bouton">Self Test</div></a>
-		<a href="run/run.php"><div class="bouton">Manual</div></a>
-		<a href="run/run.php"><div class="bouton">Match A</div></a>
-		<a href="run/run.php"><div class="bouton">Match B</div></a>
+		<a href="run/run.php?action=dev"><div class="bouton">Dev</div></a>
+		<a href="run/run.php?action=selftest"><div class="bouton">Self Test</div></a>
+		<a href="run/run.php?action=manual"><div class="bouton">Manual</div></a>
+		<a href="run/run.php?action=matchA"><div class="bouton">Match A</div></a>
+		<a href="run/run.php?action=matchB"><div class="bouton">Match B</div></a>
 	</nav>
 	
 	<header>
@@ -30,6 +30,8 @@
 
 
 
-	<footer></footer>
+	<footer>
+	<a href="hml/index.php">HML debug screen</a>
+	</footer>
 </body>
 </html>

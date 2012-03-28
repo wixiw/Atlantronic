@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 ### BEGIN INIT INFO
 # Provides:          ard_autostart
 # Required-Start:    $remote_fs $syslog ard_can
@@ -6,7 +6,7 @@
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: Example initscript
-# Description:      This is used to autostart ARd's binairies for matches
+# Description:      This is used to autostart ARD's binairies for matches
 ### END INIT INFO
 
 # Author: Foo Bar <contact@team-ard.com>
@@ -27,8 +27,7 @@ if [ -x "/opt/env.sh" ] ; then
 	echo "ERROR : The /opt/env.sh script is not present : $DAEMON"
 	exit 0
 else
-	. /opt/color.sh
-	#. /opt/env.sh	
+	. /opt/env.sh	
 fi
 
 
@@ -61,16 +60,15 @@ do_start()
 	start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON --test > /dev/null \
 		|| return 1
 
-	if [ -f /opt/conf/MATCH ]; then
+	echo ""
+	if [[ $1 == "" ]]; then
+		cecho red "You must provide a launch command !"
+	else
+		cecho yellow "Launching a deamon on IHM request..."
 		#S=start m=create pid file b=go to background v=verbose
 		start-stop-daemon -Smbv -x $DAEMON -p $PIDFILE \
 			|| return 2
-		cecho "yellow" "Autostarting binaries !"
-		sleep 2
-	else
-		cecho "yellow" "/opt/conf/MATCH is not present, I am not autostarting binaries"
 	fi
-
 }
 
 #
@@ -106,7 +104,7 @@ do_reload() {
 case "$1" in
   start)
 	[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$NAME"
-	do_start
+	do_start $2
 	case "$?" in
 		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
 		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
@@ -114,7 +112,7 @@ case "$1" in
 	;;
   stop)
 	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
-	do_stop
+	do_stop $2
 	case "$?" in
 		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
 		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
@@ -138,7 +136,7 @@ case "$1" in
 	# 'force-reload' alias
 	#
 	log_daemon_msg "Restarting $DESC" "$NAME"
-	do_stop
+	do_stop $2
 	case "$?" in
 	  0|1)
 		do_start
