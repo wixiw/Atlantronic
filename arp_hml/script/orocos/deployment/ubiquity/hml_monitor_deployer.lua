@@ -7,6 +7,8 @@ local me = "HmlMonitor"
 function HmlMonitorDeployer:load()
 	Deployer:loadComponent(me, "arp_hml::HmlMonitor")
 	Deployer:setActivity(me, 0.100, 10, 1)
+	--turn it into a Corba server
+	Deployer:server(me, true)
 end
 
 

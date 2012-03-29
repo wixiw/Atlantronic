@@ -43,3 +43,26 @@ section p
 {
 	margin-left: 50px;
 }
+
+footer
+{
+	margin-left: 780px;
+}
+
+.button
+{
+	color: #e8ecf6;
+	background-color: #3c404c;
+	border-radius: 10px;
+	font-size: 40px;
+	width: 200px;
+	height: 40px;
+	text-align: center;
+	padding-bottom: 15px;
+}
+
+a
+{
+	text-decoration:none;
+	color: #4a64aa;
+}

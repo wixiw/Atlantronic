@@ -41,9 +41,10 @@ nav {
 	width: 300px;
 }
 
-nav a
+a
 {
-	text-decoration:none
+	text-decoration:none;
+	color: #4a64aa;
 }
 
 .bouton {
