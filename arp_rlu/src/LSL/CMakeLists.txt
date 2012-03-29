@@ -16,6 +16,10 @@ rosbuild_add_library(lsl Logger.cpp
                          filters/CartesianSegment.cpp
                          filters/CircleIdentif.cpp 
                          
+                         identificators/SoloCircleIdentif.cpp
+                         identificators/DuoCircleIdentif.cpp
+                         identificators/TrioCircleIdentif.cpp
+                         
                          tools/JsonScanParser.cpp )
             
 

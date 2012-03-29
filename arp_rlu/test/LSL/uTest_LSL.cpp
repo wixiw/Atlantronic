@@ -19,6 +19,7 @@ BOOST_AUTO_TEST_CASE( testdummy )
 {
 //  arp_rlu::lsl::Logger::InitNull("uT_LSL", DEBUG);
   arp_rlu::lsl::Logger::InitConsole("uT_LSL", ERROR);
+//  arp_rlu::lsl::Logger::InitConsole("uT_LSL", DEBUG);
 //  arp_rlu::lsl::Logger::InitFile("uT_LSL", DEBUG);
 
 //  arp_rlu::lsl::Log( FATAL )  << "fatal";
@@ -53,6 +54,10 @@ BOOST_AUTO_TEST_SUITE_END()
 #include "filters/uTest_PolarSegment.hpp"
 #include "filters/uTest_CartesianSegment.hpp"
 #include "filters/uTest_CircleIdentif.hpp"
+
+#include "identificators/uTest_SoloCircleIdentif.hpp"
+#include "identificators/uTest_DuoCircleIdentif.hpp"
+#include "identificators/uTest_TrioCircleIdentif.hpp"
 
 #include "tools/uTest_JsonScanParser.hpp"
 
