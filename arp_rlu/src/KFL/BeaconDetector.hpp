@@ -13,14 +13,15 @@
 
 #include <math/core>
 
-#include "LSL/LaserScan.hpp"
-#include "LSL/objects/Circle.hpp"
-#include "LSL/objects/DetectedCircle.hpp"
-#include "LSL/filters/MedianFilter.hpp"
-#include "LSL/filters/PolarCrop.hpp"
-#include "LSL/filters/CartesianCrop.hpp"
-#include "LSL/filters/PolarSegment.hpp"
-#include "LSL/filters/CircleIdentif.hpp"
+#include <LSL/LaserScan.hpp>
+#include <LSL/objects/Circle.hpp>
+#include <LSL/objects/DetectedCircle.hpp>
+#include <LSL/filters/MedianFilter.hpp>
+#include <LSL/filters/PolarCrop.hpp>
+#include <LSL/filters/PolarSegment.hpp>
+#include <LSL/filters/CircleIdentif.hpp>
+#include <LSL/identificators/TrioCircleIdentif.hpp>
+#include <LSL/identificators/DuoCircleIdentif.hpp>
 
 
 
@@ -64,10 +65,10 @@ class BeaconDetector
              *  Il initialise des paramètres classiques non-stupides :\n
              *  mfp => voir constructeur par défault de lsl::MedianFilter::Params \n
              *  pcp => voir constructeur par défault de lsl::PolarCrop::Params \n
-             *  ccp => voir constructeur par défault de lsl::CartesianCrop::Params \n
              *  psp => voir constructeur par défault de lsl::PolarSegment::Params \n
              *  cip => voir constructeur par défault de lsl::CircleIdentif::Params \n
-             *  dist2beaconThres = 0.7
+             *  tcp => voir constructeur par défault de lsl::CircleIdentif::Params \n
+             *  dcp => voir constructeur par défault de lsl::CircleIdentif::Params \n
              */
             Params();
 
@@ -80,7 +81,6 @@ class BeaconDetector
              * Permet de vérifier que les paramètres sont consistants.\n
              * A savoir :\n
              * \li chaque sous-groupe de paramètres est consistant.
-             * \li maxDistance2NearestReferencedBeacon > 0.
              */
             bool checkConsistency() const;
 
@@ -95,24 +95,30 @@ class BeaconDetector
             lsl::PolarCrop::Params pcp;
 
             /**
-             * Paramètres pour la troisème étape du traitement, à savoir un crop cartésien qui permet d'éliminer les mesures qui sont assurément hors-table.
-             */
-            lsl::CartesianCrop::Params ccp;
-
-            /**
-             * Paramètres pour la quatrième étape, celle qui consiste à identifier des clusters de mesures succeptibles d'être des balises.
+             * Paramètres pour la troisième étape, celle qui consiste à identifier des clusters de mesures succeptibles d'être des balises.
              */
             lsl::PolarSegment::Params psp;
 
             /**
-             * Paramètres pour la cinquième étape, celle qui consiste à identifier les clusters comme étant des cercles.
+             * Paramètres pour la quatrième étape, celle qui consiste à identifier les clusters comme étant des cercles.
              */
             lsl::CircleIdentif::Params cip;
 
             /**
-             * Distance maximale à une balise référencée
+             * Paramètres pour la cinquième étape, celle qui consiste à essayer de trouver le triangle des trois balises parmis les cercles détectés.
              */
-            double maxDistance2NearestReferencedBeacon;
+            lsl::TrioCircleIdentif::Params tcp;
+
+            /**
+             * Paramètres pour la sixième étape, celle qui consiste à essayer de trouver un segment de deux balises parmis les cercles détectés.
+             */
+            lsl::DuoCircleIdentif::Params dcp;
+
+            /**
+             * Nombre minimal de point pour qu'un DetectedObject soit considéré comme une balise potentielle.
+             */
+            unsigned int minNbPoints;
+
         };
 
     public:
@@ -155,11 +161,17 @@ class BeaconDetector
         bool getBeacon(double t, lsl::Circle & target, Eigen::Vector2d & meas);
 
         /**
-         * Permet de récupérer tous les cercles détectés.
+         * Permet de récupérer tous les cercles candidats.
+         * \remark Cette méthode est présente pour le débug seulement.\n
+         */
+        std::vector< lsl::DetectedCircle > getDetectedCircles();
+
+        /**
+         * Permet de récupérer les balises détectées.
          * \remark Cette méthode est surtout pratique pour le débug.\n
          * Elle évite d'avoir à appelée N fois la méthode \ref getBeacon
          */
-        std::vector< lsl::DetectedCircle > getDetectedCircles();
+        std::vector< std::pair<lsl::DetectedCircle, lsl::Circle> > getFoundBeacons();
 
         /**
          * Permet de modifier les paramètres de traitement de scan.
@@ -186,9 +198,9 @@ class BeaconDetector
         std::vector< lsl::DetectedCircle > detectedCircles;
 
         /**
-         * Vecteur de bool qui indique si la balise référente a déjà été attribuée.
+         * Balises retrouvées
          */
-        std::vector< bool > referencedBeaconUsed;
+        std::vector< std::pair<lsl::DetectedCircle, lsl::Circle> > foundBeacons;
 
         /**
          * Balises référencées
