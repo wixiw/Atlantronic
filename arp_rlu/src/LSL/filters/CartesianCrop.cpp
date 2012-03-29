@@ -41,12 +41,12 @@ bool CartesianCrop::Params::checkConsistency() const
 {
     if( maxX < minX )
     {
-        Log( NOTICE ) << "CartesianCrop::Params::checkConsistency" << " - " << "inconsistent parameters (maxX < minX)";
+        Log( WARN ) << "CartesianCrop::Params::checkConsistency" << " - " << "inconsistent parameters (maxX < minX)";
         return false;
     }
     if( maxY < minY )
     {
-        Log( NOTICE ) << "CartesianCrop::Params::checkConsistency" << " - " << "inconsistent parameters (maxY < minY)";
+        Log( WARN ) << "CartesianCrop::Params::checkConsistency" << " - " << "inconsistent parameters (maxY < minY)";
         return false;
     }
     return true;

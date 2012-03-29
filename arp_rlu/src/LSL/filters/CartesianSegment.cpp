@@ -43,22 +43,22 @@ bool CartesianSegment::Params::checkConsistency() const
 {
     if(kmeansMaxIterations == 0)
     {
-        Log( NOTICE ) << "CartesianSegment::Params::checkConsistency" << " - " << "inconsistent parameters (kmeansMaxIterations == 0)";
+        Log( WARN ) << "CartesianSegment::Params::checkConsistency" << " - " << "inconsistent parameters (kmeansMaxIterations == 0)";
         return false;
     }
     if(kmeansDispThres <= 0.)
     {
-        Log( NOTICE ) << "CartesianSegment::Params::checkConsistency" << " - " << "inconsistent parameters (kmeansDispThres <= 0.)";
+        Log( WARN ) << "CartesianSegment::Params::checkConsistency" << " - " << "inconsistent parameters (kmeansDispThres <= 0.)";
         return false;
     }
     if(minNbPoints == 0)
     {
-        Log( NOTICE ) << "CartesianSegment::Params::checkConsistency" << " - " << "inconsistent parameters (minNbPoints == 0)";
+        Log( WARN ) << "CartesianSegment::Params::checkConsistency" << " - " << "inconsistent parameters (minNbPoints == 0)";
         return false;
     }
     if(maxStddev <= 0.)
     {
-        Log( NOTICE ) << "CartesianSegment::Params::checkConsistency" << " - " << "inconsistent parameters (maxStddev <= 0.)";
+        Log( WARN ) << "CartesianSegment::Params::checkConsistency" << " - " << "inconsistent parameters (maxStddev <= 0.)";
         return false;
     }
     return true;

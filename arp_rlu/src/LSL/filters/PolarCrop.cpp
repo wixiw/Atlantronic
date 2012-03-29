@@ -48,22 +48,22 @@ bool PolarCrop::Params::checkConsistency() const
 {
     if( minRange.size() == 0 )
     {
-        Log( NOTICE ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters (minRange.size() == 0)";
+        Log( WARN ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters (minRange.size() == 0)";
         return false;
     }
     if( maxRange.size() == 0 )
     {
-        Log( NOTICE ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters (maxRange.size() == 0)";
+        Log( WARN ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters (maxRange.size() == 0)";
         return false;
     }
     if( minRange.minCoeff() < 0.)
     {
-        Log( NOTICE ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters (minRange.minCoeff() < 0.)";
+        Log( WARN ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters (minRange.minCoeff() < 0.)";
         return false;
     }
     if( maxRange.minCoeff() < 0.)
     {
-        Log( NOTICE ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters (maxRange.minCoeff() < 0.)";
+        Log( WARN ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters (maxRange.minCoeff() < 0.)";
         return false;
     }
     if( maxRange.size() > 1 )
@@ -72,7 +72,7 @@ bool PolarCrop::Params::checkConsistency() const
         {
             if( (maxRange - minRange).minCoeff() < 0.)
             {
-                Log( NOTICE ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters ( (maxRange - minRange).minCoeff() < 0. )";
+                Log( WARN ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters ( (maxRange - minRange).minCoeff() < 0. )";
                 return false;
             }
         }
@@ -80,7 +80,7 @@ bool PolarCrop::Params::checkConsistency() const
         {
             if( maxRange.minCoeff() - minRange[0] < 0.)
             {
-                Log( NOTICE ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters ( maxRange.minCoeff() - minRange[0] < 0. )";
+                Log( WARN ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters ( maxRange.minCoeff() - minRange[0] < 0. )";
                 return false;
             }
         }
@@ -91,7 +91,7 @@ bool PolarCrop::Params::checkConsistency() const
         {
             if( maxRange[0] - minRange.minCoeff() < 0.)
             {
-                Log( NOTICE ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters ( maxRange[0] - minRange.minCoeff() < 0. )";
+                Log( WARN ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters ( maxRange[0] - minRange.minCoeff() < 0. )";
                 return false;
             }
         }
@@ -99,14 +99,14 @@ bool PolarCrop::Params::checkConsistency() const
         {
             if( maxRange[0] - minRange[0] < 0.)
             {
-                Log( NOTICE ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters ( maxRange[0] - minRange[0] < 0. )";
+                Log( WARN ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters ( maxRange[0] - minRange[0] < 0. )";
                 return false;
             }
         }
     }
     if( minTheta > maxTheta )
     {
-        Log( NOTICE ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters ( minTheta > maxTheta )";
+        Log( WARN ) << "PolarCrop::Params::checkConsistency" << " - " << "inconsistent parameters ( minTheta > maxTheta )";
         return false;
     }
     return true;

@@ -38,12 +38,12 @@ bool CircleIdentif::Params::checkConsistency() const
 {
     if(radius <= 0.)
     {
-        Log( NOTICE ) << "CircleIdentif::Params::checkConsistency" << " - " << "inconsistent parameters (radius <= 0.)";
+        Log( WARN ) << "CircleIdentif::Params::checkConsistency" << " - " << "inconsistent parameters (radius <= 0.)";
         return false;
     }
     if( rangeDelta > radius )
     {
-        Log( NOTICE ) << "CircleIdentif::Params::checkConsistency" << " - " << "inconsistent parameters (rangeDelta > radius)";
+        Log( WARN ) << "CircleIdentif::Params::checkConsistency" << " - " << "inconsistent parameters (rangeDelta > radius)";
         return false;
     }
     return true;

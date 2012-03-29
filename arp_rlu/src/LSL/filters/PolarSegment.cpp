@@ -37,7 +37,7 @@ bool PolarSegment::Params::checkConsistency() const
 {
     if( rangeThres <= 0.)
     {
-        Log( NOTICE ) << "PolarSegment::Params::checkConsistency" << " - " << "inconsistent parameters (rangeThres <= 0.)";
+        Log( WARN ) << "PolarSegment::Params::checkConsistency" << " - " << "inconsistent parameters (rangeThres <= 0.)";
         return false;
     }
     return true;
