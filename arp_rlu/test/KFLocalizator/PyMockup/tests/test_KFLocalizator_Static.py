@@ -20,7 +20,7 @@ import params_KFLocalizator_Static as params
 
 np.set_printoptions(precision=4)
 
-xpIndex = 1
+xpIndex = 10
 
 graine = random.randint(0,1000)
 graine_ = random.randint(0,1000)

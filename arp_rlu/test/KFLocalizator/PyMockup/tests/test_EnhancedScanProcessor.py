@@ -1,6 +1,8 @@
 # coding=utf-8
-import sys
+import sys, os
 sys.path.append( "../../../../src/KFLocalizator/PyMockup" )
+
+import json
 
 import random
 import logging
@@ -144,6 +146,66 @@ log.info("################################")
 log.info("Nb recognized beacons after cleaning: %d", len(scanproc.foundBeacons))
 for i,o in enumerate(scanproc.foundBeacons):
   log.info("Object [%d]  x:%f - y:%f with apparent radius:%f", i, o.xCenter, o.yCenter, o.radius)
+
+
+
+#===============================================================================
+# Exporting
+#===============================================================================
+xpIndex = 5
+
+#export traj
+dictTraj = {}
+dictTraj["type"] = "trajectory"
+dictTraj["size"] = N
+dictTraj["tt"] = list(tt[-N:])
+dictTraj["xx"] = list(xx[-N:])
+dictTraj["yy"] = list(yy[-N:])
+dictTraj["hh"] = list(hh[-N:])
+if not os.path.exists("enhancedscanprocessor"):
+  os.mkdir("enhancedscanprocessor")
+output = open("./enhancedscanprocessor/traj_"+str(xpIndex)+".json", mode='w')
+output.write(json.dumps(dictTraj,indent=2,sort_keys=True))
+output.close()
+
+#export scan
+if not os.path.exists("enhancedscanprocessor"):
+  os.mkdir("enhancedscanprocessor")
+scan.export("./enhancedscanprocessor/scan_"+str(xpIndex)+".json")
+
+# export results
+dictResults = {}
+dictResults["nbObjects"] = len(scanproc.foundBeacons)
+for i, o in enumerate(scanproc.foundBeacons):
+  d = {}
+  d["xCenter"] = o.xCenter
+  d["yCenter"] = o.yCenter
+  d["radius"] = o.radius
+  dictResults["obj_" + str(i)] = d
+if not os.path.exists("enhancedscanprocessor"):
+  os.mkdir("enhancedscanprocessor")
+output = open("./enhancedscanprocessor/results_"+str(xpIndex)+".json", mode='w')
+output.write(json.dumps(dictResults,indent=2,sort_keys=True))
+output.close()
+
+# export measures
+dictMeas = {}
+nbMeas = 0
+for t in list(tt):
+  (xBeacon, yBeacon, rangeMeas, thetaMeas) = scanproc.getBeacons(t)
+  if xBeacon is not None:
+    dictMeas["meas_"+str(nbMeas)] = {}
+    dictMeas["meas_"+str(nbMeas)]["xBeacon"] = xBeacon
+    dictMeas["meas_"+str(nbMeas)]["yBeacon"] = yBeacon
+    dictMeas["meas_"+str(nbMeas)]["range"] = rangeMeas
+    dictMeas["meas_"+str(nbMeas)]["theta"] = thetaMeas
+    nbMeas = nbMeas + 1
+dictMeas["nbMeas"] = nbMeas   
+if not os.path.exists("enhancedscanprocessor"):
+  os.mkdir("enhancedscanprocessor")
+output = open("./enhancedscanprocessor/meas_"+str(xpIndex)+".json", mode='w')
+output.write(json.dumps(dictMeas,indent=2,sort_keys=True))
+output.close()
 
 
 #===============================================================================
