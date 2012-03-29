@@ -12,21 +12,43 @@ import matplotlib.patches as mpatches
 import Scan
 
 
-
-fileName = "../bin/BeaconDetector__process__scan_0.json"
 if len(sys.argv) > 1:
-  fileName = sys.argv[1]
-  
+  scanFileName = sys.argv[1]
+else:
+  raise BaseException("Usage : [scan].json")
 
 # importation du scan
 scan = Scan.Scan()
-scan.load(fileName)
-
-# importation de la trajectoire
+scan.load(scanFileName)
 tt = scan.tt
-xx = scan.xx
-yy = scan.yy
-hh = scan.hh
+
+
+if len(sys.argv) > 2:
+  trajFileName = sys.argv[2]
+  input = open(trajFileName,mode='r')
+  dict = json.loads(input.read())
+  input.close()
+  assert("type" in dict)
+  assert(dict["type"] == "trajectory")
+  assert("tt" in dict and "xx" in dict and "yy" in dict and "hh" in dict)
+  xx = np.array(dict["xx"])
+  yy = np.array(dict["yy"])
+  hh = np.array(dict["hh"])
+else:
+  if scan.xx is None:
+    xx = np.zeros( (len(tt)) )
+  else:
+    xx = scan.xx
+  
+  if scan.yy is None:
+    yy = np.zeros( (len(tt)) )
+  else:
+    yy = scan.yy
+    
+  if scan.hh is None:
+    hh = np.zeros( (len(tt)) )
+  else:
+    hh = scan.hh
 
 
 #===============================================================================
