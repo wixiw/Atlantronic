@@ -15,7 +15,6 @@
 using namespace arp_math;
 using namespace arp_rlu;
 using namespace std;
-using namespace lsl;
 using namespace kfl;
 using namespace arp_core::log;
 
@@ -154,7 +153,7 @@ namespace unittest_BeaconDetector
             double trueRange   = docMeas.getFloatData( docMeas.getChild( docMeas.getChild(docMeas.root(), ss.str()), "range") );
             double trueTheta   = docMeas.getFloatData( docMeas.getChild( docMeas.getChild(docMeas.root(), ss.str()), "theta") );
 
-            Circle target = measures[i].first;
+            lsl::Circle target = measures[i].first;
             Eigen::Vector2d meas = measures[i].second;
 
             Log( DEBUG ) << "test_DetectedCircle_" << xpName << " - " << "  * xTarget=" << target.x() << "   vs trueXBeacon=" << trueXBeacon;
