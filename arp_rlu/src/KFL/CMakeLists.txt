@@ -4,7 +4,10 @@
 
 rosbuild_add_library(kfl Logger.cpp
                          KFLocalizator.cpp
+                         
+                         BeaconDetector_deprecated.cpp
                          BeaconDetector.cpp
+                         
                          BFL/BFLWrapper.cpp
                          BFL/BFLSysConditionalPdf.cpp
                          BFL/BFLMeasConditionalPdf.cpp)

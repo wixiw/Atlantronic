@@ -7,6 +7,7 @@
 
 
 #include "KFL/Logger.hpp"
+#include "LSL/Logger.hpp"
 
 using namespace arp_core::log;
 
@@ -21,6 +22,8 @@ BOOST_AUTO_TEST_CASE( testdummy )
     //  arp_rlu::kfl::Logger::InitNull("uT_KFL", DEBUG);
     arp_rlu::kfl::Logger::InitConsole("uT_KFL", DEBUG);
 //      arp_rlu::kfl::Logger::InitFile("uT_KFL", DEBUG);
+
+//    arp_rlu::lsl::Logger::InitConsole("uT_LSL", DEBUG);
 
 //      arp_rlu::kfl::Log( FATAL )  << "fatal";
 //      arp_rlu::kfl::Log( EMERG )  << "emerg";
@@ -42,9 +45,10 @@ BOOST_AUTO_TEST_CASE( testdummy )
 }
 BOOST_AUTO_TEST_SUITE_END()
 
-#include "uTest_BeaconDetector.hpp"
+//#include "uTest_BeaconDetector_deprecated.hpp"
+//#include "uTest_BeaconDetector.hpp"
 
-#include "BFL/uTest_BFLWrapper.hpp"
+//#include "BFL/uTest_BFLWrapper.hpp"
 //
-//#include "uTest_KFLocalizator.hpp"
+#include "uTest_KFLocalizator.hpp"
 

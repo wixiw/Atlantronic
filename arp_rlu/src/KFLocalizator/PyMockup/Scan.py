@@ -30,6 +30,9 @@ class Scan:
     self.tt    = np.zeros( (N) )
     self.theta = np.zeros( (N) )
     self.range = np.zeros( (N) )
+    self.xx = None
+    self.yy = None
+    self.hh = None
     
   def copy(self):
     retval = Scan()
@@ -90,9 +93,6 @@ class Scan:
     self.tt = np.array(dict["tt"]) #np.array([ float(x) for x in dict["tt"].split()] )
     self.range = np.array(dict["range"]) #np.array([ float(x) for x in dict["range" ].split()] )
     self.theta = np.array(dict["theta"]) #np.array([ float(x) for x in dict["theta" ].split()] )
-    self.xx = None
-    self.yy = None
-    self.hh = None
     if "xx" in dict:
       self.xx = np.array(dict["xx"])
     if "yy" in dict:

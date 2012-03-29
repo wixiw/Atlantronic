@@ -27,9 +27,6 @@ KFLocalizator::Params::Params()
 , iekfParams(KFLocalizator::IEKFParams())
 , procParams(BeaconDetector::Params())
 {
-    referencedBeacons.push_back( lsl::Circle( 1.5, 0., 0.04 ) );
-    referencedBeacons.push_back( lsl::Circle(-1.5, 1., 0.04 ) );
-    referencedBeacons.push_back( lsl::Circle(-1.5,-1., 0.04 ) );
 }
 
 std::string KFLocalizator::Params::getInfo() const
@@ -97,8 +94,8 @@ void KFLocalizator::setParams(KFLocalizator::Params p)
     params.bufferSize = p.bufferSize;
     params.referencedBeacons = p.referencedBeacons;
     beaconDetector.setReferencedBeacons(params.referencedBeacons);
-    setParams(params.iekfParams);
-    setParams(params.procParams);
+    setParams(p.iekfParams);
+    setParams(p.procParams);
 }
 
 void KFLocalizator::setParams(KFLocalizator::IEKFParams p)
@@ -242,8 +239,7 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
 
     beaconDetector.process(scan, tt, xx, yy, hh);
 
-    std::vector< lsl::DetectedCircle > vdc = beaconDetector.getDetectedCircles();
-    Log( DEBUG ) << "KFLocalizator::newScan - " << vdc.size() << " circle(s) detected in scan";
+    Log( DEBUG ) << "KFLocalizator::newScan - " << beaconDetector.getFoundBeacons().size() << " beacons(s) detected in scan";
 
 
     // Update
@@ -257,8 +253,8 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
             BFLWrapper::UpdateParams updateParams;
             updateParams.laserRangeSigma = params.iekfParams.defaultLaserRangeSigma;
             updateParams.laserThetaSigma = params.iekfParams.defaultLaserThetaSigma;
-            Log( DEBUG ) << "KFLocalizator::newScan - meas=" << meas ;
-            Log( DEBUG ) << "KFLocalizator::newScan - target=" << target.getPosition() ;
+//            Log( DEBUG ) << "KFLocalizator::newScan - meas=" << meas.transpose() ;
+//            Log( DEBUG ) << "KFLocalizator::newScan - target=" << target.getPosition().transpose() ;
             bayesian->update(meas, target.getPosition(), updateParams);
             nbBeaconSeen++;
         }
@@ -277,7 +273,7 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
 
         bayesian->predict( input, dt, predictParams );
     }
-    Log( DEBUG ) << "KFLocalizator::newScan - " << nbBeaconSeen << " beacons seen";
+    Log( DEBUG ) << "KFLocalizator::newScan - " << nbBeaconSeen << " kalman update(s) done";
 
     KFLocalizator::updateBuffer(tt(tt.size()-1), EstimatedTwist2D(vx(tt.size()-1), vy(tt.size()-1), vh(tt.size()-1)));
 

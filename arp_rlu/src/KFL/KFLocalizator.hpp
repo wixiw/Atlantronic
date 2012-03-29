@@ -114,7 +114,7 @@ class KFLocalizator
                 /** Constructeur par défault.
                  *  Il initialise des paramètres classiques non-stupides :\n
                  *  \li bufferSize = 100
-                 *  \li referencedBeacons contient 3 balises
+                 *  \li referencedBeacons est vide
                  *  \li initParams => voir KFLocalizator::InitParams()
                  *  \li iekfParams => voir KFLocalizator::IEKFParams()
                  *  \li procParams => voir BeaconDetector::Params()
