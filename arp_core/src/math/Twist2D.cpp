@@ -7,8 +7,7 @@
 
 #include <math/Twist2D.hpp>
 
-namespace arp_math
-{
+using namespace arp_math;
 
 Twist2D::Twist2D(Vector2 _vitesseTranslation, double _vitesseRotation)
 : vitesseTranslation(_vitesseTranslation)
@@ -40,6 +39,11 @@ double Twist2D::vh() const
     return vitesseRotation;
 }
 
+double Twist2D::speedAngle() const
+{
+    return atan2(vitesseTranslation[1], vitesseTranslation[0]);
+}
+
 void Twist2D::vx(double _vx)
 {
     vitesseTranslation[0] = _vx;
@@ -55,4 +59,3 @@ void Twist2D::vh(double _vh)
     vitesseRotation = _vh;
 }
 
-}

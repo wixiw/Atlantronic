@@ -48,6 +48,9 @@ class Twist2D
         /** \returns la vitesse de rotation. Il s'agit d'un double en rad/sec */
         double vh() const;
 
+        /** \returns l'angle entre la vitesse de translation et l'axe x du repère = atan2(vy,vx)*/
+        double speedAngle() const;
+
         /** \param _vx la vitesse de translation selon l'axe x en m/s */
         void vx(double _vx);
 
