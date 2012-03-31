@@ -30,7 +30,7 @@
 <meta name="author" content="Advanced Robotics Design" />
 
 <link rel="stylesheet" href="run.css" />
-<?php if ( file_exists("/var/run/ard/ard_ihm_launcher.pid") ) { ?>
+<?php if ( file_exists("/var/run/ard_ihm_launcher.pid") ) { ?>
 		<meta http-equiv="refresh" content="1;URL='run.php'" />
 		<meta HTTP-EQUIV="pragma" CONTENT="no-cache" />
 <?php }	else { ?>

@@ -31,7 +31,7 @@
 
 
 	<footer>
-	<a href="hml/index.php">HML debug screen</a>
+	<a href="hml/index.php">HML debug screen</a>-------------------<a href="halt.php">Halt PC</a>
 	</footer>
 </body>
 </html>

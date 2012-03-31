@@ -19,7 +19,7 @@ DESC="Use this script from IHM to launch a program in background"
 NAME="ard_ihm_launcher"
 DAEMON="/opt/ros/ros/bin/roslaunch"
 DAEMON_ARGS=""
-PIDFILE="/var/run/ard/$NAME.pid"
+PIDFILE="/var/run/$NAME.pid"
 SCRIPTNAME="/etc/init.d/$NAME.sh"
 
 
