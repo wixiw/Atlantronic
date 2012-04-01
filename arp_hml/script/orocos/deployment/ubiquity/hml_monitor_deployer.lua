@@ -81,7 +81,6 @@ end
 function HmlMonitorDeployer:start()
 	HmlMonitor = Deployer:getPeer(me)
 	HmlMonitor:configure()
-
 	HmlMonitor:start()
 
 	LeftDriving = HmlMonitor:getPeer("LeftDriving")
@@ -91,16 +90,28 @@ function HmlMonitorDeployer:start()
 	RightSteering = HmlMonitor:getPeer("RightSteering")
 	RearSteering = HmlMonitor:getPeer("RearSteering")
 
+	LeftDriving:ooSetOperationMode("other");
+	RightDriving:ooSetOperationMode("other");
 	RearDriving:ooSetOperationMode("other");
+	LeftSteering:ooSetOperationMode("other");
+	RightSteering:ooSetOperationMode("other");
 	RearSteering:ooSetOperationMode("other");
 
-	RearDriving:ooFaulhaberCmd(0x81,RearDriving:getProperty("propMaximalTorque"):get()*1000); 
+	LeftDriving:ooFaulhaberCmd(0x81,RearDriving:getProperty("propMaximalTorque"):get()*1000); 
+	RightDriving:ooFaulhaberCmd(0x81,RearDriving:getProperty("propMaximalTorque"):get()*1000);
+	RearDriving:ooFaulhaberCmd(0x81,RearDriving:getProperty("propMaximalTorque"):get()*1000);  
+	LeftSteering:ooFaulhaberCmd(0x81,RearSteering:getProperty("propMaximalTorque"):get()*1000);
+	RightSteering:ooFaulhaberCmd(0x81,RearSteering:getProperty("propMaximalTorque"):get()*1000);
 	RearSteering:ooFaulhaberCmd(0x81,RearSteering:getProperty("propMaximalTorque"):get()*1000);
-
+	
 	RearDriving:ooSleep(1);
 
+	LeftDriving:ooSetOperationMode("speed");
+	RightDriving:ooSetOperationMode("speed");
 	RearDriving:ooSetOperationMode("speed");
-	RearSteering:ooSetOperationMode("speed");
+	LeftSteering:ooSetOperationMode("position");
+	RightSteering:ooSetOperationMode("position");
+	RearSteering:ooSetOperationMode("position");
 
 end
 
