@@ -229,6 +229,10 @@ void BFLWrapper::predict( const KFLSysInput & input , double dt, BayesianWrapper
 
 //    Log( DEBUG ) << "BFLWrapper::predict - eigenvalues=" << w.transpose();
 //    Log( DEBUG ) << "BFLWrapper::predict - eigenvectors=\n" << v;
+//    Log( DEBUG ) << "BFLWrapper::predict - predictParams.odoVelXSigma=" << predictParams.odoVelXSigma;
+//    Log( DEBUG ) << "BFLWrapper::predict - predictParams.odoVelYSigma=" << predictParams.odoVelYSigma;
+//    Log( DEBUG ) << "BFLWrapper::predict - predictParams.odoVelHSigma=" << predictParams.odoVelHSigma;
+//    Log( DEBUG ) << "BFLWrapper::predict - dt=" << dt;
 
     KFLStateVar Q_;
     Q_(0) = sqrt(w(0)) + dt * predictParams.odoVelXSigma;
@@ -296,8 +300,8 @@ void BFLWrapper::update( const KFLMeasVar & mvar, const KFLMeasTarget & mtar, Ba
     s(1) = mtar(0);
     s(2) = mtar(1);
     s(3) = mvar(1); // dirty but usefull to manage -PI/PI discontinuity in filter update
-//    Log( DEBUG ) << "z:\n" << z;
-//    Log( DEBUG ) << "s:\n" << s;
+//    Log( DEBUG ) << "BFLWrapper::update - z:\n" << z;
+//    Log( DEBUG ) << "BFLWrapper::update - s:\n" << s;
     filter->Update(measModel, z, s);
 
     return;

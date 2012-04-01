@@ -1,6 +1,8 @@
 # coding=utf-8
-import sys
+import sys, os
 sys.path.append( "../../../../src/KFLocalizator/PyMockup" )
+
+import json
 
 import roslib; roslib.load_manifest('arp_rlu')
 import rospy
@@ -19,6 +21,8 @@ from BaseClasses import *
 import params_KFLocalizator_Dynamic as params
 
 np.set_printoptions(precision=4)
+
+xpIndex = 3
 
 graine = random.randint(0,1000)
 graine_ = random.randint(0,1000)
@@ -182,7 +186,46 @@ if params.visu_cfg["save"]:
       os.remove(os.path.join(dirName, f))
   
   plt.savefig(os.path.join(dirName, "0_0.000" + ".png"))
-  
+
+
+#===============================================================================
+# Export de la position initiale
+#===============================================================================
+dictInitPos = {}
+dictInitPos["estimInitialXPosition"] = initialXPosition
+dictInitPos["estimInitialYPosition"] = initialYPosition
+dictInitPos["estimInitialHPosition"] = initialHeading
+dictInitPos["trueInitialXPosition"] = xx[0]
+dictInitPos["trueInitialYPosition"] = yy[0]
+dictInitPos["trueInitialHPosition"] = hh[0]
+if not os.path.exists("dynamic_"+ str(xpIndex)):
+  os.mkdir("dynamic_"+ str(xpIndex))
+output = open("./dynamic_"+ str(xpIndex) + "/initial_position.json", mode='w')
+output.write(json.dumps(dictInitPos,indent=2,sort_keys=True))
+output.close()
+
+#===============================================================================
+# Export des paramètres du KFLocalizator
+#===============================================================================
+dictKFParams = {}
+dictKFParams["sigmaInitialPosition"] = params.simu_cfg["sigmaInitialPosition"]
+dictKFParams["sigmaInitialHeading"] = params.simu_cfg["sigmaInitialHeading"]
+dictKFParams["sigmaTransOdoVelocity"] = params.kf_cfg["sigmaTransOdoVelocity"]
+dictKFParams["sigmaRotOdoVelocity"] = params.kf_cfg["sigmaRotOdoVelocity"]
+dictKFParams["sigmaLaserRange"] = params.kf_cfg["sigmaLaserRange"]
+dictKFParams["sigmaLaserAngle"] = params.kf_cfg["sigmaLaserAngle"]
+dictKFParams["iekf_Nit"] = params.kf_cfg["iekf_cfg"]["Nit"]
+dictKFParams["iekf_xThreshold"] = params.kf_cfg["iekf_cfg"]["threshold"][0,0]
+dictKFParams["iekf_yThreshold"] = params.kf_cfg["iekf_cfg"]["threshold"][1,0]
+dictKFParams["iekf_hThreshold"] = params.kf_cfg["iekf_cfg"]["threshold"][2,0]
+dictKFParams["beacondetector_maxDistance"] = params.kf_cfg["scanproc_cfg"]["maxDistance"]
+dictKFParams["beacondetector_rangeThreshold"] = params.kf_cfg["scanproc_cfg"]["thresholdRange"]
+if not os.path.exists("dynamic_"+ str(xpIndex)):
+  os.mkdir("dynamic_"+ str(xpIndex))
+output = open("./dynamic_"+ str(xpIndex) + "/kfl_params.json", mode='w')
+output.write(json.dumps(dictKFParams,indent=2,sort_keys=True))
+output.close()  
+
 
 #===============================================================================
 # En avant !
@@ -199,7 +242,8 @@ for i, time in enumerate(tt):
     doLrf = (math.floor(tt[i] /0.1) > math.floor(tt[i-1] / 0.1) )
     
   doOdo = doOdo and params.simu_cfg["odoSimu"]
-  doLrf = doLrf and params.simu_cfg["lrfSimu"]
+  doLrf = doLrf and params.simu_cfg["lrfSimu"]    
+    
   
   if doOdo or doLrf:
     rospy.loginfo("==============================================")
@@ -208,6 +252,17 @@ for i, time in enumerate(tt):
     rospy.loginfo( "  x (en m): %f", xx[i])
     rospy.loginfo( "  y (en m): %f", yy[i])
     rospy.loginfo( "  h (en deg): %f", np.degrees(betweenMinusPiAndPlusPi( hh[i] )))
+    
+    dictTrue = {}
+    dictTrue["t"] = tt[i]
+    dictTrue["x"] = xx[i]
+    dictTrue["y"] = yy[i]
+    dictTrue["h"] = hh[i]
+    if not os.path.exists("dynamic_"+ str(xpIndex)):
+      os.mkdir("dynamic_"+ str(xpIndex))
+    output = open("./dynamic_"+ str(xpIndex) + "/t_" + str(time) + "_true_position.json", mode='w')
+    output.write(json.dumps(dictTrue,indent=2,sort_keys=True))
+    output.close()
   
   # si on "reçoit" des données odo
   if doOdo:
@@ -223,9 +278,9 @@ for i, time in enumerate(tt):
       
     else:
       # simule des vrais odos
-      vxOdo = np.sum(vx[i-102:i+1]) / 103.
-      vyOdo = np.sum(vy[i-102:i+1]) / 103.
-      vhOdo = np.sum(vh[i-102:i+1]) / 103.
+      vxOdo = np.sum(vx[i-99:i+1]) / 100. #np.sum(vx[i-102:i+1]) / 103.
+      vyOdo = np.sum(vy[i-99:i+1]) / 100. #np.sum(vy[i-102:i+1]) / 103.
+      vhOdo = np.sum(vh[i-99:i+1]) / 100. #np.sum(vh[i-102:i+1]) / 103.
       rospy.loginfo("-----------------------")
       rospy.loginfo("vxOdo: %f m/s", vxOdo)
       rospy.loginfo("vyOdo: %f m/s", vyOdo)
@@ -240,6 +295,24 @@ for i, time in enumerate(tt):
       ov.vx = random.normalvariate(vxOdo, sigmaXOdo)
       ov.vy = random.normalvariate(vyOdo, sigmaYOdo)
       ov.vh = random.normalvariate(vhOdo, sigmaHOdo)
+      rospy.loginfo("ov.vx: %f m/s", ov.vx)
+      rospy.loginfo("ov.vy: %f m/s", ov.vy)
+      rospy.loginfo("ov.vh: %f deg/s", np.degrees(ov.vh))
+      
+      dictOdo = {}
+      dictOdo["t"] = time
+      dictOdo["vx"] = ov.vx
+      dictOdo["vy"] = ov.vy
+      dictOdo["vh"] = ov.vh
+      dictOdo["sigmaX"] = sigmaXOdo
+      dictOdo["sigmaY"] = sigmaYOdo
+      dictOdo["sigmaH"] = sigmaHOdo
+      if not os.path.exists("dynamic_"+ str(xpIndex)):
+        os.mkdir("dynamic_"+ str(xpIndex))
+      output = open("./dynamic_"+ str(xpIndex) + "/t_" + str(time) + "_odo_velocity.json", mode='w')
+      output.write(json.dumps(dictOdo,indent=2,sort_keys=True))
+      output.close()
+      
     
     # Estimation de postion via les odos
     kfloc.newOdoVelocity(time, ov, sigmaXOdo, sigmaYOdo, sigmaHOdo)
@@ -251,6 +324,21 @@ for i, time in enumerate(tt):
     rospy.loginfo( "  sur y (en mm): %f", (estim[1].yRobot - yy[i]) * 1000.)
     rospy.loginfo( "  en cap (deg) : %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot - hh[i] )))
     rospy.loginfo("covariance :\n%s", repr(estim[1].covariance))  
+    
+    dictEstim = {}
+    dictEstim["t"] = estim[0]
+    dictEstim["x"] = estim[1].xRobot
+    dictEstim["y"] = estim[1].yRobot
+    dictEstim["h"] = estim[1].hRobot
+    dictEstim["covariance"] = {}
+    dictEstim["covariance"]["row_0"] = [estim[1].covariance[0,0], estim[1].covariance[0,1], estim[1].covariance[0,2]]
+    dictEstim["covariance"]["row_1"] = [estim[1].covariance[1,0], estim[1].covariance[1,1], estim[1].covariance[1,2]]
+    dictEstim["covariance"]["row_2"] = [estim[1].covariance[2,0], estim[1].covariance[2,1], estim[1].covariance[2,2]]
+    if not os.path.exists("dynamic_"+ str(xpIndex)):
+      os.mkdir("dynamic_"+ str(xpIndex))
+    output = open("./dynamic_"+ str(xpIndex) + "/t_" + str(time) + "_odo_estimate.json", mode='w')
+    output.write(json.dumps(dictEstim,indent=2,sort_keys=True))
+    output.close()
     
     # On stocke l'estimée
     estimates.append( kfloc.getBestEstimate() ) 
@@ -299,6 +387,10 @@ for i, time in enumerate(tt):
     # On calcule le scan
     scan = lrfsim.computeScan(tt_, xx_, yy_, hh_)
     kfloc.scanproc.setTrueStaticPositionForDebugOnly(xx[i], yy[i], hh[i])
+    
+    if not os.path.exists("dynamic_"+ str(xpIndex)):
+        os.mkdir("dynamic_"+ str(xpIndex))
+    scan.export("./dynamic_"+ str(xpIndex) + "/t_" + str(time) + "_scan.json")
   
     # Estimation de postion via le scan
     kfloc.newScan(time, scan)
@@ -338,6 +430,21 @@ for i, time in enumerate(tt):
     rospy.loginfo( "  sur y (en mm): %f", (estim[1].yRobot - yy[i]) * 1000.)
     rospy.loginfo( "  en cap (deg) : %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot - hh[i] )))
     rospy.loginfo("covariance :\n%s", repr(estim[1].covariance))
+    
+    dictEstim = {}
+    dictEstim["t"] = estim[0]
+    dictEstim["x"] = estim[1].xRobot
+    dictEstim["y"] = estim[1].yRobot
+    dictEstim["h"] = estim[1].hRobot
+    dictEstim["covariance"] = {}
+    dictEstim["covariance"]["row_0"] = [estim[1].covariance[0,0], estim[1].covariance[0,1], estim[1].covariance[0,2]]
+    dictEstim["covariance"]["row_1"] = [estim[1].covariance[1,0], estim[1].covariance[1,1], estim[1].covariance[1,2]]
+    dictEstim["covariance"]["row_2"] = [estim[1].covariance[2,0], estim[1].covariance[2,1], estim[1].covariance[2,2]]
+    if not os.path.exists("static_"+ str(xpIndex)):
+      os.mkdir("dynamic_"+ str(xpIndex))
+    output = open("./dynamic_"+ str(xpIndex) + "/t_" + str(time) + "_scan_estimate.json", mode='w')
+    output.write(json.dumps(dictEstim,indent=2,sort_keys=True))
+    output.close()
     
     # On stocke l'estimée
     estimates.append( kfloc.getBestEstimate() ) 

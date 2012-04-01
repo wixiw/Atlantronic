@@ -35,10 +35,22 @@ MatrixWrapper::ColumnVector BFLMeasConditionalPdf::ExpectedValueGet() const
     MatrixWrapper::ColumnVector X = ConditionalArgumentGet(0);
     MatrixWrapper::ColumnVector s = ConditionalArgumentGet(1);
 
+
+//    Log( DEBUG ) << "BFLMeasConditionalPdf::ExpectedValueGet - X(1)=" << X(1);
+//    Log( DEBUG ) << "BFLMeasConditionalPdf::ExpectedValueGet - X(2)=" << X(2);
+//    Log( DEBUG ) << "BFLMeasConditionalPdf::ExpectedValueGet - X(3)=" << X(3)<< " (rad)";
+//    Log( DEBUG ) << "BFLMeasConditionalPdf::ExpectedValueGet - X(3)=" << rad2deg(X(3))<< " (deg)";
+//    Log( DEBUG ) << "BFLMeasConditionalPdf::ExpectedValueGet - s(1)=" << s(1);
+//    Log( DEBUG ) << "BFLMeasConditionalPdf::ExpectedValueGet - s(2)=" << s(2);
+//    Log( DEBUG ) << "BFLMeasConditionalPdf::ExpectedValueGet - s(3)=" << s(3);
+
     MatrixWrapper::ColumnVector IM(2);
     IM(1) = sqrt( (X(1)-s(1))*(X(1)-s(1)) + (X(2)-s(2))*(X(2)-s(2)) );
     IM(2) = betweenMinusPiAndPlusPi( atan2(s(2) - X(2), s(1) - X(1) ) - X(3) );
 
+//    Log( DEBUG ) << "BFLMeasConditionalPdf::ExpectedValueGet - IM(1)=" << IM(1);
+//
+//    Log( DEBUG ) << "BFLMeasConditionalPdf::ExpectedValueGet - -----------------------";
 //    Log( DEBUG ) << "BFLMeasConditionalPdf::ExpectedValueGet - s(2) - X(2)=" << s(2) - X(2);
 //    Log( DEBUG ) << "BFLMeasConditionalPdf::ExpectedValueGet - s(1) - X(1)=" << s(1) - X(1);
 //    Log( DEBUG ) << "BFLMeasConditionalPdf::ExpectedValueGet - atan2(s(2) - X(2), s(1) - X(1))=" << atan2(s(2) - X(2), s(1) - X(1));

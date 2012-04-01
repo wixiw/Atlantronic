@@ -156,11 +156,10 @@ bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D odoVel)
     input(1) = odoVel.vy();
     input(2) = odoVel.vh();
 
-
     BFLWrapper::PredictParams predictParams;
-    predictParams.odoVelXSigma = odoVel.cov()(0,0);
-    predictParams.odoVelYSigma = odoVel.cov()(1,1);
-    predictParams.odoVelHSigma = odoVel.cov()(2,2);
+    predictParams.odoVelXSigma = sqrt(odoVel.cov()(0,0));
+    predictParams.odoVelYSigma = sqrt(odoVel.cov()(1,1));
+    predictParams.odoVelHSigma = sqrt(odoVel.cov()(2,2));
     bayesian->predict( input, dt, predictParams );
 
     updateBuffer(odoVel.date(), odoVel);
@@ -242,6 +241,24 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
     Log( DEBUG ) << "KFLocalizator::newScan - " << beaconDetector.getFoundBeacons().size() << " beacons(s) detected in scan";
 
 
+
+    // Reinit in the past
+    KFLStateVar initStateVar;
+    initStateVar(0) = xx[0];
+    initStateVar(1) = yy[0];
+    initStateVar(2) = hh[0];
+
+    KFLStateCov initStateCov;
+    initStateCov = odoCovs[0];
+
+    BFLWrapper::FilterParams filterParams;
+    filterParams.iekfMaxIt = params.iekfParams.iekfMaxIt;
+    filterParams.iekfInnovationMin = params.iekfParams.iekfInnovationMin;
+    bayesian->init(initStateVar, initStateCov, filterParams);
+
+//    KFLStateVar preUpEstim = bayesian->getEstimate();
+//    Log( DEBUG ) << "KFLocalizator::newScan - i=" << 0 << "  - time=" << tt(0) << "  - yy=" << yy(0) << " (m)  - vy=" << vy(0) << " (m/s)  - preOdoY=" << preUpEstim(1);
+
     // Update
     unsigned int nbBeaconSeen = 0;
     for(unsigned int i = 1 ; i < scan.getSize() ; i++)
@@ -250,13 +267,26 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
         Eigen::Vector2d meas;
         if( beaconDetector.getBeacon( tt(i), target, meas) )
         {
+            KFLStateVar preEstimStateVar = bayesian->getEstimate();
+            Log( DEBUG ) << "KFLocalizator::newScan - pre intermediaire estim [time=" << tt[i] << "]";
+            Log( DEBUG ) << "  sur x (en m): " << preEstimStateVar(0);
+            Log( DEBUG ) << "  sur y (en m): " << preEstimStateVar(1);
+            Log( DEBUG ) << "  en cap (deg) : " << rad2deg( preEstimStateVar(2) );
+
             BFLWrapper::UpdateParams updateParams;
             updateParams.laserRangeSigma = params.iekfParams.defaultLaserRangeSigma;
             updateParams.laserThetaSigma = params.iekfParams.defaultLaserThetaSigma;
-//            Log( DEBUG ) << "KFLocalizator::newScan - meas=" << meas.transpose() ;
-//            Log( DEBUG ) << "KFLocalizator::newScan - target=" << target.getPosition().transpose() ;
+            Log( DEBUG ) << "KFLocalizator::newScan - meas=" << meas.transpose() ;
+            Log( DEBUG ) << "KFLocalizator::newScan - target=" << target.getPosition().transpose() ;
+            Log( DEBUG ) << "----" ;
             bayesian->update(meas, target.getPosition(), updateParams);
             nbBeaconSeen++;
+
+            KFLStateVar postEstimStateVar = bayesian->getEstimate();
+            Log( DEBUG ) << "KFLocalizator::newScan - post intermediaire estim [time=" << tt[i] << "]";
+            Log( DEBUG ) << "  sur x (en m): " << postEstimStateVar(0);
+            Log( DEBUG ) << "  sur y (en m): " << postEstimStateVar(1);
+            Log( DEBUG ) << "  en cap (deg) : " << rad2deg( postEstimStateVar(2) );
         }
 
         KFLSysInput input;
@@ -267,11 +297,16 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
         double dt = tt(i) - tt(i-1);
 
         BFLWrapper::PredictParams predictParams;
-        predictParams.odoVelXSigma = odoCovs(i)(0,0);
-        predictParams.odoVelYSigma = odoCovs(i)(1,1);
-        predictParams.odoVelHSigma = odoCovs(i)(2,2);
+        predictParams.odoVelXSigma = sqrt(odoCovs(i)(0,0));
+        predictParams.odoVelYSigma = sqrt(odoCovs(i)(1,1));
+        predictParams.odoVelHSigma = sqrt(odoCovs(i)(2,2));
+
+//        KFLStateVar preOdoEstim = bayesian->getEstimate();
 
         bayesian->predict( input, dt, predictParams );
+
+//        KFLStateVar postOdoEstim = bayesian->getEstimate();
+//        Log( DEBUG ) << "KFLocalizator::newScan - i=" << i << "  - time=" << tt(i) << "  - yy=" << yy(i) << " (m)  - vy=" << vy(i) << " (m/s)  - preOdoY=" << preOdoEstim(1) << "  - postOdoY=" << postOdoEstim(1);
     }
     Log( DEBUG ) << "KFLocalizator::newScan - " << nbBeaconSeen << " kalman update(s) done";
 
