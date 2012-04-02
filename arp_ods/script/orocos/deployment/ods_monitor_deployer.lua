@@ -8,7 +8,7 @@ function OdsMonitorDeployer:load()
 	Deployer:loadComponent(me, "arp_core::Monitor")
 	Deployer:setActivity(me, 0.100, 10, 1)
 	--turn it into a Corba server (caution it prevent the normal deployer from deploying)
-	--Deployer:server(me, true)
+	Deployer:server(me, true)
 end
 
 

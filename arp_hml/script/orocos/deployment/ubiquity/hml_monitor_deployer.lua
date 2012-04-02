@@ -106,12 +106,8 @@ function HmlMonitorDeployer:start()
 	
 	RearDriving:ooSleep(1);
 
-	LeftDriving:ooSetOperationMode("speed");
-	RightDriving:ooSetOperationMode("speed");
-	RearDriving:ooSetOperationMode("speed");
-	LeftSteering:ooSetOperationMode("position");
-	RightSteering:ooSetOperationMode("position");
-	RearSteering:ooSetOperationMode("position");
+	-- il n'est pas necessaire de repasser dans les bons modes de pilotage 
+	-- puisqu'il faudrait faire un enable drive qui de toutes façons repassera tout le monde comme il faut
 
 end
 

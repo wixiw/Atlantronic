@@ -25,7 +25,7 @@ if [ $# == 1 ]
 then
 	cecho yellow "You probably need to copy paste this into gdb :"
 	cecho yellow "run -s $ROOT_DEPLOYMENT_FILE"
-	gdb `rospack find ocl`/bin/deployer$CORBA-$OROCOS_TARGET
+	gdb  `rosstack find orocos_toolchain`/install/bin/deployer$CORBA-$OROCOS_TARGET
 else
 	cecho yellow "running : rosrun ocl deployer$CORBA-$OROCOS_TARGET -s $ROOT_DEPLOYMENT_FILE"
 	rosrun ocl deployer$CORBA-$OROCOS_TARGET -s $ROOT_DEPLOYMENT_FILE
