@@ -17,6 +17,7 @@ add_subdirectory(taskcontexts)
 add_subdirectory(timer)
 add_subdirectory(logger)
 add_subdirectory(tools)
+add_subdirectory(types)
 
 ####################################################################################################################
 

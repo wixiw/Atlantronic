@@ -50,6 +50,23 @@ double Pose2D::h() const
     return positionRotation.angle();
 }
 
+//pour les typkits Orocos il faut un getter avec reference
+
+double& Pose2D::xRef()
+{
+    return positionTranslation(0);
+}
+
+double& Pose2D::yRef()
+{
+    return positionTranslation(1);
+}
+
+double& Pose2D::hRef()
+{
+    return positionRotation.angle();
+}
+
 double Pose2D::angle() const
 {
     return positionRotation.angle();

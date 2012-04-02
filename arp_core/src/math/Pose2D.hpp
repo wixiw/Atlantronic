@@ -52,12 +52,15 @@ class Pose2D
         //Displacement displacement();
         /** \returns la composante x de la partie translation en m */
         double x() const;
+        double& xRef();
 
         /** \returns la composante y de la partie translation en m */
         double y() const;
+        double& yRef();
 
         /** \returns un double image du cap en radians (idem angle() )*/
         double h() const;
+        double& hRef();
 
         /** \returns un double image du cap en radians (idem h() )*/
         double angle() const;

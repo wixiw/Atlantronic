@@ -34,6 +34,7 @@ end
 
 -- Use this function to check if ports are conencted
 function ComposantDeployer:check(tc)
+   --[[
    local portnames = tc:getPortNames()
    local ret = true
    for _,pn in ipairs(portnames) do
@@ -45,5 +46,6 @@ function ComposantDeployer:check(tc)
       end
    end
    return ret
+   ]]
    
 end
