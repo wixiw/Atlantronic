@@ -31,7 +31,7 @@ GraphicsSimuFrame::GraphicsSimuFrame(std::string topicName) :
     std::string images_path = ros::package::getPath("arp_master")
             + "/ressource/images/";
 
-    std::string robot_image_file = "robot.png"; // hauteur de robot.png : 200px = 1m
+    std::string robot_image_file = "box-turtle.png"; // hauteur de robot.png : 200px = 1m
     robot_image_.LoadFile(
             wxString::FromAscii((images_path + robot_image_file).c_str()));
     robot_image_.SetMask(true);
@@ -59,12 +59,13 @@ GraphicsSimuFrame::GraphicsSimuFrame(std::string topicName) :
                     Vector2(0., 0.), 0., one_meter_in_pixel, topicName));
     mRobot = t;
 
+    /*
     wxStaticText* position = new wxStaticText(this, wxID_ANY, wxT("Measured :"),wxPoint(10, 90));
     wxString  position_x  = wxT("X : -1000 mm");
     wxStaticText* position_x_text = new wxStaticText(this, wxID_ANY, position_x, wxPoint(10, 105));
     wxStaticText* position_y_text = new wxStaticText(this, wxID_ANY, wxT("Y : 1000 mm"), wxPoint(10, 120));
     wxStaticText* position_theta_text = new wxStaticText(this, wxID_ANY, wxT("theta : 135°"), wxPoint(10, 135));
-    position_x = wxT("X : 0 mm");
+    position_x = wxT("X : 0 mm");*/
 
 }
 
