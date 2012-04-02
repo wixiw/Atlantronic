@@ -15,7 +15,7 @@ using namespace arp_hml;
 using namespace arp_core;
 using namespace arp_math;
 
-ORO_CREATE_COMPONENT( arp_hml::Faulhaber3268Bx4 )
+ORO_LIST_COMPONENT_TYPE( arp_hml::Faulhaber3268Bx4 )
 
 Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         CanOpenNode(name),
@@ -50,9 +50,10 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
             .doc("Maximal delay beetween 2 commands to consider someone is still giving coherent orders, in s");
 
     addPort("inSpeedCmd",inSpeedCmd)
-            .doc("Command to be used in position mode. It must be provided in rad on the reductor's output. It is not available yet.");
-    addPort("inPositionCmd",inPositionCmd)
             .doc("Command to be used in speed mode. It must be provided in rad/s on the reductor's output");
+    addPort("inPositionCmd",inPositionCmd)
+            .doc("Command to be used in position mode. It must be provided in rad on the reductor's output. It is not available yet.");
+
     addPort("inTorqueCmd",inTorqueCmd)
             .doc("Command to be used in torque mode. This mode is not available yes");
 
@@ -423,6 +424,27 @@ void Faulhaber3268Bx4::stopHook()
 /*              Operation Orocos		                              */
 /**********************************************************************/
 
+bool Faulhaber3268Bx4::ooLimitCurrent(double ampValue)
+{
+    if( outDriveEnable.getLastWrittenValue() )
+    {
+        LOG(Error) << "Failed to limitCurrent because the drive are not disabled (this limitation is not HW dependent, it's an ARD choice)" << endlog();
+        return false;
+    }
+
+    if( !isRunning() )
+    {
+        LOG(Error) << "Failed to limitCurrent because the component is not running" << endlog();
+        return false;
+    }
+
+    ArdMotorItf::setOperationMode(ArdMotorItf::OTHER);
+    m_faulhaberScriptCommand = F_CMD_LPC;
+    m_faulhaberScriptCommandParam = (UNS32) ampValue*1000;
+    m_faulhaberCommandTodo = true;
+    return true;
+}
+
 void Faulhaber3268Bx4::ooFaulhaberCmd(int cmd, int param)
 {
 	ArdMotorItf::setOperationMode(ArdMotorItf::OTHER);
@@ -598,27 +620,6 @@ void Faulhaber3268Bx4::disableDrive()
         m_faulhaberScriptCommandParam = 0;
         m_faulhaberCommandTodo = true;
     }
-}
-
-bool Faulhaber3268Bx4::ooLimitCurrent(double ampValue)
-{
-    if( outDriveEnable.getLastWrittenValue() )
-    {
-        LOG(Error) << "Failed to limitCurrent because the drive are not disabled (this limitation is not HW dependent, it's an ARD choice)" << endlog();
-        return false;
-    }
-
-    if( !isRunning() )
-    {
-        LOG(Error) << "Failed to limitCurrent because the component is not running" << endlog();
-        return false;
-    }
-
-    ArdMotorItf::setOperationMode(ArdMotorItf::OTHER);
-    m_faulhaberScriptCommand = F_CMD_LPC;
-    m_faulhaberScriptCommandParam = (UNS32) ampValue*1000;
-    m_faulhaberCommandTodo = true;
-    return true;
 }
 
 bool Faulhaber3268Bx4::reset()

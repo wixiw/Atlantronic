@@ -1,21 +1,36 @@
 /*
- * UbiquityItf.cpp
+ * UbiquitySimul.cpp
  *
- *  Created on: 26 oct. 2010
+ *  Created on: 02 April 2012
  *      Author: wla
  */
 
 #include "UbiquitySimul.hpp"
 #include <rtt/Component.hpp>
-#include <math/math.hpp>
 
 using namespace arp_hml;
 
 ORO_LIST_COMPONENT_TYPE( arp_hml::UbiquitySimul )
 
 UbiquitySimul::UbiquitySimul(const std::string& name):
-RosHmlItf(name)
+    HmlTaskContext(name)
 {
+    addPort("inLeftSteeringPositionCmd",inLeftSteeringPositionCmd)
+            .doc("Command to be used in position mode. It must be provided in rad on the reductor's output. It is not available yet.");
+    addPort("inRightSteeringPositionCmd",inRightSteeringPositionCmd)
+            .doc("Command to be used in position mode. It must be provided in rad on the reductor's output. It is not available yet.");
+    addPort("inRearSteeringPositionCmd",inRearSteeringPositionCmd)
+            .doc("Command to be used in position mode. It must be provided in rad on the reductor's output. It is not available yet.");
+
+    addPort("inLeftDrivingSpeedCmd",inLeftDrivingSpeedCmd)
+            .doc("Command to be used in speed mode. It must be provided in rad/s on the reductor's output");
+    addPort("inRightDrivingSpeedCmd",inRightDrivingSpeedCmd)
+            .doc("Command to be used in speed mode. It must be provided in rad/s on the reductor's output");
+    addPort("inRearDrivingSpeedCmd",inRearDrivingSpeedCmd)
+            .doc("Command to be used in speed mode. It must be provided in rad/s on the reductor's output");
+
+    addPort("outRealPosition",outRealPosition)
+        .doc("Provides the real position of the robot taking into account the commands ");
 }
 
 bool UbiquitySimul::configureHook()
@@ -26,23 +41,8 @@ bool UbiquitySimul::configureHook()
 
 void UbiquitySimul::updateHook()
 {
-    loopEncoder();
+    static Pose2D p(1,2,3);
+    p.x(p.x()+1);
+    outRealPosition.write(p);
 }
 
-void UbiquitySimul::loopEncoder()
-{
-    OmniCommand cmd;
-    if(NewData==inOmniCmd.readNewest(cmd))
-    {
-       attrCurrentCmd = cmd;
-    }
-
-    attrOdometers.odo_left_driving = attrCurrentCmd.v_left_driving;
-    attrOdometers.odo_right_driving = attrCurrentCmd.v_right_driving;
-    attrOdometers.odo_rear_driving = attrCurrentCmd.v_rear_driving;
-    attrOdometers.odo_left_steering = attrCurrentCmd.p_left_steering;
-    attrOdometers.odo_right_steering = attrCurrentCmd.p_right_steering;
-    attrOdometers.odo_rear_steering = attrCurrentCmd.p_rear_steering;
-    attrOdometers.time = arp_math::getTime();
-    outOdometryMeasures.write(attrOdometers);
-}

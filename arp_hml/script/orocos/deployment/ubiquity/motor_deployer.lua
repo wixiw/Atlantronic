@@ -51,13 +51,6 @@ function MotorDeployer:connect()
 	--MotorDeployer:registerToSql("LeftSteering")
 	--MotorDeployer:registerToSql("RightSteering")
 	--MotorDeployer:registerToSql("RearSteering")
-
-	Deployer:connect("LeftDriving.inSpeedCmd", "RosHmlItf.outLeftDrivingSpeedCmd",cp);
-	Deployer:connect("RightDriving.inSpeedCmd", "RosHmlItf.outRightDrivingSpeedCmd",cp);
-	Deployer:connect("RearDriving.inSpeedCmd", "RosHmlItf.outRearDrivingSpeedCmd",cp);
-	Deployer:connect("LeftSteering.inPositionCmd", "RosHmlItf.outLeftSteeringPositionCmd",cp);
-	Deployer:connect("RightSteering.inPositionCmd", "RosHmlItf.outRightSteeringPositionCmd",cp);
-	Deployer:connect("RearSteering.inPositionCmd", "RosHmlItf.outRearSteeringPositionCmd",cp);
 	
 	MotorDeployer:check("LeftDriving")
 	MotorDeployer:check("RightDriving")

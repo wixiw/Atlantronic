@@ -151,7 +151,7 @@ namespace arp_hml
         bool coWaitEnable(double timeout);
 
 /****************************************************************************
- * 			ARDITFMOTOT INTERFACE
+ * 			ARDITFMOTOR INTERFACE
  ****************************************************************************/
 
     public:

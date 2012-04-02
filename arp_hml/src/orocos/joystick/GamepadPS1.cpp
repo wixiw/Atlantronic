@@ -73,7 +73,7 @@ propEventName("/dev/input/event0")
     retry: //goto pour l'appel systeme specifique systeme, c'est comme ça que ça se fait
 
     if( (m_event_fd = open(propEventName.c_str(), O_WRONLY)) < 0 )
-        cerr << "fail to opend propEventName" << endl;
+        cerr << "fail to open file : " << propEventName << " (defined by propEventName)" << endl;
 
     //gestion du eagain important pour le debugger et xenomai
     if( errno == EAGAIN )
