@@ -14,6 +14,12 @@ Deployer:loadComponent("Reporting","OCL::FileReporting")
 Reporting = Deployer:getPeer("Reporting")
 Reporting:setPeriod (0.050)
 
+-- chargement du composant serveur parametre
+print("loading Ubiquity param server...")
+Deployer:loadComponent("UbiquityParams","arp_core::UbiquityParams")
+UbiquityParams = Deployer:getPeer("UbiquityParams")
+UbiquityParams:setPeriod (0.100)
+
 --chargement du generateur de visualisation des composant
 print("loading rtt_dot_service...")
 Deployer:import("rtt_dot_service")

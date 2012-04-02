@@ -27,6 +27,8 @@ Monitor::Monitor(const std::string& name) :
                .doc("Display the list of peers");
     addOperation("coGetCoreVersion",&Monitor::coGetCoreVersion, this, ClientThread)
             .doc("Returns a string containing Core version");
+    addOperation("connect",&Monitor::connect, this, ClientThread)
+            .doc("Use this to connect internal peers");
 }
 
 Monitor::~Monitor()
@@ -264,4 +266,53 @@ bool Monitor::checkPortConnection()
 string Monitor::coGetCoreVersion()
 {
     return ARP_CORE_VERSION;
+}
+
+bool Monitor::connect(const std::string& compA, const std::string& portA, const std::string& compB, const std::string& portB)
+{
+    TaskContext* tcA;
+    RTT::base::PortInterface* portItfA;
+    TaskContext* tcB;
+    RTT::base::PortInterface* portItfB;
+
+    tcA = this->getPeer(compA);
+    if( tcA == NULL )
+    {
+        LOG(Error)  << "connect : Failed to find component : " << compA << endlog();
+        goto failed;
+    }
+    portItfA = tcA->getPort(portA);
+    if( portItfA == NULL )
+    {
+        LOG(Error)  << "connect : Failed to find port : " << portA << " in component " << compA << endlog();
+        goto failed;
+    }
+
+    tcB = this->getPeer(compB);
+    if( tcB == NULL )
+    {
+        LOG(Error)  << "connect : Failed to find component : " << compB << endlog();
+        goto failed;
+    }
+    portItfB = tcB->getPort(portB);
+    if( portItfB == NULL )
+    {
+        LOG(Error)  << "connect : Failed to find port : " << portB << " in component " << compB << endlog();
+        goto failed;
+    }
+
+    if( portItfA->connectTo(portItfB) == false )
+    {
+        LOG(Error)  << "connect : Failed to connect ports : " << compA << "." << portA << " to " << compB << "." << portB << endlog();
+        goto failed;
+    }
+
+    LOG(Info)  << "Connecting " << compA << "." << portA << " to " << compB << "." << portB << endlog();
+
+    goto success;
+
+    failed:
+        return false;
+    success:
+        return true;
 }

@@ -11,14 +11,17 @@ end
 
 
 function HmlCmdMockupDeployer:connectOneMotor(name)
-	Deployer:connect(name..".inSpeedCmd",		me..".out"..name.."SpeedCmd",cp)
-	Deployer:connect(name..".inPositionCmd",	me..".out"..name.."PositionCmd",cp)
-	Deployer:connect(name..".inTorqueCmd",		me..".out"..name.."TorqueCmd",cp)
+	HmlMonitor = Deployer:getPeer("HmlMonitor");
+	HmlMonitor:connect(name, "inSpeedCmd", me, "out"..name.."SpeedCmd")
+	HmlMonitor:connect(name, "inPositionCmd", me, "out"..name.."PositionCmd")
+	HmlMonitor:connect(name, "inTorqueCmd", me, "out"..name.."TorqueCmd")
 end
 
 function HmlCmdMockupDeployer:connect()
 	
 	Deployer:addPeer(me, "HmlMonitor")
+	--on s'ajoute en peer a HmlMonitor pour pouvoir faire les connections
+	Deployer:addPeer("HmlMonitor", me)
 
 	HmlCmdMockupDeployer:connectOneMotor("LeftDriving")
 	HmlCmdMockupDeployer:connectOneMotor("RightDriving")
@@ -27,14 +30,15 @@ function HmlCmdMockupDeployer:connect()
 	HmlCmdMockupDeployer:connectOneMotor("RightSteering")
 	HmlCmdMockupDeployer:connectOneMotor("RearSteering")
 
-	Deployer:connect("WoodheadOut.inBit1",me..".outBit01",cp)
-	Deployer:connect("WoodheadOut.inBit2",me..".outBit02",cp)
-	Deployer:connect("WoodheadOut.inBit3",me..".outBit03",cp)
-	Deployer:connect("WoodheadOut.inBit4",me..".outBit04",cp)
-	Deployer:connect("WoodheadOut.inBit5",me..".outBit05",cp)
-	Deployer:connect("WoodheadOut.inBit6",me..".outBit06",cp)
-	Deployer:connect("WoodheadOut.inBit7",me..".outBit07",cp)
-	Deployer:connect("WoodheadOut.inBit8",me..".outBit08",cp)
+	HmlMonitor = Deployer:getPeer("HmlMonitor");
+	HmlMonitor:connect("WoodheadOut","inBit1",me,"outBit01")
+	HmlMonitor:connect("WoodheadOut","inBit2",me,"outBit02")
+	HmlMonitor:connect("WoodheadOut","inBit3",me,"outBit03")
+	HmlMonitor:connect("WoodheadOut","inBit4",me,"outBit04")
+	HmlMonitor:connect("WoodheadOut","inBit5",me,"outBit05")
+	HmlMonitor:connect("WoodheadOut","inBit6",me,"outBit06")
+	HmlMonitor:connect("WoodheadOut","inBit7",me,"outBit07")
+	HmlMonitor:connect("WoodheadOut","inBit8",me,"outBit08")
 	
 	HmlCmdMockupDeployer:check("HmlCmdMockup")
 end

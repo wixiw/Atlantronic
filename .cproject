@@ -767,7 +767,6 @@
 		<buildTargets>
 			<target name="clean" path="arp_core" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
-				<buildArguments/>
 				<buildTarget>clean</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
@@ -796,7 +795,6 @@
 			</target>
 			<target name="clean" path="arp_hml" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
-				<buildArguments/>
 				<buildTarget>clean</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
@@ -805,7 +803,6 @@
 			<target name="install hml on beta" path="arp_hml" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>/opt/ard/default/script/install_target.sh</buildCommand>
 				<buildArguments>arp_hml beta</buildArguments>
-				<buildTarget/>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
@@ -819,6 +816,7 @@
 			</target>
 			<target name="clean" path="arp_ihm" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
+				<buildArguments/>
 				<buildTarget>clean</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
@@ -838,14 +836,6 @@
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
-			<target name="make arp_master" path="arp_master" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>rosmake</buildCommand>
-				<buildArguments>arp_master</buildArguments>
-				<buildTarget>make arp_master</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>false</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
 			<target name="make all" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>rosmake</buildCommand>
 				<buildArguments>ard</buildArguments>
@@ -860,8 +850,17 @@
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
+			<target name="make arp_master" path="arp_master" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>rosmake</buildCommand>
+				<buildArguments>arp_master</buildArguments>
+				<buildTarget>make arp_master</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
 			<target name="clean" path="arp_ods" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
+				<buildArguments/>
 				<buildTarget>clean</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
@@ -870,6 +869,14 @@
 			<target name="make arp_ods" path="arp_ods" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>rosmake</buildCommand>
 				<buildArguments>arp_ods</buildArguments>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="install ods on beta" path="arp_ods" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>/opt/ard/default/script/install_target.sh</buildCommand>
+				<buildArguments>arp_ods beta</buildArguments>
+				<buildTarget/>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>

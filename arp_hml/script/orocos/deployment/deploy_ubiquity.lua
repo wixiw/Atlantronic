@@ -17,7 +17,6 @@ dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/motor_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/io_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/joystick_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/ros_hml_itf_deployer.lua");
-dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/hml_cmd_mockup_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/hml_monitor_deployer.lua");
 
 print("... load components")
@@ -26,7 +25,6 @@ IoDeployer:load()
 MotorDeployer:load()
 JoystickDeployer:load()
 RosHmlItfDeployer:load()
-HmlCmdMockupDeployer:load()
 HmlMonitorDeployer:load()
 
 
@@ -36,12 +34,10 @@ IoDeployer:connect()
 MotorDeployer:connect()
 JoystickDeployer:connect()
 RosHmlItfDeployer:connect()
-HmlCmdMockupDeployer:connect()
 HmlMonitorDeployer:connect()
 
 print("... start components")
 HmlMonitorDeployer:start()
-HmlCmdMockupDeployer:start()
 
 print("fin déploiment arp_hml")
 print("====================")

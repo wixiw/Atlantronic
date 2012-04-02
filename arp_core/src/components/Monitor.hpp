@@ -77,6 +77,15 @@ namespace arp_core
          */
         string coGetCoreVersion();
 
+        /**
+         * Use this to connect internal peers
+         * @param compA : name of the internal peer
+         * @param portA : name of the port of portA
+         * @param tcB : the Component that is trying to connect to the internal peer
+         * @param portItfB : port of tcB to connect to the internal peer compA.
+         */
+        bool connect(const std::string& compA, const std::string& portA, const std::string& compB, const std::string& portB);
+
     protected:
         /** List of peers to monitor */
         vector<TaskContext*> m_monitoredList;
