@@ -35,14 +35,14 @@ gnosis/version.py:
 	rm -rf gnosis_extract
 
 install: gnosis
-	mkdir -p $(PREFIX)/objdictgen
-	cp -r *.py* config doc doc_index locale examples gnosis *.ico $(PREFIX)/objdictgen
-	chmod -R a+r $(PREFIX)/objdictgen
-	mkdir -p $(PREFIX)/bin
-	ln -sf $(PREFIX)/objdictgen/objdictedit.py $(PREFIX)/bin/objdictedit
-	chmod 755 $(PREFIX)/objdictgen/objdictedit.py
-	ln -sf $(PREFIX)/objdictgen/objdictgen.py $(PREFIX)/bin/objdictgen
-	chmod 755 $(PREFIX)/objdictgen/objdictgen.py
+#	mkdir -p $(PREFIX)/objdictgen
+#	cp -r *.py* config doc doc_index locale examples gnosis $(PREFIX)/objdictgen
+#	chmod -R a+r $(PREFIX)/objdictgen
+#	mkdir -p $(PREFIX)/bin
+#	ln -sf $(PREFIX)/objdictgen/objdictedit.py $(PREFIX)/bin/objdictedit
+#	chmod 755 $(PREFIX)/objdictgen/objdictedit.py
+#	ln -sf $(PREFIX)/objdictgen/objdictgen.py $(PREFIX)/bin/objdictgen
+#	chmod 755 $(PREFIX)/objdictgen/objdictgen.py
 
 uninstall:
 	rm -rf $(PREFIX)/objdictgen
