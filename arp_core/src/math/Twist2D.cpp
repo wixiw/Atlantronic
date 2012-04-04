@@ -42,6 +42,11 @@ double Twist2D::speedAngle() const
     return atan2(vitesseTranslation[1], vitesseTranslation[0]);
 }
 
+double Twist2D::speedNorm() const
+{
+    return vitesseTranslation.norm();
+}
+
 void Twist2D::vx(double _vx)
 {
     vitesseTranslation[0] = _vx;

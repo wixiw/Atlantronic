@@ -148,7 +148,8 @@ BigAdjoint2 Pose2D::getBigAdjoint() const
     BigAdjoint2 Ad = BigAdjoint2::Identity();
     Eigen::Matrix<double,2,2> R = this->orientation().toRotationMatrix();
     Ad(1,1) = 1;
-    Ad.bottomRightCorner(2,2) = R;
+    Ad(2,1) = y();
+    Ad(3,1) = -x();
     return Ad;
 }
 

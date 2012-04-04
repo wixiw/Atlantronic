@@ -57,6 +57,9 @@ class Twist2D
         /** \returns l'angle entre la vitesse de translation et l'axe x du repère = atan2(vy,vx)*/
         double speedAngle() const;
 
+        /** \returns la norme du vecteur vitesse*/
+        double speedNorm() const;
+
         /** \param _vx la vitesse de translation selon l'axe x en m/s */
         void vx(double _vx);
 
