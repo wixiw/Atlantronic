@@ -9,7 +9,7 @@
 
 #include "CoreTypeKit.hpp"
 #include "Pose2DTypeInfo.hpp"
-
+#include "ParamsTypeInfo.hpp"
 
 using namespace RTT;
 using namespace arp_core;
@@ -25,6 +25,7 @@ bool CoreTypeKit::loadTypes()
 
     // Tell the RTT the name and type of this struct
     res &= types::Types()->addType( new Pose2DTypeInfo() );
+    res &= types::Types()->addType( new ParamsTypeInfo() );
 
     return res;
 }

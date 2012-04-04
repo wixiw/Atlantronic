@@ -278,7 +278,7 @@ bool ARDTaskContext::ooWriteProperties()
     //vérification de la valeur des propriétés
     if( checkProperties() == false )
     {
-        LOG(Warning) << "coWriteProperties : checkProperties failed ! Properties saved may be unloadable next time" << endlog();;
+        LOG(Warning) << "ooWriteProperties : checkProperties failed ! Properties saved may be unloadable next time" << endlog();;
     }
 
     //nom du fichier à rechercher
@@ -288,13 +288,13 @@ bool ARDTaskContext::ooWriteProperties()
     {
         if( marshalling->writeProperties(fileName) == false )
         {
-            LOG(Error) << "coWriteProperties : error while writing properties in file " << fileName << endlog();
+            LOG(Error) << "ooWriteProperties : error while writing properties in file " << fileName << endlog();
             res &= false;
         }
         //on a reussit à charger les propriétés !
         else
         {
-            LOG(Info) << "coWriteProperties : Properties saved successfully from " << fileName << endlog();
+            LOG(Info) << "ooWriteProperties : Properties saved successfully from " << fileName << endlog();
             res &= true;
         }
     }

@@ -9,6 +9,9 @@
 #define UBIQUITYKINEMATICS_HPP_
 
 #include "UbiquityParams.hpp"
+#include <math/core>
+
+using namespace arp_math;
 
 namespace arp_core
 {
@@ -64,6 +67,11 @@ struct CouplingSpeeds
         {}
 };
 
+struct Slippage
+{
+
+};
+
 class UbiquityKinematics
 {
     public:
@@ -97,8 +105,30 @@ class UbiquityKinematics
          */
         static bool turrets2Motors(TurretCommands const inputs, MotorCommands& outputs, CouplingSpeeds const turretSpeeds,  UbiquityParams const params);
 
-        static bool turrets2Twist(UbiquityParams const params);
-        static bool twist2Turrets(UbiquityParams const params);
+        /**
+         * Modèle direct cinématique de la base.
+         * Convertit le 6-uplet TurretCommands correspondants aux vitesses et positions de tourelles en un Twist au centre du robot
+         * exprimé dans le repère XXX . En parrallèles un vecteur de taille 3 correspondant aux glissements est publié.
+         * @param inputs : vitesse de traction du chassis exprimée en mm/s par rapport au sol sur chaque tourelle et
+         *               angles des tourelles par rapport au chassis en rad. Tient compte des 0 tourelle calibrés
+         * @param outputs : Twist de la base roulante par rapport au sol exprimé dans le repère XXX, réduit au centre du chassis.
+         * @param slippage : (output) donne une information sur le taux de glissement du robot.
+         * @param params : paramètres géométriques du robot
+         * @return : true if computation succeed, false otherwise (param inconsistent for instance)
+         */
+        static bool turrets2Twist(TurretCommands const inputs, Twist2D& outputs, Slippage& splippage, UbiquityParams const params);
+
+        /**
+         * Modèle indirect cinématique de la base
+         * Convertit un Twist au centre du robot exprimé dans le repère XXX en des consignes de vitesse linéaire et de position angulaire
+         * à destination du modèle de tourelle.
+         * @param inputs : Twist de la base roulante par rapport au sol exprimé dans le repère XXX, réduit au centre du chassis.
+         * @param outputs : vitesse de traction du chassis exprimée en mm/s par rapport au sol sur chaque tourelle et
+         *               angles des tourelles par rapport au chassis en rad. Tient compte des 0 tourelle calibrés
+         * @param params : paramètres géométriques du robot
+         * @return : true if computation succeed, false otherwise (param inconsistent for instance)
+         */
+        static bool twist2Turrets(Twist2D const  inputs, TurretCommands& outputs, UbiquityParams const params);
 
 };
 
