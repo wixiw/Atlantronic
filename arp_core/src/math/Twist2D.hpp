@@ -9,6 +9,7 @@
 #define _ARP_MATH_TWIST2D_HPP_
 
 #include <math/math.hpp>
+#include <math/Pose2D.hpp>
 
 namespace arp_math
 {
@@ -39,6 +40,11 @@ class Twist2D
                 double _vy,
                 double _vh = 0);
 
+        /**
+         * Permet de construire le Twist à partir de sa représentation vectorielle (omega, vx, vy)
+         */
+        Twist2D(Vector3 T);
+
         /** \returns la vitesse de translation selon l'axe x en m/s */
         double vx() const;
 
@@ -60,11 +66,9 @@ class Twist2D
         /** \param _vh la vitesse de rotation en rad/sec */
         void vh(double _vh);
 
-    protected:
-        Vector2 vitesseTranslation;
-        double vitesseRotation;
+        /** affiche (vx,vy,vtheta) */
+        std::string toString() const;
 
-    public:
         /** Opérateur d'addition de deux Twist2*/
         inline friend Twist2D operator+(const Twist2D& lhs, const Twist2D& rhs);
 
@@ -82,6 +86,14 @@ class Twist2D
          * Index(3) donne la vitesse de rotation */
         inline double& operator()(int i);
 
+        /** Opérateur d'égalité.
+         * \param _other la Twist2D à comparer.
+         * \returns vrai si les Twist2D sont exactement identiques
+         * \remarks la comparaison est basée sur la double comparaison des
+         * composantes de la partie translation et de l'angle de la partie
+         * rotation. La précision utilisée est ici celle des double. */
+        bool operator ==(Twist2D _other) const;
+
         /** Accession aux composants via des index.
          * Index(0..1) donne la vitesse de translation
          * Index(3) donne la vitesse de rotation */
@@ -91,6 +103,22 @@ class Twist2D
          * Index(0..1) donne la vitesse de translation
          * Index(3) donne la vitesse de rotation */
         double& operator[](int index);
+
+        /**
+         * Retourne le Twist sous forme de Vecteur 3 (omega,vx,vy)
+         */
+        Vector3 getTVector() const;
+
+        /**
+         * Transporte et réduit le Twist courant dans le nouveau repère
+         * définit par la Pose2D du nouveau repère dans l'ancien.
+         */
+        Twist2D transport(Pose2D p) const;
+
+    protected:
+        Vector2 vitesseTranslation;
+        double vitesseRotation;
+
 };
 
 }

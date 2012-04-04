@@ -20,6 +20,12 @@
 namespace arp_math
 {
 
+/** Matrice 3*3 (Hij) représentant une configuration en 2D */
+typedef Eigen::Matrix<double,3,3> Displacement2;
+
+/** Matrice 3*3 des operateurs Grand Adjoints en 2D*/
+typedef Eigen::Matrix<double,3,3> BigAdjoint2;
+
 /** \ingroup arp_math
  * \nonstableyet
  *
@@ -66,8 +72,9 @@ class Pose2D
         double angle() const;
 
         /** \returns la matrice homogène 3x3. Le bloc haut gauche est constitué de la matrice orthogonale 2x2
+         *
          * de la rotation. Le vecteur colonne 2x1 du bloc haut droit est constitué du vecteur translation */
-        Eigen::Matrix<double, 3, 3> matrix3() const;
+        Displacement2 getDisplacement2Matrix() const;
 
         //	Eigen::Matrix<double,4,4> matrix4();
 
@@ -103,9 +110,16 @@ class Pose2D
         Pose2D inverse() const;
 
         /**
-         * Créé une chaine de caractère représentant la pose
+         * Crée une chaine de caractère représentant la pose sous forme (x,y,theta)
          */
         std::string toString() const;
+
+        /**
+         * Construit le grandAdjoint de la pose
+         * (1           0)
+         * (toHat(p)R   R)
+         */
+        BigAdjoint2 getBigAdjoint() const;
 
     protected:
         Vector2 positionTranslation;

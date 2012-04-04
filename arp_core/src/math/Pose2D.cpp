@@ -5,11 +5,10 @@
  *      Author: boris
  */
 
-#include <math/Pose2D.hpp>
+#include "Pose2D.hpp"
 #include <iostream>
 
-namespace arp_math
-{
+using namespace arp_math;
 
 Pose2D::Pose2D(Vector2 _positionTranslation, Rotation2 _positionRotation)
 : positionTranslation(_positionTranslation)
@@ -73,12 +72,7 @@ double Pose2D::angle() const
     return positionRotation.angle();
 }
 
-/*Displacement Pose2D::displacement()
-     {
-     return Displacement(this->getMatrix4());
-     }*/
-
-Eigen::Matrix<double,3,3> Pose2D::matrix3() const
+Eigen::Matrix<double,3,3> Pose2D::getDisplacement2Matrix() const
 {
 	Eigen::Matrix<double,3,3> mat = Eigen::Matrix<double,3,3>::Identity();
 	mat.topLeftCorner(2,2) = this->orientation().toRotationMatrix();
@@ -149,6 +143,16 @@ bool Pose2D::operator ==(Pose2D other) const
             );
 }
 
+BigAdjoint2 Pose2D::getBigAdjoint() const
+{
+    BigAdjoint2 Ad = BigAdjoint2::Identity();
+    Eigen::Matrix<double,2,2> R = this->orientation().toRotationMatrix();
+    Ad(1,1) = 1;
+    Ad.bottomRightCorner(2,2) = R;
+    return Ad;
+}
+
+
 //inline friend Pose2D operator+(const Pose2D& lhs, const Pose2D& rhs)
 //{
 //	return Pose2D( lhs.translation() + rhs.translation() , lhs.angle() + rhs.angle() );
@@ -165,4 +169,3 @@ bool Pose2D::operator ==(Pose2D other) const
 //  return os;
 //}
 
-}

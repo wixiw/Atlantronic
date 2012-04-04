@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE( Pose2D_Accessors )
 	mat3 << cosA, -sinA, a.x(),
     		sinA,  cosA, a.y(),
 		     0  ,   0  ,  1   ;
-	BOOST_CHECK( a.matrix3() == mat3 );
+	BOOST_CHECK( a.getDisplacement2Matrix() == mat3 );
 
 //	Eigen::Matrix<double,4,4> mat4;
 //	mat4 << cosA, -sinA, 0 , a.x(),
@@ -99,4 +99,25 @@ BOOST_AUTO_TEST_CASE( Pose2D_Operators )
 //	BOOST_CHECK( e.h() == (c.h() - a.h()) );
 
 	// Ecrire ici le test unitaire pour l'operateur <<
+}
+
+BOOST_AUTO_TEST_CASE( Pose2D_BigAdjoint )
+{
+    Pose2D zero;
+    BigAdjoint2 id = BigAdjoint2::Identity();
+    BigAdjoint2 res;
+
+    res = zero.getBigAdjoint();
+    BOOST_CHECK_EQUAL( res , id );
+
+    Pose2D demitour(0,0,2.16);
+    Eigen::Matrix<double,3,3> mat3;
+    double cosA = std::cos(2.16);
+    double sinA = std::sin(2.16);
+    mat3 << 1, 0,       0,
+            0, cosA,    sinA,
+            0, -sinA,   cosA   ;
+
+    res = zero.getBigAdjoint();
+    BOOST_CHECK_EQUAL( res , id );
 }
