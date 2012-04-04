@@ -9,6 +9,9 @@
 #define LITTLESEXCONTROL_HPP_
 
 #include "taskcontexts/OdsTaskContext.hpp"
+#include <math/core>
+
+using namespace arp_math;
 
 namespace arp_ods
 {
@@ -24,6 +27,8 @@ class LittleSexControl: public OdsTaskContext
          * It contains the time at which the input data are supposed to be calculated
          */
         InputPort<timespec> inClock;
+
+        OutputPort<Twist2D> outTwistCmd;
 };
 
 } /* namespace arp_ods */

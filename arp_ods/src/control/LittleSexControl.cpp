@@ -18,5 +18,8 @@ LittleSexControl::LittleSexControl(const std::string& name):
 {
     addEventPort("inClock",inClock)
             .doc("Clock port which trigger our activity. It contains the time at which the input data are supposed to be calculated");
+
+    addPort("outTwistCmd",outTwistCmd)
+            .doc("");
 }
 
