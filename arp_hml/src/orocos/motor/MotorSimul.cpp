@@ -15,7 +15,8 @@ ORO_LIST_COMPONENT_TYPE( arp_hml::MotorSimul )
 
 MotorSimul::MotorSimul(const std::string& name):
     HmlTaskContext(name),
-    ArdMotorItf()
+    ArdMotorItf(),
+    m_power(false)
 {
     addAttribute("attrCommandedSpeed",m_speedCommand);
     addAttribute("attrPeriod",attrPeriod);
@@ -33,6 +34,8 @@ MotorSimul::MotorSimul(const std::string& name):
     addProperty("propInputsTimeout",propInputsTimeout)
             .doc("Maximal delay beetween 2 commands to consider someone is still giving coherent orders, in s");
 
+    addEventPort("inClock",inClock)
+            .doc("Port to fire to wake up the component");
     addPort("inSpeedCmd",inSpeedCmd)
             .doc("Command to be used in speed mode. It must be provided in rad/s on the reductor's output");
     addPort("inPositionCmd",inPositionCmd)
@@ -90,10 +93,71 @@ bool MotorSimul::configureHook()
 
 void MotorSimul::updateHook()
 {
-    outConnected.write(true);
+    getInputs();
+
+    //appel du run de la classe générique moteur
+    ArdMotorItf::run();
+
+    setOutputs();
+}
+
+void MotorSimul::getInputs()
+{
+    //Récupération de la date du cycle CAN
+    timespec syncTime;
+    inClock.readNewest(syncTime);
+    m_syncTime = syncTime.tv_sec + (double)(syncTime.tv_nsec)/1E9;
+
+    //read last speed command
+    double speedCmd = 0;
+    if( inSpeedCmd.read(speedCmd) == NewData )
+    {
+        ArdMotorItf::setSpeedCmd(speedCmd);
+        m_oldSpeedCommandTime = m_syncTime;
+    }
+    //if we did not get a speed command since a time, we assume a 0 cmd for security reasons
+    else if(m_syncTime - m_oldSpeedCommandTime > propInputsTimeout)
+    {
+        ArdMotorItf::setSpeedCmd(0);
+    }
+
+    //read last position command
+    double positionCmd = 0;
+    if( inPositionCmd.readNewest(positionCmd) != NoData )
+    {
+        ArdMotorItf::setPositionCmd(positionCmd);
+    }
+
+    //read last torque command
+    double torqueCmd = 0;
+    if( inTorqueCmd.read(torqueCmd) == NewData )
+    {
+        ArdMotorItf::setTorqueCmd(torqueCmd);
+        m_oldTorqueCommandTime = m_syncTime;
+    }
+    //if we did not get a speed command since a time, we assume a 0 cmd for security reasons
+    else if(m_syncTime - m_oldTorqueCommandTime > propInputsTimeout)
+    {
+        ArdMotorItf::setTorqueCmd(0);
+    }
 }
 
 
+void MotorSimul::setOutputs()
+{
+    //publication de la position
+    outMeasuredPosition.write( ArdMotorItf::getPositionMeasure() );
+    outMeasuredPositionTime.write( m_syncTime );
+    //publication de la vitesse
+    outComputedSpeed.write( ArdMotorItf::getSpeedMeasure() );
+    //lecture du courant
+    outMeasuredTorque.write( ArdMotorItf::getTorqueMeasure() );
+    //publication du mode d'operation
+    outCurrentOperationMode.write( getStringFromMode(getOperationMode()) );
+
+    outConnected.write(true);
+    outDriveEnable.write(m_power);
+}
 
 /**********************************************************************/
 /*              Operation Orocos                                      */
@@ -180,18 +244,63 @@ bool MotorSimul::coWaitEnable(double timeout)
 
 void MotorSimul::runSpeed()
 {
+    if( m_power )
+    {
+        outFilteredSpeedCommand.write(m_speedCommand);
+        double speed = m_speedCommand;
+        if( propInvertDriveDirection )
+        {
+            speed = -speed;
+        }
+        m_speedMeasure = speed;
+    }
+    else
+    {
+        outFilteredSpeedCommand.write(0);
+        m_speedMeasure = 0;
+    }
 }
 
 void MotorSimul::runTorque()
 {
+    if( m_power )
+    {
+        //TODO
+    }
 }
 
 void MotorSimul::runPosition()
 {
+    if( m_power )
+    {
+        outFilteredPositionCommand.write(m_positionCommand);
+        double position = m_positionCommand;
+        if( propInvertDriveDirection )
+        {
+            position = -position;
+        }
+        m_positionMeasure = position;
+        //TODO :
+        //outFiltereadSpeedCommand.write(??);
+        //m_speedMeasure = ?;
+    }
+    else
+    {
+        m_speedMeasure = 0;
+    }
 }
 
 void MotorSimul::runHoming()
 {
+    if( m_power )
+    {
+        m_positionMeasure = 0;
+        m_speedMeasure = 0;
+    }
+    else
+    {
+        m_speedMeasure = 0;
+    }
 }
 
 void MotorSimul::runOther()
@@ -201,19 +310,23 @@ void MotorSimul::runOther()
 bool MotorSimul::init()
 {
     bool res = true;
+    m_power = false;
     return res;
 }
 
 void MotorSimul::enableDrive()
 {
+    m_power = true;
 }
 
 void MotorSimul::disableDrive()
 {
+    m_power = false;
 }
 
 bool MotorSimul::reset()
 {
+    m_power = false;
     return false;
 }
 

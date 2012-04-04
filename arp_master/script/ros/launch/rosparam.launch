@@ -31,7 +31,7 @@
 	<!--Distance between center of robot and back -->
     <param name="/Protokrot/DIST_BACK" value="0.053"/>  
     <!--horizontal wall position -->
-    <param name="/Table/HWALL_Y" value="1.05"/>  
+    <param name="/Table/HWALL_Y" value="1.0"/>  
     <!--vertical wall position -->
     <param name="/Table/VWALL_X" value="1.5"/>   
 

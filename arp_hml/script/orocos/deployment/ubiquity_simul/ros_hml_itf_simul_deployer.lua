@@ -25,8 +25,9 @@ function RosHmlItfDeployer:connect()
 	Deployer:connect("RosHmlItf.inIoStart", "WoodheadIn.outBit1",cp)
 	]]
 	
---connexion ROS
+	Deployer:connect("RosHmlItf.inRealPosition", "UbiquitySimul.outRealPosition",cp)
 	
+--connexion ROS
 	Deployer:stream("RosHmlItf.inOmniCmd",ros:topic("/Ubiquity/omnidirectional_command"))
 	Deployer:stream("RosHmlItf.outOdometryMeasures",ros:topic("/Ubiquity/odo"))
 	Deployer:stream("RosHmlItf.outOmniSpeedMeasure",ros:topic("/Ubiquity/omnidirectional_measure"))
@@ -38,4 +39,6 @@ function RosHmlItfDeployer:connect()
 	Deployer:stream("RosHmlItf.outWheelBlocked",ros:topic("/Ubiquity/wheel_blocked"))
 	Deployer:stream("RosHmlItf.outEmergencyStop",ros:topic("/Ubiquity/emergency_stop"))
 	Deployer:stream("RosHmlItf.outIoStart",ros:topic("/Ubiquity/start"))
+	
+	Deployer:stream("RosHmlItf.outRealPosition",ros:topic("/Ubiquity/simuRealPose"))
 end

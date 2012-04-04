@@ -6,12 +6,12 @@ import smach
 import smach_ros
 import smach_msgs
 
-from arp_master.strat.stratVierge.util.CyclicState import CyclicState
-from arp_master.strat.stratVierge.util.Inputs import Inputs
-from arp_master.strat.stratVierge.util.Data import Data
-from arp_master.strat.stratVierge.util.CyclicActionState import CyclicActionState
-from arp_master.strat.stratVierge.util.TableVierge import *
-from arp_master.strat.stratVierge.util.UtilARD import *
+from arp_master.strat.util.CyclicState import CyclicState
+from arp_master.strat.util.Inputs import Inputs
+from arp_master.strat.util.Data import Data
+from arp_master.strat.util.CyclicActionState import CyclicActionState
+from arp_master.strat.util.TableVierge import *
+from arp_master.strat.util.UtilARD import *
 from math import pi
 
 
@@ -20,6 +20,10 @@ class StartSequence(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
         with self:
+            smach.StateMachine.add('SetPower',
+                      SetPower(),
+                      transitions={'succeeded':'Recal_hor_bord','failed':'problem'})
+            
             smach.StateMachine.add('Recal_hor_bord',
                       Recal_hor_bord(),
                       transitions={'succeeded':'SetPos_hor_bord','aborted':'SetPos_hor_bord'})
@@ -58,6 +62,20 @@ class StartSequence(smach.StateMachine):
                                    transitions={'start':'gogogo'})
     
             
+            
+class SetPower(CyclicState):
+    def __init__(self):
+        CyclicState.__init__(self, outcomes=['succeeded','failed'])
+    
+    def executeIn(self):
+        self.result = self.enablePower()
+    
+    def executeTransitions(self):
+        if self.result == True:
+            return 'succeeded'   
+        else:
+            return 'failed'
+        
 
 class Recal_hor_bord(CyclicActionState):
     def createAction(self):

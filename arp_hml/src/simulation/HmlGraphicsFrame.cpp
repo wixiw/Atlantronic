@@ -47,12 +47,12 @@ HmlGraphicsFrame::HmlGraphicsFrame():
 	Connect(update_timer_->GetId(), wxEVT_TIMER, wxTimerEventHandler(HmlGraphicsFrame::onUpdate), NULL, this);
 	Connect(wxEVT_PAINT, wxPaintEventHandler(HmlGraphicsFrame::onPaint), NULL, this);
 
-	start_pub = m_nodeHandle.advertise<Start>("Protokrot/start", 1);
-	color_pub = m_nodeHandle.advertise<StartColor>("Protokrot/color", 1);
+	start_pub = m_nodeHandle.advertise<Start>("Ubiquity/start", 1);
+	color_pub = m_nodeHandle.advertise<StartColor>("Ubiquity/color", 1);
 	obstacle_pub = m_nodeHandle.advertise<Obstacle>("ObstacleDetector/front_obstacle", 1);
-	rear_obstacle_pub = m_nodeHandle.advertise<Bool>("Protokrot/rear_obstacle", 1);
-	emergency_pub = m_nodeHandle.advertise<Bool>("Protokrot/emergency_stop", 1);
-	wheel_blocked_pub = m_nodeHandle.advertise<Bool>("Protokrot/wheel_blocked", 1);
+	rear_obstacle_pub = m_nodeHandle.advertise<Bool>("Ubiquity/rear_obstacle", 1);
+	emergency_pub = m_nodeHandle.advertise<Bool>("Ubiquity/emergency_stop", 1);
+	wheel_blocked_pub = m_nodeHandle.advertise<Bool>("Ubiquity/wheel_blocked", 1);
 
 	ROS_INFO("Starting HmlGraphics with node name %s", ros::this_node::getName().c_str()) ;
 }

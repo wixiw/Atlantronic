@@ -23,19 +23,21 @@
 #include "orocos/taskcontexts/HmlTaskContext.hpp"
 #include <sys/time.h>
 #include "ros/ros.h"
+#include <math/core>
 //pour les ports
 #include <arp_core/OmniCommand.h>
 #include <arp_core/OmniOdo.h>
 #include <arp_core/Start.h>
+#include <arp_core/Pose.h>
 #include <std_msgs/Bool.h>
 //pour les services
+#include <arp_core/SetPosition.h>
 #include <arp_hml/SetMotorPower.h>
-#include <arp_hml/SetDrivingMotorPower.h>
-#include <arp_hml/SetSteeringMotorPower.h>
 #include <arp_hml/ResetHml.h>
 #include <arp_hml/GetVersion.h>
 
 using namespace arp_core;
+using namespace arp_math;
 using namespace arp_hml;
 using namespace std_msgs;
 
@@ -85,9 +87,10 @@ namespace arp_hml
         ros::ServiceServer m_srvSetDrivingMotorPower;
         /** node handle to store the service advertiser srvSetMotorPower**/
         ros::ServiceServer m_srvSetSteeringMotorPower;
-
         /** node handle to store the service advertiser srvResetHml**/
         ros::ServiceServer m_srvResetHml;
+        /** node handle to store the service advertiser srvSetMotorPower**/
+        ros::ServiceServer m_srvSetRealSimulPosition;
         /** node handle to store the service advertiser srvResetHml**/
         ros::ServiceServer m_srvGetVersion;
 
@@ -99,17 +102,22 @@ namespace arp_hml
         /**
          * ROS wrapper on the ooSetPowerMotor operation
          */
-        bool srvSetDrivingMotorPower(SetDrivingMotorPower::Request& req, SetDrivingMotorPower::Response& res);
+        bool srvSetDrivingMotorPower(SetMotorPower::Request& req, SetMotorPower::Response& res);
 
         /**
          * ROS wrapper on the ooSetPowerMotor operation
          */
-        bool srvSetSteeringMotorPower(SetSteeringMotorPower::Request& req, SetSteeringMotorPower::Response& res);
+        bool srvSetSteeringMotorPower(SetMotorPower::Request& req, SetMotorPower::Response& res);
 
         /**
          * ROS wrapper on the HmlMonitor.ooResetHml operation
          */
         bool srvResetHml(ResetHml::Request& req, ResetHml::Response& res);
+
+        /**
+         * ROS wrapper on the HmlMonitor.ooSetRealSimulPosition operation
+         */
+        bool srvSetRealSimulPosition(SetPosition::Request& req, SetPosition::Response& res);
 
         /**
          * ROS wrapper on the HmlMonitor.coGethmlVersion operation
@@ -143,12 +151,18 @@ namespace arp_hml
         /** Is true when wheel are blocked */
         OutputPort<Bool> outWheelBlocked;
 
+        /** Real Position of the robot, given by the simulation */
+        OutputPort<Pose> outRealPosition;
+
 /*****************************************************************
  *  Interface with the INSIDE (hml !)
  *****************************************************************/
 
         /** HW value of the start switch. It is true when the start is in **/
         InputPort<bool> inIoStart;
+
+        /** Real Position of the robot, given by the simulation */
+        InputPort<Pose2D> inRealPosition;
 
         /** Value of the odometers in rad on the wheel axe **/
         InputPort<double> inLeftDrivingPosition;
@@ -227,6 +241,8 @@ protected:
         OperationCaller<bool(bool)> m_coSetSteeringMotorPower;
         /** Pointer on the HmlMonitor ooResetHml Operation**/
         OperationCaller<bool(void)> m_ooResetHml;
+        /** Pointer on the HmlMonitor ooSetPosition Operation**/
+        OperationCaller<bool(Pose2D)> m_ooSetPosition;
         /** Pointer on the HmlMonitor coGetVersion Operation**/
         OperationCaller<string(void)> m_coGetVersion;
 

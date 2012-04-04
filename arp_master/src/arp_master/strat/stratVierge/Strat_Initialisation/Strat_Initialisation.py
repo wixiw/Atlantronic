@@ -6,10 +6,10 @@ import smach
 import smach_ros
 import smach_msgs
 
-from arp_master.strat.stratVierge.util.CyclicState import CyclicState
-from arp_master.strat.stratVierge.util.Inputs import Inputs
-from arp_master.strat.stratVierge.util.Data import Data
-from arp_master.strat.stratVierge.util.TableVierge import *
+from arp_master.strat.util.CyclicState import CyclicState
+from arp_master.strat.util.Inputs import Inputs
+from arp_master.strat.util.Data import Data
+from arp_master.strat.util.TableVierge import *
 
 
 # the main state machine
@@ -50,5 +50,5 @@ class WaitForStart(CyclicState):
             Data.adv_color='red'
         poseDepart=AmbiPoseRed(-0.9,0.84,-pi/2,Data.color)
         self.setPosition(poseDepart.x,poseDepart.y,poseDepart.theta)
-        self.enableDrive()
+            
     

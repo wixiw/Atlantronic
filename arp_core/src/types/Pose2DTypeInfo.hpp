@@ -14,7 +14,7 @@ using namespace RTT;
       void serialize( Archive & a, Pose2D& pose, unsigned int) {
          using boost::serialization::make_nvp;
              a & make_nvp("x", pose.xRef());
-             a & make_nvp("y", pose.xRef());
+             a & make_nvp("y", pose.yRef());
              a & make_nvp("theta", pose.hRef());
       }
     }

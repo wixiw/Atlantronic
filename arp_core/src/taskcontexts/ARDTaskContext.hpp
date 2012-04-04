@@ -113,7 +113,7 @@ namespace arp_core
             else
             {
                 opItf = taskContext->getOperation(operation);
-                if( opItf->getLocalOperation() == NULL )
+                if( opItf == NULL || opItf->getLocalOperation() == NULL )
                 {
                     LOG(Error)  << "getOperation : " << component << "." << operation << " is not available" << endlog();
                     res = false;

@@ -1,4 +1,0 @@
-bool powerOn
-float64 timeout
----
-bool success

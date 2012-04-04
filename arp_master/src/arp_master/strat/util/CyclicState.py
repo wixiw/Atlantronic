@@ -64,6 +64,8 @@ class CyclicState(smach.StateMachine):
     def initClients(self):
         self.initSetPositionClient()
         self.initSetMotorPower()
+        self.initSetDrivingMotorPower()
+        self.initSetSteeringMotorPower()
         self.initSetVMaxClient()
 
     def initSetVMaxClient(self):
@@ -71,7 +73,7 @@ class CyclicState(smach.StateMachine):
         
     def initSetPositionClient(self):
         self.setPosition_loc=rospy.ServiceProxy("Localizator/setPosition",SetPosition)
-        self.setPosition_simu=rospy.ServiceProxy("PhysicsSimu/setPosition",SetPosition)
+        self.setPosition_simu=rospy.ServiceProxy("/Ubiquity/setRealSimulPosition",SetPosition)
         
     def setPosition(self,x,y,theta):
         self.setPosition_loc(x,y,theta)
@@ -80,15 +82,63 @@ class CyclicState(smach.StateMachine):
         except rospy.ServiceException, e:
             rospy.logerr("Position could not be set on simulator")
     
-    def initSetMotorPower(self):
-        self.setMotorPower_srv=rospy.ServiceProxy("Protokrot/setMotorPower",SetMotorPower)
     
-    def enableDrive(self):
-        self.setMotorPower_srv(True)
+    #----------------------------------------------------
+    #recuperation et mapping du service pour mettre la puissance sur les moteurs
+    def initSetMotorPower(self):
+        self.setMotorPower_srv=rospy.ServiceProxy("Ubiquity/setMotorPower",SetMotorPower)
+    def enablePower(self):
+        try:
+            self.setMotorPower_srv(True)
+            return True;
+        except rospy.ServiceException, e:
+            rospy.logerr("Position could not enable MotorPower")
+            return False
+    def disablePower(self):
+        try:
+            self.setMotorPower_srv(False)
+            return True;
+        except rospy.ServiceException, e:
+            rospy.logerr("Position could not disable MotorPower")
+            return False
         
-    def disableDrive(self):
-        self.setMotorPower_srv(False)
+    def initSetDrivingMotorPower(self):
+        self.setDrivingMotorPower_srv=rospy.ServiceProxy("Ubiquity/setDrivingMotorPower",SetMotorPower)
+    def enableDrivingPower(self):
+        try:
+            self.setDrivingMotorPower_srv(True)
+            return True;
+        except rospy.ServiceException, e:
+            rospy.logerr("Position could not enable Driving MotorPower")
+            return False
+    def DrivingPowerdisableDrive(self):
+        try:
+            self.setDrivingMotorPower_srv(False)
+            return True;
+        except rospy.ServiceException, e:
+            rospy.logerr("Position could not disable Driving MotorPower")
+            return False
         
+    def initSetSteeringMotorPower(self):
+        self.setSteeringMotorPower_srv=rospy.ServiceProxy("Ubiquity/setSteeringMotorPower",SetMotorPower)
+    def enableSteeringPower(self):
+        try:
+            self.setSteeringMotorPower_srv(True)
+            return True;
+        except rospy.ServiceException, e:
+            rospy.logerr("Position could not enable Steering MotorPower")
+            return False
+    def disableSteeringPower(self):
+        self.setSteeringMotorPower_srv(False)
+        try:
+            self.setSteeringMotorPower_srv(False)
+            return True;
+        except rospy.ServiceException, e:
+            rospy.logerr("Position could not disable Steering MotorPower")
+            return False
+    #----------------------------------------------------
+    
+    
     def setVMax(self,v):
         self.setVMax_srv(v,False)
         

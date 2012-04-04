@@ -1,8 +1,0 @@
-<launch>
-	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
-	<include file="$(find arp_master)/script/ros/launch/rosparam.launch"/>
-	<include file="$(find arp_hml)/script/ros/launch/protokrot.launch"/> 
-	<include file="$(find arp_rlu)/script/ros/launch/arp_rlu.launch"/>
-	<include file="$(find arp_ods)/script/ros/launch/arp_ods.launch"/>
-	<node name="MotionTestingStratNode"   pkg="arp_master"  type="MotionTestingStratNode.py"     args="" output="screen"/>
-</launch>

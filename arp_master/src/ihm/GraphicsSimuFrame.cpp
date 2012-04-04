@@ -31,13 +31,13 @@ GraphicsSimuFrame::GraphicsSimuFrame(std::string topicName) :
     std::string images_path = ros::package::getPath("arp_master")
             + "/ressource/images/";
 
-    std::string robot_image_file = "box-turtle.png"; // hauteur de robot.png : 200px = 1m
+    std::string robot_image_file = "robot.png"; // hauteur de robot.png : 200px = 1m
     robot_image_.LoadFile(
             wxString::FromAscii((images_path + robot_image_file).c_str()));
     robot_image_.SetMask(true);
     robot_image_.SetMaskColour(255, 255, 255);
 
-    std::string table_image_file = "table.png"; // 609 x 429 px
+    std::string table_image_file = "table.png"; // 609 x 409 px
     table_image_.LoadFile(
             wxString::FromAscii((images_path + table_image_file).c_str()));
     table_image_.SetMask(false);

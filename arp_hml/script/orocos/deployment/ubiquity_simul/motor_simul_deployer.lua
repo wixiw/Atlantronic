@@ -4,19 +4,20 @@ dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/motor_deployer.lua");
 MotorSimulDeployer = MotorDeployer:new()
 
 function MotorSimulDeployer:load()
+	--TODO remettre en aperiodique quand inCLock sera geree
 	Deployer:loadComponent("LeftDriving","arp_hml::MotorSimul")
-	Deployer:setActivity("LeftDriving",0,40,1)
+	Deployer:setActivity("LeftDriving",0.010,40,1)
 	Deployer:loadComponent("RightDriving","arp_hml::MotorSimul")
-	Deployer:setActivity("RightDriving",0,40,1)
+	Deployer:setActivity("RightDriving",0.010,40,1)
 	Deployer:loadComponent("RearDriving","arp_hml::MotorSimul")
-	Deployer:setActivity("RearDriving",0,40,1)
+	Deployer:setActivity("RearDriving",0.010,40,1)
 
 	Deployer:loadComponent("LeftSteering","arp_hml::MotorSimul")
-	Deployer:setActivity("LeftSteering",0,40,1)
+	Deployer:setActivity("LeftSteering",0.010,40,1)
 	Deployer:loadComponent("RightSteering","arp_hml::MotorSimul")
-	Deployer:setActivity("RightSteering",0,40,1)
+	Deployer:setActivity("RightSteering",0.010,40,1)
 	Deployer:loadComponent("RearSteering","arp_hml::MotorSimul")
-	Deployer:setActivity("RearSteering",0,40,1)
+	Deployer:setActivity("RearSteering",0.010,40,1)
 end
 
 function MotorSimulDeployer:connect()

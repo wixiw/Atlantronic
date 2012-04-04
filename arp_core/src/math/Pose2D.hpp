@@ -44,10 +44,10 @@ class Pose2D
 
         // Getters
         /** \returns la partie translation. Il s'agit d'un Eigen::Vector de taille 2 en m */
-        Vector2 translation();
+        Vector2 translation() const;
 
         /** \returns la partie rotation de la Pose2D (en radians). */
-        Rotation2 orientation();
+        Rotation2 orientation() const;
 
         //Displacement displacement();
         /** \returns la composante x de la partie translation en m */
@@ -67,7 +67,7 @@ class Pose2D
 
         /** \returns la matrice homogène 3x3. Le bloc haut gauche est constitué de la matrice orthogonale 2x2
          * de la rotation. Le vecteur colonne 2x1 du bloc haut droit est constitué du vecteur translation */
-        Eigen::Matrix<double, 3, 3> matrix3();
+        Eigen::Matrix<double, 3, 3> matrix3() const;
 
         //	Eigen::Matrix<double,4,4> matrix4();
 
@@ -100,7 +100,12 @@ class Pose2D
          * La Pose2D inverse a un vecteur translation et un angle opposés à ceux initiaux.
          * \remarks l'objet n'est pas modifié.
          * \returns la Pose2D inversée */
-        Pose2D inverse();
+        Pose2D inverse() const;
+
+        /**
+         * Créé une chaine de caractère représentant la pose
+         */
+        std::string toString() const;
 
     protected:
         Vector2 positionTranslation;
@@ -114,7 +119,7 @@ class Pose2D
          * \remarks la comparaison est basée sur la double comparaison des
          * composantes de la partie translation et de l'angle de la partie
          * rotation. La précision utilisée est ici celle des double. */
-        bool operator ==(Pose2D _other);
+        bool operator ==(Pose2D _other) const;
 
         //	inline friend Pose2D operator+(const Pose2D& lhs, const Pose2D& rhs);
         //	Pose2D operator +(Pose2D other);

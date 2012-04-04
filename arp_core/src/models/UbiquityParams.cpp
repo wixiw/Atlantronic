@@ -9,11 +9,44 @@
 
 using namespace arp_core;
 
-UbiquityParams::UbiquityParams()
+UbiquityParams::UbiquityParams():
+        m_leftTurretPosition(0.000, 0.200, 0),
+        m_rightTurretPosition(0.000, -0.200, 0),
+        m_rearTurretPosition(-0.250, 0.000, 0),
+        m_leftTurretZero(0),
+        m_rightTurretZero(0),
+        m_rearTurretZero(0),
+        m_leftWheelDiameter(0.066),
+        m_rightWheelDiameter(0.066),
+        m_rearWheelDiameter(0.066),
+        m_tractionRatio(1.0),
+        m_turretRatio(0.25)
 {
-    // TODO Auto-generated constructor stub
-
 }
+
+bool UbiquityParams::check() const
+{
+    if( m_leftWheelDiameter <= 0.010 || m_leftWheelDiameter >= 3 )
+        return false;
+    if( m_rightWheelDiameter <= 0.010 || m_rightWheelDiameter >= 3 )
+        return false;
+    if( m_rearWheelDiameter <= 0.010 || m_rearWheelDiameter >= 3 )
+        return false;
+
+    if( m_tractionRatio <= 0 )
+        return false;
+    if( m_turretRatio <= 0 )
+        return false;
+
+    if( m_leftTurretPosition == m_rightTurretPosition
+            || m_leftTurretPosition == m_rearTurretPosition
+            || m_rightTurretPosition == m_rearTurretPosition)
+        return false;
+
+    //tout va bien
+    return true;
+}
+
 
 double UbiquityParams::getLeftTurretZero() const
 {
@@ -44,6 +77,90 @@ void UbiquityParams::setRightTurretZero(double rightTurretZero)
 {
     m_rightTurretZero = rightTurretZero;
 }
+
+Pose2D UbiquityParams::getLeftTurretPosition() const
+{
+    return m_leftTurretPosition;
+}
+
+Pose2D UbiquityParams::getRearTurretPosition() const
+{
+    return m_rearTurretPosition;
+}
+
+Pose2D UbiquityParams::getRightTurretPosition() const
+{
+    return m_rightTurretPosition;
+}
+
+void UbiquityParams::setLeftTurretPosition(Pose2D leftTurretPosition)
+{
+    m_leftTurretPosition = leftTurretPosition;
+}
+
+void UbiquityParams::setRearTurretPosition(Pose2D rearTurretPosition)
+{
+    m_rearTurretPosition = rearTurretPosition;
+}
+
+void UbiquityParams::setRightTurretPosition(Pose2D rightTurretPosition)
+{
+    m_rightTurretPosition = rightTurretPosition;
+}
+
+double UbiquityParams::getLeftWheelDiameter() const
+{
+    return m_leftWheelDiameter;
+}
+
+double UbiquityParams::getRearWheelDiameter() const
+{
+    return m_rearWheelDiameter;
+}
+
+double UbiquityParams::getRightWheelDiameter() const
+{
+    return m_rightWheelDiameter;
+}
+
+double UbiquityParams::getTractionRatio() const
+{
+    return m_tractionRatio;
+}
+
+double UbiquityParams::getTurretRatio() const
+{
+    return m_turretRatio;
+}
+
+void UbiquityParams::setLeftWheelDiameter(double leftWheelDiameter)
+{
+    m_leftWheelDiameter = leftWheelDiameter;
+}
+
+void UbiquityParams::setRearWheelDiameter(double rearWheelDiameter)
+{
+    m_rearWheelDiameter = rearWheelDiameter;
+}
+
+void UbiquityParams::setRightWheelDiameter(double rightWheelDiameter)
+{
+    m_rightWheelDiameter = rightWheelDiameter;
+}
+
+void UbiquityParams::setTractionRatio(double tractionRatio)
+{
+    m_tractionRatio = tractionRatio;
+}
+
+void UbiquityParams::setTurretRatio(double turretRatio)
+{
+    m_turretRatio = turretRatio;
+}
+
+
+
+
 
 
 

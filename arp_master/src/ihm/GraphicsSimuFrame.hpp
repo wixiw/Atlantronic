@@ -53,7 +53,7 @@ namespace arp_master
         /**
          * table width in pixel. Should be the height of table image
          */
-        static const double table_width_in_pixel = 429.0;
+        static const double table_width_in_pixel = 400.0;
     public:
 
         /**

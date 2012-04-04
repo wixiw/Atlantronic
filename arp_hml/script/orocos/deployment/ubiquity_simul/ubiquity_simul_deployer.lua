@@ -5,7 +5,7 @@ UbiquitySimulDeployer = ComposantDeployer:new()
 
 function UbiquitySimulDeployer:load()
 	Deployer:loadComponent("UbiquitySimul","arp_hml::UbiquitySimul")
-	Deployer:setActivity("UbiquitySimul",0,40,1)
+	Deployer:setActivity("UbiquitySimul",0.010,40,1)
 end
 
 function UbiquitySimulDeployer:registerToSql(name)
@@ -14,8 +14,10 @@ function UbiquitySimulDeployer:registerToSql(name)
 end
 
 function UbiquitySimulDeployer:connect()
+	--je m'ajoute aux autres
 	Deployer:addPeer("Reporting", "UbiquitySimul")
-
+	Deployer:addPeer("RosHmlItf", "UbiquitySimul")
+	
 	--UbiquitySimulDeployer:registerToSql("LeftDriving")
 	--UbiquitySimulDeployer:registerToSql("RightDriving")
 	--UbiquitySimulDeployer:registerToSql("RearDriving")

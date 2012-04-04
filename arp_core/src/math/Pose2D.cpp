@@ -6,6 +6,7 @@
  */
 
 #include <math/Pose2D.hpp>
+#include <iostream>
 
 namespace arp_math
 {
@@ -25,12 +26,12 @@ Pose2D::Pose2D(double _x, double _y, double _h)
 }
 
 
-Vector2 Pose2D::translation()
+Vector2 Pose2D::translation() const
 {
     return positionTranslation;
 }
 
-Rotation2 Pose2D::orientation()
+Rotation2 Pose2D::orientation() const
 {
     return positionRotation;
 }
@@ -77,7 +78,7 @@ double Pose2D::angle() const
      return Displacement(this->getMatrix4());
      }*/
 
-Eigen::Matrix<double,3,3> Pose2D::matrix3()
+Eigen::Matrix<double,3,3> Pose2D::matrix3() const
 {
 	Eigen::Matrix<double,3,3> mat = Eigen::Matrix<double,3,3>::Identity();
 	mat.topLeftCorner(2,2) = this->orientation().toRotationMatrix();
@@ -123,7 +124,7 @@ void Pose2D::angle(double _heading)
     positionRotation = Rotation2(_heading);
 }
 
-Pose2D Pose2D::inverse()
+Pose2D Pose2D::inverse() const
 {
     Pose2D p;
     p.translation(-this->translation());
@@ -131,12 +132,22 @@ Pose2D Pose2D::inverse()
     return p;
 }
 
+std::string Pose2D::toString() const
+{
+    std::ostringstream  s;
+    s << "(" << x() << "," << y() << "," << h() << ")";
+    return s.str();
+}
 
-bool Pose2D::operator ==(Pose2D other)
-                                            {
-    return (this->h() == other.h()) && (this->translation()
-            == other.translation());
-                                            }
+bool Pose2D::operator ==(Pose2D other) const
+{
+    //le test de translation est fait à la main sinon on perd le const... visiblement eigen ne note pas ses == const... c'est moche
+    return (
+            this->h() == other.h()
+            && this->translation()[0] == other.translation()[0]
+            && this->translation()[1] == other.translation()[1]
+            );
+}
 
 //inline friend Pose2D operator+(const Pose2D& lhs, const Pose2D& rhs)
 //{

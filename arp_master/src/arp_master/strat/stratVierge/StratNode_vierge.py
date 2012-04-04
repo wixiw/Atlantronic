@@ -16,9 +16,9 @@ from arp_master.strat.stratVierge.Strat_Endgame import Strat_Endgame
 from arp_master.strat.stratVierge.Strat_Uninitialisation import Strat_Uninitialisation
 
 #import utility classes
-from arp_master.strat.stratVierge.util.Inputs import Inputs
-from arp_master.strat.stratVierge.util.Data import Data
-from arp_master.strat.stratVierge.util.TableVierge import *
+from arp_master.strat.util.Inputs import Inputs
+from arp_master.strat.util.Data import Data
+from arp_master.strat.util.TableVierge import *
 
 
 ###########################  TEMPORAL BEHAVIOR
@@ -48,9 +48,13 @@ class StratNode_vierge():
         rospy.loginfo("And unplug start")
         rospy.loginfo("******************************************************")
     
-        # execute the state machine
+        # initialise the smach introspection server to view the state machine with :
+        #  rosrun smach_viewer smach_viewer.py
+        sis = smach_ros.IntrospectionServer('strat_server', sm, '/SratNode_vierge')
+        sis.start()
         sm.execute()
         
+        sis.stop()
     
 ############################## MAIN STATE MACHINE CREATION
 class MainStateMachine(smach.StateMachine):

@@ -3,9 +3,9 @@
 #
 #choose your deployment file :
 #
-ROOT_DEPLOYMENT_FILE="`rospack find arp_hml`/script/orocos/deployment/deploy_hml_standalone.ops"
+#ROOT_DEPLOYMENT_FILE="`rospack find arp_hml`/script/orocos/deployment/deploy_hml_standalone.ops"
 #ROOT_DEPLOYMENT_FILE="`rospack find arp_hml`/script/orocos/deployment/deploy_ubiquity.ops"
-#ROOT_DEPLOYMENT_FILE="`rospack find arp_hml`/script/orocos/deployment/deploy_ubiquity_simul.ops"
+ROOT_DEPLOYMENT_FILE="`rospack find arp_hml`/script/orocos/deployment/deploy_ubiquity_simul.ops"
 
 #
 # write "-corba" to use corba, else leave empty
@@ -15,10 +15,6 @@ CORBA="-corba"
 
 . /opt/color.sh
 
-if [[ $EUID -ne 0 ]]; then
-	cecho red-e $ROUGE "This script must be run as root"
-	exit 1
-fi
 cd `rospack find arp_hml`
 
 if [ $# == 1 ]

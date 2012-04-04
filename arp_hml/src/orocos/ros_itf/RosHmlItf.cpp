@@ -8,7 +8,6 @@
 #include "RosHmlItf.hpp"
 
 #include <rtt/Component.hpp>
-#include <math/math.hpp>
 
 using namespace arp_hml;
 using namespace arp_core;
@@ -34,11 +33,17 @@ bool RosHmlItf::configureHook()
     bool res = true;
     HmlTaskContext::configureHook();
 
-    res &= getOperation("HmlMonitor" ,  "coSetMotorPower",          m_coSetMotorPower);
+    res &= getOperation("HmlMonitor",   "coSetMotorPower",          m_coSetMotorPower);
     res &= getOperation("HmlMonitor",   "coSetDrivingMotorPower",   m_coSetDrivingMotorPower);
     res &= getOperation("HmlMonitor",   "coSetSteeringMotorPower",  m_coSetSteeringMotorPower);
+    res &= getOperation("HmlMonitor",   "ooResetHml",               m_ooResetHml);
+    //don't care if those are missing
+    getOperation("HmlMonitor",          "coGetHmlVersion",             m_coGetVersion);
 
-    res &= getOperation("HmlMonitor"    , "ooResetHml",  m_ooResetHml);
+    if( getPeer("UbiquitySimul") != NULL )
+        res &=getOperation("UbiquitySimul", "ooSetRealSimulPosition",  m_ooSetPosition);
+
+
 
     if( res == false )
     {
@@ -69,6 +74,18 @@ void RosHmlItf::updateHook()
 
     //lecture du blocage roues
     readWheelBlocked();
+
+    Pose poseOut;
+    Pose2D poseIn;
+    if( NoData != inRealPosition.readNewest(poseIn) )
+    {
+        poseOut.x = poseIn.x();
+        poseOut.y = poseIn.y();
+        poseOut.theta = poseIn.h();
+        outRealPosition.write(poseOut);
+    }
+
+
 }
 
 /*
@@ -277,13 +294,13 @@ bool RosHmlItf::srvSetMotorPower(SetMotorPower::Request& req, SetMotorPower::Res
     return res.success;
 }
 
-bool RosHmlItf::srvSetDrivingMotorPower(SetDrivingMotorPower::Request& req, SetDrivingMotorPower::Response& res)
+bool RosHmlItf::srvSetDrivingMotorPower(SetMotorPower::Request& req, SetMotorPower::Response& res)
 {
     res.success = m_coSetSteeringMotorPower(req.powerOn);
     return res.success;
 }
 
-bool RosHmlItf::srvSetSteeringMotorPower(SetSteeringMotorPower::Request& req, SetSteeringMotorPower::Response& res)
+bool RosHmlItf::srvSetSteeringMotorPower(SetMotorPower::Request& req, SetMotorPower::Response& res)
 {
     res.success = m_coSetDrivingMotorPower(req.powerOn);
     return res.success;
@@ -293,6 +310,21 @@ bool RosHmlItf::srvGetVersion(GetVersion::Request& req, GetVersion::Response& re
 {
     res.version = m_coGetVersion();
     return true;
+}
+
+bool RosHmlItf::srvSetRealSimulPosition(SetPosition::Request& req, SetPosition::Response& res)
+{
+    if( getPeer("UbiquitySimul") != NULL )
+    {
+        Pose2D p(req.x,req.y,req.theta);
+        res.success = m_ooSetPosition(p);
+    }
+    else
+    {
+        LOG(Error) << "You should not call srvSetRealSimulPosition outside simulation" << endlog();
+        res.success = false;
+    }
+    return res.success;
 }
 
 bool RosHmlItf::srvResetHml(ResetHml::Request& req, ResetHml::Response& res)
@@ -330,10 +362,14 @@ void RosHmlItf::createOrocosInterface()
         .doc("Is true when the 6 motors are enabled. Since this port is false, drive speed are forced to 0");
     addPort("outWheelBlocked",outWheelBlocked)
          .doc("Is true when one of the 3 driving wheel is blocked");
+    addPort("outRealPosition",outRealPosition)
+        .doc("Position calculated by the simulation (is just a type conversion from same named input port)");
 
     /** Interface with INSIDE (hml !) **/
     addEventPort("inIoStart",inIoStart)
             .doc("HW value of the start switch. It is true when the start is in");
+    addEventPort("inRealPosition",inRealPosition)
+            .doc("Position calculated by simulation");
 
     addEventPort("inLeftDrivingPosition",inLeftDrivingPosition)
             .doc("Value of the left driving odometer in rad on the wheel axe");
@@ -417,9 +453,11 @@ void RosHmlItf::createOrocosInterface()
 void RosHmlItf::createRosInterface()
 {
     ros::NodeHandle nh;
-    m_srvSetMotorPower = nh.advertiseService("/Protokrot/setMotorPower", &RosHmlItf::srvSetMotorPower, this);
-    m_srvSetMotorPower = nh.advertiseService("/Protokrot/setDrivingMotorPower", &RosHmlItf::srvSetDrivingMotorPower, this);
-    m_srvSetMotorPower = nh.advertiseService("/Protokrot/setSteeringMotorPower", &RosHmlItf::srvSetSteeringMotorPower, this);
-    m_srvResetHml = nh.advertiseService("/Protokrot/resetHml", &RosHmlItf::srvResetHml, this);
+    m_srvSetMotorPower = nh.advertiseService("/Ubiquity/setMotorPower", &RosHmlItf::srvSetMotorPower, this);
+    m_srvSetDrivingMotorPower = nh.advertiseService("/Ubiquity/setDrivingMotorPower", &RosHmlItf::srvSetDrivingMotorPower, this);
+    m_srvSetSteeringMotorPower = nh.advertiseService("/Ubiquity/setSteeringMotorPower", &RosHmlItf::srvSetSteeringMotorPower, this);
+    m_srvSetRealSimulPosition = nh.advertiseService("/Ubiquity/setRealSimulPosition", &RosHmlItf::srvSetRealSimulPosition, this);
+    m_srvResetHml = nh.advertiseService("/Ubiquity/resetHml", &RosHmlItf::srvResetHml, this);
+    m_srvGetVersion = nh.advertiseService("/Ubiquity/getHmlVersion", &RosHmlItf::srvGetVersion, this);
 }
 

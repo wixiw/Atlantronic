@@ -15,6 +15,8 @@ ORO_LIST_COMPONENT_TYPE( arp_hml::UbiquitySimul )
 UbiquitySimul::UbiquitySimul(const std::string& name):
     HmlTaskContext(name)
 {
+    addAttribute("attrRealPosition",attrRealPosition);
+
     addPort("inLeftSteeringPositionCmd",inLeftSteeringPositionCmd)
             .doc("Command to be used in position mode. It must be provided in rad on the reductor's output. It is not available yet.");
     addPort("inRightSteeringPositionCmd",inRightSteeringPositionCmd)
@@ -31,6 +33,10 @@ UbiquitySimul::UbiquitySimul(const std::string& name):
 
     addPort("outRealPosition",outRealPosition)
         .doc("Provides the real position of the robot taking into account the commands ");
+
+    addOperation("ooSetRealSimulPosition", &UbiquitySimul::setPosition,this, OwnThread )
+            .doc("Define a new absolute real robot position");
+
 }
 
 bool UbiquitySimul::configureHook()
@@ -41,8 +47,14 @@ bool UbiquitySimul::configureHook()
 
 void UbiquitySimul::updateHook()
 {
-    static Pose2D p(1,2,3);
-    p.x(p.x()+1);
-    outRealPosition.write(p);
+    outRealPosition.write(attrRealPosition);
 }
 
+bool UbiquitySimul::setPosition(Pose2D newPose)
+{
+    LOG(Info) << "Setting new Real Position to " << newPose.toString() << endlog();
+    attrRealPosition.x(newPose.x());
+    attrRealPosition.y(newPose.y());
+    attrRealPosition.h(newPose.h());
+    return true;
+}

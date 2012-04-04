@@ -37,6 +37,18 @@ namespace arp_hml
         void updateHook();
 
         /**
+         * Read input ports to populated ArdMotorItf.
+         * Call this function before calling run()
+         */
+        void getInputs();
+
+        /**
+         * Write output ports from ArdMotorItf.
+         * Call this function after calling run()
+         */
+        void setOutputs();
+
+        /**
          * This attributre is used by the readCaptors loop to compute the speed with position of motor.
          * In a way, it is close to the period of the component.
          */
@@ -58,6 +70,9 @@ namespace arp_hml
         double propMaximalTorque;
         /** Maximal delay beetween 2 commands to consider someone is still giving coherent orders*/
         double propInputsTimeout;
+
+        /** Clock port which trigger our activity */
+        InputPort<timespec> inClock;
 
         /** Command to be used in position mode. It must be provided in rad on the reductor's output.
          * It is not available yet. */
@@ -142,6 +157,17 @@ namespace arp_hml
          void runPosition();
          void runHoming();
          void runOther();
+
+    private:
+         /** Memory of the power state in the motor */
+         bool m_power;
+
+         /** Last sync time received **/
+         double m_syncTime;
+         /** Last speed command received */
+         double m_oldSpeedCommandTime;
+         /** Last torque command received */
+         double m_oldTorqueCommandTime;
     };
 
 }

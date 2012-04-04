@@ -212,7 +212,6 @@ void Faulhaber3268Bx4::getInputs()
     	m_oldSpeedCommandTime = attrSyncTime;
     }
     //if we did not get a speed command since a time, we assume a 0 cmd for security reasons
-    //if we did not get a speed command since a time, we assume a 0 cmd for security reasons
     else if(attrSyncTime - m_oldSpeedCommandTime > propInputsTimeout)
     {
         ArdMotorItf::setSpeedCmd(0);
