@@ -7,6 +7,7 @@
 
 #include "KinematicFilter.hpp"
 #include <models/UbiquityKinematics.hpp>
+#include <rtt/Component.hpp>
 
 using namespace arp_core;
 using namespace arp_math;
@@ -23,7 +24,7 @@ KinematicFilter::~KinematicFilter()
     // TODO Auto-generated destructor stub
 }
 
-bool KinematicFilter::filterTwist(Twist2D const  desTwist, Twist2D const  currentTwist, Twist2D& acceptableTwist, UbiquityParams const params)
+bool KinematicFilter::filterTwist(Twist2D const  desTwist, Twist2D const  currentTwist, MotorCommands const motorsCurrentState, Twist2D& acceptableTwist, UbiquityParams const params)
 {
 
     if( !params.check() )
@@ -34,16 +35,16 @@ bool KinematicFilter::filterTwist(Twist2D const  desTwist, Twist2D const  curren
     Twist2D slowedTwist;
 
     // call first filtering
-    filterForNonholonomy(desTwist,currentTwist,slowedTwist,params);
+    filterForNonholonomy(desTwist,currentTwist,motorsCurrentState,slowedTwist,params);
     //call second filtering
-    filterForConstraints(slowedTwist,currentTwist,acceptableTwist,params)
+    filterForConstraints(slowedTwist,currentTwist,acceptableTwist,params);
 
     //////////////////////////////////////// 2 - A TESTER PUIS RETIRER :  ca doit rien faire
     //je transporte et je reviens
     Twist2D bite;
     Twist2D couille;
-    refTwist2cogTwist(desTwist,bite,params);
-    cogTwist2refTwist(bite,couille,params);
+    transportToCog(desTwist,bite,params);
+    transportToRef(bite,couille,params);
     acceptableTwist=couille;
 
     //////////////////////////////////////// 1  - A TESTER PUIS RETIRER : ca doit rien faire
@@ -53,27 +54,30 @@ bool KinematicFilter::filterTwist(Twist2D const  desTwist, Twist2D const  curren
     return true;
 }
 
-// Non Holonomy handling: if the robot is asked a twist with a CIR that it will not reached, then it's no use to let him go fast
-void KinematicFilter::filterForNonholonomy(Twist2D const  inputTwist, Twist2D const  currentTwist, Twist2D& outputTwist, UbiquityParams const params)
+void KinematicFilter::filterForNonholonomy(Twist2D const inputTwist, Twist2D const  currentTwist, MotorCommands const motorsCurrentState, Twist2D& outputTwist, UbiquityParams const params)
 {
+    // GET DIFFERENCE OF TURRET POSITION BETWEEN NOW AND WHAT IS DESIRED
+    TurretCommands desTurretCmd;
+    UbiquityKinematics::twist2Turrets(inputTwist, desTurretCmd, params);
+    double deltaLeft=desTurretCmd.leftSteeringTurretPosition-motorsCurrentState.leftSteeringMotorPosition;
+    double deltaRight=desTurretCmd.rightSteeringTurretPosition-motorsCurrentState.rightSteeringMotorPosition;
+    double deltaRear=desTurretCmd.rearSteeringTurretPosition-motorsCurrentState.rearSteeringMotorPosition;
+
     outputTwist=inputTwist;
 }
 
-// Handling of the hardware contraints:
-// we known that the current twist would be an acceptable solution.
-// so we choose a Twist that is something between the desired wtsit and the current twist
+
 void KinematicFilter::filterForConstraints(Twist2D const  inputTwist, Twist2D const  currentTwist, Twist2D& outputTwist, UbiquityParams const params)
 {
     outputTwist=inputTwist;
 }
 
-//transport of the twist to what is nice for the filter: twist at center of gravity
-void KinematicFilter::refTwist2cogTwist(Twist2D const  refTwist, Twist2D& cogTwist, UbiquityParams const params)
+void KinematicFilter::transportToCog(Twist2D const  refTwist, Twist2D& cogTwist, UbiquityParams const params)
 {
     cogTwist = refTwist.transport(params.getChassisCenter());
 }
 
-void KinematicFilter::cogTwist2refTwist(Twist2D const  cogTwist, Twist2D& refTwist, UbiquityParams const params)
+void KinematicFilter::transportToRef(Twist2D const  cogTwist, Twist2D& refTwist, UbiquityParams const params)
 {
     refTwist = cogTwist.transport(params.getChassisCenter().inverse());
 }

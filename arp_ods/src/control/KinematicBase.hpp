@@ -32,14 +32,24 @@ class KinematicBase: public OdsTaskContext
         InputPort<Twist2D> inTwistCmd;
         InputPort<UbiquityParams> inParams;
 
+		InputPort<Twist2D> inCurrentTwist;
+
         InputPort<double> inLeftSteeringSpeedMeasure;
         InputPort<double> inRightSteeringSpeedMeasure;
         InputPort<double> inRearSteeringSpeedMeasure;
-        InputPort<Twist2D> inCurrentTwist;
+        
+        InputPort<double> inLeftSteeringPositionMeasure;
+        InputPort<double> inRightSteeringPositionMeasure;
+        InputPort<double> inRearSteeringPositionMeasure;
+        
+        InputPort<double> inLeftDrivingSpeedMeasure;
+        InputPort<double> inRightDrivingSpeedMeasure;
+        InputPort<double> inRearDrivingSpeedMeasure;
 
         OutputPort<double> outLeftDrivingSpeedCmd;
         OutputPort<double> outRightDrivingSpeedCmd;
         OutputPort<double> outRearDrivingSpeedCmd;
+
         OutputPort<double> outLeftSteeringPositionCmd;
         OutputPort<double> outRightSteeringPositionCmd;
         OutputPort<double> outRearSteeringPositionCmd;
@@ -47,6 +57,9 @@ class KinematicBase: public OdsTaskContext
         Twist2D attrTwistCmd;
         Twist2D attrCurrentTwist;
         Twist2D attrAcceptableTwist;
+        MotorCommands attrMotorsCurrentState;
+
+
 };
 
 } /* namespace arp_ods */
