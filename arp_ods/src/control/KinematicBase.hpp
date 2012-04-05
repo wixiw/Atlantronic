@@ -44,6 +44,9 @@ class KinematicBase: public OdsTaskContext
         OutputPort<double> outRearSteeringPositionCmd;
 
         Twist2D attrTwistCmd;
+
+        //ceci devrait etre un inputPort. en attente de cablage
+        Twist2D inCurrentTwist;
 };
 
 } /* namespace arp_ods */

@@ -8,6 +8,7 @@
 #include "KinematicBase.hpp"
 #include <rtt/Component.hpp>
 #include <models/UbiquityKinematics.hpp>
+#include "KinematicFilter.hpp"
 
 using namespace arp_core;
 using namespace arp_math;
@@ -55,6 +56,7 @@ void KinematicBase::updateHook()
 {
     OdsTaskContext::updateHook();
 
+    Twist2D acceptableTwist;
     TurretCommands turretCmd;
     MotorCommands motorCmd;
     CouplingSpeeds turretSpeeds;
@@ -66,7 +68,12 @@ void KinematicBase::updateHook()
     inTwistCmd.readNewest(attrTwistCmd);
     inParams.readNewest(params);
 
-    if( UbiquityKinematics::twist2Turrets(attrTwistCmd, turretCmd, params) == false )
+    if( KinematicFilter::filterTwist(attrTwistCmd, inCurrentTwist, acceptableTwist, params) == false )
+        {
+            LOG(Error) << "Failed to filter desired twist to an acceptable twist" << endlog();
+        }
+
+    if( UbiquityKinematics::twist2Turrets(acceptableTwist, turretCmd, params) == false )
     {
         LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
     }
