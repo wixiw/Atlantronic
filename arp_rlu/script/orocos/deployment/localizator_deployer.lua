@@ -17,7 +17,7 @@ end
 
 
 function LocalizatorDeployer:connect()
-
+	Deployer:connect(me..".inOdo","Odometry.outTwist",cp)
 	
 	LocalizatorDeployer:check(me)
 end

@@ -29,17 +29,31 @@ void Odometry::createOrocosInterface()
             .doc("");
     addPort("inParams",inParams)
             .doc("");
-    addPort("inLeftTurretSpeed",inLeftTurretSpeed)
+
+    addPort("inLeftDrivingSpeed",inLeftDrivingSpeed)
             .doc("");
-    addPort("inRightTurretSpeed",inRightTurretSpeed)
+    addPort("inRightDrivingSpeed",inRightDrivingSpeed)
             .doc("");
-    addPort("inRearTurretSpeed",inRearTurretSpeed)
+    addPort("inRearDrivingSpeed",inRearDrivingSpeed)
             .doc("");
-    addPort("inLeftTurretPosition",inLeftTurretPosition)
+    addPort("inLeftSteeringSpeed",inLeftSteeringSpeed)
             .doc("");
-    addPort("inRightTurretPosition",inRightTurretPosition)
+    addPort("inRightSteeringSpeed",inRightSteeringSpeed)
             .doc("");
-    addPort("inRearTurretPosition",inRearTurretPosition)
+    addPort("inRearSteeringSpeed",inRearSteeringSpeed)
+            .doc("");
+
+    addPort("inLeftDrivingPosition",inLeftDrivingPosition)
+            .doc("");
+    addPort("inRightDrivingPosition",inRightDrivingPosition)
+            .doc("");
+    addPort("inRearDrivingPosition",inRearDrivingPosition)
+            .doc("");
+    addPort("inLeftSteeringPosition",inLeftSteeringPosition)
+            .doc("");
+    addPort("inRightSteeringPosition",inRightSteeringPosition)
+            .doc("");
+    addPort("inRearSteeringPosition",inRearSteeringPosition)
             .doc("");
 
     addPort("outTwist",outTwist)

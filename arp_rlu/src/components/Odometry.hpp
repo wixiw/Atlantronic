@@ -26,12 +26,19 @@ class Odometry: public RluTaskContext
         InputPort<double> inTime;
         InputPort<UbiquityParams> inParams;
 
-        InputPort<double> inLeftTurretSpeed;
-        InputPort<double> inRightTurretSpeed;
-        InputPort<double> inRearTurretSpeed;
-        InputPort<double> inLeftTurretPosition;
-        InputPort<double> inRightTurretPosition;
-        InputPort<double> inRearTurretPosition;
+        InputPort<double> inLeftDrivingSpeed;
+        InputPort<double> inRightDrivingSpeed;
+        InputPort<double> inRearDrivingSpeed;
+        InputPort<double> inLeftSteeringSpeed;
+        InputPort<double> inRightSteeringSpeed;
+        InputPort<double> inRearSteeringSpeed;
+
+        InputPort<double> inLeftDrivingPosition;
+        InputPort<double> inRightDrivingPosition;
+        InputPort<double> inRearDrivingPosition;
+        InputPort<double> inLeftSteeringPosition;
+        InputPort<double> inRightSteeringPosition;
+        InputPort<double> inRearSteeringPosition;
 
         OutputPort<EstimatedTwist2D> outTwist;
 
