@@ -15,17 +15,25 @@ using namespace RTT;
       void serialize( Archive & a, UbiquityParams& params, unsigned int) {
          using boost::serialization::make_nvp;
              a & make_nvp("leftTurretZero",         params.getLeftTurretZeroRef());
-             a & make_nvp("rightTurretZero",        params.getRearTurretZeroRef());
-             a & make_nvp("rearTurretZero",         params.getRightTurretZeroRef());
+             a & make_nvp("rightTurretZero",        params.getRightTurretZeroRef());
+             a & make_nvp("rearTurretZero",         params.getRearTurretZeroRef());
              a & make_nvp("leftTurretPosition",     params.getLeftTurretPositionRef());
-             a & make_nvp("rightTurretPosition",    params.getRearTurretPositionRef());
-             a & make_nvp("rearTurretPosition",     params.getRightTurretPositionRef());
+             a & make_nvp("rightTurretPosition",    params.getRightTurretPositionRef());
+             a & make_nvp("rearTurretPosition",     params.getRearTurretPositionRef());
              a & make_nvp("chassisCenter",          params.getChassisCenterRef());
              a & make_nvp("leftWheelDiameter",      params.getLeftWheelDiameterRef());
-             a & make_nvp("rightWheelDiameter",     params.getRearWheelDiameterRef());
-             a & make_nvp("rearWheelDiameter",      params.getRightWheelDiameterRef());
-             a & make_nvp("turretRatio",            params.getRightWheelDiameterRef());
-             a & make_nvp("tractionRatio",          params.getTurretRatioRef());
+             a & make_nvp("rightWheelDiameter",     params.getRightWheelDiameterRef());
+             a & make_nvp("rearWheelDiameter",      params.getRearWheelDiameterRef());
+             a & make_nvp("turretRatio",            params.getTurretRatioRef());
+             a & make_nvp("tractionRatio",          params.getTractionRatioRef());
+             a & make_nvp("maxTractionSpeed",       params.getMaxTractionSpeedRef());
+             a & make_nvp("maxTurretSpeed",         params.getMaxTurretSpeedRef());
+             a & make_nvp("maxTractionAcc",         params.getMaxTractionAccRef());
+             a & make_nvp("maxTurretAcc",           params.getMaxTurretAccRef());
+             a & make_nvp("maxTractionDec",         params.getMaxTractionDecRef());
+             a & make_nvp("maxTurretDec",           params.getMaxTurretDecRef());
+             a & make_nvp("maxTractionTorque",      params.getMaxTractionTorqueRef());
+             a & make_nvp("maxTurretTorque",        params.getMaxTurretTorqueRef());
       }
     }
   }

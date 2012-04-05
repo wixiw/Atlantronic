@@ -105,6 +105,54 @@ double UbiquityParams::getTurretRatio() const
 }
 
 
+double UbiquityParams::getMaxTractionAcc() const
+{
+    return m_maxTractionAcc;
+}
+
+double UbiquityParams::getMaxTractionDec() const
+{
+    return m_maxTractionDec;
+}
+
+double UbiquityParams::getMaxTractionSpeed() const
+{
+    return m_maxTractionSpeed;
+}
+
+double UbiquityParams::getMaxTractionTorque() const
+{
+    return m_maxTractionTorque;
+}
+
+double UbiquityParams::getMaxTurretAcc() const
+{
+    return m_maxTurretAcc;
+}
+
+double UbiquityParams::getMaxTurretDec() const
+{
+    return m_maxTurretDec;
+}
+
+double UbiquityParams::getMaxTurretSpeed() const
+{
+    return m_maxTurretSpeed;
+}
+
+double UbiquityParams::getMaxTurretTorque() const
+{
+    return m_maxTurretTorque;
+}
+
+Pose2D UbiquityParams::getChassisCenter() const
+{
+    return m_chassisCenter;
+}
+
+
+
+
 
 double& UbiquityParams::getLeftTurretZeroRef()
 {
@@ -161,6 +209,58 @@ double& UbiquityParams::getTurretRatioRef()
     return m_turretRatio;
 }
 
+double& UbiquityParams::getMaxTractionAccRef()
+{
+    return m_maxTractionAcc;
+}
+
+double& UbiquityParams::getMaxTractionDecRef()
+{
+    return m_maxTractionDec;
+}
+
+double& UbiquityParams::getMaxTractionSpeedRef()
+{
+    return m_maxTractionSpeed;
+}
+
+double& UbiquityParams::getMaxTractionTorqueRef()
+{
+    return m_maxTractionTorque;
+}
+
+double& UbiquityParams::getMaxTurretAccRef()
+{
+    return m_maxTurretAcc;
+}
+
+double& UbiquityParams::getMaxTurretDecRef()
+{
+    return m_maxTurretDec;
+}
+
+double& UbiquityParams::getMaxTurretSpeedRef()
+{
+    return m_maxTurretSpeed;
+}
+
+double& UbiquityParams::getMaxTurretTorqueRef()
+{
+    return m_maxTurretTorque;
+}
+
+Pose2D& UbiquityParams::getChassisCenterRef()
+{
+    return m_chassisCenter;
+}
+
+
+
+
+
+
+
+
 
 void UbiquityParams::setLeftTurretZero(double leftTurretZero)
 {
@@ -175,21 +275,6 @@ void UbiquityParams::setRearTurretZero(double rearTurretZero)
 void UbiquityParams::setRightTurretZero(double rightTurretZero)
 {
     m_rightTurretZero = rightTurretZero;
-}
-
-void UbiquityParams::setLeftTurretPosition(Pose2D leftTurretPosition)
-{
-    m_leftTurretPosition = leftTurretPosition;
-}
-
-void UbiquityParams::setRearTurretPosition(Pose2D rearTurretPosition)
-{
-    m_rearTurretPosition = rearTurretPosition;
-}
-
-void UbiquityParams::setRightTurretPosition(Pose2D rightTurretPosition)
-{
-    m_rightTurretPosition = rightTurretPosition;
 }
 
 void UbiquityParams::setLeftWheelDiameter(double leftWheelDiameter)
@@ -207,30 +292,6 @@ void UbiquityParams::setRightWheelDiameter(double rightWheelDiameter)
     m_rightWheelDiameter = rightWheelDiameter;
 }
 
-void UbiquityParams::setTractionRatio(double tractionRatio)
-{
-    m_tractionRatio = tractionRatio;
-}
-
-void UbiquityParams::setTurretRatio(double turretRatio)
-{
-    m_turretRatio = turretRatio;
-}
-
-Pose2D UbiquityParams::getChassisCenter() const
-{
-    return m_chassisCenter;
-}
-
-Pose2D& UbiquityParams::getChassisCenterRef()
-{
-    return m_chassisCenter;
-}
-
-void UbiquityParams::setChassisCenter(Pose2D chassisCenter)
-{
-    m_chassisCenter = chassisCenter;
-}
 
 
 
