@@ -56,14 +56,27 @@ bool KinematicFilter::filterTwist(Twist2D const  desTwist, Twist2D const  curren
 
 void KinematicFilter::filterForNonholonomy(Twist2D const inputTwist, Twist2D const  currentTwist, MotorCommands const motorsCurrentState, Twist2D& outputTwist, UbiquityParams const params)
 {
-    // GET DIFFERENCE OF TURRET POSITION BETWEEN NOW AND WHAT IS DESIRED
+    // GET SATURATION OF TURRETS TO FULLFILL THE ORDER
     TurretCommands desTurretCmd;
     UbiquityKinematics::twist2Turrets(inputTwist, desTurretCmd, params);
-    double deltaLeft=desTurretCmd.leftSteeringTurretPosition-motorsCurrentState.leftSteeringMotorPosition;
-    double deltaRight=desTurretCmd.rightSteeringTurretPosition-motorsCurrentState.rightSteeringMotorPosition;
-    double deltaRear=desTurretCmd.rearSteeringTurretPosition-motorsCurrentState.rearSteeringMotorPosition;
+    double speedLeft=desTurretCmd.leftSteeringTurretPosition-motorsCurrentState.leftSteeringMotorPosition;
+    double speedRight=desTurretCmd.rightSteeringTurretPosition-motorsCurrentState.rightSteeringMotorPosition;
+    double speedRear=desTurretCmd.rearSteeringTurretPosition-motorsCurrentState.rearSteeringMotorPosition;
+    double saturationLeft=(speedLeft-params.getMaxTurretSpeed())/params.getMaxTurretSpeed();
+    double saturationRight=(speedRight-params.getMaxTurretSpeed())/params.getMaxTurretSpeed();
+    double saturationRear=(speedRear-params.getMaxTurretSpeed())/params.getMaxTurretSpeed();
 
-    outputTwist=inputTwist;
+    double saturationMax=std::max(saturationLeft,std::max(saturationRight,saturationRear));
+
+    // FROM THIS SATURATION, DECREASE THE DESIRED TWIST
+    Twist2D twistInit;
+    Twist2D twistReduced;
+    transportToCog(inputTwist,twistInit,params);
+    ////////////////////////////////////
+    twistReduced=twistInit; //utiliser une fonction "scale" a rajouter dans twist2D
+    //////////////////////////////////
+    transportToRef(twistReduced,outputTwist,params);
+
 }
 
 
