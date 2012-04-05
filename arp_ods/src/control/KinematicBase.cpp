@@ -34,11 +34,11 @@ KinematicBase::KinematicBase(const std::string& name):
     addPort("inParams",inParams)
             .doc("");
 
-    addPort("inLeftSteeringSpeedMeasure", inLeftSteeringSpeedMeasure)
+    addPort("inLeftSteeringVelocityMeasure", inLeftSteeringVelocityMeasure)
             .doc("");
-    addPort("inRightSteeringSpeedMeasure", inRightSteeringSpeedMeasure)
+    addPort("inRightSteeringVelocityMeasure", inRightSteeringVelocityMeasure)
             .doc("");
-    addPort("inRearSteeringSpeedMeasure", inRearSteeringSpeedMeasure)
+    addPort("inRearSteeringVelocityMeasure", inRearSteeringVelocityMeasure)
             .doc("");
 
     addPort("inLeftSteeringPositionMeasure", inLeftSteeringPositionMeasure)
@@ -48,19 +48,19 @@ KinematicBase::KinematicBase(const std::string& name):
     addPort("inRearSteeringPositionMeasure", inRearSteeringPositionMeasure)
             .doc("");
 
-    addPort("inLeftDrivingSpeedMeasure", inLeftDrivingSpeedMeasure)
+    addPort("inLeftDrivingVelocityMeasure", inLeftDrivingVelocityMeasure)
             .doc("");
-    addPort("inRightDrivingSpeedMeasure", inRightDrivingSpeedMeasure)
+    addPort("inRightDrivingVelocityMeasure", inRightDrivingVelocityMeasure)
             .doc("");
-    addPort("inRearDrivingSpeedMeasure", inRearDrivingSpeedMeasure)
+    addPort("inRearDrivingVelocityMeasure", inRearDrivingVelocityMeasure)
             .doc("");
 
 
-    addPort("outLeftDrivingSpeedCmd",outLeftDrivingSpeedCmd)
+    addPort("outLeftDrivingVelocityCmd",outLeftDrivingVelocityCmd)
             .doc("");
-    addPort("outRightDrivingSpeedCmd",outRightDrivingSpeedCmd)
+    addPort("outRightDrivingVelocityCmd",outRightDrivingVelocityCmd)
             .doc("");
-    addPort("outRearDrivingSpeedCmd",outRearDrivingSpeedCmd)
+    addPort("outRearDrivingVelocityCmd",outRearDrivingVelocityCmd)
             .doc("");
     addPort("outLeftSteeringPositionCmd",outLeftSteeringPositionCmd)
             .doc("");
@@ -76,50 +76,53 @@ void KinematicBase::updateHook()
     OdsTaskContext::updateHook();
 
     // INPUTS
-    CouplingSpeeds turretSpeeds;
+    SteeringMotorVelocities turretVelocities;
     UbiquityParams params;
 
 
-    // gathering of Steering Speeds
-    inLeftSteeringSpeedMeasure.readNewest(turretSpeeds.leftSteeringMotorSpeed);
-    inRightSteeringSpeedMeasure.readNewest(turretSpeeds.rightSteeringMotorSpeed);
-    inRearSteeringSpeedMeasure.readNewest(turretSpeeds.rearSteeringMotorSpeed);
+    // gathering of Steering Velocities
+    inLeftSteeringVelocityMeasure.readNewest(turretVelocities.leftSteeringMotorVelocity);
+    inRightSteeringVelocityMeasure.readNewest(turretVelocities.rightSteeringMotorVelocity);
+    inRearSteeringVelocityMeasure.readNewest(turretVelocities.rearSteeringMotorVelocity);
 
     // gathering of motors positions and speeds
     inLeftSteeringPositionMeasure.readNewest(attrMotorsCurrentState.leftSteeringMotorPosition);
     inRightSteeringPositionMeasure.readNewest(attrMotorsCurrentState.rightSteeringMotorPosition);
     inRearSteeringPositionMeasure.readNewest(attrMotorsCurrentState.rearSteeringMotorPosition);
-    inLeftDrivingSpeedMeasure.readNewest(attrMotorsCurrentState.leftDrivingMotorSpeed);
-    inRightDrivingSpeedMeasure.readNewest(attrMotorsCurrentState.rightDrivingMotorSpeed);
-    inRearDrivingSpeedMeasure.readNewest(attrMotorsCurrentState.rearDrivingMotorSpeed);
+    inLeftDrivingVelocityMeasure.readNewest(attrMotorsCurrentState.leftDrivingMotorVelocity);
+    inRightDrivingVelocityMeasure.readNewest(attrMotorsCurrentState.rightDrivingMotorVelocity);
+    inRearDrivingVelocityMeasure.readNewest(attrMotorsCurrentState.rearDrivingMotorVelocity);
 
     inTwistCmd.readNewest(attrTwistCmd);
     inCurrentTwist.readNewest(attrCurrentTwist);
     inParams.readNewest(params);
 
     // COMPUTATIONS
-    TurretCommands turretCmd;
-    MotorCommands motorCmd;
+    TurretState turretCmd;
+    MotorState motorCmd;
 
-    if( KinematicFilter::filterTwist(attrTwistCmd, attrCurrentTwist, attrMotorsCurrentState, attrAcceptableTwist, params) == false )
-        {
-            LOG(Error) << "Failed to filter desired twist to an acceptable twist" << endlog();
-        }
+    // BMO pour RMO : Il faut récupérer les infos Moteur, les convertir en infos Tourelle (gestion du couplage des axes en particulier).
+    // Il y a une fonction pour ça dans UbiquityKinematics. Par contre, il va te manquer des infos (l'état courant de la tourelle).
+    // Il va donc te falloir de nouveaux ports.
+//    if( KinematicFilter::filterTwist(attrTwistCmd, attrCurrentTwist, attrMotorsCurrentState, attrAcceptableTwist, params) == false )
+//        {
+//            LOG(Error) << "Failed to filter desired twist to an acceptable twist" << endlog();
+//        }
 
     if( UbiquityKinematics::twist2Turrets(attrAcceptableTwist, turretCmd, params) == false )
     {
         LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
     }
-    else if( UbiquityKinematics::turrets2Motors(turretCmd, motorCmd, turretSpeeds, params) == false )
+    else if( UbiquityKinematics::turrets2Motors(turretCmd, turretVelocities, motorCmd, params) == false )
     {
         LOG(Error) << "Failed to compute Motor Cmd" << endlog();
     }
 
-    LOG(Info) << "turrets : " << turretCmd << endlog();
+    LOG(Info) << "turrets : " << turretCmd.toString() << endlog();
 
-    outLeftDrivingSpeedCmd.write(motorCmd.leftDrivingMotorSpeed);
-    outRightDrivingSpeedCmd.write(motorCmd.rightDrivingMotorSpeed);
-    outRearDrivingSpeedCmd.write(motorCmd.rearDrivingMotorSpeed);
+    outLeftDrivingVelocityCmd.write(motorCmd.leftDrivingMotorVelocity);
+    outRightDrivingVelocityCmd.write(motorCmd.rightDrivingMotorVelocity);
+    outRearDrivingVelocityCmd.write(motorCmd.rearDrivingMotorVelocity);
     outLeftSteeringPositionCmd.write(motorCmd.leftSteeringMotorPosition);
     outRightSteeringPositionCmd.write(motorCmd.rightSteeringMotorPosition);
     outRearSteeringPositionCmd.write(motorCmd.rearSteeringMotorPosition);

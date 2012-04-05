@@ -11,73 +11,184 @@
 #include "UbiquityParams.hpp"
 #include <math/core>
 
-using namespace arp_math;
-
 namespace arp_core
 {
 
-struct MotorCommands
+struct SteeringMotorPositions
 {
-        double leftDrivingMotorSpeed;
-        double rightDrivingMotorSpeed;
-        double rearDrivingMotorSpeed;
         double leftSteeringMotorPosition;
         double rightSteeringMotorPosition;
         double rearSteeringMotorPosition;
 
-        MotorCommands():
-            leftDrivingMotorSpeed(0.0),
-            rightDrivingMotorSpeed(0.0),
-            rearDrivingMotorSpeed(0.0),
+        SteeringMotorPositions():
             leftSteeringMotorPosition(0.0),
             rightSteeringMotorPosition(0.0),
             rearSteeringMotorPosition(0.0)
         {}
 };
 
-struct TurretCommands
+struct DrivingMotorPositions
 {
-        double leftDrivingTurretSpeed;
-        double rightDrivingTurretSpeed;
-        double rearDrivingTurretSpeed;
+        double leftDrivingMotorPosition;
+        double rightDrivingMotorPosition;
+        double rearDrivingMotorPosition;
+
+        DrivingMotorPositions():
+            leftDrivingMotorPosition(0.0),
+            rightDrivingMotorPosition(0.0),
+            rearDrivingMotorPosition(0.0)
+        {}
+};
+
+struct SteeringMotorVelocities
+{
+        double leftSteeringMotorVelocity;
+        double rightSteeringMotorVelocity;
+        double rearSteeringMotorVelocity;
+
+        SteeringMotorVelocities():
+            leftSteeringMotorVelocity(0.0),
+            rightSteeringMotorVelocity(0.0),
+            rearSteeringMotorVelocity(0.0)
+        {}
+};
+
+struct DrivingMotorVelocities
+{
+        double leftDrivingMotorVelocity;
+        double rightDrivingMotorVelocity;
+        double rearDrivingMotorVelocity;
+
+        DrivingMotorVelocities():
+            leftDrivingMotorVelocity(0.0),
+            rightDrivingMotorVelocity(0.0),
+            rearDrivingMotorVelocity(0.0)
+        {}
+};
+
+
+struct MotorState : public  DrivingMotorPositions,
+                            DrivingMotorVelocities,
+                            SteeringMotorPositions,
+                            SteeringMotorVelocities
+{
+        MotorState()
+        : DrivingMotorPositions()
+        , DrivingMotorVelocities()
+        , SteeringMotorPositions()
+        , SteeringMotorVelocities()
+        {}
+
+        std::string toString()
+        {
+            std::stringstream ss;
+            ss << "Driving : " << "(" << leftDrivingMotorPosition << ","
+               << rightDrivingMotorPosition << ","
+               << rearDrivingMotorPosition << ") m" << ","
+               << "(" << leftDrivingMotorVelocity << ","
+               << rightDrivingMotorVelocity << ","
+               << rearDrivingMotorVelocity << ") m/s" << " - "
+               << "Steering : " << "(" << leftSteeringMotorPosition << ","
+               << rightSteeringMotorPosition << ","
+               << rearSteeringMotorPosition << ") rad" << ","
+               << "(" << leftSteeringMotorVelocity << ","
+               << rightSteeringMotorVelocity << ","
+               << rearSteeringMotorVelocity << ") rad/s";
+            return ss.str();
+        }
+};
+
+
+
+struct SteeringTurretPositions
+{
         double leftSteeringTurretPosition;
         double rightSteeringTurretPosition;
         double rearSteeringTurretPosition;
 
-        TurretCommands():
-            leftDrivingTurretSpeed(0.0),
-            rightDrivingTurretSpeed(0.0),
-            rearDrivingTurretSpeed(0.0),
+        SteeringTurretPositions():
             leftSteeringTurretPosition(0.0),
             rightSteeringTurretPosition(0.0),
             rearSteeringTurretPosition(0.0)
         {}
 };
 
-std::ostream& operator<<(std::ostream& os, const TurretCommands& tc)
-{
-  return os << "(" << tc.leftDrivingTurretSpeed << ","
-                  << tc.rightDrivingTurretSpeed << ","
-                  << tc.rearDrivingTurretSpeed << ") mm/s ("
-                  << tc.leftSteeringTurretPosition << ","
-                  << tc.rightSteeringTurretPosition << ","
-                  << tc.rearSteeringTurretPosition << ") rad";
-}
 
-struct CouplingSpeeds
+struct DrivingTurretPositions
 {
-        double leftSteeringMotorSpeed;
-        double rightSteeringMotorSpeed;
-        double rearSteeringMotorSpeed;
+        double leftDrivingTurretPosition;
+        double rightDrivingTurretPosition;
+        double rearDrivingTurretPosition;
 
-        CouplingSpeeds():
-            leftSteeringMotorSpeed(0.0),
-            rightSteeringMotorSpeed(0.0),
-            rearSteeringMotorSpeed(0.0)
+        DrivingTurretPositions():
+            leftDrivingTurretPosition(0.0),
+            rightDrivingTurretPosition(0.0),
+            rearDrivingTurretPosition(0.0)
         {}
 };
 
-struct Slippage
+
+struct SteeringTurretVelocities
+{
+        double leftSteeringTurretVelocity;
+        double rightSteeringTurretVelocity;
+        double rearSteeringTurretVelocity;
+
+        SteeringTurretVelocities():
+            leftSteeringTurretVelocity(0.0),
+            rightSteeringTurretVelocity(0.0),
+            rearSteeringTurretVelocity(0.0)
+        {}
+};
+
+
+struct DrivingTurretVelocities
+{
+        double leftDrivingTurretVelocity;
+        double rightDrivingTurretVelocity;
+        double rearDrivingTurretVelocity;
+
+        DrivingTurretVelocities():
+            leftDrivingTurretVelocity(0.0),
+            rightDrivingTurretVelocity(0.0),
+            rearDrivingTurretVelocity(0.0)
+        {}
+};
+
+
+struct TurretState : public  DrivingTurretPositions,
+                            DrivingTurretVelocities,
+                            SteeringTurretPositions,
+                            SteeringTurretVelocities
+{
+        TurretState()
+        : DrivingTurretPositions()
+        , DrivingTurretVelocities()
+        , SteeringTurretPositions()
+        , SteeringTurretVelocities()
+        {}
+
+        std::string toString()
+        {
+            std::stringstream ss;
+            ss << "Driving : " << "(" << leftDrivingTurretPosition << ","
+               << rightDrivingTurretPosition << ","
+               << rearDrivingTurretPosition << ") m" << ","
+               << "(" << leftDrivingTurretVelocity << ","
+               << rightDrivingTurretVelocity << ","
+               << rearDrivingTurretVelocity << ") m/s" << " - "
+               << "Steering : " << "(" << leftSteeringTurretPosition << ","
+               << rightSteeringTurretPosition << ","
+               << rearSteeringTurretPosition << ") rad" << ","
+               << "(" << leftSteeringTurretVelocity << ","
+               << rightSteeringTurretVelocity << ","
+               << rearSteeringTurretVelocity << ") rad/s";
+            return ss.str();
+        }
+};
+
+
+struct SlippageReport
 {
 
 };
@@ -88,63 +199,65 @@ class UbiquityKinematics
         UbiquityKinematics();
 
         /**
-         * Modèle direct de tourelle
+         * Modèle cinématique direct de tourelle
          * Convertit le couple (domega,omega) exprimé sur les axes des motoréducteurs
          * en un couple (vitesse, angle) exprimé sur le centre de la roue de la tourelle
-         * @param inputs : vitesse des moteurs de traction exprimee en rad/s en sortie de réducteur
-         *              et positions des moteurs de direction exprime en rad en sortie du réducteur
-         * @param outputs : vitesse de traction du chassis exprimée en mm/s par rapport au sol sur chaque tourelle et
-         *               angles des tourelles par rapport au chassis en rad. Tient compte des 0 tourelle calibrés
-         * @param turretSpeeds : vitesse de direction de tourelle pour le couplage
-         * @param params : paramètres géométriques du robot
+         * @param[in] iMS : Etat des moteurs ie positions et vitesses des moteurs (traction et direction) exprimee en rad et rad/s
+         *               en sortie de réducteur
+         * @param[out] oTS : Etat des tourelles ie positions des tourelles (traction et direction) exprimés en rad et rad/s.
+         *               Tient compte des 0 tourelle calibrés
+         * @param[in] iParams : paramètres géométriques du robot
          * @return : true if computation succeed, false otherwise (param inconsistent for instance)
          */
-        static bool motors2Turrets(MotorCommands const inputs, TurretCommands& outputs, CouplingSpeeds const turretSpeeds,  UbiquityParams const params);
+        static bool motors2Turrets(const MotorState & iMS, TurretState& oTS, const UbiquityParams & iParams);
 
         /**
-         * Modèle inverse de tourelle
+         * Modèle cinématique inverse de tourelle
          * Convertit le couple (vitesse, angle) exprimé sur le centre de la roue de la tourelle
          * en un couple (domega,omega) exprimé sur les axes des motoréducteurs
-         * @param inputs : vitesse de traction du chassis exprimée en mm/s par rapport au sol sur chaque tourelle et
-         *               angles des tourelles par rapport au chassis en rad. Tient compte des 0 tourelle calibrés
-         * @param outputs : vitesse des moteurs de traction exprimee en rad/s en sortie de réducteur
-         *              et positions des moteurs de direction exprime en rad en sortie du réducteur
-         * @param turretSpeeds : vitesse de direction de tourelle pour le couplage
-         * @param params : paramètres géométriques du robot
+         * @param[in] iTS : Etat des tourelles ie positions des tourelles (traction et direction) exprimés en rad et rad/s.
+         *               Tient compte des 0 tourelle calibrés
+         * @param[in] iSMV : Vitesses courantes des moteurs de direction (pour prendre en compte le couplage)
+         * @param[out] oMS : Etat des moteurs ie positions et vitesses des moteurs (traction et direction) exprimee en rad et rad/s
+         *               en sortie de réducteur
+         * @param[in] iParams : paramètres géométriques du robot
          * @return : true if computation succeed, false otherwise (param inconsistent for instance)
          */
-        static bool turrets2Motors(TurretCommands const inputs, MotorCommands& outputs, CouplingSpeeds const turretSpeeds,  UbiquityParams const params);
+        static bool turrets2Motors(const TurretState & iTS, const SteeringMotorVelocities & iSMV, MotorState& oMS, const UbiquityParams & iParams);
 
         /**
-         * Modèle direct cinématique de la base.
-         * Convertit le 6-uplet TurretCommands correspondants aux vitesses et positions de tourelles en un Twist au centre du robot
-         * exprimé dans le repère XXX . En parrallèles un vecteur de taille 3 correspondant aux glissements est publié.
-         * @param inputs : vitesse de traction du chassis exprimée en mm/s par rapport au sol sur chaque tourelle et
-         *               angles des tourelles par rapport au chassis en rad. Tient compte des 0 tourelle calibrés
-         * @param outputs : Twist de la base roulante par rapport au sol exprimé dans le repère XXX, réduit au centre du chassis.
-         * @param slippage : (output) donne une information sur le taux de glissement du robot.
-         * @param params : paramètres géométriques du robot
+         * Modèle cinématique direct de la base.
+         * Convertit l'état des tourelles en un Twist (Twist du repère de référence du chassis par rapport au sol projeté et réduit dans le
+         * repère de référence du chassis).\n
+         * En parrallèle, un rapport sur les glissements est publié.
+         * @remark : cette fonction correspond à la fonction d'odométrie.
+         * @param[in] iTS : Etat des tourelles ie positions des tourelles (traction et direction) exprimés en rad et rad/s.
+         *               Tient compte des 0 tourelle calibrés
+         * @param[out] oTw : Twist du repère de référence du chassis par rapport au sol projeté et réduit dans le repère de référence du chassis.
+         * @param[out] oSR : donne une information sur le taux de glissement du robot.
+         * @param[in] iParams : paramètres géométriques du robot
          * @return : true if computation succeed, false otherwise (param inconsistent for instance)
          */
-        static bool turrets2Twist(TurretCommands const inputs, Twist2D& outputs, Slippage& splippage, UbiquityParams const params);
+        static bool turrets2Twist(const TurretState & iTS, arp_math::Twist2D& oTw, SlippageReport& oSR, const UbiquityParams & iParams);
 
         /**
-         * Modèle indirect cinématique de la base
-         * Convertit un Twist au centre du robot exprimé dans le repère XXX en des consignes de vitesse linéaire et de position angulaire
+         * Modèle cinématique indirect de la base
+         * Convertit un Twist (Twist du repère de référence du chassis par rapport au sol projeté et réduit dans le repère de référence du chassis)
+         * en consignes articulaires pour les tourelles.
          * à destination du modèle de tourelle.
-         * @param inputs : Twist de la base roulante par rapport au sol exprimé dans le repère XXX, réduit au centre du chassis.
-         * @param outputs : vitesse de traction du chassis exprimée en mm/s par rapport au sol sur chaque tourelle et
-         *               angles des tourelles par rapport au chassis en rad. Tient compte des 0 tourelle calibrés
-         * @param params : paramètres géométriques du robot
+         * @param[in] iTw : Twist du repère de référence du chassis par rapport au sol projeté et réduit dans le repère de référence du chassis.
+         * @param[out] oTS : Etat des tourelles ie positions des tourelles (traction et direction).
+         *               Tient compte des 0 tourelle calibrés
+         * @param[in] iParams : paramètres géométriques du robot
          * @return : true if computation succeed, false otherwise (param inconsistent for instance)
          */
-        static bool twist2Turrets(Twist2D const  inputs, TurretCommands& outputs, UbiquityParams const params);
+        static bool twist2Turrets(const arp_math::Twist2D & iTw, TurretState& oTS, const UbiquityParams & iParams);
 
         /**
          * Les tourelles permettent de recouvrir l'état de possibles de plusieurs façons lorsqu'elles sont pilotés en marche
          * AV et AR entre -PI et PI. Cette fonction permet de réduire ce recouvrement à un pilotage entre -PI/2 et PI/2 puis marche AV/AR
-         * @param angle : angle en rad à normalizer entre -PI/2 et PI/2
-         * @param speed : la vitesse dont il faut éventuellement changer le signe
+         * @param[in] angle : angle en rad à normalizer entre -PI/2 et PI/2
+         * @param[in] speed : la vitesse dont il faut éventuellement changer le signe
          */
         static void normalizeDirection(double& angle, double& speed);
 };

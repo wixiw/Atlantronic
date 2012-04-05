@@ -24,7 +24,7 @@ KinematicFilter::~KinematicFilter()
     // TODO Auto-generated destructor stub
 }
 
-bool KinematicFilter::filterTwist(Twist2D const  desTwist, Twist2D const  currentTwist, MotorCommands const motorsCurrentState, Twist2D& acceptableTwist, UbiquityParams const params)
+bool KinematicFilter::filterTwist(const Twist2D & desTwist, const Twist2D & currentTwist, const TurretState & turretCurrentState, Twist2D& acceptableTwist, const UbiquityParams & params)
 {
 
     if( !params.check() )
@@ -35,7 +35,7 @@ bool KinematicFilter::filterTwist(Twist2D const  desTwist, Twist2D const  curren
     Twist2D slowedTwist;
 
     // call first filtering
-    filterForNonholonomy(desTwist,currentTwist,motorsCurrentState,slowedTwist,params);
+    filterForNonholonomy(desTwist,currentTwist,turretCurrentState,slowedTwist,params);
     //call second filtering
     filterForConstraints(slowedTwist,currentTwist,acceptableTwist,params);
 
@@ -54,19 +54,22 @@ bool KinematicFilter::filterTwist(Twist2D const  desTwist, Twist2D const  curren
     return true;
 }
 
-void KinematicFilter::filterForNonholonomy(Twist2D const inputTwist, Twist2D const  currentTwist, MotorCommands const motorsCurrentState, Twist2D& outputTwist, UbiquityParams const params)
+void KinematicFilter::filterForNonholonomy(const arp_math::Twist2D & inputTwist, const arp_math::Twist2D & currentTwist, const arp_core::TurretState & turretCurrentState, arp_math::Twist2D& outputTwist, const arp_core::UbiquityParams & params)
 {
     // GET SATURATION OF TURRETS TO FULLFILL THE ORDER
-    TurretCommands desTurretCmd;
+    TurretState desTurretCmd;
     UbiquityKinematics::twist2Turrets(inputTwist, desTurretCmd, params);
-    double speedLeft=desTurretCmd.leftSteeringTurretPosition-motorsCurrentState.leftSteeringMotorPosition;
+
+    // Attention Moumou, j'ai l'impression que tu mélanges moteur et tourelle. (BMO)
+
+    /*double speedLeft=desTurretCmd.leftSteeringTurretPosition-motorsCurrentState.leftSteeringMotorPosition;
     double speedRight=desTurretCmd.rightSteeringTurretPosition-motorsCurrentState.rightSteeringMotorPosition;
     double speedRear=desTurretCmd.rearSteeringTurretPosition-motorsCurrentState.rearSteeringMotorPosition;
     double saturationLeft=(speedLeft-params.getMaxTurretSpeed())/params.getMaxTurretSpeed();
     double saturationRight=(speedRight-params.getMaxTurretSpeed())/params.getMaxTurretSpeed();
     double saturationRear=(speedRear-params.getMaxTurretSpeed())/params.getMaxTurretSpeed();
 
-    double saturationMax=std::max(saturationLeft,std::max(saturationRight,saturationRear));
+    double saturationMax=std::max(saturationLeft,std::max(saturationRight,saturationRear));*/
 
     // FROM THIS SATURATION, DECREASE THE DESIRED TWIST
     Twist2D twistInit;
@@ -80,17 +83,17 @@ void KinematicFilter::filterForNonholonomy(Twist2D const inputTwist, Twist2D con
 }
 
 
-void KinematicFilter::filterForConstraints(Twist2D const  inputTwist, Twist2D const  currentTwist, Twist2D& outputTwist, UbiquityParams const params)
+void KinematicFilter::filterForConstraints(const Twist2D & inputTwist, const Twist2D & currentTwist, Twist2D& outputTwist, const UbiquityParams & params)
 {
     outputTwist=inputTwist;
 }
 
-void KinematicFilter::transportToCog(Twist2D const  refTwist, Twist2D& cogTwist, UbiquityParams const params)
+void KinematicFilter::transportToCog(const Twist2D & refTwist, Twist2D& cogTwist, const UbiquityParams & params)
 {
     cogTwist = refTwist.transport(params.getChassisCenter());
 }
 
-void KinematicFilter::transportToRef(Twist2D const  cogTwist, Twist2D& refTwist, UbiquityParams const params)
+void KinematicFilter::transportToRef(const Twist2D & cogTwist, Twist2D& refTwist, const UbiquityParams & params)
 {
     refTwist = cogTwist.transport(params.getChassisCenter().inverse());
 }

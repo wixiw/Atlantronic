@@ -40,16 +40,16 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_ZeroToZeroTest )
     UbiquityParams params;
     Twist2D twist;
     Twist2D twistZero;
-    TurretCommands turretCmd;
-    Slippage splippage;
+    TurretState turretCmd;
+    SlippageReport splippage;
     bool res;
 
     res = UbiquityKinematics::twist2Turrets(twist, turretCmd, params);
 
     BOOST_CHECK_EQUAL( res , true);
-    BOOST_CHECK_EQUAL( turretCmd.leftDrivingTurretSpeed,       0 );
-    BOOST_CHECK_EQUAL( turretCmd.rightDrivingTurretSpeed,      0 );
-    BOOST_CHECK_EQUAL( turretCmd.rearDrivingTurretSpeed,       0 );
+    BOOST_CHECK_EQUAL( turretCmd.leftDrivingTurretVelocity,    0 );
+    BOOST_CHECK_EQUAL( turretCmd.rightDrivingTurretVelocity,   0 );
+    BOOST_CHECK_EQUAL( turretCmd.rearDrivingTurretVelocity,    0 );
     BOOST_CHECK_EQUAL( turretCmd.leftSteeringTurretPosition,   0 );
     BOOST_CHECK_EQUAL( turretCmd.rightSteeringTurretPosition,  0 );
     BOOST_CHECK_EQUAL( turretCmd.rearSteeringTurretPosition,   0 );
@@ -65,15 +65,15 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_InverseModel )
     UbiquityParams params;
     Twist2D twist(7.3,0,0);
     Twist2D twistZero;
-    TurretCommands turretCmd;
-    Slippage splippage;
+    TurretState turretCmd;
+    SlippageReport splippage;
     bool res;
 
     res = UbiquityKinematics::twist2Turrets(twist, turretCmd, params);
     BOOST_CHECK_EQUAL( res , true);
-    BOOST_CHECK_CLOSE( turretCmd.leftDrivingTurretSpeed,       7.3 , 1E-6 );
-    BOOST_CHECK_CLOSE( turretCmd.rightDrivingTurretSpeed,      7.3 , 1E-6 );
-    BOOST_CHECK_CLOSE( turretCmd.rearDrivingTurretSpeed,       7.3 , 1E-6 );
+    BOOST_CHECK_CLOSE( turretCmd.leftDrivingTurretVelocity,    7.3 , 1E-6 );
+    BOOST_CHECK_CLOSE( turretCmd.rightDrivingTurretVelocity,   7.3 , 1E-6 );
+    BOOST_CHECK_CLOSE( turretCmd.rearDrivingTurretVelocity,    7.3 , 1E-6 );
     BOOST_CHECK_CLOSE( turretCmd.leftSteeringTurretPosition,   0 , 1E-6 );
     BOOST_CHECK_CLOSE( turretCmd.rightSteeringTurretPosition,  0 , 1E-6 );
     BOOST_CHECK_CLOSE( turretCmd.rearSteeringTurretPosition,   0 , 1E-6 );
@@ -81,9 +81,9 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_InverseModel )
     Twist2D twist1(-7.3,0,0);
     res = UbiquityKinematics::twist2Turrets(twist1, turretCmd, params);
     BOOST_CHECK_EQUAL( res , true);
-    BOOST_CHECK_CLOSE( turretCmd.leftDrivingTurretSpeed,       -7.3 , 1E-6 );
-    BOOST_CHECK_CLOSE( turretCmd.rightDrivingTurretSpeed,      -7.3 , 1E-6 );
-    BOOST_CHECK_CLOSE( turretCmd.rearDrivingTurretSpeed,       -7.3 , 1E-6 );
+    BOOST_CHECK_CLOSE( turretCmd.leftDrivingTurretVelocity,    -7.3 , 1E-6 );
+    BOOST_CHECK_CLOSE( turretCmd.rightDrivingTurretVelocity,   -7.3 , 1E-6 );
+    BOOST_CHECK_CLOSE( turretCmd.rearDrivingTurretVelocity,    -7.3 , 1E-6 );
     BOOST_CHECK_CLOSE( turretCmd.leftSteeringTurretPosition,   0 , 1E-6 );
     BOOST_CHECK_CLOSE( turretCmd.rightSteeringTurretPosition,  0 , 1E-6 );
     BOOST_CHECK_CLOSE( turretCmd.rearSteeringTurretPosition,   0 , 1E-6 );
@@ -91,9 +91,9 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_InverseModel )
     Twist2D twist2(0,8.2,0);
     res = UbiquityKinematics::twist2Turrets(twist2, turretCmd, params);
     BOOST_CHECK_EQUAL( res , true);
-    BOOST_CHECK_CLOSE( turretCmd.leftDrivingTurretSpeed,       8.2 , 1E-6 );
-    BOOST_CHECK_CLOSE( turretCmd.rightDrivingTurretSpeed,      8.2 , 1E-6 );
-    BOOST_CHECK_CLOSE( turretCmd.rearDrivingTurretSpeed,       8.2 , 1E-6 );
+    BOOST_CHECK_CLOSE( turretCmd.leftDrivingTurretVelocity,    8.2 , 1E-6 );
+    BOOST_CHECK_CLOSE( turretCmd.rightDrivingTurretVelocity,   8.2 , 1E-6 );
+    BOOST_CHECK_CLOSE( turretCmd.rearDrivingTurretVelocity,    8.2 , 1E-6 );
     BOOST_CHECK_CLOSE( turretCmd.leftSteeringTurretPosition,   M_PI_2 , 1E-6 );
     BOOST_CHECK_CLOSE( turretCmd.rightSteeringTurretPosition,  M_PI_2 , 1E-6 );
     BOOST_CHECK_CLOSE( turretCmd.rearSteeringTurretPosition,   M_PI_2 , 1E-6 );
@@ -101,9 +101,9 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_InverseModel )
     Twist2D twist3(0,-8.2,0);
     res = UbiquityKinematics::twist2Turrets(twist3, turretCmd, params);
     BOOST_CHECK_EQUAL( res , true);
-    BOOST_CHECK_CLOSE( turretCmd.leftDrivingTurretSpeed,       -8.2 , 1E-6 );
-    BOOST_CHECK_CLOSE( turretCmd.rightDrivingTurretSpeed,      -8.2 , 1E-6 );
-    BOOST_CHECK_CLOSE( turretCmd.rearDrivingTurretSpeed,       -8.2 , 1E-6 );
+    BOOST_CHECK_CLOSE( turretCmd.leftDrivingTurretVelocity,    -8.2 , 1E-6 );
+    BOOST_CHECK_CLOSE( turretCmd.rightDrivingTurretVelocity,   -8.2 , 1E-6 );
+    BOOST_CHECK_CLOSE( turretCmd.rearDrivingTurretVelocity,    -8.2 , 1E-6 );
     BOOST_CHECK_CLOSE( turretCmd.leftSteeringTurretPosition,   M_PI_2 , 1E-6 );
     BOOST_CHECK_CLOSE( turretCmd.rightSteeringTurretPosition,  M_PI_2 , 1E-6 );
     BOOST_CHECK_CLOSE( turretCmd.rearSteeringTurretPosition,   M_PI_2 , 1E-6 );
