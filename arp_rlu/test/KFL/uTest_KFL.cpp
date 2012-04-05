@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_SUITE_END()
 
 //#include "BFL/uTest_BFLWrapper.hpp"
 //
-//#include "uTest_KFLocalizator_Trivial.hpp"
-//#include "uTest_KFLocalizator_Static.hpp"
+#include "uTest_KFLocalizator_Trivial.hpp"
+#include "uTest_KFLocalizator_Static.hpp"
 #include "uTest_KFLocalizator_Dynamic.hpp"
 

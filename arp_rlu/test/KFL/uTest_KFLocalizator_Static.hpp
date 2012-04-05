@@ -27,7 +27,7 @@ namespace unittest_KFLocalizator_Static
         xpSS << xpIndex;
         std::string xpName = xpSS.str();
 
-        const double transPrecision = 0.050;
+        const double transPrecision = 0.025;
         const double rotPrecision = deg2rad(5.0);
         const double covPrecisionDiag = 8.e-3;
         const double covPrecisionNonDiag = 8.e-3;
@@ -231,19 +231,22 @@ namespace unittest_KFLocalizator_Static
                         }
                     }
                 }
-            }
 
+                BOOST_CHECK( abs(odoEstim.x() - trueX) < 3.0 * sqrt(odoEstim.cov()(0,0)) );
+                BOOST_CHECK( abs(odoEstim.y() - trueY) < 3.0 * sqrt(odoEstim.cov()(1,1)) );
+                BOOST_CHECK( abs(betweenMinusPiAndPlusPi( odoEstim.h() - trueH )) < 3.0 * sqrt(odoEstim.cov()(2,2)) );
+            }
             arp_math::EstimatedPose2D postOdoEstim;
             postOdoEstim = obj.getLastEstimatedPose2D();
 
             kfl::Log( DEBUG ) << "=======================";
             kfl::Log( DEBUG ) << "erreur statique apres les odos [time=" << time << "]:";
-            kfl::Log( DEBUG ) << "  sur x (en mm): " << (postOdoEstim.x() - trueX) * 1000.;
-            kfl::Log( DEBUG ) << "  sur y (en mm): " << (postOdoEstim.y() - trueY) * 1000.;
-            kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( postOdoEstim.h() - trueH ) );
-            kfl::Log( DEBUG ) << "covariance : " << postOdoEstim.cov().row(0);
-            kfl::Log( DEBUG ) << "             " << postOdoEstim.cov().row(1);
-            kfl::Log( DEBUG ) << "             " << postOdoEstim.cov().row(2);
+            kfl::Log( DEBUG ) << "  sur x (en mm): " << (postOdoEstim.x() - trueX) * 1000. << " +/- " << 3000. * sqrt(postOdoEstim.cov()(0,0));
+            kfl::Log( DEBUG ) << "  sur y (en mm): " << (postOdoEstim.y() - trueY) * 1000. << " +/- " << 3000. * sqrt(postOdoEstim.cov()(1,1));
+            kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( postOdoEstim.h() - trueH ) ) << 3.0 * rad2deg(sqrt(postOdoEstim.cov()(2,2)));
+//            kfl::Log( DEBUG ) << "covariance : " << postOdoEstim.cov().row(0);
+//            kfl::Log( DEBUG ) << "             " << postOdoEstim.cov().row(1);
+//            kfl::Log( DEBUG ) << "             " << postOdoEstim.cov().row(2);
 
 
             arp_rlu::lsl::JsonScanParser scanParser;
@@ -296,14 +299,18 @@ namespace unittest_KFLocalizator_Static
                 }
             }
 
+            BOOST_CHECK( abs(postScanEstim.x() - trueX) < 3.0 * sqrt(postScanEstim.cov()(0,0)) );
+            BOOST_CHECK( abs(postScanEstim.y() - trueY) < 3.0 * sqrt(postScanEstim.cov()(1,1)) );
+            BOOST_CHECK( abs(betweenMinusPiAndPlusPi( postScanEstim.h() - trueH )) < 3.0 * sqrt(postScanEstim.cov()(2,2)) );
+
             kfl::Log( DEBUG ) << "=======================";
             kfl::Log( DEBUG ) << "erreur statique apres le scan [time=" << time << "]:";
-            kfl::Log( DEBUG ) << "  sur x (en mm): " << (postScanEstim.x() - trueX) * 1000.;
-            kfl::Log( DEBUG ) << "  sur y (en mm): " << (postScanEstim.y() - trueY) * 1000.;
-            kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( postScanEstim.h() - trueH ) );
-            kfl::Log( DEBUG ) << "covariance : " << postScanEstim.cov().row(0);
-            kfl::Log( DEBUG ) << "             " << postScanEstim.cov().row(1);
-            kfl::Log( DEBUG ) << "             " << postScanEstim.cov().row(2);
+            kfl::Log( DEBUG ) << "  sur x (en mm): " << (postScanEstim.x() - trueX) * 1000. << " +/- " << 3000. * sqrt(postScanEstim.cov()(0,0));
+            kfl::Log( DEBUG ) << "  sur y (en mm): " << (postScanEstim.y() - trueY) * 1000. << " +/- " << 3000. * sqrt(postScanEstim.cov()(1,1));
+            kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( postScanEstim.h() - trueH ) ) << " +/- " << 3.0 * rad2deg(sqrt(postScanEstim.cov()(2,2)));
+//            kfl::Log( DEBUG ) << "covariance : " << postScanEstim.cov().row(0);
+//            kfl::Log( DEBUG ) << "             " << postScanEstim.cov().row(1);
+//            kfl::Log( DEBUG ) << "             " << postScanEstim.cov().row(2);
         }
 
         arp_math::EstimatedPose2D lastEstim;
