@@ -11,6 +11,7 @@
 #include "taskcontexts/OdsTaskContext.hpp"
 #include <math/core>
 #include <models/UbiquityParams.hpp>
+#include <models/UbiquityKinematics.hpp>
 
 using namespace arp_core;
 using namespace arp_math;
