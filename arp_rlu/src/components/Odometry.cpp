@@ -15,6 +15,33 @@ ORO_LIST_COMPONENT_TYPE( arp_rlu::Odometry )
 Odometry::Odometry(const std::string& name):
         RluTaskContext(name)
 {
-
+    createOrocosInterface();
 }
 
+
+
+
+
+
+void Odometry::createOrocosInterface()
+{
+    addEventPort("inTime",inTime)
+            .doc("");
+    addPort("inParams",inParams)
+            .doc("");
+    addPort("inLeftTurretSpeed",inLeftTurretSpeed)
+            .doc("");
+    addPort("inRightTurretSpeed",inRightTurretSpeed)
+            .doc("");
+    addPort("inRearTurretSpeed",inRearTurretSpeed)
+            .doc("");
+    addPort("inLeftTurretPosition",inLeftTurretPosition)
+            .doc("");
+    addPort("inRightTurretPosition",inRightTurretPosition)
+            .doc("");
+    addPort("inRearTurretPosition",inRearTurretPosition)
+            .doc("");
+
+    addPort("outTwist",outTwist)
+            .doc("");
+}

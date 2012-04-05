@@ -5,4 +5,4 @@
     )  
     
 orocos_component(arp_ods-components ${source_files} )
-#target_link_libraries(arp_ods-components XXX)
+target_link_libraries(arp_ods-components arp_core-models)
