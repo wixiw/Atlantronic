@@ -1,5 +1,5 @@
 /*
- * uTest_UbiquityKinematics.hpp
+ * uTest_UK_Twist2Turrets.hpp
  *
  *  Created on: 04 April 2012
  *      Author: willy
@@ -14,7 +14,7 @@
 using namespace arp_math;
 using namespace arp_core;
 
-BOOST_AUTO_TEST_CASE( UbiquityKinematics_NormalizeAngle )
+BOOST_AUTO_TEST_CASE( UK_Twist2Turrets_NormalizeAngle )
 {
       double angle = 0;
       double v = 2.9;
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_NormalizeAngle )
       BOOST_CHECK_EQUAL( v , -2.9 );
 }
 
-BOOST_AUTO_TEST_CASE( UbiquityKinematics_ZeroToZeroTest )
+BOOST_AUTO_TEST_CASE( UK_Twist2Turrets_ZeroToZeroTest )
 {
     UbiquityParams params;
     Twist2D twist;
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_ZeroToZeroTest )
     BOOST_CHECK( twist == twistZero );
 }
 
-BOOST_AUTO_TEST_CASE( UbiquityKinematics_InverseModel )
+BOOST_AUTO_TEST_CASE( UK_Twist2Turrets_InverseModel )
 {
     UbiquityParams params;
     Twist2D twist(7.3,0,0);

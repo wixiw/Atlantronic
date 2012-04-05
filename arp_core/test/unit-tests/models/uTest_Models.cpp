@@ -11,5 +11,5 @@
 #include <boost/bind.hpp>
 
 #include "uTest_UbiquityParams.hpp"
-#include "uTest_UbiquityKinematics.hpp"
-#include "uTest_UbiquityKinematicsB.hpp"
+#include "uTest_UK_MotorTurret.hpp"
+#include "uTest_UK_Twist2Turrets.hpp"

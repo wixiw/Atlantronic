@@ -1,5 +1,5 @@
 /*
- * uTest_UbiquityKinematicsB.hpp
+ * uTest_UK_MotorTurret.hpp
  *
  *  Created on: 04 April 2012
  *      Author: willy
@@ -14,7 +14,7 @@
 using namespace arp_math;
 using namespace arp_core;
 
-BOOST_AUTO_TEST_CASE( UbiquityKinematicsB_ZeroToZeroTest )
+BOOST_AUTO_TEST_CASE( UK_MotorTurret_ZeroToZeroTest )
 {
     UbiquityParams params;
     MotorState motorsCmd;
