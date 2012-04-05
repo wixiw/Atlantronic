@@ -1,12 +1,12 @@
 /*
- * Odometry.hpp
+ * Odometry4Ubiquity.hpp
  *
  *  Created on: Apr 5, 2012
  *      Author: ard
  */
 
-#ifndef ODOMETRY_HPP_
-#define ODOMETRY_HPP_
+#ifndef ODOMETRY4UBIQUITY_HPP_
+#define ODOMETRY4UBIQUITY_HPP_
 
 #include "RluTaskContext.hpp"
 #include <math/core>
@@ -17,10 +17,13 @@ using namespace arp_math;
 namespace arp_rlu
 {
 
-class Odometry: public RluTaskContext
+class Odometry4Ubiquity: public RluTaskContext
 {
     public:
-        Odometry(const std::string& name);
+        Odometry4Ubiquity(const std::string& name);
+
+        /** Callback d'update.*/
+        virtual void updateHook();
 
     protected:
         InputPort<double> inTime;
@@ -50,4 +53,4 @@ class Odometry: public RluTaskContext
 };
 
 } /* namespace arp_rlu */
-#endif /* ODOMETRY_HPP_ */
+#endif /* ODOMETRY4UBIQUITY_HPP_ */
