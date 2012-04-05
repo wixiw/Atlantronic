@@ -42,6 +42,8 @@ class KinematicBase: public OdsTaskContext
         OutputPort<double> outLeftSteeringPositionCmd;
         OutputPort<double> outRightSteeringPositionCmd;
         OutputPort<double> outRearSteeringPositionCmd;
+
+        Twist2D attrTwistCmd;
 };
 
 } /* namespace arp_ods */

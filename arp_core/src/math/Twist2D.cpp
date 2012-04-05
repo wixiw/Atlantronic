@@ -37,6 +37,21 @@ double Twist2D::vh() const
     return vitesseRotation;
 }
 
+double& Twist2D::vxRef()
+{
+    return vitesseTranslation[0];
+}
+
+double& Twist2D::vyRef()
+{
+    return vitesseTranslation[1];
+}
+
+double& Twist2D::vhRef()
+{
+    return vitesseRotation;
+}
+
 double Twist2D::speedAngle() const
 {
     return atan2(vitesseTranslation[1], vitesseTranslation[0]);

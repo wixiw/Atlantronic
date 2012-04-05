@@ -54,6 +54,16 @@ struct TurretCommands
         {}
 };
 
+std::ostream& operator<<(std::ostream& os, const TurretCommands& tc)
+{
+  return os << "(" << tc.leftDrivingTurretSpeed << ","
+                  << tc.rightDrivingTurretSpeed << ","
+                  << tc.rearDrivingTurretSpeed << ") mm/s ("
+                  << tc.leftSteeringTurretPosition << ","
+                  << tc.rightSteeringTurretPosition << ","
+                  << tc.rearSteeringTurretPosition << ") rad";
+}
+
 struct CouplingSpeeds
 {
         double leftSteeringMotorSpeed;
@@ -130,6 +140,13 @@ class UbiquityKinematics
          */
         static bool twist2Turrets(Twist2D const  inputs, TurretCommands& outputs, UbiquityParams const params);
 
+        /**
+         * Les tourelles permettent de recouvrir l'état de possibles de plusieurs façons lorsqu'elles sont pilotés en marche
+         * AV et AR entre -PI et PI. Cette fonction permet de réduire ce recouvrement à un pilotage entre -PI/2 et PI/2 puis marche AV/AR
+         * @param angle : angle en rad à normalizer entre -PI/2 et PI/2
+         * @param speed : la vitesse dont il faut éventuellement changer le signe
+         */
+        static void normalizeDirection(double& angle, double& speed);
 };
 
 } /* namespace arp_core */

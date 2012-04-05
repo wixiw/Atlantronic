@@ -9,6 +9,7 @@
 
 #include "CoreTypeKit.hpp"
 #include "Pose2DTypeInfo.hpp"
+#include "Twist2DTypeInfo.hpp"
 #include "ParamsTypeInfo.hpp"
 
 using namespace RTT;
@@ -25,6 +26,7 @@ bool CoreTypeKit::loadTypes()
 
     // Tell the RTT the name and type of this struct
     res &= types::Types()->addType( new Pose2DTypeInfo() );
+    res &= types::Types()->addType( new Twist2DTypeInfo() );
     res &= types::Types()->addType( new ParamsTypeInfo() );
 
     return res;
@@ -36,6 +38,7 @@ bool CoreTypeKit::loadConstructors()
     bool res = true;
 
     types::Types()->type("Pose2D")->addConstructor( types::newConstructor(&createPose2D) );
+    types::Types()->type("Twist2D")->addConstructor( types::newConstructor(&createTwist2D) );
 
     return res;
 }

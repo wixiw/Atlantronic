@@ -19,6 +19,8 @@ KinematicBase::KinematicBase(const std::string& name):
         OdsTaskContext(name),
         inClock()
 {
+    addAttribute("attrTwistCmd",attrTwistCmd);
+
     addEventPort("inClock",inClock)
             .doc("Clock port which trigger our activity. It contains the time at which the input data are supposed to be calculated");
 
@@ -53,21 +55,18 @@ void KinematicBase::updateHook()
 {
     OdsTaskContext::updateHook();
 
-    Twist2D twistCmd;
     TurretCommands turretCmd;
     MotorCommands motorCmd;
-
     CouplingSpeeds turretSpeeds;
+    UbiquityParams params;
+
     inLeftSteeringSpeedMeasure.readNewest(turretSpeeds.leftSteeringMotorSpeed);
     inRightSteeringSpeedMeasure.readNewest(turretSpeeds.rightSteeringMotorSpeed);
     inRearSteeringSpeedMeasure.readNewest(turretSpeeds.rearSteeringMotorSpeed);
-
-    UbiquityParams params;
-
-    inTwistCmd.readNewest(twistCmd);
+    inTwistCmd.readNewest(attrTwistCmd);
     inParams.readNewest(params);
 
-    if( UbiquityKinematics::twist2Turrets(twistCmd, turretCmd, params) == false )
+    if( UbiquityKinematics::twist2Turrets(attrTwistCmd, turretCmd, params) == false )
     {
         LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
     }
@@ -76,10 +75,12 @@ void KinematicBase::updateHook()
         LOG(Error) << "Failed to compute Motor Cmd" << endlog();
     }
 
+    LOG(Info) << "turrets : " << turretCmd << endlog();
+
     outLeftDrivingSpeedCmd.write(motorCmd.leftDrivingMotorSpeed);
     outRightDrivingSpeedCmd.write(motorCmd.rightDrivingMotorSpeed);
     outRearDrivingSpeedCmd.write(motorCmd.rearDrivingMotorSpeed);
     outLeftSteeringPositionCmd.write(motorCmd.leftSteeringMotorPosition);
     outRightSteeringPositionCmd.write(motorCmd.rightSteeringMotorPosition);
-    outRearDrivingSpeedCmd.write(motorCmd.rearSteeringMotorPosition);
+    outRearSteeringPositionCmd.write(motorCmd.rearSteeringMotorPosition);
 }

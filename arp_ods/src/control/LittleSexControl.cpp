@@ -21,5 +21,7 @@ LittleSexControl::LittleSexControl(const std::string& name):
 
     addPort("outTwistCmd",outTwistCmd)
             .doc("");
+
+    outTwistCmd.write(Twist2D(10,0,0));
 }
 

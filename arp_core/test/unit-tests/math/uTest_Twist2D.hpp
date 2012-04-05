@@ -8,6 +8,7 @@
 #include <math/core>
 #include <iostream>
 using namespace arp_math;
+using namespace std;
 
 BOOST_AUTO_TEST_CASE( Twist2_Default_Constructor )
 {
@@ -94,6 +95,8 @@ BOOST_AUTO_TEST_CASE( Twist2_TransportRotation )
     Twist2D res;
     Pose2D demitour(0,0,M_PI);
     Pose2D quarttour(0,0,M_PI_2);
+    Pose2D x(1,0);
+    Pose2D y(0,1);
 
     res = a.transport(demitour);
     BOOST_CHECK_CLOSE( res.vx() ,  0 , 1E-6);
@@ -102,6 +105,20 @@ BOOST_AUTO_TEST_CASE( Twist2_TransportRotation )
 
     res = a.transport(quarttour);
     BOOST_CHECK_CLOSE( res.vx() ,  0, 1E-6);
+    BOOST_CHECK_CLOSE( res.vy() ,  0, 1E-6);
+    BOOST_CHECK_CLOSE( res.vh() ,  2.6, 1E-6);
+
+    res = a.transport(x);
+    //cerr << x.toString() << " -> " << x.getBigAdjoint() << endl;
+    //cerr << a.toString() << " -> " << a.transport(x).toString() << endl;
+    //cerr << a.toString() << " -> " << a.transport(y).toString() << endl;
+
+    BOOST_CHECK_CLOSE( res.vx() ,  0, 1E-6);
+    BOOST_CHECK_CLOSE( res.vy() ,  2.6, 1E-6);
+    BOOST_CHECK_CLOSE( res.vh() ,  2.6, 1E-6);
+
+    res = a.transport(y);
+    BOOST_CHECK_CLOSE( res.vx() ,  -2.6, 1E-6);
     BOOST_CHECK_CLOSE( res.vy() ,  0, 1E-6);
     BOOST_CHECK_CLOSE( res.vh() ,  2.6, 1E-6);
 }

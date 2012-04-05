@@ -12,3 +12,4 @@
 
 #include "uTest_UbiquityParams.hpp"
 #include "uTest_UbiquityKinematics.hpp"
+#include "uTest_UbiquityKinematicsB.hpp"

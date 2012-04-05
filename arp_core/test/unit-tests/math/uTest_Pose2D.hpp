@@ -8,6 +8,8 @@
 // TODO BMO: test unitaire pour l'opérateur <<
 
 #include "math/Pose2D.hpp"
+#include <iostream>
+using namespace std;
 using namespace arp_math;
 
 BOOST_AUTO_TEST_CASE( Pose2D_Default_Constructor )
@@ -110,14 +112,79 @@ BOOST_AUTO_TEST_CASE( Pose2D_BigAdjoint )
     res = zero.getBigAdjoint();
     BOOST_CHECK_EQUAL( res , id );
 
-    Pose2D demitour(0,0,2.16);
+    Pose2D quartTour(0,0,M_PI_2);
     Eigen::Matrix<double,3,3> mat3;
-    double cosA = std::cos(2.16);
-    double sinA = std::sin(2.16);
+    double cosA = std::cos(M_PI_2);
+    double sinA = std::sin(M_PI_2);
     mat3 << 1, 0,       0,
-            0, cosA,    sinA,
-            0, -sinA,   cosA   ;
+            0, cosA,    -sinA,
+            0, sinA,   cosA   ;
 
-    res = zero.getBigAdjoint();
-    BOOST_CHECK_EQUAL( res , id );
+    res = quartTour.getBigAdjoint();
+    for( int i = 0 ; i< 3 ; i++ )
+    {
+        for( int j = 0 ; j< 3 ; j++ )
+        {
+            //cerr << "(i,j)=(" << i << "," << j << ")" << endl;
+            if( fabs(mat3(i,j)) >= 1E-6 )
+            {
+                BOOST_CHECK_CLOSE( res(i,j) , mat3(i,j), 1E-6 );
+            }
+            else
+            {
+                BOOST_CHECK_SMALL( res(i,j) , 1E-6 );
+            }
+        }
+    }
+
+
+    Pose2D demitour(0,0,2.16);
+    cosA = std::cos(2.16);
+    sinA = std::sin(2.16);
+    mat3 << 1, 0,       0,
+            0, cosA,    -sinA,
+            0, sinA,   cosA   ;
+
+    res = demitour.getBigAdjoint();
+    for( int i = 0 ; i< 3 ; i++ )
+    {
+        for( int j = 0 ; j< 3 ; j++ )
+        {
+            //cerr << "(i,j)=(" << i << "," << j << ")" << endl;
+            if( fabs(mat3(i,j)) >= 1E-6 )
+            {
+                BOOST_CHECK_CLOSE( res(i,j) , mat3(i,j), 1E-6 );
+            }
+            else
+            {
+                BOOST_CHECK_SMALL( res(i,j) , 1E-6 );
+            }
+        }
+    }
+
+    Pose2D p(3,2,2.16);
+    mat3 << 1, 0,       0,
+            2, cosA,    -sinA,
+            -3, sinA,   cosA   ;
+
+    res = p.getBigAdjoint();
+
+    //cerr << "res = " << res << endl;
+    //cerr << "mat3 = " << mat3 << endl;
+
+    for( int i = 0 ; i< 3 ; i++ )
+    {
+        for( int j = 0 ; j< 3 ; j++ )
+        {
+            //cerr << "(i,j)=(" << i << "," << j << ")" << endl;
+            if( fabs(mat3(i,j)) >= 1E-6 )
+            {
+                BOOST_CHECK_CLOSE( res(i,j) , mat3(i,j), 1E-6 );
+            }
+            else
+            {
+                BOOST_CHECK_SMALL( res(i,j) , 1E-6 );
+            }
+        }
+    }
 }

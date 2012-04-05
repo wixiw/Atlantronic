@@ -221,7 +221,8 @@ void Faulhaber3268Bx4::getInputs()
     double positionCmd = 0;
     if( inPositionCmd.readNewest(positionCmd) != NoData )
     {
-    	ArdMotorItf::setPositionCmd(positionCmd);
+        //TODO WLA commprendre pourquoi
+    	ArdMotorItf::setPositionCmd(positionCmd*50);
     }
 
     //read last torque command
