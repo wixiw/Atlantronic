@@ -32,8 +32,8 @@ def gen(params):
   log.info("ay(t):%f en m/s**2",ayo)
   log.info("ah(t):%f en deg/s**2",aho*180.0/np.pi)
   
-  dt = 0.1 / 1000.
-#  dt = 0.1 / 1024.
+#  dt = 0.1 / 1000.
+  dt = 0.1 / 1024.
   td = 1./dt
   tt = np.arange( 0., params["duration"], dt)
   

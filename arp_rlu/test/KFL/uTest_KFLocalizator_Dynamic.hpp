@@ -27,16 +27,21 @@ namespace unittest_KFLocalizator_Dynamic
         xpSS << xpIndex;
         std::string xpName = xpSS.str();
 
-        const double transPrecision = 0.001;
-        const double rotPrecision = deg2rad(0.5);
-        const double covPrecisionDiag = 0.02;
+        kfl::Log( INFO ) << "============================================================================================";
+        kfl::Log( INFO ) << "============================================================================================";
+        kfl::Log( INFO ) << "=== Experience " << xpIndex;
+        kfl::Log( INFO ) << "============================================================================================";
+        kfl::Log( INFO ) << "============================================================================================";
+
+        const double transPrecisionAgainstPy = 0.015;
+        const double rotPrecisionAgainstPy = deg2rad(1.0);
+
+        const double covPrecisionDiag = 1.e-3;
         const double covPrecisionNonDiag = 1.e-3;
 
-        const double transPrecisionAgainstPy = 0.025;
-        const double rotPrecisionAgainstPy = deg2rad(5.0);
-
-        const double transPrecisionAgainstGroundTruth = 0.020;
+        const double transPrecisionAgainstGroundTruth = 0.015;
         const double rotPrecisionAgainstGroundTruth = deg2rad(1.0);
+
 
 
         //*******************************************
@@ -74,7 +79,7 @@ namespace unittest_KFLocalizator_Dynamic
         iekfParams.iekfInnovationMin       = sqrt( iekf_xThres*iekf_xThres + iekf_yThres*iekf_yThres + iekf_hThres*iekf_hThres );
 
         kfl::BeaconDetector::Params     procParams;
-        procParams.mfp.width = 3;
+        procParams.mfp.width = 0;
         procParams.pcp.minRange = 0.01 * Eigen::VectorXd::Ones(1);
         procParams.pcp.maxRange = 10.0 * Eigen::VectorXd::Ones(1);
         procParams.pcp.minTheta = -PI;
@@ -102,6 +107,10 @@ namespace unittest_KFLocalizator_Dynamic
         kfParams.procParams = procParams;
 
         obj.setParams(kfParams);
+
+        kfl::Log( INFO ) << "================================";
+        kfl::Log( INFO ) << "=== KFLOCALIZATOR PARAMETERS ===";
+        kfl::Log( INFO ) << kfParams.getInfo();
 
 
         //*******************************************
@@ -131,147 +140,178 @@ namespace unittest_KFLocalizator_Dynamic
 
         BOOST_CHECK(obj.initialize(initialPose));
 
-        kfl::Log( DEBUG ) << "============================================================================================";
-        kfl::Log( DEBUG ) << "============================================================================================";
-        kfl::Log( DEBUG ) << "=== TEST " << xpName;
 
         arp_math::EstimatedPose2D initEstim;
         initEstim = obj.getLastEstimatedPose2D();
 
-        kfl::Log( DEBUG ) << "position réelle [time=0.0]:";
-        kfl::Log( DEBUG ) << "  sur x (en m): " << trueInitialXPosition;
-        kfl::Log( DEBUG ) << "  sur y (en m): " << trueInitialYPosition;
-        kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( trueInitialHPosition ));
-        kfl::Log( DEBUG ) << "------------------------------";
-        kfl::Log( DEBUG ) << "position initiale [time=0.0]:";
-        kfl::Log( DEBUG ) << "  sur x (en m): " << initEstim.x();
-        kfl::Log( DEBUG ) << "  sur y (en m): " << initEstim.y();
-        kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( initEstim.h() ));
-        kfl::Log( DEBUG ) << "------------------------------";
-        kfl::Log( DEBUG ) << "erreur initiale [time=0.0]:";
-        kfl::Log( DEBUG ) << "  sur x (en mm): " << (initEstim.x() - trueInitialXPosition) * 1000.;
-        kfl::Log( DEBUG ) << "  sur y (en mm): " << (initEstim.y() - trueInitialYPosition) * 1000.;
-        kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( initEstim.h() - trueInitialHPosition ) );
+//        kfl::Log( DEBUG ) << "position réelle [time=0.0]:";
+//        kfl::Log( DEBUG ) << "  sur x (en m): " << trueInitialXPosition;
+//        kfl::Log( DEBUG ) << "  sur y (en m): " << trueInitialYPosition;
+//        kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( trueInitialHPosition ));
+//        kfl::Log( INFO ) << "------------------------------";
+//        kfl::Log( INFO ) << "position initiale [time=0.0]:";
+//        kfl::Log( INFO ) << "  sur x (en m): " << initEstim.x();
+//        kfl::Log( INFO ) << "  sur y (en m): " << initEstim.y();
+//        kfl::Log( INFO ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( initEstim.h() ));
+        kfl::Log( INFO ) << "------------------------------";
+        kfl::Log( INFO ) << "erreur initiale [time=0.0]:";
+        kfl::Log( INFO ) << "  sur x (en mm): " << (initEstim.x() - trueInitialXPosition) * 1000. << " +/- " << 2000. * sqrt(cov(0,0));
+        kfl::Log( INFO ) << "  sur y (en mm): " << (initEstim.y() - trueInitialYPosition) * 1000. << " +/- " << 2000. * sqrt(cov(1,1));
+        kfl::Log( INFO ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( initEstim.h() - trueInitialHPosition ) ) << 2.0 * rad2deg(sqrt(cov(2,2)));
 
 
+        //*******************************************
+        //********       Load Timeline      *********
+        //*******************************************
+        vjson::JsonDocument docTimeline;
+        std::string timelineFileName = "../ressource/unittest/KFL/KFLocalizator/dynamic_" + xpName + "/time_line.json";
+        BOOST_CHECK( docTimeline.parse(timelineFileName.c_str() ) );
+        const unsigned int N = docTimeline.getIntegerData( docTimeline.getChild( docTimeline.root(), "nb" ) );
+        Eigen::VectorXd times(N);
+        Eigen::VectorXd doOdos(N);
+        Eigen::VectorXd doLrfs(N);
+        for(unsigned int k = 0 ; k < N ; k++)
+        {
+            times(k) = docTimeline.getFloatData( docTimeline.getChild( docTimeline.getChild( docTimeline.root(), "times"), k ) );
+            doOdos(k) = docTimeline.getFloatData( docTimeline.getChild( docTimeline.getChild( docTimeline.root(), "doOdo"), k ) );
+            doLrfs(k) = docTimeline.getFloatData( docTimeline.getChild( docTimeline.getChild( docTimeline.root(), "doLrf"), k ) );
+        }
+
+        double startTime = arp_math::getTime();
         //*******************************************
         //********          Start           *********
         //*******************************************
-
-        const double duration = 0.601;
-        const double odoPeriodInSec = 0.01;
-        const double scanPeriodInSec = 0.1;
-
-        unsigned int i = 1;
-        for(double time = odoPeriodInSec ; time < duration ; time = time + odoPeriodInSec, i++)
+        for(unsigned int k = 1 ; k < N ; k++)
         {
-            kfl::Log( DEBUG ) << "============================================================================================";
-            kfl::Log( DEBUG ) << "============================================================================================";
-            kfl::Log( DEBUG ) << "Time=" << time;
+            double time = times(k);
+            bool doOdo = doOdos(k) > 0.5;
+            bool doLrf = doLrfs(k) > 0.5;
 
-            vjson::JsonDocument docInit;
-            std::stringstream truePosFileName;
-            truePosFileName << "../ressource/unittest/KFL/KFLocalizator/dynamic_" << xpName << "/t_" << time << "_true_position.json";
-            BOOST_CHECK( docInit.parse(truePosFileName.str().c_str() ) );
-            float trueX = docInit.getFloatData( docInit.getChild( docInit.root(), "x") );
-            float trueY = docInit.getFloatData( docInit.getChild( docInit.root(), "y") );
-            float trueH = docInit.getFloatData( docInit.getChild( docInit.root(), "h") );
+            float trueX;
+            float trueY;
+            float trueH;
 
-            kfl::Log( DEBUG ) << "------------------------------";
-            kfl::Log( DEBUG ) << "position réelle :";
-            kfl::Log( DEBUG ) << "  x (en m): " << trueX;
-            kfl::Log( DEBUG ) << "  y (en m): " << trueY;
-            kfl::Log( DEBUG ) << "  h (en deg): " << rad2deg(betweenMinusPiAndPlusPi(trueH));
-
-
-            kfl::Log( DEBUG ) << "============================================================";
-            kfl::Log( DEBUG ) << "Time=" << time << " => ODO";
-
-
-            vjson::JsonDocument docOdoVel;
-            std::stringstream odoVelFileName;
-            odoVelFileName << "../ressource/unittest/KFL/KFLocalizator/dynamic_" << xpName << "/t_" << time << "_odo_velocity.json";
-            BOOST_CHECK( docOdoVel.parse(odoVelFileName.str().c_str()) );
-            BOOST_CHECK_CLOSE( time , docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "t") ), 1.f);
-
-            arp_math::EstimatedTwist2D odoVel;
-            odoVel.date( time );
-            odoVel.vx( docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "vx") ) );
-            odoVel.vy( docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "vy") ) );
-            odoVel.vh( docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "vh") ) );
-            double sigmaX = docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "sigmaX") );
-            double sigmaY = docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "sigmaY") );
-            double sigmaH = docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "sigmaH") );
-            Eigen::Matrix<double, 3,3> covariance = Eigen::Matrix<double, 3,3>::Identity();
-            covariance(0,0) = sigmaX*sigmaX;
-            covariance(1,1) = sigmaY*sigmaY;
-            covariance(2,2) = sigmaH*sigmaH;
-            odoVel.cov( covariance );
-
-            kfl::Log( DEBUG ) << "------------------------------";
-            kfl::Log( DEBUG ) << "vx=" << odoVel.vx() << " m/s";
-            kfl::Log( DEBUG ) << "vy=" << odoVel.vy() << " m/s";
-            kfl::Log( DEBUG ) << "vh=" << rad2deg(odoVel.vh()) << " deg/s";
-            kfl::Log( DEBUG ) << "vh=" << odoVel.vh() << " rad/s";
-
-            obj.newOdoVelocity(odoVel);
-
-            arp_math::EstimatedPose2D odoEstim;
-            odoEstim = obj.getLastEstimatedPose2D();
-
-            vjson::JsonDocument docOdoEstim;
-            std::stringstream odoEstimFileName;
-            odoEstimFileName << "../ressource/unittest/KFL/KFLocalizator/dynamic_" << xpName << "/t_" << time << "_odo_estimate.json";
-            BOOST_CHECK( docOdoEstim.parse(odoEstimFileName.str().c_str()) );
-            BOOST_CHECK_CLOSE( time , docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "t")), 1.f );
-
-            double pyOdoEstimT = docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "t"));
-            double pyOdoEstimX = docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "x"));
-            double pyOdoEstimY = docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "y"));
-            double pyOdoEstimH = docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "h"));
-            BOOST_CHECK_CLOSE( odoEstim.date() , pyOdoEstimT, 1.f);
-            BOOST_CHECK_SMALL( odoEstim.x()    - pyOdoEstimX, transPrecisionAgainstPy);
-            BOOST_CHECK_SMALL( odoEstim.y()    - pyOdoEstimY, transPrecisionAgainstPy);
-            BOOST_CHECK_SMALL( betweenMinusPiAndPlusPi(odoEstim.h()- pyOdoEstimH), rotPrecisionAgainstPy);
-
-            BOOST_CHECK_CLOSE( odoEstim.date() , time, 1.f);
-//            BOOST_CHECK_SMALL( odoEstim.x()    - trueX, transPrecisionAgainstGroundTruth);
-//            BOOST_CHECK_SMALL( odoEstim.y()    - trueY, transPrecisionAgainstGroundTruth);
-//            BOOST_CHECK_SMALL( odoEstim.h()    - trueH, rotPrecisionAgainstGroundTruth);
-            for(unsigned int i = 0 ; i < 3 ; i++)
+            if( doOdo || doLrf )
             {
-                std::stringstream rowName;
-                rowName << "row_" << i;
-                for(unsigned int j = 0 ; j < 3 ; j++)
-                {
-                    // kfl::Log( NOTICE ) << "check odo covariance (" << i << "," << j << ")";
-                    double cov_i_j = docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.getChild( docOdoEstim.getChild( docOdoEstim.root(), "covariance"), rowName.str()), j ));
-                    if( i == j )
-                    {
-                        BOOST_CHECK_SMALL( odoEstim.cov()(i,j) - cov_i_j, covPrecisionDiag);
-                    }
-                    else
-                    {
-                        BOOST_CHECK_SMALL( odoEstim.cov()(i,j) - cov_i_j, covPrecisionNonDiag);
-                    }
-                }
+                kfl::Log( DEBUG ) << "============================================================================================";
+                kfl::Log( DEBUG ) << "============================================================================================";
+                kfl::Log( DEBUG ) << "Time=" << time;
+
+                vjson::JsonDocument docInit;
+                std::stringstream truePosFileName;
+                truePosFileName << "../ressource/unittest/KFL/KFLocalizator/dynamic_" << xpName << "/t_" << std::setprecision(6) << time << "_true_position.json";
+                BOOST_CHECK( docInit.parse(truePosFileName.str().c_str() ) );
+                trueX = docInit.getFloatData( docInit.getChild( docInit.root(), "x") );
+                trueY = docInit.getFloatData( docInit.getChild( docInit.root(), "y") );
+                trueH = docInit.getFloatData( docInit.getChild( docInit.root(), "h") );
+
+//                kfl::Log( DEBUG ) << "------------------------------";
+//                kfl::Log( DEBUG ) << "position réelle :";
+//                kfl::Log( DEBUG ) << "  x (en m): " << trueX;
+//                kfl::Log( DEBUG ) << "  y (en m): " << trueY;
+//                kfl::Log( DEBUG ) << "  h (en deg): " << rad2deg(betweenMinusPiAndPlusPi(trueH));
             }
 
-            kfl::Log( DEBUG ) << "------------------------------";
-            kfl::Log( DEBUG ) << "position apres les odos [time=" << time << "]:";
-            kfl::Log( DEBUG ) << "  sur x (en m): " << odoEstim.x();
-            kfl::Log( DEBUG ) << "  sur y (en m): " << odoEstim.y();
-            kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( odoEstim.h() ) );
-            kfl::Log( DEBUG ) << "------------------------------";
-            kfl::Log( DEBUG ) << "erreur apres les odos [time=" << time << "]:";
-            kfl::Log( DEBUG ) << "  sur x (en mm): " << (odoEstim.x() - trueX) * 1000.;
-            kfl::Log( DEBUG ) << "  sur y (en mm): " << (odoEstim.y() - trueY) * 1000.;
-            kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( odoEstim.h() - trueH ) );
-            kfl::Log( DEBUG ) << "covariance : " << odoEstim.cov().row(0);
-            kfl::Log( DEBUG ) << "             " << odoEstim.cov().row(1);
-            kfl::Log( DEBUG ) << "             " << odoEstim.cov().row(2);
+            if( doOdo )
+            {
+                kfl::Log( DEBUG ) << "============================================================";
+                kfl::Log( DEBUG ) << "Time=" << time << " => ODO";
 
-            if( i % 10 == 0 )
+
+                vjson::JsonDocument docOdoVel;
+                std::stringstream odoVelFileName;
+                odoVelFileName << "../ressource/unittest/KFL/KFLocalizator/dynamic_" << xpName << "/t_" << time << "_odo_velocity.json";
+                BOOST_CHECK( docOdoVel.parse(odoVelFileName.str().c_str()) );
+                BOOST_CHECK_CLOSE( time , docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "t") ), 1.f);
+
+                arp_math::EstimatedTwist2D odoVel;
+                odoVel.date( time );
+                odoVel.vx( docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "vx") ) );
+                odoVel.vy( docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "vy") ) );
+                odoVel.vh( docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "vh") ) );
+                double sigmaX = docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "sigmaX") );
+                double sigmaY = docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "sigmaY") );
+                double sigmaH = docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "sigmaH") );
+                Eigen::Matrix<double, 3,3> covariance = Eigen::Matrix<double, 3,3>::Identity();
+                covariance(0,0) = sigmaX*sigmaX;
+                covariance(1,1) = sigmaY*sigmaY;
+                covariance(2,2) = sigmaH*sigmaH;
+                odoVel.cov( covariance );
+
+//                kfl::Log( DEBUG ) << "------------------------------";
+//                kfl::Log( DEBUG ) << "vx=" << odoVel.vx() << " m/s";
+//                kfl::Log( DEBUG ) << "vy=" << odoVel.vy() << " m/s";
+//                kfl::Log( DEBUG ) << "vh=" << rad2deg(odoVel.vh()) << " deg/s";
+//                kfl::Log( DEBUG ) << "vh=" << odoVel.vh() << " rad/s";
+
+                double startOdoTime = arp_math::getTime();
+                obj.newOdoVelocity(odoVel);
+                double endOdoTime = arp_math::getTime();
+                kfl::Log( INFO ) << "Odo Computation Time :" << endOdoTime - startOdoTime;
+
+                arp_math::EstimatedPose2D odoEstim;
+                odoEstim = obj.getLastEstimatedPose2D();
+
+                vjson::JsonDocument docOdoEstim;
+                std::stringstream odoEstimFileName;
+                odoEstimFileName << "../ressource/unittest/KFL/KFLocalizator/dynamic_" << xpName << "/t_" << time << "_odo_estimate.json";
+                BOOST_CHECK( docOdoEstim.parse(odoEstimFileName.str().c_str()) );
+                BOOST_CHECK_CLOSE( time , docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "t")), 1.f );
+
+                double pyOdoEstimT = docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "t"));
+                double pyOdoEstimX = docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "x"));
+                double pyOdoEstimY = docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "y"));
+                double pyOdoEstimH = docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "h"));
+                BOOST_CHECK_CLOSE( odoEstim.date() , pyOdoEstimT, 1.f);
+                BOOST_CHECK_SMALL( odoEstim.x()    - pyOdoEstimX, transPrecisionAgainstPy);
+                BOOST_CHECK_SMALL( odoEstim.y()    - pyOdoEstimY, transPrecisionAgainstPy);
+                BOOST_CHECK_SMALL( betweenMinusPiAndPlusPi(odoEstim.h()- pyOdoEstimH), rotPrecisionAgainstPy);
+
+                BOOST_CHECK_CLOSE( odoEstim.date() , time, 1.f);
+                //            BOOST_CHECK_SMALL( odoEstim.x()    - trueX, transPrecisionAgainstGroundTruth);
+                //            BOOST_CHECK_SMALL( odoEstim.y()    - trueY, transPrecisionAgainstGroundTruth);
+                //            BOOST_CHECK_SMALL( odoEstim.h()    - trueH, rotPrecisionAgainstGroundTruth);
+                for(unsigned int i = 0 ; i < 3 ; i++)
+                {
+                    std::stringstream rowName;
+                    rowName << "row_" << i;
+                    for(unsigned int j = 0 ; j < 3 ; j++)
+                    {
+                        // kfl::Log( NOTICE ) << "check odo covariance (" << i << "," << j << ")";
+                        double cov_i_j = docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.getChild( docOdoEstim.getChild( docOdoEstim.root(), "covariance"), rowName.str()), j ));
+                        if( i == j )
+                        {
+                            BOOST_CHECK_SMALL( odoEstim.cov()(i,j) - cov_i_j, covPrecisionDiag);
+                        }
+                        else
+                        {
+                            BOOST_CHECK_SMALL( odoEstim.cov()(i,j) - cov_i_j, covPrecisionNonDiag);
+                        }
+                    }
+                }
+
+                BOOST_CHECK( abs(odoEstim.x() - trueX) < 3.0 * sqrt(odoEstim.cov()(0,0)) );
+                BOOST_CHECK( abs(odoEstim.y() - trueY) < 3.0 * sqrt(odoEstim.cov()(1,1)) );
+                BOOST_CHECK( abs(betweenMinusPiAndPlusPi( odoEstim.h() - trueH )) < 3.0 * sqrt(odoEstim.cov()(2,2)) );
+
+//                kfl::Log( INFO ) << "------------------------------";
+//                kfl::Log( INFO ) << "position apres les odos [time=" << time << "]:";
+//                kfl::Log( INFO ) << "  sur x (en m): " << odoEstim.x();
+//                kfl::Log( INFO ) << "  sur y (en m): " << odoEstim.y();
+//                kfl::Log( INFO ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( odoEstim.h() ) );
+                kfl::Log( INFO ) << "------------------------------";
+                kfl::Log( INFO ) << "erreur apres les odos [time=" << time << "]:";
+                kfl::Log( INFO ) << "  sur x (en mm): " << (odoEstim.x() - trueX) * 1000. << " +/- " << 3000. * sqrt(odoEstim.cov()(0,0));
+                kfl::Log( INFO ) << "  sur y (en mm): " << (odoEstim.y() - trueY) * 1000. << " +/- " << 3000. * sqrt(odoEstim.cov()(1,1));
+                kfl::Log( INFO ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( odoEstim.h() - trueH ) ) << " +/- " << 3.0 * rad2deg(sqrt(odoEstim.cov()(2,2)));
+                kfl::Log( INFO ) << "covariance : " << odoEstim.cov().row(0);
+                kfl::Log( INFO ) << "             " << odoEstim.cov().row(1);
+                kfl::Log( INFO ) << "             " << odoEstim.cov().row(2);
+            }
+
+
+            //            if( k % (int)(scanPeriodInSec/odoPeriodInSec) == 0 )
+            if( doLrf )
             {
                 kfl::Log( DEBUG ) << "============================================================";
                 kfl::Log( DEBUG ) << "Time=" << time << " => LRF";
@@ -284,7 +324,10 @@ namespace unittest_KFLocalizator_Dynamic
                 lsl::LaserScan scan;
                 BOOST_CHECK( scanParser.getScan(scan) );
 
+                double startScanTime = arp_math::getTime();
                 obj.newScan(scan);
+                double endScanTime = arp_math::getTime();
+                kfl::Log( INFO ) << "Scan Computation Time :" << endScanTime - startScanTime;
 
                 kfl::Log( DEBUG ) << "------------------------------";
 
@@ -304,19 +347,19 @@ namespace unittest_KFLocalizator_Dynamic
                 BOOST_CHECK_CLOSE( postScanEstim.date() , pyScanEstimT, 1.f);
                 BOOST_CHECK_SMALL( postScanEstim.x() - pyScanEstimX, transPrecisionAgainstPy);
                 BOOST_CHECK_SMALL( postScanEstim.y() - pyScanEstimY, transPrecisionAgainstPy);
-                BOOST_CHECK_SMALL( postScanEstim.h() - pyScanEstimH, rotPrecisionAgainstPy);
+                BOOST_CHECK_SMALL( betweenMinusPiAndPlusPi(postScanEstim.h() - pyScanEstimH), rotPrecisionAgainstPy);
 
                 BOOST_CHECK_CLOSE( postScanEstim.date() , time, 1.f);
                 BOOST_CHECK_SMALL( postScanEstim.x() - trueX, transPrecisionAgainstGroundTruth);
                 BOOST_CHECK_SMALL( postScanEstim.y() - trueY, transPrecisionAgainstGroundTruth);
-                BOOST_CHECK_SMALL( postScanEstim.h() - trueH, rotPrecisionAgainstGroundTruth);
+                BOOST_CHECK_SMALL( betweenMinusPiAndPlusPi(postScanEstim.h() - trueH), rotPrecisionAgainstGroundTruth);
                 for(unsigned int i = 0 ; i < 3 ; i++)
                 {
                     std::stringstream rowName;
                     rowName << "row_" << i;
                     for(unsigned int j = 0 ; j < 3 ; j++)
                     {
-                        //                kfl::Log( NOTICE ) << "check laser covariance (" << i << "," << j << ")";
+                        //                        kfl::Log( NOTICE ) << "check laser covariance (" << i << "," << j << ")";
                         double cov_i_j = docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.getChild( docScanEstim.getChild( docScanEstim.root(), "covariance"), rowName.str()), j ));
                         if( i == j )
                         {
@@ -329,72 +372,65 @@ namespace unittest_KFLocalizator_Dynamic
                     }
                 }
 
-                kfl::Log( DEBUG ) << "------------------------------";
-                kfl::Log( DEBUG ) << "position apres le scan [time=" << time << "]:";
-                kfl::Log( DEBUG ) << "  sur x (en m): " << postScanEstim.x();
-                kfl::Log( DEBUG ) << "  sur y (en m): " << postScanEstim.y();
-                kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( postScanEstim.h() ) );
-                kfl::Log( DEBUG ) << "------------------------------";
-                kfl::Log( DEBUG ) << "erreur apres le scan [time=" << time << "]:";
-                kfl::Log( DEBUG ) << "  sur x (en mm): " << (postScanEstim.x() - trueX) * 1000.;
-                kfl::Log( DEBUG ) << "  sur y (en mm): " << (postScanEstim.y() - trueY) * 1000.;
-                kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( postScanEstim.h() - trueH ) );
-                kfl::Log( DEBUG ) << "covariance : " << postScanEstim.cov().row(0);
-                kfl::Log( DEBUG ) << "             " << postScanEstim.cov().row(1);
-                kfl::Log( DEBUG ) << "             " << postScanEstim.cov().row(2);
+                BOOST_CHECK( abs(postScanEstim.x() - trueX) < 3.0 * sqrt(postScanEstim.cov()(0,0)) );
+                BOOST_CHECK( abs(postScanEstim.y() - trueY) < 3.0 * sqrt(postScanEstim.cov()(1,1)) );
+                BOOST_CHECK( abs(betweenMinusPiAndPlusPi( postScanEstim.h() - trueH )) < 3.0 * sqrt(postScanEstim.cov()(2,2)) );
+
+//                kfl::Log( INFO ) << "------------------------------";
+//                kfl::Log( INFO ) << "position apres le scan [time=" << time << "]:";
+//                kfl::Log( INFO ) << "  sur x (en m): " << postScanEstim.x();
+//                kfl::Log( INFO ) << "  sur y (en m): " << postScanEstim.y();
+//                kfl::Log( INFO ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( postScanEstim.h() ) );
+                kfl::Log( INFO ) << "------------------------------";
+                kfl::Log( INFO ) << "erreur apres le scan [time=" << time << "]:";
+                kfl::Log( INFO ) << "  sur x (en mm): " << (postScanEstim.x() - trueX) * 1000. << " +/- " << 3000. * sqrt(postScanEstim.cov()(0,0));
+                kfl::Log( INFO ) << "  sur y (en mm): " << (postScanEstim.y() - trueY) * 1000. << " +/- " << 3000. * sqrt(postScanEstim.cov()(1,1));
+                kfl::Log( INFO ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( postScanEstim.h() - trueH ) )  << " +/- " << 3.0 * rad2deg(sqrt(postScanEstim.cov()(2,2)));
+                kfl::Log( INFO ) << "covariance : " << postScanEstim.cov().row(0);
+                kfl::Log( INFO ) << "             " << postScanEstim.cov().row(1);
+                kfl::Log( INFO ) << "             " << postScanEstim.cov().row(2);
             }
         }
+
+        double endTime = arp_math::getTime();
+        kfl::Log( INFO ) << "Computation Time :" << endTime - startTime;
     }
+
 }
 
-//BOOST_AUTO_TEST_CASE( test_1 )
-//{
-//    unittest_KFLocalizator_Dynamic::doTest(1);
-//}
+BOOST_AUTO_TEST_CASE( test_1 )
+{
+    unittest_KFLocalizator_Dynamic::doTest(1);
+}
 
-//BOOST_AUTO_TEST_CASE( test_2 )
-//{
-//    unittest_KFLocalizator_Dynamic::doTest(2);
-//}
+BOOST_AUTO_TEST_CASE( test_2 )
+{
+    unittest_KFLocalizator_Dynamic::doTest(2);
+}
 
 BOOST_AUTO_TEST_CASE( test_3 )
 {
     unittest_KFLocalizator_Dynamic::doTest(3);
 }
-//
-//BOOST_AUTO_TEST_CASE( test_4 )
-//{
-//    unittest_KFLocalizator_Dynamic::doTest(4);
-//}
-//
-//BOOST_AUTO_TEST_CASE( test_5 )
-//{
-//    unittest_KFLocalizator_Dynamic::doTest(5);
-//}
-//
-//BOOST_AUTO_TEST_CASE( test_6 )
-//{
-//    unittest_KFLocalizator_Dynamic::doTest(6);
-//}
-//
-//BOOST_AUTO_TEST_CASE( test_7 )
-//{
-//    unittest_KFLocalizator_Dynamic::doTest(7);
-//}
-//
-//BOOST_AUTO_TEST_CASE( test_8 )
-//{
-//    unittest_KFLocalizator_Dynamic::doTest(8);
-//}
-//
-//BOOST_AUTO_TEST_CASE( test_9 )
-//{
-//    unittest_KFLocalizator_Dynamic::doTest(9);
-//}
-//
-//BOOST_AUTO_TEST_CASE( test_10 )
-//{
-//    unittest_KFLocalizator_Dynamic::doTest(10);
-//}
+
+BOOST_AUTO_TEST_CASE( test_4 )
+{
+    unittest_KFLocalizator_Dynamic::doTest(4);
+}
+
+BOOST_AUTO_TEST_CASE( test_5 )
+{
+    unittest_KFLocalizator_Dynamic::doTest(5);
+}
+
+BOOST_AUTO_TEST_CASE( test_6 )
+{
+    unittest_KFLocalizator_Dynamic::doTest(6);
+}
+
+BOOST_AUTO_TEST_CASE( test_7 )
+{
+    unittest_KFLocalizator_Dynamic::doTest(7);
+}
 
 BOOST_AUTO_TEST_SUITE_END()

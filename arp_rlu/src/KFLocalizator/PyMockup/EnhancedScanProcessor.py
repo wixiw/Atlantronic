@@ -84,7 +84,8 @@ class EnhancedScanProcessor:
     yA = self.currentPts[1][0]
     xB = self.currentPts[0][len(self.currentPts[0])-1]
     yB = self.currentPts[1][len(self.currentPts[0])-1]
-    obj.radius = math.sqrt( (xB-xA)**2 + (yB-yA)**2 ) / 2.
+#    obj.radius = math.sqrt( (xB-xA)**2 + (yB-yA)**2 ) / 2.
+    obj.radius = 0.04
     # le 0.85 est statistique. Il permet de reculer le point pour arriver pres du centre
     obj.xCenter = np.mean(self.currentPts[0]) + 0.85 * obj.radius * math.cos(math.atan2(yMean-y, xMean-x))
     obj.yCenter = np.mean(self.currentPts[1]) + 0.85 * obj.radius * math.sin(math.atan2(yMean-y, xMean-x))
@@ -93,6 +94,23 @@ class EnhancedScanProcessor:
     obj.timeBeg = self.timeLastOpen
     obj.timeEnd = self.timeLastAdded
     obj.range = np.mean(self.currentPts[2]) + 0.85 * obj.radius
+#    rospy.loginfo( "EnhancedScanProcessor - xMean=%f", xMean )
+#    rospy.loginfo( "EnhancedScanProcessor - yMean=%f", yMean )
+#    rospy.loginfo( "EnhancedScanProcessor - x=%f", x )
+#    rospy.loginfo( "EnhancedScanProcessor - y=%f", y )
+#    rospy.loginfo( "EnhancedScanProcessor - xMean - x=%f", xMean - x )
+#    rospy.loginfo( "EnhancedScanProcessor - yMean - y=%f", yMean - y )
+#    rospy.loginfo( "EnhancedScanProcessor - math.atan2(yMean-y, xMean-x)=%f", math.atan2(yMean-y, xMean-x) )
+#    rospy.loginfo( "EnhancedScanProcessor - xDelta=%f", 0.85 * obj.radius * math.cos(math.atan2(yMean-y, xMean-x)) )
+#    rospy.loginfo( "EnhancedScanProcessor - yDelta=%f", 0.85 * obj.radius * math.sin(math.atan2(yMean-y, xMean-x)) )
+#    rospy.loginfo( "EnhancedScanProcessor - xCenter=%f", obj.xCenter )
+#    rospy.loginfo( "EnhancedScanProcessor - yCenter=%f", obj.yCenter )
+#    rospy.loginfo( "EnhancedScanProcessor - ranges=%s", repr(self.currentPts[2]) )
+#    rospy.loginfo( "EnhancedScanProcessor - mean(range)=%f", np.mean(self.currentPts[2]) )
+#    rospy.loginfo( "EnhancedScanProcessor - range=%f", obj.range )
+#    rospy.loginfo( "EnhancedScanProcessor - theta=%f", (obj.thetaBeg + obj.thetaEnd)/2. )
+#    rospy.loginfo( "EnhancedScanProcessor - time=%f", (obj.timeBeg + obj.timeEnd)/2. )
+#    rospy.loginfo( "EnhancedScanProcessor - ----------------" )
     self.objects.append( obj )
     self.currentPts = [[],[],[],[]]
     self.clusterOpen = False

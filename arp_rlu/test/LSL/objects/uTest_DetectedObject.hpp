@@ -303,7 +303,7 @@ BOOST_AUTO_TEST_CASE( getApparentCartesianMeanTime )
     BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanTime(), 0.2, 1.f);
 }
 
-BOOST_AUTO_TEST_CASE( getApparentPointOfView )
+BOOST_AUTO_TEST_CASE( getPointOfView )
 {
     Eigen::MatrixXd d = MatrixXd::Random(3, 4);
     d.row(0) << 0.1 ,  0.2  , 0.3  ,    0.4  ;
@@ -321,12 +321,12 @@ BOOST_AUTO_TEST_CASE( getApparentPointOfView )
     lsl::DetectedObject obj;
     obj.setScan(ls);
 
-    arp_math::Vector2 pov = obj.getApparentPointOfView();
+    arp_math::Vector2 pov = obj.getPointOfView();
     BOOST_CHECK_EQUAL( pov.x(), 0.0);
     BOOST_CHECK_EQUAL( pov.y(), 0.0);
 }
 
-BOOST_AUTO_TEST_CASE( getApparentAngleOfView )
+BOOST_AUTO_TEST_CASE( getAngleOfView )
 {
     Eigen::MatrixXd d = MatrixXd::Random(3, 4);
     d.row(0) << 0.1 ,  0.2  , 0.3  ,    0.4  ;
@@ -344,7 +344,7 @@ BOOST_AUTO_TEST_CASE( getApparentAngleOfView )
     lsl::DetectedObject obj;
     obj.setScan(ls);
 
-    BOOST_CHECK_EQUAL( obj.getApparentAngleOfView(), 0.0);
+    BOOST_CHECK_EQUAL( obj.getAngleOfView(), 0.0);
 }
 
 BOOST_AUTO_TEST_CASE( computeStatistics_1 )
@@ -422,10 +422,10 @@ BOOST_AUTO_TEST_CASE( computeStatistics_3 )
     BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanRange(), 0.67314560089181297, 1.f);
     BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanTheta(), -2.761086276477428, 1.f);
     BOOST_CHECK_CLOSE( obj.getApparentCartesianMeanTime(), 0.2, 1.f);
-    arp_math::Vector2 pov = obj.getApparentPointOfView();
+    arp_math::Vector2 pov = obj.getPointOfView();
     BOOST_CHECK_EQUAL( pov.x(), 1.0);
     BOOST_CHECK_EQUAL( pov.y(),-1.0);
-    BOOST_CHECK_EQUAL( obj.getApparentAngleOfView(), PI);
+    BOOST_CHECK_EQUAL( obj.getAngleOfView(), PI);
 
     arp_math::Vector2 m = obj.getCartesianMean();
     arp_math::Vector2 s = obj.getCartesianStddev();

@@ -23,8 +23,8 @@ DetectedObject::DetectedObject()
 , apparentCartMeanRange(0.)
 , apparentCartMeanTheta(0.)
 , apparentCartMeanTime(0.)
-, apparentPoV(Vector2::Zero())
-, apparentAoV(0.)
+, PoV(Vector2::Zero())
+, AoV(0.)
 , cartMean(Vector2::Zero())
 , cartStddev(Vector2::Zero())
 {
@@ -36,8 +36,8 @@ DetectedObject::DetectedObject(const DetectedObject & d)
 , apparentCartMeanRange(d.getApparentCartesianMeanRange())
 , apparentCartMeanTheta(d.getApparentCartesianMeanTheta())
 , apparentCartMeanTime(d.getApparentCartesianMeanTime())
-, apparentPoV(d.getApparentPointOfView())
-, apparentAoV(d.getApparentAngleOfView())
+, PoV(d.getPointOfView())
+, AoV(d.getAngleOfView())
 , cartMean(d.getCartesianMean())
 , cartStddev(d.getCartesianStddev())
 {
@@ -50,8 +50,8 @@ DetectedObject::DetectedObject(const LaserScan & ls)
 , apparentCartMeanRange(0.)
 , apparentCartMeanTheta(0.)
 , apparentCartMeanTime(0.)
-, apparentPoV(Vector2::Zero())
-, apparentAoV(0.)
+, PoV(Vector2::Zero())
+, AoV(0.)
 , cartMean(Vector2::Zero())
 , cartStddev(Vector2::Zero())
 {
@@ -96,14 +96,14 @@ double DetectedObject::getApparentCartesianMeanTime() const
     return apparentCartMeanTime;
 }
 
-Vector2 DetectedObject::getApparentPointOfView() const
+Vector2 DetectedObject::getPointOfView() const
 {
-    return apparentPoV;
+    return PoV;
 }
 
-double DetectedObject::getApparentAngleOfView() const
+double DetectedObject::getAngleOfView() const
 {
-    return apparentAoV;
+    return AoV;
 }
 
 void DetectedObject::computeStatistics()
@@ -135,8 +135,8 @@ void DetectedObject::computeStatistics()
     double xMed = cartdata(3,(int)(n-1)/2);
     double yMed = cartdata(4,(int)(n-1)/2);
     double hMed = cartdata(5,(int)(n-1)/2);
-    apparentPoV = Vector2(xMed, yMed);
-    apparentAoV = hMed;
+    PoV = Vector2(xMed, yMed);
+    AoV = hMed;
 
     apparentCartMeanRange = sqrt( (xMean-xMed)*(xMean-xMed) + (yMean-yMed)*(yMean-yMed) );
     apparentCartMeanTheta = betweenMinusPiAndPlusPi( atan2( yMean-yMed, xMean-xMed ) - hMed );

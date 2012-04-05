@@ -29,7 +29,7 @@ BeaconDetector::Params::Params()
 , dcp(lsl::DuoCircleIdentif::Params())
 , minNbPoints(4)
 {
-    mfp.width = 3;
+    mfp.width = 0;
 
     pcp.minRange = 0.01 * VectorXd::Ones(1);
     pcp.maxRange = 10.0 * VectorXd::Ones(1);

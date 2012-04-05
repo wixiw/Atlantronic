@@ -1,5 +1,6 @@
 # coding=utf-8
 import sys, os
+from wx.lib.agw.cubecolourdialog import rad2deg
 sys.path.append( "../../../../src/KFLocalizator/PyMockup" )
 
 import json
@@ -22,11 +23,10 @@ import params_KFLocalizator_Dynamic as params
 
 np.set_printoptions(precision=4)
 
-xpIndex = 3
+xpIndex = 7
 
 graine = random.randint(0,1000)
 graine_ = random.randint(0,1000)
-
 
 rospy.loginfo("graine pour la position réelle :%d", graine)
 rospy.loginfo("graine pour la simulation :%d", graine_)
@@ -227,11 +227,16 @@ output.write(json.dumps(dictKFParams,indent=2,sort_keys=True))
 output.close()  
 
 
+
 #===============================================================================
 # En avant !
 #===============================================================================
 needRedraw = False
+doOdos = [ 0. ] * len(tt)
+doLrfs = [ 0. ] * len(tt)
 for i, time in enumerate(tt):
+  
+  time = round(time,6)
   
   # on regarde s'il faut faire quelque chose
   if i == 0:
@@ -242,7 +247,12 @@ for i, time in enumerate(tt):
     doLrf = (math.floor(tt[i] /0.1) > math.floor(tt[i-1] / 0.1) )
     
   doOdo = doOdo and params.simu_cfg["odoSimu"]
-  doLrf = doLrf and params.simu_cfg["lrfSimu"]    
+  doLrf = doLrf and params.simu_cfg["lrfSimu"]  
+  
+  if doOdo:
+    doOdos[i] = 1.0
+  if doLrf:  
+    doLrfs[i] = 1.0  
     
   
   if doOdo or doLrf:
@@ -281,23 +291,23 @@ for i, time in enumerate(tt):
       vxOdo = np.sum(vx[i-99:i+1]) / 100. #np.sum(vx[i-102:i+1]) / 103.
       vyOdo = np.sum(vy[i-99:i+1]) / 100. #np.sum(vy[i-102:i+1]) / 103.
       vhOdo = np.sum(vh[i-99:i+1]) / 100. #np.sum(vh[i-102:i+1]) / 103.
-      rospy.loginfo("-----------------------")
-      rospy.loginfo("vxOdo: %f m/s", vxOdo)
-      rospy.loginfo("vyOdo: %f m/s", vyOdo)
-      rospy.loginfo("vhOdo: %f deg/s", np.degrees(vhOdo))
+#      rospy.loginfo("-----------------------")
+#      rospy.loginfo("  vxOdo: %f m/s", vxOdo)
+#      rospy.loginfo("  vyOdo: %f m/s", vyOdo)
+#      rospy.loginfo("  vhOdo: %f deg/s", np.degrees(vhOdo))
       sigmaXOdo = np.max(  [params.simu_cfg["minSigmaTransOdoVelocity"], params.simu_cfg["percentSigmaTransOdoVelocity"] * np.fabs(vxOdo)])
       sigmaYOdo = np.max( [params.simu_cfg["minSigmaTransOdoVelocity"], params.simu_cfg["percentSigmaTransOdoVelocity"] * np.fabs(vyOdo)])
       sigmaHOdo = np.max( [params.simu_cfg["minSigmaRotOdoVelocity"],   params.simu_cfg["percentSigmaRotOdoVelocity"]   * np.fabs(vhOdo)])
-      rospy.loginfo("sigmaXOdo: %f m/s", sigmaXOdo)
-      rospy.loginfo("sigmaYOdo: %f m/s", sigmaYOdo)
-      rospy.loginfo("sigmaHOdo: %f deg/s", np.degrees(sigmaHOdo))
+#      rospy.loginfo("  sigmaXOdo: %f m/s", sigmaXOdo)
+#      rospy.loginfo("  sigmaYOdo: %f m/s", sigmaYOdo)
+#      rospy.loginfo("  sigmaHOdo: %f deg/s", np.degrees(sigmaHOdo))
       ov = OdoVelocity()
       ov.vx = random.normalvariate(vxOdo, sigmaXOdo)
       ov.vy = random.normalvariate(vyOdo, sigmaYOdo)
       ov.vh = random.normalvariate(vhOdo, sigmaHOdo)
-      rospy.loginfo("ov.vx: %f m/s", ov.vx)
-      rospy.loginfo("ov.vy: %f m/s", ov.vy)
-      rospy.loginfo("ov.vh: %f deg/s", np.degrees(ov.vh))
+#      rospy.loginfo("ov.vx: %f m/s", ov.vx)
+#      rospy.loginfo("ov.vy: %f m/s", ov.vy)
+#      rospy.loginfo("ov.vh: %f deg/s", np.degrees(ov.vh))
       
       dictOdo = {}
       dictOdo["t"] = time
@@ -318,11 +328,16 @@ for i, time in enumerate(tt):
     kfloc.newOdoVelocity(time, ov, sigmaXOdo, sigmaYOdo, sigmaHOdo)
   
     estim = kfloc.getBestEstimate()
+#    rospy.loginfo( "-----------------------")
+#    rospy.loginfo( "position après les odos (t = %f):", estim[0])
+#    rospy.loginfo( "  x (en m): %f", (estim[1].xRobot - xx[i]) * 1000.)
+#    rospy.loginfo( "  y (en m): %f", (estim[1].yRobot - yy[i]) * 1000.)
+#    rospy.loginfo( "  h (en deg): %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot - hh[i] )))
     rospy.loginfo("-----------------------")
     rospy.loginfo( "erreur après odos (t = %f):", estim[0])
-    rospy.loginfo( "  sur x (en mm): %f", (estim[1].xRobot - xx[i]) * 1000.)
-    rospy.loginfo( "  sur y (en mm): %f", (estim[1].yRobot - yy[i]) * 1000.)
-    rospy.loginfo( "  en cap (deg) : %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot - hh[i] )))
+    rospy.loginfo( "  sur x (en mm): %f  +/- %f", (estim[1].xRobot - xx[i]) * 1000., 1.5*math.sqrt(estim[1].covariance[0,0]) * 1000.)
+    rospy.loginfo( "  sur y (en mm): %f  +/- %f", (estim[1].yRobot - yy[i]) * 1000., 1.5*math.sqrt(estim[1].covariance[1,1]) * 1000.)
+    rospy.loginfo( "  en cap (deg) : %f  +/- %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot - hh[i] )), rad2deg(1.5*math.sqrt(estim[1].covariance[2,2])))
     rospy.loginfo("covariance :\n%s", repr(estim[1].covariance))  
     
     dictEstim = {}
@@ -371,12 +386,17 @@ for i, time in enumerate(tt):
     rospy.loginfo("time: %f => LRF", time)
     
     estim = kfloc.getBestEstimate()
-    rospy.loginfo("-----------------------")
-    rospy.loginfo( "erreur avant scan (t = %f):", estim[0])
-    rospy.loginfo( "  sur x (en mm): %f", (estim[1].xRobot - xx[i]) * 1000.)
-    rospy.loginfo( "  sur y (en mm): %f", (estim[1].yRobot - yy[i]) * 1000.)
-    rospy.loginfo( "  en cap (deg) : %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot - hh[i] )))
-    rospy.loginfo("covariance :\n%s", repr(estim[1].covariance))   
+#    rospy.loginfo( "-----------------------")
+#    rospy.loginfo( "position avant scan (t = %f):", estim[0])
+#    rospy.loginfo( "  x (en m): %f", estim[1].xRobot)
+#    rospy.loginfo( "  y (en m): %f", estim[1].yRobot)
+#    rospy.loginfo( "  h (en deg): %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot )))
+#    rospy.loginfo("-----------------------")
+#    rospy.loginfo( "erreur avant scan (t = %f):", estim[0])
+#    rospy.loginfo( "  sur x (en mm): %f", (estim[1].xRobot - xx[i]) * 1000.)
+#    rospy.loginfo( "  sur y (en mm): %f", (estim[1].yRobot - yy[i]) * 1000.)
+#    rospy.loginfo( "  en cap (deg) : %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot - hh[i] )))
+#    rospy.loginfo("covariance :\n%s", repr(estim[1].covariance))   
     
     # Sélection de la fenêtre de position
     tt_ = tt[i-680:i+1]
@@ -398,12 +418,12 @@ for i, time in enumerate(tt):
   # Estimée apres le scan
     estims = kfloc.getLastEstimates()
     for estim in estims[:-1]:
-      rospy.loginfo( "-----------------------")
-      rospy.loginfo( "erreur en cours d'update (t = %f):", estim[0])
-      rospy.loginfo( "  sur x (en mm): %f", (estim[1].xRobot - xx[i]) * 1000.)
-      rospy.loginfo( "  sur y (en mm): %f", (estim[1].yRobot - yy[i]) * 1000.)
-      rospy.loginfo( "en cap (deg) : %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot - hh[i] )))
-      rospy.loginfo("covariance :\n%s", repr(estim[1].covariance))
+#      rospy.loginfo( "-----------------------")
+#      rospy.loginfo( "erreur en cours d'update (t = %f):", estim[0])
+#      rospy.loginfo( "  sur x (en mm): %f", (estim[1].xRobot - xx[i]) * 1000.)
+#      rospy.loginfo( "  sur y (en mm): %f", (estim[1].yRobot - yy[i]) * 1000.)
+#      rospy.loginfo( "en cap (deg) : %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot - hh[i] )))
+#      rospy.loginfo("covariance :\n%s", repr(estim[1].covariance))
       
       if params.visu_cfg["arrowUpdateLrf"]:    
         xArrowBeg = estim[1].xRobot
@@ -424,11 +444,16 @@ for i, time in enumerate(tt):
         needRedraw = True
       
     estim = kfloc.getBestEstimate()
+#    rospy.loginfo( "-----------------------")
+#    rospy.loginfo( "position après scan (t = %f):", estim[0])
+#    rospy.loginfo( "  x (en m): %f", estim[1].xRobot)
+#    rospy.loginfo( "  y (en m): %f", estim[1].yRobot)
+#    rospy.loginfo( "  h (en deg): %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot )))
     rospy.loginfo( "-----------------------")
     rospy.loginfo( "erreur après scan (t = %f): ", estim[0])
-    rospy.loginfo( "  sur x (en mm): %f", (estim[1].xRobot - xx[i]) * 1000.)
-    rospy.loginfo( "  sur y (en mm): %f", (estim[1].yRobot - yy[i]) * 1000.)
-    rospy.loginfo( "  en cap (deg) : %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot - hh[i] )))
+    rospy.loginfo( "  sur x (en mm): %f  +/- %f", (estim[1].xRobot - xx[i]) * 1000., 1.5*math.sqrt(estim[1].covariance[0,0]) * 1000.)
+    rospy.loginfo( "  sur y (en mm): %f  +/- %f", (estim[1].yRobot - yy[i]) * 1000., 1.5*math.sqrt(estim[1].covariance[1,1]) * 1000.)
+    rospy.loginfo( "  en cap (deg) : %f  +/- %f", np.degrees(betweenMinusPiAndPlusPi( estim[1].hRobot - hh[i] )), rad2deg(1.5*math.sqrt(estim[1].covariance[2,2])))
     rospy.loginfo("covariance :\n%s", repr(estim[1].covariance))
     
     dictEstim = {}
@@ -510,7 +535,18 @@ for i, time in enumerate(tt):
     
     rospy.loginfo("==============================================")
     
-      
+
+
+dictTimeLine = {}
+dictTimeLine["nb"] = len(tt)
+dictTimeLine["times"] = [ round(t,6) for t in list(tt) ]
+dictTimeLine["doOdo"] = doOdos
+dictTimeLine["doLrf"] = doLrfs
+if not os.path.exists("dynamic_"+ str(xpIndex)):
+  os.mkdir("dynamic_"+ str(xpIndex))
+output = open("./dynamic_"+ str(xpIndex) + "/time_line.json", mode='w')
+output.write(json.dumps(dictTimeLine,indent=2,sort_keys=True))
+output.close()        
 
 rospy.loginfo("graine pour la position réelle :%d", graine)
 rospy.loginfo("graine pour la simulation :%d", graine_)

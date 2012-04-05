@@ -6,7 +6,7 @@ import numpy as np
 
 simu_cfg = {
 # Durée
-"duration" : 0.601,   # en s
+"duration" : 0.301,   # en s
             
 # Espace de naviguation
 "maxXPos"   :  1.3,       # en m
@@ -19,6 +19,7 @@ simu_cfg = {
 "maxRotAcc" : 6. * np.pi,  # en rad/s**2
 "maxLinVel" : 3.,         # en m/s
 "maxRotVel" : 2. * np.pi,  # en rad/s
+
 
 ## Generation d'un mouvement gentil
 #"maxLinAcc" : 0.,         # en m/s**2
@@ -83,7 +84,7 @@ kf_cfg = {
 "sigmaRotOdoVelocity" : 0.01, #0.1   # en rad/s
 
 # Performance du LRF
-"sigmaLaserRange" : 0.005,    # en m
+"sigmaLaserRange" : 0.006,    # en m
 "sigmaLaserAngle" : 0.05,    # en rad
 "sigmaSegmentHeading" : 0.5,   # en rad
 

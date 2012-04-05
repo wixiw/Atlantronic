@@ -218,21 +218,21 @@ void BFLWrapper::predict( const KFLSysInput & input , double dt, BayesianWrapper
     sysModel->BSet(B);
 
     KFLStateCov P_km1 = getCovariance();
-    Eigen::SelfAdjointEigenSolver< KFLStateCov > eigensolver(P_km1);
+    Eigen::EigenSolver< KFLStateCov > eigensolver(P_km1); // complex version in order to have unsorted values
     if (eigensolver.info() != Eigen::Success)
     {
         Log( ERROR ) << "BFLWrapper::predict - Eigen value solver failed (Matrix not symetric and positive ?) => return";
         return;
     }
-    KFLStateVar w  = eigensolver.eigenvalues();
-    KFLStateCov v  = eigensolver.eigenvectors();
+    KFLStateVar w  = eigensolver.eigenvalues().real();  // squeeze imaginary part (it should be nul if matrix is actually symetric)
+    KFLStateCov v  = eigensolver.eigenvectors().real();
 
 //    Log( DEBUG ) << "BFLWrapper::predict - eigenvalues=" << w.transpose();
 //    Log( DEBUG ) << "BFLWrapper::predict - eigenvectors=\n" << v;
 //    Log( DEBUG ) << "BFLWrapper::predict - predictParams.odoVelXSigma=" << predictParams.odoVelXSigma;
 //    Log( DEBUG ) << "BFLWrapper::predict - predictParams.odoVelYSigma=" << predictParams.odoVelYSigma;
 //    Log( DEBUG ) << "BFLWrapper::predict - predictParams.odoVelHSigma=" << predictParams.odoVelHSigma;
-//    Log( DEBUG ) << "BFLWrapper::predict - dt=" << dt;
+
 
     KFLStateVar Q_;
     Q_(0) = sqrt(w(0)) + dt * predictParams.odoVelXSigma;
@@ -244,7 +244,6 @@ void BFLWrapper::predict( const KFLSysInput & input , double dt, BayesianWrapper
     Q2(2) = Q_(2)*Q_(2) - w(2);
     KFLStateCov Q = v * Q2.asDiagonal() * v.transpose();
 
-//    Log( DEBUG ) << "BFLWrapper::predict - Q=\n" << Q;
 
     MatrixWrapper::SymmetricMatrix sysNoiseCov(3);
     sysNoiseCov(1,1) = Q(0,0);
@@ -263,6 +262,14 @@ void BFLWrapper::predict( const KFLSysInput & input , double dt, BayesianWrapper
     u(2) = input(1);
     u(3) = input(2);
     filter->Update(sysModel, u);
+
+//    Log( DEBUG ) << "BFLWrapper::predict - dt=" << dt;
+//    Log( DEBUG ) << "BFLWrapper::predict - U=\n" << u;
+//    Log( DEBUG ) << "BFLWrapper::predict - P=\n" << P_km1;
+//    Log( DEBUG ) << "BFLWrapper::predict - w=\n" << w;
+//    Log( DEBUG ) << "BFLWrapper::predict - v=\n" << v;
+//    Log( DEBUG ) << "BFLWrapper::predict - Q_=\n" << Q_;
+//    Log( DEBUG ) << "BFLWrapper::predict - Q=\n" << Q;
 
     return;
 }
@@ -291,7 +298,7 @@ void BFLWrapper::update( const KFLMeasVar & mvar, const KFLMeasTarget & mtar, Ba
     measNoiseCov(2,1) = 0.0;
     measNoiseCov(2,2) = updateParams.laserThetaSigma*updateParams.laserThetaSigma;
     measPdf->AdditiveNoiseSigmaSet(measNoiseCov);
-//    Log( DEBUG ) << "measNoiseCov:\n" << measNoiseCov;
+//    Log( DEBUG ) << "measNoiseCov:\n" << measPdf->AdditiveNoiseSigmaGet();
 
     MatrixWrapper::ColumnVector z(2);
     z(1) = mvar(0);

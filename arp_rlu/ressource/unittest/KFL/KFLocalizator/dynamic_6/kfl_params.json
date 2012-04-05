@@ -1,0 +1,14 @@
+{
+  "beacondetector_maxDistance": 0.90000000000000002, 
+  "beacondetector_rangeThreshold": 0.080000000000000002, 
+  "iekf_Nit": 10, 
+  "iekf_hThreshold": 0.01, 
+  "iekf_xThreshold": 0.0050000000000000001, 
+  "iekf_yThreshold": 0.0050000000000000001, 
+  "sigmaInitialHeading": 0.001, 
+  "sigmaInitialPosition": 0.0050000000000000001, 
+  "sigmaLaserAngle": 0.050000000000000003, 
+  "sigmaLaserRange": 0.0060000000000000001, 
+  "sigmaRotOdoVelocity": 0.01, 
+  "sigmaTransOdoVelocity": 0.01
+}

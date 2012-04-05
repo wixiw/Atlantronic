@@ -103,18 +103,18 @@ class DetectedObject
         double getApparentCartesianMeanTime() const;
 
         /**
-         * Permet d'obtenir la position d'où est vue l'objet.
+         * Permet d'obtenir la position d'où est vu l'objet.
          * \return un Vector2 contenant une position cartésienne de l'origine du repère polaire par rapport
          * au repère de référence cartésien.
          */
-        arp_math::Vector2 getApparentPointOfView() const;
+        arp_math::Vector2 getPointOfView() const;
 
         /**
-         * Permet d'obtenir l'angle de vue sous lequel est vue l'objet.
+         * Permet d'obtenir l'angle de vue sous lequel est vu l'objet.
          * \return un double contenant l'angle de vue en radian. Cet angle correspond à l'orientation du repère polaire par rapport
          * au repère de référence cartésien (table).
          */
-        double getApparentAngleOfView() const;
+        double getAngleOfView() const;
 
 
     protected:
@@ -122,8 +122,8 @@ class DetectedObject
         double apparentCartMeanRange;
         double apparentCartMeanTheta;
         double apparentCartMeanTime;
-        arp_math::Vector2 apparentPoV;
-        double apparentAoV;
+        arp_math::Vector2 PoV;
+        double AoV;
         arp_math::Vector2 cartMean;
         arp_math::Vector2 cartStddev;
 

@@ -194,6 +194,8 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
 
     //***************************************
     // back to the past
+    double startBITPTime = arp_math::getTime();
+
     Eigen::VectorXd ttFromBuffer(circularBuffer.size());
     Eigen::VectorXd xxFromBuffer(circularBuffer.size());
     Eigen::VectorXd yyFromBuffer(circularBuffer.size());
@@ -224,22 +226,28 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
     Eigen::VectorXd vx = Interpolator::transInterp(tt, ttFromBuffer, vxFromBuffer);
     Eigen::VectorXd vy = Interpolator::transInterp(tt, ttFromBuffer, vyFromBuffer);
     Eigen::VectorXd vh = Interpolator::transInterp(tt, ttFromBuffer, vhFromBuffer); // transInterp and not rotInterp because vh is not borned
-    Eigen::Array< Eigen::Matrix3d, Eigen::Dynamic, 1 > odoCovs = Interpolator::covInterp(tt, ttFromBuffer, odoCovFromBuffer, 1.e-6, Eigen::Vector3d(1.e-9,1.e-9,1.e-9));
+    Eigen::Array< Eigen::Matrix3d, Eigen::Dynamic, 1 > odoCovs = Interpolator::covInterp(tt, ttFromBuffer, odoCovFromBuffer, 1.e-9, Eigen::Vector3d(1.e-12,1.e-12,1.e-12));
 
     popBufferUntilADate(tt(0));
+
 
     if(circularBuffer.empty())
     {
         Log( CRIT ) << "KFLocalizator::newScan - Internal Circular Buffer is empty after \"back to the past\" operation => return false";
         return false;
     }
+
+    double endBITPTime = arp_math::getTime();
+    kfl::Log( INFO ) << "Back in the Past Computation Time :" << endBITPTime - startBITPTime;
     //***************************************
 
 
+    double startBPTime = arp_math::getTime();
     beaconDetector.process(scan, tt, xx, yy, hh);
+    double endBPTime = arp_math::getTime();
+    kfl::Log( INFO ) << "BeaconDetector Computation Time :" << endBPTime - startBPTime;
 
     Log( DEBUG ) << "KFLocalizator::newScan - " << beaconDetector.getFoundBeacons().size() << " beacons(s) detected in scan";
-
 
 
     // Reinit in the past
@@ -249,17 +257,29 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
     initStateVar(2) = hh[0];
 
     KFLStateCov initStateCov;
-    initStateCov = odoCovs[0];
+    initStateCov = covs[0];
 
     BFLWrapper::FilterParams filterParams;
     filterParams.iekfMaxIt = params.iekfParams.iekfMaxIt;
     filterParams.iekfInnovationMin = params.iekfParams.iekfInnovationMin;
     bayesian->init(initStateVar, initStateCov, filterParams);
 
-//    KFLStateVar preUpEstim = bayesian->getEstimate();
-//    Log( DEBUG ) << "KFLocalizator::newScan - i=" << 0 << "  - time=" << tt(0) << "  - yy=" << yy(0) << " (m)  - vy=" << vy(0) << " (m/s)  - preOdoY=" << preUpEstim(1);
+
+
+    KFLStateVar BITPEstimVar = bayesian->getEstimate();
+    KFLStateCov BITPEstimCov = bayesian->getCovariance();
+//    Log( DEBUG ) << "KFLocalizator::newScan - estimée in the past [time=" << tt[0] << "]";
+//    Log( DEBUG ) << "  sur x (en m): " << BITPEstimVar(0);
+//    Log( DEBUG ) << "  sur y (en m): " << BITPEstimVar(1);
+//    Log( DEBUG ) << "  en cap (deg) : " << rad2deg( BITPEstimVar(2) );
+//    Log( DEBUG ) << "covariance : " << BITPEstimCov.row(0);
+//    Log( DEBUG ) << "             " << BITPEstimCov.row(1);
+//    Log( DEBUG ) << "             " << BITPEstimCov.row(2);
+
+    //    Log( DEBUG ) << "KFLocalizator::newScan - i=" << 0 << "  - time=" << tt(0) << "  - yy=" << yy(0) << " (m)  - vy=" << vy(0) << " (m/s)  - preOdoY=" << preUpEstim(1);
 
     // Update
+    double startUpdateTime = arp_math::getTime();
     unsigned int nbBeaconSeen = 0;
     for(unsigned int i = 1 ; i < scan.getSize() ; i++)
     {
@@ -268,10 +288,14 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
         if( beaconDetector.getBeacon( tt(i), target, meas) )
         {
             KFLStateVar preEstimStateVar = bayesian->getEstimate();
-            Log( DEBUG ) << "KFLocalizator::newScan - pre intermediaire estim [time=" << tt[i] << "]";
-            Log( DEBUG ) << "  sur x (en m): " << preEstimStateVar(0);
-            Log( DEBUG ) << "  sur y (en m): " << preEstimStateVar(1);
-            Log( DEBUG ) << "  en cap (deg) : " << rad2deg( preEstimStateVar(2) );
+            KFLStateCov preEstimStateCov = bayesian->getCovariance();
+//            Log( DEBUG ) << "KFLocalizator::newScan - pre intermediaire estim [time=" << tt[i] << "]";
+//            Log( DEBUG ) << "  sur x (en m): " << preEstimStateVar(0);
+//            Log( DEBUG ) << "  sur y (en m): " << preEstimStateVar(1);
+//            Log( DEBUG ) << "  en cap (deg) : " << rad2deg( preEstimStateVar(2) );
+//            Log( DEBUG ) << "covariance : " << preEstimStateCov.row(0);
+//            Log( DEBUG ) << "             " << preEstimStateCov.row(1);
+//            Log( DEBUG ) << "             " << preEstimStateCov.row(2);
 
             BFLWrapper::UpdateParams updateParams;
             updateParams.laserRangeSigma = params.iekfParams.defaultLaserRangeSigma;
@@ -283,10 +307,14 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
             nbBeaconSeen++;
 
             KFLStateVar postEstimStateVar = bayesian->getEstimate();
-            Log( DEBUG ) << "KFLocalizator::newScan - post intermediaire estim [time=" << tt[i] << "]";
-            Log( DEBUG ) << "  sur x (en m): " << postEstimStateVar(0);
-            Log( DEBUG ) << "  sur y (en m): " << postEstimStateVar(1);
-            Log( DEBUG ) << "  en cap (deg) : " << rad2deg( postEstimStateVar(2) );
+            KFLStateCov postEstimStateCov = bayesian->getCovariance();
+//            Log( DEBUG ) << "KFLocalizator::newScan - post intermediaire estim [time=" << tt[i] << "]";
+//            Log( DEBUG ) << "  sur x (en m): " << postEstimStateVar(0);
+//            Log( DEBUG ) << "  sur y (en m): " << postEstimStateVar(1);
+//            Log( DEBUG ) << "  en cap (deg) : " << rad2deg( postEstimStateVar(2) );
+//            Log( DEBUG ) << "covariance : " << postEstimStateCov.row(0);
+//            Log( DEBUG ) << "             " << postEstimStateCov.row(1);
+//            Log( DEBUG ) << "             " << postEstimStateCov.row(2);
         }
 
         KFLSysInput input;
@@ -301,14 +329,16 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
         predictParams.odoVelYSigma = sqrt(odoCovs(i)(1,1));
         predictParams.odoVelHSigma = sqrt(odoCovs(i)(2,2));
 
-//        KFLStateVar preOdoEstim = bayesian->getEstimate();
+        //        KFLStateVar preOdoEstim = bayesian->getEstimate();
 
         bayesian->predict( input, dt, predictParams );
 
-//        KFLStateVar postOdoEstim = bayesian->getEstimate();
-//        Log( DEBUG ) << "KFLocalizator::newScan - i=" << i << "  - time=" << tt(i) << "  - yy=" << yy(i) << " (m)  - vy=" << vy(i) << " (m/s)  - preOdoY=" << preOdoEstim(1) << "  - postOdoY=" << postOdoEstim(1);
+        //        KFLStateVar postOdoEstim = bayesian->getEstimate();
+        //        Log( DEBUG ) << "KFLocalizator::newScan - i=" << i << "  - time=" << tt(i) << "  - yy=" << yy(i) << " (m)  - vy=" << vy(i) << " (m/s)  - preOdoY=" << preOdoEstim(1) << "  - postOdoY=" << postOdoEstim(1);
     }
     Log( DEBUG ) << "KFLocalizator::newScan - " << nbBeaconSeen << " kalman update(s) done";
+    double endUpdateTime = arp_math::getTime();
+    kfl::Log( INFO ) << "Update Computation Time :" << endUpdateTime - startUpdateTime;
 
     KFLocalizator::updateBuffer(tt(tt.size()-1), EstimatedTwist2D(vx(tt.size()-1), vy(tt.size()-1), vh(tt.size()-1)));
 

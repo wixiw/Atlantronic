@@ -75,10 +75,10 @@ BOOST_AUTO_TEST_CASE( Constructor_copy_DetectedObject )
     BOOST_CHECK_CLOSE( dcircle.getApparentCartesianMeanRange(), 0.67314560089181297, 1.f);
     BOOST_CHECK_CLOSE( dcircle.getApparentCartesianMeanTheta(), -2.761086276477428, 1.f);
     BOOST_CHECK_CLOSE( dcircle.getApparentCartesianMeanTime(), 0.2, 1.f);
-    arp_math::Vector2 pov = dcircle.getApparentPointOfView();
+    arp_math::Vector2 pov = dcircle.getPointOfView();
     BOOST_CHECK_CLOSE( pov.x(), 1.0, 1.f);
     BOOST_CHECK_CLOSE( pov.y(),-1.0, 1.f);
-    BOOST_CHECK_CLOSE( dcircle.getApparentAngleOfView(), PI, 1.f);
+    BOOST_CHECK_CLOSE( dcircle.getAngleOfView(), PI, 1.f);
 
     BOOST_CHECK_CLOSE( dcircle.getApparentCenterRange(), 1., 1.f);
     BOOST_CHECK_CLOSE( dcircle.getApparentCenterTheta(), -2., 1.f);

@@ -78,6 +78,13 @@ class KFLocalizator:
     Q_ = np.sqrt(w) + np.array( [self.sigmaXOdo * dt, self.sigmaYOdo * dt, self.sigmaHOdo * dt] ) 
     Q = np.dot( v , np.dot( np.diag( Q_**2 - w ), v.transpose()))
     
+#    rospy.loginfo("predict - dt: %f", dt)
+#    rospy.loginfo("predict - P:\n %s", str(self.P))
+#    rospy.loginfo("predict - w:\n %s", str(w))
+#    rospy.loginfo("predict - v:\n %s", str(v))
+#    rospy.loginfo("predict - Q_:\n %s", str(Q_))
+#    rospy.loginfo("predict - Q:\n %s", str(Q))
+    
     (self.X, self.P) = kf_predict(self.X, self.P, A, Q, np.diag((dt,dt,dt)), U)
   
   def newOdoVelocity(self, currentT, ov, sigmaXOdo_, sigmaYOdo_, sigmaHOdo_ ):
@@ -134,7 +141,7 @@ class KFLocalizator:
     if len(tt_) == 0:
       return (tt_, xx_, yy_, hh_, vvx_, vvy_, vvh_, covars_)
 
-    tt = np.arange(tCurrent-duration, tCurrent, deltaT)
+    tt = np.arange(tCurrent-duration, tCurrent + deltaT, deltaT)
     tt = tt[:681]
     xx = interp1d(tt, tt_, xx_)
     yy = interp1d(tt, tt_, yy_)
@@ -151,8 +158,10 @@ class KFLocalizator:
 #    self.scanproc.setScan(scan)
     
     # back in the past
-    duration = 681. * 0.1 / 1024.
-    dt = 0.1 / 1024.
+#    duration = 681. * 0.1 / 1024.
+#    dt = 0.1 / 1024.
+    duration = scan.tt[-1] - scan.tt[0] 
+    dt = duration / (len( scan.tt) - 1)
     (tt, xx, yy, hh, vvx, vvy, vvh, covars) = self.backInThePast(currentTime, duration, dt)
     if len(tt) == 0:
       return False
@@ -164,7 +173,12 @@ class KFLocalizator:
                     [yy[0]], 
                     [hh[0]]])
     self.P = covars[0]
-    rospy.loginfo("back in the past : covars:\n%s",repr(covars[0]))
+    
+#    rospy.loginfo("back in the past - estimée ")
+#    rospy.loginfo( "  x (en m): %f", xx[0])
+#    rospy.loginfo( "  y (en m): %f", yy[0])
+#    rospy.loginfo( "  h (en deg): %f", np.degrees(betweenMinusPiAndPlusPi( hh[0] )))
+#    rospy.loginfo( "  covars:\n%s", repr(covars[0]))
     
 #    self.scanproc.findCluster(tt, xx, yy, hh)
     self.scanproc.do(scan, tt, xx, yy, hh)
@@ -175,9 +189,9 @@ class KFLocalizator:
     
     rospy.loginfo("=======================")
     rospy.loginfo("nb of detected clusters: %d", len(self.scanproc.objects))
-    rospy.loginfo("objects :")
-    for o in self.scanproc.objects:
-      rospy.loginfo(" " + o.__str__())
+#    rospy.loginfo("objects :")
+#    for o in self.scanproc.objects:
+#      rospy.loginfo(" " + o.__str__())
       
     if len(self.scanproc.objects) < 2:
       rospy.loginfo("Only one beacon has been seen")
@@ -194,8 +208,7 @@ class KFLocalizator:
       if xBeacon != None and yBeacon != None:
         
           rospy.loginfo("=========================================")
-          rospy.loginfo("xBeacon =%f", xBeacon)
-          rospy.loginfo("yBeacon =%f", yBeacon)
+          rospy.loginfo("xBeacon =%f  - yBeacon =%f", xBeacon, yBeacon)
           Y = np.zeros((2,1))
           Y[0,0] = r
           Y[1,0] = theta
@@ -220,36 +233,36 @@ class KFLocalizator:
           
           rospy.loginfo("---")
           rospy.loginfo("mesure : Y.r= %f  Y.theta= %f", r, theta)
-          rospy.loginfo("simulée pre update: IM.r= %f  IM.theta= %f", IM[0,0], IM[1,0])
-          rospy.loginfo("Y[0] - IM[0]= %f", (Y[0,0] - IM[0,0])*1000.)
+#          rospy.loginfo("simulée pre update: IM.r= %f  IM.theta= %f", IM[0,0], IM[1,0])
+#          rospy.loginfo("Y[0] - IM[0]= %f", (Y[0,0] - IM[0,0])*1000.)
             
 #          rospy.loginfo( "-----------------------")
-#          rospy.loginfo( "Estimée pre update:")
+#          rospy.loginfo( "Estimée pre update [time=%f]:",t)
 #          rospy.loginfo( "  sur x (en m):%f", self.X[0,0] )
 #          rospy.loginfo( "  sur y (en m):%f", self.X[1,0] )
 #          rospy.loginfo( "  en cap (deg) :%f", betweenMinusPiAndPlusPi(self.X[2,0]) * 180./np.pi)
-
+#          rospy.loginfo("covariance pre update: \n%s", repr(self.P))
+          
 
 #          (self.X, self.P, K,IM,IS) = ekf_update(self.X, self.P, Y, J(self.X), R, IM)
-          rospy.loginfo("covariance pre update: \n%s", repr(self.P))
           (self.X, self.P, K,IM,IS, k) = iekf_update(self.X, self.P, Y, J, R, IM, self.Nit, self.threshold)
-          rospy.loginfo("covariance post update: \n%s", repr(self.P))
           
           
           IM = np.zeros((2,1))
           IM[0,0] = np.sqrt((self.X[0,0] - xBeacon)**2 + (self.X[1,0] - yBeacon)**2 )
           IM[1,0] = betweenMinusPiAndPlusPi(math.atan2(yBeacon - self.X[1,0], xBeacon - self.X[0,0]) -  self.X[2,0])
-          rospy.loginfo("simulée post update: IM.r= %f  IM.theta= %f", IM[0,0], IM[1,0])
-          rospy.loginfo("Y[0] - IM[0]= %f", (Y[0,0] - IM[0,0])*1000.)
+#          rospy.loginfo("simulée post update: IM.r= %f  IM.theta= %f", IM[0,0], IM[1,0])
+#          rospy.loginfo("Y[0] - IM[0]= %f", (Y[0,0] - IM[0,0])*1000.)
           
 #          rospy.loginfo( "-----------------------")
-#          rospy.loginfo( "Estimée post update:")
+#          rospy.loginfo( "Estimée post update [time=%f]:",t)
 #          rospy.loginfo( "  sur x (en m):%f", self.X[0,0] )
 #          rospy.loginfo( "  sur y (en m):%f", self.X[1,0] )
 #          rospy.loginfo( "  en cap (deg) :%f", betweenMinusPiAndPlusPi(self.X[2,0]) * 180./np.pi)
+#          rospy.loginfo("covariance post update: \n%s", repr(self.P))
           
           nbVisibleBeacons = nbVisibleBeacons + 1
-          rospy.loginfo("xBeacon: %f  yBeacon: %f  hBeacon: %s", xBeacon, yBeacon, str(hBeacon))
+#          rospy.loginfo("xBeacon: %f  yBeacon: %f  hBeacon: %s", xBeacon, yBeacon, str(hBeacon))
           
           estim = Estimate()
           estim.xRobot = self.X[0,0]
