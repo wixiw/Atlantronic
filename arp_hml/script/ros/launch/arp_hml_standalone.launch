@@ -1,0 +1,13 @@
+<!--  Use this file de deploy hml only on a real platfrom (for test purposes) -->
+<launch>
+	<include file="$(find arp_hml)/script/ros/launch/arp_hml_ros.launch"/>
+    
+	<node 	name="ArpHml" 
+			pkg="ocl" 
+			type="cdeployer-gnulinux" 
+			args="-s $(find arp_hml)/script/orocos/deployment/deploy_ubiquity.ops --" 
+			output="screen"
+			respawn="false"
+			required="true"
+			/>
+</launch>

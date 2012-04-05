@@ -1,9 +1,0 @@
-<!-- Use this file to test the HokuyoManager to switch off LRF when AU is pressed -->
-<launch>
-	<node name="Hokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="true" output="screen">
-    	<param name="calibrate_time" type="bool" value="false"/> 
-    	<param name="port" type="string" value="/dev/ttyACM0"/> 
-  		<param name="intensity" type="bool" value="false"/>  
-  	</node>
-	<!--<node name="rviz"     pkg="rviz"  type="rviz"     args="-d /opt/ros/laser_drivers/hokuyo_node/hokuyo_test.vcg" output="screen"/>-->
-</launch>

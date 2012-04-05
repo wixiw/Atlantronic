@@ -1,7 +1,9 @@
-<!--  Use this file de deploy the real platform "Ubiquity" hardware -->
+<!--  Use this file de deploy the real platform "Ubiquity" hardware in an integrated environnment (aka with other projects) 
+		In this case you need to add the Orocos part of the deployment in your integrated deployment
+-->
 <launch>
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
-	<include file="$(find arp_hml)/script/ros/launch/geometry_ubiquity.launch"/>
+	<include file="$(find arp_hml)/script/ros/launch/ubiquity/geometry_ubiquity.launch"/>
   	
 	
 	<remap from="scan" to="top_scan" />
@@ -35,14 +37,4 @@
                     update_rate: 20
         </rosparam>
     </node>
-  	
-    
-	<node 	name="ArpHml" 
-			pkg="ocl" 
-			type="cdeployer-gnulinux" 
-			args="-s $(find arp_hml)/script/orocos/deployment/deploy_ubiquity.ops --" 
-			output="screen"
-			respawn="false"
-			required="true"
-			/>
 </launch>
