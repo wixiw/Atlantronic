@@ -21,11 +21,14 @@ KinematicBase::KinematicBase(const std::string& name):
         inClock()
 {
     addAttribute("attrTwistCmd",attrTwistCmd);
+    addAttribute("attrCurrentTwist",attrCurrentTwist);
+    addAttribute("attrAcceptableTwist",attrAcceptableTwist);
 
     addEventPort("inClock",inClock)
             .doc("Clock port which trigger our activity. It contains the time at which the input data are supposed to be calculated");
-
     addPort("inTwistCmd",inTwistCmd)
+            .doc("");
+    addPort("inCurrentTwist",inCurrentTwist)
             .doc("");
     addPort("inParams",inParams)
             .doc("");
@@ -56,7 +59,6 @@ void KinematicBase::updateHook()
 {
     OdsTaskContext::updateHook();
 
-    Twist2D acceptableTwist;
     TurretCommands turretCmd;
     MotorCommands motorCmd;
     CouplingSpeeds turretSpeeds;
@@ -66,14 +68,15 @@ void KinematicBase::updateHook()
     inRightSteeringSpeedMeasure.readNewest(turretSpeeds.rightSteeringMotorSpeed);
     inRearSteeringSpeedMeasure.readNewest(turretSpeeds.rearSteeringMotorSpeed);
     inTwistCmd.readNewest(attrTwistCmd);
+    inCurrentTwist.readNewest(attrCurrentTwist);
     inParams.readNewest(params);
 
-    if( KinematicFilter::filterTwist(attrTwistCmd, inCurrentTwist, acceptableTwist, params) == false )
+    if( KinematicFilter::filterTwist(attrTwistCmd, attrCurrentTwist, attrAcceptableTwist, params) == false )
         {
             LOG(Error) << "Failed to filter desired twist to an acceptable twist" << endlog();
         }
 
-    if( UbiquityKinematics::twist2Turrets(acceptableTwist, turretCmd, params) == false )
+    if( UbiquityKinematics::twist2Turrets(attrAcceptableTwist, turretCmd, params) == false )
     {
         LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
     }

@@ -35,6 +35,7 @@ class KinematicBase: public OdsTaskContext
         InputPort<double> inLeftSteeringSpeedMeasure;
         InputPort<double> inRightSteeringSpeedMeasure;
         InputPort<double> inRearSteeringSpeedMeasure;
+        InputPort<Twist2D> inCurrentTwist;
 
         OutputPort<double> outLeftDrivingSpeedCmd;
         OutputPort<double> outRightDrivingSpeedCmd;
@@ -44,9 +45,8 @@ class KinematicBase: public OdsTaskContext
         OutputPort<double> outRearSteeringPositionCmd;
 
         Twist2D attrTwistCmd;
-
-        //ceci devrait etre un inputPort. en attente de cablage
-        Twist2D inCurrentTwist;
+        Twist2D attrCurrentTwist;
+        Twist2D attrAcceptableTwist;
 };
 
 } /* namespace arp_ods */

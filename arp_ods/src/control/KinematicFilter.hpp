@@ -14,6 +14,9 @@
 using namespace arp_core;
 using namespace arp_math;
 
+namespace arp_ods
+{
+
 class KinematicFilter
 {
     public:
@@ -21,7 +24,7 @@ class KinematicFilter
         virtual ~KinematicFilter();
 
         /**
-         * Filtre d'un twist pour obtenir un twist acceptable
+         * Filtre un twist pour obtenir un twist acceptable
          * Convertit un Twist desire en un twist qui respecte les contraintes physique
          * tous les twists sont " base roulante par rapport au sol exprimé dans le repère XXX, réduit au centre du chassis "
          * @param desTwist : le twist desire
@@ -38,4 +41,5 @@ class KinematicFilter
         static void filterForConstraints(Twist2D const  inputTwist, Twist2D const  currentTwist, Twist2D& outputTwist, UbiquityParams const params);
 };
 
+}
 #endif /* KINEMATICFILTER_HPP_ */
