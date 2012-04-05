@@ -10,7 +10,7 @@ configure_file(
 #    EDIT BELOW THIS LINE AND UNTIL NEXT LINE FOR A NEW PROJECT
 
 
-
+add_subdirectory(components)
 add_subdirectory(lasertoolbox)
 add_subdirectory(cornerdetector)
 add_subdirectory(localizator)
