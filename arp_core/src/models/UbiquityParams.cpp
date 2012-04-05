@@ -10,9 +10,9 @@
 using namespace arp_core;
 
 UbiquityParams::UbiquityParams():
-        m_leftTurretPosition(0.000, 0.200, 0),
-        m_rightTurretPosition(0.000, -0.200, 0),
-        m_rearTurretPosition(-0.250, 0.000, 0),
+        m_leftTurretPosition(0.000, 0.155, 0),
+        m_rightTurretPosition(0.000, -0.155, 0),
+        m_rearTurretPosition(-0.175, 0.000, 0),
         m_leftTurretZero(0),
         m_rightTurretZero(0),
         m_rearTurretZero(0),
