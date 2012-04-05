@@ -20,6 +20,7 @@ using namespace RTT;
              a & make_nvp("leftTurretPosition",     params.getLeftTurretPositionRef());
              a & make_nvp("rightTurretPosition",    params.getRearTurretPositionRef());
              a & make_nvp("rearTurretPosition",     params.getRightTurretPositionRef());
+             a & make_nvp("chassisCenter",          params.getChassisCenterRef());
              a & make_nvp("leftWheelDiameter",      params.getLeftWheelDiameterRef());
              a & make_nvp("rightWheelDiameter",     params.getRearWheelDiameterRef());
              a & make_nvp("rearWheelDiameter",      params.getRightWheelDiameterRef());

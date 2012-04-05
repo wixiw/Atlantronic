@@ -29,6 +29,7 @@ class UbiquityParams
         Pose2D getLeftTurretPosition() const;
         Pose2D getRearTurretPosition() const;
         Pose2D getRightTurretPosition() const;
+        Pose2D getChassisCenter() const;
         double getLeftWheelDiameter() const;
         double getRearWheelDiameter() const;
         double getRightWheelDiameter() const;
@@ -41,6 +42,7 @@ class UbiquityParams
         Pose2D& getLeftTurretPositionRef();
         Pose2D& getRearTurretPositionRef();
         Pose2D& getRightTurretPositionRef();
+        Pose2D& getChassisCenterRef();
         double& getLeftWheelDiameterRef();
         double& getRearWheelDiameterRef();
         double& getRightWheelDiameterRef();
@@ -58,6 +60,7 @@ class UbiquityParams
         void setRightWheelDiameter(double rightWheelDiameter);
         void setTractionRatio(double tractionRatio);
         void setTurretRatio(double turretRatio);
+        void setChassisCenter(Pose2D chassisCenter);
 
     protected:
         /** Position de la tourelle en rad lorsque le moteur est sur le top tour*/
@@ -73,6 +76,8 @@ class UbiquityParams
         Pose2D m_rightTurretPosition;
         /** Position de la tourelle arriere sur le chassis */
         Pose2D m_rearTurretPosition;
+        /** Position du centre du chassis */
+        Pose2D m_chassisCenter;
 
         /** taille de la roue avant gauche*/
         double m_leftWheelDiameter;

@@ -13,6 +13,7 @@ UbiquityParams::UbiquityParams():
         m_leftTurretPosition(0.000, 0.155, 0),
         m_rightTurretPosition(0.000, -0.155, 0),
         m_rearTurretPosition(-0.175, 0.000, 0),
+        m_chassisCenter(-0.058, 0.000, 0),
         m_leftTurretZero(0),
         m_rightTurretZero(0),
         m_rearTurretZero(0),
@@ -215,6 +216,23 @@ void UbiquityParams::setTurretRatio(double turretRatio)
 {
     m_turretRatio = turretRatio;
 }
+
+Pose2D UbiquityParams::getChassisCenter() const
+{
+    return m_chassisCenter;
+}
+
+Pose2D& UbiquityParams::getChassisCenterRef()
+{
+    return m_chassisCenter;
+}
+
+void UbiquityParams::setChassisCenter(Pose2D chassisCenter)
+{
+    m_chassisCenter = chassisCenter;
+}
+
+
 
 
 
