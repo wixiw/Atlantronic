@@ -7,7 +7,7 @@
 
 #include "KinematicBase.hpp"
 #include <rtt/Component.hpp>
-#include <models/UbiquityKinematics.hpp>
+#include <models/core>
 #include "control/KinematicFilter.hpp"
 
 using namespace arp_model;
@@ -58,7 +58,7 @@ void KinematicBase::updateHook()
     OdsTaskContext::updateHook();
 
     // INPUTS
-    SteeringMotorVelocities turretVelocities;
+    MotorState turretVelocities;
     UbiquityParams params;
 
     // gathering of Steering Velocities
@@ -79,21 +79,17 @@ void KinematicBase::updateHook()
 //            LOG(Error) << "Failed to filter desired twist to an acceptable twist" << endlog();
 //        }
 
-    if( UbiquityKinematics::twist2Turrets(attrAcceptableTwist, turretCmd, params) == false )
+    if( UbiquityKinematics::twist2Motors(attrAcceptableTwist, turretVelocities, motorCmd, params) == false )
     {
         LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
     }
-    else if( UbiquityKinematics::turrets2Motors(turretCmd, turretVelocities, motorCmd, params) == false )
-    {
-        LOG(Error) << "Failed to compute Motor Cmd" << endlog();
-    }
 
-    LOG(Info) << "turrets : " << turretCmd.toString() << endlog();
+    //LOG(Info) << "turrets : " << turretCmd.toString() << endlog();
 
-    outLeftDrivingVelocityCmd.write(motorCmd.leftDrivingMotorVelocity);
-    outRightDrivingVelocityCmd.write(motorCmd.rightDrivingMotorVelocity);
-    outRearDrivingVelocityCmd.write(motorCmd.rearDrivingMotorVelocity);
-    outLeftSteeringPositionCmd.write(motorCmd.leftSteeringMotorPosition);
-    outRightSteeringPositionCmd.write(motorCmd.rightSteeringMotorPosition);
-    outRearSteeringPositionCmd.write(motorCmd.rearSteeringMotorPosition);
+    outLeftDrivingVelocityCmd.write(motorCmd.leftDrivingVelocity);
+    outRightDrivingVelocityCmd.write(motorCmd.rightDrivingVelocity);
+    outRearDrivingVelocityCmd.write(motorCmd.rearDrivingVelocity);
+    outLeftSteeringPositionCmd.write(motorCmd.leftSteeringPosition);
+    outRightSteeringPositionCmd.write(motorCmd.rightSteeringPosition);
+    outRearSteeringPositionCmd.write(motorCmd.rearSteeringPosition);
 }
