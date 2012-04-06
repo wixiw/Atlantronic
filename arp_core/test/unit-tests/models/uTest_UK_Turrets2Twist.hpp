@@ -12,20 +12,20 @@
 #include "models/UbiquityParams.hpp"
 
 
-//BOOST_AUTO_TEST_CASE( UK_Turrets2Twist_ZeroToZeroTest )
-//{
-//    arp_model::UbiquityParams params;
-//    arp_math::Twist2D twist;
-//    arp_model::TurretState zeroTurretCmd;
-//    arp_model::SlippageReport splippage;
-//    bool res;
-//    res = arp_model::UbiquityKinematics::turrets2Twist(zeroTurretCmd, twist, splippage, params);
-//
-//    BOOST_CHECK_EQUAL( res , true);
-//    BOOST_CHECK_EQUAL( twist.vx(), 0. );
-//    BOOST_CHECK_EQUAL( twist.vy(), 0. );
-//    BOOST_CHECK_EQUAL( twist.vh(), 0. );
-//}
+BOOST_AUTO_TEST_CASE( UK_Turrets2Twist_ZeroToZeroTest )
+{
+    arp_model::UbiquityParams params;
+    arp_math::Twist2D twist;
+    arp_model::TurretState zeroTurretCmd;
+    arp_model::SlippageReport splippage;
+    bool res;
+    res = arp_model::UbiquityKinematics::turrets2Twist(zeroTurretCmd, twist, splippage, params);
+
+    BOOST_CHECK_EQUAL( res , true);
+    BOOST_CHECK_EQUAL( twist.vx(), 0. );
+    BOOST_CHECK_EQUAL( twist.vy(), 0. );
+    BOOST_CHECK_EQUAL( twist.vh(), 0. );
+}
 
 BOOST_AUTO_TEST_CASE( UK_Turrets2Twist_Rotation_1 )
 {

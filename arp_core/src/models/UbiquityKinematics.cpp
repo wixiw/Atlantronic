@@ -32,19 +32,19 @@ bool UbiquityKinematics::motors2Turrets(const MotorState & iMS,
     }
 
     //TODO modulo ? je pense pas
-    oTS.leftSteeringTurretPosition = iMS.leftSteeringMotorPosition*iParams.getTurretRatio()
+    oTS.leftSteeringPosition = iMS.leftSteeringPosition*iParams.getTurretRatio()
             + iParams.getLeftTurretZero();
-    oTS.rightSteeringTurretPosition = iMS.rightSteeringMotorPosition*iParams.getTurretRatio()
+    oTS.rightSteeringPosition = iMS.rightSteeringPosition*iParams.getTurretRatio()
             + iParams.getRightTurretZero();
-    oTS.rearSteeringTurretPosition = iMS.rearSteeringMotorPosition*iParams.getTurretRatio()
+    oTS.rearSteeringPosition = iMS.rearSteeringPosition*iParams.getTurretRatio()
             + iParams.getRearTurretZero();
 
-    oTS.leftDrivingTurretVelocity = iParams.getLeftWheelDiameter()/2
-            *(iMS.leftDrivingMotorVelocity*iParams.getTractionRatio() + iMS.leftSteeringMotorVelocity*iParams.getTurretRatio());
-    oTS.rightDrivingTurretVelocity = iParams.getRightWheelDiameter()/2
-            *(iMS.rightDrivingMotorVelocity*iParams.getTractionRatio() + iMS.rightSteeringMotorVelocity*iParams.getTurretRatio());
-    oTS.rearDrivingTurretVelocity = iParams.getRearWheelDiameter()/2
-            *(iMS.rearDrivingMotorVelocity*iParams.getTractionRatio() + iMS.rearSteeringMotorVelocity*iParams.getTurretRatio());
+    oTS.leftDrivingVelocity = iParams.getLeftWheelDiameter()/2
+            *(iMS.leftDrivingVelocity*iParams.getTractionRatio() + iMS.leftSteeringVelocity*iParams.getTurretRatio());
+    oTS.rightDrivingVelocity = iParams.getRightWheelDiameter()/2
+            *(iMS.rightDrivingVelocity*iParams.getTractionRatio() + iMS.rightSteeringVelocity*iParams.getTurretRatio());
+    oTS.rearDrivingVelocity = iParams.getRearWheelDiameter()/2
+            *(iMS.rearDrivingVelocity*iParams.getTractionRatio() + iMS.rearSteeringVelocity*iParams.getTurretRatio());
 
     return true;
 }
@@ -60,18 +60,18 @@ bool UbiquityKinematics::turrets2Motors(const TurretState & iTS,
     }
 
     //TODO modulo ? je pense pas
-    oMS.leftSteeringMotorPosition = (iTS.leftSteeringTurretPosition - iParams.getLeftTurretZero())
+    oMS.leftSteeringPosition = (iTS.leftSteeringPosition - iParams.getLeftTurretZero())
             /iParams.getTurretRatio();
-    oMS.rightSteeringMotorPosition = (iTS.rightSteeringTurretPosition - iParams.getRightTurretZero())
+    oMS.rightSteeringPosition = (iTS.rightSteeringPosition - iParams.getRightTurretZero())
             /iParams.getTurretRatio();
-    oMS.rearSteeringMotorPosition = (iTS.rearSteeringTurretPosition - iParams.getRearTurretZero())
+    oMS.rearSteeringPosition = (iTS.rearSteeringPosition - iParams.getRearTurretZero())
             /iParams.getTurretRatio();
 
-    oMS.leftDrivingMotorVelocity = (2*iTS.leftDrivingTurretVelocity/iParams.getLeftWheelDiameter() - iSMV.leftSteeringMotorVelocity*iParams.getTurretRatio())
+    oMS.leftDrivingVelocity = (2*iTS.leftDrivingVelocity/iParams.getLeftWheelDiameter() - iSMV.leftSteeringVelocity*iParams.getTurretRatio())
             /iParams.getTractionRatio();
-    oMS.rightDrivingMotorVelocity = (2*iTS.rightDrivingTurretVelocity/iParams.getRightWheelDiameter() - iSMV.rightSteeringMotorVelocity*iParams.getTurretRatio())
+    oMS.rightDrivingVelocity = (2*iTS.rightDrivingVelocity/iParams.getRightWheelDiameter() - iSMV.rightSteeringVelocity*iParams.getTurretRatio())
             /iParams.getTractionRatio();
-    oMS.rearDrivingMotorVelocity = (2*iTS.rearDrivingTurretVelocity/iParams.getRearWheelDiameter() - iSMV.rearSteeringMotorVelocity*iParams.getTurretRatio())
+    oMS.rearDrivingVelocity = (2*iTS.rearDrivingVelocity/iParams.getRearWheelDiameter() - iSMV.rearSteeringVelocity*iParams.getTurretRatio())
             /iParams.getTractionRatio();
 
     return true;
@@ -92,8 +92,8 @@ bool UbiquityKinematics::turrets2Twist(const TurretState & iTS, Twist2D& oTw, Sl
         A(1,1) =  0.;
         A(0,2) =  0.;
         A(1,2) = -1.;
-        A(0,3) = cos(iTS.leftSteeringTurretPosition) * iTS.leftDrivingTurretVelocity;
-        A(1,3) = sin(iTS.leftSteeringTurretPosition) * iTS.leftDrivingTurretVelocity;
+        A(0,3) = cos(iTS.leftSteeringPosition) * iTS.leftDrivingVelocity;
+        A(1,3) = sin(iTS.leftSteeringPosition) * iTS.leftDrivingVelocity;
     }
     {
         A(2,0) =  iParams.getRightTurretPosition().y();
@@ -102,8 +102,8 @@ bool UbiquityKinematics::turrets2Twist(const TurretState & iTS, Twist2D& oTw, Sl
         A(3,1) =  0.;
         A(2,2) =  0.;
         A(3,2) = -1.;
-        A(2,3) = cos(iTS.rightSteeringTurretPosition) * iTS.rightDrivingTurretVelocity;
-        A(3,3) = sin(iTS.rightSteeringTurretPosition) * iTS.rightDrivingTurretVelocity;
+        A(2,3) = cos(iTS.rightSteeringPosition) * iTS.rightDrivingVelocity;
+        A(3,3) = sin(iTS.rightSteeringPosition) * iTS.rightDrivingVelocity;
     }
     {
         A(4,0) =  iParams.getRearTurretPosition().y();
@@ -112,8 +112,8 @@ bool UbiquityKinematics::turrets2Twist(const TurretState & iTS, Twist2D& oTw, Sl
         A(5,1) =  0.;
         A(4,2) =  0.;
         A(5,2) = -1.;
-        A(4,3) = cos(iTS.rearSteeringTurretPosition) * iTS.rearDrivingTurretVelocity;
-        A(5,3) = sin(iTS.rearSteeringTurretPosition) * iTS.rearDrivingTurretVelocity;
+        A(4,3) = cos(iTS.rearSteeringPosition) * iTS.rearDrivingVelocity;
+        A(5,3) = sin(iTS.rearSteeringPosition) * iTS.rearDrivingVelocity;
     }
 
     Eigen::VectorXd s = A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).singularValues();
@@ -145,19 +145,19 @@ bool UbiquityKinematics::twist2Turrets(const Twist2D & iTw, TurretState& oTS, co
     Twist2D Trear = iTw.transport(iParams.getRearTurretPosition());
 
     //recuperation des angles
-    oTS.leftSteeringTurretPosition = Tleft.speedAngle();
-    oTS.rightSteeringTurretPosition = Tright.speedAngle();
-    oTS.rearSteeringTurretPosition = Trear.speedAngle();
+    oTS.leftSteeringPosition = Tleft.speedAngle();
+    oTS.rightSteeringPosition = Tright.speedAngle();
+    oTS.rearSteeringPosition = Trear.speedAngle();
 
     //recuperation des vitesses
-    oTS.leftDrivingTurretVelocity = Tleft.speedNorm();
-    oTS.rightDrivingTurretVelocity = Tright.speedNorm();
-    oTS.rearDrivingTurretVelocity = Trear.speedNorm();
+    oTS.leftDrivingVelocity = Tleft.speedNorm();
+    oTS.rightDrivingVelocity = Tright.speedNorm();
+    oTS.rearDrivingVelocity = Trear.speedNorm();
 
     //normalisations
-    normalizeDirection(oTS.leftSteeringTurretPosition, oTS.leftDrivingTurretVelocity);
-    normalizeDirection(oTS.rightSteeringTurretPosition, oTS.rightDrivingTurretVelocity);
-    normalizeDirection(oTS.rearSteeringTurretPosition, oTS.rearDrivingTurretVelocity);
+    normalizeDirection(oTS.leftSteeringPosition, oTS.leftDrivingVelocity);
+    normalizeDirection(oTS.rightSteeringPosition, oTS.rightDrivingVelocity);
+    normalizeDirection(oTS.rearSteeringPosition, oTS.rearDrivingVelocity);
 
     return true;
 }

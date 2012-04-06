@@ -23,20 +23,20 @@ BOOST_AUTO_TEST_CASE( UK_MotorTurret_ZeroToZeroTest )
     res = arp_model::UbiquityKinematics::motors2Turrets(motorsCmd, turretCmd, params);
 
     BOOST_CHECK_EQUAL( res , true);
-    BOOST_CHECK_EQUAL( turretCmd.leftDrivingTurretVelocity,    0 );
-    BOOST_CHECK_EQUAL( turretCmd.rightDrivingTurretVelocity,   0 );
-    BOOST_CHECK_EQUAL( turretCmd.rearDrivingTurretVelocity,    0 );
-    BOOST_CHECK_EQUAL( turretCmd.leftSteeringTurretPosition,   0 );
-    BOOST_CHECK_EQUAL( turretCmd.rightSteeringTurretPosition,  0 );
-    BOOST_CHECK_EQUAL( turretCmd.rearSteeringTurretPosition,   0 );
+    BOOST_CHECK_EQUAL( turretCmd.leftDrivingVelocity,    0 );
+    BOOST_CHECK_EQUAL( turretCmd.rightDrivingVelocity,   0 );
+    BOOST_CHECK_EQUAL( turretCmd.rearDrivingVelocity,    0 );
+    BOOST_CHECK_EQUAL( turretCmd.leftSteeringPosition,   0 );
+    BOOST_CHECK_EQUAL( turretCmd.rightSteeringPosition,  0 );
+    BOOST_CHECK_EQUAL( turretCmd.rearSteeringPosition,   0 );
 
     res = arp_model::UbiquityKinematics::turrets2Motors(turretCmd, steeringMotorVelocities, motorsCmd, params);
 
     BOOST_CHECK_EQUAL( res , true);
-    BOOST_CHECK_EQUAL( motorsCmd.leftDrivingMotorVelocity,     0 );
-    BOOST_CHECK_EQUAL( motorsCmd.rightDrivingMotorVelocity,    0 );
-    BOOST_CHECK_EQUAL( motorsCmd.rearDrivingMotorVelocity,     0 );
-    BOOST_CHECK_EQUAL( motorsCmd.leftSteeringMotorPosition,    0 );
-    BOOST_CHECK_EQUAL( motorsCmd.rightSteeringMotorPosition,   0 );
-    BOOST_CHECK_EQUAL( motorsCmd.rearSteeringMotorPosition,    0 );
+    BOOST_CHECK_EQUAL( motorsCmd.leftDrivingVelocity,     0 );
+    BOOST_CHECK_EQUAL( motorsCmd.rightDrivingVelocity,    0 );
+    BOOST_CHECK_EQUAL( motorsCmd.rearDrivingVelocity,     0 );
+    BOOST_CHECK_EQUAL( motorsCmd.leftSteeringPosition,    0 );
+    BOOST_CHECK_EQUAL( motorsCmd.rightSteeringPosition,   0 );
+    BOOST_CHECK_EQUAL( motorsCmd.rearSteeringPosition,    0 );
 }
