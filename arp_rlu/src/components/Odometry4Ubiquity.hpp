@@ -12,8 +12,6 @@
 #include <math/core>
 #include <models/UbiquityParams.hpp>
 
-using namespace arp_math;
-
 namespace arp_rlu
 {
 
@@ -27,7 +25,7 @@ class Odometry4Ubiquity: public RluTaskContext
 
     protected:
         InputPort<double> inTime;
-        InputPort<UbiquityParams> inParams;
+        InputPort<arp_model::UbiquityParams> inParams;
 
         InputPort<double> inLeftDrivingSpeed;
         InputPort<double> inRightDrivingSpeed;
@@ -43,7 +41,7 @@ class Odometry4Ubiquity: public RluTaskContext
         InputPort<double> inRightSteeringPosition;
         InputPort<double> inRearSteeringPosition;
 
-        OutputPort<EstimatedTwist2D> outTwist;
+        OutputPort<arp_math::EstimatedTwist2D> outTwist;
 
         /**
          * Permet d'ajouter port/operations à l'interface Orocos.

@@ -8,6 +8,8 @@
 #include "Odometry4Ubiquity.hpp"
 #include <rtt/Component.hpp>
 
+using namespace arp_math;
+using namespace arp_model;
 using namespace arp_rlu;
 
 ORO_LIST_COMPONENT_TYPE( arp_rlu::Odometry4Ubiquity )
