@@ -10,13 +10,16 @@ Deployer:import("arp_rlu");
 dofile("/opt/ard/arp_rlu/script/orocos/deployment/rlu_monitor_deployer.lua");
 dofile("/opt/ard/arp_rlu/script/orocos/deployment/odometry_deployer.lua");
 dofile("/opt/ard/arp_rlu/script/orocos/deployment/localizator_deployer.lua");
+dofile("/opt/ard/arp_rlu/script/orocos/deployment/ros_rlu_itf_deployer.lua");
 
 OdometryDeployer:load();
 LocalizatorDeployer:load();
+RosRluItfDeployer:load();
 RluMonitorDeployer:load();
 
 OdometryDeployer:connect();
 LocalizatorDeployer:connect();
+RosRluItfDeployer:connect();
 RluMonitorDeployer:connect();
 
 RluMonitorDeployer:start();
