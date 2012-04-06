@@ -20,8 +20,8 @@ Localizator::Localizator(const std::string& name)
      : RluTaskContext(name)
      , kfloc()
 {
-    arp_rlu::lsl::Logger::InitConsole("uT_LSL", ERROR);
-    arp_rlu::kfl::Logger::InitFile("uT_KFL", DEBUG);
+    arp_rlu::lsl::Logger::InitConsole("LSL", ERROR);
+    arp_rlu::kfl::Logger::InitFile("KFL", DEBUG);
     createOrocosInterface();
 }
 
@@ -63,8 +63,10 @@ void Localizator::odoCb(RTT::base::PortInterface* portInterface)
     //changement de repère de T_r_t
     Eigen::Vector3d T;
     T << T_r_t.vx(), T_r_t.vy(), T_r_t.vh();
-    Eigen::Vector3d V = kfloc.getLastEstimatedPose2D().getDisplacement2Matrix() * T;
-    Eigen::Matrix3d covariance = kfloc.getLastEstimatedPose2D().getDisplacement2Matrix() * T_r_t.cov();
+    Eigen::Matrix<double,3,3> R = Eigen::Matrix<double,3,3>::Identity();
+    R.topLeftCorner(2,2) = kfloc.getLastEstimatedPose2D().orientation().toRotationMatrix();
+    Eigen::Vector3d V = R * T;
+    Eigen::Matrix3d covariance = R * T_r_t.cov();
     T_r_t_t.vx( V(0) );
     T_r_t_t.vy( V(1) );
     T_r_t_t.vh( V(2) );
@@ -91,8 +93,10 @@ void Localizator::updateHook()
 
     Eigen::Vector3d T;
     T << T_r_t_t.vx(), T_r_t_t.vy(), T_r_t_t.vh();
-    Eigen::Vector3d V = kfloc.getLastEstimatedPose2D().getDisplacement2Matrix().inverse() * T;
-    Eigen::Matrix3d covariance = kfloc.getLastEstimatedPose2D().getDisplacement2Matrix().inverse() * T_r_t.cov();
+    Eigen::Matrix<double,3,3> R = Eigen::Matrix<double,3,3>::Identity();
+    R.topLeftCorner(2,2) = kfloc.getLastEstimatedPose2D().orientation().toRotationMatrix();
+    Eigen::Vector3d V = R.inverse() * T;
+    Eigen::Matrix3d covariance = R.inverse() * T_r_t.cov();
     T_r_t.vx( V(0) );
     T_r_t.vy( V(1) );
     T_r_t.vh( V(2) );
