@@ -53,7 +53,8 @@ void Odometry4Ubiquity::updateHook()
         LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
     }
 
-    if( report.kernelQuality < propMinKernelQuality )
+    attrKernelQuality = report.kernelQuality;
+    if( attrKernelQuality < propMinKernelQuality )
     {
         LOG(Warning) << "Slippage detected ! (kernelQuality=" << report.kernelQuality << ")" << endlog();
     }
@@ -91,6 +92,7 @@ void Odometry4Ubiquity::createOrocosInterface()
     addAttribute("attrMotorState", attrMotorState);
     addAttribute("attrParams", attrParams);
     addAttribute("attrTime", attrTime);
+    addAttribute("attrKernelQuality",attrKernelQuality);
 
     addProperty("propMinKernelQuality",propMinKernelQuality)
         .doc("");
