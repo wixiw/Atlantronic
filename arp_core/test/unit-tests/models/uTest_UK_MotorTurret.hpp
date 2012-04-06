@@ -11,18 +11,16 @@
 #include "models/UbiquityKinematics.hpp"
 #include "models/UbiquityParams.hpp"
 
-using namespace arp_math;
-using namespace arp_core;
 
 BOOST_AUTO_TEST_CASE( UK_MotorTurret_ZeroToZeroTest )
 {
-    UbiquityParams params;
-    MotorState motorsCmd;
-    TurretState turretCmd;
-    SteeringMotorVelocities steeringMotorVelocities;
+    arp_model::UbiquityParams params;
+    arp_model::MotorState motorsCmd;
+    arp_model::TurretState turretCmd;
+    arp_model::SteeringMotorVelocities steeringMotorVelocities;
     bool res;
 
-    res = UbiquityKinematics::motors2Turrets(motorsCmd, turretCmd, params);
+    res = arp_model::UbiquityKinematics::motors2Turrets(motorsCmd, turretCmd, params);
 
     BOOST_CHECK_EQUAL( res , true);
     BOOST_CHECK_EQUAL( turretCmd.leftDrivingTurretVelocity,    0 );
@@ -32,7 +30,7 @@ BOOST_AUTO_TEST_CASE( UK_MotorTurret_ZeroToZeroTest )
     BOOST_CHECK_EQUAL( turretCmd.rightSteeringTurretPosition,  0 );
     BOOST_CHECK_EQUAL( turretCmd.rearSteeringTurretPosition,   0 );
 
-    res = UbiquityKinematics::turrets2Motors(turretCmd, steeringMotorVelocities, motorsCmd, params);
+    res = arp_model::UbiquityKinematics::turrets2Motors(turretCmd, steeringMotorVelocities, motorsCmd, params);
 
     BOOST_CHECK_EQUAL( res , true);
     BOOST_CHECK_EQUAL( motorsCmd.leftDrivingMotorVelocity,     0 );

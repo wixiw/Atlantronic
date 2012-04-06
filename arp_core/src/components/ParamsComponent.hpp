@@ -21,8 +21,8 @@ class ParamsComponent: public ARDTaskContext
         bool configureHook();
 
     protected:
-        UbiquityParams propSavedParams;
-        OutputPort<UbiquityParams> outParams;
+        arp_model::UbiquityParams propSavedParams;
+        OutputPort<arp_model::UbiquityParams> outParams;
 };
 
 } /* namespace arp_core */

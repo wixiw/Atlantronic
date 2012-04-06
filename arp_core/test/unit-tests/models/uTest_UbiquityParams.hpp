@@ -10,18 +10,16 @@
 #include <boost/test/floating_point_comparison.hpp>
 #include "models/UbiquityParams.hpp"
 
-using namespace arp_math;
-using namespace arp_core;
 
 BOOST_AUTO_TEST_CASE( UbiquityKinematics_checkTest )
 {
-    UbiquityParams params;
+    arp_model::UbiquityParams params;
     BOOST_CHECK_EQUAL( params.check() , true);
 }
 
 BOOST_AUTO_TEST_CASE( UbiquityKinematics_leftWheelDiameter )
 {
-    UbiquityParams params;
+    arp_model::UbiquityParams params;
     //null
     params.setLeftWheelDiameter(0.0);
     BOOST_CHECK_EQUAL( params.check() , false);
@@ -35,7 +33,7 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_leftWheelDiameter )
 
 BOOST_AUTO_TEST_CASE( UbiquityKinematics_rightWheelDiameter )
 {
-    UbiquityParams params;
+    arp_model::UbiquityParams params;
     //null
     params.setRightWheelDiameter(0.0);
     BOOST_CHECK_EQUAL( params.check() , false);
@@ -49,7 +47,7 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_rightWheelDiameter )
 
 BOOST_AUTO_TEST_CASE( UbiquityKinematics_rearWheelDiameter )
 {
-    UbiquityParams params;
+    arp_model::UbiquityParams params;
     //null
     params.setRearWheelDiameter(0.0);
     BOOST_CHECK_EQUAL( params.check() , false);

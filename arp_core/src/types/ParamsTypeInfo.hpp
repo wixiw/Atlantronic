@@ -5,6 +5,7 @@
 #include <boost/lexical_cast.hpp>
 
 using namespace arp_math;
+using namespace arp_model;
 using namespace arp_core;
 using namespace RTT;
 

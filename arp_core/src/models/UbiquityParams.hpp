@@ -10,9 +10,8 @@
 
 #include <math/core>
 
-using namespace arp_math;
 
-namespace arp_core
+namespace arp_model
 {
 
 class UbiquityParams
@@ -26,10 +25,10 @@ class UbiquityParams
         double getLeftTurretZero() const;
         double getRearTurretZero() const;
         double getRightTurretZero() const;
-        Pose2D getLeftTurretPosition() const;
-        Pose2D getRearTurretPosition() const;
-        Pose2D getRightTurretPosition() const;
-        Pose2D getChassisCenter() const;
+        arp_math::Pose2D getLeftTurretPosition() const;
+        arp_math::Pose2D getRearTurretPosition() const;
+        arp_math::Pose2D getRightTurretPosition() const;
+        arp_math::Pose2D getChassisCenter() const;
         double getLeftWheelDiameter() const;
         double getRearWheelDiameter() const;
         double getRightWheelDiameter() const;
@@ -47,10 +46,10 @@ class UbiquityParams
         double& getLeftTurretZeroRef();
         double& getRearTurretZeroRef();
         double& getRightTurretZeroRef();
-        Pose2D& getLeftTurretPositionRef();
-        Pose2D& getRearTurretPositionRef();
-        Pose2D& getRightTurretPositionRef();
-        Pose2D& getChassisCenterRef();
+        arp_math::Pose2D& getLeftTurretPositionRef();
+        arp_math::Pose2D& getRearTurretPositionRef();
+        arp_math::Pose2D& getRightTurretPositionRef();
+        arp_math::Pose2D& getChassisCenterRef();
         double& getLeftWheelDiameterRef();
         double& getRearWheelDiameterRef();
         double& getRightWheelDiameterRef();
@@ -82,13 +81,13 @@ class UbiquityParams
         double m_rearTurretZero;
 
         /** Position de la tourelle avant gauche sur le chassis en (m,m,rad) */
-        Pose2D m_leftTurretPosition;
+        arp_math::Pose2D m_leftTurretPosition;
         /** Position de la tourelle avant droite sur le chassis en (m,m,rad) */
-        Pose2D m_rightTurretPosition;
+        arp_math::Pose2D m_rightTurretPosition;
         /** Position de la tourelle arriere sur le chassis en (m,m,rad) */
-        Pose2D m_rearTurretPosition;
+        arp_math::Pose2D m_rearTurretPosition;
         /** Position du centre du chassis en (m,m,rad) */
-        Pose2D m_chassisCenter;
+        arp_math::Pose2D m_chassisCenter;
 
         /** taille de la roue avant gauche en m*/
         double m_leftWheelDiameter;

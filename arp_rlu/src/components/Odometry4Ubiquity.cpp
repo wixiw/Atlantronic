@@ -120,7 +120,6 @@ void Odometry4Ubiquity::updateHook()
         return;
     }
 
-    Eigen::MatrixXd A(6,4);
 }
 
 

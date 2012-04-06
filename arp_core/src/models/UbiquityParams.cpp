@@ -7,7 +7,8 @@
 
 #include "UbiquityParams.hpp"
 
-using namespace arp_core;
+using namespace arp_model;
+using namespace arp_math;
 
 UbiquityParams::UbiquityParams():
         m_leftTurretPosition(0.000, 0.155, 0),

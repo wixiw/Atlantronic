@@ -11,7 +11,7 @@
 #include "UbiquityParams.hpp"
 #include <math/core>
 
-namespace arp_core
+namespace arp_model
 {
 
 struct SteeringMotorPositions
@@ -79,7 +79,7 @@ struct MotorState : public  DrivingMotorPositions,
         , SteeringMotorVelocities()
         {}
 
-        std::string toString()
+        std::string toString() const
         {
             std::stringstream ss;
             ss << "Driving : " << "(" << leftDrivingMotorPosition << ","
@@ -168,7 +168,7 @@ struct TurretState : public  DrivingTurretPositions,
         , SteeringTurretVelocities()
         {}
 
-        std::string toString()
+        std::string toString() const
         {
             std::stringstream ss;
             ss << "Driving : " << "(" << leftDrivingTurretPosition << ","
@@ -190,7 +190,7 @@ struct TurretState : public  DrivingTurretPositions,
 
 struct SlippageReport
 {
-
+        double kernelQuality;
 };
 
 class UbiquityKinematics
