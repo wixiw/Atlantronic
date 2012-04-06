@@ -66,7 +66,7 @@ void Localizator::odoCb(RTT::base::PortInterface* portInterface)
     Eigen::Matrix<double,3,3> R = Eigen::Matrix<double,3,3>::Identity();
     R.topLeftCorner(2,2) = kfloc.getLastEstimatedPose2D().orientation().toRotationMatrix();
     Eigen::Vector3d V = R * T;
-    Eigen::Matrix3d covariance = R * T_r_t.cov();
+    Eigen::Matrix3d covariance = R * T_r_t.cov() * R.inverse();
     T_r_t_t.vx( V(0) );
     T_r_t_t.vy( V(1) );
     T_r_t_t.vh( V(2) );
@@ -96,7 +96,7 @@ void Localizator::updateHook()
     Eigen::Matrix<double,3,3> R = Eigen::Matrix<double,3,3>::Identity();
     R.topLeftCorner(2,2) = kfloc.getLastEstimatedPose2D().orientation().toRotationMatrix();
     Eigen::Vector3d V = R.inverse() * T;
-    Eigen::Matrix3d covariance = R.inverse() * T_r_t.cov();
+    Eigen::Matrix3d covariance = R.inverse() * T_r_t.cov() * R;
     T_r_t.vx( V(0) );
     T_r_t.vy( V(1) );
     T_r_t.vh( V(2) );
