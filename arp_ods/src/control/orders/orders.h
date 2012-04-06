@@ -24,6 +24,7 @@ namespace arp_ods
     {
         extern shared_ptr<MotionOrder> defaultOrder;
     }
+
 }
 
 #endif /* ORDERS_H_ */

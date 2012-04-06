@@ -121,6 +121,18 @@ class Pose2D
          */
         BigAdjoint2 getBigAdjoint() const;
 
+        /**
+         * Calcule la distance entre 2 positions (en 2D, sans tenir compte de l'angle)
+         */
+        double distanceTo(Pose2D pose) const;
+
+        /**
+         * Calcule l'angle entre 2 positions
+         * comptée positive de notre angle vers celui de la pose en paramètre
+         * retour normalisé entre -Pi et Pi
+         */
+        double angleTo(Pose2D pose) const;
+
     protected:
         Vector2 positionTranslation;
         Rotation2 positionRotation;

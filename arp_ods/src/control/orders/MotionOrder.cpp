@@ -7,9 +7,8 @@
 
 #include "math/math.hpp"
 #include "MotionOrder.hpp"
-#include "orders/orders.h"
+#include "control/orders/orders.h"
 
-using namespace arp_core;
 using namespace arp_math;
 
 namespace arp_ods
@@ -41,45 +40,45 @@ MotionOrder::MotionOrder() :
 
 }
 
-Velocity MotionOrder::computeSpeed(arp_core::Pose currentPosition)
+Twist2D MotionOrder::computeSpeed(Pose2D currentPosition, double dt)
 {
-    Velocity v;
-    v.linear = 0;
-    v.angular = 0;
+    Twist2D v;
+    v.vx(0);
+    v.vh(0);
     return v;
 }
 
-Pose MotionOrder::reversePosition(Pose p)
+Pose2D MotionOrder::reversePosition(Pose2D p)
 {
-    Pose ret;
-    ret.x = p.x;
-    ret.y = p.y;
+    Pose2D ret;
+    ret.x(p.x());
+    ret.y(p.y());
     if( m_reverse )
     {
-        ret.theta = normalizeAngle(p.theta + PI);
+        ret.h(normalizeAngle(p.h() + PI));
     }
     else
     {
-        ret.theta = normalizeAngle(p.theta);
+        ret.h(normalizeAngle(p.h()));
     }
     return ret;
 }
 
-shared_ptr<MotionOrder> MotionOrder::createOrder( const OrderGoalConstPtr &goal, Pose currentPose, order::config conf )
+shared_ptr<MotionOrder> MotionOrder::createOrder( const OrderGoalConstPtr &goal, Pose2D currentPose, order::config conf )
 {
     shared_ptr<MotionOrder> order(new MotionOrder());
 
-    Pose begin;
-    Pose end;
+    Pose2D begin;
+    Pose2D end;
 
-    begin.x = currentPose.x;
-    begin.y = currentPose.y;
-    begin.theta = currentPose.theta;
+    begin.x(currentPose.x());
+    begin.y(currentPose.y());
+    begin.h(currentPose.h());
     order->setBeginPose(begin);
 
-    end.x = goal->x_des;
-    end.y = goal->y_des;
-    end.theta = goal->theta_des;
+    end.x(goal->x_des);
+    end.y(goal->y_des);
+    end.h(goal->theta_des);
     order->setEndPose(end);
 
     order->setReverse(goal->reverse);

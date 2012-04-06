@@ -8,13 +8,10 @@
 #ifndef MOTIONORDER_HPP_
 #define MOTIONORDER_HPP_
 
-#include <arp_core/Velocity.h>
 #include "ModeSelector.hpp"
 #include <arp_ods/OrderAction.h>
 #include <boost/shared_ptr.hpp>
-
-using namespace arp_core;
-using namespace boost;
+#include <math/core>
 
 namespace arp_ods
 {
@@ -50,8 +47,10 @@ class MotionOrder: public arp_ods::ModeSelector
 
         /**
          * Compute the motor set points according to the current mode.
+         * @param currentPosition : current Robot position
+         * @param dt : time since last call
          */
-        virtual Velocity computeSpeed(arp_core::Pose currentPosition);
+        virtual arp_math::Twist2D computeSpeed(arp_math::Pose2D currentPosition, double dt);
 
         /**
          * Use this to filter begin, end and current point with m_reverse
@@ -59,16 +58,17 @@ class MotionOrder: public arp_ods::ModeSelector
          * In any case a normalization in [-PI;PI] is done so you should use this function in any case
          * @param p : pose to convert
          */
-        Pose reversePosition(Pose p);
+        arp_math::Pose2D reversePosition(arp_math::Pose2D p);
 
         /**
          * Factory to create an order with default parameters from the order
+         * TODO il faudrait une vraie Factory en dehors, parce que là c'est un peu Joe La Bricole
          * @param goal : action lib goal to process
          * @param currentPose : current position of the robot
          * @param conf : automation parameters (gains)
          * @return : a MotionOrder to execute
          */
-        static shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, Pose currentPose, order::config conf  );
+        static boost::shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, arp_math::Pose2D currentPose, order::config conf  );
 
         /**
          * Returns the type of the order

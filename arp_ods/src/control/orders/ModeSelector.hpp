@@ -8,9 +8,7 @@
 #ifndef MODESELECTOR_HPP_
 #define MODESELECTOR_HPP_
 
-#include <arp_core/Pose.h>
-
-using namespace arp_core;
+#include <math/core>
 
 namespace arp_ods
 {
@@ -72,7 +70,7 @@ class ModeSelector
          * Call this function every cycle to check if a new mode is available.
          * If a mode is available, the new mode is automatically entered
          */
-        void switchMode(arp_core::Pose currentPosition);
+        void switchMode(arp_math::Pose2D currentPosition);
 
         /**
          * Switch the mode back to MODE_INIT
@@ -89,29 +87,29 @@ class ModeSelector
          * Returns the distance to the m_endPose
          * @param currentPosition : current position of the robot
          */
-        virtual double getRemainingDistance(arp_core::Pose currentPosition);
+        virtual double getRemainingDistance(arp_math::Pose2D currentPosition);
 
         /**
          * Returns the angle difference (normalized) between m_endPose and currentPosition
          * @param currentPosition : current position of the robot
          */
-        virtual double getRemainingAngle(arp_core::Pose currentPosition);
+        virtual double getRemainingAngle(arp_math::Pose2D currentPosition);
 
         /**
          * Returns the distance from the m_beginPose
          * @param currentPosition : current position of the robot
          */
-        virtual double getCoveredDistance(arp_core::Pose currentPosition);
+        virtual double getCoveredDistance(arp_math::Pose2D currentPosition);
 
         /**
          * Returns the Begin pose m_beginPose
          */
-        arp_core::Pose getBeginPose() const;
+        arp_math::Pose2D getBeginPose() const;
 
         /**
          * Returns the End pose m_endPose
          */
-        arp_core::Pose getEndPose() const;
+        arp_math::Pose2D getEndPose() const;
 
         /**
          * Returns the pass mode
@@ -138,17 +136,17 @@ class ModeSelector
 
         void setAngleAccuracy(double m_angleAccuracy);
         void setDistanceAccurancy(double m_distanceAccurancy);
-        void setBeginPose(arp_core::Pose beginPose);
-        void setEndPose(arp_core::Pose endPose);
+        void setBeginPose(arp_math::Pose2D beginPose);
+        void setEndPose(arp_math::Pose2D endPose);
         void setPassTimeout(double timeout);
         void setOrderTimeout(double timeout);
 
     protected:
         /** Pose of the expected begin of the move */
-        arp_core::Pose m_beginPose;
+        arp_math::Pose2D m_beginPose;
 
         /** Pose of the expected end of the move */
-        arp_core::Pose m_endPose;
+        arp_math::Pose2D m_endPose;
 
         /** motion without stop at the end */
         bool m_pass;
@@ -180,40 +178,35 @@ class ModeSelector
         /** order timeout */
         double m_orderTimeout;
 
-        /** Compute the distance between two Poses a and b
-         * TODO WLA : je n'arrive pas à le mettre dans math*/
-        double distance(arp_core::Pose a, arp_core::Pose b);
-        double angle(arp_core::Pose a, arp_core::Pose b);
-
         /**
          * This function is called by switchMode when m_currentMode==MODE_INIT
          */
-        virtual void switchInit(arp_core::Pose currentPosition);
+        virtual void switchInit(arp_math::Pose2D currentPosition);
 
         /**
          * This function is called by switchMode when m_currentMode==MODE_RUN
          */
-        virtual void switchRun(arp_core::Pose currentPosition);
+        virtual void switchRun(arp_math::Pose2D currentPosition);
 
         /**
          * This function is called by switchMode when m_currentMode==MODE_APPROACH
          */
-        virtual void switchApproach(arp_core::Pose currentPosition);
+        virtual void switchApproach(arp_math::Pose2D currentPosition);
 
         /**
          * This function is called by switchMode when m_currentMode==MODE_DONE
          */
-        virtual void switchDone(arp_core::Pose currentPosition);
+        virtual void switchDone(arp_math::Pose2D currentPosition);
 
         /**
          * This function is called by switchMode when m_currentMode==MODE_ERROR
          */
-        virtual void switchError(arp_core::Pose currentPosition);
+        virtual void switchError(arp_math::Pose2D currentPosition);
 
         /**
          * This function is called by switchMode when m_currentMode==MODE_PASS
          */
-        virtual void switchPass(arp_core::Pose currentPosition);
+        virtual void switchPass(arp_math::Pose2D currentPosition);
 
 };
 

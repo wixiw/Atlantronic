@@ -7,7 +7,6 @@
 
 #include "RotationOrder.hpp"
 
-using namespace arp_core;
 using namespace arp_math;
 
 namespace arp_ods
@@ -25,21 +24,21 @@ RotationOrder::RotationOrder(MotionOrder order):
 {
 }
 
-shared_ptr<MotionOrder>  RotationOrder::createOrder( const OrderGoalConstPtr &goal, Pose currentPose, order::config conf )
+shared_ptr<MotionOrder>  RotationOrder::createOrder( const OrderGoalConstPtr &goal, Pose2D currentPose, order::config conf )
 {
     shared_ptr<RotationOrder> order(new RotationOrder());
 
-    Pose begin;
-    Pose end;
+    Pose2D begin;
+    Pose2D end;
 
-    begin.x = currentPose.x;
-    begin.y = currentPose.y;
-    begin.theta = currentPose.theta;
+    begin.x(currentPose.x());
+    begin.y(currentPose.y());
+    begin.h(currentPose.h());
     order->setBeginPose(begin);
 
-    end.x = currentPose.x;
-    end.y = currentPose.y;
-    end.theta = goal->theta_des;
+    end.x(currentPose.x());
+    end.y(currentPose.y());
+    end.h(goal->theta_des);
     order->setEndPose(end);
 
     order->setReverse(false);
@@ -50,14 +49,14 @@ shared_ptr<MotionOrder>  RotationOrder::createOrder( const OrderGoalConstPtr &go
     return static_cast<shared_ptr<MotionOrder>  >(order);
 }
 
-void RotationOrder::switchInit(arp_core::Pose currentPosition)
+void RotationOrder::switchInit(arp_math::Pose2D currentPosition)
 {
     // as init is left as soon as it is entered, I allow to put the last init time into m_initTime
     m_initTime = getTime();
 
     m_beginPose = currentPosition;
-    m_endPose.x = m_beginPose.x;
-    m_endPose.y = m_endPose.y;
+    m_endPose.x(m_beginPose.x());
+    m_endPose.y(m_endPose.y());
     m_reverse = false;
     m_pass = false;
 

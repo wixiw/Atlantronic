@@ -11,6 +11,7 @@
 #include "MotionOrder.hpp"
 #include "math/math.hpp"
 #include <boost/shared_ptr.hpp>
+#include <math/core>
 
 using namespace boost;
 
@@ -38,9 +39,12 @@ class FantomOrder: public arp_ods::MotionOrder
         /**
          * Override to define specific parameters
          */
-        static shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, Pose currentPose, order::config conf  );
+        static shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, arp_math::Pose2D currentPose, order::config conf  );
 
-        virtual Velocity computeSpeed(arp_core::Pose currentPosition);
+        /**
+         *
+         */
+        virtual arp_math::Twist2D computeSpeed(arp_math::Pose2D currentPosition, double dt);
 
         /**
          * this is the restriction of linear speed due to angle error. the coefficient is between -1 and 1
@@ -53,7 +57,7 @@ class FantomOrder: public arp_ods::MotionOrder
          * @return if m_mode == Approach : distance of the robot to the line perpendicular to the m_endPoint heading
          * in any other case it simply returns the euclidian distance to the end point
          */
-        double getRemainingDistance(arp_core::Pose currentPosition);
+        double getRemainingDistance(arp_math::Pose2D currentPosition);
 
         /**
          * Derivated to handle the different computation in approach mode
@@ -61,15 +65,16 @@ class FantomOrder: public arp_ods::MotionOrder
          * @param remaining_distance : the distance to the point from getRemainingDistance
          * @return if m_mode == Approach : ...//TODO WLA documenter
          */
-        double getRemainingAngle(arp_core::Pose currentPosition, double remaining_distance);
+        double getRemainingAngle(arp_math::Pose2D currentPosition, double remaining_distance);
 
         /**
          * Calcule l'erreur derivée en cap
          * TODO : si ici que sont fait les timing, faut-il extraire pour un éventuel dérivé de position ?
          * @param currentPosition : current position of the robot
          * @param angle_error : the new angle error
+         * @param dt : time since last call
          */
-        double getDerivatedAngleError(arp_core::Pose currentPosition, double angle_error);
+        double getDerivatedAngleError(arp_math::Pose2D currentPosition, double angle_error, double dt);
 
         /**
          * When errors are defined, call this function to have the linear speed command
@@ -102,22 +107,20 @@ class FantomOrder: public arp_ods::MotionOrder
         /**
          * Redifined because there is no init for this order
          */
-        virtual void switchInit(arp_core::Pose currentPosition);
+        virtual void switchInit(arp_math::Pose2D currentPosition);
 
         /**
          * Redefined to keep trac of the speed when entering pass mode
          * TODO shouldn't this go into the MotionControl class ?
          */
-        virtual void switchRun(arp_core::Pose currentPosition);
+        virtual void switchRun(arp_math::Pose2D currentPosition);
 
         /** keep track of the former loop value of angle_error, to compute derivative */
         double old_angle_error;
-        /** last loop time value to compute derivative error*/
-        double old_loop_date;
         /** buffer to keep track of the speed when entering pass mode */
-        Velocity m_passSpeed;
+        arp_math::Twist2D m_passSpeed;
         /** buffer to keep memory of last sended command */
-        Velocity m_lastSpeedCmd;
+        arp_math::Twist2D m_lastSpeedCmd;
 
        /**Constantes issues des rosparam*/
         double FANTOM_COEF;

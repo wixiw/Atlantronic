@@ -4,11 +4,11 @@
  *  Created on: 24 mai 2011
  *      Author: wla
  */
-
-#include "math/math.hpp"
 #include "ModeSelector.hpp"
 
-using namespace arp_core;
+#include <math/core>
+#include <ros/ros.h>
+
 using namespace arp_math;
 
 // Displaying:
@@ -45,8 +45,8 @@ namespace arp_ods
 
 ModeSelector::ModeSelector()
 {
-    m_beginPose = Pose();
-    m_endPose = Pose();
+    m_beginPose = arp_math::Pose2D();
+    m_endPose = arp_math::Pose2D();
     m_pass = false;
     m_currentMode = MODE_INIT;
     m_passTime = 0;
@@ -74,7 +74,7 @@ void ModeSelector::setDefaults(order::config conf)
     m_orderTimeout = conf.ORDER_TIMEOUT;
 }
 
-void ModeSelector::switchInit(arp_core::Pose currentPosition)
+void ModeSelector::switchInit(arp_math::Pose2D currentPosition)
 {
     // as init is left as soon as it is entered, I allow to put the last init time into m_initTime
     m_initTime = getTime();
@@ -82,7 +82,7 @@ void ModeSelector::switchInit(arp_core::Pose currentPosition)
     m_currentMode = MODE_RUN;
 }
 
-void ModeSelector::switchRun(arp_core::Pose currentPosition)
+void ModeSelector::switchRun(arp_math::Pose2D currentPosition)
 {
     if (getRemainingDistance(currentPosition) <= getRadiusApproachZone())
     {
@@ -103,7 +103,7 @@ void ModeSelector::switchRun(arp_core::Pose currentPosition)
     testTimeout();
 }
 
-void ModeSelector::switchApproach(arp_core::Pose currentPosition)
+void ModeSelector::switchApproach(arp_math::Pose2D currentPosition)
 {
     double distance_error = getRemainingDistance(currentPosition);
     double angle_error = getRemainingAngle(currentPosition);
@@ -111,8 +111,8 @@ void ModeSelector::switchApproach(arp_core::Pose currentPosition)
     if (distance_error < m_distanceAccuracy && fabs(angle_error) < m_angleAccuracy)
     {
         ROS_INFO("switched MODE_APPROACH --> MODE_DONE");
-        ROS_INFO("(%.3fm,%.3fm,%.1fdeg) with e_d=%.1fmm e_cap=%.1fdeg", currentPosition.x, currentPosition.y,
-                rad2deg(currentPosition.theta), distance_error * 1000, rad2deg(angle_error));
+        ROS_INFO("(%.3fm,%.3fm,%.1fdeg) with e_d=%.1fmm e_cap=%.1fdeg", currentPosition.x(), currentPosition.y(),
+                rad2deg(currentPosition.h()), distance_error * 1000, rad2deg(angle_error));
         m_currentMode = MODE_DONE;
         return;
     }
@@ -120,17 +120,17 @@ void ModeSelector::switchApproach(arp_core::Pose currentPosition)
 
 }
 
-void ModeSelector::switchDone(arp_core::Pose currentPosition)
+void ModeSelector::switchDone(arp_math::Pose2D currentPosition)
 {
 
 }
 
-void ModeSelector::switchError(arp_core::Pose currentPosition)
+void ModeSelector::switchError(arp_math::Pose2D currentPosition)
 {
 
 }
 
-void ModeSelector::switchPass(arp_core::Pose currentPosition)
+void ModeSelector::switchPass(arp_math::Pose2D currentPosition)
 {
     double t = getTime();
     double dt = t - m_passTime;
@@ -142,7 +142,7 @@ void ModeSelector::switchPass(arp_core::Pose currentPosition)
     }
 }
 
-void ModeSelector::switchMode(arp_core::Pose currentPosition)
+void ModeSelector::switchMode(Pose2D currentPosition)
 {
     switch (m_currentMode)
     {
@@ -169,29 +169,29 @@ void ModeSelector::switchMode(arp_core::Pose currentPosition)
     }
 }
 
-double ModeSelector::getRemainingDistance(arp_core::Pose currentPosition)
+double ModeSelector::getRemainingDistance(arp_math::Pose2D currentPosition)
 {
-    return distance(currentPosition, m_endPose);
+    return currentPosition.distanceTo(m_endPose);
 }
 
-double ModeSelector::getRemainingAngle(arp_core::Pose currentPosition)
+double ModeSelector::getRemainingAngle(arp_math::Pose2D currentPosition)
 {
-    double e_theta = angle(currentPosition, m_endPose);
+    double e_theta = currentPosition.angleTo(m_endPose);
     //ROS_WARN("e_theta %0.3f",e_theta);
     return e_theta;
 }
 
-double ModeSelector::getCoveredDistance(arp_core::Pose currentPosition)
+double ModeSelector::getCoveredDistance(arp_math::Pose2D currentPosition)
 {
-    return distance(m_beginPose, currentPosition);
+    return currentPosition.distanceTo(m_beginPose);
 }
 
-arp_core::Pose ModeSelector::getBeginPose() const
+arp_math::Pose2D ModeSelector::getBeginPose() const
 {
     return m_beginPose;
 }
 
-arp_core::Pose ModeSelector::getEndPose() const
+arp_math::Pose2D ModeSelector::getEndPose() const
 {
     return m_endPose;
 }
@@ -251,28 +251,16 @@ void ModeSelector::setDistanceAccurancy(double m_distanceAccurancy)
     this->m_distanceAccuracy = m_distanceAccurancy;
 }
 
-void ModeSelector::setBeginPose(arp_core::Pose beginPose)
+void ModeSelector::setBeginPose(Pose2D beginPose)
 {
-    beginPose.theta = normalizeAngle(beginPose.theta);
+    beginPose.h(betweenMinusPiAndPlusPi(beginPose.h()));
     this->m_beginPose = beginPose;
 }
 
-void ModeSelector::setEndPose(arp_core::Pose endPose)
+void ModeSelector::setEndPose(Pose2D endPose)
 {
-    endPose.theta = normalizeAngle(endPose.theta);
+    endPose.h(betweenMinusPiAndPlusPi(endPose.h()));
     this->m_endPose = endPose;
-}
-
-double ModeSelector::distance(arp_core::Pose a, arp_core::Pose b)
-{
-    double dx = b.x - a.x;
-    double dy = b.y - a.y;
-    return sqrt(dx * dx + dy * dy);
-}
-
-double ModeSelector::angle(arp_core::Pose a, arp_core::Pose b)
-{
-    return normalizeAngle(b.theta - a.theta);
 }
 
 void ModeSelector::testTimeout()

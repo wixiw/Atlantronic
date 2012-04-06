@@ -24,10 +24,10 @@ function MotorSimulDeployer:load()
 end
 
 function MotorSimulDeployer:connectMotor(name)
-	Deployer:addPeer("Reporting", me)
+	Deployer:addPeer("Reporting", name)
 	--MotorDeployer:registerToSql("LeftDriving")
 	Deployer:connect(name..".inClock", "Can1.outClock",cp)
-	MotorDeployer:check(me)
+	MotorDeployer:check(name)
 end
 
 function MotorSimulDeployer:connect()

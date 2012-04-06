@@ -20,7 +20,7 @@ class StayInPosition: public arp_ods::MotionOrder
 {
     public:
         StayInPosition();
-        virtual Velocity computeSpeed(arp_core::Pose currentPosition);
+        virtual arp_math::Twist2D computeSpeed(arp_math::Pose2D currentPosition);
 };
 
 }

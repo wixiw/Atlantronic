@@ -30,34 +30,24 @@ function MotorDeployer:registerToSql(name)
 	OrocosSqlMonitor:ooRegisterDoublePort(name,"outMeasuredTorque")
 end
 
-function MotorDeployer:connect()
-	Deployer:addPeer("LeftDriving", "Can1");
-	Deployer:addPeer("Reporting", "LeftDriving")
-	Deployer:addPeer("RightDriving", "Can1");
-	Deployer:addPeer("Reporting", "RightDriving")
-	Deployer:addPeer("RearDriving", "Can1");
-	Deployer:addPeer("Reporting", "RearDriving")
-
-	Deployer:addPeer("LeftSteering", "Can1");
-	Deployer:addPeer("Reporting", "LeftSteering")
-	Deployer:addPeer("RightSteering", "Can1");
-	Deployer:addPeer("Reporting", "RightSteering")
-	Deployer:addPeer("RearSteering", "Can1");
-	Deployer:addPeer("Reporting", "RearSteering")
-
+function MotorDeployer:connectMotor(name)
+	--on s'enregistre en peer au composant de trace
+	--on enregistre chez nous le controlleur Can
+	Deployer:addPeer(me, "Can1")
+	Deployer:addPeer("Reporting", me)
 	--MotorDeployer:registerToSql("LeftDriving")
-	--MotorDeployer:registerToSql("RightDriving")
-	--MotorDeployer:registerToSql("RearDriving")
-	--MotorDeployer:registerToSql("LeftSteering")
-	--MotorDeployer:registerToSql("RightSteering")
-	--MotorDeployer:registerToSql("RearSteering")
-	
-	MotorDeployer:check("LeftDriving")
-	MotorDeployer:check("RightDriving")
-	MotorDeployer:check("RearDriving")
-	MotorDeployer:check("LeftSteering")
-	MotorDeployer:check("RightSteering")
-	MotorDeployer:check("RearSteering")
+	Deployer:connect(name..".inClock", "Can1.outClock",cp)
+	MotorDeployer:check(me)
+end
+
+
+function MotorDeployer:connect()
+	MotorDeployer:connectMotor("LeftDriving")
+	MotorDeployer:connectMotor("RightDriving")
+	MotorDeployer:connectMotor("RearDriving")
+	MotorDeployer:connectMotor("LeftSteering")
+	MotorDeployer:connectMotor("RightSteering")
+	MotorDeployer:connectMotor("RearSteering")
 end
 
 

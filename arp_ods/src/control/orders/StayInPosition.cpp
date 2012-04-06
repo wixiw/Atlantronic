@@ -16,9 +16,9 @@ StayInPosition::StayInPosition() :
     m_type = STAY_IN_POSITION;
 }
 
-Velocity StayInPosition::computeSpeed(arp_core::Pose currentPosition)
+arp_math::Twist2D StayInPosition::computeSpeed(arp_math::Pose2D currentPosition)
 {
-    Velocity v;
+    arp_math::Twist2D v;
     return v;
 }
 

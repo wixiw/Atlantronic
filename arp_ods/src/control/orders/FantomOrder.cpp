@@ -7,7 +7,6 @@
 
 #include "FantomOrder.hpp"
 
-using namespace arp_core;
 using namespace arp_math;
 
 namespace arp_ods
@@ -18,7 +17,6 @@ FantomOrder::FantomOrder() :
 {
     m_type = FANTOM;
 
-    old_loop_date = 0;
     old_angle_error = 0;
 
     setFANTOM_COEF(-1);
@@ -44,21 +42,21 @@ void FantomOrder::setDefaults(order::config conf)
     setVEL_FINAL(conf.VEL_FINAL);
 }
 
-shared_ptr<MotionOrder> FantomOrder::createOrder( const OrderGoalConstPtr &goal, Pose currentPose, order::config conf  )
+shared_ptr<MotionOrder> FantomOrder::createOrder( const OrderGoalConstPtr &goal, Pose2D currentPose, order::config conf  )
 {
     shared_ptr<FantomOrder> order(new FantomOrder());
 
-    Pose begin;
-    Pose end;
+    Pose2D begin;
+    Pose2D end;
 
-    begin.x = currentPose.x;
-    begin.y = currentPose.y;
-    begin.theta = currentPose.theta;
+    begin.x(currentPose.x());
+    begin.y(currentPose.y());
+    begin.h(currentPose.h());
     order->setBeginPose(begin);
 
-    end.x = goal->x_des;
-    end.y = goal->y_des;
-    end.theta = goal->theta_des;
+    end.x(goal->x_des);
+    end.y(goal->y_des);
+    end.h(goal->theta_des);
     order->setEndPose(end);
 
     order->setReverse(goal->reverse);
@@ -78,12 +76,12 @@ double FantomOrder::linearReductionCoef(double angle_error)
     return result;
 }
 
-double FantomOrder::getRemainingDistance(arp_core::Pose currentPosition)
+double FantomOrder::getRemainingDistance(arp_math::Pose2D currentPosition)
 {
     double result = 0.0;
-    Vector2 position(currentPosition.x, currentPosition.y);
-    Vector2 trans_des(m_endPose.x, m_endPose.y);
-    Rotation2 orient_desLocal_(reversePosition(m_endPose).theta);
+    Vector2 position(currentPosition.x(), currentPosition.y());
+    Vector2 trans_des(m_endPose.x(), m_endPose.y());
+    Rotation2 orient_desLocal_(reversePosition(m_endPose).h());
 
     if (m_currentMode == MODE_APPROACH)
     {
@@ -100,13 +98,13 @@ double FantomOrder::getRemainingDistance(arp_core::Pose currentPosition)
     return result;
 }
 
-double FantomOrder::getRemainingAngle(arp_core::Pose currentPosition, double distance_error)
+double FantomOrder::getRemainingAngle(arp_math::Pose2D currentPosition, double distance_error)
 {
     double result = 0.0;
-    Vector2 trans_des(m_endPose.x, m_endPose.y);
-    Vector2 position(currentPosition.x, currentPosition.y);
-    Rotation2 orientLocal_(reversePosition(currentPosition).theta);
-    Rotation2 orient_desLocal_(reversePosition(m_endPose).theta);
+    Vector2 trans_des(m_endPose.x(), m_endPose.y());
+    Vector2 position(currentPosition.x(), currentPosition.y());
+    Rotation2 orientLocal_(reversePosition(currentPosition).h());
+    Rotation2 orient_desLocal_(reversePosition(m_endPose).h());
     Vector2 u_x(1.0, 0.0);
     Vector2 phantom_direction_unit;
     Vector2 direction_in_current;
@@ -142,11 +140,10 @@ double FantomOrder::getRemainingAngle(arp_core::Pose currentPosition, double dis
     return result;
 }
 
-double FantomOrder::getDerivatedAngleError(arp_core::Pose currentPosition, double angle_error)
+double FantomOrder::getDerivatedAngleError(arp_math::Pose2D currentPosition, double angle_error, double dt)
 {
     double d_angle_error;
-    double dt = currentPosition.date - old_loop_date;
-    if (old_loop_date != 0 && dt > 0)
+    if ( dt > 0 )
     {
         d_angle_error = (angle_error - old_angle_error) / dt;
     }
@@ -155,7 +152,6 @@ double FantomOrder::getDerivatedAngleError(arp_core::Pose currentPosition, doubl
         d_angle_error = 0;
     }
     old_angle_error = angle_error;
-    old_loop_date = currentPosition.date;
 
     return d_angle_error;
 }
@@ -185,9 +181,9 @@ double FantomOrder::getAngularSpeedCmd(double angle_error, double d_angle_error)
     return getROTATION_GAIN() * angle_error + getROTATION_D_GAIN() * d_angle_error;
 }
 
-Velocity FantomOrder::computeSpeed(arp_core::Pose currentPosition)
+Twist2D FantomOrder::computeSpeed(arp_math::Pose2D currentPosition, double dt)
 {
-    Velocity v;
+    Twist2D v;
 
     double distance_error = 0;
     double angle_error = 0;
@@ -202,8 +198,8 @@ Velocity FantomOrder::computeSpeed(arp_core::Pose currentPosition)
 
     if (m_currentMode == MODE_DONE)
     {
-        v.linear = 0;
-        v.angular = 0;
+        v.vx(0);
+        v.vh(0);
         return v;
     }
 
@@ -212,11 +208,11 @@ Velocity FantomOrder::computeSpeed(arp_core::Pose currentPosition)
     //get the angle error for orientation control
     angle_error = getRemainingAngle(currentPosition, distance_error);
     // calcul de la derivee de l'angle_error
-    d_angle_error = getDerivatedAngleError(currentPosition, angle_error);
+    d_angle_error = getDerivatedAngleError(currentPosition, angle_error, dt);
 
     //creation des consignes full patates
-    v.linear = getLinearSpeedCmd(distance_error, angle_error);
-    v.angular = getAngularSpeedCmd(angle_error, d_angle_error);
+    v.vx( getLinearSpeedCmd(distance_error, angle_error) );
+    v.vh( getAngularSpeedCmd(angle_error, d_angle_error) );
 
     //ROS_INFO("e_d %0.3f e_a %0.3f sens_lin %0.1f", distance_error, angle_error, sens_lin);
     //ROS_INFO("vlf %0.3f vaf %0.3f", lin_vel_cons_full, ang_vel_cons_full);
@@ -228,7 +224,7 @@ Velocity FantomOrder::computeSpeed(arp_core::Pose currentPosition)
     return v;
 }
 
-void FantomOrder::switchInit(arp_core::Pose currentPosition)
+void FantomOrder::switchInit(arp_math::Pose2D currentPosition)
 {
     // as init is left as soon as it is entered, I allow to put the last init time into m_initTime
     m_initTime = getTime();
@@ -240,7 +236,7 @@ void FantomOrder::switchInit(arp_core::Pose currentPosition)
     return;
 }
 
-void FantomOrder::switchRun(arp_core::Pose currentPosition)
+void FantomOrder::switchRun(arp_math::Pose2D currentPosition)
 {
     ModeSelector::switchRun(currentPosition);
 

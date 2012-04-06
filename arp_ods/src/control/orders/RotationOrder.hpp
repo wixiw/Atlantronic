@@ -26,10 +26,10 @@ class RotationOrder: public arp_ods::FantomOrder
         RotationOrder(MotionOrder order);
 
         /** Override to define specific parameters*/
-        static shared_ptr<MotionOrder>  createOrder( const OrderGoalConstPtr &goal, Pose currentPose, order::config conf );
+        static shared_ptr<MotionOrder>  createOrder( const OrderGoalConstPtr &goal, arp_math::Pose2D currentPose, order::config conf );
 
         /** Override to go in approach mode directly */
-        virtual void switchInit(arp_core::Pose currentPosition);
+        virtual void switchInit(arp_math::Pose2D currentPosition);
 
         /** Override to forbids another value than false */
         void setReverse(bool reverse);

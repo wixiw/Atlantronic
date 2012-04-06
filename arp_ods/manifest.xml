@@ -9,7 +9,7 @@
     <depend package="actionlib" />
   	<depend package="actionlib_msgs" />
     <depend package="arp_core" />
-    <depend package="arp_hml" />
+    <!--<depend package="arp_hml" />-->
     <depend package="nav_msgs" />
     <depend package="tf" />
 </package>

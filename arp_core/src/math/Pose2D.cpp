@@ -154,6 +154,18 @@ BigAdjoint2 Pose2D::getBigAdjoint() const
     return Ad;
 }
 
+double Pose2D::distanceTo(Pose2D pose) const
+{
+    double dx = pose.x() - x();
+    double dy = pose.y() - y();
+    return sqrt(dx * dx + dy * dy);
+}
+
+double Pose2D::angleTo(Pose2D pose) const
+{
+    return betweenMinusPiAndPlusPi(pose.h() - h());
+}
+
 
 //inline friend Pose2D operator+(const Pose2D& lhs, const Pose2D& rhs)
 //{
