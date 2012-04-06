@@ -6,7 +6,7 @@
  */
 
 #include "KinematicFilter.hpp"
-#include <models/UbiquityKinematics.hpp>
+#include <models/core>
 #include <rtt/Component.hpp>
 
 using namespace arp_model;

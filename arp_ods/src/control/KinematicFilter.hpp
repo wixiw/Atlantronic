@@ -9,9 +9,7 @@
 #define KINEMATICFILTER_HPP_
 
 #include <math/core>
-#include <models/UbiquityParams.hpp>
-#include <models/UbiquityKinematics.hpp>
-
+#include <models/core>
 
 namespace arp_ods
 {
