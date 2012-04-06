@@ -89,7 +89,9 @@ bool GamepadPS1::checkIdentity()
 
     if( getJoystickName() == "Logitech Logitech(R) Precision(TM) Gamepad"
     		||
-    	getJoystickName() == "Logitech Logitech Cordless RumblePad 2"	)
+    	getJoystickName() == "Logitech Logitech Cordless RumblePad 2"
+    	     ||
+    	getJoystickName() == "Logitech Logitech Dual Action"    )
     {
         res = true;
     }

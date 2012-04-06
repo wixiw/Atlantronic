@@ -36,4 +36,5 @@ void RosRluItf::updateHook()
     pOut.vx = tIn.vx();
     pOut.vy = tIn.vy();
     pOut.vtheta = tIn.vh();
+    outPose.write(pOut);
 }

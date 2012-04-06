@@ -7,7 +7,10 @@
 
 #include "Localizator.hpp"
 #include <rtt/Component.hpp>
+#include "LSL/Logger.hpp"
+#include "KFL/Logger.hpp"
 
+using namespace arp_core::log;
 using namespace arp_rlu;
 using namespace arp_math;
 
@@ -17,20 +20,31 @@ Localizator::Localizator(const std::string& name)
      : RluTaskContext(name)
      , kfloc()
 {
+    arp_rlu::lsl::Logger::InitConsole("uT_LSL", ERROR);
+    arp_rlu::kfl::Logger::InitFile("uT_KFL", DEBUG);
     createOrocosInterface();
 }
 
-
-bool Localizator::initialize(EstimatedPose2D pose)
+bool Localizator::configureHook()
 {
-    return kfloc.initialize(pose);
-}
+    EstimatedPose2D pose;
 
+    if( !RluTaskContext::configureHook() )
+        goto fail;
 
-void Localizator::setParams(LocalizatorParams params)
-{
-    propParams = params;
-    kfloc.setParams(propParams);
+    if(  !initialize(pose) )
+    {
+        LOG(Error) << "failed to initialize kfloc" << endlog();
+        goto fail;
+    }
+
+    //reussit
+    goto success;
+
+    fail:
+        return false;
+    success:
+        return true;
 }
 
 void Localizator::scanCb(RTT::base::PortInterface* portInterface)
@@ -40,41 +54,72 @@ void Localizator::scanCb(RTT::base::PortInterface* portInterface)
 
 void Localizator::odoCb(RTT::base::PortInterface* portInterface)
 {
-    EstimatedTwist2D T_r_t;
+    //TODO faire des test sur les inputs ports ?
 
+    EstimatedTwist2D T_r_t;
+    EstimatedTwist2D T_r_t_t; //je ne sais pas le vrai nom mais je rajoute un t pour dire qu'il y a un bricolage pour etre dans le repere de la table
     inOdo.readNewest(T_r_t);
 
+    //changement de repère de T_r_t
     Eigen::Vector3d T;
     T << T_r_t.vx(), T_r_t.vy(), T_r_t.vh();
     Eigen::Vector3d V = kfloc.getLastEstimatedPose2D().getDisplacement2Matrix() * T;
     Eigen::Matrix3d covariance = kfloc.getLastEstimatedPose2D().getDisplacement2Matrix() * T_r_t.cov();
-    T_r_t.vx( V(0) );
-    T_r_t.vy( V(1) );
-    T_r_t.vh( V(2) );
-    T_r_t.cov( covariance );
+    T_r_t_t.vx( V(0) );
+    T_r_t_t.vy( V(1) );
+    T_r_t_t.vh( V(2) );
+    T_r_t_t.cov( covariance );
+    T_r_t_t.date(T_r_t.date());
 
-    kfloc.newOdoVelocity(T_r_t);
+
+    LOG(Info) << "odoCb in=" << T_r_t.toString() << " bricole=" << T_r_t_t.toString() << endlog();
+    //update du Kalman
+    kfloc.newOdoVelocity(T_r_t_t);
 
 }
 
-void Localizator::updadeHook()
+void Localizator::updateHook()
 {
     // !!!!!!!! BIG FAT WARNING : l'updateHook est appele apres chaque callback automatiquement par orocos !!!
 
+
+
     EstimatedPose2D p = kfloc.getLastEstimatedPose2D();
-    EstimatedTwist2D T_r_t = kfloc.getLastEstimatedTwist2D();
+    EstimatedTwist2D T_r_t_t = kfloc.getLastEstimatedTwist2D(); //idem odoCB
+    EstimatedTwist2D T_r_t;
+
 
     Eigen::Vector3d T;
-    T << T_r_t.vx(), T_r_t.vy(), T_r_t.vh();
+    T << T_r_t_t.vx(), T_r_t_t.vy(), T_r_t_t.vh();
     Eigen::Vector3d V = kfloc.getLastEstimatedPose2D().getDisplacement2Matrix().inverse() * T;
     Eigen::Matrix3d covariance = kfloc.getLastEstimatedPose2D().getDisplacement2Matrix().inverse() * T_r_t.cov();
     T_r_t.vx( V(0) );
     T_r_t.vy( V(1) );
     T_r_t.vh( V(2) );
     T_r_t.cov( covariance );
+    T_r_t.date(T_r_t_t.date());
+
+    //TODO faire des test sur les inputs ports ?
+    LOG(Info) << "updateHook pose=" << p.toString() << " Twist_kfl=" << T_r_t_t.toString() << " twist=" << T_r_t.toString() << endlog();
 
     outTwist.write(T_r_t);
     outPose.write(p);
+}
+
+bool Localizator::initialize(EstimatedPose2D pose)
+{
+    LOG(Info) << "initialize to " << pose.toString() << endlog();
+
+    return kfloc.initialize(pose);
+}
+
+
+void Localizator::setParams(LocalizatorParams params)
+{
+    propParams = params;
+    kfloc.setParams(propParams);
+    LOG(Info) << "New params defined !" << endlog();
+
 }
 
 void Localizator::createOrocosInterface()

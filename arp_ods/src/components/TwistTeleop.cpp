@@ -33,11 +33,11 @@ void TwistTeleop::updateHook()
 
     double vx,vy,vtheta;
 
-    inXSpeed.readNewest(vy);
-    inYSpeed.readNewest(vx);
+    inXSpeed.readNewest(vx);
+    inYSpeed.readNewest(vy);
     inThetaSpeed.readNewest(vtheta);
 
-    Twist2D twist(-vx,vy,vtheta);
+    Twist2D twist(-vy,-vx,-vtheta);
 
     outTwistCmd.write(twist);
 }

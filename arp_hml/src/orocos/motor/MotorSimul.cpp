@@ -16,7 +16,14 @@ ORO_LIST_COMPONENT_TYPE( arp_hml::MotorSimul )
 MotorSimul::MotorSimul(const std::string& name):
     HmlTaskContext(name),
     ArdMotorItf(),
-    m_power(false)
+    m_power(false),
+    attrBlockingDelay(0),
+    propInvertDriveDirection(false),
+    propReductorValue(14),
+    propEncoderResolution(3000),
+    propMaximalTorque(0.5),
+    propInputsTimeout(20.0)
+
 {
     addAttribute("attrCommandedSpeed",m_speedCommand);
     addAttribute("attrPeriod",attrPeriod);

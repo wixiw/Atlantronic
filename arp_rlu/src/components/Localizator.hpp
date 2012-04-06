@@ -26,7 +26,8 @@ class Localizator: public RluTaskContext
         Localizator(const std::string& name);
         bool initialize(arp_math::EstimatedPose2D pose);
         void setParams(LocalizatorParams params);
-        void updadeHook();
+        bool configureHook();
+        void updateHook();
 
     protected:
         //*****************************************************

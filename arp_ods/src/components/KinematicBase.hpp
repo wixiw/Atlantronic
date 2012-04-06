@@ -23,9 +23,7 @@ class KinematicBase: public OdsTaskContext
         void updateHook();
 
     protected:
-        /** Clock port which trigger our activity. It contains the time at which the input data are supposed to be calculated*/
-        InputPort<timespec> inClock;
-
+        /** Clock port which trigger our activity. contains the Twist command we ha to try to do on the robot*/
         InputPort<arp_math::Twist2D> inTwistCmd;
         InputPort<arp_model::UbiquityParams> inParams;
 

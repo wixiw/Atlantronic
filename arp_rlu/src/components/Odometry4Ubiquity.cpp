@@ -29,19 +29,19 @@ void Odometry4Ubiquity::updateHook()
     {
         //WLA->BMO : attention, si on nous appelle via une commande c'est possible que ça trigger l'updateHook
         //tu es egalement triggered après le start() il me semble
-        LOG( Warning ) << "No new data in inTime port : updateHook should not be externally trigger => return" << endlog();
+        LOG( Error ) << "No new data in inTime port : updateHook should not be externally trigger => return" << endlog();
         return;
     }
 
     if( RTT::NoData == inParams.readNewest(attrParams))
     {
-        LOG( Warning ) << "No data in inParams port => return" << endlog();
+        LOG( Error ) << "No data in inParams port => return" << endlog();
         return;
     }
 
     if( RTT::NewData != inMotorState.readNewest(attrMotorState))
     {
-        LOG( Warning ) << "No new data in inMotorState port => return" << endlog();
+        LOG( Error ) << "No new data in inMotorState port => return" << endlog();
         return;
     }
 
@@ -56,7 +56,7 @@ void Odometry4Ubiquity::updateHook()
     attrKernelQuality = report.kernelQuality;
     if( attrKernelQuality < propMinKernelQuality )
     {
-        LOG(Warning) << "Slippage detected ! (kernelQuality=" << report.kernelQuality << ")" << endlog();
+        LOG(Info) << "Slippage detected ! (kernelQuality=" << report.kernelQuality << ")" << endlog();
     }
 
     EstimatedTwist2D measuredTwist = computedTwist;
@@ -82,6 +82,8 @@ void Odometry4Ubiquity::updateHook()
     measuredTwist.cov( covariance );
 
     measuredTwist.date( attrTime );
+
+    //TODO : seuiller à l'arret pour eviter de derriver quand on bouge pas
 
     outTwist.write(measuredTwist);
 }

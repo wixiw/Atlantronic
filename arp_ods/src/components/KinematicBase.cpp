@@ -17,17 +17,14 @@ using namespace arp_ods;
 ORO_LIST_COMPONENT_TYPE( arp_ods::KinematicBase )
 
 KinematicBase::KinematicBase(const std::string& name):
-        OdsTaskContext(name),
-        inClock()
+        OdsTaskContext(name)
 {
     addAttribute("attrTwistCmd",attrTwistCmd);
     addAttribute("attrCurrentTwist",attrCurrentTwist);
     addAttribute("attrAcceptableTwist",attrAcceptableTwist);
     addAttribute("attrMotorsCurrentState",attrMotorsCurrentState);
 
-    addEventPort("inClock",inClock)
-            .doc("Clock port which trigger our activity. It contains the time at which the input data are supposed to be calculated");
-    addPort("inTwistCmd",inTwistCmd)
+    addEventPort("inTwistCmd",inTwistCmd)
             .doc("");
     addPort("inCurrentTwist",inCurrentTwist)
             .doc("");
@@ -78,6 +75,8 @@ void KinematicBase::updateHook()
 //        {
 //            LOG(Error) << "Failed to filter desired twist to an acceptable twist" << endlog();
 //        }
+    //WLA pour BMO : tu as oublié de faire le fitlre Identité ^ ^ à la place du filtre à Moumou
+    attrAcceptableTwist = attrTwistCmd;
 
     if( UbiquityKinematics::twist2Motors(attrAcceptableTwist, turretVelocities, motorCmd, params) == false )
     {
