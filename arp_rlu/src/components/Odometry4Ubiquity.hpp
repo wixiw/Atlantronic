@@ -26,6 +26,10 @@ class Odometry4Ubiquity: public RluTaskContext
     protected:
         /** Buffer local pour les inMotorState */
         arp_model::MotorState attrMotorState;
+        /** Buffer local pour les params */
+        arp_model::UbiquityParams attrParams;
+        /** Buffer local pour le temps */
+        double attrTime;
 
         InputPort<double> inTime;
         InputPort<arp_model::UbiquityParams> inParams;

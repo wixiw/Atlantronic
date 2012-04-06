@@ -162,6 +162,25 @@ bool UbiquityKinematics::twist2Turrets(const Twist2D & iTw, TurretState& oTS, co
     return true;
 }
 
+bool UbiquityKinematics::motors2Twist(const MotorState & iMS, arp_math::Twist2D& oTw, SlippageReport& oSR, const UbiquityParams & iParams)
+{
+    bool res = true;
+    TurretState ioTS;
+    res &= motors2Turrets(iMS, ioTS, iParams);
+    res &= turrets2Twist(ioTS, oTw, oSR, iParams);
+    return res;
+}
+
+bool UbiquityKinematics::twist2Motors(const arp_math::Twist2D & iTw, const SteeringMotorVelocities & iSMV, MotorState& oMS, const UbiquityParams & iParams)
+{
+    bool res = true;
+    TurretState ioTS;
+    res &= twist2Turrets(iTw, ioTS, iParams);
+    res &= turrets2Motors(ioTS, iSMV, oMS, iParams);
+    return res;
+}
+
+
 void UbiquityKinematics::normalizeDirection(double& angle, double& speed)
 {
     //modulo 2PI pour commencer

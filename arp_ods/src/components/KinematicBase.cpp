@@ -58,7 +58,7 @@ void KinematicBase::updateHook()
     OdsTaskContext::updateHook();
 
     // INPUTS
-    MotorState turretVelocities;
+    SteeringMotorVelocities turretVelocities;
     UbiquityParams params;
 
     // gathering of Steering Velocities

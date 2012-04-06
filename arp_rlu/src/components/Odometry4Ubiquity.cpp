@@ -24,8 +24,7 @@ void Odometry4Ubiquity::updateHook()
 {
     ARDTaskContext::updateHook();
 
-    double time;
-    if( RTT::NewData != inTime.readNewest(time))
+    if( RTT::NewData != inTime.readNewest(attrTime))
     {
         //WLA->BMO : attention, si on nous appelle via une commande c'est possible que ça trigger l'updateHook
         //tu es egalement triggered après le start() il me semble
@@ -33,22 +32,30 @@ void Odometry4Ubiquity::updateHook()
         return;
     }
 
-    UbiquityParams params;
-    if( RTT::NoData == inParams.readNewest(params))
+    if( RTT::NoData == inParams.readNewest(attrParams))
     {
         LOG( Warning ) << "No data in inParams port => return" << endlog();
         return;
     }
 
-    MotorState ms;
-    if( RTT::NewData != inMotorState.readNewest(ms))
+    if( RTT::NewData != inMotorState.readNewest(attrMotorState))
     {
         LOG( Warning ) << "No new data in inMotorState port => return" << endlog();
         return;
     }
 
+    //calcul de l'odometrie (oh oui en une ligne c'est beau)
+    Twist2D conputedTwist;
+    SlippageReport report;
+    if( UbiquityKinematics::motors2Twist(attrMotorState, conputedTwist, report, attrParams) == false )
+    {
+        LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
+    }
 
+    //TODO il va falloir faire quelque chose pour les covariances
+    EstimatedTwist2D measuredTwist = conputedTwist;
 
+    outTwist.write(measuredTwist);
 }
 
 
@@ -56,6 +63,8 @@ void Odometry4Ubiquity::updateHook()
 void Odometry4Ubiquity::createOrocosInterface()
 {
     addAttribute("attrMotorState", attrMotorState);
+    addAttribute("attrParams", attrParams);
+    addAttribute("attrTime", attrTime);
 
     addEventPort("inTime",inTime)
             .doc("time in second.\n This port is used as trigger.\n This time is used as date of sensors data.");

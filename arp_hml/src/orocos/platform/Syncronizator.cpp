@@ -126,26 +126,26 @@ bool Syncronizator::isAllSyncReveived(double& syncTime)
 MotorState Syncronizator::readInputs()
 {
     MotorState motorState;
-    inLeftDrivingPosition.readNewest(motorState.leftDrivingMotorPosition);
-    inRightDrivingPosition.readNewest(motorState.rightDrivingMotorPosition);
-    inRearDrivingPosition.readNewest(motorState.rearDrivingMotorPosition);
-    inLeftSteeringPosition.readNewest(motorState.leftSteeringMotorPosition);
-    inRightSteeringPosition.readNewest(motorState.rightSteeringMotorPosition);
-    inRearSteeringPosition.readNewest(motorState.rearSteeringMotorPosition);
+    inLeftDrivingPosition.readNewest(motorState.leftDrivingPosition);
+    inRightDrivingPosition.readNewest(motorState.rightDrivingPosition);
+    inRearDrivingPosition.readNewest(motorState.rearDrivingPosition);
+    inLeftSteeringPosition.readNewest(motorState.leftSteeringPosition);
+    inRightSteeringPosition.readNewest(motorState.rightSteeringPosition);
+    inRearSteeringPosition.readNewest(motorState.rearSteeringPosition);
 
-    inLeftDrivingVelocity.readNewest(motorState.leftDrivingMotorVelocity);
-    inRightDrivingVelocity.readNewest(motorState.rightDrivingMotorVelocity);
-    inRearDrivingVelocity.readNewest(motorState.rearDrivingMotorVelocity);
-    inLeftSteeringVelocity.readNewest(motorState.leftSteeringMotorVelocity);
-    inRightSteeringVelocity.readNewest(motorState.rightSteeringMotorVelocity);
-    inRearSteeringVelocity.readNewest(motorState.rearSteeringMotorVelocity);
+    inLeftDrivingVelocity.readNewest(motorState.leftDrivingVelocity);
+    inRightDrivingVelocity.readNewest(motorState.rightDrivingVelocity);
+    inRearDrivingVelocity.readNewest(motorState.rearDrivingVelocity);
+    inLeftSteeringVelocity.readNewest(motorState.leftSteeringVelocity);
+    inRightSteeringVelocity.readNewest(motorState.rightSteeringVelocity);
+    inRearSteeringVelocity.readNewest(motorState.rearSteeringVelocity);
 
-    inLeftDrivingTorque.readNewest(motorState.leftDrivingMotorTorque);
-    inRightDrivingTorque.readNewest(motorState.rightDrivingMotorTorque);
-    inRearDrivingTorque.readNewest(motorState.rearDrivingMotorTorque);
-    inLeftSteeringTorque.readNewest(motorState.leftSteeringMotorTorque);
-    inRightSteeringTorque.readNewest(motorState.rightSteeringMotorTorque);
-    inRearSteeringTorque.readNewest(motorState.rearSteeringMotorTorque);
+    inLeftDrivingTorque.readNewest(motorState.leftDrivingTorque);
+    inRightDrivingTorque.readNewest(motorState.rightDrivingTorque);
+    inRearDrivingTorque.readNewest(motorState.rearDrivingTorque);
+    inLeftSteeringTorque.readNewest(motorState.leftSteeringTorque);
+    inRightSteeringTorque.readNewest(motorState.rightSteeringTorque);
+    inRearSteeringTorque.readNewest(motorState.rearSteeringTorque);
 
     return motorState;
 }

@@ -74,6 +74,12 @@ class UbiquityKinematics
          */
         static bool twist2Turrets(const arp_math::Twist2D & iTw, TurretState& oTS, const UbiquityParams & iParams);
 
+
+
+        static bool motors2Twist(const MotorState & iMS, arp_math::Twist2D& oTw, SlippageReport& oSR, const UbiquityParams & iParams);
+        static bool twist2Motors(const arp_math::Twist2D & iTw, const SteeringMotorVelocities & iSMV, MotorState& oMS, const UbiquityParams & iParams);
+
+
         /**
          * Les tourelles permettent de recouvrir l'état de possibles de plusieurs façons lorsqu'elles sont pilotés en marche
          * AV et AR entre -PI et PI. Cette fonction permet de réduire ce recouvrement à un pilotage entre -PI/2 et PI/2 puis marche AV/AR
