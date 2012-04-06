@@ -28,10 +28,12 @@ rosbuild_gensrv()
 rosbuild_include(arp_core ARP_common_functions)
 configure_ard_project()
 
+#generate typekit
+orocos_typegen_headers(src/models/UbiquityStates.hpp)
+
 ###
 # end of ARD specific
 ###
-
 
 #
 # generate orocos package

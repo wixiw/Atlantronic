@@ -34,11 +34,16 @@ bool ParamsComponent::configureHook()
         LOG(Error) << "Loading parameters are not consistent." << endlog();
     }
 
-    outParams.write(propSavedParams);
     goto success;
 
     fail:
         return false;
     success:
         return true;
+}
+
+
+void ParamsComponent::updateHook()
+{
+    outParams.write(propSavedParams);
 }

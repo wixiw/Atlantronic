@@ -6,7 +6,7 @@ local me = "Odometry"
 
 function OdometryDeployer:load()
 	Deployer:loadComponent(me, "arp_rlu::Odometry4Ubiquity")
-	Deployer:setActivity(me, 0.0, 10, 1)
+	Deployer:setActivity(me, 5.0, 10, 1)
 end
 
 
@@ -19,7 +19,7 @@ end
 function OdometryDeployer:connect()
 	--on s'ajoute en peer a HmlMonitor pour pouvoir faire les connections
 	Deployer:addPeer("HmlMonitor", me)
-	
+	HmlMonitor:connect(me, "inTime", 		"Syncronizator","outClock");
 	HmlMonitor:connect(me, "inMotorState", 		"Syncronizator","outMotorMeasures");
 	Deployer:connect(me..".inParams", "UbiquityParams.outParams",cp);
 	

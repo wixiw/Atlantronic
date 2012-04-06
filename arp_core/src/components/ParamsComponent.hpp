@@ -19,6 +19,7 @@ class ParamsComponent: public ARDTaskContext
     public:
         ParamsComponent(const std::string& name);
         bool configureHook();
+        void updateHook();
 
     protected:
         arp_model::UbiquityParams propSavedParams;

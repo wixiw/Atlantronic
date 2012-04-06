@@ -5,7 +5,7 @@ MotorSimulDeployer = MotorDeployer:new()
 
 function MotorSimulDeployer:loadMotor(name)
 	Deployer:loadComponent(name,"arp_hml::MotorSimul")
-	Deployer:setActivity(name,0.0,40,1)
+	Deployer:setActivity(name,0.0,40,0)
 end
 
 function MotorSimulDeployer:load()

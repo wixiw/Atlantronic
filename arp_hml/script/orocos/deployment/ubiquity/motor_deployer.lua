@@ -4,19 +4,20 @@ dofile("/opt/ard/arp_core/script/orocos/deployment/component_deployer_object.lua
 MotorDeployer = ComposantDeployer:new()
 
 function MotorDeployer:load()
+	--sched_type 0 = RT 
 	Deployer:loadComponent("LeftDriving","arp_hml::Faulhaber3268Bx4")
-	Deployer:setActivity("LeftDriving",0,40,1)
+	Deployer:setActivity("LeftDriving",0,40,0)
 	Deployer:loadComponent("RightDriving","arp_hml::Faulhaber3268Bx4")
-	Deployer:setActivity("RightDriving",0,40,1)
+	Deployer:setActivity("RightDriving",0,40,0)
 	Deployer:loadComponent("RearDriving","arp_hml::Faulhaber3268Bx4")
-	Deployer:setActivity("RearDriving",0,40,1)
+	Deployer:setActivity("RearDriving",0,40,0)
 
 	Deployer:loadComponent("LeftSteering","arp_hml::Faulhaber3268Bx4")
-	Deployer:setActivity("LeftSteering",0,40,1)
+	Deployer:setActivity("LeftSteering",0,40,0)
 	Deployer:loadComponent("RightSteering","arp_hml::Faulhaber3268Bx4")
-	Deployer:setActivity("RightSteering",0,40,1)
+	Deployer:setActivity("RightSteering",0,40,0)
 	Deployer:loadComponent("RearSteering","arp_hml::Faulhaber3268Bx4")
-	Deployer:setActivity("RearSteering",0,40,1)
+	Deployer:setActivity("RearSteering",0,40,0)
 end
 
 function MotorDeployer:registerToSql(name)

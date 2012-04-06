@@ -15,7 +15,8 @@ using namespace arp_rlu;
 ORO_LIST_COMPONENT_TYPE( arp_rlu::Odometry4Ubiquity )
 
 Odometry4Ubiquity::Odometry4Ubiquity(const std::string& name):
-RluTaskContext(name)
+    RluTaskContext(name),
+    propMinKernelQuality(100.0)
 {
     createOrocosInterface();
 }
@@ -52,7 +53,7 @@ void Odometry4Ubiquity::updateHook()
         LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
     }
 
-    if( report.kernelQuality < 100. )
+    if( report.kernelQuality < propMinKernelQuality )
     {
         LOG(Warning) << "Slippage detected ! (kernelQuality=" << report.kernelQuality << ")" << endlog();
     }
@@ -90,6 +91,9 @@ void Odometry4Ubiquity::createOrocosInterface()
     addAttribute("attrMotorState", attrMotorState);
     addAttribute("attrParams", attrParams);
     addAttribute("attrTime", attrTime);
+
+    addProperty("propMinKernelQuality",propMinKernelQuality)
+        .doc("");
 
     addEventPort("inTime",inTime)
             .doc("time in second.\n This port is used as trigger.\n This time is used as date of sensors data.");
