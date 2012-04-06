@@ -11,51 +11,46 @@
 #include "RluTaskContext.hpp"
 #include <math/core>
 
-using namespace arp_math;
+#include "KFL/KFLocalizator.hpp"
+
 
 namespace arp_rlu
 {
 
-struct LocalizatorParams
-{
-        double truc;
-
-        //valeurs par defaut pas trop debiles
-        //ou completement debiles suivant les philosophies
-        LocalizatorParams():
-            truc(1.0)
-        {}
-
-        bool check() const
-        {
-            if( truc <= 0 )
-                return false;
-
-            //tout est ok
-            return true;
-        }
-};
+typedef kfl::KFLocalizator::Params LocalizatorParams;
 
 
 class Localizator: public RluTaskContext
 {
     public:
         Localizator(const std::string& name);
-        bool initialize(EstimatedPose2D pose);
+        bool initialize(arp_math::EstimatedPose2D pose);
         void setParams(LocalizatorParams params);
         void updadeHook();
 
     protected:
+        //*****************************************************
+        // Params
         LocalizatorParams propParams;
 
+        //*****************************************************
+        // Ports
         InputPort<double> inScan;
-        InputPort<EstimatedTwist2D > inOdo;
+        InputPort<arp_math::EstimatedTwist2D > inOdo;
 
-        OutputPort<EstimatedPose2D> outPose;
-        OutputPort<EstimatedTwist2D> outTwist;
+        OutputPort<arp_math::EstimatedPose2D> outPose;
+        OutputPort<arp_math::EstimatedTwist2D> outTwist;
+
+
+        //*****************************************************
+        // Methods
 
         /* Cree l'interface Orocos : ajout de port, proprietes, operations */
         void createOrocosInterface();
+
+
+        //*****************************************************
+        // Callbacks
 
         /** callback appelee lors de la reception de donnees sur inScan,
          * Attention l'updateHook sera automatique appelee... jusqu'au prochaine versions d'orocos*/
@@ -64,6 +59,10 @@ class Localizator: public RluTaskContext
         /** callback appelee lors de la reception de donnees sur inOdo,
          * Attention l'updateHook sera automatique appelee... jusqu'au prochaine versions d'orocos*/
         void odoCb(RTT::base::PortInterface* portInterface);
+
+        //*****************************************************
+        // Internal objects
+        kfl::KFLocalizator kfloc;
 
 };
 
