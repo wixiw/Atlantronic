@@ -84,8 +84,6 @@ bool UbiquityKinematics::turrets2Twist(const TurretState & iTS, Twist2D& oTw, Sl
         return false;
     }
 
-    Log( DEBUG ) << "iTS:\n" << iTS.toString();
-
     Eigen::Matrix<double, 6, 4> A;
     {
         A(0,0) =  iParams.getLeftTurretPosition().y();
@@ -94,8 +92,8 @@ bool UbiquityKinematics::turrets2Twist(const TurretState & iTS, Twist2D& oTw, Sl
         A(1,1) =  0.;
         A(0,2) =  0.;
         A(1,2) = -1.;
-        A(0,3) =  cos(iTS.leftSteeringTurretPosition) * iTS.leftDrivingTurretVelocity;
-        A(1,3) = -sin(iTS.leftSteeringTurretPosition) * iTS.leftDrivingTurretVelocity;
+        A(0,3) = cos(iTS.leftSteeringTurretPosition) * iTS.leftDrivingTurretVelocity;
+        A(1,3) = sin(iTS.leftSteeringTurretPosition) * iTS.leftDrivingTurretVelocity;
     }
     {
         A(2,0) =  iParams.getRightTurretPosition().y();
@@ -104,8 +102,8 @@ bool UbiquityKinematics::turrets2Twist(const TurretState & iTS, Twist2D& oTw, Sl
         A(3,1) =  0.;
         A(2,2) =  0.;
         A(3,2) = -1.;
-        A(2,3) =  cos(iTS.rightSteeringTurretPosition) * iTS.rightDrivingTurretVelocity;
-        A(3,3) = -sin(iTS.rightSteeringTurretPosition) * iTS.rightDrivingTurretVelocity;
+        A(2,3) = cos(iTS.rightSteeringTurretPosition) * iTS.rightDrivingTurretVelocity;
+        A(3,3) = sin(iTS.rightSteeringTurretPosition) * iTS.rightDrivingTurretVelocity;
     }
     {
         A(4,0) =  iParams.getRearTurretPosition().y();
@@ -114,31 +112,21 @@ bool UbiquityKinematics::turrets2Twist(const TurretState & iTS, Twist2D& oTw, Sl
         A(5,1) =  0.;
         A(4,2) =  0.;
         A(5,2) = -1.;
-        A(4,3) =  cos(iTS.rearSteeringTurretPosition) * iTS.rearDrivingTurretVelocity;
-        A(5,3) = -sin(iTS.rearSteeringTurretPosition) * iTS.rearDrivingTurretVelocity;
+        A(4,3) = cos(iTS.rearSteeringTurretPosition) * iTS.rearDrivingTurretVelocity;
+        A(5,3) = sin(iTS.rearSteeringTurretPosition) * iTS.rearDrivingTurretVelocity;
     }
-
-    Log( DEBUG ) << "A:\n" << A;
 
     Eigen::VectorXd s = A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).singularValues();
     Eigen::MatrixXd V = A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).matrixV();
 
-    Log( DEBUG ) << "s:\n" << s;
-    Log( DEBUG ) << "V:\n" << V;
-
     oSR.kernelQuality = s(2) / s(3);
-    Log( DEBUG ) << "kernelQuality: " << oSR.kernelQuality;
 
     Eigen::VectorXd X = V.col(3);
-    Log( DEBUG ) << "X:\n" << X;
     X = X / X(3);
-    Log( DEBUG ) << "X normalized:\n" << X;
 
     oTw.vh( X(0) );
     oTw.vx( X(1) );
     oTw.vy( X(2) );
-
-    Log( DEBUG ) << "oTw:\n" << oTw.toString();
 
     return true;
 }
