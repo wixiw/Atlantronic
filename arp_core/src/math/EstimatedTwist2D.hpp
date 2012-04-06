@@ -22,6 +22,7 @@ class EstimatedTwist2D : public Twist2D
 
     Eigen::Matrix<double,3,3> cov() const;
     double date() const;
+    double& dateRef();
 
     void cov(Eigen::Matrix<double,3,3>) ;
     void date(double);

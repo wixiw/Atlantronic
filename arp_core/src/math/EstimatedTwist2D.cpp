@@ -44,6 +44,11 @@ double EstimatedTwist2D::date() const
     return estimationDate;
 }
 
+double& EstimatedTwist2D::dateRef()
+{
+    return estimationDate;
+}
+
 void EstimatedTwist2D::cov(Eigen::Matrix<double,3,3> _cov)
 {
     covariance = _cov;
