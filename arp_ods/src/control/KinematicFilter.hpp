@@ -33,28 +33,28 @@ class KinematicFilter
          * @param params : paramètres géométriques du robot
          * @return : true if computation succeed, false otherwise (param inconsistent for instance)
          */
-        static bool filterTwist(const arp_math::Twist2D & desTwist, const arp_math::Twist2D & currentTwist, const arp_core::TurretState & turretCurrentState,  arp_math::Twist2D& acceptableTwist, const arp_core::UbiquityParams & params);
+        static bool filterTwist(const arp_math::Twist2D & desTwist, const arp_math::Twist2D & currentTwist, const arp_model::TurretState & turretCurrentState,  arp_math::Twist2D& acceptableTwist, const arp_model::UbiquityParams & params);
 
     protected:
         /*
          * transport of the twist to what is nice for the filter: twist at center of gravity
          */
-        static void transportToCog(const arp_math::Twist2D & refTwist, arp_math::Twist2D& cogTwist, const arp_core::UbiquityParams & params);
+        static void transportToCog(const arp_math::Twist2D & refTwist, arp_math::Twist2D& cogTwist, const arp_model::UbiquityParams & params);
         /*
          * get back the twist from centre of gravity to the usual referential
          */
-        static void transportToRef(const arp_math::Twist2D & cogTwist, arp_math::Twist2D& refTwist, const arp_core::UbiquityParams & params);
+        static void transportToRef(const arp_math::Twist2D & cogTwist, arp_math::Twist2D& refTwist, const arp_model::UbiquityParams & params);
         /**
          * Non Holonomy handling: if the robot is asked a twist with a CIR that it will not reached, then it's no use to let him go fast
          */
-        static void filterForNonholonomy(const arp_math::Twist2D & inputTwist, const arp_math::Twist2D & currentTwist, const arp_core::TurretState & turretCurrentState, arp_math::Twist2D& outputTwist, const arp_core::UbiquityParams & params);
+        static void filterForNonholonomy(const arp_math::Twist2D & inputTwist, const arp_math::Twist2D & currentTwist, const arp_model::TurretState & turretCurrentState, arp_math::Twist2D& outputTwist, const arp_model::UbiquityParams & params);
 
         /**
          * Handling of the hardware contraints:
          * we known that the current twist would be an acceptable solution.
          * so we choose a Twist that is something between the desired twist and the current twist
          */
-        static void filterForConstraints(const arp_math::Twist2D & inputTwist, const arp_math::Twist2D & currentTwist, arp_math::Twist2D& outputTwist, const arp_core::UbiquityParams & params);
+        static void filterForConstraints(const arp_math::Twist2D & inputTwist, const arp_math::Twist2D & currentTwist, arp_math::Twist2D& outputTwist, const arp_model::UbiquityParams & params);
 };
 
 }

@@ -28,7 +28,7 @@ class KinematicBase: public OdsTaskContext
         InputPort<timespec> inClock;
 
         InputPort<arp_math::Twist2D> inTwistCmd;
-        InputPort<arp_core::UbiquityParams> inParams;
+        InputPort<arp_model::UbiquityParams> inParams;
 
 		InputPort<arp_math::Twist2D> inCurrentTwist;
 
@@ -55,7 +55,7 @@ class KinematicBase: public OdsTaskContext
         arp_math::Twist2D attrTwistCmd;
         arp_math::Twist2D attrCurrentTwist;
         arp_math::Twist2D attrAcceptableTwist;
-        arp_core::MotorState attrMotorsCurrentState;
+        arp_model::MotorState attrMotorsCurrentState;
 
 
 };

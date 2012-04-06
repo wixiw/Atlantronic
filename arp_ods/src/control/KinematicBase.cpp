@@ -10,7 +10,7 @@
 #include <models/UbiquityKinematics.hpp>
 #include "KinematicFilter.hpp"
 
-using namespace arp_core;
+using namespace arp_model;
 using namespace arp_math;
 using namespace arp_ods;
 

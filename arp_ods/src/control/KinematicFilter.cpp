@@ -9,7 +9,7 @@
 #include <models/UbiquityKinematics.hpp>
 #include <rtt/Component.hpp>
 
-using namespace arp_core;
+using namespace arp_model;
 using namespace arp_math;
 using namespace arp_ods;
 
@@ -54,7 +54,7 @@ bool KinematicFilter::filterTwist(const Twist2D & desTwist, const Twist2D & curr
     return true;
 }
 
-void KinematicFilter::filterForNonholonomy(const arp_math::Twist2D & inputTwist, const arp_math::Twist2D & currentTwist, const arp_core::TurretState & turretCurrentState, arp_math::Twist2D& outputTwist, const arp_core::UbiquityParams & params)
+void KinematicFilter::filterForNonholonomy(const Twist2D & inputTwist, const Twist2D & currentTwist, const TurretState & turretCurrentState, Twist2D& outputTwist, const UbiquityParams & params)
 {
     // GET SATURATION OF TURRETS TO FULLFILL THE ORDER
     TurretState desTurretCmd;
