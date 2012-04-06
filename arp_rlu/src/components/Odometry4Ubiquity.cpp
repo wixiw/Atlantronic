@@ -45,19 +45,44 @@ void Odometry4Ubiquity::updateHook()
     }
 
     //calcul de l'odometrie (oh oui en une ligne c'est beau)
-    Twist2D conputedTwist;
+    Twist2D computedTwist;
     SlippageReport report;
-    if( UbiquityKinematics::motors2Twist(attrMotorState, conputedTwist, report, attrParams) == false )
+    if( UbiquityKinematics::motors2Twist(attrMotorState, computedTwist, report, attrParams) == false )
     {
         LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
     }
 
-    //TODO il va falloir faire quelque chose pour les covariances
-    EstimatedTwist2D measuredTwist = conputedTwist;
+    if( report.kernelQuality < 100. )
+    {
+        LOG(Warning) << "Slippage detected ! (kernelQuality=" << report.kernelQuality << ")" << endlog();
+    }
+
+    EstimatedTwist2D measuredTwist = computedTwist;
+
+    // En attendant de propager les erreurs des moteurs, on définit arbitrairement (cf maquette python) des covariances :
+    // sigmaXOdo = np.max(  [params.simu_cfg["minSigmaTransOdoVelocity"], params.simu_cfg["percentSigmaTransOdoVelocity"] * np.fabs(vxOdo)])
+    // sigmaYOdo = np.max( [params.simu_cfg["minSigmaTransOdoVelocity"], params.simu_cfg["percentSigmaTransOdoVelocity"] * np.fabs(vyOdo)])
+    // sigmaHOdo = np.max( [params.simu_cfg["minSigmaRotOdoVelocity"],   params.simu_cfg["percentSigmaRotOdoVelocity"]   * np.fabs(vhOdo)])
+
+    const double percentSigmaTransOdoVelocity = 0.03; // 3 %
+    const double percentSigmaRotOdoVelocity = 0.03;   // 3 %
+    const double minSigmaTransOdoVelocity = 0.001;    // 1 mm/s
+    const double minSigmaRotOdoVelocity = 0.01;       // 0.5 deg/s
+
+    double sigmaXOdo = max( minSigmaTransOdoVelocity, fabs(percentSigmaTransOdoVelocity * computedTwist.vx()) ); // en m/s
+    double sigmaYOdo = max( minSigmaTransOdoVelocity, fabs(percentSigmaTransOdoVelocity * computedTwist.vy()) ); // en m/s
+    double sigmaHOdo = max( minSigmaRotOdoVelocity, fabs(percentSigmaRotOdoVelocity * computedTwist.vh()) ); // en rad/s
+
+    Eigen::Matrix3d covariance = Eigen::Matrix3d::Identity();
+    covariance(0,0) = sigmaXOdo * sigmaXOdo;
+    covariance(1,1) = sigmaYOdo * sigmaYOdo;
+    covariance(2,2) = sigmaHOdo * sigmaHOdo;
+    measuredTwist.cov( covariance );
+
+    measuredTwist.date( attrTime );
 
     outTwist.write(measuredTwist);
 }
-
 
 
 void Odometry4Ubiquity::createOrocosInterface()
