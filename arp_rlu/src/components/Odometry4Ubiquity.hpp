@@ -10,7 +10,7 @@
 
 #include "RluTaskContext.hpp"
 #include <math/core>
-#include <models/UbiquityParams.hpp>
+#include <models/core>
 
 namespace arp_rlu
 {
@@ -24,22 +24,14 @@ class Odometry4Ubiquity: public RluTaskContext
         virtual void updateHook();
 
     protected:
+        /** Buffer local pour les inMotorState */
+        arp_model::MotorState attrMotorState;
+
         InputPort<double> inTime;
         InputPort<arp_model::UbiquityParams> inParams;
 
-        InputPort<double> inLeftDrivingSpeed;
-        InputPort<double> inRightDrivingSpeed;
-        InputPort<double> inRearDrivingSpeed;
-        InputPort<double> inLeftSteeringSpeed;
-        InputPort<double> inRightSteeringSpeed;
-        InputPort<double> inRearSteeringSpeed;
-
-        InputPort<double> inLeftDrivingPosition;
-        InputPort<double> inRightDrivingPosition;
-        InputPort<double> inRearDrivingPosition;
-        InputPort<double> inLeftSteeringPosition;
-        InputPort<double> inRightSteeringPosition;
-        InputPort<double> inRearSteeringPosition;
+        /** Measures from HML */
+        InputPort<arp_model::MotorState> inMotorState;
 
         OutputPort<arp_math::EstimatedTwist2D> outTwist;
 

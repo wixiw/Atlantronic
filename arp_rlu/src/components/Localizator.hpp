@@ -43,6 +43,7 @@ class Localizator: public RluTaskContext
         Localizator(const std::string& name);
         bool initialize(EstimatedPose2D pose);
         void setParams(LocalizatorParams params);
+        void updadeHook();
 
     protected:
         LocalizatorParams propParams;
@@ -53,7 +54,16 @@ class Localizator: public RluTaskContext
         OutputPort<EstimatedPose2D> outPose;
         OutputPort<EstimatedTwist2D> outTwist;
 
+        /* Cree l'interface Orocos : ajout de port, proprietes, operations */
         void createOrocosInterface();
+
+        /** callback appelee lors de la reception de donnees sur inScan,
+         * Attention l'updateHook sera automatique appelee... jusqu'au prochaine versions d'orocos*/
+        void scanCb(RTT::base::PortInterface* portInterface);
+
+        /** callback appelee lors de la reception de donnees sur inOdo,
+         * Attention l'updateHook sera automatique appelee... jusqu'au prochaine versions d'orocos*/
+        void odoCb(RTT::base::PortInterface* portInterface);
 
 };
 
