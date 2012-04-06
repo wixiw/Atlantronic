@@ -66,34 +66,72 @@ struct DrivingMotorVelocities
         {}
 };
 
+struct SteeringMotorTorques
+{
+        double leftSteeringMotorTorque;
+        double rightSteeringMotorTorque;
+        double rearSteeringMotorTorque;
+
+        SteeringMotorTorques():
+            leftSteeringMotorTorque(0.0),
+            rightSteeringMotorTorque(0.0),
+            rearSteeringMotorTorque(0.0)
+        {}
+};
+
+struct DrivingMotorTorques
+{
+        double leftDrivingMotorTorque;
+        double rightDrivingMotorTorque;
+        double rearDrivingMotorTorque;
+
+        DrivingMotorTorques():
+            leftDrivingMotorTorque(0.0),
+            rightDrivingMotorTorque(0.0),
+            rearDrivingMotorTorque(0.0)
+        {}
+};
 
 struct MotorState : public  DrivingMotorPositions,
                             DrivingMotorVelocities,
+                            DrivingMotorTorques,
                             SteeringMotorPositions,
-                            SteeringMotorVelocities
+                            SteeringMotorVelocities,
+                            SteeringMotorTorques
+
 {
         MotorState()
         : DrivingMotorPositions()
         , DrivingMotorVelocities()
+        , DrivingMotorTorques()
         , SteeringMotorPositions()
         , SteeringMotorVelocities()
+        , SteeringMotorTorques()
         {}
 
         std::string toString() const
         {
             std::stringstream ss;
-            ss << "Driving : " << "(" << leftDrivingMotorPosition << ","
-               << rightDrivingMotorPosition << ","
-               << rearDrivingMotorPosition << ") m" << ","
-               << "(" << leftDrivingMotorVelocity << ","
-               << rightDrivingMotorVelocity << ","
-               << rearDrivingMotorVelocity << ") m/s" << " - "
-               << "Steering : " << "(" << leftSteeringMotorPosition << ","
-               << rightSteeringMotorPosition << ","
-               << rearSteeringMotorPosition << ") rad" << ","
-               << "(" << leftSteeringMotorVelocity << ","
-               << rightSteeringMotorVelocity << ","
-               << rearSteeringMotorVelocity << ") rad/s";
+            ss << "Driving : "
+                   << "(" << leftDrivingMotorPosition << ","
+                   << rightDrivingMotorPosition << ","
+                   << rearDrivingMotorPosition << ") m" << ","
+                   << "(" << leftDrivingMotorVelocity << ","
+                   << rightDrivingMotorVelocity << ","
+                   << rearDrivingMotorVelocity << ") m/s" << ","
+                   << "(" << leftDrivingMotorTorque << ","
+                   << rightDrivingMotorTorque << ","
+                   << rearDrivingMotorTorque << ") Nm" << " - "
+               << "Steering : "
+                   << "(" << leftSteeringMotorPosition << ","
+                   << rightSteeringMotorPosition << ","
+                   << rearSteeringMotorPosition << ") rad" << ","
+                   << "(" << leftSteeringMotorVelocity << ","
+                   << rightSteeringMotorVelocity << ","
+                   << rearSteeringMotorVelocity << ") rad/s" << ","
+                   << "(" << leftSteeringMotorTorque << ","
+                   << rightSteeringMotorTorque << ","
+                   << rearSteeringMotorTorque << ") Nm";
             return ss.str();
         }
 };

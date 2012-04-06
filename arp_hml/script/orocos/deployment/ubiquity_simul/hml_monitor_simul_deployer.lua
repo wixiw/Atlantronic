@@ -20,6 +20,7 @@ function HmlMonitorSimulDeployer:connect()
 
 --ajout au monitor
 	HmlMonitorSimulDeployer:addToMonitor("Joystick")
+	HmlMonitorSimulDeployer:addToMonitor("Can1")
 	HmlMonitorDeployer:addToMonitor("LeftDriving")
 	HmlMonitorDeployer:addToMonitor("RightDriving")
 	HmlMonitorDeployer:addToMonitor("RearDriving")
@@ -28,6 +29,8 @@ function HmlMonitorSimulDeployer:connect()
 	HmlMonitorDeployer:addToMonitor("RearSteering")
 	HmlMonitorSimulDeployer:addToMonitor("RosHmlItf")
 	HmlMonitorSimulDeployer:addToMonitor("UbiquitySimul")
+	HmlMonitorSimulDeployer:addToMonitor("Syncronizator")
+
 
 	--HmlMonitorDeployer:registerToSql();
 	HmlMonitorSimulDeployer:check("HmlMonitor")

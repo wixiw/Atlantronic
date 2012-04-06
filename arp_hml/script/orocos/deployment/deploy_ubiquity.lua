@@ -18,11 +18,14 @@ dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/io_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/joystick_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/ros_hml_itf_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/hml_monitor_deployer.lua");
+dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/syncronizator_deployer.lua");
+
 
 print("... load components")
 CanDeployer:load()
 IoDeployer:load()
 MotorDeployer:load()
+Syncronizator:load()
 JoystickDeployer:load()
 RosHmlItfDeployer:load()
 HmlMonitorDeployer:load()
@@ -32,6 +35,7 @@ print("... connect components")
 CanDeployer:connect()
 IoDeployer:connect()
 MotorDeployer:connect()
+Syncronizator:connect()
 JoystickDeployer:connect()
 RosHmlItfDeployer:connect()
 HmlMonitorDeployer:connect()

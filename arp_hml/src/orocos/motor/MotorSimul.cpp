@@ -48,13 +48,13 @@ MotorSimul::MotorSimul(const std::string& name):
     addPort("outFilteredPositionCommand",outFilteredPositionCommand)
             .doc("");
 
-    addPort("outMeasuredPosition",outMeasuredPosition)
+    addPort("outPosition",outPosition)
         .doc("Provides the measured position of the encoder from CAN. It is converted in rad on the reductor's output's axe.");
-    addPort("outMeasuredPositionTime",outMeasuredPositionTime)
+    addPort("outClock",outClock)
         .doc("");
-    addPort("outMeasuredTorque",outMeasuredTorque)
+    addPort("outTorque",outTorque)
         .doc("Provides the torque measured from CAN. Not available yet");
-    addPort("outComputedSpeed",outComputedSpeed)
+    addPort("outVelocity",outVelocity)
         .doc(" Provides a computed speed from the encoder position. In rad/s on the reductor's output's axe.");
     addPort("outDriveEnable",outDriveEnable)
         .doc("Is true when the drive is ready to be operated (axe blocked). If it is false, the axe is free of any mouvement");
@@ -104,9 +104,7 @@ void MotorSimul::updateHook()
 void MotorSimul::getInputs()
 {
     //Récupération de la date du cycle CAN
-    timespec syncTime;
-    inClock.readNewest(syncTime);
-    m_syncTime = syncTime.tv_sec + (double)(syncTime.tv_nsec)/1E9;
+    inClock.readNewest(m_syncTime);
 
     //read last speed command
     double speedCmd = 0;
@@ -146,17 +144,19 @@ void MotorSimul::getInputs()
 void MotorSimul::setOutputs()
 {
     //publication de la position
-    outMeasuredPosition.write( ArdMotorItf::getPositionMeasure() );
-    outMeasuredPositionTime.write( m_syncTime );
+    outPosition.write( ArdMotorItf::getPositionMeasure() );
     //publication de la vitesse
-    outComputedSpeed.write( ArdMotorItf::getSpeedMeasure() );
+    outVelocity.write( ArdMotorItf::getSpeedMeasure() );
     //lecture du courant
-    outMeasuredTorque.write( ArdMotorItf::getTorqueMeasure() );
+    outTorque.write( ArdMotorItf::getTorqueMeasure() );
     //publication du mode d'operation
     outCurrentOperationMode.write( getStringFromMode(getOperationMode()) );
 
     outConnected.write(true);
     outDriveEnable.write(m_power);
+
+    //a faire a la fin pour dire qu'on a fini
+    outClock.write( m_syncTime );
 }
 
 /**********************************************************************/

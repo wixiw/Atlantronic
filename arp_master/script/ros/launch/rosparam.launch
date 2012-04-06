@@ -3,33 +3,8 @@
 	
   	<param name="/match_duration" value="89.5" /> 
   	<param name="/blinding_period" value="2." /> 
-
-	<!--Distance in meters between wheels -->
-    <param name="/Protokrot/BASE_LINE" value="0.307039062"/>
-    <!--Factor for cap odometry on the right wheel in rad -->
-    <param name="/Protokrot/RIGHT_ROTATION_FACTOR" value="0.220486132"/>   
-    <!--Factor for cap odometry on the left wheel in rad -->
-    <param name="/Protokrot/LEFT_ROTATION_FACTOR" value="0.220451657"/> 
-	<!--Diameter in meters -->
-	<param name="/Protokrot/RIGHT_WHEEL_DIAMETER" value="0.067645146" />
-	<!--Diameter in meters -->
-	<param name="/Protokrot/LEFT_WHEEL_DIAMETER" value="0.067560591" />
-	
-
-	<!--maximum forward velocity (m/s) (1 by willy) -->
-    <param name="/arp_ods/LIN_VEL_MAX"  value="1.000" /> 
-	<!--maximum rotation velocity (rad/s) (7 by willy) -->
-    <param name="/arp_ods/ANG_VEL_MAX"  value="1.000" /> 
-
-	<!--maximum rotation acceleration (rad/s^2) -->
-    <param name="/arp_ods/ANG_ACC_MAX"  value="5.000" /> 
-	<!--maximum forward acceleration (m/s^02) -->
-    <param name="/arp_ods/LIN_ACC_MAX"  value="0.500" /> 
-	<!--maximum forward deceleration (m/s^02) -->
-    <param name="/arp_ods/LIN_DEC_MAX"  value="-0.500" /> 
-    
 	<!--Distance between center of robot and back -->
-    <param name="/Protokrot/DIST_BACK" value="0.053"/>  
+    <param name="/Ubiquity/DIST_BACK" value="0.053"/>  
     <!--horizontal wall position -->
     <param name="/Table/HWALL_Y" value="1.0"/>  
     <!--vertical wall position -->

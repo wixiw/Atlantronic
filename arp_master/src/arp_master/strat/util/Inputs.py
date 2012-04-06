@@ -44,8 +44,8 @@ class Inputs:
     @staticmethod
     def link():
         Inputs.obstacleInput= Inputs.createInput("ObstacleDetector/front_obstacle", Obstacle)
-        Inputs.colorInput=Inputs.createInput("Protokrot/color", StartColor)
-        Inputs.startInput=Inputs.createInput("Protokrot/start", Start)
+        Inputs.colorInput=Inputs.createInput("Ubiquity/color", StartColor)
+        Inputs.startInput=Inputs.createInput("Ubiquity/start", Start)
         Inputs.poseInput=Inputs.createInput("Localizator/pose", Pose)
         Inputs.rearObstacleInput=Inputs.createInput("ObstacleDetector/rear_obstacle", Obstacle)
         Inputs.listener = tf.TransformListener()

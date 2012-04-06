@@ -96,13 +96,13 @@ namespace arp_hml
         InputPort<double> inTorqueCmd;
 
         /** Provides the measured position of the encoder from CAN. It is converted in rad on the reductor's output's axe. **/
-        OutputPort<double> outMeasuredPosition;
+        OutputPort<double> outPosition;
         /** Sync time of the position mesure*/
-        OutputPort<double> outMeasuredPositionTime;
+        OutputPort<double> outClock;
         /** Provides the torque measured from CAN. In Amps**/
-        OutputPort<double> outMeasuredTorque;
+        OutputPort<double> outTorque;
         /** Provides a computed speed from the encoder position. In rad/s on the reductor's output's axe. */
-        OutputPort<double> outComputedSpeed;
+        OutputPort<double> outVelocity;
         /** Prints the last Faulhaber command sent on CAN in OTHER mode of operation **/
         OutputPort<int> outLastSentCommand;
         /** Prints the last Faulhaber params sent on CAN in OTHER mode of operation **/

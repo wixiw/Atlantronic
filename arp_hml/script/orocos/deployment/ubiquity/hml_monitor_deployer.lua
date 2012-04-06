@@ -71,6 +71,8 @@ function HmlMonitorDeployer:connect()
 
 	HmlMonitorDeployer:addToMonitor("Joystick")
 
+	HmlMonitorDeployer:addToMonitor("Syncronizator")
+
 	--HmlMonitorDeployer:addToMonitor("RosHmlItf")
 
 	--HmlMonitorDeployer:registerToSql();

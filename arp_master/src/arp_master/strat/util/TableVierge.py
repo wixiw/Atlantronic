@@ -10,7 +10,7 @@ from UtilARD import *
 class Robot:
     @staticmethod
     def init():
-        Robot.DIST_BACK=rospy.get_param('/Protokrot/DIST_BACK')
+        Robot.DIST_BACK=rospy.get_param('/Ubiquity/DIST_BACK')
 
 class Table:
     @staticmethod

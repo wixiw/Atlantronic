@@ -33,7 +33,7 @@ namespace arp_master
             ros::init(argc, local_argv_, "GraphicsSimulator");
             nh_.reset(new ros::NodeHandle);
 
-            std::string topicName = "/Protokrot/pose";
+            std::string topicName = "/Ubiquity/pose";
             if (argc > 1)
             {
                 char filename[30];

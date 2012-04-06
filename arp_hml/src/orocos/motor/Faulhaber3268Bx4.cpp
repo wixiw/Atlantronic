@@ -57,13 +57,13 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
     addPort("inTorqueCmd",inTorqueCmd)
             .doc("Command to be used in torque mode. This mode is not available yes");
 
-    addPort("outMeasuredPosition",outMeasuredPosition)
+    addPort("outPosition",outPosition)
         .doc("Provides the measured position of the encoder from CAN. It is converted in rad on the reductor's output's axe.");
-    addPort("outMeasuredPositionTime",outMeasuredPositionTime)
+    addPort("outClock",outClock)
         .doc("");
-    addPort("outMeasuredTorque",outMeasuredTorque)
+    addPort("outTorque",outTorque)
         .doc("Provides the torque measured from CAN. Not available yet");
-    addPort("outComputedSpeed",outComputedSpeed)
+    addPort("outVelocity",outVelocity)
         .doc(" Provides a computed speed from the encoder position. In rad/s on the reductor's output's axe.");
     addPort("outLastSentCommand",outLastSentCommand)
         .doc("Prints the last Faulhaber command sent on CAN in OTHER mode of operation");
@@ -222,7 +222,7 @@ void Faulhaber3268Bx4::getInputs()
     if( inPositionCmd.readNewest(positionCmd) != NoData )
     {
         //TODO WLA commprendre pourquoi
-    	ArdMotorItf::setPositionCmd(positionCmd*50);
+    	ArdMotorItf::setPositionCmd(positionCmd);
     }
 
     //read last torque command
@@ -242,12 +242,12 @@ void Faulhaber3268Bx4::getInputs()
 void Faulhaber3268Bx4::setOutputs()
 {
 	//publication de la position
-	outMeasuredPosition.write( ArdMotorItf::getPositionMeasure() );
-	outMeasuredPositionTime.write( attrSyncTime );
+	outPosition.write( ArdMotorItf::getPositionMeasure() );
+
     //publication de la vitesse
-	outComputedSpeed.write( ArdMotorItf::getSpeedMeasure() );
+	outVelocity.write( ArdMotorItf::getSpeedMeasure() );
     //lecture du courant
-    outMeasuredTorque.write( ArdMotorItf::getTorqueMeasure() );
+    outTorque.write( ArdMotorItf::getTorqueMeasure() );
 
     //publication du blocage
     outMaxTorqueTimeout.write( m_isMotorBlocked );
@@ -267,6 +267,9 @@ void Faulhaber3268Bx4::setOutputs()
     outLastSentCommandParam.write( *m_faulhaberCommandReturnParameter );
     outLastSentCommandReturn.write( *m_faulhaberCommandReturnCode );
     LeaveMutex();
+
+    //a publier quand on a finit.
+    outClock.write( attrSyncTime );
 }
 
 void Faulhaber3268Bx4::runSpeed()

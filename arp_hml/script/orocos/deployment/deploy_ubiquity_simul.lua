@@ -1,4 +1,7 @@
 require("rttlib")
+--require("rfsm")
+--require("rfsm_rtt")
+
 rttlib.color=true
 Deployer = rtt.getTC()
 print("====================")
@@ -12,11 +15,13 @@ dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity_simul/hml_monitor_sim
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity_simul/ros_hml_itf_simul_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity_simul/motor_simul_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity_simul/ubiquity_simul_deployer.lua");
+dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/syncronizator_deployer.lua");
 
 -- chargement de l'interface HML
 print("... load components")
 JoystickDeployer:load()
 MotorSimulDeployer:load()
+Syncronizator:load()
 UbiquitySimulDeployer:load()
 RosHmlItfDeployer:load()
 HmlMonitorSimulDeployer:load()
@@ -24,6 +29,7 @@ HmlMonitorSimulDeployer:load()
 print("... connect components")
 JoystickDeployer:connect()
 MotorSimulDeployer:connect()
+Syncronizator:connect()
 UbiquitySimulDeployer:connect()
 RosHmlItfDeployer:connect()
 HmlMonitorSimulDeployer:connect()

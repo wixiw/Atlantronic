@@ -72,7 +72,7 @@ namespace arp_hml
         double propInputsTimeout;
 
         /** Clock port which trigger our activity */
-        InputPort<timespec> inClock;
+        InputPort<double> inClock;
 
         /** Command to be used in position mode. It must be provided in rad on the reductor's output.
          * It is not available yet. */
@@ -86,13 +86,13 @@ namespace arp_hml
         OutputPort<double> outFilteredPositionCommand;
 
         /** Provides the measured position of the encoder from CAN. It is converted in rad on the reductor's output's axe. **/
-        OutputPort<double> outMeasuredPosition;
+        OutputPort<double> outPosition;
         /** Sync time of the position mesure*/
-        OutputPort<double> outMeasuredPositionTime;
+        OutputPort<double> outClock;
         /** Provides the torque measured from CAN. In Amps**/
-        OutputPort<double> outMeasuredTorque;
+        OutputPort<double> outTorque;
         /** Provides a computed speed from the encoder position. In rad/s on the reductor's output's axe. */
-        OutputPort<double> outComputedSpeed;
+        OutputPort<double> outVelocity;
         /** Prints the last Faulhaber command sent on CAN in OTHER mode of operation **/
         OutputPort<bool> outDriveEnable;
         /** Provides the current mode of operation of the motor (speed,position,torque,homing,other=faulhaber) **/

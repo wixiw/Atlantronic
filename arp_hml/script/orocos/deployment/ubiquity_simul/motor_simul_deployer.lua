@@ -3,45 +3,40 @@ dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/motor_deployer.lua");
 
 MotorSimulDeployer = MotorDeployer:new()
 
+function MotorSimulDeployer:loadMotor(name)
+	Deployer:loadComponent(name,"arp_hml::MotorSimul")
+	Deployer:setActivity(name,0.0,40,1)
+end
+
 function MotorSimulDeployer:load()
 	--TODO remettre en aperiodique quand inCLock sera geree
-	Deployer:loadComponent("LeftDriving","arp_hml::MotorSimul")
-	Deployer:setActivity("LeftDriving",0.010,40,1)
-	Deployer:loadComponent("RightDriving","arp_hml::MotorSimul")
-	Deployer:setActivity("RightDriving",0.010,40,1)
-	Deployer:loadComponent("RearDriving","arp_hml::MotorSimul")
-	Deployer:setActivity("RearDriving",0.010,40,1)
+	
+	MotorSimulDeployer:loadMotor("LeftDriving");
+	MotorSimulDeployer:loadMotor("RightDriving");
+	MotorSimulDeployer:loadMotor("RearDriving");
+	MotorSimulDeployer:loadMotor("LeftSteering");
+	MotorSimulDeployer:loadMotor("RightSteering");
+	MotorSimulDeployer:loadMotor("RearSteering");
 
-	Deployer:loadComponent("LeftSteering","arp_hml::MotorSimul")
-	Deployer:setActivity("LeftSteering",0.010,40,1)
-	Deployer:loadComponent("RightSteering","arp_hml::MotorSimul")
-	Deployer:setActivity("RightSteering",0.010,40,1)
-	Deployer:loadComponent("RearSteering","arp_hml::MotorSimul")
-	Deployer:setActivity("RearSteering",0.010,40,1)
+	Deployer:loadComponent("Can1","arp_core::PeriodicClock")
+	Deployer:setActivity("Can1",0.010,60,1)
+
+end
+
+function MotorSimulDeployer:connectMotor(name)
+	Deployer:addPeer("Reporting", me)
+	--MotorDeployer:registerToSql("LeftDriving")
+	Deployer:connect(name..".inClock", "Can1.outClock",cp)
+	MotorDeployer:check(me)
 end
 
 function MotorSimulDeployer:connect()
-	Deployer:addPeer("Reporting", "LeftDriving")
-	Deployer:addPeer("Reporting", "RightDriving")
-	Deployer:addPeer("Reporting", "RearDriving")
-
-	Deployer:addPeer("Reporting", "LeftSteering")
-	Deployer:addPeer("Reporting", "RightSteering")
-	Deployer:addPeer("Reporting", "RearSteering")
-
-	--MotorDeployer:registerToSql("LeftDriving")
-	--MotorDeployer:registerToSql("RightDriving")
-	--MotorDeployer:registerToSql("RearDriving")
-	--MotorDeployer:registerToSql("LeftSteering")
-	--MotorDeployer:registerToSql("RightSteering")
-	--MotorDeployer:registerToSql("RearSteering")
-	
-	MotorDeployer:check("LeftDriving")
-	MotorDeployer:check("RightDriving")
-	MotorDeployer:check("RearDriving")
-	MotorDeployer:check("LeftSteering")
-	MotorDeployer:check("RightSteering")
-	MotorDeployer:check("RearSteering")
+	MotorSimulDeployer:connectMotor("LeftDriving")
+	MotorSimulDeployer:connectMotor("RightDriving")
+	MotorSimulDeployer:connectMotor("RearDriving")
+	MotorSimulDeployer:connectMotor("LeftSteering")
+	MotorSimulDeployer:connectMotor("RightSteering")
+	MotorSimulDeployer:connectMotor("RearSteering")
 end
 
 
