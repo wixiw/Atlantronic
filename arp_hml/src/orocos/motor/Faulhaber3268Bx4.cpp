@@ -31,71 +31,7 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         m_oldPositionMeasure(0),
         m_isMotorBlocked(false)
 {
-    addAttribute("attrState",attrState);
-    addAttribute("attrCommandedSpeed",m_speedCommand);
-    addAttribute("attrPeriod",attrPeriod);
-    addAttribute("attrBlockingDelay",attrBlockingDelay);
-    addAttribute("attrIncrementalOdometer",attrIncrementalOdometer);
-    addAttribute("attrFaulhaberCommandPdoIndex",attrFaulhaberCommandPdoIndex);
-
-    addProperty("propInvertDriveDirection",propInvertDriveDirection)
-    	.doc("Is true when you when to invert the speed command and feedback of the motor softly");
-    addProperty("propReductorValue",propReductorValue)
-    	.doc("Reductor's value from the motor's axe to the reductor's output's axe. So it should be greather than 1");
-    addProperty("propEncoderResolution",propEncoderResolution)
-    	.doc("Encoder resolution in point by rev");
-    addProperty("propMaximalTorque",propMaximalTorque)
-        .doc("Maximal Torque allowed in Amps");
-    addProperty("propInputsTimeout",propInputsTimeout)
-            .doc("Maximal delay beetween 2 commands to consider someone is still giving coherent orders, in s");
-
-    addPort("inSpeedCmd",inSpeedCmd)
-            .doc("Command to be used in speed mode. It must be provided in rad/s on the reductor's output");
-    addPort("inPositionCmd",inPositionCmd)
-            .doc("Command to be used in position mode. It must be provided in rad on the reductor's output. It is not available yet.");
-
-    addPort("inTorqueCmd",inTorqueCmd)
-            .doc("Command to be used in torque mode. This mode is not available yes");
-
-    addPort("outPosition",outPosition)
-        .doc("Provides the measured position of the encoder from CAN. It is converted in rad on the reductor's output's axe.");
-    addPort("outClock",outClock)
-        .doc("");
-    addPort("outTorque",outTorque)
-        .doc("Provides the torque measured from CAN. Not available yet");
-    addPort("outVelocity",outVelocity)
-        .doc(" Provides a computed speed from the encoder position. In rad/s on the reductor's output's axe.");
-    addPort("outLastSentCommand",outLastSentCommand)
-        .doc("Prints the last Faulhaber command sent on CAN in OTHER mode of operation");
-    addPort("outLastSentCommandParam",outLastSentCommandParam)
-        .doc("Prints the last Faulhaber params sent on CAN in OTHER mode of operation");
-    addPort("outLastSentCommandReturn",outLastSentCommandReturn)
-        .doc("Prints the last Faulhaber command return received from CAN in OTHER mode of operation");
-    addPort("outDriveEnable",outDriveEnable)
-        .doc("Is true when the drive is ready to be operated (axe blocked). If it is false, the axe is free of any mouvement");
-    addPort("outCurrentOperationMode",outCurrentOperationMode)
-    	.doc("Provides the current mode of operation of the motor (speed,position,torque,homing,other=faulhaber)");
-    addPort("outMaxTorqueTimeout",outMaxTorqueTimeout)
-        .doc(" Is true when the propMaximalTorque has been reached for more propBlockingTorqueTimeout");
-
-    addOperation("ooEnableDrive", &Faulhaber3268Bx4::enableDrive,this, OwnThread )
-        .doc("Activate the power on the motor. Without a speed command it acts as a brake. Returns false if the component is not running.");
-    addOperation("ooDisableDrive", &Faulhaber3268Bx4::disableDrive,this, OwnThread )
-        .doc("disable power on the motor, this is a freewheel mode. Returns false if the component is not running.");
-    addOperation("ooLimitCurrent", &Faulhaber3268Bx4::ooLimitCurrent,this, OwnThread )
-        .doc("Limit the current given to the motor. Should be greather then 0.2A and lower than 10A. Returns false if the motor are not disabled or the component is not running.")
-        .arg("currentValue","in A");
-    addOperation("ooFaulhaberCmd", &Faulhaber3268Bx4::ooFaulhaberCmd,this, OwnThread )
-        .doc("");
-    addOperation("ooSetOperationMode", &Faulhaber3268Bx4::ooSetOperationMode,this, OwnThread )
-    	.doc("")
-    	.arg("mode"," string = speed,position,torque,homing,faulhaber");
-    addOperation("ooSleep", &Faulhaber3268Bx4::ooSleep,this, ClientThread )
-           .doc("Permet d'attendre pour bloquer le script de déploiement")
-           .arg("dt"," temps à dormir en s");
-    addOperation("coWaitEnable", &Faulhaber3268Bx4::coWaitEnable,this, ClientThread )
-    	.doc("")
-    	.arg("timeout","in s");
+    createOrocosInterface();
 
     m_measuredPosition = CanARDDictionnaryAccessor::getINTEGER32Pointer(name,"MeasuredPosition");
     m_measuredCurrent = CanARDDictionnaryAccessor::getINTEGER16Pointer(name,"MeasuredCurrent");
@@ -316,8 +252,8 @@ void Faulhaber3268Bx4::runPosition()
     // The submodes are not called is the motor is not powered
     if( outDriveEnable.getLastWrittenValue() )
     {
-        //conversion de rad/s sur la roue, vers RPM sur l'axe moteur
-        UNS32 position = m_positionCommand*propReductorValue*RAD_S_TO_RPM;
+        //conversion de rad sur la roue, vers des tours sur l'axe moteur
+        UNS32 position = m_positionCommand*propReductorValue*RAD_TO_TURN*(double)propEncoderResolution;
 
         EnterMutex();
         *m_faulhaberCommand = F_CMD_LA;
@@ -656,4 +592,75 @@ bool Faulhaber3268Bx4::isInError()
 unsigned int Faulhaber3268Bx4::getError()
 {
     return 0;
+}
+
+void Faulhaber3268Bx4::createOrocosInterface()
+{
+    addAttribute("attrState",attrState);
+    addAttribute("attrVelocityCmd",m_speedCommand);
+    addAttribute("attrPositionCmd",m_positionCommand);
+    addAttribute("attrTorqueCmd",m_torqueCommand);
+    addAttribute("attrPeriod",attrPeriod);
+    addAttribute("attrBlockingDelay",attrBlockingDelay);
+    addAttribute("attrIncrementalOdometer",attrIncrementalOdometer);
+    addAttribute("attrFaulhaberCommandPdoIndex",attrFaulhaberCommandPdoIndex);
+
+    addProperty("propInvertDriveDirection",propInvertDriveDirection)
+        .doc("Is true when you when to invert the speed command and feedback of the motor softly");
+    addProperty("propReductorValue",propReductorValue)
+        .doc("Reductor's value from the motor's axe to the reductor's output's axe. So it should be greather than 1");
+    addProperty("propEncoderResolution",propEncoderResolution)
+        .doc("Encoder resolution in point by rev");
+    addProperty("propMaximalTorque",propMaximalTorque)
+        .doc("Maximal Torque allowed in Amps");
+    addProperty("propInputsTimeout",propInputsTimeout)
+            .doc("Maximal delay beetween 2 commands to consider someone is still giving coherent orders, in s");
+
+    addPort("inSpeedCmd",inSpeedCmd)
+            .doc("Command to be used in speed mode. It must be provided in rad/s on the reductor's output");
+    addPort("inPositionCmd",inPositionCmd)
+            .doc("Command to be used in position mode. It must be provided in rad on the reductor's output. It is not available yet.");
+
+    addPort("inTorqueCmd",inTorqueCmd)
+            .doc("Command to be used in torque mode. This mode is not available yes");
+
+    addPort("outPosition",outPosition)
+        .doc("Provides the measured position of the encoder from CAN. It is converted in rad on the reductor's output's axe.");
+    addPort("outClock",outClock)
+        .doc("");
+    addPort("outTorque",outTorque)
+        .doc("Provides the torque measured from CAN. Not available yet");
+    addPort("outVelocity",outVelocity)
+        .doc(" Provides a computed speed from the encoder position. In rad/s on the reductor's output's axe.");
+    addPort("outLastSentCommand",outLastSentCommand)
+        .doc("Prints the last Faulhaber command sent on CAN in OTHER mode of operation");
+    addPort("outLastSentCommandParam",outLastSentCommandParam)
+        .doc("Prints the last Faulhaber params sent on CAN in OTHER mode of operation");
+    addPort("outLastSentCommandReturn",outLastSentCommandReturn)
+        .doc("Prints the last Faulhaber command return received from CAN in OTHER mode of operation");
+    addPort("outDriveEnable",outDriveEnable)
+        .doc("Is true when the drive is ready to be operated (axe blocked). If it is false, the axe is free of any mouvement");
+    addPort("outCurrentOperationMode",outCurrentOperationMode)
+        .doc("Provides the current mode of operation of the motor (speed,position,torque,homing,other=faulhaber)");
+    addPort("outMaxTorqueTimeout",outMaxTorqueTimeout)
+        .doc(" Is true when the propMaximalTorque has been reached for more propBlockingTorqueTimeout");
+
+    addOperation("ooEnableDrive", &Faulhaber3268Bx4::enableDrive,this, OwnThread )
+        .doc("Activate the power on the motor. Without a speed command it acts as a brake. Returns false if the component is not running.");
+    addOperation("ooDisableDrive", &Faulhaber3268Bx4::disableDrive,this, OwnThread )
+        .doc("disable power on the motor, this is a freewheel mode. Returns false if the component is not running.");
+    addOperation("ooLimitCurrent", &Faulhaber3268Bx4::ooLimitCurrent,this, OwnThread )
+        .doc("Limit the current given to the motor. Should be greather then 0.2A and lower than 10A. Returns false if the motor are not disabled or the component is not running.")
+        .arg("currentValue","in A");
+    addOperation("ooFaulhaberCmd", &Faulhaber3268Bx4::ooFaulhaberCmd,this, OwnThread )
+        .doc("");
+    addOperation("ooSetOperationMode", &Faulhaber3268Bx4::ooSetOperationMode,this, OwnThread )
+        .doc("")
+        .arg("mode"," string = speed,position,torque,homing,faulhaber");
+    addOperation("ooSleep", &Faulhaber3268Bx4::ooSleep,this, ClientThread )
+           .doc("Permet d'attendre pour bloquer le script de déploiement")
+           .arg("dt"," temps à dormir en s");
+    addOperation("coWaitEnable", &Faulhaber3268Bx4::coWaitEnable,this, ClientThread )
+        .doc("")
+        .arg("timeout","in s");
 }

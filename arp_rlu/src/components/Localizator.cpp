@@ -49,7 +49,7 @@ bool Localizator::configureHook()
 
 void Localizator::scanCb(RTT::base::PortInterface* portInterface)
 {
-
+    //TODO faire des test sur les inputs ports ?
 }
 
 void Localizator::odoCb(RTT::base::PortInterface* portInterface)
@@ -73,8 +73,6 @@ void Localizator::odoCb(RTT::base::PortInterface* portInterface)
     T_r_t_t.cov( covariance );
     T_r_t_t.date(T_r_t.date());
 
-
-    LOG(Info) << "odoCb in=" << T_r_t.toString() << " bricole=" << T_r_t_t.toString() << endlog();
     //update du Kalman
     kfloc.newOdoVelocity(T_r_t_t);
 
@@ -102,9 +100,6 @@ void Localizator::updateHook()
     T_r_t.vh( V(2) );
     T_r_t.cov( covariance );
     T_r_t.date(T_r_t_t.date());
-
-    //TODO faire des test sur les inputs ports ?
-    LOG(Info) << "updateHook pose=" << p.toString() << " Twist_kfl=" << T_r_t_t.toString() << " twist=" << T_r_t.toString() << endlog();
 
     outTwist.write(T_r_t);
     outPose.write(p);

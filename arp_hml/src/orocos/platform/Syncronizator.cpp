@@ -14,20 +14,17 @@ using namespace arp_hml;
 
 ORO_LIST_COMPONENT_TYPE( arp_hml::Syncronizator )
 
-#define RESET_SYNC() \
-		m_syncCount = 0; \
-	    m_syncTimes[0] = -1;\
-	    m_syncTimes[1] = -1;\
-	    m_syncTimes[2] = -1;\
-	    m_syncTimes[3] = -1;\
-	    m_syncTimes[4] = -1;\
-	    m_syncTimes[5] = -1;
-
 Syncronizator::Syncronizator(const std::string name):
     HmlTaskContext(name)
 {
-    RESET_SYNC();
     createOrocosInterface();
+}
+
+void Syncronizator::eventCanSyncCB(RTT::base::PortInterface* portInterface)
+{
+     inCanSync.readNewest(m_syncTime);
+     m_syncCount = 0;
+     LOG(Info) << "portCanCB " << m_syncTime << endlog();
 }
 
 void Syncronizator::eventPortCB(RTT::base::PortInterface* portInterface)
@@ -40,6 +37,13 @@ void Syncronizator::eventPortCB(RTT::base::PortInterface* portInterface)
 
     const char* name = portInterface->getName().c_str();
     int i = 0;
+    double syncValue;
+    InputPort<double>* inPort = dynamic_cast< InputPort<double>* > (portInterface);
+    if( inPort == NULL )
+    {
+        LOG(Error) << "failed to cast port " << name << " to an InputPort<double>" << endlog();
+        return;
+    }
 
     //enregistre la date du port triggé dans le tableau des sync.
     //pour ce faire on cherche a quel index il correspond.
@@ -56,71 +60,36 @@ void Syncronizator::eventPortCB(RTT::base::PortInterface* portInterface)
     else if( strcmp(name, "inRearSteeringClock") == 0 )
         i = 5;
 
-    //m_eventCbMutex.lock();
-    inLeftDrivingClock.readNewest(m_syncTimes[i]);
-    m_syncCount++;
-    //m_eventCbMutex.unlock();
+    inPort->readNewest(syncValue);
 
-    //LOG(Info) << "eventPortCB " << portInterface->getName() << "time : " << m_syncTimes[i] << endlog();
+    //on ne met à jour le compteur que si la syncronisation reçue est bien la bonne.
+    if( syncValue == m_syncTime )
+    {
+        //pour creer le masque binaire correspondant au moteur dont on a reçu le sync il faut
+        //ecrire un1 à la ième colonne du mot binaire, soit 1<<i;
+        //pour additionner le compteur avec le nouveau masque on fait un ou bit à bit de sorte qu'il
+        //y aura à 1 à la ième colonne du mot binaire m_syncCount et les autres colonnes sont inchangées.
+        m_syncCount |= 1<<i;
+        LOG(Info) << "portCB " << name << " counter is " << std::hex << m_syncCount << std::dec << endlog();
+    }
+    else
+    {
+        //si on est la c'est qu'il se passe des choses etonnantes au niveau du scheduling
+        attrNbError++;
+    }
 }
 
 void Syncronizator::updateHook()
 {
-    double sync;
-
     //m_eventCbMutex.lock();
-    if( isAllSyncReveived(sync) )
+    if( m_syncCount == 0b111111 )
     {
-        //LOG(Info) << "updateHook" << endlog();
+        LOG(Info) << "updateHook" << endlog();
         outMotorMeasures.write(readInputs());
-        outClock.write(sync);
-        RESET_SYNC();
+        outClock.write(m_syncTime);
     }
 
-    if( m_syncCount > 6 )
-    {
-        //LOG(Error) << "syncCount should not be greather than 6, this is a scheduling error " << m_syncCount << endlog();
-        RESET_SYNC();
-    }
-    //m_eventCbMutex.unlock();
-}
-
-bool Syncronizator::isAllSyncReveived(double& syncTime)
-{
-    bool res = true;
-
-    if( m_syncCount == 6 )
-    {
-        for( int i = 0 ; i < 5 ; i++ )
-        {
-            if( m_syncTimes[i] != m_syncTimes[i+1] )
-            {
-                res = false;
-            }
-        }
-        if( res == false )
-        {
-            /*LOG(Fatal) << "syncTimes not consistent ["
-                    << m_syncTimes[0] << ","
-                    << m_syncTimes[1] << ","
-                    << m_syncTimes[2] << ","
-                    << m_syncTimes[3] << ","
-                    << m_syncTimes[4] << ","
-                    << m_syncTimes[5] << "]" <<endlog();*/
-            RESET_SYNC();
-        }
-    }
-    else
-    {
-        res = false;
-    }
-
-    if( res == true )
-        syncTime = m_syncTimes[0];
-    else
-        syncTime = -1;
-
-    return res;
+    m_eventCbMutex.unlock();
 }
 
 MotorState Syncronizator::readInputs()
@@ -152,11 +121,14 @@ MotorState Syncronizator::readInputs()
 
 void Syncronizator::createOrocosInterface()
 {
+    addAttribute("attrNbError",attrNbError);
+
     addPort("outClock",outClock)
                 .doc("");
     addPort("outMotorMeasures",outMotorMeasures)
                 .doc("");
-
+    addEventPort("inCanSync",inCanSync, boost::bind(&Syncronizator::eventCanSyncCB,this,_1))
+            .doc("");
     addEventPort("inLeftDrivingClock",inLeftDrivingClock, boost::bind(&Syncronizator::eventPortCB,this,_1))
             .doc("");
     addEventPort("inRightDrivingClock",inRightDrivingClock, boost::bind(&Syncronizator::eventPortCB,this,_1))

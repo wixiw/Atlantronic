@@ -150,6 +150,11 @@ namespace arp_hml
          */
         bool coWaitEnable(double timeout);
 
+        /**
+         * Utility function to hide the long orocos interface declaration outside of the constructor
+         */
+        void createOrocosInterface();
+
 /****************************************************************************
  * 			ARDITFMOTOR INTERFACE
  ****************************************************************************/

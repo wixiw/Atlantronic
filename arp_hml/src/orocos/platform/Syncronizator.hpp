@@ -25,6 +25,11 @@ class Syncronizator: public arp_hml::HmlTaskContext
         void updateHook();
 
     protected:
+        /**
+         * Compte le nombre de message de syncronisation venant des moteurs qui ne sont pas dans le cycle courant
+         */
+        int attrNbError;
+
         /** Ce port est publié à la fin de la syncronisation, des composants qui sont connectés aux ports de données peuvent
          * se trigger en eventPort sur outClock. Il contient la date des mesures sur le CAN (date de l'envoit du message SYNC)
          */
@@ -34,6 +39,8 @@ class Syncronizator: public arp_hml::HmlTaskContext
          * Ce port contient un condensé de toutes les mesures Hml a une date identique pour tous les moteurs.
          */
         OutputPort<arp_model::MotorState> outMotorMeasures;
+
+        InputPort<double> inCanSync;
 
         InputPort<double> inLeftDrivingClock;
         InputPort<double> inRightDrivingClock;
@@ -63,11 +70,17 @@ class Syncronizator: public arp_hml::HmlTaskContext
         InputPort<double> inRightSteeringTorque;
         InputPort<double> inRearSteeringTorque;
 
-        /** callbacks pour les eventPort
+        /** callbacks pour les eventPort des horloges des composants à syncroniser
          * BIG FAT WARNING : attention L'updateHook est appelé derrière.
          * ceci ne sera pas valable dans les versions suivantes d'Orocos.
          */
         void eventPortCB(RTT::base::PortInterface* portInterface);
+
+        /** callbacks pour l'eventPort de l'horloge principale
+         * BIG FAT WARNING : attention L'updateHook est appelé derrière.
+         * ceci ne sera pas valable dans les versions suivantes d'Orocos.
+         */
+        void eventCanSyncCB(RTT::base::PortInterface* portInterface);
 
         /**
          * Teste la liste des messages sync reçu pour verifier si l'updateHook doit être executé
@@ -84,11 +97,14 @@ class Syncronizator: public arp_hml::HmlTaskContext
         /** construit l'interface Orocos */
         void createOrocosInterface();
 
-        /** contient les date d'update de tous les moteurs */
-        double m_syncTimes[6];
+        /** contient la date de l'horloge principale */
+        double m_syncTime;
 
-        /** compte le nombre de message sync recu depuis le dernier updateHook */
-        double m_syncCount;
+        /** compte le nombre de message sync recu depuis le dernier updateHook
+         * Chaque bit est mis à 1 ou 0 en fonction du moteur dont on a reçu la sync
+         * on a eut toutes les sync si m_syncCount = 0b111111
+         */
+        int m_syncCount;
 
     private:
         /**

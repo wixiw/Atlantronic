@@ -208,7 +208,7 @@ void CanOpenController::updateHook()
     //wake up slave activities of all registered nodes after a certain amount of time to wait for PDOs
     usleep(propPdoMaxAwaitedDelay*1E6);
 
-    outNodesClock.write(syncTime);
+    outNodesClock.write(attrSyncTime);
 }
 
 void CanOpenController::cleanupHook()

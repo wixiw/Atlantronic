@@ -2,7 +2,7 @@ require("rttlib")
 rttlib.color=true
 Deployer = rtt.getTC()
 print("====================")
-print("début déploiment arp_ods")
+print("début déploiment arp_ods manual")
 
 --chargement des librairies contenants les composants d'arp_ods
 Deployer:import("arp_ods");

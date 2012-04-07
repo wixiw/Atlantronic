@@ -53,8 +53,7 @@ void Odometry4Ubiquity::updateHook()
         LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
     }
 
-    attrKernelQuality = report.kernelQuality;
-    if( attrKernelQuality < propMinKernelQuality )
+    if( report.kernelQuality < propMinKernelQuality )
     {
         LOG(Info) << "Slippage detected ! (kernelQuality=" << report.kernelQuality << ")" << endlog();
     }
@@ -86,6 +85,7 @@ void Odometry4Ubiquity::updateHook()
     //TODO : seuiller à l'arret pour eviter de derriver quand on bouge pas
 
     outTwist.write(measuredTwist);
+    outKernelQuality.write(report.kernelQuality);
 }
 
 
@@ -94,7 +94,6 @@ void Odometry4Ubiquity::createOrocosInterface()
     addAttribute("attrMotorState", attrMotorState);
     addAttribute("attrParams", attrParams);
     addAttribute("attrTime", attrTime);
-    addAttribute("attrKernelQuality",attrKernelQuality);
 
     addProperty("propMinKernelQuality",propMinKernelQuality)
         .doc("");
@@ -109,4 +108,6 @@ void Odometry4Ubiquity::createOrocosInterface()
 
     addPort("outTwist",outTwist)
             .doc("T_robot_table_p_robot_r_robot : Twist of robot reference frame relative to table frame, reduced and expressed in robot reference frame.\n It is an EstimatedTwist, so it contains Twist, estimation date (in sec) and covariance matrix.");
+    addPort("outKernelQuality",outKernelQuality)
+            .doc("Quality of the Kernel when trying to resolve the constraint equations");
 }

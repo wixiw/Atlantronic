@@ -105,6 +105,13 @@ function HmlMonitorDeployer:start()
 	LeftSteering:ooFaulhaberCmd(0x81,RearSteering:getProperty("propMaximalTorque"):get()*1000);
 	RightSteering:ooFaulhaberCmd(0x81,RearSteering:getProperty("propMaximalTorque"):get()*1000);
 	RearSteering:ooFaulhaberCmd(0x81,RearSteering:getProperty("propMaximalTorque"):get()*1000);
+	LeftDriving:ooFaulhaberCmd(0x80,RearDriving:getProperty("propMaximalTorque"):get()*1000); 
+	RightDriving:ooFaulhaberCmd(0x80,RearDriving:getProperty("propMaximalTorque"):get()*1000);
+	RearDriving:ooFaulhaberCmd(0x80,RearDriving:getProperty("propMaximalTorque"):get()*1000);  
+	LeftSteering:ooFaulhaberCmd(0x80,RearSteering:getProperty("propMaximalTorque"):get()*1000);
+	RightSteering:ooFaulhaberCmd(0x80,RearSteering:getProperty("propMaximalTorque"):get()*1000);
+	RearSteering:ooFaulhaberCmd(0x80,RearSteering:getProperty("propMaximalTorque"):get()*1000);
+	
 	
 	RearDriving:ooSleep(1);
 

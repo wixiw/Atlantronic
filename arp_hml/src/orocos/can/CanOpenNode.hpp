@@ -70,7 +70,7 @@ namespace arp_hml
         /**
          * Clock port which trigger our activity
          */
-        InputPort<timespec> inMasterClock;
+        InputPort<double> inMasterClock;
 
         /**
          * port from which we receive the bootUp frame of our node from a CanOpenController

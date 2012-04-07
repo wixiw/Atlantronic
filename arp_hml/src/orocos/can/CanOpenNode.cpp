@@ -194,9 +194,7 @@ bool CanOpenNode::startHook()
 void CanOpenNode::updateHook()
 {
     //Récupération de la date du cycle CAN
-    timespec syncTime;
-    inMasterClock.readNewest(syncTime);
-    attrSyncTime = syncTime.tv_sec + (double)(syncTime.tv_nsec)/1E9;
+    inMasterClock.readNewest(attrSyncTime);
 
     HmlTaskContext::updateHook();
 

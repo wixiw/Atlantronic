@@ -23,6 +23,9 @@ class TwistTeleop: public OdsTaskContext
         void updateHook();
 
     protected:
+        double propLinearGain;
+        double propAngularGain;
+
         OutputPort<Twist2D> outTwistCmd;
         InputPort<double> inXSpeed;
         InputPort<double> inYSpeed;

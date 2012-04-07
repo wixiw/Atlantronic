@@ -13,8 +13,12 @@ using namespace arp_ods;
 ORO_LIST_COMPONENT_TYPE( arp_ods::TwistTeleop )
 
 TwistTeleop::TwistTeleop(const std::string& name):
-        OdsTaskContext(name)
+        OdsTaskContext(name),
+        propLinearGain(0.3),
+        propAngularGain(1)
 {
+    addProperty("propLinearGain",propLinearGain);
+    addProperty("propAngularGain",propAngularGain);
 
     addPort("inXSpeed",inXSpeed)
             .doc("");
@@ -37,7 +41,7 @@ void TwistTeleop::updateHook()
     inYSpeed.readNewest(vy);
     inThetaSpeed.readNewest(vtheta);
 
-    Twist2D twist(-vy,-vx,-vtheta);
+    Twist2D twist(-vy*propLinearGain,-vx*propLinearGain,-vtheta*propAngularGain);
 
     outTwistCmd.write(twist);
 }
