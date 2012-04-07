@@ -31,6 +31,10 @@ class Odometry4Ubiquity: public RluTaskContext
         /** Buffer local pour le temps */
         double attrTime;
 
+
+        /** La vitesse min des moteurs (sans quoi le robot est considéré comme étant à l'arrêt complet)*/
+        double propMinMotorVelocity;
+
         /** The KernelQuality when getting the report fromthe model must be larger than this property, else we spawn an error */
         double propMinKernelQuality;
 
