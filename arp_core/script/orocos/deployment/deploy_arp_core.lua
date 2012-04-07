@@ -12,7 +12,7 @@ Deployer:import("rtt_rosnode");
 print("loading Reporting component...")
 Deployer:loadComponent("Reporting","OCL::FileReporting")
 Reporting = Deployer:getPeer("Reporting")
-Reporting:setPeriod (0.050)
+Reporting:setPeriod (0.010)
 
 -- chargement du composant serveur parametre
 print("loading Ubiquity param server...")
