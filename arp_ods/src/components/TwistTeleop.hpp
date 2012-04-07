@@ -10,6 +10,7 @@
 
 #include "taskcontexts/OdsTaskContext.hpp"
 #include <math/core>
+#include <models/core>
 
 using namespace arp_math;
 
@@ -30,6 +31,7 @@ class TwistTeleop: public OdsTaskContext
         InputPort<double> inXSpeed;
         InputPort<double> inYSpeed;
         InputPort<double> inThetaSpeed;
+        InputPort<arp_model::UbiquityParams>inParams;
 };
 
 } /* namespace arp_ods */

@@ -255,6 +255,12 @@ void Faulhaber3268Bx4::runPosition()
         //conversion de rad sur la roue, vers des tours sur l'axe moteur
         UNS32 position = m_positionCommand*propReductorValue*RAD_TO_TURN*(double)propEncoderResolution;
 
+        //inversion de polarité soft
+        if( propInvertDriveDirection )
+        {
+            position = -position;
+        }
+
         EnterMutex();
         *m_faulhaberCommand = F_CMD_LA;
         *m_faulhaberCommandParameter = position;

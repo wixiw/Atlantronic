@@ -6,11 +6,11 @@
  */
 
 #include "UbiquityKinematics.hpp"
-
 #include "models/Logger.hpp"
-
+#include <iostream>
 #include <iostream>
 #include <Eigen/SVD>
+
 using namespace std;
 using namespace arp_math;
 using namespace arp_model;
@@ -144,6 +144,8 @@ bool UbiquityKinematics::twist2Turrets(const Twist2D & iTw, TurretState& oTS, co
     Twist2D Tright = iTw.transport(iParams.getRightTurretPosition());
     Twist2D Trear = iTw.transport(iParams.getRearTurretPosition());
 
+    //cerr << "Tleft=" << Tleft.toString() << " Tright=" << Tright.toString() << " Trear=" << Trear.toString() << endl;
+
     //recuperation des angles
     oTS.leftSteeringPosition = Tleft.speedAngle();
     oTS.rightSteeringPosition = Tright.speedAngle();
@@ -155,9 +157,9 @@ bool UbiquityKinematics::twist2Turrets(const Twist2D & iTw, TurretState& oTS, co
     oTS.rearDrivingVelocity = Trear.speedNorm();
 
     //normalisations
-    normalizeDirection(oTS.leftSteeringPosition, oTS.leftDrivingVelocity);
-    normalizeDirection(oTS.rightSteeringPosition, oTS.rightDrivingVelocity);
-    normalizeDirection(oTS.rearSteeringPosition, oTS.rearDrivingVelocity);
+    //normalizeDirection(oTS.leftSteeringPosition, oTS.leftDrivingVelocity);
+    //normalizeDirection(oTS.rightSteeringPosition, oTS.rightDrivingVelocity);
+    //normalizeDirection(oTS.rearSteeringPosition, oTS.rearDrivingVelocity);
 
     return true;
 }

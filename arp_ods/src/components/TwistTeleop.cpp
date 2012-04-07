@@ -8,6 +8,7 @@
 #include "TwistTeleop.hpp"
 #include <rtt/Component.hpp>
 
+using namespace arp_model;
 using namespace arp_ods;
 
 ORO_LIST_COMPONENT_TYPE( arp_ods::TwistTeleop )
@@ -26,7 +27,8 @@ TwistTeleop::TwistTeleop(const std::string& name):
             .doc("");
     addPort("inThetaSpeed",inThetaSpeed)
             .doc("");
-
+    addPort("inParams",inParams)
+            .doc("");
     addPort("outTwistCmd",outTwistCmd)
             .doc("");
 }
@@ -34,15 +36,20 @@ TwistTeleop::TwistTeleop(const std::string& name):
 void TwistTeleop::updateHook()
 {
     OdsTaskContext::updateHook();
-
+    UbiquityParams params;
     double vx,vy,vtheta;
 
     inXSpeed.readNewest(vx);
     inYSpeed.readNewest(vy);
     inThetaSpeed.readNewest(vtheta);
+    inParams.readNewest(params);
 
-    Twist2D twist(-vy*propLinearGain,-vx*propLinearGain,-vtheta*propAngularGain);
+    //on veut piloter en "carthesien" au centre du robot
+    Twist2D twistCdg(-vy*propLinearGain,-vx*propLinearGain,-vtheta*propAngularGain);
 
-    outTwistCmd.write(twist);
+    //mais le robot se pilote au centre des tourelles :(
+    Twist2D twistRef = twistCdg.transport(params.getChassisCenter().inverse());
+
+    outTwistCmd.write(twistRef);
 }
 

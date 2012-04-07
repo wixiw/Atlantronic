@@ -6,6 +6,7 @@
 			echo exec('sudo /etc/init.d/ard_ihm_launcher.sh start arp_hml ubiquity.launch');
 			break;
 		case "manual":
+			echo exec('sudo /etc/init.d/ard_ihm_launcher.sh start arp_hml manual.launch');
 			break;
 		case "matchA":
 			break;

@@ -21,6 +21,7 @@ function TwistTeleopDeployer:connect()
 	HmlMonitor:connect(me,"inXSpeed","Joystick","outX1");
 	HmlMonitor:connect(me,"inYSpeed","Joystick","outY1");
 	HmlMonitor:connect(me,"inThetaSpeed","Joystick","outX2");
+	Deployer:connect(me..".inParams","UbiquityParams.outParams",cp);
 end
 
 
