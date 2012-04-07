@@ -8,6 +8,8 @@
 #include "TwistTeleop.hpp"
 #include <rtt/Component.hpp>
 
+using namespace RTT;
+using namespace arp_math;
 using namespace arp_model;
 using namespace arp_ods;
 

@@ -12,8 +12,6 @@
 #include <math/core>
 #include <models/core>
 
-using namespace arp_math;
-
 namespace arp_ods
 {
 
@@ -27,11 +25,11 @@ class TwistTeleop: public OdsTaskContext
         double propLinearGain;
         double propAngularGain;
 
-        OutputPort<Twist2D> outTwistCmd;
-        InputPort<double> inXSpeed;
-        InputPort<double> inYSpeed;
-        InputPort<double> inThetaSpeed;
-        InputPort<arp_model::UbiquityParams>inParams;
+        RTT::OutputPort<arp_math::Twist2D> outTwistCmd;
+        RTT::InputPort<double> inXSpeed;
+        RTT::InputPort<double> inYSpeed;
+        RTT::InputPort<double> inThetaSpeed;
+        RTT::InputPort<arp_model::UbiquityParams>inParams;
 };
 
 } /* namespace arp_ods */

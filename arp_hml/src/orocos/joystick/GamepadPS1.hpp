@@ -12,15 +12,13 @@
 
 namespace arp_hml
 {
-    using namespace RTT;
-
     class GamepadPS1: public Joystick
     {
     public:
         GamepadPS1(const std::string& name);
 
         /** Name of the joystick drive file usually /dev/input/event0 */
-        string propEventName;
+        std::string propEventName;
 
         /** Vibreur */
         InputPort<bool> inRumble;

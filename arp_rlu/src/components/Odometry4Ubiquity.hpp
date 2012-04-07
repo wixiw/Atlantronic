@@ -38,17 +38,17 @@ class Odometry4Ubiquity: public RluTaskContext
         /** The KernelQuality when getting the report fromthe model must be larger than this property, else we spawn an error */
         double propMinKernelQuality;
 
-        InputPort<double> inTime;
-        InputPort<arp_model::UbiquityParams> inParams;
+        RTT::InputPort<double> inTime;
+        RTT::InputPort<arp_model::UbiquityParams> inParams;
 
         /** Measures from HML */
-        InputPort<arp_model::MotorState> inMotorState;
+        RTT::InputPort<arp_model::MotorState> inMotorState;
 
         /** Computed Twist */
-        OutputPort<arp_math::EstimatedTwist2D> outTwist;
+        RTT::OutputPort<arp_math::EstimatedTwist2D> outTwist;
 
         /** Quality of last computed Twist */
-        OutputPort<double> outKernelQuality;
+        RTT::OutputPort<double> outKernelQuality;
 
         /**
          * Permet d'ajouter port/operations à l'interface Orocos.

@@ -10,6 +10,7 @@
 using namespace arp_core;
 using namespace RTT;
 using namespace base;
+using namespace std;
 
 ARDTaskContext::ARDTaskContext(const std::string& name, const std::string projectRootPath) :
     TaskContext(name, PreOperational),

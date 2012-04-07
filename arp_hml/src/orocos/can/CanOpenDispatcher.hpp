@@ -35,13 +35,13 @@ namespace arp_hml
     	/**
     	 * @param tc : pointer to the parent task context (A CanOpenController)
     	 */
-        CanOpenDispatcher(TaskContext& tc);
+        CanOpenDispatcher(RTT::TaskContext& tc);
         virtual ~CanOpenDispatcher();
 
         /**
          * Define the m_colog attribute
          */
-        void setColog(OperationCaller<bool(LoggerLevel,string)> colog);
+        void setColog(RTT::OperationCaller<bool(RTT::LoggerLevel,std::string)> colog);
 
         /**
          * This operation allows a Device Component to register in the CanController
@@ -65,7 +65,7 @@ namespace arp_hml
          * @param inBootUpReceived : port du CanOpenController connecté à la CanFestival pour recevoir
          * les bootup
          */
-        void dispatchBootUp(nodeID_t propNodeId, InputPort<nodeID_t>& inBootUpReceived);
+        void dispatchBootUp(nodeID_t propNodeId, RTT::InputPort<nodeID_t>& inBootUpReceived);
 
         /**
          * read the table of NMT states and dispatch change to registered nodes
@@ -89,25 +89,25 @@ namespace arp_hml
         {
             public:
                 //nodeID_t nodeId;
-                OutputPort<bool> outBootUp;
-                ARDTaskContext* task;
+                RTT::OutputPort<bool> outBootUp;
+                arp_core::ARDTaskContext* task;
         };
 
     protected:
         /**
          * Contains a map of nodeRegistration to do the dispatch stuff
          */
-        map< nodeID_t, nodeRegistration_t* > m_registeredNodes;
+        std::map< nodeID_t, nodeRegistration_t* > m_registeredNodes;
 
         /**
          * Component into we are operating
          */
-        TaskContext& m_parent;
+        RTT::TaskContext& m_parent;
 
         /**
          * Handle on the logger
          */
-        OperationCaller<bool(LoggerLevel,string)> m_coLog;
+        RTT::OperationCaller<bool(RTT::LoggerLevel,std::string)> m_coLog;
     };
 
 }

@@ -32,30 +32,30 @@ class LittleSexControl: public OdsTaskContext
          * Position courante du robot par rapport a la table dans le repère (??? XXX ??? )
          * C'est un eventPort qui schedule le composant.
          */
-        InputPort< arp_math::EstimatedPose2D > inPosition;
+        RTT::InputPort< arp_math::EstimatedPose2D > inPosition;
 
         /**
          * Ordre a realiser. Il change lentement
          * il est possible de voir un changement avec readNewest() == NewData
          */
-        InputPort< shared_ptr<MotionOrder> > inOrder;
+        RTT::InputPort< shared_ptr<MotionOrder> > inOrder;
 
         /**
          * This is the result of computation : the Twist that the robot should do
          */
-        OutputPort<arp_math::Twist2D> outTwistCmd;
+        RTT::OutputPort<arp_math::Twist2D> outTwistCmd;
 
         /**
          * This tells to the Order manager that we have finished the job.
          * We are waiting for a new order
          */
-        OutputPort<bool> outOrderFinished;
+        RTT::OutputPort<bool> outOrderFinished;
 
         /**
          * This tells to the Order manager that we failed the job.
          * We are waiting an order cancellation
          */
-        OutputPort<bool> outOrderInError;
+        RTT::OutputPort<bool> outOrderInError;
 
         /**
          * Buffer for computed speed commands

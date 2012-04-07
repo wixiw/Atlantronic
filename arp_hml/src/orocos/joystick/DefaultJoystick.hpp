@@ -17,8 +17,6 @@
 
 namespace arp_hml
 {
-    using namespace RTT;
-
     class DefaultJoystick: public Joystick
     {
     public:

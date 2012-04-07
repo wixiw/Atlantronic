@@ -15,6 +15,8 @@
 
 using namespace arp_core;
 using namespace std_msgs;
+using namespace std;
+using namespace RTT;
 
 namespace arp_ods
 {

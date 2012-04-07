@@ -27,14 +27,14 @@ using namespace RTT;
              a & make_nvp("rearWheelDiameter",      params.getRearWheelDiameterRef());
              a & make_nvp("turretRatio",            params.getTurretRatioRef());
              a & make_nvp("tractionRatio",          params.getTractionRatioRef());
-             a & make_nvp("maxTractionSpeed",       params.getMaxTractionSpeedRef());
-             a & make_nvp("maxTurretSpeed",         params.getMaxTurretSpeedRef());
-             a & make_nvp("maxTractionAcc",         params.getMaxTractionAccRef());
-             a & make_nvp("maxTurretAcc",           params.getMaxTurretAccRef());
-             a & make_nvp("maxTractionDec",         params.getMaxTractionDecRef());
-             a & make_nvp("maxTurretDec",           params.getMaxTurretDecRef());
-             a & make_nvp("maxTractionTorque",      params.getMaxTractionTorqueRef());
-             a & make_nvp("maxTurretTorque",        params.getMaxTurretTorqueRef());
+             a & make_nvp("maxDrivingSpeed",       params.getMaxDrivingSpeedRef());
+             a & make_nvp("maxSteeringSpeed",         params.getMaxSteeringSpeedRef());
+             a & make_nvp("maxDrivingAcc",         params.getMaxDrivingAccRef());
+             a & make_nvp("maxSteeringAcc",           params.getMaxSteeringAccRef());
+             a & make_nvp("maxDrivingDec",         params.getMaxDrivingDecRef());
+             a & make_nvp("maxSteeringDec",           params.getMaxSteeringDecRef());
+             a & make_nvp("maxDrivingTorque",      params.getMaxDrivingTorqueRef());
+             a & make_nvp("maxSteeringTorque",        params.getMaxSteeringTorqueRef());
       }
     }
   }

@@ -10,6 +10,7 @@
 #include <math/math.hpp>
 
 using namespace arp_hml;
+using namespace std;
 
 ORO_LIST_COMPONENT_TYPE( arp_hml::MotorSimul )
 

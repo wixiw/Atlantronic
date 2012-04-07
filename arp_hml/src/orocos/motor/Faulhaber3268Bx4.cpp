@@ -14,6 +14,7 @@
 using namespace arp_hml;
 using namespace arp_core;
 using namespace arp_math;
+using namespace std;
 
 ORO_LIST_COMPONENT_TYPE( arp_hml::Faulhaber3268Bx4 )
 

@@ -12,9 +12,6 @@
 #include "PowerManager.hpp"
 #include "StateManager.hpp"
 
-using namespace RTT;
-using namespace arp_core;
-
 namespace arp_hml
 {
     /** \ingroup ARP-arp_hml
@@ -23,7 +20,7 @@ namespace arp_hml
      *
      * inherited to handle bus managers which has to be started before other components are configured
      */
-    class HmlMonitor : public Monitor
+    class HmlMonitor : public arp_core::Monitor
     {
     public:
 
@@ -61,7 +58,7 @@ namespace arp_hml
         /**
          * Returns a string containing HML version
          */
-        string coGetHmlVersion();
+        std::string coGetHmlVersion();
 
         /**
          * Send a reset node to all Can nodes.
@@ -74,25 +71,25 @@ namespace arp_hml
 
     protected:
         /** List of peers to monitor */
-        vector<TaskContext*> m_monitoredBusList;
+        std::vector<RTT::TaskContext*> m_monitoredBusList;
 
 
         /** Pointer in the Woodhead 8 out coReset Operation**/
-        OperationCaller<bool(void)> m_coResetWoodheadOut;
+        RTT::OperationCaller<bool(void)> m_coResetWoodheadOut;
         /** Pointer in the Woodhead 8 in coReset Operation**/
-        OperationCaller<bool(void)> m_coResetWoodheadIn;
+        RTT::OperationCaller<bool(void)> m_coResetWoodheadIn;
         /** Pointer in the LeftDriving coReset Operation **/
-        OperationCaller<bool(void)> m_coResetLeftDriving;
+        RTT::OperationCaller<bool(void)> m_coResetLeftDriving;
         /** Pointer in the RightDriving coReset Operation **/
-        OperationCaller<bool(void)> m_coResetRightDriving;
+        RTT::OperationCaller<bool(void)> m_coResetRightDriving;
         /** Pointer in the RearDriving coReset Operation **/
-        OperationCaller<bool(void)> m_coResetRearDriving;
+        RTT::OperationCaller<bool(void)> m_coResetRearDriving;
         /** Pointer in the LeftSteering coReset Operation **/
-        OperationCaller<bool(void)> m_coResetLeftSteering;
+        RTT::OperationCaller<bool(void)> m_coResetLeftSteering;
         /** Pointer in the RightSteering coReset Operation **/
-        OperationCaller<bool(void)> m_coResetRightSteering;
+        RTT::OperationCaller<bool(void)> m_coResetRightSteering;
         /** Pointer in the RearSteering coReset Operation **/
-        OperationCaller<bool(void)> m_coResetRearSteering;
+        RTT::OperationCaller<bool(void)> m_coResetRearSteering;
 
         PowerManager m_powerManager;
         StateManager m_stateManager;

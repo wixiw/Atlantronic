@@ -25,11 +25,6 @@
 
 #include "orders/orders.h"
 
-using namespace arp_core;
-using namespace nav_msgs;
-using namespace geometry_msgs;
-using namespace std_msgs;
-
 namespace arp_ods
 {
 class ModeSelector;
@@ -74,7 +69,7 @@ class MotionControl
 
         /** buffered Pose (will be use during the main loop)
          */
-        Odometry m_poseFromCallback;
+        arp_core::Odometry m_poseFromCallback;
 
         /**
          * rempli par la callback dès qu'une roue est a Couple max
@@ -102,7 +97,7 @@ class MotionControl
         /**
          * computed speed commands
          */
-        Velocity m_computedVelocityCmd;
+        arp_core::Velocity m_computedVelocityCmd;
 
         /** Motion control configuration. They are feeded with rosparam during init */
         order::config m_orderConfig;
@@ -176,7 +171,7 @@ class MotionControl
         /**
          * Called when a new pose message is received
          */
-        void poseCallback(OdometryConstPtr c);
+        void poseCallback(arp_core::OdometryConstPtr c);
 
         /**
          * Called when a new wheel blocked message is received

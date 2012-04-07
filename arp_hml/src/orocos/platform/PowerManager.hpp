@@ -10,13 +10,10 @@
 
 #include <taskcontexts/ARDTaskContext.hpp>
 
-using namespace RTT;
-using namespace arp_core;
-
 namespace arp_hml
 {
     /** surcharge du log */
-    #define LOGS(level) RTT::log(m_owner.propEnableLog?level:Never)<<"["<<m_owner.getName()<<"] "
+    #define LOGS(level) RTT::log(m_owner.propEnableLog?level:RTT::Never)<<"["<<m_owner.getName()<<"] "
 
     /** \ingroup ARP-arp_hml
      *
@@ -28,7 +25,7 @@ namespace arp_hml
     {
     public:
         /** */
-        PowerManager(ARDTaskContext& c);
+        PowerManager(arp_core::ARDTaskContext& c);
 
         virtual ~PowerManager();
 
@@ -46,67 +43,67 @@ namespace arp_hml
 
         /** Timeout when sending a command on the CAN, in s */
         double propCanRequestTimeout;
-        Property<bool>* m_propRequireCompleteHardware;
+        RTT::Property<bool>* m_propRequireCompleteHardware;
 
         /** Drive soft enable state **/
-        InputPort<bool> inLeftDrivingEnable;
-        InputPort<bool> inRightDrivingEnable;
-        InputPort<bool> inRearDrivingEnable;
-        InputPort<bool> inLeftSteeringEnable;
-        InputPort<bool> inRightSteeringEnable;
-        InputPort<bool> inRearSteeringEnable;
+        RTT::InputPort<bool> inLeftDrivingEnable;
+        RTT::InputPort<bool> inRightDrivingEnable;
+        RTT::InputPort<bool> inRearDrivingEnable;
+        RTT::InputPort<bool> inLeftSteeringEnable;
+        RTT::InputPort<bool> inRightSteeringEnable;
+        RTT::InputPort<bool> inRearSteeringEnable;
 
         /** CAN Connectivity */
-        InputPort<bool> inLeftDrivingConnected;
-        InputPort<bool> inRightDrivingConnected;
-        InputPort<bool> inRearDrivingConnected;
-        InputPort<bool> inLeftSteeringConnected;
-        InputPort<bool> inRightSteeringConnected;
-        InputPort<bool> inRearSteeringConnected;
-        InputPort<bool> inWoodheadInConnected;
-        InputPort<bool> inWoodheadOutConnected;
+        RTT::InputPort<bool> inLeftDrivingConnected;
+        RTT::InputPort<bool> inRightDrivingConnected;
+        RTT::InputPort<bool> inRearDrivingConnected;
+        RTT::InputPort<bool> inLeftSteeringConnected;
+        RTT::InputPort<bool> inRightSteeringConnected;
+        RTT::InputPort<bool> inRearSteeringConnected;
+        RTT::InputPort<bool> inWoodheadInConnected;
+        RTT::InputPort<bool> inWoodheadOutConnected;
 
         /**PowerManagement synthesis */
-        OutputPort<bool> outDrivingEnable;
-        OutputPort<bool> outSteeringEnable;
-        OutputPort<bool> outEnable;
-        OutputPort<bool> outEmergencyStop;
+        RTT::OutputPort<bool> outDrivingEnable;
+        RTT::OutputPort<bool> outSteeringEnable;
+        RTT::OutputPort<bool> outEnable;
+        RTT::OutputPort<bool> outEmergencyStop;
 
         /** */
-        ARDTaskContext& m_owner;
+        arp_core::ARDTaskContext& m_owner;
 
 
         /** Pointer on the LeftDrive ooEnableDrive Operation**/
-        OperationCaller<void(void)> m_ooEnableLeftDriving;
+        RTT::OperationCaller<void(void)> m_ooEnableLeftDriving;
         /** Pointer on the RightDriveooEnableDrive Operation**/
-        OperationCaller<void(void)> m_ooEnableRightDriving;
+        RTT::OperationCaller<void(void)> m_ooEnableRightDriving;
         /** Pointer on the RearDrive ooEnableDrive Operation**/
-        OperationCaller<void(void)> m_ooEnableRearDriving;
+        RTT::OperationCaller<void(void)> m_ooEnableRearDriving;
         /** Pointer on the Left Turret ooEnableDrive Operation**/
-        OperationCaller<void(void)> m_ooEnableLeftSteering;
+        RTT::OperationCaller<void(void)> m_ooEnableLeftSteering;
         /** Pointer on the Right Turret ooEnableDrive Operation**/
-        OperationCaller<void(void)> m_ooEnableRightSteering;
+        RTT::OperationCaller<void(void)> m_ooEnableRightSteering;
         /** Pointer on the Rear Turret ooEnableDrive Operation**/
-        OperationCaller<void(void)> m_ooEnableRearSteering;
+        RTT::OperationCaller<void(void)> m_ooEnableRearSteering;
 
         /** Pointer on the LeftDrive ooDisableDrive Operation**/
-        OperationCaller<void(void)> m_ooDisableLeftDriving;
+        RTT::OperationCaller<void(void)> m_ooDisableLeftDriving;
         /** Pointer on the Right ooDisableDrive Operation**/
-        OperationCaller<void(void)> m_ooDisableRightDriving;
+        RTT::OperationCaller<void(void)> m_ooDisableRightDriving;
         /** Pointer on the RearDrive ooDisableDrive Operation**/
-        OperationCaller<void(void)> m_ooDisableRearDriving;
+        RTT::OperationCaller<void(void)> m_ooDisableRearDriving;
         /** Pointer on the Left Turret ooDisableDrive Operation**/
-        OperationCaller<void(void)> m_ooDisableLeftSteering;
+        RTT::OperationCaller<void(void)> m_ooDisableLeftSteering;
         /** Pointer on the Right Turret ooDisableDrive Operation**/
-        OperationCaller<void(void)> m_ooDisableRightSteering;
+        RTT::OperationCaller<void(void)> m_ooDisableRightSteering;
         /** Pointer on the Rear Turret ooDisableDrive Operation**/
-        OperationCaller<void(void)> m_ooDisableRearSteering;
+        RTT::OperationCaller<void(void)> m_ooDisableRearSteering;
 
 
         /** Pointer in the Left driving ooSetOperationMode Operation **/
-        OperationCaller<bool(string)> m_ooSetDrivingOperationMode;
+        RTT::OperationCaller<bool(std::string)> m_ooSetDrivingOperationMode;
         /** Pointer in the Left steering ooSetOperationMode Operation **/
-        OperationCaller<bool(string)> m_ooSetSteeringOperationMode;
+        RTT::OperationCaller<bool(std::string)> m_ooSetSteeringOperationMode;
 
         /**
          * Read and merge information about motor power

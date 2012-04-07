@@ -11,12 +11,10 @@
 
 #include <taskcontexts/ARDTaskContext.hpp>
 
-using namespace arp_core;
-
 namespace arp_rlu
 {
 
-    class RluTaskContext: public ARDTaskContext
+    class RluTaskContext: public arp_core::ARDTaskContext
     {
     public:
     	RluTaskContext(const std::string& name);

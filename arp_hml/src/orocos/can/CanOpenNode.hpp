@@ -59,10 +59,10 @@ namespace arp_hml
         double propNmtTimeout;
 
         /** name of the CanOpenController this component will connect*/
-        string propCanOpenControllerName;
+        std::string propCanOpenControllerName;
 
         /** this script is executed in the configureHook to set up CAN config values*/
-        string propCanConfigurationScript;
+        std::string propCanConfigurationScript;
 
         /** Require a CAN node reset during configure. As the controller is already doing it, it is usually not usefull */
         bool propResetFirst;

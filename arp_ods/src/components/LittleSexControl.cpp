@@ -9,6 +9,8 @@
 #include <rtt/Component.hpp>
 
 using namespace arp_ods;
+using namespace RTT;
+using namespace std;
 
 ORO_LIST_COMPONENT_TYPE( arp_ods::LittleSexControl )
 

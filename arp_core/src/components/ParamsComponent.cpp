@@ -10,6 +10,7 @@
 #include <ros/package.h>
 
 using namespace arp_core;
+using namespace RTT;
 
 ORO_LIST_COMPONENT_TYPE( arp_core::ParamsComponent )
 

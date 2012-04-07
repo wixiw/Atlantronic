@@ -10,6 +10,8 @@
 
 using namespace arp_math;
 using namespace arp_ods;
+using namespace RTT;
+using namespace std;
 
 ORO_LIST_COMPONENT_TYPE( arp_ods::RosOdsItf )
 

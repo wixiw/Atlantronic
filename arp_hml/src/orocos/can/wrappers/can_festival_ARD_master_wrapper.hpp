@@ -10,7 +10,7 @@
 #include "orocos/can/dictionnary/CanARD.h"
 #include "orocos/can/ard_can_types.hpp"
 
-extern string canFestivalWrapperName;
+extern std::string canFestivalWrapperName;
 extern RTT::OutputPort<e_nodeState> canFestival_outNMTState;
 extern RTT::OutputPort<nodeID_t> canFestival_outBootUpReceived;
 extern RTT::OutputPort<timespec> canFestival_outSyncSent;

@@ -12,9 +12,6 @@
 #include <math/core>
 #include <arp_core/Pose.h>
 
-using namespace arp_math;
-using namespace arp_core;
-
 namespace arp_rlu
 {
 
@@ -25,9 +22,9 @@ class RosRluItf: public arp_rlu::RluTaskContext
         void updateHook();
 
     protected:
-        InputPort<EstimatedPose2D> inPose;
-        InputPort<EstimatedTwist2D> inTwist;
-        OutputPort<Pose> outPose;
+        RTT::InputPort<arp_math::EstimatedPose2D> inPose;
+        RTT::InputPort<arp_math::EstimatedTwist2D> inTwist;
+        RTT::OutputPort<arp_core::Pose> outPose;
 };
 
 } /* namespace arp_rlu */

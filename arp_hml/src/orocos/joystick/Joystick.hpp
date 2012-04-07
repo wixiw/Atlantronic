@@ -18,9 +18,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-using namespace RTT;
-using namespace arp_core;
-
 namespace arp_hml
 {
 	/**
@@ -58,14 +55,14 @@ namespace arp_hml
         bool isJoystickAlive();
 
         /** Name of the joystick drive file usually /dev/input/js0 */
-        string propDevName;
+        std::string propDevName;
         /** Minimal driver version on which this code is working */
         int propMinimalDriverVersion;
         /** Maximal delay when no event is received to put the component in safe mode in the isJoystickAlive method */
         double propMaxNoEventDelay;
 
         /** Returns the joystick name as reading from USB manufacturer information */
-        string getJoystickName();
+        std::string getJoystickName();
 
         /** Is true when the component thinks the joystick is connected. When true, this information is not always accurate
          * (that's why there is an isJoystickAlive method), but you can be sure that if it is false, the joystick is badly connected.

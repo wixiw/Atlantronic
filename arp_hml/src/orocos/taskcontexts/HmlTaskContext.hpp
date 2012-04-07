@@ -12,6 +12,7 @@
 #include <taskcontexts/ARDTaskContext.hpp>
 
 using namespace arp_core;
+using namespace RTT;
 
 namespace arp_hml
 {

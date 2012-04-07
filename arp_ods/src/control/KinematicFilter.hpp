@@ -24,35 +24,37 @@ class KinematicFilter
          * Filtre un twist pour obtenir un twist acceptable.\n
          * Convertit un Twist desire en un twist qui respecte les contraintes physiques.\n
          * tous les twists sont des "Twist du repère de référence du chassis par rapport au sol projeté et réduit dans le repère de référence du chassis"
-         * @param desTwist : le twist desire
-         * @param currentTwist : le twist actuel du robot
-         * @param turretCurrentState : le twist actuel du robot
-         * @param acceptableTwist : le resultat. Un twist qui essaie de se rapprocher du twist desire tout en respectant les contraintes physiques.
-         * @param params : paramètres géométriques du robot
+         * Les twist doivent être similaire (même mobile/même base projeté réduit dans le même repère)
+         * @param desiredTwist :    [in] le twist desire
+         * @param currentTwist :    [in] le twist actuel du robot
+         * @param currentMS :       [in] l'état courant des moteurs (en provenance de HML)
+         * @param params :          [in] paramètres géométriques du robot
+         * @param dt :              [in] delay between now and last computation.
+         * @param acceptableTwist : [out]le resultat. Un twist qui essaie de se rapprocher du twist desire tout en respectant les contraintes physiques.
+         * @param quality :         [out] give us the closeness to desiredTwist of acceptableTwist in [0,1]. 0 mean we stay on last Twists
          * @return : true if computation succeed, false otherwise (param inconsistent for instance)
          */
-        static bool filterTwist(const arp_math::Twist2D & desTwist, const arp_math::Twist2D & currentTwist, const arp_model::TurretState & turretCurrentState,  arp_math::Twist2D& acceptableTwist, const arp_model::UbiquityParams & params);
+        static bool filterTwist(const arp_math::Twist2D & desiredTwist,
+                const arp_math::Twist2D & currentTwist,
+                const arp_model::MotorState & currentMS,
+                const arp_model::UbiquityParams & params,
+                const double & dt,
+                arp_math::Twist2D & acceptableTwist,
+                double & quality);
 
     protected:
-        /*
-         * transport of the twist to what is nice for the filter: twist at center of gravity
-         */
-        static void transportToCog(const arp_math::Twist2D & refTwist, arp_math::Twist2D& cogTwist, const arp_model::UbiquityParams & params);
-        /*
-         * get back the twist from centre of gravity to the usual referential
-         */
-        static void transportToRef(const arp_math::Twist2D & cogTwist, arp_math::Twist2D& refTwist, const arp_model::UbiquityParams & params);
-        /**
-         * Non Holonomy handling: if the robot is asked a twist with a CIR that it will not reached, then it's no use to let him go fast
-         */
-        static void filterForNonholonomy(const arp_math::Twist2D & inputTwist, const arp_math::Twist2D & currentTwist, const arp_model::TurretState & turretCurrentState, arp_math::Twist2D& outputTwist, const arp_model::UbiquityParams & params);
 
         /**
-         * Handling of the hardware contraints:
-         * we known that the current twist would be an acceptable solution.
-         * so we choose a Twist that is something between the desired twist and the current twist
+         * Check if the current motor state command is reachable
+         * @param desiredState : the stat we try to reach already containing the solution for angle.
+         * @param measuredState : the current motor state.
+         * @param params : geometrical parameters required to use UbiquityKinematics models
+         * @return a percentage between 0 and 1 which give a rates to apply on the desiredTwist commanded
          */
-        static void filterForConstraints(const arp_math::Twist2D & inputTwist, const arp_math::Twist2D & currentTwist, arp_math::Twist2D& outputTwist, const arp_model::UbiquityParams & params);
+        static bool isMotorStateReachable(const arp_model::MotorState & desiredMS,
+                                        const arp_model::MotorState & measuredMS,
+                                        const arp_model::UbiquityParams & params,
+                                        const double & dt);
 };
 
 }

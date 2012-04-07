@@ -1,6 +1,8 @@
 #include <rtt/types/StructTypeInfo.hpp>
 #include "orocos/can/ard_can_types.hpp"
 
+using namespace std;
+
   namespace boost {
     namespace serialization {
       // The helper function which you write yourself:

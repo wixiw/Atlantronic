@@ -10,11 +10,11 @@
 
 #include <math/math.hpp>
 #include <math/Pose2D.hpp>
+#include <iostream>
 
 namespace arp_math
 {
-
-/** \ingroup arp_math
+/*
  * \nonstableyet
  *
  * \class Twist2D
@@ -78,21 +78,22 @@ class Twist2D
         std::string toString() const;
 
         /** Opérateur d'addition de deux Twist2*/
-        inline friend Twist2D operator+(const Twist2D& lhs, const Twist2D& rhs);
+        Twist2D operator+(const Twist2D& b);
 
         /** Opérateur de soustraction de deux Twist2*/
-        inline friend Twist2D operator-(const Twist2D& lhs, const Twist2D& rhs);
+        Twist2D operator-(const Twist2D& rhs);
+
+        /** Opérateur de multiplication sclaire*/
+        Twist2D operator*(const double & scalaire);
+
+        /** Opérateur de division sclaire*/
+        Twist2D operator/(const  double & scalaire);
 
         /** Soustraction sur place */
-        inline Twist2D& operator-=(const Twist2D& _other);
+        Twist2D& operator-=(const Twist2D& _other);
 
         /** Addition sur place */
-        inline Twist2D& operator+=(const Twist2D& _other);
-
-        /** Accession aux composants via des index.
-         * Index(0..1) donne la vitesse de translation
-         * Index(3) donne la vitesse de rotation */
-        inline double& operator()(int i);
+        Twist2D& operator+=(const Twist2D& _other);
 
         /** Opérateur d'égalité.
          * \param _other la Twist2D à comparer.
@@ -101,16 +102,6 @@ class Twist2D
          * composantes de la partie translation et de l'angle de la partie
          * rotation. La précision utilisée est ici celle des double. */
         bool operator ==(Twist2D _other) const;
-
-        /** Accession aux composants via des index.
-         * Index(0..1) donne la vitesse de translation
-         * Index(3) donne la vitesse de rotation */
-        double operator[](int index) const;
-
-        /** Accession aux composants via des index.
-         * Index(0..1) donne la vitesse de translation
-         * Index(3) donne la vitesse de rotation */
-        double& operator[](int index);
 
         /**
          * Retourne le Twist sous forme de Vecteur 3 (omega,vx,vy)
@@ -123,11 +114,21 @@ class Twist2D
          */
         Twist2D transport(Pose2D p) const;
 
+        /**
+         * Calcul la distance entre 2 Twist.
+         * @param twist : Twist2D dont on veut la distance par rapport à nous
+         * @param coef : coefficients de ponderation pour le calcul de la distance = sqrt(coef(0)2*theta2+coef(1)2*x2 + coef(2)2*y()2)
+         * @return la distance
+         */
+        double distanceTo(Twist2D twist, Vector3 coef) const;
+
     protected:
         Vector2 vitesseTranslation;
         double vitesseRotation;
 
 };
+
+std::ostream &operator<<( std::ostream &flux, arp_math::Twist2D const& t);
 
 }
 

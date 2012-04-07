@@ -80,14 +80,6 @@ Eigen::Matrix<double,3,3> Pose2D::getDisplacement2Matrix() const
 	return mat;
 }
 
-//Eigen::Matrix<double,4,4> Pose2D::matrix4()
-//{
-//	Eigen::Matrix<double,4,4> mat = Eigen::Matrix<double,4,4>::Identity();
-//	mat.corner(Eigen::TopLeft,2,2) = this->rotation2().toRotationMatrix();
-//	mat.corner(Eigen::TopRight,2,1) = this->translation();
-//	return mat;
-//}
-
 void Pose2D::translation(Vector2 _positionTranslation)
 {
     positionTranslation = _positionTranslation;
@@ -167,19 +159,19 @@ double Pose2D::angleTo(Pose2D pose) const
 }
 
 
-//inline friend Pose2D operator+(const Pose2D& lhs, const Pose2D& rhs)
-//{
-//	return Pose2D( lhs.translation() + rhs.translation() , lhs.angle() + rhs.angle() );
-//}
-//
-//Pose2D Pose2D::operator -(Pose2D other)
-//{
-//	return Pose2D( this->translation() + other.translation() , this->angle() + other.angle() );
-//}
-//
-//inline std::ostream& operator <<(std::ostream& os, Pose2D _pose)
-//{
-//  os << _pose.translation().transpose() << "\t" << _pose.angle();
-//  return os;
-//}
+Pose2D Pose2D::operator+(const Pose2D& b)
+{
+	return Pose2D( this->translation() + b.translation() , this->angle() + b.angle() );
+}
+
+Pose2D Pose2D::operator-(const Pose2D& b)
+{
+	return Pose2D( this->translation() - b.translation() , this->angle() - b.angle() );
+}
+
+std::ostream& operator <<(std::ostream& os, Pose2D _pose)
+{
+  os << _pose.translation().transpose() << "\t" << _pose.angle();
+  return os;
+}
 

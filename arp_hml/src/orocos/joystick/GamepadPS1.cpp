@@ -11,6 +11,7 @@
 #include <sys/ioctl.h>
 
 using namespace arp_hml;
+using namespace std;
 
 //alors qu'il faut mettre autant de ORO_LIST_COMPONENT_TYPE qu'il y a de composants
 ORO_LIST_COMPONENT_TYPE( arp_hml::GamepadPS1 )

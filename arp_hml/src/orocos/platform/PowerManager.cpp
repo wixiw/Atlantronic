@@ -8,6 +8,8 @@
 
 using namespace arp_hml;
 using namespace arp_core;
+using namespace std;
+using namespace RTT;
 
 PowerManager::PowerManager(ARDTaskContext& owner):
     propCanRequestTimeout(2.0),

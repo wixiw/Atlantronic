@@ -11,6 +11,8 @@
 
 using namespace arp_hml;
 using namespace arp_core;
+using namespace std;
+using namespace RTT;
 
 ORO_CREATE_COMPONENT_LIBRARY()
 ORO_LIST_COMPONENT_TYPE( arp_hml::HmlMonitor )

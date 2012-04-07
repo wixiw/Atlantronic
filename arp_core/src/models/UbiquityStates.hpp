@@ -202,17 +202,16 @@ struct SteeringTurretVelocities
         {}
 };
 
-
 struct DrivingTurretVelocities
 {
-        double leftDrivingTorque;
-        double rightDrivingTorque;
-        double rearDrivingTorque;
+        double leftDrivingVelocity;
+        double rightDrivingVelocity;
+        double rearDrivingVelocity;
 
         DrivingTurretVelocities():
-            leftDrivingTorque(0.0),
-            rightDrivingTorque(0.0),
-            rearDrivingTorque(0.0)
+            leftDrivingVelocity(0.0),
+            rightDrivingVelocity(0.0),
+            rearDrivingVelocity(0.0)
         {}
 };
 
@@ -229,17 +228,16 @@ struct SteeringTurretTorques
         {}
 };
 
-
 struct DrivingTurretTorques
 {
-        double leftDrivingVelocity;
-        double rightDrivingVelocity;
-        double rearDrivingVelocity;
+        double leftDrivingTorque;
+        double rightDrivingTorque;
+        double rearDrivingTorque;
 
         DrivingTurretTorques():
-            leftDrivingVelocity(0.0),
-            rightDrivingVelocity(0.0),
-            rearDrivingVelocity(0.0)
+            leftDrivingTorque(0.0),
+            rightDrivingTorque(0.0),
+            rearDrivingTorque(0.0)
         {}
 };
 

@@ -96,7 +96,7 @@ namespace arp_hml
         /** Prints the last Faulhaber command sent on CAN in OTHER mode of operation **/
         OutputPort<bool> outDriveEnable;
         /** Provides the current mode of operation of the motor (speed,position,torque,homing,other=faulhaber) **/
-        OutputPort<string> outCurrentOperationMode;
+        OutputPort<std::string> outCurrentOperationMode;
         /** Is true when the propMaximalTorque has been reached*/
         OutputPort<bool> outMaxTorqueTimeout;
 

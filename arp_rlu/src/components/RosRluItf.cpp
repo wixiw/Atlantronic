@@ -9,6 +9,11 @@
 #include <rtt/Component.hpp>
 
 using namespace arp_rlu;
+using namespace arp_math;
+using namespace RTT;
+using namespace std;
+using namespace arp_core;
+
 
 ORO_LIST_COMPONENT_TYPE( arp_rlu::RosRluItf )
 

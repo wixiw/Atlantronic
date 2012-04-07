@@ -12,8 +12,6 @@
 #include "orocos/can/ard_can_types.hpp"
 #include "orocos/can/CanOpenDispatcher.hpp"
 
-using namespace arp_core;
-
 namespace arp_hml
 {
     /**
@@ -126,11 +124,11 @@ namespace arp_hml
         CanDicoEntry attrTestingSdo;
 
         /** This property contains the name of the can driver library that will be loaded dynamically */
-        string propCanFestivalDriverName;
+        std::string propCanFestivalDriverName;
         /** This property contains the name of the bus attached to the CanController */
-        string propBusName;
+        std::string propBusName;
         /** This propertu contains the baudrate of the attached bus (10K,250K,500K,1000K, ...)*/
-        string propBaudRate;
+        std::string propBaudRate;
         /** This property contains the nodeID of the Controller node on the attached bus (in decimal)*/
         int propNodeId;
         /** This property defines the maximal allowed duration of slaves nodes before considering they are not on the bus (in s)*/

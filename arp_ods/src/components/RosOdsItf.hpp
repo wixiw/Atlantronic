@@ -25,10 +25,10 @@ class RosOdsItf: public OdsTaskContext
         RosOdsItf(std::string const name);
 
     protected:
-        InputPort<arp_math::EstimatedPose2D> inPose;
-        InputPort<bool> inCurrentOrderIsFinished;
-        InputPort<bool> inCurrentOrderIsInError;
-        OutputPort< shared_ptr<MotionOrder> > outOrder;
+        RTT::InputPort<arp_math::EstimatedPose2D> inPose;
+        RTT::InputPort<bool> inCurrentOrderIsFinished;
+        RTT::InputPort<bool> inCurrentOrderIsInError;
+        RTT::OutputPort< shared_ptr<MotionOrder> > outOrder;
 
         /**
          * Actionlib server.

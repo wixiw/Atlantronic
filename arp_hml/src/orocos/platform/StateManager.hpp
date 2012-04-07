@@ -10,13 +10,10 @@
 
 #include <taskcontexts/ARDTaskContext.hpp>
 
-using namespace RTT;
-using namespace arp_core;
-
 namespace arp_hml
 {
     /** surcharge du log */
-    #define LOGS(level) RTT::log(m_owner.propEnableLog?level:Never)<<"["<<m_owner.getName()<<"] "
+    #define LOGS(level) RTT::log(m_owner.propEnableLog?level:RTT::Never)<<"["<<m_owner.getName()<<"] "
 
     /** \ingroup ARP-arp_hml
      *
@@ -29,7 +26,7 @@ namespace arp_hml
         public:
 
             /** */
-            StateManager(ARDTaskContext& c);
+            StateManager(arp_core::ARDTaskContext& c);
 
             /**
              * Get the operation on motors
@@ -43,36 +40,36 @@ namespace arp_hml
         protected:
 
             /** */
-            ARDTaskContext& m_owner;
+            arp_core::ARDTaskContext& m_owner;
 
-            Property<bool>* m_propRequireCompleteHardware;
+            RTT::Property<bool>* m_propRequireCompleteHardware;
 
 
             /** Pointer in the Left driving ooSetOperationMode Operation **/
-            OperationCaller<bool(string)> m_ooSetLeftDrivingOperationMode;
+            RTT::OperationCaller<bool(std::string)> m_ooSetLeftDrivingOperationMode;
             /** Pointer in the Right driving ooSetOperationMode Operation **/
-            OperationCaller<bool(string)> m_ooSetRightDrivingOperationMode;
+            RTT::OperationCaller<bool(std::string)> m_ooSetRightDrivingOperationMode;
             /** Pointer in the Right driving ooSetOperationMode Operation **/
-            OperationCaller<bool(string)> m_ooSetRearDrivingOperationMode;
+            RTT::OperationCaller<bool(std::string)> m_ooSetRearDrivingOperationMode;
             /** Pointer in the Left steering ooSetOperationMode Operation **/
-            OperationCaller<bool(string)> m_ooSetLeftSteeringOperationMode;
+            RTT::OperationCaller<bool(std::string)> m_ooSetLeftSteeringOperationMode;
             /** Pointer in the Right steering ooSetOperationMode Operation **/
-            OperationCaller<bool(string)> m_ooSetRightSteeringOperationMode;
+            RTT::OperationCaller<bool(std::string)> m_ooSetRightSteeringOperationMode;
             /** Pointer in the Right steering ooSetOperationMode Operation **/
-            OperationCaller<bool(string)> m_ooSetRearSteeringOperationMode;
+            RTT::OperationCaller<bool(std::string)> m_ooSetRearSteeringOperationMode;
 
 
             /** Choose a mode of operation on driving motors
              * @param state : choose between spped,position,torque,other
              * @return true only if the 3 driving motors switched to the correct state.
              */
-            bool ooSetDrivingOperationMode(const string state);
+            bool ooSetDrivingOperationMode(const std::string state);
 
             /** Choose a mode of operation on sttering motors
              * @param state : choose between spped,position,torque,other
              * @return true only if the 3 steering motors switched to the correct state.
              */
-            bool ooSetSteeringOperationMode(const string state);
+            bool ooSetSteeringOperationMode(const std::string state);
 
             /**
              * Use this to connect local handlers to all peer component operations.

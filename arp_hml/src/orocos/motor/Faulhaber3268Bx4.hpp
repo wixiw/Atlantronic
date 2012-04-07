@@ -18,8 +18,6 @@
 #include "orocos/can/ard_can_types.hpp"
 #include <sys/time.h>
 
-using namespace arp_core;
-
 namespace arp_hml
 {
 
@@ -112,7 +110,7 @@ namespace arp_hml
         /** Is true when the drive is ready to be operated (axe blocked). If it is false, the axe is free of any mouvement **/
         OutputPort<bool> outDriveEnable;
         /** Provides the current mode of operation of the motor (speed,position,torque,homing,other=faulhaber) **/
-        OutputPort<string> outCurrentOperationMode;
+        OutputPort<std::string> outCurrentOperationMode;
         /** Is true when the propMaximalTorque has been reached*/
         OutputPort<bool> outMaxTorqueTimeout;
 

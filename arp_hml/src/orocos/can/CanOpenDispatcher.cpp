@@ -12,6 +12,7 @@
 using namespace arp_hml;
 using namespace RTT;
 using namespace extras;
+using namespace std;
 
 CanOpenDispatcher::CanOpenDispatcher(TaskContext& tc):
     m_registeredNodes(),

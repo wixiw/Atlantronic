@@ -8,6 +8,8 @@
 
 using namespace arp_hml;
 using namespace arp_core;
+using namespace std;
+using namespace RTT;
 
 StateManager::StateManager(ARDTaskContext& owner):
     m_owner(owner)

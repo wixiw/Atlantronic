@@ -14,6 +14,7 @@
 
 using namespace arp_hml;
 using namespace arp_core;
+using namespace std;
 
 ORO_CREATE_COMPONENT_LIBRARY()
 ORO_LIST_COMPONENT_TYPE( arp_hml::CanOpenController)

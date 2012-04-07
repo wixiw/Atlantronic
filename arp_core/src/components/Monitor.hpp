@@ -10,8 +10,6 @@
 
 #include "taskcontexts/ARDTaskContext.hpp"
 
-using namespace RTT;
-
 namespace arp_core
 {
     /** \ingroup ARP-arp_core
@@ -75,7 +73,7 @@ namespace arp_core
         /**
          * Returns a string containing Core version
          */
-        string coGetCoreVersion();
+        std::string coGetCoreVersion();
 
         /**
          * Use this to connect internal peers
@@ -88,7 +86,7 @@ namespace arp_core
 
     protected:
         /** List of peers to monitor */
-        vector<TaskContext*> m_monitoredList;
+        std::vector<RTT::TaskContext*> m_monitoredList;
 
         /** Use this fucntion to check that all input port of registered components are connected */
         bool checkPortConnection();

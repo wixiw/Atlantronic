@@ -20,13 +20,10 @@
 #include <rtt/Port.hpp>
 #include <rtt/Logger.hpp>
 
-using namespace std;
-using namespace RTT;
-
 namespace arp_core
 {
     /** surcharge du log */
-    #define LOG(level) RTT::log(propEnableLog?level:Never)<<"["<<getName()<<"] "
+    #define LOG(level) RTT::log(propEnableLog?level:RTT::Never)<<"["<<getName()<<"] "
 
     /**
      * Create a while loop to wait a function to answer true until a timeout explodes
@@ -66,7 +63,7 @@ namespace arp_core
      * Cette classe contient l'instrumentation de base utile
      * pour tous les composants qui seron développés avec Orocos
      */
-    class ARDTaskContext : public TaskContext
+    class ARDTaskContext : public RTT::TaskContext
     {
     public:
 
@@ -89,11 +86,11 @@ namespace arp_core
 
         /** Allows a component to connect easily to an other component's operation */
         template<class CommandT>
-        bool getOperation(string component, string operation, OperationCaller<CommandT>& reference)
+        bool getOperation(std::string component, std::string operation, RTT::OperationCaller<CommandT>& reference)
         {
             bool res = true;
-            TaskContext* taskContext;
-            OperationInterfacePart* opItf;
+            RTT::TaskContext* taskContext;
+            RTT::OperationInterfacePart* opItf;
 
             //si je cherche une operation sur moi c'est facile, sinon je cherche le peer
             if( getName() == component )
@@ -107,7 +104,7 @@ namespace arp_core
 
             if ( taskContext == NULL )
             {
-                LOG(Error)  << "getOperation : failed to find peer " << component  << " (when asking for " << operation << endlog();
+                LOG(RTT::Error)  << "getOperation : failed to find peer " << component  << " (when asking for " << operation << RTT::endlog();
                 res = false;
             }
             else
@@ -115,7 +112,7 @@ namespace arp_core
                 opItf = taskContext->getOperation(operation);
                 if( opItf == NULL || opItf->getLocalOperation() == NULL )
                 {
-                    LOG(Error)  << "getOperation : " << component << "." << operation << " is not available" << endlog();
+                    LOG(RTT::Error)  << "getOperation : " << component << "." << operation << " is not available" << RTT::endlog();
                     res = false;
                 }
                 else
@@ -130,30 +127,30 @@ namespace arp_core
     protected:
 
         /** Nom du script à charger automatiquement, si vide on ne charge rien snas erreur */
-        string propAutoLoadScript;
+        std::string propAutoLoadScript;
         /** Nom de la machine à états à charger automatiquement, si vide on ne charge rien snas erreur */
-        string propAutoLoadStateMachines;
+        std::string propAutoLoadStateMachines;
 
         /**Chemin vers le project */
-        string attrProjectRootPath;
+        std::string attrProjectRootPath;
         /** Chemin vers le dossier des propriétés depuis attrProjectRootPath  */
-        string attrPropertyPath;
+        std::string attrPropertyPath;
         /** Chemin vers le dossier des scripts depuis attrProjectRootPath */
-        string attrScriptPath;
+        std::string attrScriptPath;
         /** Chemin vers le dossier des fsm depuis attrProjectRootPath */
-        string attrStateMachinePath;
+        std::string attrStateMachinePath;
         /** Used by configuration programs to set a success flag */
         bool attrScriptRes;
 
         /** Interface de scripting Orocos (ods,ops) */
-        boost::shared_ptr<Scripting> scripting;
+        boost::shared_ptr<RTT::Scripting> scripting;
 
         /** Interface de marshalling XML (sauvegarde des propriétés)  */
-        boost::shared_ptr<Marshalling> marshalling;
+        boost::shared_ptr<RTT::Marshalling> marshalling;
 
         /** Logger */
         // TODO WLA OCL::logging::Category* logger;
-        Logger::In logger;
+        RTT::Logger::In logger;
 
         /**
          * Check if the properties have correct values. This function may be override in components
@@ -191,7 +188,7 @@ namespace arp_core
         virtual bool loadStateMachines();
 
         /** Permet de logger en script */
-        bool coLog(LoggerLevel level, string s);
+        bool coLog(RTT::LoggerLevel level, std::string s);
 
 
     };

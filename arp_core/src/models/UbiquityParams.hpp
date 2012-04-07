@@ -34,14 +34,14 @@ class UbiquityParams
         double getRightWheelDiameter() const;
         double getTractionRatio() const;
         double getTurretRatio() const;
-        double getMaxTractionAcc() const;
-        double getMaxTractionDec() const;
-        double getMaxTractionSpeed() const;
-        double getMaxTractionTorque() const;
-        double getMaxTurretAcc() const;
-        double getMaxTurretDec() const;
-        double getMaxTurretSpeed() const;
-        double getMaxTurretTorque() const;
+        double getMaxDrivingAcc() const;
+        double getMaxDrivingDec() const;
+        double getMaxDrivingSpeed() const;
+        double getMaxDrivingTorque() const;
+        double getMaxSteeringAcc() const;
+        double getMaxSteeringDec() const;
+        double getMaxSteeringSpeed() const;
+        double getMaxSteeringTorque() const;
 
         double& getLeftTurretZeroRef();
         double& getRearTurretZeroRef();
@@ -55,14 +55,14 @@ class UbiquityParams
         double& getRightWheelDiameterRef();
         double& getTractionRatioRef();
         double& getTurretRatioRef();
-        double& getMaxTractionAccRef();
-        double& getMaxTractionDecRef();
-        double& getMaxTractionSpeedRef();
-        double& getMaxTractionTorqueRef();
-        double& getMaxTurretAccRef();
-        double& getMaxTurretDecRef();
-        double& getMaxTurretSpeedRef();
-        double& getMaxTurretTorqueRef();
+        double& getMaxDrivingAccRef();
+        double& getMaxDrivingDecRef();
+        double& getMaxDrivingSpeedRef();
+        double& getMaxDrivingTorqueRef();
+        double& getMaxSteeringAccRef();
+        double& getMaxSteeringDecRef();
+        double& getMaxSteeringSpeedRef();
+        double& getMaxSteeringTorqueRef();
 
         void setLeftTurretZero(double leftTurretZero);
         void setRearTurretZero(double rearTurretZero);
@@ -101,22 +101,31 @@ class UbiquityParams
         /** Rapport de traction vitesse rotation roue = rappport*vitesse moteur */
         double m_tractionRatio;
 
+        /**
+         * Note : on ne peut pas exprimer les limitations cinématiques autrement que sur les moteurs pour la direction à cause
+         * du couplage avec les vitesses de directions qui nous font dépendre du temps.
+         */
         /** Vitesse maximale en m/s qu'une roue peut fournir au sol */
-        double m_maxTractionSpeed;
-        /** Vitesse maximale en rad/s que la tourelle peut avoir par rapport au chassis */
-        double m_maxTurretSpeed;
+        double m_maxDrivingSpeed;
         /** Acceleration maximale en m/s2 qu'une roue peut fournir au sol */
-        double m_maxTractionAcc;
-        /** Acceleration maximale en rad/s2 que la tourelle peut avoir par rapport au chassis */
-        double m_maxTurretAcc;
+        double m_maxDrivingAcc;
         /** Deceleration maximale en m/s2 qu'une roue peut fournir au sol */
-        double m_maxTractionDec;
-        /** Decceleration maximale en rad/s2 que la tourelle peut avoir par rapport au chassis */
-        double m_maxTurretDec;
+        double m_maxDrivingDec;
         /** Couple maximal en Nm qu'une roue peut fournir au sol */
-        double m_maxTractionTorque;
+        double m_maxDrivingTorque;
+
+
+        /**
+         * Note : on peut exprimer les limitations cinématiques sur la tourelle parce qu'il n'y a pas de couplage côté direction
+         */
+        /** Vitesse maximale en rad/s que la tourelle peut avoir par rapport au chassis */
+        double m_maxSteeringSpeed;
+        /** Acceleration maximale en rad/s2 que la tourelle peut avoir par rapport au chassis */
+        double m_maxSteeringAcc;
+        /** Decceleration maximale en rad/s2 que la tourelle peut avoir par rapport au chassis */
+        double m_maxSteeringDec;
         /** Couple maximal en Nm que la tourelle peut fournir par rapport au chassis */
-        double m_maxTurretTorque;
+        double m_maxSteeringTorque;
 
 };
 

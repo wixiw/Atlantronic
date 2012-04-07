@@ -3,6 +3,8 @@
  *  in C++, we need this wrapper
  **********************************************************************/
 
+using namespace std;
+
 #include "orocos/can/wrappers/can_festival_ARD_master_wrapper.hpp"
 
 //#define DEBUG_ON

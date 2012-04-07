@@ -6,9 +6,7 @@
  */
 
 // TODO BMO :
-// * faire compiler les operateurs << - +
 // * utiliser les références et les const
-// * debuger matrix4 (??!?)
 // * opérateurs approximation et différence
 // * faire apparaitre cette todolist dans le Doxygen
 
@@ -75,8 +73,6 @@ class Pose2D
          *
          * de la rotation. Le vecteur colonne 2x1 du bloc haut droit est constitué du vecteur translation */
         Displacement2 getDisplacement2Matrix() const;
-
-        //	Eigen::Matrix<double,4,4> matrix4();
 
         // Setters
         /** Permet de modifier la partie translation.
@@ -147,11 +143,11 @@ class Pose2D
          * rotation. La précision utilisée est ici celle des double. */
         bool operator ==(Pose2D _other) const;
 
-        //	inline friend Pose2D operator+(const Pose2D& lhs, const Pose2D& rhs);
-        //	Pose2D operator +(Pose2D other);
-        //	Pose2D operator -(Pose2D other);
-        //	friend std::ostream operator <<(std::ostream os, Pose2D _pose);
+        Pose2D operator+(const Pose2D& other);
+        Pose2D operator-(const Pose2D& other);
 };
+
+std::ostream operator <<(std::ostream os, arp_math::Pose2D _pose);
 
 }
 

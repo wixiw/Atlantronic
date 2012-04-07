@@ -13,6 +13,7 @@
 using namespace arp_hml;
 using namespace arp_core;
 using namespace scripting;
+using namespace std;
 
 CanOpenNode::CanOpenNode(const std::string& name):
 	HmlTaskContext(name),

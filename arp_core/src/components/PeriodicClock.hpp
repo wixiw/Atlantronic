@@ -20,7 +20,7 @@ class PeriodicClock: public ARDTaskContext
         void updateHook();
 
     protected:
-        OutputPort<double> outClock;
+        RTT::OutputPort<double> outClock;
 };
 
 } /* namespace arp_core */

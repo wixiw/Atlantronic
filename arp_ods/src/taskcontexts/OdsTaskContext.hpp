@@ -11,12 +11,10 @@
 
 #include <taskcontexts/ARDTaskContext.hpp>
 
-using namespace arp_core;
-
 namespace arp_ods
 {
 
-    class OdsTaskContext: public ARDTaskContext
+    class OdsTaskContext: public arp_core::ARDTaskContext
     {
     public:
     	OdsTaskContext(const std::string& name);

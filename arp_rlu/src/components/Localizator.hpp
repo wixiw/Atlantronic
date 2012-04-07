@@ -36,11 +36,11 @@ class Localizator: public RluTaskContext
 
         //*****************************************************
         // Ports
-        InputPort<double> inScan;
-        InputPort<arp_math::EstimatedTwist2D > inOdo;
+        RTT::InputPort<double> inScan;
+        RTT::InputPort<arp_math::EstimatedTwist2D > inOdo;
 
-        OutputPort<arp_math::EstimatedPose2D> outPose;
-        OutputPort<arp_math::EstimatedTwist2D> outTwist;
+        RTT::OutputPort<arp_math::EstimatedPose2D> outPose;
+        RTT::OutputPort<arp_math::EstimatedTwist2D> outTwist;
 
 
         //*****************************************************

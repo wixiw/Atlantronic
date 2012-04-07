@@ -22,12 +22,21 @@ UbiquityParams::UbiquityParams():
         m_rightWheelDiameter(0.066),
         m_rearWheelDiameter(0.066),
         m_tractionRatio(1.0),
-        m_turretRatio(0.25)
+        m_turretRatio(0.25),
+        m_maxDrivingSpeed(-1),
+        m_maxDrivingAcc(-1),
+        m_maxDrivingDec(-1),
+        m_maxDrivingTorque(-1),
+        m_maxSteeringSpeed(125),
+        m_maxSteeringAcc(52),
+        m_maxSteeringDec(52),
+        m_maxSteeringTorque(-1)
 {
 }
 
 bool UbiquityParams::check() const
 {
+    //on vérifie que les roues ont une dimension réaliste
     if( m_leftWheelDiameter <= 0.010 || m_leftWheelDiameter >= 3 )
         return false;
     if( m_rightWheelDiameter <= 0.010 || m_rightWheelDiameter >= 3 )
@@ -35,14 +44,32 @@ bool UbiquityParams::check() const
     if( m_rearWheelDiameter <= 0.010 || m_rearWheelDiameter >= 3 )
         return false;
 
+    //pas de rapport d'engrages négatifs ou nuls
     if( m_tractionRatio <= 0 )
         return false;
     if( m_turretRatio <= 0 )
         return false;
 
+    //on verifie que les 2 tourelles ne sont pas confondues 2 à 2
     if( m_leftTurretPosition == m_rightTurretPosition
             || m_leftTurretPosition == m_rearTurretPosition
             || m_rightTurretPosition == m_rearTurretPosition)
+        return false;
+
+    //on verifie que les vitesses max de traction/direction ont du sens
+    if( m_maxDrivingSpeed <= 0.1 || m_maxDrivingSpeed >= 3 || m_maxSteeringSpeed <= 1 || m_maxSteeringSpeed >= 300)
+        return false;
+
+    //on verifie que les accelerations de traction on du sens
+    if( m_maxDrivingAcc <= 0 || m_maxDrivingAcc >= 15 || m_maxDrivingDec <= 0 || m_maxDrivingDec >= 15)
+        return false;
+
+    //on a pas de raison de mettre des valeurs diffentes en acc et dec
+    if( m_maxSteeringAcc <= 1 || m_maxSteeringDec <= 1 || m_maxSteeringAcc != m_maxSteeringDec )
+        return false;
+
+    //pour le moment on a pas de modele dynamique on a pas de raison de les utiliser.
+    if( m_maxDrivingTorque != -1 || m_maxSteeringTorque != 1 )
         return false;
 
     //tout va bien
@@ -106,44 +133,44 @@ double UbiquityParams::getTurretRatio() const
 }
 
 
-double UbiquityParams::getMaxTractionAcc() const
+double UbiquityParams::getMaxDrivingAcc() const
 {
-    return m_maxTractionAcc;
+    return m_maxDrivingAcc;
 }
 
-double UbiquityParams::getMaxTractionDec() const
+double UbiquityParams::getMaxDrivingDec() const
 {
-    return m_maxTractionDec;
+    return m_maxDrivingDec;
 }
 
-double UbiquityParams::getMaxTractionSpeed() const
+double UbiquityParams::getMaxDrivingSpeed() const
 {
-    return m_maxTractionSpeed;
+    return m_maxDrivingSpeed;
 }
 
-double UbiquityParams::getMaxTractionTorque() const
+double UbiquityParams::getMaxDrivingTorque() const
 {
-    return m_maxTractionTorque;
+    return m_maxDrivingTorque;
 }
 
-double UbiquityParams::getMaxTurretAcc() const
+double UbiquityParams::getMaxSteeringAcc() const
 {
-    return m_maxTurretAcc;
+    return m_maxSteeringAcc;
 }
 
-double UbiquityParams::getMaxTurretDec() const
+double UbiquityParams::getMaxSteeringDec() const
 {
-    return m_maxTurretDec;
+    return m_maxSteeringDec;
 }
 
-double UbiquityParams::getMaxTurretSpeed() const
+double UbiquityParams::getMaxSteeringSpeed() const
 {
-    return m_maxTurretSpeed;
+    return m_maxSteeringSpeed;
 }
 
-double UbiquityParams::getMaxTurretTorque() const
+double UbiquityParams::getMaxSteeringTorque() const
 {
-    return m_maxTurretTorque;
+    return m_maxSteeringTorque;
 }
 
 Pose2D UbiquityParams::getChassisCenter() const
@@ -210,44 +237,44 @@ double& UbiquityParams::getTurretRatioRef()
     return m_turretRatio;
 }
 
-double& UbiquityParams::getMaxTractionAccRef()
+double& UbiquityParams::getMaxDrivingAccRef()
 {
-    return m_maxTractionAcc;
+    return m_maxDrivingAcc;
 }
 
-double& UbiquityParams::getMaxTractionDecRef()
+double& UbiquityParams::getMaxDrivingDecRef()
 {
-    return m_maxTractionDec;
+    return m_maxDrivingDec;
 }
 
-double& UbiquityParams::getMaxTractionSpeedRef()
+double& UbiquityParams::getMaxDrivingSpeedRef()
 {
-    return m_maxTractionSpeed;
+    return m_maxDrivingSpeed;
 }
 
-double& UbiquityParams::getMaxTractionTorqueRef()
+double& UbiquityParams::getMaxDrivingTorqueRef()
 {
-    return m_maxTractionTorque;
+    return m_maxDrivingTorque;
 }
 
-double& UbiquityParams::getMaxTurretAccRef()
+double& UbiquityParams::getMaxSteeringAccRef()
 {
-    return m_maxTurretAcc;
+    return m_maxSteeringAcc;
 }
 
-double& UbiquityParams::getMaxTurretDecRef()
+double& UbiquityParams::getMaxSteeringDecRef()
 {
-    return m_maxTurretDec;
+    return m_maxSteeringDec;
 }
 
-double& UbiquityParams::getMaxTurretSpeedRef()
+double& UbiquityParams::getMaxSteeringSpeedRef()
 {
-    return m_maxTurretSpeed;
+    return m_maxSteeringSpeed;
 }
 
-double& UbiquityParams::getMaxTurretTorqueRef()
+double& UbiquityParams::getMaxSteeringTorqueRef()
 {
-    return m_maxTurretTorque;
+    return m_maxSteeringTorque;
 }
 
 Pose2D& UbiquityParams::getChassisCenterRef()

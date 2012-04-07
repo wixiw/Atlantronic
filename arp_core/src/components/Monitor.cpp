@@ -12,7 +12,8 @@
 #include "arp_core_version.h"
 
 using namespace arp_core;
-
+using namespace RTT;
+using namespace std;
 
 ORO_LIST_COMPONENT_TYPE( arp_core::Monitor )
 

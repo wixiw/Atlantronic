@@ -13,8 +13,6 @@
 #include "orocos/can/ard_DS402.hpp"
 
 
-using namespace arp_core;
-
 typedef int nodeID_t;
 
 enum enum_DS301_nmtStateRequest
@@ -62,15 +60,15 @@ struct CanNodeIdCard
         inBootUpFrame(NULL)
         {}
 
-    CanNodeIdCard(int nodeId, ARDTaskContext* task, InputPort<bool>* inBootUpFrame):
+    CanNodeIdCard(int nodeId, arp_core::ARDTaskContext* task, RTT::InputPort<bool>* inBootUpFrame):
         nodeId(nodeId),
         task(task),
         inBootUpFrame(inBootUpFrame)
         {}
 
     nodeID_t nodeId;
-    ARDTaskContext* task;
-    InputPort<bool>* inBootUpFrame;
+    arp_core::ARDTaskContext* task;
+    RTT::InputPort<bool>* inBootUpFrame;
 
     /**
      * Use this function to check the data validity of the current CanNodeIdCard

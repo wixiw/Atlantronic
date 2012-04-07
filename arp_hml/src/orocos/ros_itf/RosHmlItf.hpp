@@ -129,27 +129,27 @@ namespace arp_hml
  *****************************************************************/
 
         /** Speed command for left and right motor **/
-        InputPort<OmniCommand> inOmniCmd;
+        InputPort<arp_core::OmniCommand> inOmniCmd;
 
         /** Odometers value from left and right wheel assembled in an "Odo" Ros message **/
-        OutputPort<OmniOdo> outOdometryMeasures;
+        OutputPort<arp_core::OmniOdo> outOdometryMeasures;
 
         /** Speed measures for left and right motor **/
-        OutputPort<OmniCommand> outOmniSpeedMeasure;
+        OutputPort<arp_core::OmniCommand> outOmniSpeedMeasure;
 
         /** Value of the start. GO is true when it is not in, go is false when the start is in **/
-        OutputPort<Start> outIoStart;
+        OutputPort<arp_core::Start> outIoStart;
 
         /** Is true when HML thinks the emergency stop button is active **/
-        OutputPort<Bool> outEmergencyStop;
+        OutputPort<std_msgs::Bool> outEmergencyStop;
 
         /** Output of Enable value of motors to publish to Ros **/
-        OutputPort<Bool> outDrivingMotorsEnable;
-        OutputPort<Bool> outSteeringMotorsEnable;
-        OutputPort<Bool> outMotorsEnable;
+        OutputPort<std_msgs::Bool> outDrivingMotorsEnable;
+        OutputPort<std_msgs::Bool> outSteeringMotorsEnable;
+        OutputPort<std_msgs::Bool> outMotorsEnable;
 
         /** Is true when wheel are blocked */
-        OutputPort<Bool> outWheelBlocked;
+        OutputPort<std_msgs::Bool> outWheelBlocked;
 
         /** Real Position of the robot, given by the simulation */
         OutputPort<Pose> outRealPosition;
@@ -242,9 +242,9 @@ protected:
         /** Pointer on the HmlMonitor ooResetHml Operation**/
         OperationCaller<bool(void)> m_ooResetHml;
         /** Pointer on the HmlMonitor ooSetPosition Operation**/
-        OperationCaller<bool(Pose2D)> m_ooSetPosition;
+        OperationCaller<bool(arp_math::Pose2D)> m_ooSetPosition;
         /** Pointer on the HmlMonitor coGetVersion Operation**/
-        OperationCaller<string(void)> m_coGetVersion;
+        OperationCaller<std::string(void)> m_coGetVersion;
 
         /**
          * Get the differential command speed for both motor and dispatch it to them

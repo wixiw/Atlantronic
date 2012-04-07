@@ -13,6 +13,7 @@
 using namespace arp_core::log;
 using namespace arp_rlu;
 using namespace arp_math;
+using namespace RTT;
 
 ORO_LIST_COMPONENT_TYPE( arp_rlu::Localizator )
 
@@ -108,9 +109,10 @@ void Localizator::updateHook()
 bool Localizator::initialize(EstimatedPose2D pose)
 {
     double initDate = arp_math::getTime();
-    LOG(Info) << "initialize to " << pose.toString() << " with date : "  << initDate <<  " (sec)" << endlog();
-
     pose.date( initDate );
+    
+    LOG(Info) << "initialize to " << pose.toString() << " with date : "  << initDate <<  " (sec)" << endlog();
+    
     return kfloc.initialize(pose);
 }
 

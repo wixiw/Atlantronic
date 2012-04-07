@@ -23,7 +23,7 @@ class ParamsComponent: public ARDTaskContext
 
     protected:
         arp_model::UbiquityParams propSavedParams;
-        OutputPort<arp_model::UbiquityParams> outParams;
+        RTT::OutputPort<arp_model::UbiquityParams> outParams;
 };
 
 } /* namespace arp_core */
