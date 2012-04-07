@@ -19,6 +19,7 @@ end
 function OdometryDeployer:connect()
 	--on s'ajoute en peer a HmlMonitor pour pouvoir faire les connections
 	Deployer:addPeer("HmlMonitor", me)
+	Deployer:addPeer("Reporting", me)
 	HmlMonitor:connect(me, "inTime", 		"Syncronizator","outClock");
 	HmlMonitor:connect(me, "inMotorState", 		"Syncronizator","outMotorMeasures");
 	Deployer:connect(me..".inParams", "UbiquityParams.outParams",cp);

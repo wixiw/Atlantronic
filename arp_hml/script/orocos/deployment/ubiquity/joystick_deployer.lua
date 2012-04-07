@@ -5,7 +5,7 @@ JoystickDeployer = ComposantDeployer:new()
 
 function JoystickDeployer:load()
 	Deployer:loadComponent("Joystick","arp_hml::GamepadPS1");
-	Deployer:setActivity("Joystick",0.050,0,1);
+	Deployer:setActivity("Joystick",0.050,5,1);
 
 end
 

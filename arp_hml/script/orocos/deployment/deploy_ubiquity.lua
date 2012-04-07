@@ -13,13 +13,12 @@ Deployer:import("arp_hml");
 
 
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/can_deployer.lua");
-dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/motor_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/io_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/joystick_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/ros_hml_itf_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/hml_monitor_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/syncronizator_deployer.lua");
-
+dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/motor_deployer.lua");
 
 print("... load components")
 CanDeployer:load()

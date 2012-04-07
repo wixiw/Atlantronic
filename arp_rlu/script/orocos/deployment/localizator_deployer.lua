@@ -18,7 +18,7 @@ end
 
 function LocalizatorDeployer:connect()
 	Deployer:connect(me..".inOdo","Odometry.outTwist",cp)
-	
+	Deployer:addPeer("Reporting", me)
 	LocalizatorDeployer:check(me)
 end
 

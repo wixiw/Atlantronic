@@ -3,21 +3,19 @@ dofile("/opt/ard/arp_core/script/orocos/deployment/component_deployer_object.lua
 
 MotorDeployer = ComposantDeployer:new()
 
-function MotorDeployer:load()
-	--sched_type 0 = RT 
-	Deployer:loadComponent("LeftDriving","arp_hml::Faulhaber3268Bx4")
-	Deployer:setActivity("LeftDriving",0,40,0)
-	Deployer:loadComponent("RightDriving","arp_hml::Faulhaber3268Bx4")
-	Deployer:setActivity("RightDriving",0,40,0)
-	Deployer:loadComponent("RearDriving","arp_hml::Faulhaber3268Bx4")
-	Deployer:setActivity("RearDriving",0,40,0)
+function MotorDeployer:loadMotor(name)
+	--sched_type 1 = RT 
+	Deployer:loadComponent(name,"arp_hml::Faulhaber3268Bx4")
+	Deployer:setActivity(name,0,40,1)
+end
 
-	Deployer:loadComponent("LeftSteering","arp_hml::Faulhaber3268Bx4")
-	Deployer:setActivity("LeftSteering",0,40,0)
-	Deployer:loadComponent("RightSteering","arp_hml::Faulhaber3268Bx4")
-	Deployer:setActivity("RightSteering",0,40,0)
-	Deployer:loadComponent("RearSteering","arp_hml::Faulhaber3268Bx4")
-	Deployer:setActivity("RearSteering",0,40,0)
+function MotorDeployer:load()
+	MotorDeployer:loadMotor("LeftDriving");
+	MotorDeployer:loadMotor("RightDriving");
+	MotorDeployer:loadMotor("RearDriving");
+	MotorDeployer:loadMotor("LeftSteering");
+	MotorDeployer:loadMotor("RightSteering");
+	MotorDeployer:loadMotor("RearSteering");
 end
 
 function MotorDeployer:registerToSql(name)
@@ -26,18 +24,17 @@ function MotorDeployer:registerToSql(name)
 	OrocosSqlMonitor:ooRegisterBoolPort(name,"outConnected")
 	OrocosSqlMonitor:ooRegisterBoolPort(name,"outDriveEnable")
 	OrocosSqlMonitor:ooRegisterStringPort(name,"outCurrentOperationMode")
-	OrocosSqlMonitor:ooRegisterDoublePort(name,"outComputedSpeed")
-	OrocosSqlMonitor:ooRegisterDoublePort(name,"outMeasuredPosition")
-	OrocosSqlMonitor:ooRegisterDoublePort(name,"outMeasuredTorque")
+	OrocosSqlMonitor:ooRegisterDoublePort(name,"outSpeed")
+	OrocosSqlMonitor:ooRegisterDoublePort(name,"outPosition")
+	OrocosSqlMonitor:ooRegisterDoublePort(name,"outTorque")
 end
 
 function MotorDeployer:connectMotor(name)
 	--on s'enregistre en peer au composant de trace
+	Deployer:addPeer("Reporting", name)
 	--on enregistre chez nous le controlleur Can
-	Deployer:addPeer(me, "Can1")
-	Deployer:addPeer("Reporting", me)
-	--MotorDeployer:registerToSql("LeftDriving")
-	Deployer:connect(name..".inClock", "Can1.outClock",cp)
+	Deployer:addPeer(name, "Can1")
+	--MotorDeployer:registerToSql(name)
 	MotorDeployer:check(me)
 end
 
@@ -49,6 +46,13 @@ function MotorDeployer:connect()
 	MotorDeployer:connectMotor("LeftSteering")
 	MotorDeployer:connectMotor("RightSteering")
 	MotorDeployer:connectMotor("RearSteering")
+	
+	Deployer:addPeer("LeftDriving", "Can1");
+	Deployer:addPeer("Reporting", "LeftDriving")
+	Deployer:addPeer("RightDriving", "Can1");
+	Deployer:addPeer("Reporting", "RightDriving")
+	Deployer:addPeer("RearDriving", "Can1");
+	Deployer:addPeer("Reporting", "RearDriving")
 end
 
 

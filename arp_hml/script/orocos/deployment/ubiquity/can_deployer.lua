@@ -5,7 +5,7 @@ CanDeployer = ComposantDeployer:new()
 
 function CanDeployer:load()
 	Deployer:loadComponent("Can1","arp_hml::CanOpenController");
-	Deployer:setActivity("Can1",0,50,0);
+	Deployer:setActivity("Can1",0,50,1);
 
 end
 

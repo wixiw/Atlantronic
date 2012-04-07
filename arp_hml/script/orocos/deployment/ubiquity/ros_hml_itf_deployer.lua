@@ -11,9 +11,9 @@ end
 
 function RosHmlItfDeployer:connectOneMotor(name)
 	Deployer:addPeer("RosHmlItf", name)
-	Deployer:connect("RosHmlItf.in"..name.."Position", name..".outMeasuredPosition",cp)
-	Deployer:connect("RosHmlItf.in"..name.."PositionTime", name..".outMeasuredPositionTime",cp)
-	Deployer:connect("RosHmlItf.in"..name.."SpeedMeasure", name..".outComputedSpeed",cp)
+	Deployer:connect("RosHmlItf.in"..name.."Position", name..".outPosition",cp)
+	Deployer:connect("RosHmlItf.in"..name.."PositionTime", name..".outClock",cp)
+	Deployer:connect("RosHmlItf.in"..name.."SpeedMeasure", name..".outVelocity",cp)
 	Deployer:connect("RosHmlItf.in"..name.."Blocked", name..".outMaxTorqueTimeout",cp)
 end
 

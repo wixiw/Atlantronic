@@ -17,7 +17,7 @@ Reporting:setPeriod (0.050)
 -- chargement du composant serveur parametre
 print("loading Ubiquity param server...")
 Deployer:loadComponent("UbiquityParams","arp_core::ParamsComponent")
-Deployer:setActivity("UbiquityParams", 0.100, 0, 1)
+Deployer:setActivity("UbiquityParams", 0.100, 0, 0)
 UbiquityParams = Deployer:getPeer("UbiquityParams")
 UbiquityParams:configure()
 UbiquityParams:start();
