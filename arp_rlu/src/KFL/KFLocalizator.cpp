@@ -23,6 +23,7 @@ using namespace arp_core::log;
 
 KFLocalizator::Params::Params()
 : bufferSize(100)
+, maxTime4OdoPrediction(0.5)
 , referencedBeacons()
 , iekfParams(KFLocalizator::IEKFParams())
 , procParams(BeaconDetector::Params())
@@ -34,13 +35,14 @@ std::string KFLocalizator::Params::getInfo() const
     std::stringstream ss;
     ss << "KFLocalizator Params :" << std::endl;
     ss << " [*] bufferSize: " << bufferSize << std::endl;
+    ss << " [*] maxTime4OdoPrediction: " << maxTime4OdoPrediction << " (sec)" << std::endl;
     ss << " [*] referencedBeacons.size(): " << referencedBeacons.size() << std::endl;
     for(unsigned int i = 0 ; i < referencedBeacons.size() ; i++)
     {
         ss << "       # referencedBeacons[" << i << "]:  ";
-        ss << "  x=" << referencedBeacons[i].x();
-        ss << "  y=" << referencedBeacons[i].y();
-        ss << "  r=" << referencedBeacons[i].r();
+        ss << "  x=" << referencedBeacons[i].x() << "(m)";
+        ss << "  y=" << referencedBeacons[i].y() << "(m)";
+        ss << "  r=" << referencedBeacons[i].r() << "(m)";
         ss << "" << std::endl;
     }
     ss << "****************************" << std::endl;
@@ -48,6 +50,31 @@ std::string KFLocalizator::Params::getInfo() const
     ss << "****************************" << std::endl;
     ss << procParams.getInfo();
     return ss.str();
+}
+
+bool KFLocalizator::Params::checkConsistency() const
+{
+    if(bufferSize < 10)
+    {
+        Log( NOTICE ) << "KFLocalizator::Params::checkConsistency - inconsistent parameter : bufferSize (" << bufferSize << ") < 10";
+        return false;
+    }
+    if(maxTime4OdoPrediction <= 0.)
+    {
+        Log( NOTICE ) << "KFLocalizator::Params::checkConsistency - inconsistent parameter : maxTime4OdoPrediction (" << maxTime4OdoPrediction << ") should be strictly positive";
+        return false;
+    }
+    if(!iekfParams.checkConsistency())
+    {
+        Log( NOTICE ) << "BeaconDetector::Params::checkConsistency" << " - " << "IEKFParams::Params are not consistent";
+        return false;
+    }
+    if(!procParams.checkConsistency())
+    {
+        Log( NOTICE ) << "BeaconDetector::Params::checkConsistency" << " - " << "BeaconDetector::Params are not consistent";
+        return false;
+    }
+    return true;
 }
 
 KFLocalizator::IEKFParams::IEKFParams()
@@ -73,6 +100,41 @@ std::string KFLocalizator::IEKFParams::getInfo() const
     return ss.str();
 }
 
+bool KFLocalizator::IEKFParams::checkConsistency() const
+{
+    if(defaultOdoVelTransSigma <= 0.)
+    {
+        Log( NOTICE ) << "KFLocalizator::IEKFParams::checkConsistency - inconsistent parameter : defaultOdoVelTransSigma (" << defaultOdoVelTransSigma << ") should be strictly positive";
+        return false;
+    }
+    if(defaultOdoVelRotSigma <= 0.)
+    {
+        Log( NOTICE ) << "KFLocalizator::IEKFParams::checkConsistency - inconsistent parameter : defaultOdoVelRotSigma (" << defaultOdoVelRotSigma << ") should be strictly positive";
+        return false;
+    }
+    if(defaultLaserRangeSigma <= 0.)
+    {
+        Log( NOTICE ) << "KFLocalizator::IEKFParams::checkConsistency - inconsistent parameter : defaultLaserRangeSigma (" << defaultLaserRangeSigma << ") should be strictly positive";
+        return false;
+    }
+    if(defaultLaserThetaSigma <= 0.)
+    {
+        Log( NOTICE ) << "KFLocalizator::IEKFParams::checkConsistency - inconsistent parameter : defaultLaserThetaSigma (" << defaultLaserThetaSigma << ") should be strictly positive";
+        return false;
+    }
+    if(iekfMaxIt == 0)
+    {
+        Log( NOTICE ) << "KFLocalizator::IEKFParams::checkConsistency - inconsistent parameter : iekfMaxIt (" << iekfMaxIt << ") should be strictly positive";
+        return false;
+    }
+    if(iekfInnovationMin <= 0.)
+    {
+        Log( NOTICE ) << "KFLocalizator::IEKFParams::checkConsistency - inconsistent parameter : iekfInnovationMin (" << iekfInnovationMin << ") should be strictly positive";
+        return false;
+    }
+    return true;
+}
+
 KFLocalizator::KFLocalizator()
 : params()
 , beaconDetector()
@@ -91,7 +153,13 @@ KFLocalizator::~KFLocalizator()
 
 void KFLocalizator::setParams(KFLocalizator::Params p)
 {
+    if(!p.checkConsistency())
+    {
+        Log( ERROR ) << "KFLocalizator::setParams - Parameters are ignored because they are inconsistent :\n" << p.getInfo();
+        return;
+    }
     params.bufferSize = p.bufferSize;
+    params.maxTime4OdoPrediction = p.maxTime4OdoPrediction;
     params.referencedBeacons = p.referencedBeacons;
     beaconDetector.setReferencedBeacons(params.referencedBeacons);
     setParams(p.iekfParams);
@@ -146,6 +214,13 @@ bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D odoVel)
     if( lastEstim.date() >= odoVel.date() )
     {
         Log( ERROR ) << "KFLocalizator::newOdoVelocity - Last estimation date (" << lastEstim.date() << ") is posterior or same than odo velocity date (" << odoVel.date() << ") => return false";
+        return false;
+    }
+
+    if( lastEstim.date() + params.maxTime4OdoPrediction < odoVel.date() )
+    {
+        Log( WARN ) << "KFLocalizator::newOdoVelocity - Time betwee EstimatedTwist2D date (" << odoVel.date() << ") and last estimation date (" << lastEstim.date() << ") is strangely big and superior than" << params.maxTime4OdoPrediction << "). "
+             << "maybe because of an initalization date error or a scheduling fault => return false";
         return false;
     }
 

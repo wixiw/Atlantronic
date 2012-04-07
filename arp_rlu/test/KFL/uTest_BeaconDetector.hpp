@@ -164,7 +164,7 @@ namespace unittest_BeaconDetector
 
             BOOST_CHECK_CLOSE( target.x(), trueXBeacon, 1.f);
             BOOST_CHECK_CLOSE( target.y(), trueYBeacon, 1.f);
-            BOOST_CHECK( abs(meas(0) - trueRange) < 0.01 );
+            BOOST_CHECK( abs(meas(0) - trueRange) < 0.015 );
             BOOST_CHECK( abs(meas(1) - trueTheta) < 0.01);
         }
     }

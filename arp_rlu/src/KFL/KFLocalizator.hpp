@@ -46,57 +46,69 @@ class KFLocalizator
         class IEKFParams
         {
             public:
-                /** Constructeur par défault.
-                 *  Il initialise des paramètres classiques non-stupides :\n
-                 *  \li defaultOdoVelTransSigma = 0.001
-                 *  \li defaultOdoVelRotSigma = 0.01
-                 *  \li defaultLaserRangeSigma = 0.005
-                 *  \li defaultLaserThetaSigma = 0.05
-                 *  \li iekfMaxIt = 10
-                 *  \li iekfInnovationMin = 0.00015
-                 */
-                IEKFParams();
+            /** Constructeur par défault.
+             *  Il initialise des paramètres classiques non-stupides :\n
+             *  \li defaultOdoVelTransSigma = 0.001
+             *  \li defaultOdoVelRotSigma = 0.01
+             *  \li defaultLaserRangeSigma = 0.005
+             *  \li defaultLaserThetaSigma = 0.05
+             *  \li iekfMaxIt = 10
+             *  \li iekfInnovationMin = 0.00015
+             */
+            IEKFParams();
 
-                /**
-                 * Permet de formatter les paramètres en un message lisible.
-                 */
-                std::string getInfo() const;
+            /**
+             * Permet de formatter les paramètres en un message lisible.
+             */
+            std::string getInfo() const;
 
-                /**
-                 * La précision estimée de la vitesse de translation odo en m/s.\n
-                 * Il s'agit de l'écart type.
-                 */
-                double defaultOdoVelTransSigma;
+            /**
+             * Permet de vérifier que les paramètres sont consistants.\n
+             * A savoir :\n
+             * \li defaultOdoVelTransSigma doit être strictement positif.
+             * \li defaultOdoVelRotSigma doit être strictement positif.
+             * \li defaultLaserRangeSigma doit être strictement positif.
+             * \li defaultLaserThetaSigma doit être strictement positif.
+             * \li iekfMaxIt doit être strictement positif.
+             * \li iekfInnovationMin doit être strictement positif.
+             */
+            bool checkConsistency() const;
 
-                /**
-                 * La précision estimée de la vitesse de rotation odo en rad/s.\n
-                 * Il s'agit de l'écart type.
-                 */
-                double defaultOdoVelRotSigma;
+            /**
+             * La précision estimée de la vitesse de translation odo en m/s.\n
+             * Il s'agit de l'écart type.
+             */
+            double defaultOdoVelTransSigma;
 
-                /**
-                 * La précision estimée de la mesure de distance du laser en m.\n
-                 * Il s'agit de l'écart type.
-                 */
-                double defaultLaserRangeSigma;
+            /**
+             * La précision estimée de la vitesse de rotation odo en rad/s.\n
+             * Il s'agit de l'écart type.
+             */
+            double defaultOdoVelRotSigma;
 
-                /**
-                 * La précision estimée de la mesure d'angle du laser en rad.\n
-                 * Il s'agit de l'écart type.
-                 */
-                double defaultLaserThetaSigma;
+            /**
+             * La précision estimée de la mesure de distance du laser en m.\n
+             * Il s'agit de l'écart type.
+             */
+            double defaultLaserRangeSigma;
 
-                /**
-                 * Le nombre d'itérations maximal de la routine itérative du kalman étendu itératif.\n
-                 * Au delà de ce nombre d'itérations, même si l'estimée n'a pas convergé, l'algo rend la dernière estimée.
-                 */
-                unsigned int iekfMaxIt;
+            /**
+             * La précision estimée de la mesure d'angle du laser en rad.\n
+             * Il s'agit de l'écart type.
+             */
+            double defaultLaserThetaSigma;
 
-                /**
-                 * L'innovation minimale désirée pour le IEKF.\n
-                 * Il s'agit de la norme au carré de l'innovation minimale.
-                 */
-                double iekfInnovationMin;
+            /**
+             * Le nombre d'itérations maximal de la routine itérative du kalman étendu itératif.\n
+             * Au delà de ce nombre d'itérations, même si l'estimée n'a pas convergé, l'algo rend la dernière estimée.
+             */
+            unsigned int iekfMaxIt;
+
+            /**
+             * L'innovation minimale désirée pour le IEKF.\n
+             * Il s'agit de la norme au carré de l'innovation minimale.
+             */
+            double iekfInnovationMin;
         };
 
 
@@ -114,6 +126,7 @@ class KFLocalizator
                 /** Constructeur par défault.
                  *  Il initialise des paramètres classiques non-stupides :\n
                  *  \li bufferSize = 100
+                 *  \li maxTime4OdoPrediction = 0.5
                  *  \li referencedBeacons est vide
                  *  \li initParams => voir KFLocalizator::InitParams()
                  *  \li iekfParams => voir KFLocalizator::IEKFParams()
@@ -127,6 +140,15 @@ class KFLocalizator
                 std::string getInfo() const;
 
                 /**
+                 * Permet de vérifier que les paramètres sont consistants.\n
+                 * A savoir :\n
+                 * \li bufferSize est de taille 10 au moins.
+                 * \li maxTime4OdoPrediction est strictement positif.
+                 * \li chaque sous-groupe de paramètres est consistant.
+                 */
+                bool checkConsistency() const;
+
+                /**
                  * Taille du buffer interne.\n
                  * Ce buffer stocke des informations temporelles (les différentes estimées). Il est utilisé
                  * afin de pouvoir "revenir dans le passé" pour réaliser une mise à jour a posteriori.\n
@@ -135,6 +157,13 @@ class KFLocalizator
                  * bufferSize doit être supérieur à Tscan/Todo.
                  */
                 unsigned int bufferSize;
+
+                /**
+                 * Si la date de l'estimée Odo est plus récente de plus de maxTime4OdoPrediction (en seconde) par rapport
+                 * à la dernière estimée (qui peut être celle de l'initialisation), alors la prediction Odo
+                 * est annulée, on estime qu'il y a un pb quelque part.
+                 */
+                double maxTime4OdoPrediction;
 
                 /**
                  * Position des balises (circulaires) sur la table

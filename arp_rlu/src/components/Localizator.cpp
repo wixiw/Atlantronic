@@ -107,8 +107,10 @@ void Localizator::updateHook()
 
 bool Localizator::initialize(EstimatedPose2D pose)
 {
-    LOG(Info) << "initialize to " << pose.toString() << endlog();
+    double initDate = arp_math::getTime();
+    LOG(Info) << "initialize to " << pose.toString() << " with date : "  << initDate <<  " (sec)" << endlog();
 
+    pose.date( initDate );
     return kfloc.initialize(pose);
 }
 
