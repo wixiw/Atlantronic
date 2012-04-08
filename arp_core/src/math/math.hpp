@@ -36,6 +36,7 @@ namespace arp_math
 
     /**
      * Return any angle in -pi +pi
+     * TODO faire les tests unitaires !!!!!!!!!
      */
 
     double betweenMinusPiAndPlusPi( double angle);
@@ -44,6 +45,8 @@ namespace arp_math
 
     double betweenMinusPiAndPlusPi( double angle);
     double betweenZeroAndTwoPi( double angle);
+    double betweenMinusPi2AndPlusPi2(double angle);
+    double betweenZeroAndPi(double angle);
 
     double deg2rad(double deg);
     double rad2deg(double rad);

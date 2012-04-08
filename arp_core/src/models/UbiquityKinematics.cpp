@@ -27,20 +27,25 @@ bool UbiquityKinematics::motors2Turrets(const MotorState & iMS,
 {
     if( !iParams.check() )
         return false;
+    //cout << "----- UbiquityKinematics::motors2Turrets" << endl;
 
     oTS.steering.left.position = (iMS.steering.left.position - iParams.getLeftTurretZero())
             *iParams.getTurretRatio() ;
-    oTS.steering.right.position = (iMS.steering.right.position - iParams.getLeftTurretZero())
+    oTS.steering.right.position = (iMS.steering.right.position - iParams.getRightTurretZero())
             *iParams.getTurretRatio();
     oTS.steering.rear.position = (iMS.steering.rear.position - iParams.getRearTurretZero())
             *iParams.getTurretRatio();
 
     oTS.driving.left.velocity = iParams.getLeftWheelDiameter()/2
             *(iMS.driving.left.velocity*iParams.getTractionRatio() + iMS.steering.left.velocity*iParams.getTurretRatio());
+
     oTS.driving.right.velocity = iParams.getRightWheelDiameter()/2
             *(iMS.driving.right.velocity*iParams.getTractionRatio() + iMS.steering.right.velocity*iParams.getTurretRatio());
+
+
     oTS.driving.rear.velocity = iParams.getRearWheelDiameter()/2
             *(iMS.driving.rear.velocity*iParams.getTractionRatio() + iMS.steering.rear.velocity*iParams.getTurretRatio());
+    //cout << "oTS b4 norm : " << oTS.toString() << endl;
 
     //normalisations
     normalizeDirection(oTS.steering.left.position, oTS.driving.left.velocity);
@@ -55,6 +60,7 @@ bool UbiquityKinematics::turrets2Motors(const TurretState & iTSbrut,
                                         MotorState& oMS,
                                         const UbiquityParams & iParams)
 {
+    //cout << "----- UbiquityKinematics::turrets2Motors" << endl;
     if( !iParams.check() )
         return false;
 
@@ -70,8 +76,17 @@ bool UbiquityKinematics::turrets2Motors(const TurretState & iTSbrut,
     motors2Turrets(iMS,currentTurretPos,iParams);
 
     //calcul des delta de position commandé
-    AxesGroup deltaCmd;
-    deltaCmd = iTS.steering - currentTurretPos.steering;
+    AxesGroup deltaCmd = iTS.steering - currentTurretPos.steering;
+    TurretState dummyDeltaCmd;//utilisé pour retourner les vitesses de traction
+    dummyDeltaCmd.steering = deltaCmd;
+    dummyDeltaCmd.driving = iTS.driving;
+    normalizeDirection(dummyDeltaCmd);
+    deltaCmd = dummyDeltaCmd.steering;
+    iTS.driving = dummyDeltaCmd.driving;
+
+    //cout << "iTS : " << iTS.toString() << endl;
+    //cout << "currentTurretPos : " << currentTurretPos.toString() << endl;
+    //cout << "deltaCmd : " << deltaCmd.toString() << endl;
 
     //ajout a la position brute du moteur le delta de commande, et paf ca fait la consigne a envoyer au prochain step
     oMS.steering.left.position = iMS.steering.left.position + deltaCmd.left.position/iParams.getTurretRatio() + iParams.getLeftTurretZero();
@@ -86,6 +101,7 @@ bool UbiquityKinematics::turrets2Motors(const TurretState & iTSbrut,
     oMS.driving.rear.velocity = (2*iTS.driving.rear.velocity/iParams.getRearWheelDiameter() - iMS.steering.rear.velocity*iParams.getTurretRatio())
             /iParams.getTractionRatio();
 
+    //cout << "oMS : " << oMS.toString() << endl;
     return true;
 }
 

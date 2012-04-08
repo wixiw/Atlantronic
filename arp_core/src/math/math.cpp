@@ -30,9 +30,28 @@ double betweenMinusPiAndPlusPi(double angle)
     return angle;
 }
 
+double betweenMinusPi2AndPlusPi2(double angle)
+{
+    angle = betweenZeroAndPi( angle );
+    if (angle > M_PI_2)
+    {
+        angle = angle - PI;
+    }
+    if (angle <= -M_PI_2)
+    {
+        angle = angle + PI;
+    }
+    return angle;
+}
+
 double betweenZeroAndTwoPi(double angle)
 {
     return fmod( fmod(angle, 2 * PI) + 4. * PI, 2 * PI);
+}
+
+double betweenZeroAndPi(double angle)
+{
+    return fmod( fmod(angle, PI) + 2. * PI, PI);
 }
 
 double deg2rad(double deg)
