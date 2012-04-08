@@ -37,11 +37,10 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
 
     quality = -666;
 
-    AxesGroup SMV = currentMS.steering;
-
     //before going to dichotomy, check is the desiredTwist is reachable
     MotorState desiredMS;
-    if( UbiquityKinematics::twist2Motors(desiredTwist, SMV, desiredMS, params) == false )
+    TurretState ioTS;
+    if( UbiquityKinematics::twist2Motors(desiredTwist, currentMS, ioTS, desiredMS, params) == false )
     {
         cerr << "failed to compute first model" << endl;
         quality = -1;
@@ -71,7 +70,7 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
         //we take a Twist half way beetween last acceptable Twist and last not acceptable Twist
         testedTwist = (highBound - lowBound) / 2;
         //compute motor state related to testedTwist
-        if( UbiquityKinematics::twist2Motors(testedTwist, SMV, desiredMS, params) == false )
+        if( UbiquityKinematics::twist2Motors(testedTwist, currentMS, ioTS, desiredMS, params) == false )
         {
             cerr << "fail to compute in loop model loop=" << nbLoops << " low=" << lowBound.toString() << " high=" << highBound.toString() << endl;
             quality = -2;

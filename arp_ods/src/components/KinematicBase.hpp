@@ -27,6 +27,8 @@ class KinematicBase: public OdsTaskContext
         arp_math::Twist2D attrCurrentTwist;
         arp_math::Twist2D attrAcceptableTwist;
         arp_model::MotorState attrMotorStateCommand;
+        /**Internal model feedback, for debug info only */
+        arp_model::TurretState attrTurretState;
         arp_model::MotorState attrMotorsCurrentState;
         arp_model::UbiquityParams attrParams;
         double attrQuality;

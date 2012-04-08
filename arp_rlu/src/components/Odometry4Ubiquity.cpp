@@ -52,14 +52,15 @@ void Odometry4Ubiquity::updateHook()
     }
 
     //calcul de l'odometrie (oh oui en une ligne c'est beau)
-    if( UbiquityKinematics::motors2Twist(attrMotorState, computedTwist, report, attrParams) == false )
+    if( UbiquityKinematics::motors2Twist(attrTurretState, attrMotorState, computedTwist, report, attrParams) == false )
     {
         LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
     }
 
+    outSlippageDetected.write(report.kernelQuality < propMinKernelQuality);
     if( report.kernelQuality < propMinKernelQuality )
     {
-        LOG(Info) << "Slippage detected ! (kernelQuality=" << report.kernelQuality << ")" << endlog();
+        //LOG(Info) << "Slippage detected ! (kernelQuality=" << report.kernelQuality << ")" << endlog();
     }
 
     //Si le twist calculé est trop petit on envoit 0
@@ -105,6 +106,7 @@ void Odometry4Ubiquity::updateHook()
 
 void Odometry4Ubiquity::createOrocosInterface()
 {
+    addAttribute("attrTurretState", attrTurretState);
     addAttribute("attrMotorState", attrMotorState);
     addAttribute("attrParams", attrParams);
     addAttribute("attrTime", attrTime);
@@ -126,4 +128,6 @@ void Odometry4Ubiquity::createOrocosInterface()
             .doc("T_robot_table_p_robot_r_robot : Twist of robot reference frame relative to table frame, reduced and expressed in robot reference frame.\n It is an EstimatedTwist, so it contains Twist, estimation date (in sec) and covariance matrix.");
     addPort("outKernelQuality",outKernelQuality)
             .doc("Quality of the Kernel when trying to resolve the constraint equations");
+    addPort("outSlippageDetected",outSlippageDetected)
+        .doc("The computation has detection a slippage");
 }

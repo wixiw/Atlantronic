@@ -45,8 +45,6 @@ class AxeState
                 ss  << "\t";
             ss << "torque : " << torque << std::endl;
 
-            ss << std::endl;
-
             return ss.str();
         }
 
@@ -106,17 +104,15 @@ class AxesGroup
             ss  << std::endl;
             for( int i = 0 ; i < slash ; i++ )
                 ss  << "\t";
-            ss << "left : " << left.toString(slash+1) << std::endl;
+            ss << "left : " << left.toString(slash+1);
 
             for( int i = 0 ; i < slash ; i++ )
                 ss  << "\t";
-            ss << "right : " << right.toString(slash+1) << std::endl;
+            ss << "right : " << right.toString(slash+1);
 
             for( int i = 0 ; i < slash ; i++ )
                 ss  << "\t";
-            ss << "rear " << rear.toString(slash+1) << std::endl;
-
-            ss << std::endl;
+            ss << "rear " << rear.toString(slash+1);
 
             return ss.str();
         }
@@ -124,36 +120,36 @@ class AxesGroup
         AxesGroup operator+(const AxesGroup& b) const
         {
             AxesGroup group;
-            group.left = group.left + b.left;
-            group.right = group.right + b.right;
-            group.rear = group.rear + b.rear;
+            group.left = left + b.left;
+            group.right = right + b.right;
+            group.rear = rear + b.rear;
             return group;
         }
 
         AxesGroup operator-(const AxesGroup& b) const
         {
             AxesGroup group;
-            group.left = group.left - b.left;
-            group.right = group.right - b.right;
-            group.rear = group.rear - b.rear;
+            group.left = left - b.left;
+            group.right = right - b.right;
+            group.rear = rear - b.rear;
             return group;
         }
 
         AxesGroup operator*(const double& scal) const
         {
             AxesGroup group;
-            group.left = group.left * scal;
-            group.right = group.right * scal;
-            group.rear = group.rear * scal;
+            group.left = left * scal;
+            group.right = right * scal;
+            group.rear = rear * scal;
             return group;
         }
 
         AxesGroup operator/(const double& scal) const
         {
             AxesGroup group;
-            group.left = group.left / scal;
-            group.right = group.right / scal;
-            group.rear = group.rear / scal;
+            group.left = left / scal;
+            group.right = right / scal;
+            group.rear = rear / scal;
             return group;
         }
 };
@@ -181,14 +177,8 @@ class UbiquityKinematicState
         }
 };
 
-class TurretState: public UbiquityKinematicState
-{
-};
-
-class MotorState: public UbiquityKinematicState
-{
-};
-
+typedef UbiquityKinematicState TurretState;
+typedef UbiquityKinematicState MotorState;
 
 
 class SlippageReport

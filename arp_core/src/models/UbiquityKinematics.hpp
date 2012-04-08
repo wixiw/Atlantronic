@@ -39,16 +39,17 @@ class UbiquityKinematics
          * Le modèle tient compte du pilotage multitour et de l'optimisation à réaliser pour trouver la position de tourelle la plus proche
          * quitte à faire domega *= -1 ou omega += PI
          * Le modèle tient compte des 0 calibrés de tourelle.
+         * Il utilise motors2Turrets en interne sur iMS
          * @param[in] iTS : Etat des tourelles ie positions des tourelles (traction et direction) exprimés en rad et rad/s.
          *               Tient compte des 0 tourelle calibrés
-         * @param[in] iSMV : Vitesses courantes des moteurs de direction (pour prendre en compte le couplage)
+         * @param[in] iMS : mesure courante de l'état des moteurs (pour prendre en compte le couplage)
          * @param[out] oMS : Etat des moteurs ie positions et vitesses des moteurs (traction et direction) exprimee en rad et rad/s
          *               en sortie de réducteur
          * @param[in] iParams : paramètres géométriques du robot
          * @return : true if computation succeed, false otherwise (param inconsistent for instance)
          */
         static bool turrets2Motors(const TurretState & iTS,
-                                const AxesGroup & iSteeringVelocities,
+                                const MotorState & iMS,
                                 MotorState& oMS,
                                 const UbiquityParams & iParams);
 
@@ -87,17 +88,21 @@ class UbiquityKinematics
 
         /**
          * Echainement des modèles direct de tourelle et cinématique
+         * @param oTS : [out] the intermediate computation of Turret State. Should be only used for debug or user feedback
          */
         static bool motors2Twist(const MotorState & iMS,
+                TurretState& oTS,
                 arp_math::Twist2D& oTw,
                 SlippageReport& oSR,
                 const UbiquityParams & iParams);
 
         /**
          * Echainement des indirect modèles direct de tourelle et cinématique
+         * @param oTS : [out] the intermediate computation of Turret State. Should be only used for debug or user feedback
          */
         static bool twist2Motors(const arp_math::Twist2D & iTw,
-                                    const AxesGroup & iSteeringVelocities,
+                                    const MotorState & iMS,
+                                    TurretState& oTS,
                                     MotorState& oMS,
                                     const UbiquityParams & iParams);
 
@@ -108,6 +113,11 @@ class UbiquityKinematics
          * @param[in] speed : la vitesse dont il faut éventuellement changer le signe
          */
         static void normalizeDirection(double& angle, double& speed);
+
+        /**
+         * Idem que normalizeDirection(double& angle, double& speed) mais sur un ensemble de 3 tourelles
+         */
+        static void normalizeDirection(UbiquityKinematicState& state);
 };
 
 } /* namespace arp_model */

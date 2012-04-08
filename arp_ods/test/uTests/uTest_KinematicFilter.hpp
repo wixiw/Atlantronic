@@ -275,11 +275,10 @@ BOOST_AUTO_TEST_CASE( KinematicFilter_InputOk )
     BOOST_CHECK( attrAcceptableTwist == attrCurrentTwist );
     BOOST_CHECK_EQUAL( attrQuality , 1.0 );
 
-    AxesGroup SMV = attrMotorsCurrentState.steering;
-
      //before going to dichotomy, check is the desiredTwist is reachable
      MotorState desiredMS;
-     BOOST_CHECK( UbiquityKinematics::twist2Motors(attrTwistCmd, SMV, desiredMS, attrParams) );
+     TurretState ioTS;
+     BOOST_CHECK( UbiquityKinematics::twist2Motors(attrTwistCmd, attrMotorsCurrentState, ioTS, desiredMS, attrParams) );
      BOOST_CHECK( KinematicFilter::isMotorStateReachable(desiredMS, attrMotorsCurrentState, attrParams, dt) );
 
 }

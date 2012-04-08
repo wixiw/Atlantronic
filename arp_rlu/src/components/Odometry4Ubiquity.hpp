@@ -24,6 +24,8 @@ class Odometry4Ubiquity: public RluTaskContext
         virtual void updateHook();
 
     protected:
+        /**Internal model feedback, for debug info only */
+        arp_model::TurretState attrTurretState;
         /** Buffer local pour les inMotorState */
         arp_model::MotorState attrMotorState;
         /** Buffer local pour les params */
@@ -44,6 +46,8 @@ class Odometry4Ubiquity: public RluTaskContext
         RTT::OutputPort<arp_math::EstimatedTwist2D> outTwist;
         /** Quality of last computed Twist */
         RTT::OutputPort<double> outKernelQuality;
+        /** Slippage detected */
+        RTT::OutputPort<bool> outSlippageDetected;
 
         /**
          * Permet d'ajouter port/operations à l'interface Orocos.

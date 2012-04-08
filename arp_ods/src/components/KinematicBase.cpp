@@ -48,10 +48,9 @@ void KinematicBase::getInputs()
 
 void KinematicBase::run()
 {
-    // INPUTS
-    AxesGroup turretVelocities;
     double dt = 0.010; //TODO faire mieux ! mettre un vrai temps calculé depuis la derniere execution
 
+    /*
     //filter the input command to get a reachable command that we are sure the hardware will be capable to do
     if( KinematicFilter::filterTwist(attrTwistCmd, attrCurrentTwist,
                                     attrMotorsCurrentState, attrParams,
@@ -59,10 +58,11 @@ void KinematicBase::run()
     {
         //TODO remettre en erreur
         LOG(Info) << "Failed to filter desired twist to an acceptable twist" << endlog();
-    }
+    }*/
+    attrAcceptableTwist = attrTwistCmd;
 
     //compute the motor commands to do the filtered twist command
-    if( UbiquityKinematics::twist2Motors(attrAcceptableTwist, turretVelocities, attrMotorStateCommand, attrParams) == false )
+    if( UbiquityKinematics::twist2Motors(attrAcceptableTwist, attrMotorsCurrentState, attrTurretState, attrMotorStateCommand, attrParams) == false )
     {
         //TODO remettre en erreur
         LOG(Info) << "Failed to compute Turrets Cmd" << endlog();
@@ -93,6 +93,7 @@ void KinematicBase::createOrocosInterface()
     addAttribute("attrTwistCmd",attrTwistCmd);
     addAttribute("attrCurrentTwist",attrCurrentTwist);
     addAttribute("attrAcceptableTwist",attrAcceptableTwist);
+    addAttribute("attrTurretState", attrTurretState);
     addAttribute("attrMotorStateCommand",attrMotorStateCommand);
     addAttribute("attrMotorsCurrentState",attrMotorsCurrentState);
     addAttribute("attrParams",attrParams);
