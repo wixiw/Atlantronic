@@ -26,7 +26,7 @@ function Syncronizator:connect()
 	Syncronizator:connectMotorMeasure("Velocity");
 	Syncronizator:connectMotorMeasure("Torque");
 
-Deployer:connect(me..".inCanSync", 	"Can1.outNodesClock", cp);
+	Deployer:connect(me..".inCanSync", 	"Can1.outClock", cp);
 
 	Syncronizator:check(me)
 end

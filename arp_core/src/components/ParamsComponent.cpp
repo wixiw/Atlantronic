@@ -26,13 +26,14 @@ bool ParamsComponent::configureHook()
 {
     if( !ARDTaskContext::configureHook() )
     {
+        LOG(Error) << "ARDTaskContext failed to configure" << endlog();
         goto fail;
     }
 
     if( ! propSavedParams.check() )
     {
-        goto fail;
         LOG(Error) << "Loading parameters are not consistent." << endlog();
+        goto fail;
     }
 
     goto success;

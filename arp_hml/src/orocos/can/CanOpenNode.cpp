@@ -127,9 +127,9 @@ bool CanOpenNode::configureHook()
         LOG(Error) << "failed to configure : Controller TaskContext not found (is it a peer ?)" << endlog();
         goto failedUnregister;
     }
-    else if( !inMasterClock.connectTo(tc->getPort("outNodesClock")) )
+    else if( !inMasterClock.connectTo(tc->getPort("outClock")) )
     {
-        LOG(Error) << "failed to configure : inMasterClock failed to connect to outNodesClock" << endlog();
+        LOG(Error) << "failed to configure : inMasterClock failed to connect to outClock" << endlog();
         goto failedUnregister;
     }
 

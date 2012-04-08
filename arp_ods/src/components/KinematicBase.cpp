@@ -35,9 +35,11 @@ void KinematicBase::updateHook()
 void KinematicBase::getInputs()
 {
     //buffering ports
+    EstimatedTwist2D inTwist;
     inMotorState.readNewest(attrMotorsCurrentState);
     inTwistCmd.readNewest(attrTwistCmd);
-    inCurrentTwist.readNewest(attrCurrentTwist);
+    inCurrentTwist.readNewest(inTwist);
+    attrCurrentTwist = inTwist.toTwist();
     inParams.readNewest(attrParams);
 
     //initialisation of attribute to something realistic just in case
@@ -55,13 +57,15 @@ void KinematicBase::run()
                                     attrMotorsCurrentState, attrParams,
                                     dt, attrAcceptableTwist, attrQuality) == false )
     {
-        LOG(Error) << "Failed to filter desired twist to an acceptable twist" << endlog();
+        //TODO remettre en erreur
+        LOG(Info) << "Failed to filter desired twist to an acceptable twist" << endlog();
     }
 
     //compute the motor commands to do the filtered twist command
     if( UbiquityKinematics::twist2Motors(attrAcceptableTwist, turretVelocities, attrMotorStateCommand, attrParams) == false )
     {
-        LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
+        //TODO remettre en erreur
+        LOG(Info) << "Failed to compute Turrets Cmd" << endlog();
     }
 }
 

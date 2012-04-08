@@ -32,10 +32,10 @@ class Odometry4Ubiquity: public RluTaskContext
         double attrTime;
 
 
-        /** La vitesse min des moteurs (sans quoi le robot est considéré comme étant à l'arrêt complet)*/
-        double propMinMotorVelocity;
+        /** Norme minimale du Twist résultant des calculs d'ocométrie, en mm/s */
+        double propMinVelocity;
 
-        /** The KernelQuality when getting the report fromthe model must be larger than this property, else we spawn an error */
+        /** The KernelQuality when getting the report fromthe model must be larger than this property, else we spawn an error*/
         double propMinKernelQuality;
 
         RTT::InputPort<double> inTime;

@@ -19,7 +19,7 @@ ORO_LIST_COMPONENT_TYPE( arp_rlu::Odometry4Ubiquity )
 Odometry4Ubiquity::Odometry4Ubiquity(const std::string& name):
     RluTaskContext(name),
     propMinKernelQuality(100.0),
-    propMinMotorVelocity(0.01)
+    propMinVelocity(0.001)
 {
     createOrocosInterface();
 }
@@ -27,6 +27,9 @@ Odometry4Ubiquity::Odometry4Ubiquity(const std::string& name):
 void Odometry4Ubiquity::updateHook()
 {
     ARDTaskContext::updateHook();
+    Twist2D computedTwist;
+    EstimatedTwist2D measuredTwist;
+    SlippageReport report;
 
     if( RTT::NewData != inTime.readNewest(attrTime))
     {
@@ -49,25 +52,27 @@ void Odometry4Ubiquity::updateHook()
     }
 
     //calcul de l'odometrie (oh oui en une ligne c'est beau)
-    Twist2D computedTwist;
-    SlippageReport report;
-
-    if( fabs(attrMotorState.leftDrivingVelocity) > propMinMotorVelocity
-            || fabs(attrMotorState.rightDrivingVelocity) > propMinMotorVelocity
-            || fabs(attrMotorState.rearDrivingVelocity) > propMinMotorVelocity  )
+    if( UbiquityKinematics::motors2Twist(attrMotorState, computedTwist, report, attrParams) == false )
     {
-        if( UbiquityKinematics::motors2Twist(attrMotorState, computedTwist, report, attrParams) == false )
-        {
-            LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
-        }
-
-        if( report.kernelQuality < propMinKernelQuality )
-        {
-            LOG(Info) << "Slippage detected ! (kernelQuality=" << report.kernelQuality << ")" << endlog();
-        }
+        LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
     }
 
-    EstimatedTwist2D measuredTwist = computedTwist;
+    if( report.kernelQuality < propMinKernelQuality )
+    {
+        LOG(Info) << "Slippage detected ! (kernelQuality=" << report.kernelQuality << ")" << endlog();
+    }
+
+    //Si le twist calculé est trop petit on envoit 0
+    if( fabs(computedTwist.speedNorm()) < propMinVelocity )
+    {
+        measuredTwist = EstimatedTwist2D();
+    }
+    else
+    {
+        measuredTwist = computedTwist;
+    }
+
+
 
     // En attendant de propager les erreurs des moteurs, on définit arbitrairement (cf maquette python) des covariances :
     // sigmaXOdo = np.max(  [params.simu_cfg["minSigmaTransOdoVelocity"], params.simu_cfg["percentSigmaTransOdoVelocity"] * np.fabs(vxOdo)])
@@ -104,7 +109,7 @@ void Odometry4Ubiquity::createOrocosInterface()
     addAttribute("attrParams", attrParams);
     addAttribute("attrTime", attrTime);
 
-    addProperty("propMinMotorVelocity",propMinMotorVelocity)
+    addProperty("propMinVelocity",propMinVelocity)
         .doc("La vitesse minimale considérée pour les moteurs de traction (en dessous de quoi le robot est estimé comme étant à l'arrêt complet)");
     addProperty("propMinKernelQuality",propMinKernelQuality)
         .doc("");

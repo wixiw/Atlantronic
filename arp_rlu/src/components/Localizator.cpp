@@ -28,12 +28,10 @@ Localizator::Localizator(const std::string& name)
 
 bool Localizator::configureHook()
 {
-    EstimatedPose2D pose;
-
     if( !RluTaskContext::configureHook() )
         goto fail;
 
-    if(  !initialize(pose) )
+    if(  !ooInitialize(0,0,0) )
     {
         LOG(Error) << "failed to initialize kfloc" << endlog();
         goto fail;
@@ -106,8 +104,9 @@ void Localizator::updateHook()
     outPose.write(p);
 }
 
-bool Localizator::initialize(EstimatedPose2D pose)
+bool Localizator::ooInitialize(double x, double y, double theta)
 {
+    EstimatedPose2D pose(x,y,theta);
     double initDate = arp_math::getTime();
     pose.date( initDate );
     
@@ -138,9 +137,11 @@ void Localizator::createOrocosInterface()
     addPort("outTwist",outTwist)
             .doc("Last estimation of T_robot_table_p_robot_r_robot.\n Cette estimée est datée et dispose d'une matrice de covariance.");
 
-    addOperation("ooInitialize",&Localizator::initialize, this, OwnThread)
+    addOperation("ooInitialize",&Localizator::ooInitialize, this, OwnThread)
                 .doc("Initialisation de la Localisation")
-                .arg("pose","EstimatedPose2D : pose initiale, datée, avec sa covariance");
+                .arg("x","m")
+                .arg("y","m")
+                .arg("theta","rad");
 
     addOperation("ooSetParams",&Localizator::setParams, this, OwnThread)
                 .doc("")

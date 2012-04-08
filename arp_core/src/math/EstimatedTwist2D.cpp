@@ -58,3 +58,9 @@ void EstimatedTwist2D::date(double _date)
 {
     estimationDate = _date;
 }
+
+Twist2D EstimatedTwist2D::toTwist()
+{
+    Twist2D t(vx(),vy(),vh());
+    return t;
+}

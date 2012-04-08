@@ -154,7 +154,7 @@ namespace arp_hml
         /**
          * clock port, each node must listed this port to execute
          */
-        OutputPort<double> outNodesClock;
+        OutputPort<double> outClock;
 
         /**
          * The routing stuff is delegated to this class

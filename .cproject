@@ -187,10 +187,33 @@
 	<storageModule moduleId="refreshScope" versionNumber="1">
 		<resource resourceType="PROJECT" workspacePath="/ard"/>
 	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.2102803918;cdt.managedbuild.tool.gnu.cpp.compiler.base.1956915137;cdt.managedbuild.tool.gnu.cpp.compiler.input.916184697">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.228070318;cdt.managedbuild.tool.gnu.c.compiler.base.1829666111;cdt.managedbuild.tool.gnu.c.compiler.input.399882191">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.1014738129;cdt.managedbuild.tool.gnu.cpp.compiler.base.93061302;cdt.managedbuild.tool.gnu.cpp.compiler.input.410649785">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.1014738129;cdt.managedbuild.tool.gnu.c.compiler.base.674158016;cdt.managedbuild.tool.gnu.c.compiler.input.531509558">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.2102803918;cdt.managedbuild.tool.gnu.c.compiler.base.1756728366;cdt.managedbuild.tool.gnu.c.compiler.input.295243193">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.228070318;cdt.managedbuild.tool.gnu.cpp.compiler.base.640232574;cdt.managedbuild.tool.gnu.cpp.compiler.input.1393136034">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+		</scannerConfigBuildInfo>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 		<buildTargets>
 			<target name="clean" path="arp_core" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
+				<buildArguments/>
 				<buildTarget>clean</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
@@ -217,8 +240,17 @@
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
+			<target name="install rlu on beta" path="arp_rlu" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>/opt/ard/default/script/install_target.sh</buildCommand>
+				<buildArguments>arp_rlu beta</buildArguments>
+				<buildTarget/>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
 			<target name="clean" path="arp_hml" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
+				<buildArguments/>
 				<buildTarget>clean</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
@@ -240,7 +272,6 @@
 			</target>
 			<target name="clean" path="arp_ihm" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
-				<buildArguments/>
 				<buildTarget>clean</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
@@ -260,6 +291,14 @@
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
+			<target name="make arp_master" path="arp_master" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>rosmake</buildCommand>
+				<buildArguments>arp_master</buildArguments>
+				<buildTarget>make arp_master</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
 			<target name="make all" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>rosmake</buildCommand>
 				<buildArguments>ard</buildArguments>
@@ -274,17 +313,8 @@
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
-			<target name="make arp_master" path="arp_master" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>rosmake</buildCommand>
-				<buildArguments>arp_master</buildArguments>
-				<buildTarget>make arp_master</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>false</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
 			<target name="clean" path="arp_ods" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
-				<buildArguments/>
 				<buildTarget>clean</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
@@ -300,33 +330,10 @@
 			<target name="install ods on beta" path="arp_ods" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>/opt/ard/default/script/install_target.sh</buildCommand>
 				<buildArguments>arp_ods beta</buildArguments>
-				<buildTarget/>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
 		</buildTargets>
 	</storageModule>
-	<storageModule moduleId="scannerConfiguration">
-		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.2102803918;cdt.managedbuild.tool.gnu.cpp.compiler.base.1956915137;cdt.managedbuild.tool.gnu.cpp.compiler.input.916184697">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.228070318;cdt.managedbuild.tool.gnu.c.compiler.base.1829666111;cdt.managedbuild.tool.gnu.c.compiler.input.399882191">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.1014738129;cdt.managedbuild.tool.gnu.cpp.compiler.base.93061302;cdt.managedbuild.tool.gnu.cpp.compiler.input.410649785">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.1014738129;cdt.managedbuild.tool.gnu.c.compiler.base.674158016;cdt.managedbuild.tool.gnu.c.compiler.input.531509558">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.2102803918;cdt.managedbuild.tool.gnu.c.compiler.base.1756728366;cdt.managedbuild.tool.gnu.c.compiler.input.295243193">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.228070318;cdt.managedbuild.tool.gnu.cpp.compiler.base.640232574;cdt.managedbuild.tool.gnu.cpp.compiler.input.1393136034">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
-		</scannerConfigBuildInfo>
-	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>

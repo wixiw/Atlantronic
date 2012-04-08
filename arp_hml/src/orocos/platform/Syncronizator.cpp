@@ -15,7 +15,9 @@ using namespace arp_hml;
 ORO_LIST_COMPONENT_TYPE( arp_hml::Syncronizator )
 
 Syncronizator::Syncronizator(const std::string name):
-    HmlTaskContext(name)
+    HmlTaskContext(name),
+    attrNbError(0.0),
+    propVerbose(false)
 {
     createOrocosInterface();
 }
@@ -24,7 +26,8 @@ void Syncronizator::eventCanSyncCB(RTT::base::PortInterface* portInterface)
 {
      inCanSync.readNewest(m_syncTime);
      m_syncCount = 0;
-     LOG(Info) << "portCanCB " << m_syncTime << endlog();
+     if( propVerbose )
+         LOG(Info) << "portCanCB " << m_syncTime << endlog();
 }
 
 void Syncronizator::eventPortCB(RTT::base::PortInterface* portInterface)
@@ -70,7 +73,8 @@ void Syncronizator::eventPortCB(RTT::base::PortInterface* portInterface)
         //pour additionner le compteur avec le nouveau masque on fait un ou bit à bit de sorte qu'il
         //y aura à 1 à la ième colonne du mot binaire m_syncCount et les autres colonnes sont inchangées.
         m_syncCount |= 1<<i;
-        LOG(Info) << "portCB " << name << " counter is " << std::hex << m_syncCount << std::dec << endlog();
+        if( propVerbose )
+            LOG(Info) << "portCB " << name << " counter is " << std::hex << m_syncCount << std::dec << endlog();
     }
     else
     {
@@ -81,15 +85,15 @@ void Syncronizator::eventPortCB(RTT::base::PortInterface* portInterface)
 
 void Syncronizator::updateHook()
 {
-    //m_eventCbMutex.lock();
     if( m_syncCount == 0b111111 )
     {
-        LOG(Info) << "updateHook" << endlog();
         outMotorMeasures.write(readInputs());
         outClock.write(m_syncTime);
-    }
+        m_syncCount = 0;
 
-    m_eventCbMutex.unlock();
+        if( propVerbose )
+            LOG(Info) << "updateHook" << endlog();
+    }
 }
 
 MotorState Syncronizator::readInputs()
@@ -122,6 +126,9 @@ MotorState Syncronizator::readInputs()
 void Syncronizator::createOrocosInterface()
 {
     addAttribute("attrNbError",attrNbError);
+
+    addProperty("propVerbose",propVerbose)
+            .doc("Use this to have detailed report about synchronisation");
 
     addPort("outClock",outClock)
                 .doc("");

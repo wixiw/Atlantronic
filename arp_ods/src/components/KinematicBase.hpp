@@ -34,7 +34,7 @@ class KinematicBase: public OdsTaskContext
         /** Clock port which trigger our activity. contains the Twist command we ha to try to do on the robot*/
         RTT::InputPort<arp_math::Twist2D> inTwistCmd;
         /** Measure of the current robot Twist */
-        RTT::InputPort<arp_math::Twist2D> inCurrentTwist;
+        RTT::InputPort<arp_math::EstimatedTwist2D> inCurrentTwist;
         /** Measures of the motor state. In a way it is redundant with inCurrentTwist but as the state does'nt
          match the same size, I prefer getting them from HML instead of computed it from inTwist. And to finish wit
          we need internally Turret speeds anyway to compute couplings so it doesn't cost much to take the entire state */

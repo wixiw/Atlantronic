@@ -27,6 +27,9 @@ class EstimatedTwist2D : public Twist2D
     void cov(Eigen::Matrix<double,3,3>) ;
     void date(double);
 
+    //create a simple Twist similar to us
+    Twist2D toTwist();
+
     private:
     Eigen::Matrix<double,3,3> covariance;
     double estimationDate;

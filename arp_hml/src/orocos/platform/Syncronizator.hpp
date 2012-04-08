@@ -30,6 +30,11 @@ class Syncronizator: public arp_hml::HmlTaskContext
          */
         int attrNbError;
 
+        /**
+         * Set this to true to have detailled log of synchronisation
+         */
+        bool propVerbose;
+
         /** Ce port est publié à la fin de la syncronisation, des composants qui sont connectés aux ports de données peuvent
          * se trigger en eventPort sur outClock. Il contient la date des mesures sur le CAN (date de l'envoit du message SYNC)
          */
@@ -105,13 +110,6 @@ class Syncronizator: public arp_hml::HmlTaskContext
          * on a eut toutes les sync si m_syncCount = 0b111111
          */
         int m_syncCount;
-
-    private:
-        /**
-         * Use this mutex to avoid corruption during different callback.
-         * I am not sure it is necessary but who knows... better to bouble check than to fail
-         */
-        boost::mutex m_eventCbMutex;
 };
 
 } /* namespace arp_hml */

@@ -27,6 +27,11 @@ function KinematicBaseDeployer:connect()
 	HmlMonitor:connect("LeftSteering","inPositionCmd",me,"outLeftSteeringPositionCmd");
 	HmlMonitor:connect("RightSteering","inPositionCmd",me,"outRightSteeringPositionCmd");
 	HmlMonitor:connect("RearSteering","inPositionCmd",me,"outRearSteeringPositionCmd");
+	
+	RluMonitor = Deployer:getPeer("RluMonitor");
+	--on s'ajoute en peer a HmlMonitor pour pouvoir faire les connections
+	Deployer:addPeer("RluMonitor", me)
+	RluMonitor:connect(me,"inCurrentTwist","Localizator","outTwist");
 end
 
 

@@ -52,7 +52,7 @@ CanOpenController::CanOpenController(const std::string& name) :
             "This port is connected to the CanFestival thread to populate attrCurrentNMTState");
     addPort("inBootUpReceived", inBootUpReceived) .doc(
             "his port is connected to the CanFestival thread to dispatch the boot event to registred Device Components");
-    addPort("outNodesClock", outNodesClock) .doc("");
+    addPort("outClock", outClock) .doc("");
     addEventPort("inSync", inSync) .doc(
             "wakes up the component on SYNC message");
 
@@ -209,7 +209,7 @@ void CanOpenController::updateHook()
     //wake up slave activities of all registered nodes after a certain amount of time to wait for PDOs
     usleep(propPdoMaxAwaitedDelay*1E6);
 
-    outNodesClock.write(attrSyncTime);
+    outClock.write(attrSyncTime);
 }
 
 void CanOpenController::cleanupHook()
