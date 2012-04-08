@@ -98,10 +98,10 @@ class Twist2D
         /** Opérateur d'égalité.
          * \param _other la Twist2D à comparer.
          * \returns vrai si les Twist2D sont exactement identiques
-         * \remarks la comparaison est basée sur la double comparaison des
-         * composantes de la partie translation et de l'angle de la partie
-         * rotation. La précision utilisée est ici celle des double. */
+         * \remarks la comparaison est basée sur la distance nulle this->toDistance(other) == 0 */
         bool operator ==(Twist2D _other) const;
+
+        bool operator !=(Twist2D other) const;
 
         /**
          * Retourne le Twist sous forme de Vecteur 3 (omega,vx,vy)

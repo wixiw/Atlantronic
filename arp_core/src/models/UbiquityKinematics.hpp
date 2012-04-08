@@ -44,7 +44,10 @@ class UbiquityKinematics
          * @param[in] iParams : paramètres géométriques du robot
          * @return : true if computation succeed, false otherwise (param inconsistent for instance)
          */
-        static bool turrets2Motors(const TurretState & iTS, const SteeringMotorVelocities & iSMV, MotorState& oMS, const UbiquityParams & iParams);
+        static bool turrets2Motors(const TurretState & iTS,
+                                const AxesGroup & iSteeringVelocities,
+                                MotorState& oMS,
+                                const UbiquityParams & iParams);
 
         /**
          * Modèle cinématique direct de la base.
@@ -59,7 +62,10 @@ class UbiquityKinematics
          * @param[in] iParams : paramètres géométriques du robot
          * @return : true if computation succeed, false otherwise (param inconsistent for instance)
          */
-        static bool turrets2Twist(const TurretState & iTS, arp_math::Twist2D& oTw, SlippageReport& oSR, const UbiquityParams & iParams);
+        static bool turrets2Twist(const TurretState & iTS,
+                                    arp_math::Twist2D& oTw,
+                                    SlippageReport& oSR,
+                                    const UbiquityParams & iParams);
 
         /**
          * Modèle cinématique indirect de la base
@@ -75,10 +81,21 @@ class UbiquityKinematics
         static bool twist2Turrets(const arp_math::Twist2D & iTw, TurretState& oTS, const UbiquityParams & iParams);
 
 
+        /**
+         * Echainement des modèles direct de tourelle et cinématique
+         */
+        static bool motors2Twist(const MotorState & iMS,
+                arp_math::Twist2D& oTw,
+                SlippageReport& oSR,
+                const UbiquityParams & iParams);
 
-        static bool motors2Twist(const MotorState & iMS, arp_math::Twist2D& oTw, SlippageReport& oSR, const UbiquityParams & iParams);
-        static bool twist2Motors(const arp_math::Twist2D & iTw, const SteeringMotorVelocities & iSMV, MotorState& oMS, const UbiquityParams & iParams);
-
+        /**
+         * Echainement des indirect modèles direct de tourelle et cinématique
+         */
+        static bool twist2Motors(const arp_math::Twist2D & iTw,
+                                    const AxesGroup & iSteeringVelocities,
+                                    MotorState& oMS,
+                                    const UbiquityParams & iParams);
 
         /**
          * Les tourelles permettent de recouvrir l'état de possibles de plusieurs façons lorsqu'elles sont pilotés en marche

@@ -17,26 +17,26 @@ BOOST_AUTO_TEST_CASE( UK_MotorTurret_ZeroToZeroTest )
     arp_model::UbiquityParams params;
     arp_model::MotorState motorsCmd;
     arp_model::TurretState turretCmd;
-    arp_model::SteeringMotorVelocities steeringMotorVelocities;
+    arp_model::AxesGroup steeringMotorVelocities;
     bool res;
 
     res = arp_model::UbiquityKinematics::motors2Turrets(motorsCmd, turretCmd, params);
 
     BOOST_CHECK_EQUAL( res , true);
-    BOOST_CHECK_EQUAL( turretCmd.leftDrivingVelocity,    0 );
-    BOOST_CHECK_EQUAL( turretCmd.rightDrivingVelocity,   0 );
-    BOOST_CHECK_EQUAL( turretCmd.rearDrivingVelocity,    0 );
-    BOOST_CHECK_EQUAL( turretCmd.leftSteeringPosition,   0 );
-    BOOST_CHECK_EQUAL( turretCmd.rightSteeringPosition,  0 );
-    BOOST_CHECK_EQUAL( turretCmd.rearSteeringPosition,   0 );
+    BOOST_CHECK_EQUAL( turretCmd.driving.left.velocity,    0 );
+    BOOST_CHECK_EQUAL( turretCmd.driving.right.velocity,   0 );
+    BOOST_CHECK_EQUAL( turretCmd.driving.rear.velocity,    0 );
+    BOOST_CHECK_EQUAL( turretCmd.steering.left.position,   0 );
+    BOOST_CHECK_EQUAL( turretCmd.steering.right.position,  0 );
+    BOOST_CHECK_EQUAL( turretCmd.steering.rear.position,   0 );
 
     res = arp_model::UbiquityKinematics::turrets2Motors(turretCmd, steeringMotorVelocities, motorsCmd, params);
 
     BOOST_CHECK_EQUAL( res , true);
-    BOOST_CHECK_EQUAL( motorsCmd.leftDrivingVelocity,     0 );
-    BOOST_CHECK_EQUAL( motorsCmd.rightDrivingVelocity,    0 );
-    BOOST_CHECK_EQUAL( motorsCmd.rearDrivingVelocity,     0 );
-    BOOST_CHECK_EQUAL( motorsCmd.leftSteeringPosition,    0 );
-    BOOST_CHECK_EQUAL( motorsCmd.rightSteeringPosition,   0 );
-    BOOST_CHECK_EQUAL( motorsCmd.rearSteeringPosition,    0 );
+    BOOST_CHECK_EQUAL( motorsCmd.driving.left.velocity,     0 );
+    BOOST_CHECK_EQUAL( motorsCmd.driving.right.velocity,    0 );
+    BOOST_CHECK_EQUAL( motorsCmd.driving.rear.velocity,     0 );
+    BOOST_CHECK_EQUAL( motorsCmd.steering.left.position,    0 );
+    BOOST_CHECK_EQUAL( motorsCmd.steering.right.position,   0 );
+    BOOST_CHECK_EQUAL( motorsCmd.steering.rear.position,    0 );
 }

@@ -129,12 +129,12 @@ Twist2D& Twist2D::operator-=(const Twist2D& _other)
 
 bool Twist2D::operator ==(Twist2D other) const
 {
-    //le test de translation est fait à la main sinon on perd le const... visiblement eigen ne note pas ses == const... c'est moche
-    return (
-            this->vh() == other.vh()
-            && this->vx() == other.vx()
-            && this->vy() == other.vy()
-            );
+    return distanceTo(other,Vector3(1,1,1))==0.0;
+}
+
+bool Twist2D::operator !=(Twist2D other) const
+{
+    return distanceTo(other,Vector3(1,1,1))!=0.0;
 }
 
 Vector3 Twist2D::getTVector() const

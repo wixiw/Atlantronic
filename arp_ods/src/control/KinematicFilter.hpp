@@ -42,8 +42,6 @@ class KinematicFilter
                 arp_math::Twist2D & acceptableTwist,
                 double & quality);
 
-    protected:
-
         /**
          * Check if the current motor state command is reachable
          * @param desiredState : the stat we try to reach already containing the solution for angle.

@@ -3,310 +3,125 @@
  *
  *  Created on: April 6 2012
  *      Author: ard
+ *
+ *      Ce fichier contient toutes les structures utilisées par les modèles pour ragroupes les informations d'état.
  */
 
 #ifndef UBIQUITYSTATES_HPP_
 #define UBIQUITYSTATES_HPP_
 
+#include <iostream>
+#include <sstream>
+
 namespace arp_model
 {
 
-struct SteeringMotorPositions
+class AxeState
 {
-        double leftSteeringPosition;
-        double rightSteeringPosition;
-        double rearSteeringPosition;
+    public:
+        double position;
+        double velocity;
+        double torque;
 
-        SteeringMotorPositions():
-            leftSteeringPosition(0.0),
-            rightSteeringPosition(0.0),
-            rearSteeringPosition(0.0)
+        AxeState():
+            position(0.0),
+            velocity(0.0),
+            torque(0.0)
         {}
+
+        std::string toString(int slash = 0) const
+        {
+            std::stringstream ss;
+            ss  << std::endl;
+            for( int i = 0 ; i < slash ; i++ )
+                ss  << "\t";
+            ss << "position : " << position << std::endl;
+
+            for( int i = 0 ; i < slash ; i++ )
+                ss  << "\t";
+            ss << "velocity : " << velocity << std::endl;
+
+            for( int i = 0 ; i < slash ; i++ )
+                ss  << "\t";
+            ss << "torque : " << torque << std::endl;
+
+            ss << std::endl;
+
+            return ss.str();
+        }
 };
 
-struct DrivingMotorPositions
+class AxesGroup
 {
-        double leftDrivingPosition;
-        double rightDrivingPosition;
-        double rearDrivingPosition;
+    public:
+        AxeState left;
+        AxeState right;
+        AxeState rear;
 
-        DrivingMotorPositions():
-            leftDrivingPosition(0.0),
-            rightDrivingPosition(0.0),
-            rearDrivingPosition(0.0)
+        AxesGroup():
+            left(),
+            right(),
+            rear()
         {}
+
+        std::string toString(int slash = 0) const
+        {
+            std::stringstream ss;
+            ss  << std::endl;
+            for( int i = 0 ; i < slash ; i++ )
+                ss  << "\t";
+            ss << "left : " << left.toString(slash+1) << std::endl;
+
+            for( int i = 0 ; i < slash ; i++ )
+                ss  << "\t";
+            ss << "right : " << right.toString(slash+1) << std::endl;
+
+            for( int i = 0 ; i < slash ; i++ )
+                ss  << "\t";
+            ss << "rear " << rear.toString(slash+1) << std::endl;
+
+            ss << std::endl;
+
+            return ss.str();
+        }
 };
 
-struct SteeringMotorVelocities
+/** Don't use this struct, prefer the two TurretState and Motor state below */
+class UbiquityKinematicState
 {
-        double leftSteeringVelocity;
-        double rightSteeringVelocity;
-        double rearSteeringVelocity;
+    public:
+        AxesGroup steering;
+        AxesGroup driving;
 
-        SteeringMotorVelocities():
-            leftSteeringVelocity(0.0),
-            rightSteeringVelocity(0.0),
-            rearSteeringVelocity(0.0)
-        {}
-};
-
-struct DrivingMotorVelocities
-{
-        double leftDrivingVelocity;
-        double rightDrivingVelocity;
-        double rearDrivingVelocity;
-
-        DrivingMotorVelocities():
-            leftDrivingVelocity(0.0),
-            rightDrivingVelocity(0.0),
-            rearDrivingVelocity(0.0)
-        {}
-};
-
-struct SteeringMotorTorques
-{
-        double leftSteeringTorque;
-        double rightSteeringTorque;
-        double rearSteeringTorque;
-
-        SteeringMotorTorques():
-            leftSteeringTorque(0.0),
-            rightSteeringTorque(0.0),
-            rearSteeringTorque(0.0)
-        {}
-};
-
-struct DrivingMotorTorques
-{
-        double leftDrivingTorque;
-        double rightDrivingTorque;
-        double rearDrivingTorque;
-
-        DrivingMotorTorques():
-            leftDrivingTorque(0.0),
-            rightDrivingTorque(0.0),
-            rearDrivingTorque(0.0)
-        {}
-};
-
-struct MotorState
-{
-        double leftDrivingPosition;
-        double rightDrivingPosition;
-        double rearDrivingPosition;
-        double leftSteeringPosition;
-        double rightSteeringPosition;
-        double rearSteeringPosition;
-        double leftDrivingVelocity;
-        double rightDrivingVelocity;
-        double rearDrivingVelocity;
-        double leftSteeringVelocity;
-        double rightSteeringVelocity;
-        double rearSteeringVelocity;
-        double leftDrivingTorque;
-        double rightDrivingTorque;
-        double rearDrivingTorque;
-        double leftSteeringTorque;
-        double rightSteeringTorque;
-        double rearSteeringTorque;
-
-        MotorState():
-            leftDrivingPosition(0.0),
-            rightDrivingPosition(0.0),
-            rearDrivingPosition(0.0),
-            leftSteeringPosition(0.0),
-            rightSteeringPosition(0.0),
-            rearSteeringPosition(0.0),
-            leftDrivingVelocity(0.0),
-            rightDrivingVelocity(0.0),
-            rearDrivingVelocity(0.0),
-            leftSteeringVelocity(0.0),
-            rightSteeringVelocity(0.0),
-            rearSteeringVelocity(0.0),
-            leftDrivingTorque(0.0),
-            rightDrivingTorque(0.0),
-            rearDrivingTorque(0.0),
-            leftSteeringTorque(0.0),
-            rightSteeringTorque(0.0),
-            rearSteeringTorque(0.0)
+        UbiquityKinematicState():
+            steering(),
+            driving()
         {}
 
-        /*
         std::string toString() const
         {
             std::stringstream ss;
-            ss << "Driving : "
-                   << "(" << leftDrivingMotorPosition << ","
-                   << rightDrivingMotorPosition << ","
-                   << rearDrivingMotorPosition << ") m" << ","
-                   << "(" << leftDrivingMotorVelocity << ","
-                   << rightDrivingMotorVelocity << ","
-                   << rearDrivingMotorVelocity << ") m/s" << ","
-                   << "(" << leftDrivingMotorTorque << ","
-                   << rightDrivingMotorTorque << ","
-                   << rearDrivingMotorTorque << ") Nm" << " - "
-               << "Steering : "
-                   << "(" << leftSteeringMotorPosition << ","
-                   << rightSteeringMotorPosition << ","
-                   << rearSteeringMotorPosition << ") rad" << ","
-                   << "(" << leftSteeringMotorVelocity << ","
-                   << rightSteeringMotorVelocity << ","
-                   << rearSteeringMotorVelocity << ") rad/s" << ","
-                   << "(" << leftSteeringMotorTorque << ","
-                   << rightSteeringMotorTorque << ","
-                   << rearSteeringMotorTorque << ") Nm";
+            ss  << std::endl;
+            ss << "Driving : " << driving.toString(1)
+                << "Steering : " << steering.toString(1);
+            ss << std::endl;
             return ss.str();
-        }*/
+        }
+};
+
+class TurretState: public UbiquityKinematicState
+{
+};
+
+class MotorState: public UbiquityKinematicState
+{
 };
 
 
 
-struct SteeringTurretPositions
+class SlippageReport
 {
-        double leftSteeringPosition;
-        double rightSteeringPosition;
-        double rearSteeringPosition;
-
-        SteeringTurretPositions():
-            leftSteeringPosition(0.0),
-            rightSteeringPosition(0.0),
-            rearSteeringPosition(0.0)
-        {}
-};
-
-
-struct DrivingTurretPositions
-{
-        double leftDrivingPosition;
-        double rightDrivingPosition;
-        double rearDrivingPosition;
-
-        DrivingTurretPositions():
-            leftDrivingPosition(0.0),
-            rightDrivingPosition(0.0),
-            rearDrivingPosition(0.0)
-        {}
-};
-
-
-struct SteeringTurretVelocities
-{
-        double leftSteeringVelocity;
-        double rightSteeringVelocity;
-        double rearSteeringVelocity;
-
-        SteeringTurretVelocities():
-            leftSteeringVelocity(0.0),
-            rightSteeringVelocity(0.0),
-            rearSteeringVelocity(0.0)
-        {}
-};
-
-struct DrivingTurretVelocities
-{
-        double leftDrivingVelocity;
-        double rightDrivingVelocity;
-        double rearDrivingVelocity;
-
-        DrivingTurretVelocities():
-            leftDrivingVelocity(0.0),
-            rightDrivingVelocity(0.0),
-            rearDrivingVelocity(0.0)
-        {}
-};
-
-struct SteeringTurretTorques
-{
-        double leftSteeringTorque;
-        double rightSteeringTorque;
-        double rearSteeringTorque;
-
-        SteeringTurretTorques():
-            leftSteeringTorque(0.0),
-            rightSteeringTorque(0.0),
-            rearSteeringTorque(0.0)
-        {}
-};
-
-struct DrivingTurretTorques
-{
-        double leftDrivingTorque;
-        double rightDrivingTorque;
-        double rearDrivingTorque;
-
-        DrivingTurretTorques():
-            leftDrivingTorque(0.0),
-            rightDrivingTorque(0.0),
-            rearDrivingTorque(0.0)
-        {}
-};
-
-struct TurretState
-{
-        double leftDrivingPosition;
-        double rightDrivingPosition;
-        double rearDrivingPosition;
-        double leftSteeringPosition;
-        double rightSteeringPosition;
-        double rearSteeringPosition;
-        double leftDrivingVelocity;
-        double rightDrivingVelocity;
-        double rearDrivingVelocity;
-        double leftSteeringVelocity;
-        double rightSteeringVelocity;
-        double rearSteeringVelocity;
-        double leftDrivingTorque;
-        double rightDrivingTorque;
-        double rearDrivingTorque;
-        double leftSteeringTorque;
-        double rightSteeringTorque;
-        double rearSteeringTorque;
-
-        TurretState():
-            leftDrivingPosition(0.0),
-            rightDrivingPosition(0.0),
-            rearDrivingPosition(0.0),
-            leftSteeringPosition(0.0),
-            rightSteeringPosition(0.0),
-            rearSteeringPosition(0.0),
-            leftDrivingVelocity(0.0),
-            rightDrivingVelocity(0.0),
-            rearDrivingVelocity(0.0),
-            leftSteeringVelocity(0.0),
-            rightSteeringVelocity(0.0),
-            rearSteeringVelocity(0.0),
-            leftDrivingTorque(0.0),
-            rightDrivingTorque(0.0),
-            rearDrivingTorque(0.0),
-            leftSteeringTorque(0.0),
-            rightSteeringTorque(0.0),
-            rearSteeringTorque(0.0)
-
-        {}
-
-        /*
-        std::string toString() const
-        {
-            std::stringstream ss;
-            ss << "Driving : " << "(" << leftDrivingTurretPosition << ","
-               << rightDrivingTurretPosition << ","
-               << rearDrivingTurretPosition << ") m" << ","
-               << "(" << leftDrivingTurretVelocity << ","
-               << rightDrivingTurretVelocity << ","
-               << rearDrivingTurretVelocity << ") m/s" << " - "
-               << "Steering : " << "(" << leftSteeringTurretPosition << ","
-               << rightSteeringTurretPosition << ","
-               << rearSteeringTurretPosition << ") rad" << ","
-               << "(" << leftSteeringTurretVelocity << ","
-               << rightSteeringTurretVelocity << ","
-               << rearSteeringTurretVelocity << ") rad/s";
-            return ss.str();
-        }*/
-};
-
-
-struct SlippageReport
-{
+    public:
         double kernelQuality;
 };
 } /* namespace arp_model */

@@ -49,7 +49,7 @@ void KinematicBase::getInputs()
 void KinematicBase::run()
 {
     // INPUTS
-    SteeringMotorVelocities turretVelocities;
+    AxesGroup turretVelocities;
     double dt = 0.010; //TODO faire mieux ! mettre un vrai temps calculé depuis la derniere execution
 
     //filter the input command to get a reachable command that we are sure the hardware will be capable to do
@@ -71,12 +71,12 @@ void KinematicBase::run()
 
 void KinematicBase::setOutputs()
 {
-    outLeftDrivingVelocityCmd.write(attrMotorStateCommand.leftDrivingVelocity);
-    outRightDrivingVelocityCmd.write(attrMotorStateCommand.rightDrivingVelocity);
-    outRearDrivingVelocityCmd.write(attrMotorStateCommand.rearDrivingVelocity);
-    outLeftSteeringPositionCmd.write(attrMotorStateCommand.leftSteeringPosition);
-    outRightSteeringPositionCmd.write(attrMotorStateCommand.rightSteeringPosition);
-    outRearSteeringPositionCmd.write(attrMotorStateCommand.rearSteeringPosition);
+    outLeftDrivingVelocityCmd.write(attrMotorStateCommand.driving.left.velocity);
+    outRightDrivingVelocityCmd.write(attrMotorStateCommand.driving.right.velocity);
+    outRearDrivingVelocityCmd.write(attrMotorStateCommand.driving.rear.velocity);
+    outLeftSteeringPositionCmd.write(attrMotorStateCommand.steering.left.position);
+    outRightSteeringPositionCmd.write(attrMotorStateCommand.steering.right.position);
+    outRearSteeringPositionCmd.write(attrMotorStateCommand.steering.rear.position);
     outFiltrationFeedback.write(attrQuality);
     outFilteredTwist.write(attrAcceptableTwist);
 }
