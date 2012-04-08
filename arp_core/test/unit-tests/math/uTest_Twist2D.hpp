@@ -50,6 +50,38 @@ BOOST_AUTO_TEST_CASE( Twist2_SpeedAngle )
     BOOST_CHECK_CLOSE( h.speedAngle() , -3*M_PI/4, 1E-6);
 }
 
+BOOST_AUTO_TEST_CASE( Twist2_distance )
+{
+    Twist2D a(1,0);
+    Twist2D b(0,1);
+    Twist2D c(0,0,1);
+    Twist2D d(2,-1,2);
+    Twist2D zero;
+    Vector3 coef1(1,0,0);
+    Vector3 coef2(0,1,0);
+    Vector3 coef3(0,0,1);
+    Vector3 coef(1,1,1);
+    BOOST_CHECK_EQUAL( a.distanceTo(zero,coef) , 1 );
+    BOOST_CHECK_EQUAL( a.distanceTo(zero,2*coef) , 2 );
+    BOOST_CHECK_EQUAL( a.distanceTo(zero,coef1) , 0 );
+    BOOST_CHECK_EQUAL( a.distanceTo(zero,coef2) , 1 );
+    BOOST_CHECK_EQUAL( a.distanceTo(zero,coef3) , 0 );
+
+    BOOST_CHECK_EQUAL( b.distanceTo(zero,coef) , 1 );
+    BOOST_CHECK_EQUAL( b.distanceTo(zero,2*coef) , 2 );
+    BOOST_CHECK_EQUAL( b.distanceTo(zero,coef1) , 0 );
+    BOOST_CHECK_EQUAL( b.distanceTo(zero,coef2) , 0 );
+    BOOST_CHECK_EQUAL( b.distanceTo(zero,coef3) , 1 );
+
+    BOOST_CHECK_EQUAL( c.distanceTo(zero,coef) , 1 );
+    BOOST_CHECK_EQUAL( c.distanceTo(zero,2*coef) , 2 );
+    BOOST_CHECK_EQUAL( c.distanceTo(zero,coef1) , 1 );
+    BOOST_CHECK_EQUAL( c.distanceTo(zero,coef2) , 0 );
+    BOOST_CHECK_EQUAL( c.distanceTo(zero,coef3) , 0 );
+
+    BOOST_CHECK_EQUAL( d.distanceTo(zero,coef) , 3 );
+}
+
 BOOST_AUTO_TEST_CASE( Twist2_Equal )
 {
     Twist2D a(1,2.3,-1.7);

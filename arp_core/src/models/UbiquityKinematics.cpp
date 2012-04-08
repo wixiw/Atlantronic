@@ -29,7 +29,6 @@ bool UbiquityKinematics::motors2Turrets(const MotorState & iMS,
     if( !iParams.check() )
         return false;
 
-    //TODO modulo ? je pense pas
     oTS.steering.left.position = iMS.steering.left.position*iParams.getTurretRatio()
             + iParams.getLeftTurretZero();
     oTS.steering.right.position = iMS.steering.right.position*iParams.getTurretRatio()
@@ -44,31 +43,61 @@ bool UbiquityKinematics::motors2Turrets(const MotorState & iMS,
     oTS.driving.rear.velocity = iParams.getRearWheelDiameter()/2
             *(iMS.driving.rear.velocity*iParams.getTractionRatio() + iMS.steering.rear.velocity*iParams.getTurretRatio());
 
+    //normalisations
+    normalizeDirection(oTS.steering.left.position, oTS.driving.left.velocity);
+    normalizeDirection(oTS.steering.right.position, oTS.driving.right.velocity);
+    normalizeDirection(oTS.steering.rear.position, oTS.driving.rear.velocity);
+
     return true;
 }
 
 bool UbiquityKinematics::turrets2Motors(const TurretState & iTS,
-                                        const AxesGroup & iSteeringVelocities,
+                                        const AxesGroup & iSteeringState,
                                         MotorState& oMS,
                                         const UbiquityParams & iParams)
 {
     if( !iParams.check() )
         return false;
 
-    //TODO modulo ? je pense pas
-    oMS.steering.left.position = (iTS.steering.left.position - iParams.getLeftTurretZero())
-            /iParams.getTurretRatio();
-    oMS.steering.right.position = (iTS.steering.right.position - iParams.getRightTurretZero())
-            /iParams.getTurretRatio();
-    oMS.steering.rear.position = (iTS.steering.rear.position - iParams.getRearTurretZero())
-            /iParams.getTurretRatio();
+    //convertion sur les axes moteurs en sortie de réducteur.
+    oMS.steering.left.position = iTS.steering.left.position/iParams.getTurretRatio();
+    oMS.steering.right.position = iTS.steering.right.position/iParams.getTurretRatio();
+    oMS.steering.rear.position = iTS.steering.rear.position/iParams.getTurretRatio();
 
-    oMS.driving.left.velocity = (2*iTS.driving.left.velocity/iParams.getLeftWheelDiameter() - iSteeringVelocities.left.velocity*iParams.getTurretRatio())
+    oMS.driving.left.velocity = (2*iTS.driving.left.velocity/iParams.getLeftWheelDiameter() - iSteeringState.left.velocity*iParams.getTurretRatio())
             /iParams.getTractionRatio();
-    oMS.driving.right.velocity = (2*iTS.driving.right.velocity/iParams.getRightWheelDiameter() - iSteeringVelocities.right.velocity*iParams.getTurretRatio())
+    oMS.driving.right.velocity = (2*iTS.driving.right.velocity/iParams.getRightWheelDiameter() - iSteeringState.right.velocity*iParams.getTurretRatio())
             /iParams.getTractionRatio();
-    oMS.driving.rear.velocity = (2*iTS.driving.rear.velocity/iParams.getRearWheelDiameter() - iSteeringVelocities.rear.velocity*iParams.getTurretRatio())
+    oMS.driving.rear.velocity = (2*iTS.driving.rear.velocity/iParams.getRearWheelDiameter() - iSteeringState.rear.velocity*iParams.getTurretRatio())
             /iParams.getTractionRatio();
+
+    //normalisation pour travailler dans [-PI/2;PI/2]*R
+    normalizeDirection(oMS.steering.left.position, oMS.driving.left.velocity);
+    normalizeDirection(oMS.steering.right.position, oMS.driving.right.velocity);
+    normalizeDirection(oMS.steering.rear.position, oMS.driving.rear.velocity);
+
+    //optimisation des consignes,gestion du pilotage mumtitour et gestion du zero
+
+    //calcul de la position courante des moteurs en supprimant le multi tour et en ajoutant le zero
+    // currenPosModuloPi est dans -Pi/Pi
+    AxesGroup currentPosModuloPi;
+    currentPosModuloPi.left.position = betweenMinusPiAndPlusPi(iSteeringState.left.position - iParams.getLeftTurretZero());
+    currentPosModuloPi.right.position = betweenMinusPiAndPlusPi(iSteeringState.right.position - iParams.getRightTurretZero());
+    currentPosModuloPi.rear.position = betweenMinusPiAndPlusPi(iSteeringState.rear.position - iParams.getRearTurretZero());
+
+    //calcul des delta de position commandé
+    AxesGroup deltaCmd;
+    deltaCmd.left.position = oMS.steering.left.position - currentPosModuloPi.left.position;
+    deltaCmd.right.position = oMS.steering.right.position - currentPosModuloPi.right.position;
+    deltaCmd.rear.position = oMS.steering.rear.position - currentPosModuloPi.rear.position;
+
+    //normalisation des delta entre -PI/2 et PI/2 et changement de signe des vitesses au besoin
+    normalizeDirection(deltaCmd.left.position, oMS.driving.left.velocity);
+    normalizeDirection(deltaCmd.right.position, oMS.driving.right.velocity);
+    normalizeDirection(deltaCmd.rear.position, oMS.driving.rear.velocity);
+
+    //ajout a la position brute du moteur le delta de commande, et paf ca fait la consigne a envoyer au prochain step
+    oMS.steering = iSteeringState + deltaCmd;
 
     return true;
 }
@@ -148,14 +177,14 @@ bool UbiquityKinematics::twist2Turrets(const Twist2D & iTw, TurretState& oTS, co
     oTS.steering.rear.position = Trear.speedAngle();
 
     //recuperation des vitesses
-    oTS.driving.rear.velocity = Tleft.speedNorm();
+    oTS.driving.left.velocity = Tleft.speedNorm();
     oTS.driving.right.velocity = Tright.speedNorm();
     oTS.driving.rear.velocity = Trear.speedNorm();
 
     //normalisations
-    //normalizeDirection(oTS.leftSteeringPosition, oTS.leftDrivingVelocity);
-    //normalizeDirection(oTS.rightSteeringPosition, oTS.rightDrivingVelocity);
-    //normalizeDirection(oTS.rearSteeringPosition, oTS.rearDrivingVelocity);
+    normalizeDirection(oTS.steering.left.position, oTS.driving.left.velocity);
+    normalizeDirection(oTS.steering.right.position, oTS.driving.right.velocity);
+    normalizeDirection(oTS.steering.rear.position, oTS.driving.rear.velocity);
 
     return true;
 }
@@ -196,6 +225,7 @@ void UbiquityKinematics::normalizeDirection(double& angle, double& speed)
             angle += M_PI;
         else
             angle -= M_PI;
+
         speed *= -1;
     }
 }

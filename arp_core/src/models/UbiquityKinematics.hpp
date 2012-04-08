@@ -22,7 +22,7 @@ class UbiquityKinematics
         /**
          * Modèle cinématique direct de tourelle
          * Convertit le couple (domega,omega) exprimé sur les axes des motoréducteurs
-         * en un couple (vitesse, angle) exprimé sur le centre de la roue de la tourelle
+         * en un couple (vitesse, angle) exprimé sur le centre de la roue de la tourelle avec v pouvant être négatif et angle dans [-PI/2;PI/2]
          * @param[in] iMS : Etat des moteurs ie positions et vitesses des moteurs (traction et direction) exprimee en rad et rad/s
          *               en sortie de réducteur
          * @param[out] oTS : Etat des tourelles ie positions des tourelles (traction et direction) exprimés en rad et rad/s.
@@ -36,6 +36,9 @@ class UbiquityKinematics
          * Modèle cinématique inverse de tourelle
          * Convertit le couple (vitesse, angle) exprimé sur le centre de la roue de la tourelle
          * en un couple (domega,omega) exprimé sur les axes des motoréducteurs
+         * Le modèle tient compte du pilotage multitour et de l'optimisation à réaliser pour trouver la position de tourelle la plus proche
+         * quitte à faire domega *= -1 ou omega += PI
+         * Le modèle tient compte des 0 calibrés de tourelle.
          * @param[in] iTS : Etat des tourelles ie positions des tourelles (traction et direction) exprimés en rad et rad/s.
          *               Tient compte des 0 tourelle calibrés
          * @param[in] iSMV : Vitesses courantes des moteurs de direction (pour prendre en compte le couplage)
@@ -71,7 +74,8 @@ class UbiquityKinematics
          * Modèle cinématique indirect de la base
          * Convertit un Twist (Twist du repère de référence du chassis par rapport au sol projeté et réduit dans le repère de référence du chassis)
          * en consignes articulaires pour les tourelles.
-         * à destination du modèle de tourelle.
+         * Le couple(phi,v) de la position/vitesse de chaque tourelle vérifié en sortie : v pouvant etre négatif et phi dasn [-PI/2;PI/2]
+         * Charge au modèle de tourelle d'optimiser les déplacements rotation/traction
          * @param[in] iTw : Twist du repère de référence du chassis par rapport au sol projeté et réduit dans le repère de référence du chassis.
          * @param[out] oTS : Etat des tourelles ie positions des tourelles (traction et direction).
          *               Tient compte des 0 tourelle calibrés

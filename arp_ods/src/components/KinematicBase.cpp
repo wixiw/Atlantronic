@@ -67,6 +67,13 @@ void KinematicBase::run()
         //TODO remettre en erreur
         LOG(Info) << "Failed to compute Turrets Cmd" << endlog();
     }
+
+    //gestion du cas pas de vitesse pour ne pas bouger les tourelles
+    //TODO mettre en propriete
+    if( attrAcceptableTwist.speedNorm() <= 0.001 )
+    {
+        attrMotorStateCommand.steering = attrMotorsCurrentState.steering;
+    }
 }
 
 void KinematicBase::setOutputs()

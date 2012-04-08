@@ -78,16 +78,16 @@ class Twist2D
         std::string toString() const;
 
         /** Opérateur d'addition de deux Twist2*/
-        Twist2D operator+(const Twist2D& b);
+        Twist2D operator+(const Twist2D& b) const;
 
         /** Opérateur de soustraction de deux Twist2*/
-        Twist2D operator-(const Twist2D& rhs);
+        Twist2D operator-(const Twist2D& rhs) const;
 
         /** Opérateur de multiplication sclaire*/
-        Twist2D operator*(const double & scalaire);
+        Twist2D operator*(const double & scalaire) const;
 
         /** Opérateur de division sclaire*/
-        Twist2D operator/(const  double & scalaire);
+        Twist2D operator/(const  double & scalaire) const;
 
         /** Soustraction sur place */
         Twist2D& operator-=(const Twist2D& _other);
@@ -98,7 +98,9 @@ class Twist2D
         /** Opérateur d'égalité.
          * \param _other la Twist2D à comparer.
          * \returns vrai si les Twist2D sont exactement identiques
-         * \remarks la comparaison est basée sur la distance nulle this->toDistance(other) == 0 */
+         * \remarks la comparaison est basée sur la double comparaison des
+         * composantes de la partie translation et de l'angle de la partie
+         * rotation. La précision utilisée est ici celle des double. */
         bool operator ==(Twist2D _other) const;
 
         bool operator !=(Twist2D other) const;

@@ -89,22 +89,22 @@ std::string Twist2D::toString() const
     return s.str();
 }
 
-Twist2D Twist2D::operator+(const Twist2D& b)
+Twist2D Twist2D::operator+(const Twist2D& b) const
 {
     return Twist2D( vx()+b.vx(), vy()+b.vy() , vh()+b.vh() );
 }
 
-Twist2D Twist2D::operator-(const Twist2D& b)
+Twist2D Twist2D::operator-(const Twist2D& b) const
 {
     return Twist2D( vx()-b.vx(), vy()-b.vy() , vh()-b.vh() );
 }
 
-Twist2D Twist2D::operator*(const double& scalaire)
+Twist2D Twist2D::operator*(const double& scalaire) const
 {
     return Twist2D( vx()*scalaire, vy()*scalaire , vh()*scalaire );
 }
 
-Twist2D Twist2D::operator/(const double& scalaire)
+Twist2D Twist2D::operator/(const double& scalaire) const
 {
     return Twist2D( vx()/scalaire, vy()/scalaire , vh()/scalaire );
 }
@@ -129,12 +129,22 @@ Twist2D& Twist2D::operator-=(const Twist2D& _other)
 
 bool Twist2D::operator ==(Twist2D other) const
 {
-    return distanceTo(other,Vector3(1,1,1))==0.0;
+    //le test de translation est fait à la main sinon on perd le const... visiblement eigen ne note pas ses == const... c'est moche
+    return (
+            this->vh() == other.vh()
+            && this->vx() == other.vx()
+            && this->vy() == other.vy()
+            );
 }
 
 bool Twist2D::operator !=(Twist2D other) const
 {
-    return distanceTo(other,Vector3(1,1,1))!=0.0;
+    //le test de translation est fait à la main sinon on perd le const... visiblement eigen ne note pas ses == const... c'est moche
+    return (
+            this->vh() != other.vh()
+            || this->vx() != other.vx()
+            || this->vy() != other.vy()
+            );
 }
 
 Vector3 Twist2D::getTVector() const
@@ -152,8 +162,11 @@ Twist2D Twist2D::transport(Pose2D p) const
     return Twist2D(res);
 }
 
-double Twist2D::distanceTo(Twist2D twist, Vector3 coef) const
+double Twist2D::distanceTo(Twist2D other, Vector3 coef) const
 {
-    return sqrt(coef(0)*coef(0)*vh()*vh() + coef(1)*coef(1)*vx()*vx() + coef(2)*coef(2)*vy()*vy());
+    double dh2 = (vh()-other.vh())*(vh()-other.vh());
+    double dx2 = (vx()-other.vx())*(vx()-other.vx());
+    double dy2 = (vy()-other.vy())*(vy()-other.vy());
+    return sqrt(coef(0)*coef(0)*dh2 + coef(1)*coef(1)*dx2 + coef(2)*coef(2)*dy2);
 }
 

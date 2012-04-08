@@ -159,12 +159,12 @@ double Pose2D::angleTo(Pose2D pose) const
 }
 
 
-Pose2D Pose2D::operator+(const Pose2D& b)
+Pose2D Pose2D::operator+(const Pose2D& b) const
 {
 	return Pose2D( this->translation() + b.translation() , this->angle() + b.angle() );
 }
 
-Pose2D Pose2D::operator-(const Pose2D& b)
+Pose2D Pose2D::operator-(const Pose2D& b) const
 {
 	return Pose2D( this->translation() - b.translation() , this->angle() - b.angle() );
 }

@@ -143,8 +143,8 @@ class Pose2D
          * rotation. La précision utilisée est ici celle des double. */
         bool operator ==(Pose2D _other) const;
 
-        Pose2D operator+(const Pose2D& other);
-        Pose2D operator-(const Pose2D& other);
+        Pose2D operator+(const Pose2D& other) const;
+        Pose2D operator-(const Pose2D& other) const;
 };
 
 std::ostream operator <<(std::ostream os, arp_math::Pose2D _pose);

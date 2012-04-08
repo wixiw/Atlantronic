@@ -49,6 +49,42 @@ class AxeState
 
             return ss.str();
         }
+
+        AxeState operator+(const AxeState& b) const
+        {
+            AxeState res;
+            res.position = position + b.position;
+            res.velocity = velocity + b.velocity;
+            res.torque = torque + b.torque;
+            return res;
+        }
+
+        AxeState operator-(const AxeState& b) const
+        {
+            AxeState res;
+            res.position = position - b.position;
+            res.velocity = velocity - b.velocity;
+            res.torque = torque - b.torque;
+            return res;
+        }
+
+        AxeState operator*(const double& scal) const
+        {
+            AxeState res;
+            res.position = position * scal;
+            res.velocity = velocity * scal;
+            res.torque = torque * scal;
+            return res;
+        }
+
+        AxeState operator/(const double& scal) const
+        {
+            AxeState res;
+            res.position = position / scal;
+            res.velocity = velocity / scal;
+            res.torque = torque / scal;
+            return res;
+        }
 };
 
 class AxesGroup
@@ -83,6 +119,42 @@ class AxesGroup
             ss << std::endl;
 
             return ss.str();
+        }
+
+        AxesGroup operator+(const AxesGroup& b) const
+        {
+            AxesGroup group;
+            group.left = group.left + b.left;
+            group.right = group.right + b.right;
+            group.rear = group.rear + b.rear;
+            return group;
+        }
+
+        AxesGroup operator-(const AxesGroup& b) const
+        {
+            AxesGroup group;
+            group.left = group.left - b.left;
+            group.right = group.right - b.right;
+            group.rear = group.rear - b.rear;
+            return group;
+        }
+
+        AxesGroup operator*(const double& scal) const
+        {
+            AxesGroup group;
+            group.left = group.left * scal;
+            group.right = group.right * scal;
+            group.rear = group.rear * scal;
+            return group;
+        }
+
+        AxesGroup operator/(const double& scal) const
+        {
+            AxesGroup group;
+            group.left = group.left / scal;
+            group.right = group.right / scal;
+            group.rear = group.rear / scal;
+            return group;
         }
 };
 

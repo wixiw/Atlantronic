@@ -73,11 +73,11 @@ class UbiquityParams
 
 
     protected:
-        /** Position du zero de la tourelle en rad lorsque le moteur est sur le top tour*/
+        /** Position du moteur de direction en rad lorsque le moteur est sur le top tour. ATTENTION : peut être en dehors de -PI/PI*/
         double m_leftTurretZero;
-        /** Position du zero de la tourelle en rad lorsque le moteur est sur le top tour*/
+        /** Position du moteur de direction en rad lorsque le moteur est sur le top tour. ATTENTION : peut être en dehors de -PI/PI*/
         double m_rightTurretZero;
-        /** Position du zero de la tourelle en rad lorsque le moteur est sur le top tour*/
+        /** Position du moteur de direction en rad lorsque le moteur est sur le top tour. ATTENTION : peut être en dehors de -PI/PI*/
         double m_rearTurretZero;
 
         /** Position de la tourelle avant gauche sur le chassis en (m,m,rad) */
