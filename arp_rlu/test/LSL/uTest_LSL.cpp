@@ -5,6 +5,8 @@
  *      Author: Boris
  */
 
+#include <ros/package.h>
+
 #include "LSL/Logger.hpp"
 
 using namespace arp_core::log;

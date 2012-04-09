@@ -20,6 +20,7 @@ BOOST_AUTO_TEST_SUITE( unittest_KFLocalizator_Trivial )
 
 BOOST_AUTO_TEST_CASE( test_Static )
 {
+    std::string p = ros::package::getPath("arp_rlu");
 
     const double transPrecisionAgainstGroundTruth = 0.001;
     const double rotPrecisionAgainstGroundTruth = deg2rad(0.1);
@@ -42,7 +43,7 @@ BOOST_AUTO_TEST_CASE( test_Static )
 
 
     vjson::JsonDocument docParams;
-    std::string kflParamsFileName = "../ressource/unittest/KFL/KFLocalizator/static_1/kfl_params.json";
+    std::string kflParamsFileName = p + "/ressource/unittest/KFL/KFLocalizator/static_1/kfl_params.json";
     BOOST_CHECK( docParams.parse( kflParamsFileName.c_str() ) );
     float sigmaInitialPosition  = docParams.getFloatData( docParams.getChild( docParams.root(), "sigmaInitialPosition") );
     float sigmaInitialHeading   = docParams.getFloatData( docParams.getChild( docParams.root(), "sigmaInitialHeading") );
@@ -99,7 +100,7 @@ BOOST_AUTO_TEST_CASE( test_Static )
     //*******************************************
 
     vjson::JsonDocument docInit;
-    std::string initialPositionFileName = "../ressource/unittest/KFL/KFLocalizator/static_1/initial_position.json";
+    std::string initialPositionFileName = p + "/ressource/unittest/KFL/KFLocalizator/static_1/initial_position.json";
     BOOST_CHECK( docInit.parse(initialPositionFileName.c_str() ) );
     float trueX            = docInit.getFloatData( docInit.getChild( docInit.root(), "trueX") );
     float trueY            = docInit.getFloatData( docInit.getChild( docInit.root(), "trueY") );
@@ -211,6 +212,7 @@ BOOST_AUTO_TEST_CASE( test_Static )
 
 BOOST_AUTO_TEST_CASE( test_Bad_InitTime )
 {
+    std::string p = ros::package::getPath("arp_rlu");
 
     const double transPrecisionAgainstGroundTruth = 0.001;
     const double rotPrecisionAgainstGroundTruth = deg2rad(0.1);
@@ -237,7 +239,7 @@ BOOST_AUTO_TEST_CASE( test_Bad_InitTime )
 
 
     vjson::JsonDocument docParams;
-    std::string kflParamsFileName = "../ressource/unittest/KFL/KFLocalizator/static_1/kfl_params.json";
+    std::string kflParamsFileName = p + "/ressource/unittest/KFL/KFLocalizator/static_1/kfl_params.json";
     BOOST_CHECK( docParams.parse( kflParamsFileName.c_str() ) );
     float sigmaInitialPosition  = docParams.getFloatData( docParams.getChild( docParams.root(), "sigmaInitialPosition") );
     float sigmaInitialHeading   = docParams.getFloatData( docParams.getChild( docParams.root(), "sigmaInitialHeading") );
@@ -294,7 +296,7 @@ BOOST_AUTO_TEST_CASE( test_Bad_InitTime )
     //*******************************************
 
     vjson::JsonDocument docInit;
-    std::string initialPositionFileName = "../ressource/unittest/KFL/KFLocalizator/static_1/initial_position.json";
+    std::string initialPositionFileName = p + "/ressource/unittest/KFL/KFLocalizator/static_1/initial_position.json";
     BOOST_CHECK( docInit.parse(initialPositionFileName.c_str() ) );
     float trueX            = docInit.getFloatData( docInit.getChild( docInit.root(), "trueX") );
     float trueY            = docInit.getFloatData( docInit.getChild( docInit.root(), "trueY") );
@@ -372,6 +374,7 @@ BOOST_AUTO_TEST_CASE( test_Bad_InitTime )
 
 BOOST_AUTO_TEST_CASE( test_V_constante )
 {
+    std::string p = ros::package::getPath("arp_rlu");
 
     const double transPrecisionAgainstGroundTruth = 0.001;
     const double rotPrecisionAgainstGroundTruth = deg2rad(0.1);
@@ -398,7 +401,7 @@ BOOST_AUTO_TEST_CASE( test_V_constante )
 
 
     vjson::JsonDocument docParams;
-    std::string kflParamsFileName = "../ressource/unittest/KFL/KFLocalizator/static_1/kfl_params.json";
+    std::string kflParamsFileName = p + "/ressource/unittest/KFL/KFLocalizator/static_1/kfl_params.json";
     BOOST_CHECK( docParams.parse( kflParamsFileName.c_str() ) );
     float sigmaInitialPosition  = docParams.getFloatData( docParams.getChild( docParams.root(), "sigmaInitialPosition") );
     float sigmaInitialHeading   = docParams.getFloatData( docParams.getChild( docParams.root(), "sigmaInitialHeading") );
@@ -455,7 +458,7 @@ BOOST_AUTO_TEST_CASE( test_V_constante )
     //*******************************************
 
     vjson::JsonDocument docInit;
-    std::string initialPositionFileName = "../ressource/unittest/KFL/KFLocalizator/static_1/initial_position.json";
+    std::string initialPositionFileName = p + "/ressource/unittest/KFL/KFLocalizator/static_1/initial_position.json";
     BOOST_CHECK( docInit.parse(initialPositionFileName.c_str() ) );
     float trueX            = docInit.getFloatData( docInit.getChild( docInit.root(), "trueX") );
     float trueY            = docInit.getFloatData( docInit.getChild( docInit.root(), "trueY") );
@@ -568,6 +571,7 @@ BOOST_AUTO_TEST_CASE( test_V_constante )
 
 BOOST_AUTO_TEST_CASE( test_acc )
 {
+    std::string p = ros::package::getPath("arp_rlu");
 
     const double transPrecisionAgainstGroundTruth = 0.001;
     const double rotPrecisionAgainstGroundTruth = deg2rad(0.1);
@@ -598,7 +602,7 @@ BOOST_AUTO_TEST_CASE( test_acc )
 
 
     vjson::JsonDocument docParams;
-    std::string kflParamsFileName = "../ressource/unittest/KFL/KFLocalizator/static_1/kfl_params.json";
+    std::string kflParamsFileName = p + "/ressource/unittest/KFL/KFLocalizator/static_1/kfl_params.json";
     BOOST_CHECK( docParams.parse( kflParamsFileName.c_str() ) );
     float sigmaInitialPosition  = docParams.getFloatData( docParams.getChild( docParams.root(), "sigmaInitialPosition") );
     float sigmaInitialHeading   = docParams.getFloatData( docParams.getChild( docParams.root(), "sigmaInitialHeading") );
@@ -655,7 +659,7 @@ BOOST_AUTO_TEST_CASE( test_acc )
     //*******************************************
 
     vjson::JsonDocument docInit;
-    std::string initialPositionFileName = "../ressource/unittest/KFL/KFLocalizator/static_1/initial_position.json";
+    std::string initialPositionFileName = p + "/ressource/unittest/KFL/KFLocalizator/static_1/initial_position.json";
     BOOST_CHECK( docInit.parse(initialPositionFileName.c_str() ) );
     float trueX            = docInit.getFloatData( docInit.getChild( docInit.root(), "trueX") );
     float trueY            = docInit.getFloatData( docInit.getChild( docInit.root(), "trueY") );

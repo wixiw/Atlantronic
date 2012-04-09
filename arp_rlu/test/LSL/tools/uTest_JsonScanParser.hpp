@@ -9,6 +9,7 @@
 
 #include "LSL/Logger.hpp"
 
+
 using namespace arp_math;
 using namespace Eigen;
 using namespace arp_rlu;
@@ -20,7 +21,8 @@ BOOST_AUTO_TEST_SUITE( unittest_JsonScanParser )
 
 BOOST_AUTO_TEST_CASE( test_Scan_Parsing )
 {
-    arp_rlu::lsl::JsonScanParser parser("../ressource/unittest/BFL/JsonScanParser/scan.json");
+    std::string p = ros::package::getPath("arp_rlu");
+    arp_rlu::lsl::JsonScanParser parser(p + "/ressource/unittest/BFL/JsonScanParser/scan.json");
 
     lsl::LaserScan ls;
     bool res = parser.getScan(ls);
@@ -46,7 +48,8 @@ BOOST_AUTO_TEST_CASE( test_Scan_Parsing )
 
 BOOST_AUTO_TEST_CASE( test_Scan_Writing )
 {
-    arp_rlu::lsl::JsonScanParser parser("../ressource/unittest/BFL/JsonScanParser/scan.json");
+    std::string p = ros::package::getPath("arp_rlu");
+    arp_rlu::lsl::JsonScanParser parser(p + "/ressource/unittest/BFL/JsonScanParser/scan.json");
 
     lsl::LaserScan scan;
     bool res = parser.getScan(scan);

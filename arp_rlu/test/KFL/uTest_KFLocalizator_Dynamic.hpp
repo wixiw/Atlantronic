@@ -23,6 +23,8 @@ namespace unittest_KFLocalizator_Dynamic
 
     void doTest(unsigned int xpIndex)
     {
+        std::string p = ros::package::getPath("arp_rlu");
+
         std::stringstream xpSS;
         xpSS << xpIndex;
         std::string xpName = xpSS.str();
@@ -57,7 +59,7 @@ namespace unittest_KFLocalizator_Dynamic
 
 
         vjson::JsonDocument docParams;
-        std::string kflParamsFileName = "../ressource/unittest/KFL/KFLocalizator/dynamic_" + xpName + "/kfl_params.json";
+        std::string kflParamsFileName = p + "/ressource/unittest/KFL/KFLocalizator/dynamic_" + xpName + "/kfl_params.json";
         BOOST_CHECK( docParams.parse( kflParamsFileName.c_str() ) );
         float sigmaInitialPosition  = docParams.getFloatData( docParams.getChild( docParams.root(), "sigmaInitialPosition") );
         float sigmaInitialHeading   = docParams.getFloatData( docParams.getChild( docParams.root(), "sigmaInitialHeading") );
@@ -118,7 +120,7 @@ namespace unittest_KFLocalizator_Dynamic
         //*******************************************
 
         vjson::JsonDocument docInit;
-        std::string initialPositionFileName = "../ressource/unittest/KFL/KFLocalizator/dynamic_" + xpName + "/initial_position.json";
+        std::string initialPositionFileName = p + "/ressource/unittest/KFL/KFLocalizator/dynamic_" + xpName + "/initial_position.json";
         BOOST_CHECK( docInit.parse(initialPositionFileName.c_str() ) );
         float estimInitialXPosition = docInit.getFloatData( docInit.getChild( docInit.root(), "estimInitialXPosition") );
         float estimInitialYPosition = docInit.getFloatData( docInit.getChild( docInit.root(), "estimInitialYPosition") );
@@ -164,7 +166,7 @@ namespace unittest_KFLocalizator_Dynamic
         //********       Load Timeline      *********
         //*******************************************
         vjson::JsonDocument docTimeline;
-        std::string timelineFileName = "../ressource/unittest/KFL/KFLocalizator/dynamic_" + xpName + "/time_line.json";
+        std::string timelineFileName = p + "/ressource/unittest/KFL/KFLocalizator/dynamic_" + xpName + "/time_line.json";
         BOOST_CHECK( docTimeline.parse(timelineFileName.c_str() ) );
         const unsigned int N = docTimeline.getIntegerData( docTimeline.getChild( docTimeline.root(), "nb" ) );
         Eigen::VectorXd times(N);
@@ -199,7 +201,7 @@ namespace unittest_KFLocalizator_Dynamic
 
                 vjson::JsonDocument docInit;
                 std::stringstream truePosFileName;
-                truePosFileName << "../ressource/unittest/KFL/KFLocalizator/dynamic_" << xpName << "/t_" << std::setprecision(6) << time << "_true_position.json";
+                truePosFileName << p + "/ressource/unittest/KFL/KFLocalizator/dynamic_" << xpName << "/t_" << std::setprecision(6) << time << "_true_position.json";
                 BOOST_CHECK( docInit.parse(truePosFileName.str().c_str() ) );
                 trueX = docInit.getFloatData( docInit.getChild( docInit.root(), "x") );
                 trueY = docInit.getFloatData( docInit.getChild( docInit.root(), "y") );
@@ -220,7 +222,7 @@ namespace unittest_KFLocalizator_Dynamic
 
                 vjson::JsonDocument docOdoVel;
                 std::stringstream odoVelFileName;
-                odoVelFileName << "../ressource/unittest/KFL/KFLocalizator/dynamic_" << xpName << "/t_" << time << "_odo_velocity.json";
+                odoVelFileName << p + "/ressource/unittest/KFL/KFLocalizator/dynamic_" << xpName << "/t_" << time << "_odo_velocity.json";
                 BOOST_CHECK( docOdoVel.parse(odoVelFileName.str().c_str()) );
                 BOOST_CHECK_CLOSE( time , docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "t") ), 1.f);
 
@@ -254,7 +256,7 @@ namespace unittest_KFLocalizator_Dynamic
 
                 vjson::JsonDocument docOdoEstim;
                 std::stringstream odoEstimFileName;
-                odoEstimFileName << "../ressource/unittest/KFL/KFLocalizator/dynamic_" << xpName << "/t_" << time << "_odo_estimate.json";
+                odoEstimFileName << p + "/ressource/unittest/KFL/KFLocalizator/dynamic_" << xpName << "/t_" << time << "_odo_estimate.json";
                 BOOST_CHECK( docOdoEstim.parse(odoEstimFileName.str().c_str()) );
                 BOOST_CHECK_CLOSE( time , docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "t")), 1.f );
 
@@ -319,7 +321,7 @@ namespace unittest_KFLocalizator_Dynamic
 
                 arp_rlu::lsl::JsonScanParser scanParser;
                 std::stringstream scanFileName;
-                scanFileName << "../ressource/unittest/KFL/KFLocalizator/dynamic_" << xpName << "/t_" << time << "_scan.json";
+                scanFileName << p + "/ressource/unittest/KFL/KFLocalizator/dynamic_" << xpName << "/t_" << time << "_scan.json";
                 BOOST_CHECK( scanParser.parse(scanFileName.str().c_str()) );
                 lsl::LaserScan scan;
                 BOOST_CHECK( scanParser.getScan(scan) );
@@ -336,7 +338,7 @@ namespace unittest_KFLocalizator_Dynamic
 
                 vjson::JsonDocument docScanEstim;
                 std::stringstream scanEstimFileName;
-                scanEstimFileName << "../ressource/unittest/KFL/KFLocalizator/dynamic_" << xpName << "/t_" << time << "_scan_estimate.json";
+                scanEstimFileName << p + "/ressource/unittest/KFL/KFLocalizator/dynamic_" << xpName << "/t_" << time << "_scan_estimate.json";
                 BOOST_CHECK( docScanEstim.parse(scanEstimFileName.str().c_str()) );
                 BOOST_CHECK_CLOSE( time , docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "t")), 1.f );
 

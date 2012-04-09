@@ -5,6 +5,7 @@
  *      Author: Boris
  */
 
+#include <ros/package.h>
 
 #include "KFL/Logger.hpp"
 #include "LSL/Logger.hpp"

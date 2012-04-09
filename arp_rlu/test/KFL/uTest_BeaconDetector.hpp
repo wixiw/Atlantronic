@@ -26,12 +26,14 @@ namespace unittest_BeaconDetector
 
     void doTest(unsigned int xpIndex)
     {
+        std::string p = ros::package::getPath("arp_rlu");
+
         std::stringstream xpSS;
         xpSS << xpIndex;
         std::string xpName = xpSS.str();
 
         vjson::JsonDocument docTraj;
-        std::string trajFileName = "../ressource/unittest/KFL/BeaconDetector/traj_" + xpName + ".json";
+        std::string trajFileName = p + "/ressource/unittest/KFL/BeaconDetector/traj_" + xpName + ".json";
         BOOST_CHECK( docTraj.parse( trajFileName.c_str() ) );
         unsigned int n = docTraj.getIntegerData( docTraj.getChild( docTraj.root(), "size") );
         Eigen::VectorXd tt = Eigen::VectorXd::Zero(n);
@@ -46,7 +48,7 @@ namespace unittest_BeaconDetector
             hh[i] = docTraj.getFloatData( docTraj.getChild( docTraj.getChild(docTraj.root(), "hh") , i ) );
         }
 
-        std::string scanFileName = "../ressource/unittest/KFL/BeaconDetector/scan_" + xpName + ".json";
+        std::string scanFileName = p + "/ressource/unittest/KFL/BeaconDetector/scan_" + xpName + ".json";
         arp_rlu::lsl::JsonScanParser parser( scanFileName.c_str() );
         lsl::LaserScan ls;
         bool res = parser.getScan(ls);
@@ -74,7 +76,7 @@ namespace unittest_BeaconDetector
         }
 
         vjson::JsonDocument docResults;
-        std::string resultsFileName = "../ressource/unittest/KFL/BeaconDetector/results_" + xpName + ".json";
+        std::string resultsFileName = p + "/ressource/unittest/KFL/BeaconDetector/results_" + xpName + ".json";
         BOOST_CHECK( docResults.parse( resultsFileName.c_str() ) );
 
         unsigned int nbObjects = docResults.getIntegerData( docResults.getChild( docResults.root(), "nbObjects") );
@@ -134,7 +136,7 @@ namespace unittest_BeaconDetector
 
 
         vjson::JsonDocument docMeas;
-        std::string measFileName = "../ressource/unittest/KFL/BeaconDetector/meas_" + xpName + ".json";
+        std::string measFileName = p + "/ressource/unittest/KFL/BeaconDetector/meas_" + xpName + ".json";
         BOOST_CHECK( docMeas.parse( measFileName.c_str() ) );
 
         unsigned int nbMeas = docMeas.getIntegerData( docMeas.getChild( docMeas.root(), "nbMeas") );
