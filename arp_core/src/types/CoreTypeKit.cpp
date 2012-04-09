@@ -5,6 +5,14 @@
  *      Author: ard
  */
 
+// typekit
+#include <rtt/types/Types.hpp>
+#include <rtt/types/TypekitPlugin.hpp>
+
+// typeinfo
+#include <rtt/types/TypeInfoRepository.hpp>
+#include <rtt/types/SequenceTypeInfo.hpp>
+#include <rtt/typekit/StdTypeInfo.hpp>
 #include <rtt/types/TemplateConstructor.hpp>
 
 #include "CoreTypeKit.hpp"
@@ -27,6 +35,7 @@ bool CoreTypeKit::loadTypes()
     bool res = true;
 
     // Tell the RTT the name and type of this struct
+    res &= types::Types()->addType( new RTT::types::TemplateTypeInfo< Eigen::Matrix<double, 3, 3> > ("Matrix3d") );
     res &= types::Types()->addType( new Pose2DTypeInfo() );
     res &= types::Types()->addType( new Twist2DTypeInfo() );
     res &= types::Types()->addType( new EstimatedPose2DTypeInfo() );

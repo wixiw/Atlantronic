@@ -39,6 +39,11 @@ Eigen::Matrix<double,3,3> EstimatedPose2D::cov() const
     return covariance;
 }
 
+Eigen::Matrix<double,3,3>& EstimatedPose2D::covRef()
+{
+    return covariance;
+}
+
 double EstimatedPose2D::date() const
 {
     return estimationDate;

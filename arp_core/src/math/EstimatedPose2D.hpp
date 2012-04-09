@@ -21,6 +21,7 @@ class EstimatedPose2D : public Pose2D
     EstimatedPose2D(double _x, double _y, double _h = 0.);
 
     Eigen::Matrix<double,3,3> cov() const;
+    Eigen::Matrix<double,3,3>& covRef();
     double date() const;
     double& dateRef();
 
