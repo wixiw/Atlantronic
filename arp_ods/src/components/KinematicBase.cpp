@@ -10,6 +10,7 @@
 #include <models/core>
 #include "control/KinematicFilter.hpp"
 
+using namespace arp_core::log;
 using namespace arp_model;
 using namespace arp_math;
 using namespace arp_ods;
@@ -21,6 +22,7 @@ ORO_LIST_COMPONENT_TYPE( arp_ods::KinematicBase )
 KinematicBase::KinematicBase(const std::string& name):
         OdsTaskContext(name)
 {
+    //arp_model::Logger::InitFile("arp_model", INFO);
     createOrocosInterface();
 }
 
@@ -50,15 +52,15 @@ void KinematicBase::run()
 {
     double dt = 0.010; //TODO faire mieux ! mettre un vrai temps calculé depuis la derniere execution
 
-    /*
+
     //filter the input command to get a reachable command that we are sure the hardware will be capable to do
-    if( KinematicFilter::filterTwist(attrTwistCmd, attrCurrentTwist,
-                                    attrMotorsCurrentState, attrParams,
-                                    dt, attrAcceptableTwist, attrQuality) == false )
-    {
-        //TODO remettre en erreur
-        LOG(Info) << "Failed to filter desired twist to an acceptable twist" << endlog();
-    }*/
+//    if( KinematicFilter::filterTwist(attrTwistCmd, attrCurrentTwist,
+//                                    attrMotorsCurrentState, attrParams,
+//                                    dt, attrAcceptableTwist, attrQuality) == false )
+//    {
+//        //TODO remettre en erreur
+//        LOG(Info) << "Failed to filter desired twist to an acceptable twist" << endlog();
+//    }
     attrAcceptableTwist = attrTwistCmd;
 
     //compute the motor commands to do the filtered twist command

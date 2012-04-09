@@ -8,6 +8,7 @@
 #include "KinematicFilter.hpp"
 #include <iostream>
 
+using namespace arp_core::log;
 using namespace arp_model;
 using namespace arp_math;
 using namespace arp_ods;
@@ -42,21 +43,23 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
     TurretState ioTS;
     if( UbiquityKinematics::twist2Motors(desiredTwist, currentMS, ioTS, desiredMS, params) == false )
     {
-        cerr << "failed to compute first model" << endl;
+        Log(ERROR) << "failed to compute first model";
         quality = -1;
         return false;
     }
     if( isMotorStateReachable(desiredMS, currentMS, params, dt) )
     {
+        Log(INFO) << "First try is ok";
         acceptableTwist = desiredTwist;
         quality = 1;
         return true;
     }
+    //Log(INFO) << "desiredMS : " << desiredMS.toString();
 
     //the case desiredTwist == currentTwist should be covered before, if we are here it is a bug.
     if( desiredTwist == currentTwist)
     {
-        cerr << "assertion desiredTwist != currentTwist failed" << endl;
+        Log(ERROR) << "assertion desiredTwist != currentTwist failed";
         quality = -10;
         return false;
     }
@@ -69,10 +72,15 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
     {
         //we take a Twist half way beetween last acceptable Twist and last not acceptable Twist
         testedTwist = (highBound - lowBound) / 2;
+
+        //TODO a virer
+        Log(INFO) << "LOOP("<< nbLoops<< ") : testedTwist="
+                << testedTwist.toString() << " lowBound=" << lowBound.toString() << " highBound=" << highBound.toString();
+
         //compute motor state related to testedTwist
         if( UbiquityKinematics::twist2Motors(testedTwist, currentMS, ioTS, desiredMS, params) == false )
         {
-            cerr << "fail to compute in loop model loop=" << nbLoops << " low=" << lowBound.toString() << " high=" << highBound.toString() << endl;
+            Log(ERROR) << "fail to compute in loop model loop=" << nbLoops << " low=" << lowBound.toString() << " high=" << highBound.toString();
             quality = -2;
             return false;
         }
@@ -86,6 +94,9 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
         }
         else
             highBound = testedTwist;
+
+        //TODO a virer
+        Log(INFO) << "LOOP("<< nbLoops<< ") : desiredMS=" << desiredMS.toString();
     }
 
     //gains to uniformize units. we take 20cm for the angle gain.
@@ -97,7 +108,9 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
     //we don't accept to stay at the same place when having a command
     if( currentTwist == acceptableTwist && currentTwist != desiredTwist)
     {
-        cerr << "The solution is to take the last one ... :(" << endl;
+        Log(ERROR) << "The solution is to take the last cmd twist ... :( : testedTwist="
+                << testedTwist.toString() << " lowBound=" << lowBound.toString() << " highBound=" << highBound.toString();
+        Log(INFO) << "acceptableTwist=" << acceptableTwist.toString() << " currentTwist=" << currentTwist.toString() << " desiredTwist=" << desiredTwist.toString();
         quality = -3;
         return false;
     }

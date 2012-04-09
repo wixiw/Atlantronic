@@ -6,7 +6,9 @@
  */
 
 #include "UbiquityParams.hpp"
+#include "models/Logger.hpp"
 
+using namespace arp_core::log;
 using namespace arp_model;
 using namespace arp_math;
 using namespace std;
@@ -24,9 +26,10 @@ UbiquityParams::UbiquityParams():
         m_rearWheelDiameter(0.066),
         m_tractionRatio(1.0),
         m_turretRatio(0.25),
-        m_maxDrivingSpeed(1.1),
-        m_maxDrivingAcc(1),
-        m_maxDrivingDec(1),
+        m_maxDrivingSpeed(10000000),
+        //TODO a mettre une valeur realiste
+        m_maxDrivingAcc(100000000),
+        m_maxDrivingDec(100000000),
         m_maxDrivingTorque(-1),
         m_maxSteeringSpeed(125),
         m_maxSteeringAcc(52),
@@ -39,32 +42,35 @@ bool UbiquityParams::check() const
 {
     bool res = true;
 
+    //TODO à virer
+    return true;
+
     //on vérifie que les roues ont une dimension réaliste
     if( m_leftWheelDiameter <= 0.010 || m_leftWheelDiameter >= 3 )
     {
-        cerr << "Left wheel diameter is not correct" << endl;
+        Log( ERROR ) << "Left wheel diameter is not correct";
         res = false;
     }
     if( m_rightWheelDiameter <= 0.010 || m_rightWheelDiameter >= 3 )
     {
-        cerr << "Right wheel diameter is not correct" << endl;
+        Log( ERROR ) << "Right wheel diameter is not correct";
         res = false;
     }
     if( m_rearWheelDiameter <= 0.010 || m_rearWheelDiameter >= 3 )
     {
-        cerr << "Rear wheel diameter is not correct" << endl;
+        Log( ERROR ) << "Rear wheel diameter is not correct";
         res = false;
     }
 
     //pas de rapport d'engrages négatifs ou nuls
     if( m_tractionRatio <= 0 )
     {
-        cerr << "Traction gears ratio is too little" << endl;
+        Log( ERROR ) << "Traction gears ratio is too little";
         res = false;
     }
     if( m_turretRatio <= 0 )
     {
-        cerr << "Turret gears ratio is too little" << endl;
+        Log( ERROR ) << "Turret gears ratio is too little";
         res = false;
     }
 
@@ -73,14 +79,14 @@ bool UbiquityParams::check() const
             || m_leftTurretPosition == m_rearTurretPosition
             || m_rightTurretPosition == m_rearTurretPosition)
     {
-        cerr << "The 3 turrets are not distincts" << endl;
+        Log( ERROR ) << "The 3 turrets are not distincts";
         res = false;
     }
 
     //on verifie que les vitesses max de traction/direction ont du sens
     if( m_maxDrivingSpeed <= 0.1 || m_maxDrivingSpeed >= 3 || m_maxSteeringSpeed <= 1 || m_maxSteeringSpeed >= 300)
     {
-        cerr << "Max speeds incorect" << endl;
+        Log( ERROR ) << "Max speeds incorect";
         res = false;
     }
 
@@ -95,14 +101,14 @@ bool UbiquityParams::check() const
     //on a pas de raison de mettre des valeurs diffentes en acc et dec
     if( m_maxSteeringAcc <= 1 || m_maxSteeringDec <= 1 || m_maxSteeringAcc != m_maxSteeringDec )
     {
-        cerr << "Max steering acc incorect" << endl;
+        Log( ERROR ) << "Max steering acc incorect";
         res = false;
     }
 
     //pour le moment on a pas de modele dynamique on a pas de raison de les utiliser.
     if( m_maxDrivingTorque != -1 || m_maxSteeringTorque != -1 )
     {
-        cerr << "Max torque incorect" << endl;
+        Log( ERROR ) << "Max torque incorect";
         res = false;
     }
 

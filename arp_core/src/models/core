@@ -1,3 +1,4 @@
 #include <models/UbiquityStates.hpp>
 #include <models/UbiquityParams.hpp>
 #include <models/UbiquityKinematics.hpp>
+#include <models/Logger.hpp>

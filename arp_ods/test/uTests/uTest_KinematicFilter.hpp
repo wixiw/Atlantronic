@@ -11,6 +11,7 @@ using namespace std;
 using namespace arp_ods;
 using namespace arp_math;
 using namespace arp_model;
+using namespace arp_core::log;
 
 BOOST_AUTO_TEST_CASE( KinematicFilter_isReachable_driving_success )
 {
@@ -257,8 +258,36 @@ BOOST_AUTO_TEST_CASE( KinematicFilter_Zero )
 
 BOOST_AUTO_TEST_CASE( KinematicFilter_InputOk )
 {
+    Log(INFO) << "Running KinematicFilter_InputOk";
+    arp_model::UbiquityParams attrParams;
+    double attrQuality;
+    bool res;
+    double dt = 0.010;
     arp_math::Twist2D attrTwistCmd(1,2.3,0.7);
     arp_math::Twist2D attrCurrentTwist = attrTwistCmd;
+    arp_math::Twist2D attrAcceptableTwist;
+    arp_model::MotorState attrMotorStateCommand;
+    arp_model::MotorState attrMotorsCurrentState;
+    MotorState desiredMS;
+    TurretState ioTS;
+
+    BOOST_CHECK( UbiquityKinematics::twist2Motors(attrTwistCmd, attrMotorsCurrentState, ioTS, attrMotorsCurrentState, attrParams) );
+    Log(INFO) << "ioTS=" << ioTS.toString();
+    Log(INFO) << "attrMotorsCurrentState=" << attrMotorsCurrentState.toString();
+
+    res = KinematicFilter::filterTwist(attrTwistCmd, attrCurrentTwist,
+                                    attrMotorsCurrentState, attrParams,
+                                    dt, attrAcceptableTwist, attrQuality);
+    BOOST_CHECK( res );
+    BOOST_CHECK( attrAcceptableTwist == attrTwistCmd );
+    BOOST_CHECK( attrAcceptableTwist == attrCurrentTwist );
+    BOOST_CHECK_EQUAL( attrQuality , 1.0 );
+}
+
+BOOST_AUTO_TEST_CASE( KinematicFilter_InputOk2 )
+{
+    arp_math::Twist2D attrTwistCmd(1,2.3,0.7);
+    arp_math::Twist2D attrCurrentTwist;
     arp_math::Twist2D attrAcceptableTwist;
     arp_model::MotorState attrMotorStateCommand;
     arp_model::MotorState attrMotorsCurrentState;
@@ -274,11 +303,4 @@ BOOST_AUTO_TEST_CASE( KinematicFilter_InputOk )
     BOOST_CHECK( attrAcceptableTwist == attrTwistCmd );
     BOOST_CHECK( attrAcceptableTwist == attrCurrentTwist );
     BOOST_CHECK_EQUAL( attrQuality , 1.0 );
-
-     //before going to dichotomy, check is the desiredTwist is reachable
-     MotorState desiredMS;
-     TurretState ioTS;
-     BOOST_CHECK( UbiquityKinematics::twist2Motors(attrTwistCmd, attrMotorsCurrentState, ioTS, desiredMS, attrParams) );
-     BOOST_CHECK( KinematicFilter::isMotorStateReachable(desiredMS, attrMotorsCurrentState, attrParams, dt) );
-
 }
