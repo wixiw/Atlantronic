@@ -22,10 +22,17 @@ class LittleSexControl: public OdsTaskContext
         void updateHook();
 
         /**
-         * Use this to setup a new order
+         * Use this operation to setup a new order
          * @return true on successfull change
          */
         bool ooSetOrder(shared_ptr<MotionOrder> order);
+
+        /**
+         * Use this opration to setup a new max speed
+         * @param vmax : new max speed in m/s
+         * @return true on successfull change aka the max speed sent is positive
+         */
+        bool ooSetVMax(double vmax);
 
     protected:
         /**
@@ -71,6 +78,16 @@ class LittleSexControl: public OdsTaskContext
          * Buffer for input order
          */
         shared_ptr<MotionOrder>  attrOrder;
+
+        /**
+         * Local variable to stock the max velocity that we were aked to follow
+         */
+        double attrVMax;
+
+        /**
+         * Current order type to debug
+         */
+        std::string attrCurrentOrder;
 
         /**
          * Bufferize the inputs

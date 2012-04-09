@@ -10,6 +10,7 @@
 
 #include "taskcontexts/OdsTaskContext.hpp"
 #include <math/core>
+#include <ros/ros.h>
 #include <arp_core/Pose.h>
 #include <actionlib/server/simple_action_server.h>
 #include "control/orders/orders.h"
@@ -23,6 +24,8 @@ class RosOdsItf: public OdsTaskContext
 {
     public:
         RosOdsItf(std::string const name);
+        bool configureHook();
+        bool startHook();
 
     protected:
         RTT::InputPort<arp_math::EstimatedPose2D> inPose;
@@ -42,7 +45,7 @@ class RosOdsItf: public OdsTaskContext
         shared_ptr<MotionOrder> m_order;
 
         /** Motion control configuration. They are feeded with rosparam during init */
-        order::config m_orderConfig;
+        order::config propOrderConfig;
 
         /**
          * Tells if the current order is finished with success. It is finished when the robot is in PASS mode when the order
@@ -70,6 +73,19 @@ class RosOdsItf: public OdsTaskContext
          * called when setvmax service is called
          */
         bool setVMaxCallback(SetVMax::Request& req, SetVMax::Response& res);
+
+        RTT::OperationCaller<bool(shared_ptr<MotionOrder>)> m_ooSetOrder;
+        RTT::OperationCaller<bool(double)> m_ooSetVMax;
+
+
+        /** node handle to store the service advertiser srvInitialize**/
+        ros::ServiceServer m_srvSetVMax;
+
+        /**
+         * Utility functions to hide framework interface declarations at the end of the file
+         */
+        void createOrocosInterface();
+        void createRosInterface();
 };
 
 } /* namespace arp_rlu */

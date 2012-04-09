@@ -15,9 +15,11 @@ function LittleSexControlDeployer:registerToSql()
 end
 
 function LittleSexControlDeployer:connect()
+	Deployer:connect(me..".inOrder","RosOdsItf.outOrder",cp)
+
 	RluMonitor = Deployer:getPeer("RluMonitor");
 	Deployer:addPeer("RluMonitor", me);
-	RluMonitor:connect(me,"inThetaSpeed","Localizator","outPose");
+	RluMonitor:connect(me,"inPosition","Localizator","outPose");
 end
 
 

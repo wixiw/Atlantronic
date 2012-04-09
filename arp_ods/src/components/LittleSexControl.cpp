@@ -16,7 +16,9 @@ ORO_LIST_COMPONENT_TYPE( arp_ods::LittleSexControl )
 
 LittleSexControl::LittleSexControl(const std::string& name):
         OdsTaskContext(name),
-        attrOrder(order::defaultOrder)
+        attrOrder(order::defaultOrder),
+        attrVMax(1.0),
+        attrCurrentOrder("default")
 {
     createOrocosInterface();
 }
@@ -34,8 +36,12 @@ void LittleSexControl::getInputs()
 
 void LittleSexControl::updateHook()
 {
+    OdsTaskContext::updateHook();
+
     //bufferise inputs
     getInputs();
+
+    attrCurrentOrder = attrOrder->getTypeString();
 
     //compute current order mode
     attrOrder->switchMode(attrPosition);
@@ -116,10 +122,27 @@ bool LittleSexControl::ooSetOrder(shared_ptr<MotionOrder> order)
     return true;
 }
 
+bool LittleSexControl::ooSetVMax(double vmax)
+{
+    if( vmax >= 0.0 )
+    {
+        attrVMax = vmax;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 void LittleSexControl::createOrocosInterface()
 {
     addAttribute("attrComputedTwistCmd",attrComputedTwistCmd);
     addAttribute("attrPosition",attrPosition);
+    addAttribute("attrOrder",attrOrder);
+    addAttribute("attrVMax",attrVMax);
+    addAttribute("attrCurrentOrder",attrCurrentOrder);
+
 
     addPort("inOrder",inOrder)
         .doc("");
@@ -132,4 +155,12 @@ void LittleSexControl::createOrocosInterface()
             .doc("");
     addPort("outOrderInError",outOrderInError)
             .doc("");
+
+    addOperation("ooSetOrder",&LittleSexControl::ooSetOrder, this, OwnThread)
+                .doc("Define a new order to do")
+                .arg("orderRef","a reference to the new order to do");
+
+    addOperation("ooSetVMax",&LittleSexControl::ooSetVMax, this, OwnThread)
+                .doc("Define a new max velocity to respect")
+                .arg("vmax","max velocity in m/s");
 }
