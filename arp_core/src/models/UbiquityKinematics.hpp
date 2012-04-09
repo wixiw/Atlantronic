@@ -22,7 +22,8 @@ class UbiquityKinematics
         /**
          * Modèle cinématique direct de tourelle
          * Convertit le couple (domega,omega) exprimé sur les axes des motoréducteurs
-         * en un couple (vitesse, angle) exprimé sur le centre de la roue de la tourelle avec v pouvant être négatif et angle dans [-PI/2;PI/2]
+         * en un couple (vitesse, angle) exprimé sur le centre de la roue de la tourelle avec v pouvant être négatif et angle dans ]-PI;PI]
+         * Il y a recouvrement des configurations mais sans ça, on perd l'info du sens moteur (il faut bien aligner les v+ sur 0 ou PI sur la tourelle !)
          * @param[in] iMS : Etat des moteurs ie positions et vitesses des moteurs (traction et direction) exprimee en rad et rad/s
          *               en sortie de réducteur
          * @param[out] oTS : Etat des tourelles ie positions des tourelles (traction et direction) exprimés en rad et rad/s.
@@ -75,7 +76,8 @@ class UbiquityKinematics
          * Modèle cinématique indirect de la base
          * Convertit un Twist (Twist du repère de référence du chassis par rapport au sol projeté et réduit dans le repère de référence du chassis)
          * en consignes articulaires pour les tourelles.
-         * Le couple(phi,v) de la position/vitesse de chaque tourelle vérifié en sortie : v pouvant etre négatif et phi dasn [-PI/2;PI/2]
+         * Le couple(phi,v) de la position/vitesse de chaque tourelle vérifié en sortie : v pouvant etre négatif et phi dans ]-PI/2;PI/2]
+         * (il n'y a pas lieu de repérer le sens de v+ parce qu'à ce niveau on a pas encore décidé quelle "face" de la tourelle on va mettre)
          * Charge au modèle de tourelle d'optimiser les déplacements rotation/traction
          * @param[in] iTw : Twist du repère de référence du chassis par rapport au sol projeté et réduit dans le repère de référence du chassis.
          * @param[out] oTS : Etat des tourelles ie positions des tourelles (traction et direction).
@@ -108,7 +110,7 @@ class UbiquityKinematics
 
         /**
          * Les tourelles permettent de recouvrir l'état de possibles de plusieurs façons lorsqu'elles sont pilotés en marche
-         * AV et AR entre -PI et PI. Cette fonction permet de réduire ce recouvrement à un pilotage entre -PI/2 et PI/2 puis marche AV/AR
+         * AV et AR entre -PI et PI. Cette fonction permet de réduire ce recouvrement à un pilotage entre ]-PI/2;PI/2] puis marche AV/AR
          * @param[in] angle : angle en rad à normalizer entre -PI/2 et PI/2
          * @param[in] speed : la vitesse dont il faut éventuellement changer le signe
          */

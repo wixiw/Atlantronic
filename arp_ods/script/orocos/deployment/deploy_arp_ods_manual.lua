@@ -14,12 +14,17 @@ dofile("/opt/ard/arp_ods/script/orocos/deployment/components/ros_ods_itf_deploye
 
 TwistTeleopDeployer:load();
 KinematicBaseDeployer:load();
+RosOdsItfDeployer:load();
+OdsMonitorDeployer:load();
 
 TwistTeleopDeployer:connect();
 KinematicBaseDeployer:connect();
-
-OdsMonitorDeployer:load();
+--RosOdsItfDeployer:connect();
 OdsMonitorDeployer:connect();
+
+OdsMonitorDeployer:addToMonitor("KinematicBase")
+OdsMonitorDeployer:addToMonitor("MotionControl")
+--OdsMonitorDeployer:addToMonitor("RosOdsItf")
 OdsMonitorDeployer:start();
 
 --mise automatique de la puissance

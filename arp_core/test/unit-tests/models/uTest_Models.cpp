@@ -17,9 +17,9 @@ using namespace arp_core::log;
 BOOST_AUTO_TEST_SUITE( unittest_dummy )
 BOOST_AUTO_TEST_CASE( testdummy )
 {
-    //  arp_model::Logger::InitNull("uT_KFL", DEBUG);
+    //arp_model::Logger::InitNull("uT_KFL", DEBUG);
     arp_model::Logger::InitConsole("uT_Models", INFO);
-//      arp_model::Logger::InitFile("uT_KFL", DEBUG);
+    //arp_model::Logger::InitFile("uT_KFL", DEBUG);
 
 }
 BOOST_AUTO_TEST_SUITE_END()

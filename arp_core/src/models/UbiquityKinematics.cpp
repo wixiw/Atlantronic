@@ -49,9 +49,9 @@ bool UbiquityKinematics::motors2Turrets(const MotorState & iMS,
     //cout << "oTS b4 norm : " << oTS.toString() << endl;
 
     //normalisations
-    normalizeDirection(oTS.steering.left.position, oTS.driving.left.velocity);
-    normalizeDirection(oTS.steering.right.position, oTS.driving.right.velocity);
-    normalizeDirection(oTS.steering.rear.position, oTS.driving.rear.velocity);
+    oTS.steering.left.position = betweenMinusPiAndPlusPi(oTS.steering.left.position);
+    oTS.steering.right.position = betweenMinusPiAndPlusPi(oTS.steering.right.position);
+    oTS.steering.rear.position = betweenMinusPiAndPlusPi(oTS.steering.rear.position);
 
     return true;
 }
@@ -67,34 +67,33 @@ bool UbiquityKinematics::turrets2Motors(const TurretState & iTSbrut,
         Log(ERROR) << "UbiquityKinematics::turrets2Motors failed when checking params";
         return false;
     }
-    //normalisation des entrees pour travailler dans [-PI/2;PI/2]*R
+    //normalisation des entrees pour travailler dans [-PI;PI]*R
     TurretState iTS = iTSbrut;
-    normalizeDirection(iTS);
+    iTS.steering.left.position = betweenMinusPiAndPlusPi(iTS.steering.left.position);
+    iTS.steering.right.position = betweenMinusPiAndPlusPi(iTS.steering.right.position);
+    iTS.steering.rear.position = betweenMinusPiAndPlusPi(iTS.steering.rear.position);
 
     //optimisation des consignes,gestion du pilotage mumtitour et gestion du zero
 
     //calcul de la position courante des tourelles à partir de l'état des moteurs
-    // currentTurretPos est dans -Pi/2 /Pi/2
+    // currentTurretPos est dans [-Pi;Pi]
     TurretState currentTurretPos ;
     motors2Turrets(iMS,currentTurretPos,iParams);
 
     //calcul des delta de position commandé
-    AxesGroup deltaCmd = iTS.steering - currentTurretPos.steering;
-    TurretState dummyDeltaCmd;//utilisé pour retourner les vitesses de traction
-    dummyDeltaCmd.steering = deltaCmd;
-    dummyDeltaCmd.driving = iTS.driving;
-    normalizeDirection(dummyDeltaCmd);
-    deltaCmd = dummyDeltaCmd.steering;
-    iTS.driving = dummyDeltaCmd.driving;
+    TurretState deltaCmd = iTS - currentTurretPos;
+    deltaCmd.driving = iTS.driving; //pas de delta sur la vitesse
+    normalizeDirection(deltaCmd);
+    iTS.driving = deltaCmd.driving;
 
     Log(DEBUG) << "iTS : " << iTS.toString();
     Log(DEBUG) << "currentTurretPos : " << currentTurretPos.toString();
     Log(DEBUG) << "deltaCmd : " << deltaCmd.toString();
 
     //ajout a la position brute du moteur le delta de commande, et paf ca fait la consigne a envoyer au prochain step
-    oMS.steering.left.position = iMS.steering.left.position + deltaCmd.left.position/iParams.getTurretRatio() + iParams.getLeftTurretZero();
-    oMS.steering.right.position = iMS.steering.right.position + deltaCmd.right.position/iParams.getTurretRatio() + iParams.getRightTurretZero();
-    oMS.steering.rear.position = iMS.steering.rear.position + deltaCmd.rear.position/iParams.getTurretRatio() + iParams.getRearTurretZero();
+    oMS.steering.left.position = iMS.steering.left.position + deltaCmd.steering.left.position/iParams.getTurretRatio() + iParams.getLeftTurretZero();
+    oMS.steering.right.position = iMS.steering.right.position + deltaCmd.steering.right.position/iParams.getTurretRatio() + iParams.getRightTurretZero();
+    oMS.steering.rear.position = iMS.steering.rear.position + deltaCmd.steering.rear.position/iParams.getTurretRatio() + iParams.getRearTurretZero();
 
     //mise a jour des vitesses de traction
     oMS.driving.left.velocity = (2*iTS.driving.left.velocity/iParams.getLeftWheelDiameter() - iMS.steering.left.velocity*iParams.getTurretRatio())
@@ -189,7 +188,7 @@ bool UbiquityKinematics::twist2Turrets(const Twist2D & iTw, TurretState& oTS, co
     oTS.driving.right.velocity = Tright.speedNorm();
     oTS.driving.rear.velocity = Trear.speedNorm();
 
-    //normalisations
+    //normalisation dans -PI/2 PI/2
     normalizeDirection(oTS);
 
     return true;

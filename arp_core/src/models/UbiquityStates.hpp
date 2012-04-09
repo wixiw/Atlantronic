@@ -175,6 +175,38 @@ class UbiquityKinematicState
             ss << std::endl;
             return ss.str();
         }
+
+        UbiquityKinematicState operator+(const UbiquityKinematicState& b) const
+        {
+            UbiquityKinematicState state;
+            state.steering = steering + b.steering;
+            state.driving = driving + b.driving;
+            return state;
+        }
+
+        UbiquityKinematicState operator-(const UbiquityKinematicState& b) const
+        {
+            UbiquityKinematicState state;
+            state.steering = steering - b.steering;
+            state.driving = driving - b.driving;
+            return state;
+        }
+
+        UbiquityKinematicState operator*(const double& scal) const
+        {
+            UbiquityKinematicState state;
+            state.steering = steering * scal;
+            state.driving = driving * scal;
+            return state;
+        }
+
+        UbiquityKinematicState operator/(const double& scal) const
+        {
+            UbiquityKinematicState state;
+            state.steering = steering / scal;
+            state.driving = driving / scal;
+            return state;
+        }
 };
 
 typedef UbiquityKinematicState TurretState;

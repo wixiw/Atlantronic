@@ -29,9 +29,6 @@ end
 function OdsMonitorDeployer:connect()
 
 --ajout au monitor
-	OdsMonitorDeployer:addToMonitor("KinematicBase")
-	OdsMonitorDeployer:addToMonitor("MotionControl")
-	OdsMonitorDeployer:addToMonitor("RosOdsItf")
 	--OdsMonitorDeployer:registerToSql();
 	
 	OdsMonitorDeployer:check("OdsMonitor")

@@ -22,7 +22,9 @@ KinematicBaseDeployer:connect();
 RosOdsItfDeployer:connect();
 OdsMonitorDeployer:connect();
 
-
+OdsMonitorDeployer:addToMonitor("KinematicBase")
+OdsMonitorDeployer:addToMonitor("MotionControl")
+OdsMonitorDeployer:addToMonitor("RosOdsItf")
 OdsMonitorDeployer:start();
 
 
