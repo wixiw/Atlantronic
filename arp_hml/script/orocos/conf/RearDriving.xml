@@ -20,6 +20,6 @@
 			Is true when you when to invert the speed command and feedback of the motor
 				softly
 		</description>
-		<value>1</value>
+		<value>0</value>
 	</simple>
 </properties>
