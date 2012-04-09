@@ -24,6 +24,16 @@ RosRluItf::RosRluItf(std::string const name):
     addPort("inTwist",inTwist);
     addPort("outPose",outPose);
 
+    createRosInterface();
+}
+
+bool RosRluItf::configureHook()
+{
+    bool res = RluTaskContext::configureHook();
+
+    res &= getOperation("Localizator",      "ooInitialize",  m_ooInitialize);
+
+    return res;
 }
 
 void RosRluItf::updateHook()
@@ -42,4 +52,16 @@ void RosRluItf::updateHook()
     pOut.vy = tIn.vy();
     pOut.vtheta = tIn.vh();
     outPose.write(pOut);
+}
+
+bool RosRluItf::srvInitialize(SetPosition::Request& req, SetPosition::Response& res)
+{
+    res.success = m_ooInitialize(req.x,req.y,req.theta);
+    return res.success;
+}
+
+void RosRluItf::createRosInterface()
+{
+    ros::NodeHandle nh;
+    m_srvInitialize = nh.advertiseService("/Localizator/setPosition", &RosRluItf::srvInitialize, this);
 }

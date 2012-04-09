@@ -52,7 +52,7 @@ void Odometry4Ubiquity::updateHook()
     }
 
     //calcul de l'odometrie (oh oui en une ligne c'est beau)
-    if( UbiquityKinematics::motors2Twist(attrTurretState, attrMotorState, computedTwist, report, attrParams) == false )
+    if( UbiquityKinematics::motors2Twist(attrMotorState, attrTurretState, computedTwist, report, attrParams) == false )
     {
         LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
     }

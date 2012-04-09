@@ -11,6 +11,7 @@ end
 
 
 function RosRluItfDeployer:connect()
+	Deployer:addPeer(me,"Localizator")
 	Deployer:stream(me..".outPose",ros:topic("/Localizator/pose"))
 	Deployer:connect(me..".inPose","Localizator.outPose",cp)
 	Deployer:connect(me..".inTwist","Localizator.outTwist",cp)
