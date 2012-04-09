@@ -15,8 +15,6 @@ from arp_master.strat.util.CyclicActionState import CyclicActionState
 
 from arp_master.strat.util.Inputs import Inputs
 from arp_master.strat.util.Data import Data
-from arp_master.strat.util.Table2011 import *
-from math import pi
 
 ###########################  TEMPORAL BEHAVIOR
 
@@ -26,9 +24,7 @@ class MotionTestingStratNode():
         
         #creation of the node
         rospy.init_node('MotionTestingStratNode')
-        # recuperation des parametres
-        Table.init()
-        Robot.init()
+        # recuperation des parametres)
         #creation of the cadencer for all states
         Data.stateMachineRate =rospy.Rate(10)
         #linking of the input in Inputs to the topics
@@ -169,7 +165,7 @@ class WaitForStartUnplug(CyclicState):
         
     def executeOut(self):
         self.setPosition(0,0,0)
-        self.enableDrive()
+        self.enablePower()
    
 class Cap1(CyclicActionState):
     def createAction(self):
