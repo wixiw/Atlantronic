@@ -95,6 +95,13 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         m_order = RotationOrder::createOrder(goal, pose, propOrderConfig);
         ROS_INFO("MotionControl : new Rotation goal (cap=%0.3f)", goal->theta_des);
     }
+    else if (goal->move_type == "OMNIDIRECT")
+    {
+        inPose.readNewest(pose);
+        m_order = OmnidirectOrder::createOrder(goal, pose, propOrderConfig);
+        ROS_INFO("MotionControl : new Omnidirect goal (%0.3f,%0.3f,%0.3f) ", goal->x_des, goal->y_des,
+                goal->theta_des);
+    }
     else
     {
         ROS_ERROR("%s: not possible", goal->move_type.c_str());

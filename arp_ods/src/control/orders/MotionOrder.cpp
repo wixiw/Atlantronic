@@ -113,6 +113,9 @@ std::string MotionOrder::getTypeString() const
         case FANTOM:
             return "FANTOM";
             break;
+        case OMNIDIRECT:
+            return "OMNIDIRECT";
+            break;
         default:
             return "ORDER_UNKNOW";
             break;

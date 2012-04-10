@@ -133,6 +133,8 @@ class CyclicActionState(CyclicState):
     def backward(self,dist):
         self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()+pi),Inputs.gety()+dist*sin(Inputs.gettheta()+pi),Inputs.gettheta(),'POINTCAP',True,False)
 
+    def omnidirect(self,x,y,theta):
+        self.createMotionControlAction(x,y,theta,'OMNIDIRECT',False,False)
     #these are functions linked to the replay
     def registerReplayOrder(self,x,y,theta,move_type,reverse,passe):
         Data.listReplayOrders.append(ReplayOrder(x,y,theta,move_type,reverse,passe))   
