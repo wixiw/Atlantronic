@@ -26,10 +26,9 @@ UbiquityParams::UbiquityParams():
         m_rearWheelDiameter(0.066),
         m_tractionRatio(1.0),
         m_turretRatio(0.25),
-        m_maxDrivingSpeed(10000000),
-        //TODO a mettre une valeur realiste
-        m_maxDrivingAcc(100000000),
-        m_maxDrivingDec(100000000),
+        m_maxDrivingSpeed(1),
+        m_maxDrivingAcc(1),
+        m_maxDrivingDec(1),
         m_maxDrivingTorque(-1),
         m_maxSteeringSpeed(125),
         m_maxSteeringAcc(52),
@@ -41,9 +40,6 @@ UbiquityParams::UbiquityParams():
 bool UbiquityParams::check() const
 {
     bool res = true;
-
-    //TODO à virer
-    return true;
 
     //on vérifie que les roues ont une dimension réaliste
     if( m_leftWheelDiameter <= 0.010 || m_leftWheelDiameter >= 3 )

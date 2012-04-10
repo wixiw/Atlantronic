@@ -28,7 +28,6 @@ bool UbiquityKinematics::motors2Turrets(const MotorState & iMS,
         Log(ERROR) << "UbiquityKinematics::motors2Turrets failed when checking params";
         return false;
     }
-    //cout << "----- UbiquityKinematics::motors2Turrets" << endl;
 
     oTS.steering.left.position = (iMS.steering.left.position - iParams.getLeftTurretZero())
             *iParams.getTurretRatio() ;
@@ -46,7 +45,6 @@ bool UbiquityKinematics::motors2Turrets(const MotorState & iMS,
 
     oTS.driving.rear.velocity = iParams.getRearWheelDiameter()/2
             *(iMS.driving.rear.velocity*iParams.getTractionRatio() + iMS.steering.rear.velocity*iParams.getTurretRatio());
-    //cout << "oTS b4 norm : " << oTS.toString() << endl;
 
     //normalisations
     oTS.steering.left.position = betweenMinusPiAndPlusPi(oTS.steering.left.position);
@@ -61,7 +59,6 @@ bool UbiquityKinematics::turrets2Motors(const TurretState & iTSbrut,
                                         MotorState& oMS,
                                         const UbiquityParams & iParams)
 {
-    Log(DEBUG) << "----- UbiquityKinematics::turrets2Motors";
     if( !iParams.check() )
     {
         Log(ERROR) << "UbiquityKinematics::turrets2Motors failed when checking params";
@@ -86,10 +83,6 @@ bool UbiquityKinematics::turrets2Motors(const TurretState & iTSbrut,
     normalizeDirection(deltaCmd);
     iTS.driving = deltaCmd.driving;
 
-    Log(DEBUG) << "iTS : " << iTS.toString();
-    Log(DEBUG) << "currentTurretPos : " << currentTurretPos.toString();
-    Log(DEBUG) << "deltaCmd : " << deltaCmd.toString();
-
     //ajout a la position brute du moteur le delta de commande, et paf ca fait la consigne a envoyer au prochain step
     oMS.steering.left.position = iMS.steering.left.position + deltaCmd.steering.left.position/iParams.getTurretRatio() + iParams.getLeftTurretZero();
     oMS.steering.right.position = iMS.steering.right.position + deltaCmd.steering.right.position/iParams.getTurretRatio() + iParams.getRightTurretZero();
@@ -103,7 +96,10 @@ bool UbiquityKinematics::turrets2Motors(const TurretState & iTSbrut,
     oMS.driving.rear.velocity = (2*iTS.driving.rear.velocity/iParams.getRearWheelDiameter() - iMS.steering.rear.velocity*iParams.getTurretRatio())
             /iParams.getTractionRatio();
 
-    Log(DEBUG) <<  "oMS : " << oMS.toString();
+    //Log(DEBUG) << "iTS : " << iTS.toString();
+    //Log(DEBUG) << "currentTurretPos : " << currentTurretPos.toString();
+    //Log(DEBUG) << "deltaCmd : " << deltaCmd.toString();
+    //Log(DEBUG) <<  "oMS : " << oMS.toString();
     return true;
 }
 

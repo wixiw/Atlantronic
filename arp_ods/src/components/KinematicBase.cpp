@@ -20,9 +20,10 @@ using namespace std;
 ORO_LIST_COMPONENT_TYPE( arp_ods::KinematicBase )
 
 KinematicBase::KinematicBase(const std::string& name):
-        OdsTaskContext(name)
+        OdsTaskContext(name),
+        propMinSpeed(0.001)
 {
-    //arp_model::Logger::InitFile("arp_model", INFO);
+    //arp_model::Logger::InitFile("arp_model", DEBUG);
     createOrocosInterface();
 }
 
@@ -56,7 +57,7 @@ void KinematicBase::run()
     //filter the input command to get a reachable command that we are sure the hardware will be capable to do
 //    if( KinematicFilter::filterTwist(attrTwistCmd, attrCurrentTwist,
 //                                    attrMotorsCurrentState, attrParams,
-//                                    dt, attrAcceptableTwist, attrQuality) == false )
+//                                    dt, propMinSpeed, attrAcceptableTwist, attrQuality) == false )
 //    {
 //        //TODO remettre en erreur
 //        LOG(Info) << "Failed to filter desired twist to an acceptable twist" << endlog();
@@ -71,8 +72,8 @@ void KinematicBase::run()
     }
 
     //gestion du cas pas de vitesse pour ne pas bouger les tourelles
-    //TODO mettre en propriete
-    if( attrAcceptableTwist.speedNorm() <= 0.001 )
+    //TODO a supprimer avec le filtre ?
+    if( attrAcceptableTwist.speedNorm() <= propMinSpeed )
     {
         attrMotorStateCommand.steering = attrMotorsCurrentState.steering;
     }
@@ -100,6 +101,9 @@ void KinematicBase::createOrocosInterface()
     addAttribute("attrMotorsCurrentState",attrMotorsCurrentState);
     addAttribute("attrParams",attrParams);
     addAttribute("attrQuality",attrQuality);
+
+    addProperty("propMinSpeed",propMinSpeed)
+            .doc("");
 
     addEventPort("inTwistCmd",inTwistCmd)
             .doc("");

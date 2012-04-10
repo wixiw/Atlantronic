@@ -33,6 +33,8 @@ class KinematicBase: public OdsTaskContext
         arp_model::UbiquityParams attrParams;
         double attrQuality;
 
+        double propMinSpeed;
+
         /** Clock port which trigger our activity. contains the Twist command we ha to try to do on the robot*/
         RTT::InputPort<arp_math::Twist2D> inTwistCmd;
         /** Measure of the current robot Twist */

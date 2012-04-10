@@ -246,10 +246,11 @@ BOOST_AUTO_TEST_CASE( KinematicFilter_Zero )
     double attrQuality;
     bool res;
     double dt = 0.010;
+    double minSpeed;
 
     res = KinematicFilter::filterTwist(attrTwistCmd, attrCurrentTwist,
                                     attrMotorsCurrentState, attrParams,
-                                    dt, attrAcceptableTwist, attrQuality);
+                                    dt, minSpeed, attrAcceptableTwist, attrQuality);
     BOOST_CHECK( res );
 	BOOST_CHECK( attrAcceptableTwist == attrTwistCmd );
 	BOOST_CHECK( attrAcceptableTwist == attrCurrentTwist );
@@ -263,6 +264,7 @@ BOOST_AUTO_TEST_CASE( KinematicFilter_InputOk )
     double attrQuality;
     bool res;
     double dt = 0.010;
+        double minSpeed = 0.001;
     arp_math::Twist2D attrTwistCmd(1,2.3,0.7);
     arp_math::Twist2D attrCurrentTwist = attrTwistCmd;
     arp_math::Twist2D attrAcceptableTwist;
@@ -277,16 +279,17 @@ BOOST_AUTO_TEST_CASE( KinematicFilter_InputOk )
 
     res = KinematicFilter::filterTwist(attrTwistCmd, attrCurrentTwist,
                                     attrMotorsCurrentState, attrParams,
-                                    dt, attrAcceptableTwist, attrQuality);
+                                    dt, minSpeed, attrAcceptableTwist, attrQuality);
     BOOST_CHECK( res );
     BOOST_CHECK( attrAcceptableTwist == attrTwistCmd );
     BOOST_CHECK( attrAcceptableTwist == attrCurrentTwist );
     BOOST_CHECK_EQUAL( attrQuality , 1.0 );
 }
 
-BOOST_AUTO_TEST_CASE( KinematicFilter_InputOk2 )
+//demarrage a pi/2
+BOOST_AUTO_TEST_CASE( KinematicFilter_StartPI2 )
 {
-    arp_math::Twist2D attrTwistCmd(1,2.3,0.7);
+    arp_math::Twist2D attrTwistCmd(0,1,0.0);
     arp_math::Twist2D attrCurrentTwist;
     arp_math::Twist2D attrAcceptableTwist;
     arp_model::MotorState attrMotorStateCommand;
@@ -295,12 +298,37 @@ BOOST_AUTO_TEST_CASE( KinematicFilter_InputOk2 )
     double attrQuality;
     bool res;
     double dt = 0.010;
+    double minSpeed = 0.001;
 
     res = KinematicFilter::filterTwist(attrTwistCmd, attrCurrentTwist,
                                     attrMotorsCurrentState, attrParams,
-                                    dt, attrAcceptableTwist, attrQuality);
+                                    dt, minSpeed, attrAcceptableTwist, attrQuality);
+    BOOST_CHECK( res );
+    BOOST_CHECK( attrAcceptableTwist != attrTwistCmd );
+    BOOST_CHECK( attrAcceptableTwist != attrCurrentTwist );
+    Log(INFO) << "quality=" << attrQuality << " twist=" << attrAcceptableTwist.toString();
+}
+
+//arret a pi/2
+BOOST_AUTO_TEST_CASE( KinematicFilter_StopPI2 )
+{
+    arp_math::Twist2D attrTwistCmd(0,0,0.0);
+    arp_math::Twist2D attrCurrentTwist(0,1,0.0);;
+    arp_math::Twist2D attrAcceptableTwist;
+    arp_model::MotorState attrMotorStateCommand;
+    arp_model::MotorState attrMotorsCurrentState;
+    arp_model::UbiquityParams attrParams;
+    double attrQuality;
+    bool res;
+    double dt = 0.010;
+    double minSpeed = 0.001;
+
+    res = KinematicFilter::filterTwist(attrTwistCmd, attrCurrentTwist,
+                                    attrMotorsCurrentState, attrParams,
+                                    dt, minSpeed, attrAcceptableTwist, attrQuality);
     BOOST_CHECK( res );
     BOOST_CHECK( attrAcceptableTwist == attrTwistCmd );
-    BOOST_CHECK( attrAcceptableTwist == attrCurrentTwist );
-    BOOST_CHECK_EQUAL( attrQuality , 1.0 );
+    BOOST_CHECK( attrAcceptableTwist != attrCurrentTwist );
+    BOOST_CHECK( attrQuality == 1 );
+    Log(INFO) << "quality=" << attrQuality << " twist=" << attrAcceptableTwist.toString();
 }
