@@ -46,7 +46,11 @@ class OmnidirectOrder: public arp_ods::MotionOrder
          */
         virtual arp_math::Twist2D computeSpeed(arp_math::Pose2D currentPosition, double dt);
 
-
+    protected:
+        double DECLIN;
+        double DECROT;
+        double VMAXLIN;
+        double VMAXROT;
 
 
 
