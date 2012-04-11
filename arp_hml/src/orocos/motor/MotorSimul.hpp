@@ -60,8 +60,6 @@ namespace arp_hml
         /** index of the Faulhaber Command PDO */
         int attrFaulhaberCommandPdoIndex;
 
-        /** Is true when you when to invert the speed command and feedback of the motor softly **/
-        bool propInvertDriveDirection;
         /** Reductor's value from the motor's axe to the reductor's output's axe. So it should be greather than 1**/
         double propReductorValue;
         /** Encoder resolution in point by rev **/

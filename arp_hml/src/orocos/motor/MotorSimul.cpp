@@ -17,22 +17,21 @@ ORO_LIST_COMPONENT_TYPE( arp_hml::MotorSimul )
 MotorSimul::MotorSimul(const std::string& name):
     HmlTaskContext(name),
     ArdMotorItf(),
-    m_power(false),
     attrBlockingDelay(0),
-    propInvertDriveDirection(false),
     propReductorValue(14),
     propEncoderResolution(3000),
     propMaximalTorque(0.5),
-    propInputsTimeout(20.0)
+    propInputsTimeout(20.0),
+    m_power(false)
 
 {
     addAttribute("attrCommandedSpeed",m_speedCommand);
+    addAttribute("attrPositionCmd",m_positionCommand);
+    addAttribute("attrTorqueCmd",m_torqueCommand);
     addAttribute("attrPeriod",attrPeriod);
     addAttribute("attrBlockingDelay",attrBlockingDelay);
     addAttribute("attrIncrementalOdometer",attrIncrementalOdometer);
 
-    addProperty("propInvertDriveDirection",propInvertDriveDirection)
-        .doc("Is true when you when to invert the speed command and feedback of the motor softly");
     addProperty("propReductorValue",propReductorValue)
         .doc("Reductor's value from the motor's axe to the reductor's output's axe. So it should be greather than 1");
     addProperty("propEncoderResolution",propEncoderResolution)
@@ -254,13 +253,9 @@ void MotorSimul::runSpeed()
 {
     if( m_power )
     {
+        //ne pas changer la commande qui correspond a priori a une conception interne d'un vrai moteur
         outFilteredSpeedCommand.write(m_speedCommand);
-        double speed = m_speedCommand;
-        if( propInvertDriveDirection )
-        {
-            speed = -speed;
-        }
-        m_speedMeasure = speed;
+        m_speedMeasure = m_speedCommand;
     }
     else
     {
@@ -281,13 +276,9 @@ void MotorSimul::runPosition()
 {
     if( m_power )
     {
+        //ne pas changer la commande qui correspond a priori a une conception interne d'un vrai moteur
         outFilteredPositionCommand.write(m_positionCommand);
-        double position = m_positionCommand;
-        if( propInvertDriveDirection )
-        {
-            position = -position;
-        }
-        m_positionMeasure = position;
+        m_positionMeasure = m_positionCommand;
         //TODO :
         //outFiltereadSpeedCommand.write(??);
         //m_speedMeasure = ?;
