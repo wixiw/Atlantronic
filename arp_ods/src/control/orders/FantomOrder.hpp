@@ -15,10 +15,10 @@
 
 using namespace boost;
 
-namespace arp_ods
+namespace arp_ods{ namespace orders
 {
 
-class FantomOrder: public arp_ods::MotionOrder
+class FantomOrder: public MotionOrder
 {
     public:
 
@@ -34,12 +34,12 @@ class FantomOrder: public arp_ods::MotionOrder
         /**
          * Define configurable attributes to their default values
          */
-        virtual void setDefaults(order::config conf);
+        virtual void setDefaults(orders::config conf);
 
         /**
          * Override to define specific parameters
          */
-        static shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, arp_math::Pose2D currentPose, order::config conf  );
+        static shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, arp_math::Pose2D currentPose, orders::config conf  );
 
         /**
          *
@@ -130,6 +130,6 @@ class FantomOrder: public arp_ods::MotionOrder
         double TRANSLATION_GAIN;
 };
 
-}
+}}
 
 #endif /* FANTOMORDER_HPP_ */

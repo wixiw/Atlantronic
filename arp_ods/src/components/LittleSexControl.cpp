@@ -9,6 +9,7 @@
 #include <rtt/Component.hpp>
 
 using namespace arp_ods;
+using namespace orders;
 using namespace RTT;
 using namespace std;
 
@@ -16,7 +17,7 @@ ORO_LIST_COMPONENT_TYPE( arp_ods::LittleSexControl )
 
 LittleSexControl::LittleSexControl(const std::string& name):
         OdsTaskContext(name),
-        attrOrder(order::defaultOrder),
+        attrOrder(orders::defaultOrder),
         attrVMax(1.0),
         attrCurrentOrder("default")
 {

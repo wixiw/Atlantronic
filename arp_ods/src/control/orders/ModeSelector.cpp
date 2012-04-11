@@ -10,28 +10,30 @@
 #include <ros/ros.h>
 
 using namespace arp_math;
+using namespace arp_ods;
+using namespace orders;
 
 // Displaying:
-std::ostream& operator<<(std::ostream& os, const arp_ods::mode& mode)
+std::ostream& operator<<(std::ostream& os, const arp_ods::orders::mode& mode)
 {
     switch (mode)
     {
-        case arp_ods::MODE_INIT:
+        case MODE_INIT:
             return os << "MODE_INIT";
             break;
-        case arp_ods::MODE_RUN:
+        case MODE_RUN:
             return os << "MODE_RUN";
             break;
-        case arp_ods::MODE_APPROACH:
+        case MODE_APPROACH:
             return os << "MODE_APPROACH";
             break;
-        case arp_ods::MODE_DONE:
+        case MODE_DONE:
             return os << "MODE_DONE";
             break;
-        case arp_ods::MODE_ERROR:
+        case MODE_ERROR:
             return os << "MODE_ERROR";
             break;
-        case arp_ods::MODE_PASS:
+        case MODE_PASS:
             return os << "MODE_PASS";
             break;
         default:
@@ -40,8 +42,6 @@ std::ostream& operator<<(std::ostream& os, const arp_ods::mode& mode)
     }
 }
 
-namespace arp_ods
-{
 
 ModeSelector::ModeSelector()
 {
@@ -65,7 +65,7 @@ void ModeSelector::resetMode()
     m_currentMode = MODE_INIT;
 }
 
-void ModeSelector::setDefaults(order::config conf)
+void ModeSelector::setDefaults(config conf)
 {
     m_angleAccuracy = conf.ANGLE_ACCURACY;
     m_distanceAccuracy = conf.DISTANCE_ACCURACY;
@@ -276,4 +276,3 @@ void ModeSelector::testTimeout()
     }
 }
 
-}

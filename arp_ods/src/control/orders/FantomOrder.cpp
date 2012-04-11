@@ -6,11 +6,11 @@
  */
 
 #include "FantomOrder.hpp"
+#include "control/orders/Logger.hpp"
 
 using namespace arp_math;
-
-namespace arp_ods
-{
+using namespace arp_ods;
+using namespace orders;
 
 FantomOrder::FantomOrder() :
     MotionOrder()
@@ -32,7 +32,7 @@ FantomOrder::FantomOrder(MotionOrder order) :
 {
 }
 
-void FantomOrder::setDefaults(order::config conf)
+void FantomOrder::setDefaults(orders::config conf)
 {
     MotionOrder::setDefaults(conf);
     setFANTOM_COEF(conf.FANTOM_COEF);
@@ -42,7 +42,7 @@ void FantomOrder::setDefaults(order::config conf)
     setVEL_FINAL(conf.VEL_FINAL);
 }
 
-shared_ptr<MotionOrder> FantomOrder::createOrder( const OrderGoalConstPtr &goal, Pose2D currentPose, order::config conf  )
+shared_ptr<MotionOrder> FantomOrder::createOrder( const OrderGoalConstPtr &goal, Pose2D currentPose, orders::config conf  )
 {
     shared_ptr<FantomOrder> order(new FantomOrder());
 
@@ -297,4 +297,3 @@ void FantomOrder::setVEL_FINAL(double VEL_FINAL)
     this->VEL_FINAL = VEL_FINAL;
 }
 
-}

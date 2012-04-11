@@ -10,7 +10,7 @@
 
 #include <math/core>
 
-namespace arp_ods
+namespace arp_ods{ namespace orders
 {
 
 enum mode
@@ -18,8 +18,6 @@ enum mode
     MODE_INIT = 1, MODE_RUN = 2, MODE_APPROACH = 3, MODE_DONE = 4, MODE_ERROR = 5, MODE_PASS = 6
 };
 
-    namespace order
-    {
     struct config
     {
         /** This default parameter defines the APPROACH mode area in m*/
@@ -47,7 +45,6 @@ enum mode
          double LIN_VEL_MAX;
          double ANG_VEL_MAX;
     };
-    }
 
 
 /**
@@ -64,7 +61,7 @@ class ModeSelector
         /**
          * Define configurable attributes to their default values
          */
-        virtual void setDefaults(order::config conf);
+        virtual void setDefaults(arp_ods::orders::config conf);
 
         /**
          * Call this function every cycle to check if a new mode is available.
@@ -210,6 +207,6 @@ class ModeSelector
 
 };
 
-}
+}}
 
 #endif /* MODESELECTOR_HPP_ */

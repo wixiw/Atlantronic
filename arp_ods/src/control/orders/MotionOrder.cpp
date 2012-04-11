@@ -10,17 +10,16 @@
 #include "control/orders/orders.h"
 
 using namespace arp_math;
-
-namespace arp_ods
-{
-
-namespace order
+using namespace arp_ods;
+using namespace orders;
+namespace arp_ods{
+    namespace orders
 {
     shared_ptr < MotionOrder > defaultOrder(new MotionOrder());
-}
+}}
 
 MotionOrder::MotionOrder(const MotionOrder& order):
-        arp_ods::ModeSelector()
+        ModeSelector()
 {
     m_type = order.m_type;
     m_reverse = order.m_reverse;
@@ -35,7 +34,7 @@ MotionOrder::MotionOrder(const MotionOrder& order):
 }
 
 MotionOrder::MotionOrder() :
-    arp_ods::ModeSelector(), m_type(NO_ORDER), m_reverse(false)
+   ModeSelector(), m_type(NO_ORDER), m_reverse(false)
 {
 
 }
@@ -64,7 +63,7 @@ Pose2D MotionOrder::reversePosition(Pose2D p)
     return ret;
 }
 
-shared_ptr<MotionOrder> MotionOrder::createOrder( const OrderGoalConstPtr &goal, Pose2D currentPose, order::config conf )
+shared_ptr<MotionOrder> MotionOrder::createOrder( const OrderGoalConstPtr &goal, Pose2D currentPose, orders::config conf )
 {
     shared_ptr<MotionOrder> order(new MotionOrder());
 
@@ -130,7 +129,5 @@ void MotionOrder::setReverse(bool reverse)
 void MotionOrder::setId(int id)
 {
     m_id = id;
-}
-
 }
 

@@ -13,20 +13,20 @@
 
 using namespace boost;
 
-namespace arp_ods
+namespace arp_ods{ namespace orders
 {
 
 /**
  * This order allows to do a pure rotation
  */
-class RotationOrder: public arp_ods::FantomOrder
+class RotationOrder: public arp_ods::orders::FantomOrder
 {
     public:
         RotationOrder();
         RotationOrder(MotionOrder order);
 
         /** Override to define specific parameters*/
-        static shared_ptr<MotionOrder>  createOrder( const OrderGoalConstPtr &goal, arp_math::Pose2D currentPose, order::config conf );
+        static shared_ptr<MotionOrder>  createOrder( const OrderGoalConstPtr &goal, arp_math::Pose2D currentPose, orders::config conf );
 
         /** Override to go in approach mode directly */
         virtual void switchInit(arp_math::Pose2D currentPosition);
@@ -38,6 +38,6 @@ class RotationOrder: public arp_ods::FantomOrder
         void setPass(bool pass);
 };
 
-}
+}}
 
 #endif /* ROTATIONORDER_HPP_ */

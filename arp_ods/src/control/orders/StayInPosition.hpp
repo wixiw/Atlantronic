@@ -10,19 +10,19 @@
 
 #include "MotionOrder.hpp"
 
-namespace arp_ods
+namespace arp_ods{ namespace orders
 {
 
 /**
  *  The robot is asked to stay on the position when in MODE_INIT
  */
-class StayInPosition: public arp_ods::MotionOrder
+class StayInPosition: public MotionOrder
 {
     public:
         StayInPosition();
         virtual arp_math::Twist2D computeSpeed(arp_math::Pose2D currentPosition);
 };
 
-}
+}}
 
 #endif /* STAYINPOSITION_HPP_ */

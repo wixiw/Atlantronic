@@ -21,7 +21,7 @@ using namespace boost;
 
 namespace arp_ods
 {
-    namespace order
+    namespace orders
     {
         extern shared_ptr<MotionOrder> defaultOrder;
     }

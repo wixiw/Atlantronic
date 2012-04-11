@@ -10,6 +10,7 @@
 
 using namespace arp_math;
 using namespace arp_ods;
+using namespace orders;
 using namespace RTT;
 using namespace std;
 
@@ -23,7 +24,7 @@ RosOdsItf::RosOdsItf(std::string const name):
     createOrocosInterface();
     createRosInterface();
 
-    m_order = order::defaultOrder;
+    m_order = orders::defaultOrder;
 
     //TODO a remplacer par la lecture des proprietes en XML ... ce qui necessite d'ecrire le typekit
     //WLA : j'ai tenté de le générer automatiquement ça n'a pas l'air d'avoir fonctionner,
@@ -160,7 +161,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         result.x_end = pose.x();
         result.y_end = pose.y();
         result.theta_end = pose.h();
-        m_order = order::defaultOrder;
+        m_order = orders::defaultOrder;
         m_actionServer.setAborted(result);
         return;
     success:
@@ -169,11 +170,11 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         result.x_end = pose.x();
         result.y_end = pose.y();
         result.theta_end = pose.h();
-        m_order = order::defaultOrder;
+        m_order = orders::defaultOrder;
         m_actionServer.setSucceeded(result);
         return;
     preempted:
-        m_order = order::defaultOrder;
+        m_order = orders::defaultOrder;
         m_actionServer.setPreempted();
         return;
 }

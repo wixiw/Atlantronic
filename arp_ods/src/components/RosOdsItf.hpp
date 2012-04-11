@@ -31,7 +31,7 @@ class RosOdsItf: public OdsTaskContext
         RTT::InputPort<arp_math::EstimatedPose2D> inPose;
         RTT::InputPort<bool> inCurrentOrderIsFinished;
         RTT::InputPort<bool> inCurrentOrderIsInError;
-        RTT::OutputPort< shared_ptr<MotionOrder> > outOrder;
+        RTT::OutputPort< shared_ptr<orders::MotionOrder> > outOrder;
 
         /**
          * Actionlib server.
@@ -42,10 +42,10 @@ class RosOdsItf: public OdsTaskContext
         /** The current order to do. There is always one at a time since
          * newOrderCB is blocking by design of the action lib
          */
-        shared_ptr<MotionOrder> m_order;
+        shared_ptr<orders::MotionOrder> m_order;
 
         /** Motion control configuration. They are feeded with rosparam during init */
-        order::config propOrderConfig;
+        orders::config propOrderConfig;
 
         /**
          * Tells if the current order is finished with success. It is finished when the robot is in PASS mode when the order
@@ -74,7 +74,7 @@ class RosOdsItf: public OdsTaskContext
          */
         bool setVMaxCallback(SetVMax::Request& req, SetVMax::Response& res);
 
-        RTT::OperationCaller<bool(shared_ptr<MotionOrder>)> m_ooSetOrder;
+        RTT::OperationCaller<bool(shared_ptr<orders::MotionOrder>)> m_ooSetOrder;
         RTT::OperationCaller<bool(double)> m_ooSetVMax;
 
 

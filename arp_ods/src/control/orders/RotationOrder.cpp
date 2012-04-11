@@ -8,9 +8,8 @@
 #include "RotationOrder.hpp"
 
 using namespace arp_math;
-
-namespace arp_ods
-{
+using namespace arp_ods;
+using namespace orders;
 
 RotationOrder::RotationOrder()
 {
@@ -24,7 +23,7 @@ RotationOrder::RotationOrder(MotionOrder order):
 {
 }
 
-shared_ptr<MotionOrder>  RotationOrder::createOrder( const OrderGoalConstPtr &goal, Pose2D currentPose, order::config conf )
+shared_ptr<MotionOrder>  RotationOrder::createOrder( const OrderGoalConstPtr &goal, Pose2D currentPose, orders::config conf )
 {
     shared_ptr<RotationOrder> order(new RotationOrder());
 
@@ -75,4 +74,3 @@ void RotationOrder::setPass(bool pass)
     m_pass = false;
 }
 
-}

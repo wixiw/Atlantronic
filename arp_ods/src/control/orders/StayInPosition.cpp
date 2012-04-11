@@ -7,8 +7,8 @@
 
 #include "StayInPosition.hpp"
 
-namespace arp_ods
-{
+using namespace arp_ods;
+using namespace orders;
 
 StayInPosition::StayInPosition() :
     MotionOrder()
@@ -20,6 +20,4 @@ arp_math::Twist2D StayInPosition::computeSpeed(arp_math::Pose2D currentPosition)
 {
     arp_math::Twist2D v;
     return v;
-}
-
 }

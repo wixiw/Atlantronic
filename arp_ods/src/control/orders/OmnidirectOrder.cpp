@@ -8,9 +8,8 @@
 #include "OmnidirectOrder.hpp"
 
 using namespace arp_math;
-
-namespace arp_ods
-{
+using namespace arp_ods;
+using namespace orders;
 
 OmnidirectOrder::OmnidirectOrder() :
     MotionOrder()
@@ -26,7 +25,7 @@ OmnidirectOrder::OmnidirectOrder(MotionOrder order) :
 {
 }
 
-void OmnidirectOrder::setDefaults(order::config conf)
+void OmnidirectOrder::setDefaults(orders::config conf)
 {
     MotionOrder::setDefaults(conf);
 
@@ -37,7 +36,7 @@ void OmnidirectOrder::setDefaults(order::config conf)
     VMAXROT=1.0; // en m/s2
 }
 
-shared_ptr<MotionOrder> OmnidirectOrder::createOrder( const OrderGoalConstPtr &goal, Pose2D currentPose, order::config conf  )
+shared_ptr<MotionOrder> OmnidirectOrder::createOrder( const OrderGoalConstPtr &goal, Pose2D currentPose, orders::config conf  )
 {
     shared_ptr<OmnidirectOrder> order(new OmnidirectOrder());
 
@@ -66,13 +65,15 @@ shared_ptr<MotionOrder> OmnidirectOrder::createOrder( const OrderGoalConstPtr &g
 
 Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double dt)
 {
-/*
     //position error
     Pose2D deltaPos_refTable=m_endPose-currentPosition;
 
     //position error in robot referential
     Rotation2 orient_robot(currentPosition.h());
-    Pose2D deltaPos_refRobot= orient_robot.inverse() * deltaPos_refTable;
+    currentPosition.getDisplacement2Matrix();
+    Pose2D deltaPos_refRobot;
+    deltaPos_refRobot.translation( orient_robot.inverse().toRotationMatrix() * deltaPos_refTable.translation());
+    deltaPos_refRobot.orientation(0);
 
     // brutal correction twist
     Twist2D v_correction;
@@ -86,14 +87,7 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
     //satrot=
     //sat=max(satlin, satrot,1)
     //v_correction_saturated = v_correction * sat
-*/
-
-    Twist2D v;
-    v.vx(0);
-    v.vy(0.1);
-    v.vh(0);
-    return v;
-}
 
 }
+
 

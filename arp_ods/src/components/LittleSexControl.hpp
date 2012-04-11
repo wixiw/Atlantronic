@@ -25,7 +25,7 @@ class LittleSexControl: public OdsTaskContext
          * Use this operation to setup a new order
          * @return true on successfull change
          */
-        bool ooSetOrder(shared_ptr<MotionOrder> order);
+        bool ooSetOrder(shared_ptr<orders::MotionOrder> order);
 
         /**
          * Use this opration to setup a new max speed
@@ -45,7 +45,7 @@ class LittleSexControl: public OdsTaskContext
          * Ordre a realiser. Il change lentement
          * il est possible de voir un changement avec readNewest() == NewData
          */
-        RTT::InputPort< shared_ptr<MotionOrder> > inOrder;
+        RTT::InputPort< shared_ptr<orders::MotionOrder> > inOrder;
 
         /**
          * This is the result of computation : the Twist that the robot should do
@@ -77,7 +77,7 @@ class LittleSexControl: public OdsTaskContext
         /**
          * Buffer for input order
          */
-        shared_ptr<MotionOrder>  attrOrder;
+        shared_ptr<orders::MotionOrder>  attrOrder;
 
         /**
          * Local variable to stock the max velocity that we were aked to follow

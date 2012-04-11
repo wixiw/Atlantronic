@@ -13,7 +13,7 @@
 #include <boost/shared_ptr.hpp>
 #include <math/core>
 
-namespace arp_ods
+namespace arp_ods{ namespace orders
 {
 
 enum OrderType
@@ -32,7 +32,7 @@ enum OrderType
  * TODO WLA : implémenter l'identifiant unique
  */
 
-class MotionOrder: public arp_ods::ModeSelector
+class MotionOrder: public ModeSelector
 {
     public:
         /**
@@ -68,7 +68,7 @@ class MotionOrder: public arp_ods::ModeSelector
          * @param conf : automation parameters (gains)
          * @return : a MotionOrder to execute
          */
-        static boost::shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, arp_math::Pose2D currentPose, order::config conf  );
+        static boost::shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, arp_math::Pose2D currentPose, orders::config conf  );
 
         /**
          * Returns the type of the order
@@ -102,6 +102,6 @@ class MotionOrder: public arp_ods::ModeSelector
 
 };
 
-}
+}}
 
 #endif /* MOTIONORDER_HPP_ */
