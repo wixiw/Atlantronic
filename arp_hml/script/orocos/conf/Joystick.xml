@@ -3,7 +3,7 @@
 <properties>
 	<simple name="propDevName" type="string">
 		<description>linux /dev file which represents the joystick</description>
-		<value>/dev/input/js1</value>
+		<value>/dev/gamepadPs2</value>
 	</simple>
 	<simple name="propEventName" type="string">
 		<description>linux /dev file which represents the joystick input</description>

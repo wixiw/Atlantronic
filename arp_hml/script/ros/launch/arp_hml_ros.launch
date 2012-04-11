@@ -20,7 +20,7 @@
   		<param name="min_ang" type="double" value="-2.08" />
   		<param name="max_ang" type="double" value="2.08" />
   	</node> 
-  	
+  	<!--
   	<node 	name="dynamixel_manager" 
   	  		pkg="dynamixel_controllers" 
   	  		type="controller_manager.py" 
@@ -36,5 +36,5 @@
                     max_motor_id: 20
                     update_rate: 20
         </rosparam>
-    </node>
+    </node>-->
 </launch>

@@ -133,4 +133,13 @@ else
 	echo -e $VERT "[.] rsync succeed" $NORMAL
 fi
 
+echo -e $BLEU  "setting permissions" $NORMAL
+ssh root@$2 bash -c "find /opt/ard -name "*.sh" | xargs chmod +x"
+if [ $? != 0 ]; then
+    echo -e $ROUGE "[!] permission configuration failed !"  $NORMAL
+    exit 1
+else
+	echo -e $VERT "[.] permission configuration succeed" $NORMAL
+fi
+
 date
