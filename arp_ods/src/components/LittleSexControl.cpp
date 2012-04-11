@@ -7,11 +7,12 @@
 
 #include "LittleSexControl.hpp"
 #include <rtt/Component.hpp>
-
+#include "control/orders/Logger.hpp"
 using namespace arp_ods;
 using namespace orders;
 using namespace RTT;
 using namespace std;
+using namespace arp_core::log;
 
 ORO_LIST_COMPONENT_TYPE( arp_ods::LittleSexControl )
 
@@ -22,6 +23,8 @@ LittleSexControl::LittleSexControl(const std::string& name):
         attrCurrentOrder("default")
 {
     createOrocosInterface();
+    arp_ods::orders::Logger::InitFile("arp_ods", DEBUG);
+    //arp_ods::orders::Logger::InitConsole("arp_ods", DEBUG);
 }
 
 void LittleSexControl::getInputs()

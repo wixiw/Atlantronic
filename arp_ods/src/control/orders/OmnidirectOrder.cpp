@@ -6,10 +6,11 @@
  */
 
 #include "OmnidirectOrder.hpp"
-
+#include "control/orders/Logger.hpp"
 using namespace arp_math;
 using namespace arp_ods;
 using namespace orders;
+using namespace arp_core::log;
 
 OmnidirectOrder::OmnidirectOrder() :
     MotionOrder()
@@ -73,7 +74,9 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
     currentPosition.getDisplacement2Matrix();
     Pose2D deltaPos_refRobot;
     deltaPos_refRobot.translation( orient_robot.inverse().toRotationMatrix() * deltaPos_refTable.translation());
-    deltaPos_refRobot.orientation(0);
+    deltaPos_refRobot.orientation( deltaPos_refTable.h() );
+
+    Log(ERROR) << "poil : " << deltaPos_refRobot.toString() << " l'autre " << deltaPos_refTable.toString() ;
 
     // brutal correction twist
     Twist2D v_correction;
@@ -87,6 +90,9 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
     //satrot=
     //sat=max(satlin, satrot,1)
     //v_correction_saturated = v_correction * sat
+
+    //TODO attention à bien brancher le bon truc dedans
+    return v_correction;
 
 }
 
