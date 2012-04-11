@@ -6,10 +6,11 @@
  */
 
 #include "RotationOrder.hpp"
-
+#include "control/orders/Logger.hpp"
 using namespace arp_math;
 using namespace arp_ods;
 using namespace orders;
+using namespace arp_core::log;
 
 RotationOrder::RotationOrder()
 {
@@ -59,7 +60,7 @@ void RotationOrder::switchInit(arp_math::Pose2D currentPosition)
     m_reverse = false;
     m_pass = false;
 
-    ROS_INFO("switched MODE_INIT --> MODE_APPROACH because it's a RotationOrder");
+    Log(INFO) << "switched MODE_INIT --> MODE_APPROACH because it's a RotationOrder";
     m_currentMode = MODE_APPROACH;
     return;
 }

@@ -11,6 +11,7 @@
 using namespace arp_math;
 using namespace arp_ods;
 using namespace orders;
+using namespace arp_core::log;
 
 FantomOrder::FantomOrder() :
     MotionOrder()
@@ -231,7 +232,7 @@ void FantomOrder::switchInit(arp_math::Pose2D currentPosition)
 
     m_beginPose = currentPosition;
 
-    ROS_INFO("switched MODE_INIT --> MODE_RUN automatically");
+    Log(INFO) << "switched MODE_INIT --> MODE_RUN automatically";
     m_currentMode = MODE_RUN;
     return;
 }

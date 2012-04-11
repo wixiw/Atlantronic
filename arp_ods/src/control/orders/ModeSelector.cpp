@@ -5,13 +5,15 @@
  *      Author: wla
  */
 #include "ModeSelector.hpp"
-
+#include "control/orders/Logger.hpp"
 #include <math/core>
 #include <ros/ros.h>
+
 
 using namespace arp_math;
 using namespace arp_ods;
 using namespace orders;
+using namespace arp_core::log;
 
 // Displaying:
 std::ostream& operator<<(std::ostream& os, const arp_ods::orders::mode& mode)
@@ -88,14 +90,14 @@ void ModeSelector::switchRun(arp_math::Pose2D currentPosition)
     {
         if (getPass())
         {
-            ROS_INFO("switched MODE_RUN --> MODE_PASS");
+            Log(INFO) << "switched MODE_RUN --> MODE_PASS";
             m_currentMode = MODE_PASS;
             m_passTime = getTime();
             return;
         }
         else
         {
-            ROS_INFO("switched MODE_RUN --> MODE_APPROACH");
+            Log(INFO) << "switched MODE_RUN --> MODE_APPROACH";
             m_currentMode = MODE_APPROACH;
             return;
         }
@@ -110,9 +112,11 @@ void ModeSelector::switchApproach(arp_math::Pose2D currentPosition)
 
     if (distance_error < m_distanceAccuracy && fabs(angle_error) < m_angleAccuracy)
     {
-        ROS_INFO("switched MODE_APPROACH --> MODE_DONE");
-        ROS_INFO("(%.3fm,%.3fm,%.1fdeg) with e_d=%.1fmm e_cap=%.1fdeg", currentPosition.x(), currentPosition.y(),
-                rad2deg(currentPosition.h()), distance_error * 1000, rad2deg(angle_error));
+        Log(INFO) << "switched MODE_APPROACH --> MODE_DONE";
+        char string [250];
+        sprintf(string,"(%.3fm,%.3fm,%.1fdeg) with e_d=%.1fmm e_cap=%.1fdeg", currentPosition.x(), currentPosition.y(),
+                        rad2deg(currentPosition.h()), distance_error * 1000, rad2deg(angle_error));
+        Log(INFO) << string;
         m_currentMode = MODE_DONE;
         return;
     }
@@ -136,7 +140,7 @@ void ModeSelector::switchPass(arp_math::Pose2D currentPosition)
     double dt = t - m_passTime;
     if (dt < 0 || dt > m_passTimeout)
     {
-        ROS_INFO("switched MODE_PASS --> MODE_DONE because of dt=%0.3f", dt);
+        Log(INFO) << "switched MODE_PASS --> MODE_DONE because of dt= "<< dt;
         m_currentMode = MODE_DONE;
         return;
     }
@@ -177,7 +181,7 @@ double ModeSelector::getRemainingDistance(arp_math::Pose2D currentPosition)
 double ModeSelector::getRemainingAngle(arp_math::Pose2D currentPosition)
 {
     double e_theta = currentPosition.angleTo(m_endPose);
-    //ROS_WARN("e_theta %0.3f",e_theta);
+    //Log(DEBUG) << "e_theta "<< e_theta;
     return e_theta;
 }
 
@@ -270,7 +274,7 @@ void ModeSelector::testTimeout()
 
     if (m_initTime != -1 and dt > 600) //dt > m_orderTimeout
     {
-        ROS_INFO_STREAM("switched from " << getMode() << " to MODE_ERROR because of dt=" << dt);
+        Log(INFO) << "switched from " << getMode() << " to MODE_ERROR because of dt=" << dt;
         m_currentMode = MODE_ERROR;
         return;
     }
