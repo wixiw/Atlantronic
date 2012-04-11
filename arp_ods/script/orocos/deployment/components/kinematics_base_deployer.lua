@@ -15,8 +15,11 @@ function KinematicBaseDeployer:registerToSql()
 end
 
 function KinematicBaseDeployer:connect()
-	HmlMonitor = Deployer:getPeer("HmlMonitor");
+	Deployer:addPeer("Reporting", me)
+
+	
 	--on s'ajoute en peer a HmlMonitor pour pouvoir faire les connections
+	HmlMonitor = Deployer:getPeer("HmlMonitor");
 	Deployer:addPeer("HmlMonitor", me)
 	HmlMonitor:connect(me,"inMotorState","Syncronizator","outMotorMeasures");
 	Deployer:connect(me..".inParams","UbiquityParams.outParams",cp);
@@ -28,8 +31,8 @@ function KinematicBaseDeployer:connect()
 	HmlMonitor:connect("RightSteering","inPositionCmd",me,"outRightSteeringPositionCmd");
 	HmlMonitor:connect("RearSteering","inPositionCmd",me,"outRearSteeringPositionCmd");
 	
-	RluMonitor = Deployer:getPeer("RluMonitor");
 	--on s'ajoute en peer a HmlMonitor pour pouvoir faire les connections
+	RluMonitor = Deployer:getPeer("RluMonitor");
 	Deployer:addPeer("RluMonitor", me)
 	RluMonitor:connect(me,"inCurrentTwist","Localizator","outTwist");
 end

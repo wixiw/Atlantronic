@@ -28,6 +28,7 @@ class TwistTeleop: public OdsTaskContext
         double propAngularAcc;
 
         arp_math::Twist2D attrTwistCmdB4Filter;
+        arp_math::Twist2D attrTwistCmdCdg;
         arp_math::EstimatedTwist2D attrInTwist;
 
         RTT::OutputPort<arp_math::Twist2D> outTwistCmd;

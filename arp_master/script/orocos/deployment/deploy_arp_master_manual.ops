@@ -4,3 +4,5 @@ Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua")
 Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity.lua")
 Lua.exec_file("/opt/ard/arp_rlu/script/orocos/deployment/deploy_arp_rlu.lua")
 Lua.exec_file("/opt/ard/arp_ods/script/orocos/deployment/deploy_arp_ods_manual.lua")
+
+//Lua.exec_file("/opt/ard/arp_master/script/orocos/deployment/telemetry/telemetry.lua")

@@ -24,6 +24,7 @@ TwistTeleop::TwistTeleop(const std::string& name):
         propAngularAcc(3)
 {
     addAttribute("attrInTwist",attrInTwist);
+    addAttribute("attrTwistCmdCdg",attrTwistCmdCdg);
     addAttribute("attrTwistCmdB4Filter",attrTwistCmdB4Filter);
     addProperty("propLinearGain",propLinearGain);
     addProperty("propAngularGain",propAngularGain);
@@ -59,7 +60,7 @@ void TwistTeleop::updateHook()
 
     //on veut piloter en "carthesien" au centre du robot
     Twist2D twistCdg(-vy*propLinearGain,-vx*propLinearGain,-vtheta*propAngularGain);
-
+    attrTwistCmdCdg = twistCdg;
     //mais le robot se pilote au centre des tourelles :(
     Twist2D twistRef = twistCdg.transport(params.getChassisCenter().inverse());
     attrTwistCmdB4Filter = twistRef;

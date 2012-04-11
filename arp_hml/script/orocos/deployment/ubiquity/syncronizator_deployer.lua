@@ -21,11 +21,12 @@ end
 
 
 function Syncronizator:connect()
+
 	Syncronizator:connectMotorMeasure("Clock");
 	Syncronizator:connectMotorMeasure("Position");
 	Syncronizator:connectMotorMeasure("Velocity");
 	Syncronizator:connectMotorMeasure("Torque");
-
+	Deployer:addPeer("Reporting", me)
 	Deployer:connect(me..".inCanSync", 	"Can1.outClock", cp);
 
 	Syncronizator:check(me)

@@ -46,13 +46,6 @@ function MotorDeployer:connect()
 	MotorDeployer:connectMotor("LeftSteering")
 	MotorDeployer:connectMotor("RightSteering")
 	MotorDeployer:connectMotor("RearSteering")
-	
-	Deployer:addPeer("LeftDriving", "Can1");
-	Deployer:addPeer("Reporting", "LeftDriving")
-	Deployer:addPeer("RightDriving", "Can1");
-	Deployer:addPeer("Reporting", "RightDriving")
-	Deployer:addPeer("RearDriving", "Can1");
-	Deployer:addPeer("Reporting", "RearDriving")
 end
 
 
