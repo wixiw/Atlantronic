@@ -158,6 +158,15 @@ double Pose2D::angleTo(Pose2D pose) const
     return betweenMinusPiAndPlusPi(pose.h() - h());
 }
 
+double Pose2D::vectNorm() const
+{
+    return sqrt(x() * x() + y() * y());
+}
+
+double Pose2D::vectAngle() const
+{
+    return std::atan2(y() , x());
+}
 
 Pose2D Pose2D::operator+(const Pose2D& b) const
 {

@@ -129,6 +129,15 @@ class Pose2D
          */
         double angleTo(Pose2D pose) const;
 
+        /**
+         * calcule la norme du vecteur
+         */
+        double vectNorm() const;
+        /**
+         * calcule l'angle du vecteur
+         */
+        double vectAngle() const;
+
     protected:
         Vector2 positionTranslation;
         Rotation2 positionRotation;

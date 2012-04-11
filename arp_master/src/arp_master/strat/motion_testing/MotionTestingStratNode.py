@@ -61,8 +61,9 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('Move2', Move2(),
                                    transitions={'succeeded':'Move3', 'aborted':'end'})
             smach.StateMachine.add('Move3', Move3(),
-                                   transitions={'succeeded':'Move1', 'aborted':'end'})
-            
+                                   transitions={'succeeded':'Move4', 'aborted':'end'})
+            smach.StateMachine.add('Move4', Move4(),
+                                   transitions={'succeeded':'Move1', 'aborted':'end'})            
 
 
 class Init(CyclicState):
@@ -108,6 +109,9 @@ class Move3(CyclicActionState):
     def createAction(self):
         self.omnidirect(0,-0.5,pi)   
 
+class Move4(CyclicActionState):
+    def createAction(self):
+        self.omnidirect(0,-0.5,-pi/2)   
         
 ########################## EXECUTABLE 
 #shall be always at the end ! so that every function is defined before

@@ -80,8 +80,10 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
 
     // brutal correction twist
     Twist2D v_correction;
-    v_correction.vx(sqrt2(2*DECLIN)*sqrt2(deltaPos_refRobot.x()));
-    v_correction.vy(sqrt2(2*DECLIN)*sqrt2(deltaPos_refRobot.y()));
+    double speedcorrection=sqrt2(2*DECLIN)*sqrt2(deltaPos_refRobot.vectNorm());
+
+    v_correction.vx(speedcorrection*std::cos(deltaPos_refRobot.vectAngle()));
+    v_correction.vy(speedcorrection*std::sin(deltaPos_refRobot.vectAngle()));
     v_correction.vh(sqrt2(2*DECROT)*sqrt2(deltaPos_refRobot.h()));
 
     //saturation of twist: limit max linear speed and max rotation speed
