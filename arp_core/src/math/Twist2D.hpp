@@ -25,6 +25,7 @@ namespace arp_math
  * Il s'agit de 3 trois double. Les 2 premiers représentent la vitesse de translation en mètres par seconde.
  * Le dernier correspond à la vitesse de rotation en radians par seconde.
  */
+
 class Twist2D
 {
     public:
@@ -123,6 +124,11 @@ class Twist2D
          * @return la distance
          */
         double distanceTo(Twist2D twist, Vector3 coef) const;
+
+        /**
+         * Filtre la dérivée premiere temporelle
+         */
+        void limitFirstDerivate(Twist2D lastTwist, Vector3 limits, double period);
 
     protected:
         Vector2 vitesseTranslation;

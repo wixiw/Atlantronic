@@ -79,6 +79,11 @@ namespace arp_math
             double endValue, double endLimit);
 
     /**
+     * Limite la dérivée première d'une fonction
+     */
+    double firstDerivateLimitation(double input, double lastOutput, double period, double vmin, double vmax);
+
+    /**
      * absolute value for floats
      */
     double d_abs(double x);

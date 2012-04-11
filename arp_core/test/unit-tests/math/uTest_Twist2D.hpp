@@ -154,3 +154,35 @@ BOOST_AUTO_TEST_CASE( Twist2_TransportRotation )
     BOOST_CHECK_CLOSE( res.vy() ,  0, 1E-6);
     BOOST_CHECK_CLOSE( res.vh() ,  2.6, 1E-6);
 }
+
+BOOST_AUTO_TEST_CASE( Twist2_DerivateLimit )
+{
+    Twist2D target(53,66,12);
+    Twist2D init(0,0,0);
+    Vector3 limits(10,3,5.5);
+
+    target.limitFirstDerivate(init,limits,1);
+    BOOST_CHECK_CLOSE( target.vx() ,  limits[0], 1E-6);
+    BOOST_CHECK_CLOSE( target.vy() ,  limits[1], 1E-6);
+    BOOST_CHECK_CLOSE( target.vh() ,  limits[2], 1E-6);
+
+    target = Twist2D(1,2,3);
+    target.limitFirstDerivate(init,limits,1);
+    BOOST_CHECK_CLOSE( target.vx() ,  1, 1E-6);
+    BOOST_CHECK_CLOSE( target.vy() ,  2, 1E-6);
+    BOOST_CHECK_CLOSE( target.vh() ,  3, 1E-6);
+
+    target = Twist2D(53,66,12);
+    init = Twist2D(1,2,3);
+    target.limitFirstDerivate(init,limits,1);
+    BOOST_CHECK_CLOSE( target.vx() ,  limits[0]+1, 1E-6);
+    BOOST_CHECK_CLOSE( target.vy() ,  limits[1]+2, 1E-6);
+    BOOST_CHECK_CLOSE( target.vh() ,  limits[2]+3, 1E-6);
+
+    target = Twist2D(2,4,6);
+    init = Twist2D(1,2,3);
+    target.limitFirstDerivate(init,limits,1);
+    BOOST_CHECK_CLOSE( target.vx() ,  2, 1E-6);
+    BOOST_CHECK_CLOSE( target.vy() ,  4, 1E-6);
+    BOOST_CHECK_CLOSE( target.vh() ,  6, 1E-6);
+}

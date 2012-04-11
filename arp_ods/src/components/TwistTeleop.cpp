@@ -7,6 +7,7 @@
 
 #include "TwistTeleop.hpp"
 #include <rtt/Component.hpp>
+#include <iostream>
 
 using namespace RTT;
 using namespace arp_math;
@@ -18,10 +19,16 @@ ORO_LIST_COMPONENT_TYPE( arp_ods::TwistTeleop )
 TwistTeleop::TwistTeleop(const std::string& name):
         OdsTaskContext(name),
         propLinearGain(0.3),
-        propAngularGain(1)
+        propAngularGain(1),
+        propLinearAcc(1),
+        propAngularAcc(3)
 {
+    addAttribute("attrInTwist",attrInTwist);
+    addAttribute("attrTwistCmdB4Filter",attrTwistCmdB4Filter);
     addProperty("propLinearGain",propLinearGain);
     addProperty("propAngularGain",propAngularGain);
+    addProperty("propLinearAcc",propLinearAcc);
+    addProperty("propAngularAcc",propAngularAcc);
 
     addPort("inXSpeed",inXSpeed)
             .doc("");
@@ -30,6 +37,8 @@ TwistTeleop::TwistTeleop(const std::string& name):
     addPort("inThetaSpeed",inThetaSpeed)
             .doc("");
     addPort("inParams",inParams)
+            .doc("");
+    addPort("inTwist",inTwist)
             .doc("");
     addPort("outTwistCmd",outTwistCmd)
             .doc("");
@@ -45,12 +54,21 @@ void TwistTeleop::updateHook()
     inYSpeed.readNewest(vy);
     inThetaSpeed.readNewest(vtheta);
     inParams.readNewest(params);
+    inTwist.readNewest(attrInTwist);
+
 
     //on veut piloter en "carthesien" au centre du robot
     Twist2D twistCdg(-vy*propLinearGain,-vx*propLinearGain,-vtheta*propAngularGain);
 
     //mais le robot se pilote au centre des tourelles :(
     Twist2D twistRef = twistCdg.transport(params.getChassisCenter().inverse());
+    attrTwistCmdB4Filter = twistRef;
+    //filtrage des accélérations
+    if( getPeriod() != 0.0)
+    {
+        Vector3 limits(propLinearAcc,propLinearAcc,propAngularAcc);
+        twistRef.limitFirstDerivate(attrInTwist, limits,  getPeriod());
+    }
 
     outTwistCmd.write(twistRef);
 }

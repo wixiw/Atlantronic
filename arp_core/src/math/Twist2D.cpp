@@ -170,3 +170,9 @@ double Twist2D::distanceTo(Twist2D other, Vector3 coef) const
     return sqrt(coef(0)*coef(0)*dh2 + coef(1)*coef(1)*dx2 + coef(2)*coef(2)*dy2);
 }
 
+void Twist2D::limitFirstDerivate(Twist2D lastTwist, Vector3 limits, double period)
+{
+    vx( firstDerivateLimitation(vx(),lastTwist.vx(), period, -fabs(limits[0]), fabs(limits[0])) );
+    vy( firstDerivateLimitation(vy(),lastTwist.vy(), period, -fabs(limits[1]), fabs(limits[1])) );
+    vh( firstDerivateLimitation(vh(),lastTwist.vh(), period, -fabs(limits[2]), fabs(limits[2])) );
+}

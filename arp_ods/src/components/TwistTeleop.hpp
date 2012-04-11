@@ -24,11 +24,19 @@ class TwistTeleop: public OdsTaskContext
     protected:
         double propLinearGain;
         double propAngularGain;
+        double propLinearAcc;
+        double propAngularAcc;
+
+        arp_math::Twist2D attrTwistCmdB4Filter;
+        arp_math::EstimatedTwist2D attrInTwist;
 
         RTT::OutputPort<arp_math::Twist2D> outTwistCmd;
+        //commandes joystick
         RTT::InputPort<double> inXSpeed;
         RTT::InputPort<double> inYSpeed;
         RTT::InputPort<double> inThetaSpeed;
+        //mesure actuelle
+        RTT::InputPort<arp_math::EstimatedTwist2D> inTwist;
         RTT::InputPort<arp_model::UbiquityParams>inParams;
 };
 

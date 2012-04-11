@@ -17,11 +17,15 @@ end
 function TwistTeleopDeployer:connect()
 	MotionControl = Deployer:getPeer(me);
 	Deployer:addPeer("HmlMonitor", me)
-	
+	Deployer:addPeer("Reporting", me)
 	HmlMonitor:connect(me,"inXSpeed","Joystick","outX1");
 	HmlMonitor:connect(me,"inYSpeed","Joystick","outY1");
 	HmlMonitor:connect(me,"inThetaSpeed","Joystick","outX2");
 	Deployer:connect(me..".inParams","UbiquityParams.outParams",cp);
+	
+	Deployer:addPeer("RluMonitor", me)
+	RluMonitor = Deployer:getPeer("RluMonitor");
+	RluMonitor:connect(me,"inTwist","Localizator","outTwist");
 end
 
 

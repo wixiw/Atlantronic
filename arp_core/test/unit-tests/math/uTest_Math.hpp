@@ -60,4 +60,47 @@ BOOST_AUTO_TEST_CASE( Math_betweenMinusPiAndPlusPi )
     }
 }
 
+BOOST_AUTO_TEST_CASE( Math_firstderivate )
+{
+    //periode nulle
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(0,0,0,0,0), 0 );
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(0,0,0,1000,1000), 0 );
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(123,52,0,1000,1000), 52 );
+
+    //acc/decc nulles
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(1000,0,10,0,0), 0 );
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(0,1000,10,0,0), 1000 );
+
+    //Cas non limités
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(123,0,10,-1000,1000), 123 );
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(-123,0,10,-1000,1000), -123 );
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(123,-50,10,-1000,1000), 123 );
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(-123,50,10,-1000,1000), -123 );
+
+    //Cas limités
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(100,0,1,13,27), 27 );
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(100,0,1,-13,27), 27 );
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(100,0,1,-13,-27), 0 );//cas erreur
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(100,0,1, 13,-27), 0 );//cas erreur
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(-100,0,1,13,27), -13 );
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(-100,0,1,-13,27), -13 );
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(-100,0,1,-13,-27), 0 );
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(-100,0,1,13,-27), 0 );
+
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(0,100,1,13,27), 87 );
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(0,100,1,-13,27), 87 );
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(0,100,1,-13,-27), 100 );
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(0,100,1, 13,-27), 100 );
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(0,-100,1,13,27), -73 );
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(0,-100,1,-13,27), -73 );
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(0,-100,1,-13,-27), -100 );
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(0,-100,1,13,-27), -100 );
+
+
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(100,0,-1,13,27), 0 );
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(100,0,2,-13,27), 54 );
+    BOOST_CHECK_EQUAL( firstDerivateLimitation(-100,0,2,-13,27), -26 );
+
+}
+
 #endif /* UTEST_MATH_HPP_ */

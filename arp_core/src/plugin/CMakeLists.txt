@@ -1,1 +1,0 @@
-orocos_plugin(arp_core-filtering FilteringService.cpp)

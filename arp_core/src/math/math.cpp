@@ -105,6 +105,33 @@ double smoothStep(double x, double startValue, double startLimit, double endValu
 
 }
 
+double firstDerivateLimitation(double input, double lastOutput, double period, double vmin, double vmax)
+{
+    double output=0;
+    double derivate=0;
+
+    if( period > 0 && vmin < vmax)
+    {
+        //calcul de la derivée
+        derivate = (input - lastOutput)/period;
+
+
+        //filtrage
+        if( derivate > fabs(vmax) )
+            output = lastOutput + fabs(vmax)*period;
+        else if( derivate < -fabs(vmin) )
+            output = lastOutput -fabs(vmin)*period;
+        else
+            output = input;
+    }
+    else
+    {
+        output = lastOutput;
+    }
+
+    return output;
+}
+
 void delta_t(struct timespec *interval, struct timespec begin, struct timespec now)
 {
     interval->tv_nsec = now.tv_nsec - begin.tv_nsec; /* Subtract 'decimal fraction' first */
