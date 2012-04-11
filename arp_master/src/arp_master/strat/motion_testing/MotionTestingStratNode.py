@@ -53,14 +53,15 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('WaitForStartPlug', WaitForStartPlug(),
                                    transitions={'startplug':'WaitForStartUnplug'})
             smach.StateMachine.add('WaitForStartUnplug', WaitForStartUnplug(),
-                                   transitions={'startunplug':'Droite1'})
+                                   transitions={'startunplug':'Move1'})
             
             
-            smach.StateMachine.add('Droite1', Droite1(),
-                                   transitions={'succeeded':'Droite2', 'aborted':'end'})
-            smach.StateMachine.add('Droite2', Droite2(),
-                                   transitions={'succeeded':'Droite1', 'aborted':'end'})
-            
+            smach.StateMachine.add('Move1', Move1(),
+                                   transitions={'succeeded':'Move2', 'aborted':'end'})
+            smach.StateMachine.add('Move2', Move2(),
+                                   transitions={'succeeded':'Move3', 'aborted':'end'})
+            smach.StateMachine.add('Move3', Move3(),
+                                   transitions={'succeeded':'Move1', 'aborted':'end'})
             
 
 
@@ -95,14 +96,17 @@ class WaitForStartUnplug(CyclicState):
    
 
         
-class Droite1(CyclicActionState):
+class Move1(CyclicActionState):
     def createAction(self):
-        self.omnidirect(1.00,1,pi/2)
+        self.omnidirect(0.5,0.5,pi/2)
         
-class Droite2(CyclicActionState):
+class Move2(CyclicActionState):
     def createAction(self):
-        self.pointcap(0,0,0)       
+        self.omnidirect(-0.5,0.5,-pi/2)       
 
+class Move3(CyclicActionState):
+    def createAction(self):
+        self.omnidirect(0,-0.5,pi)   
 
         
 ########################## EXECUTABLE 

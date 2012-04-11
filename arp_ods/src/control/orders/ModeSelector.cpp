@@ -272,7 +272,7 @@ void ModeSelector::testTimeout()
     double t = getTime();
     double dt = t - m_initTime;
 
-    if (m_initTime != -1 and dt > 600) //dt > m_orderTimeout
+    if (m_initTime != -1 and dt > m_orderTimeout)
     {
         Log(INFO) << "switched from " << getMode() << " to MODE_ERROR because of dt=" << dt;
         m_currentMode = MODE_ERROR;

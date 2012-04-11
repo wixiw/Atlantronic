@@ -32,9 +32,9 @@ void OmnidirectOrder::setDefaults(orders::config conf)
 
     //TODO RMO rapatrier la conf
     DECLIN=1.0;//en m/s2
-    DECROT=1.0; //en rad/s2
+    DECROT=2.0; //en rad/s2
     VMAXLIN=1.0; //en m/s
-    VMAXROT=1.0; // en m/s2
+    VMAXROT=2.0; // en rad/s
 }
 
 shared_ptr<MotionOrder> OmnidirectOrder::createOrder( const OrderGoalConstPtr &goal, Pose2D currentPose, orders::config conf  )
@@ -86,13 +86,13 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
 
     //saturation of twist: limit max linear speed and max rotation speed
     Twist2D v_correction_saturated;
-    //satlin=
-    //satrot=
-    //sat=max(satlin, satrot,1)
-    //v_correction_saturated = v_correction * sat
+    double satlin=v_correction.speedNorm()/VMAXLIN;
+    double satrot=v_correction.vh()/VMAXROT;
+    double sat=std::max(satlin,std::max( satrot,1.0));
+    v_correction_saturated = v_correction * (1/sat);
 
-    //TODO attention à bien brancher le bon truc dedans
-    return v_correction;
+
+    return v_correction_saturated;
 
 }
 
