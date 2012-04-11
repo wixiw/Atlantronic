@@ -1,0 +1,142 @@
+<html>
+	<head>
+		<script type="text/javascript" src="_lib/jquery.js"></script>
+		<script type="text/javascript" src="_lib/jquery.jstree.js"></script>
+		
+		<script type="text/javascript">
+			//var processor;
+			var xsltDoc;
+			var xmlDoc;
+
+			var codeDefault='V005'
+			var revDefault='A'
+			
+			function init() 
+				{
+				xsltDoc=loadXMLDoc("Parts_to_html.xsl");
+				xmlDoc=loadXMLDoc("Parts.xml");
+				paramUrl=extractUrlParams();
+				if (('code' in paramUrl ) && ( 'rev' in paramUrl))
+					{
+					render(paramUrl['code'],paramUrl['rev']);
+					}
+					else
+					{
+					render(codeDefault,revDefault);
+					}
+				}
+				
+			/**
+			 * Fonction de récupération des paramètres GET de la page
+			 * @return Array Tableau associatif contenant les paramètres GET
+			 */
+			function extractUrlParams()
+				{	
+				var t = location.search.substring(1).split('&');
+				var f = [];
+				for (var i=0; i<t.length; i++)
+					{
+					var x = t[ i ].split('=');
+					f[x[0]]=x[1];
+					}
+				return f;
+				}
+
+			function render(code,revision)
+				{
+				var Parameters = new Array();
+				Parameters['code'] = code;
+				Parameters['revision'] = revision;
+				
+				XSLTGenerate("part",Parameters);
+				
+				//render tree
+				$(function () {
+				$("#bomtree").jstree({ 
+									"themes" : 	{
+												"theme" : "bom"
+												},
+									"plugins" : [ "themes", "html_data" ]
+									});
+				});
+			
+				}	
+			
+			function loadXMLDoc(dname)
+				{
+
+				if (window.ActiveXObject) // code for IE
+				  {
+				  var doc= new ActiveXObject("MSXML2.FreeThreadedDomDocument");
+				  doc.async = "false";
+				  doc.load(dname);
+				  return doc;
+				  }
+				else // code for Mozilla
+				  {
+				  xhttp=new XMLHttpRequest();
+				  xhttp.open("GET",dname,false);
+				  xhttp.send("");
+				  return xhttp.responseXML;
+				  }
+				}
+				
+			function XSLTGenerate(targetID,Parameters)
+				{
+				if (window.ActiveXObject) // code for IE
+					{
+					var XSLTCompiled = new ActiveXObject("MSXML2.XSLTemplate");
+					XSLTCompiled.stylesheet = xsltDoc
+					// create XSL-processor
+					var XSLTProc = XSLTCompiled.createProcessor();
+					XSLTProc.input = xmlDoc;
+					 
+					//if (Parameters != "")
+						//{//Loop through the parameters and apply each to the XSLT Processor
+						  for (Index in Parameters)
+						  {
+							XSLTProc.addParameter(Index, Parameters[Index]);
+						  }
+						//}
+					
+					XSLTProc.transform();
+					 
+					document.getElementById(targetID).innerHTML = XSLTProc.output;
+					}
+				// code for Mozilla, Firefox, Opera, etc.
+				else if (document.implementation && document.implementation.createDocument)
+				  {
+				  XSLTProc=new XSLTProcessor();
+				  XSLTProc.importStylesheet(xsltDoc);
+				  
+				//if (Parameters != "")
+						//{//Loop through the parameters and apply each to the XSLT Processor
+						  for (Index in Parameters)
+						  {
+							XSLTProc.setParameter(null, Index, Parameters[Index]);
+						  }
+						//}
+				  
+				  resultDocument = XSLTProc.transformToFragment(xmlDoc,document);
+				  node=document.getElementById(targetID)
+				  //erase all children
+				  while (node.firstChild) 
+					 {
+						node.removeChild(node.firstChild);
+					 };
+				  node.appendChild(resultDocument);
+				  }
+				}
+				
+			
+				
+		</script>
+		<link href="part.css" rel="stylesheet" type="text/css"/>
+	</head>
+	
+	<body onload="init()">
+		<div id="part">
+		</div>
+		
+	</body>
+</html> 
