@@ -136,7 +136,8 @@ case "$1" in
     ;;
 
   *)
-	echo "Usage: $SCRIPTNAME {start|stop|status}" >&2
+	echo "Usage: $SCRIPTNAME {start|stop|status} ros_package roslaunch_file" >&2
+	echo "Ex : /etc/init.d/ard_ihm_launcher.sh start arp_master manual.launch" >&2
 	exit 3
 	;;
 esac
