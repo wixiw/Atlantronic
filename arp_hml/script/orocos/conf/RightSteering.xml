@@ -11,10 +11,6 @@
 		</description>
 		<value>ConfigureSteering.ops</value>
 	</simple>
-	<simple name="propEncoderResolution" type="long">
-		<description>Encoder resolution in point by rev</description>
-		<value>3250</value>
-	</simple>
 	<simple name="propMaximalTorque" type="double">
 		<description>Maximal Torque allowed in Amps</description>
 		<value>3</value>
