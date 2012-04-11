@@ -21,7 +21,8 @@ TwistTeleop::TwistTeleop(const std::string& name):
         propLinearGain(0.3),
         propAngularGain(1),
         propLinearAcc(1),
-        propAngularAcc(3)
+        propAngularAcc(3),
+        propFilter(false)
 {
     addAttribute("attrInTwist",attrInTwist);
     addAttribute("attrTwistCmdCdg",attrTwistCmdCdg);
@@ -30,6 +31,8 @@ TwistTeleop::TwistTeleop(const std::string& name):
     addProperty("propAngularGain",propAngularGain);
     addProperty("propLinearAcc",propLinearAcc);
     addProperty("propAngularAcc",propAngularAcc);
+    addProperty("propFilter", propFilter)
+        .doc("Set this to true if you want acc/dec filters to operates (so it becomes a closed loop). else it only send command in open loop");
 
     addPort("inXSpeed",inXSpeed)
             .doc("");
@@ -71,6 +74,11 @@ void TwistTeleop::updateHook()
         twistRef.limitFirstDerivate(attrInTwist, limits,  getPeriod());
     }
 
-    outTwistCmd.write(twistRef);
+    //le filtre d'accélération est desactivable par propriete
+    if (propFilter == true )
+        outTwistCmd.write(twistRef);
+    else
+        outTwistCmd.write(attrTwistCmdB4Filter);
+
 }
 

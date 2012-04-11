@@ -26,6 +26,7 @@ class TwistTeleop: public OdsTaskContext
         double propAngularGain;
         double propLinearAcc;
         double propAngularAcc;
+        bool propFilter;
 
         arp_math::Twist2D attrTwistCmdB4Filter;
         arp_math::Twist2D attrTwistCmdCdg;
