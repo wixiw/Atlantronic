@@ -47,7 +47,7 @@ void LittleSexControl::updateHook()
 
     // calcule les consignes
     //TODO recuperer le dt depuis le dernier appel = inClock - lastInClock
-    double dt = 0.0;
+    double dt = 0.01;
     attrComputedTwistCmd = attrOrder->computeSpeed(attrPosition,dt);
 
     //check wheel blocked

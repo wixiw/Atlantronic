@@ -108,6 +108,10 @@ class ModeSelector
          */
         arp_math::Pose2D getEndPose() const;
 
+        /*
+         * returns the control point
+         */
+        arp_math::Pose2D getCpoint() const;
         /**
          * Returns the pass mode
          */
@@ -135,6 +139,7 @@ class ModeSelector
         void setDistanceAccurancy(double m_distanceAccurancy);
         void setBeginPose(arp_math::Pose2D beginPose);
         void setEndPose(arp_math::Pose2D endPose);
+        void setCpoint(arp_math::Pose2D cpoint);
         void setPassTimeout(double timeout);
         void setOrderTimeout(double timeout);
 
@@ -144,6 +149,9 @@ class ModeSelector
 
         /** Pose of the expected end of the move */
         arp_math::Pose2D m_endPose;
+
+        /** Control point on the robot */
+        arp_math::Pose2D m_cpoint;
 
         /** motion without stop at the end */
         bool m_pass;
@@ -157,10 +165,10 @@ class ModeSelector
         /** This parameter defines the APPROACH mode area in m*/
         double m_radiusApproachZone;
 
-        /** This parameter defines the condtion in distance to end motion in m*/
+        /** This parameter defines the condition in distance to end motion in m*/
         double m_distanceAccuracy;
 
-        /** This parameter defines the condtion in angle to end motion in rad*/
+        /** This parameter defines the condition in angle to end motion in rad*/
         double m_angleAccuracy;
 
         /** Date at which we entered the PASS mode */

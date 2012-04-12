@@ -4,5 +4,8 @@ string move_type #could be: POINTCAP ; CAP
 float64 x_des
 float64 y_des
 float64 theta_des
+float64 x_cpoint
+float64 y_cpoint
+float64 theta_cpoint
 bool reverse
 bool passe

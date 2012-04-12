@@ -96,23 +96,31 @@ class CyclicActionState(CyclicState):
              
     # generic motioncontrol action creator.
     def createMotionControlAction(self,x,y,theta,move_type,reverse,passe):
+        self.createMotionControlAction_cpoint(0,0,0,x,y,theta,move_type,reverse,passe)
+ 
+     # motioncontrol action creator with a control point
+    def createMotionControlAction_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x,y,theta,move_type,reverse,passe):
         self.client = actionlib.SimpleActionClient('MotionControl', OrderAction)
         goal=OrderGoal()
         goal.x_des=x
         goal.y_des=y
         goal.theta_des=theta
+        goal.x_cpoint=x_cpoint
+        goal.y_cpoint=y_cpoint
+        goal.theta_cpoint=theta_cpoint
         goal.move_type=move_type
         goal.reverse=reverse
         goal.passe=passe
         
-        self.registerReplayOrder(x,y,theta,move_type,reverse,passe)
+        self.registerReplayOrder_cpoint(x_cpoint,y_cpoint,theta_cpoint,x,y,theta,move_type,reverse,passe)
             
         # THIS IS BLOCKING ! <<<<<<<<<<<<<<<<<<<<<<< !!!!!!!!!!!!!!
         self.client.wait_for_server()
         self.client.cancel_all_goals
         self.client.send_goal(goal)
         
-        self.actionCreated=True
+        self.actionCreated=True       
+        
         
     # these are useful motions functions that allow not to give all parameters
     def pointcap(self,x,y,theta):
@@ -135,16 +143,19 @@ class CyclicActionState(CyclicState):
 
     def omnidirect(self,x,y,theta):
         self.createMotionControlAction(x,y,theta,'OMNIDIRECT',False,False)
+    
+    def omnidirect_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x,y,theta):
+        self.createMotionControlAction_cpoint(x_cpoint,y_cpoint,theta_cpoint,x,y,theta,'OMNIDIRECT',False,False)    
         
     def omnicap(self,theta):
         self.createMotionControlAction(Inputs.getx(),Inputs.gety(),theta,'OMNIDIRECT',False,False)
         
     #these are functions linked to the replay
-    def registerReplayOrder(self,x,y,theta,move_type,reverse,passe):
-        Data.listReplayOrders.append(ReplayOrder(x,y,theta,move_type,reverse,passe))   
+    def registerReplayOrder_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x,y,theta,move_type,reverse,passe):
+        Data.listReplayOrders.append(ReplayOrder(x_cpoint,y_cpoint,theta_cpoint,x,y,theta,move_type,reverse,passe))   
     
     def executeReplayOrder(self,replayOrder):
-        self.createMotionControlAction(replayOrder.reversegoal.x_des,replayOrder.reversegoal.y_des,replayOrder.reversegoal.theta_des,replayOrder.reversegoal.move_type,replayOrder.reversegoal.reverse,replayOrder.reversegoal.passe)
+        self.createMotionControlAction_cpoint(replayOrder.goal.x_cpoint,replayOrder.goal.y_cpoint,replayOrder.goal.theta_cpoint,replayOrder.reversegoal.x_des,replayOrder.reversegoal.y_des,replayOrder.reversegoal.theta_des,replayOrder.reversegoal.move_type,replayOrder.reversegoal.reverse,replayOrder.reversegoal.passe)
    
     
     

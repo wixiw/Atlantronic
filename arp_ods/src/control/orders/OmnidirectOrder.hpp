@@ -13,6 +13,8 @@
 #include <boost/shared_ptr.hpp>
 #include <math/core>
 
+using namespace arp_math;
+
 using namespace boost;
 
 namespace arp_ods{ namespace orders
@@ -51,6 +53,11 @@ class OmnidirectOrder: public MotionOrder
         double DECROT;
         double VMAXLIN;
         double VMAXROT;
+
+        /*
+         * twist of precedent turn
+         */
+        Twist2D m_v_correction_old;
 
         //surcharger pour supprimer le mode approche en mode normal. En mode PASS la distance approche est utilisée
         void switchRun(arp_math::Pose2D currentPosition);

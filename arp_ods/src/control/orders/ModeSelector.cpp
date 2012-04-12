@@ -200,6 +200,11 @@ arp_math::Pose2D ModeSelector::getEndPose() const
     return m_endPose;
 }
 
+arp_math::Pose2D ModeSelector::getCpoint() const
+{
+    return m_cpoint;
+}
+
 bool ModeSelector::getPass() const
 {
     return m_pass;
@@ -265,6 +270,13 @@ void ModeSelector::setEndPose(Pose2D endPose)
 {
     endPose.h(betweenMinusPiAndPlusPi(endPose.h()));
     this->m_endPose = endPose;
+}
+
+
+void ModeSelector::setCpoint(Pose2D cpoint)
+{
+    cpoint.h(betweenMinusPiAndPlusPi(cpoint.h()));
+    this->m_cpoint = cpoint;
 }
 
 void ModeSelector::testTimeout()
