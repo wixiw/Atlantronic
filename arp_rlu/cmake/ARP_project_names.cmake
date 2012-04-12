@@ -12,8 +12,8 @@ set(DEBUG ON)
 set(project_product_name "Advanced Robotics Platform arp_rlu Library")
 set(project_file_description "ARP-arp_rlu library")
 set(project_comments "develepment in progress")
-set(project_version_major 11)
-set(project_version_minor 0)
+set(project_version_major 12)
+set(project_version_minor 2)
 set(project_version_patch 0)
 
 ####################################################################################################################

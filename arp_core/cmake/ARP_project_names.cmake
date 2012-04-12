@@ -13,7 +13,7 @@ set(project_product_name "Advanced Robotics Platform Core Library")
 set(project_file_description "ARP-Core library")
 set(project_comments "develepment in progress")
 set(project_version_major 12)
-set(project_version_minor 0)
+set(project_version_minor 2)
 set(project_version_patch 0)
 
 ####################################################################################################################

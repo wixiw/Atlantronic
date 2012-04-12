@@ -13,7 +13,7 @@ set(project_product_name "Advanced Robotics Platform arp_ihm Library")
 set(project_file_description "ARP-arp_ihm library")
 set(project_comments "development in progress")
 set(project_version_major 12)
-set(project_version_minor 0)
+set(project_version_minor 2)
 set(project_version_patch 0)
 
 ####################################################################################################################
