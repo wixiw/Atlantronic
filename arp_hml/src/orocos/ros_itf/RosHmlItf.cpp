@@ -19,11 +19,7 @@ ORO_CREATE_COMPONENT_LIBRARY()
 ORO_LIST_COMPONENT_TYPE( arp_hml::RosHmlItf )
 
 RosHmlItf::RosHmlItf(const std::string& name):
-	HmlTaskContext(name),
-    attrCurrentCmd(),
-    attrOdometers(),
-    propSpeedCmdMaxDelay(1.000),
-    m_receivedPartialPosition(false)
+	HmlTaskContext(name)
 {
     createOrocosInterface();
     createRosInterface();
@@ -58,20 +54,11 @@ void RosHmlItf::updateHook()
 {
 	HmlTaskContext::updateHook();
 
-	//publication des commandes de vitesse
-	//writeOmniCmd();
-
-    //lecture des valeurs des odomètres
-    readOdometers();
-
-    //lecture du start
-    readStart();
+    //lecture des Io du woodhead
+    readIo();
 
     //lecture de enable
     readDriveEnable();
-
-    //lecture des vitesses
-    readSpeed();
 
     //lecture du blocage roues
     readWheelBlocked();
@@ -86,131 +73,9 @@ void RosHmlItf::updateHook()
         outRealPosition.write(poseOut);
     }
 
-
 }
 
-/*
-void RosHmlItf::writeOmniCmd()
-{
-    OmniCommand cmd;
-	struct timespec now;
-	double delayInS;
-
-    if(NewData==inOmniCmd.read(cmd))
-    {
-    	//ecriture des consignes moteurs
-        Bool enable = outDriveEnable.getLastWrittenValue();
-    	if( enable.data )
-    	{
-			clock_gettime(CLOCK_MONOTONIC, &m_lastCmdTimestamp);
-			attrCurrentCmd = cmd;
-    	}
-    	//si les moteurs sont disable on n'envoit pas de consigne
-    	else
-    	{
-            attrCurrentCmd.v_left_driving = 0;
-            attrCurrentCmd.v_right_driving = 0;
-            attrCurrentCmd.v_rear_driving = 0;
-            attrCurrentCmd.p_left_steering = 0;
-            attrCurrentCmd.p_right_steering = 0;
-            attrCurrentCmd.p_rear_steering = 0;
-    	}
-    }
-    else
-    {
-    	//si on n'a pas reçu de commande, au bout d'une seconde on "met les freins"
-    	clock_gettime(CLOCK_MONOTONIC, &now);
-    	delayInS = delta_t(m_lastCmdTimestamp, now);
-    	if( delayInS >= propSpeedCmdMaxDelay )
-        {
-            attrCurrentCmd.v_left_driving = 0;
-            attrCurrentCmd.v_right_driving = 0;
-            attrCurrentCmd.v_rear_driving = 0;
-            attrCurrentCmd.p_left_steering = 0;
-            attrCurrentCmd.p_right_steering = 0;
-            attrCurrentCmd.p_rear_steering = 0;
-        }
-    }
-
-    outLeftDrivingSpeedCmd.write(attrCurrentCmd.v_left_driving);
-    outRightDrivingSpeedCmd.write(attrCurrentCmd.v_right_driving);
-    outRearDrivingSpeedCmd.write(attrCurrentCmd.v_rear_driving);
-    outLeftSteeringPositionCmd.write(attrCurrentCmd.p_left_steering);
-    outRightSteeringPositionCmd.write(attrCurrentCmd.p_right_steering);
-    outRearSteeringPositionCmd.write(attrCurrentCmd.p_rear_steering);
-}
-*/
-
-void RosHmlItf::readOdometers()
-{
-    double odoValueLeftDriving;
-    double odoValueRightDriving;
-    double odoValueRearDriving;
-    double odoValueLeftSteering;
-    double odoValueRightSteering;
-    double odoValueRearSteering;
-
-    double odoTimeLeftDriving;
-    double odoTimeRightDriving;
-    double odoTimeRearDriving;
-    double odoTimeLeftSteering;
-    double odoTimeRightSteering;
-    double odoTimeRearSteering;
-
-    if(         NoData != inLeftDrivingPositionTime.readNewest(odoTimeLeftDriving)
-            &&  NoData != inRightDrivingPositionTime.readNewest(odoTimeRightDriving)
-            &&  NoData != inRearDrivingPositionTime.readNewest(odoTimeRearDriving)
-            &&  NoData != inLeftSteeringPositionTime.readNewest(odoTimeLeftSteering)
-            &&  NoData != inRightSteeringPositionTime.readNewest(odoTimeRightSteering)
-            &&  NoData != inRearSteeringPositionTime.readNewest(odoTimeRearSteering)
-    )
-    {
-    	if(         odoTimeLeftDriving != odoTimeRightDriving
-    	        ||  odoTimeRightDriving != odoTimeRearDriving
-    	        ||  odoTimeRearDriving != odoTimeLeftSteering
-    	        ||  odoTimeLeftSteering != odoTimeRightSteering
-                ||  odoTimeRightSteering != odoTimeRearSteering
-    	    )
-    	{
-    	    if( m_receivedPartialPosition == true )
-    	    {
-    	        LOG(Error) << "Did not receive the two Odometry measures in time-> Reseting HML" << endlog();
-    	        cerr << "Did not receive the two Odometry measures in time-> Reseting HML" << endl;
-    	        //ooResetHml();
-    	        m_receivedPartialPosition = false;
-    	        //ooSetMotorPower(true,1.0);
-    	    }
-    	    else
-    	    {
-    	        m_receivedPartialPosition = true;
-    	    }
-    	}
-    	else
-    	{
-    	    //on ne reproduit pas le message si c'est le dernier qui a été publié
-    	    if( attrOdometers.time != odoTimeLeftDriving )
-    	    {
-                m_receivedPartialPosition = false;
-                inLeftDrivingPosition.readNewest(odoValueLeftDriving);
-                inRightDrivingPosition.readNewest(odoValueRightDriving);
-                inRearDrivingPosition.readNewest(odoValueRearDriving);
-                inLeftSteeringPosition.readNewest(odoValueLeftSteering);
-                inRightSteeringPosition.readNewest(odoValueRightSteering);
-                inRearSteeringPosition.readNewest(odoValueRearSteering);
-                attrOdometers.odo_left_driving = odoValueLeftDriving;
-                attrOdometers.odo_right_driving = odoValueRightDriving;
-                attrOdometers.odo_rear_driving = odoValueRearDriving;
-                attrOdometers.odo_left_steering = odoValueLeftSteering;
-                attrOdometers.odo_right_steering = odoValueRightSteering;
-                attrOdometers.odo_rear_steering = odoValueRearSteering;
-                attrOdometers.time = odoTimeLeftDriving;
-                outOdometryMeasures.write(attrOdometers);
-    	    }
-    	}
-    }
-}
-
-void RosHmlItf::readStart()
+void RosHmlItf::readIo()
 {
 	bool io = false;
 	Start start;
@@ -219,6 +84,37 @@ void RosHmlItf::readStart()
 	    start.go = !io;
 	    outIoStart.write(start);
 	}
+
+    StartColor startColor;
+    if(NewData==inIoStart.readNewest(io))
+    {
+        if( io )
+            startColor.color = "red";
+        else
+            startColor.color = "purple";
+        outIoStartColor.write(startColor);
+    }
+
+    Obstacle frontLeftObstacle;
+    if(NewData==inIoFrontLeftObstacle.readNewest(io))
+    {
+        frontLeftObstacle.detected = io;
+        outFrontLeftObstacle.write(frontLeftObstacle);
+    }
+
+    Obstacle frontRightObstacle;
+    if(NewData==inIoFrontRightObstacle.readNewest(io))
+    {
+        frontRightObstacle.detected = io;
+        outFrontRightObstacle.write(frontRightObstacle);
+    }
+
+    Obstacle rearObstacle;
+    if(NewData==inIoRearObstacle.readNewest(io))
+    {
+        rearObstacle.detected = io;
+        outRearObstacle.write(rearObstacle);
+    }
 }
 
 void RosHmlItf::readDriveEnable()
@@ -238,37 +134,6 @@ void RosHmlItf::readDriveEnable()
     outSteeringMotorsEnable.write( enable );
     enable.data = motorsEnable;
     outMotorsEnable.write( enable );
-}
-
-void RosHmlItf::readSpeed()
-{
-	double leftDrivingSpeed = 0.0;
-	double rightDrivingSpeed = 0.0;
-	double rearDrivingSpeed = 0.0;
-
-    double leftSteeringPosition = 0.0;
-    double rightSteeringPosition = 0.0;
-    double rearSteeringPosition = 0.0;
-
-	OmniCommand speedMeasure;
-	if( NoData != inLeftDrivingSpeedMeasure.readNewest(leftDrivingSpeed)
-	 && NoData != inRightDrivingSpeedMeasure.readNewest(rightDrivingSpeed)
-	 && NoData != inRearDrivingSpeedMeasure.readNewest(rearDrivingSpeed)
-
-	 && NoData != inLeftSteeringPosition.readNewest(leftSteeringPosition)
-     && NoData != inRightSteeringPosition.readNewest(rightSteeringPosition)
-     && NoData != inRearSteeringPosition.readNewest(rearSteeringPosition)
-	)
-	{
-		speedMeasure.v_left_driving = leftDrivingSpeed;
-		speedMeasure.v_right_driving = rightDrivingSpeed;
-		speedMeasure.v_rear_driving = rearDrivingSpeed;
-
-        speedMeasure.p_left_steering = leftSteeringPosition;
-        speedMeasure.p_right_steering = rightSteeringPosition;
-        speedMeasure.p_rear_steering = rearSteeringPosition;
-		outOmniSpeedMeasure.write(speedMeasure);
-	}
 }
 
 void RosHmlItf::readWheelBlocked()
@@ -338,21 +203,18 @@ bool RosHmlItf::srvResetHml(ResetHml::Request& req, ResetHml::Response& res)
 //-------------------------------------------------------------------------------------------------
 void RosHmlItf::createOrocosInterface()
 {
-    addAttribute("attrCurrentCmd", attrCurrentCmd);
-    addAttribute("attrOdometers", attrOdometers);
-
-    addProperty("propSpeedCmdMaxDelay", propSpeedCmdMaxDelay)
-        .doc("Maximal delay beetween 2 received Differential commands. If this delay is overrun, a speed of 0 is sent on each motor. In s ");
-
     /** Interface with OUTSIDE (master, ODS, RLU) **/
-    addEventPort("inOmniCmd",inOmniCmd)
-            .doc("Speed command for the 6 motors motor");
-    addPort("outOdometryMeasures",outOdometryMeasures)
-        .doc("Odometers value from the motors assembled in an 'Odo' Ros message");
-    addPort("outOmniSpeedMeasure",outOmniSpeedMeasure)
-        .doc("Speed measures for left and right motor");
     addPort("outIoStart",outIoStart)
         .doc("Value of the start. GO is true when it is not in, go is false when the start is in");
+    addPort("outIoStartColor",outIoStartColor)
+        .doc("Value of the color switch");
+    addPort("outFrontLeftObstacle",outFrontLeftObstacle)
+        .doc("Value of the front left obstacle detector");
+    addPort("outFrontRightObstacle",outFrontRightObstacle)
+        .doc("Value of the front right obstacle detector");
+    addPort("outRearObstacle",outRearObstacle)
+        .doc("Value of the rear obstacle detector");
+
     addPort("outEmergencyStop",outEmergencyStop)
         .doc("Is true when HML thinks the emergency stop button is active");
     addPort("outDrivingMotorsEnable",outDrivingMotorsEnable)
@@ -367,48 +229,22 @@ void RosHmlItf::createOrocosInterface()
         .doc("Position calculated by the simulation (is just a type conversion from same named input port)");
 
     /** Interface with INSIDE (hml !) **/
-    addEventPort("inIoStart",inIoStart)
+    addPort("inIoStart",inIoStart)
             .doc("HW value of the start switch. It is true when the start is in");
-    addEventPort("inRealPosition",inRealPosition)
+    addPort("inIoStartColor",inIoStartColor)
+            .doc("");
+    addPort("inIoFrontLeftObstacle",inIoFrontLeftObstacle)
+            .doc("");
+    addPort("inIoFrontRightObstacle",inIoFrontRightObstacle)
+            .doc("");
+    addPort("inIoRearObstacle",inIoRearObstacle)
+            .doc("");
+
+    addPort("inRealPosition",inRealPosition)
             .doc("Position calculated by simulation");
 
-    addEventPort("inLeftDrivingPosition",inLeftDrivingPosition)
-            .doc("Value of the left driving odometer in rad on the wheel axe");
-    addPort("inLeftDrivingPositionTime",inLeftDrivingPositionTime)
+    addPort("inMotorMeasures",inMotorMeasures)
             .doc("");
-    addEventPort("inRightDrivingPosition",inRightDrivingPosition)
-            .doc("Value of the right driving odometer in rad on the wheel axe");
-    addPort("inRightDrivingPositionTime",inRightDrivingPositionTime)
-            .doc("");
-    addEventPort("inRearDrivingPosition",inRearDrivingPosition)
-            .doc("Value of the rear driving odometer in rad on the wheel axe");
-    addPort("inRearDrivingPositionTime",inRearDrivingPositionTime)
-            .doc("");
-    addEventPort("inLeftSteeringPosition",inLeftSteeringPosition)
-            .doc("Value of the left steering odometer in rad on the wheel axe");
-    addPort("inLeftSteeringPositionTime",inLeftSteeringPositionTime)
-            .doc("");
-    addEventPort("inRightSteeringPosition",inRightSteeringPosition)
-            .doc("Value of the right steering odometer in rad on the wheel axe");
-    addPort("inRightSteeringPositionTime",inRightSteeringPositionTime)
-            .doc("");
-    addEventPort("inRearSteeringPosition",inRearSteeringPosition)
-            .doc("Value of the rear steering odometer in rad on the wheel axe");
-    addPort("inRearSteeringPositionTime",inRearSteeringPositionTime)
-            .doc("");
-
-    addPort("inLeftDrivingSpeedMeasure",inLeftDrivingSpeedMeasure)
-            .doc("Value of the left driving speed in rad/s on the wheel axe");
-    addPort("inRightDrivingSpeedMeasure",inRightDrivingSpeedMeasure)
-            .doc("Value of the right driving speed in rad/s on the wheel axe");
-    addPort("inRearDrivingSpeedMeasure",inRearDrivingSpeedMeasure)
-            .doc("Value of the rear driving speed in rad/s on the wheel axe");
-    addPort("inLeftSteeringSpeedMeasure",inLeftSteeringSpeedMeasure)
-            .doc("Value of the left steering speed in rad/s on the wheel axe");
-    addPort("inRightSteeringSpeedMeasure",inRightSteeringSpeedMeasure)
-            .doc("Value of the right steering speed in rad/s on the wheel axe");
-    addPort("inRearSteeringSpeedMeasure",inRearSteeringSpeedMeasure)
-            .doc("Value of the rear steering speed in rad/s on the wheel axe");
 
     addPort("inLeftDrivingBlocked",inLeftDrivingBlocked)
             .doc("Left driving motor is blocked");

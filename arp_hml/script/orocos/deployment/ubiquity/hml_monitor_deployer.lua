@@ -73,7 +73,7 @@ function HmlMonitorDeployer:connect()
 
 	HmlMonitorDeployer:addToMonitor("Syncronizator")
 
-	--HmlMonitorDeployer:addToMonitor("RosHmlItf")
+	HmlMonitorDeployer:addToMonitor("RosHmlItf")
 
 	--HmlMonitorDeployer:registerToSql();
 	

@@ -15,6 +15,7 @@
 
 #include "orocos/can/CanOpenNode.hpp"
 #include "orocos/motor/ArdMotorItf.hpp"
+#include "orocos/motor/FaulhaberStates.h"
 #include "orocos/can/ard_can_types.hpp"
 #include <sys/time.h>
 
@@ -74,6 +75,11 @@ namespace arp_hml
         /** index of the Faulhaber Command PDO */
         int attrFaulhaberCommandPdoIndex;
 
+        /** Only used in running homing */
+        HomingState attrHomingState;
+        /** is true when homing is finished */
+        bool attrHomingDone;
+
         /** Is true when you when to invert the speed command and feedback of the motor softly **/
         bool propInvertDriveDirection;
         /** Reductor's value from the motor's axe to the reductor's output's axe. So it should be greather than 1**/
@@ -84,6 +90,8 @@ namespace arp_hml
         double propMaximalTorque;
         /** Maximal delay beetween 2 commands to consider someone is still giving coherent orders*/
         double propInputsTimeout;
+        /** Homing speed in rad/s on the reductor output */
+        double propHomingSpeed;
 
         /** Command to be used in position mode. It must be provided in rad on the reductor's output.
          * It is not available yet. */
@@ -113,7 +121,8 @@ namespace arp_hml
         OutputPort<std::string> outCurrentOperationMode;
         /** Is true when the propMaximalTorque has been reached*/
         OutputPort<bool> outMaxTorqueTimeout;
-
+        /** Is true when the Homing sequence is finished. It has no sense when the motor is not in HOMING mode */
+        OutputPort<bool> outHomingDone;
         /**
          * Limits the torque on the motor via a current limitation.
          * @param ampValue : the maximal current that the motor can require in A. Should be in ]0.2;10[
@@ -221,6 +230,31 @@ namespace arp_hml
         static const int F_CMD_M = 0x3C;
         ///load an absolute position target
         static const int F_CMD_LA = 0xB4;
+
+        ///configure homing : edge for switches
+        static const int F_CMD_HP = 0x79;
+        static const int F_CMD_HP_FAILING_EDGE = 0;
+        static const int F_CMD_HP_RISING_EDGE = 1;
+
+        //Switches masks
+        static const UNS32 F_ANALOG_SWICTH_MASK = 0b1;
+        static const UNS32 F_FAULT_SWICTH_MASK = 0b10;
+        static const UNS32 F_3RD_SWICTH_MASK = 0b100;
+
+        ///configure homing : reset on switch
+        static const int F_CMD_SHA = 0x8A;
+        ///configure homing : stop on switch
+        static const int F_CMD_SHL = 0x90;
+        ///configure homing : notify on switch
+        static const int F_CMD_SHN = 0x9A;
+        ///configure homing : grouped config
+        static const int F_CMD_HOC = 0x5B;
+
+        ///configure homing : speed
+        static const int F_CMD_HOSP = 0x24 ;
+
+        ///configure homing : speed
+        static const int F_CMD_GOHOSEQ = 0x2F ;
 
         /*
          * Faulhaber return codes should be clear

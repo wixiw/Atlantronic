@@ -25,9 +25,9 @@
 #include "ros/ros.h"
 #include <math/core>
 //pour les ports
-#include <arp_core/OmniCommand.h>
-#include <arp_core/OmniOdo.h>
 #include <arp_core/Start.h>
+#include <arp_core/StartColor.h>
+#include <arp_core/Obstacle.h>
 #include <arp_core/Pose.h>
 #include <std_msgs/Bool.h>
 //pour les services
@@ -35,6 +35,8 @@
 #include <arp_hml/SetMotorPower.h>
 #include <arp_hml/ResetHml.h>
 #include <arp_hml/GetVersion.h>
+
+#include <models/UbiquityStates.hpp>
 
 using namespace arp_core;
 using namespace arp_math;
@@ -52,26 +54,15 @@ namespace arp_hml
     protected:
 
 /******************************************************
- * Oroso Interface
+ * Orocos Interface
  ******************************************************/
-        /** Buffured value of the input command for displaying purposes **/
-        OmniCommand attrCurrentCmd;
-        /** Buffered value of the odometers values for displaying purposes **/
-        OmniOdo attrOdometers;
 
-        /** Maximal delay beetween 2 received Differential commands. If this delay is overrun, a speed of 0 is sent on each motor. In s **/
-        double propSpeedCmdMaxDelay;
 
-        /**
-         * Get enableDrive and disableDrive operation on motors
-         */
         bool configureHook();
 
     	/**
     	 * Publish data from outside to HML, read HML data and present them in a formated way to outside.
     	 * In order :
-    	 *  _ publish speed data
-    	 *  _ read odometers value
     	 *  _ read color switch
     	 *  _ read start
     	 */
@@ -128,17 +119,14 @@ namespace arp_hml
  *  Interface with OUTSIDE (master, ODS, RLU)
  *****************************************************************/
 
-        /** Speed command for left and right motor **/
-        InputPort<arp_core::OmniCommand> inOmniCmd;
-
-        /** Odometers value from left and right wheel assembled in an "Odo" Ros message **/
-        OutputPort<arp_core::OmniOdo> outOdometryMeasures;
-
-        /** Speed measures for left and right motor **/
-        OutputPort<arp_core::OmniCommand> outOmniSpeedMeasure;
-
         /** Value of the start. GO is true when it is not in, go is false when the start is in **/
         OutputPort<arp_core::Start> outIoStart;
+        /** Value of the color switch. true when ?? **/
+        OutputPort<arp_core::StartColor> outIoStartColor;
+
+        OutputPort<arp_core::Obstacle> outFrontLeftObstacle;
+        OutputPort<arp_core::Obstacle> outFrontRightObstacle;
+        OutputPort<arp_core::Obstacle> outRearObstacle;
 
         /** Is true when HML thinks the emergency stop button is active **/
         OutputPort<std_msgs::Bool> outEmergencyStop;
@@ -160,31 +148,18 @@ namespace arp_hml
 
         /** HW value of the start switch. It is true when the start is in **/
         InputPort<bool> inIoStart;
+        /** HW value of the color switch. It is true when color is red **/
+        InputPort<bool> inIoStartColor;
+        /** Obstacles */
+        InputPort<bool> inIoFrontLeftObstacle;
+        InputPort<bool> inIoFrontRightObstacle;
+        InputPort<bool> inIoRearObstacle;
 
         /** Real Position of the robot, given by the simulation */
         InputPort<Pose2D> inRealPosition;
 
-        /** Value of the odometers in rad on the wheel axe **/
-        InputPort<double> inLeftDrivingPosition;
-        InputPort<double> inLeftDrivingPositionTime;
-        InputPort<double> inRightDrivingPosition;
-        InputPort<double> inRightDrivingPositionTime;
-        InputPort<double> inRearDrivingPosition;
-        InputPort<double> inRearDrivingPositionTime;
-        InputPort<double> inLeftSteeringPosition;
-        InputPort<double> inLeftSteeringPositionTime;
-        InputPort<double> inRightSteeringPosition;
-        InputPort<double> inRightSteeringPositionTime;
-        InputPort<double> inRearSteeringPosition;
-        InputPort<double> inRearSteeringPositionTime;
-
-        /** Speed Value of the odometers in rad on the wheel axe **/
-        InputPort<double> inLeftDrivingSpeedMeasure;
-        InputPort<double> inRightDrivingSpeedMeasure;
-        InputPort<double> inRearDrivingSpeedMeasure;
-        InputPort<double> inLeftSteeringSpeedMeasure;
-        InputPort<double> inRightSteeringSpeedMeasure;
-        InputPort<double> inRearSteeringSpeedMeasure;
+        /** State of the 6 mobile base motors **/
+        InputPort<arp_model::MotorState> inMotorMeasures;
 
         /** Input of Enable value of motors to publish to Ros **/
         InputPort<bool> inDrivingMotorsEnable;
@@ -221,18 +196,8 @@ namespace arp_hml
 /**************************************************************
  * Internals
  **************************************************************/
-public:
-        /** Use this to multiply a value given on the wheel's axe to get the value on the motor's axe **/
-        static const double WHEEL_TO_MOTOR = 14.0;
-        /** Use this to multiply a value given on the motor's axe to get the value on the wheel's axe **/
-        static const double MOTOR_TO_WHEEL = 1.0/14.0;
 
 protected:
-        /** This holds the time of the last received differential command **/
-        struct timespec m_lastCmdTimestamp;
-        /** Is true when only one of the 2 speed has been received */
-        bool m_receivedPartialPosition;
-
         /** Pointer on the HmlMonitor ooSetMotorPower Operation**/
         OperationCaller<bool(bool)> m_coSetMotorPower;
         /** Pointer on the HmlMonitor ooSetDrivingMotorPower Operation**/
@@ -247,20 +212,9 @@ protected:
         OperationCaller<std::string(void)> m_coGetVersion;
 
         /**
-         * Get the differential command speed for both motor and dispatch it to them
-         * If the 2 motors are not enabled, a null speed is forced
+         * Read Io fro woodhead and publish a go to the outside.
          */
-        //void writeOmniCmd();
-
-        /**
-         * Read the odometers value and publish them together to outside
-         */
-        void readOdometers();
-
-        /**
-         * Read the start switch value and publish a go to the outside.
-         */
-        void readStart();
+        void readIo();
 
         /**
          * Read the drive enable value from HmlMonitor and publish them to Ros
@@ -271,11 +225,6 @@ protected:
          * Read the connectivity input and try to guess if the emergency stop is active
          */
         void readConnectivity();
-
-        /**
-         * Read the value of left and rigth motor and publish them together
-         */
-        void readSpeed();
 
         /**
          * Read if wheel are blocked

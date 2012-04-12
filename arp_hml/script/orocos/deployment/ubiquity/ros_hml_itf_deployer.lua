@@ -11,9 +11,6 @@ end
 
 function RosHmlItfDeployer:connectOneMotor(name)
 	Deployer:addPeer("RosHmlItf", name)
-	Deployer:connect("RosHmlItf.in"..name.."Position", name..".outPosition",cp)
-	Deployer:connect("RosHmlItf.in"..name.."PositionTime", name..".outClock",cp)
-	Deployer:connect("RosHmlItf.in"..name.."SpeedMeasure", name..".outVelocity",cp)
 	Deployer:connect("RosHmlItf.in"..name.."Blocked", name..".outMaxTorqueTimeout",cp)
 end
 
@@ -28,15 +25,16 @@ function RosHmlItfDeployer:connect()
 	RosHmlItfDeployer:connectOneMotor("LeftSteering")
 	RosHmlItfDeployer:connectOneMotor("RightSteering")
 	RosHmlItfDeployer:connectOneMotor("RearSteering")
+	
 
 	Deployer:connect("RosHmlItf.inIoStart", "WoodheadIn.outBit1",cp)
+	Deployer:connect("RosHmlItf.inIoStartColor", "WoodheadIn.outBit3",cp)
+	Deployer:connect("RosHmlItf.inIoFrontLeftObstacle", "WoodheadIn.outBit4",cp)
+	Deployer:connect("RosHmlItf.inIoFrontRightObstacle", "WoodheadIn.outBit7",cp)
+	Deployer:connect("RosHmlItf.inIoRearObstacle", "WoodheadIn.outBit8",cp)
 
 --connexion ROS
 	
-	Deployer:stream("RosHmlItf.inOmniCmd",ros:topic("/Ubiquity/omnidirectional_command"))
-	Deployer:stream("RosHmlItf.outOdometryMeasures",ros:topic("/Ubiquity/odo"))
-	Deployer:stream("RosHmlItf.outOmniSpeedMeasure",ros:topic("/Ubiquity/omnidirectional_measure"))
-
 	Deployer:stream("RosHmlItf.outDrivingMotorsEnable",ros:topic("/Ubiquity/driving_power"))
 	Deployer:stream("RosHmlItf.outSteeringMotorsEnable",ros:topic("/Ubiquity/steering_power"))
 	Deployer:stream("RosHmlItf.outMotorsEnable",ros:topic("/Ubiquity/motor_power"))
@@ -44,4 +42,8 @@ function RosHmlItfDeployer:connect()
 	Deployer:stream("RosHmlItf.outWheelBlocked",ros:topic("/Ubiquity/wheel_blocked"))
 	Deployer:stream("RosHmlItf.outEmergencyStop",ros:topic("/Ubiquity/emergency_stop"))
 	Deployer:stream("RosHmlItf.outIoStart",ros:topic("/Ubiquity/start"))
+	Deployer:stream("RosHmlItf.inIoStartColor",ros:topic("/Ubiquity/color"))
+	Deployer:stream("RosHmlItf.inIoFrontLeftObstacle",ros:topic("/Ubiquity/front_left_obstacle"))
+	Deployer:stream("RosHmlItf.inIoFrontRightObstacle",ros:topic("/Ubiquity/front_right_obstacle"))
+	Deployer:stream("RosHmlItf.inIoRearObstacle",ros:topic("/Ubiquity/rear_obstacle"))
 end

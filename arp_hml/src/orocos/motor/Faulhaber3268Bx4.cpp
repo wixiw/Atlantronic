@@ -23,11 +23,14 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         ArdMotorItf(),
         attrState(ArdDs402::UnknownDs402State),
         attrBlockingDelay(0),
+        attrHomingState(NOT_IN_HOMNG_MODE),
+        attrHomingDone(false),
         propInvertDriveDirection(false),
         propReductorValue(14),
         propEncoderResolution(3000),
         propMaximalTorque(0.5),
         propInputsTimeout(1.0),
+        propHomingSpeed(1),
         m_faulhaberCommandTodo(false),
         m_oldPositionMeasure(0),
         m_isMotorBlocked(false)
@@ -198,6 +201,12 @@ void Faulhaber3268Bx4::setOutputs()
     else
     	outDriveEnable.write(false);
 
+    //publication de la fin de sequence homing
+    if( attrHomingState == HOMING_DONE && getOperationMode() == HOMING )
+        outHomingDone.write(true);
+    else
+        outHomingDone.write(false);
+
     EnterMutex();
     //lecture de la dernière commande envoyée :
     outLastSentCommand.write( *m_faulhaberCommandReturn );
@@ -279,10 +288,86 @@ void Faulhaber3268Bx4::runPosition()
 
 void Faulhaber3268Bx4::runHoming()
 {
+    //TODO gestion de homing error ? ...
     // The submodes are not called is the motor is not powered
     if( outDriveEnable.getLastWrittenValue() )
     {
-        //TODO WLA Faulhaber3268Bx4 implémenter control homing
+        switch (attrHomingState) {
+            case ASK_CONFIGURE_EDGE:
+                if( !m_faulhaberCommandTodo )
+                {
+                    m_faulhaberScriptCommand = (UNS8) F_CMD_HP;
+                    m_faulhaberScriptCommandParam = (UNS32) F_CMD_HP_FAILING_EDGE;
+                    m_faulhaberCommandTodo = true;
+                    attrHomingState = WAIT_CONFIGURE_EDGE;
+                }
+                break;
+            case WAIT_CONFIGURE_EDGE:
+                if( !m_faulhaberCommandTodo )
+                 {
+                     attrHomingState = ASK_CONFIGURE_SWITCH;
+                 }
+                break;
+            case ASK_CONFIGURE_SWITCH:
+                if( !m_faulhaberCommandTodo )
+                {
+                    //TODO ça merdoie là
+                    m_faulhaberScriptCommand = (UNS8) F_CMD_SHL;
+                    UNS32 mask = 1;
+                    LOG(Info) << "mask = "<< mask << endlog();
+                    m_faulhaberScriptCommandParam = (UNS32) mask;
+                    m_faulhaberCommandTodo = true;
+                    attrHomingState = WAIT_CONFIGURE_SWITCH;
+                }
+                break;
+            case WAIT_CONFIGURE_SWITCH:
+                if( !m_faulhaberCommandTodo )
+                 {
+                     attrHomingState = ASK_CONFIGURE_SPEED;
+                 }
+                break;
+            case ASK_CONFIGURE_SPEED:
+                if( !m_faulhaberCommandTodo )
+                {
+                    m_faulhaberScriptCommand = (UNS8) F_CMD_HOSP;
+                    m_faulhaberScriptCommandParam = (UNS32) propHomingSpeed*propReductorValue*RAD_S_TO_RPM;
+                    m_faulhaberCommandTodo = true;
+                    attrHomingState = WAIT_CONFIGURE_SPEED;
+                }
+                break;
+            case WAIT_CONFIGURE_SPEED:
+                if( !m_faulhaberCommandTodo )
+                 {
+                     attrHomingState = ASK_HOMING;
+                 }
+                break;
+            case ASK_HOMING:
+                if( !m_faulhaberCommandTodo )
+                {
+                    m_faulhaberScriptCommand = (UNS8) F_CMD_GOHOSEQ;
+                    m_faulhaberScriptCommandParam = (UNS32) 0;
+                    m_faulhaberCommandTodo = true;
+                    attrHomingState = WAIT_HOMING;
+                }
+                break;
+            case WAIT_HOMING:
+                if( !m_faulhaberCommandTodo )
+                {
+                    if( attrHomingDone )
+                        attrHomingState = HOMING_DONE;
+                }
+                break;
+            case HOMING_DONE:
+                //bah y'a plus qu'à attendre que les couches supéreures se reveillent
+                break;
+            default:
+                LOG(Error) << "Unknow homing state : " << attrHomingState << endlog();
+                return;
+                break;
+        }
+
+        //en fait on pilote le mode homing en mode Faulhaber
+        runOther();
     }
 }
 
@@ -305,7 +390,7 @@ void Faulhaber3268Bx4::runOther()
 		}
 		else
 		{
-			LOG(Info) << "faulhaber " << (int) m_faulhaberScriptCommand << " command succeed with return "<< *m_faulhaberCommandReturnParameter << endlog();
+			LOG(Info) << "faulhaber " << (int) m_faulhaberScriptCommand << " command succeed with return "<< outLastSentCommandReturn.getLastWrittenValue() << endlog();
 			m_faulhaberCommandTodo = false;
 		}
 	}
@@ -325,6 +410,7 @@ void Faulhaber3268Bx4::readCaptors()
 
     //lecture de l'état DS402s
     attrState = ArdDs402::getStateFromCanStatusWord( *m_ds402State );
+    attrHomingDone = *m_ds402State&=(1<<12);
 
     //lecture du courant (en mA)
 	double current = *m_measuredCurrent;
@@ -418,7 +504,7 @@ bool Faulhaber3268Bx4::ooSetOperationMode(std::string mode)
 		}
 		else
 		{
-			LOG(Error) << "Failed to switch to " << mode << " operation mode. Checks syntax or required mode is not available" << endlog();
+			LOG(Error) << "Failed to switch to " << mode << " operation mode. Check syntax or required mode is not available" << endlog();
 			res = false;
 		}
 	}
@@ -476,8 +562,26 @@ bool Faulhaber3268Bx4::setOperationMode(ArdMotorItf::operationMode_t operationMo
 	if( isRunning() )
 	{
 		//pour le moment les seuls modes accessibles sont speed et other=faulhaber command
-		if( ArdMotorItf::SPEED_CONTROL == operationMode || ArdMotorItf::OTHER == operationMode || ArdMotorItf::POSITION_CONTROL == operationMode)
+		if( ArdMotorItf::SPEED_CONTROL == operationMode
+		        || ArdMotorItf::OTHER == operationMode
+		        || ArdMotorItf::POSITION_CONTROL == operationMode
+		        || ArdMotorItf::HOMING == operationMode)
+		{
+		    //initialisation de l'état homing
+		    if( ArdMotorItf::HOMING == operationMode )
+		    {
+		        attrHomingState = ASK_CONFIGURE_EDGE;
+		        attrHomingDone = false;
+		    }
+		    //desinit de l'état homing
+		    else
+		    {
+		        attrHomingState = NOT_IN_HOMNG_MODE;
+		        attrHomingDone = false;
+		    }
+
 			ArdMotorItf::setOperationMode(operationMode);
+		}
 		else
 		{
 		    LOG(Error) << "This mode is not available for now" << endlog();
@@ -611,6 +715,7 @@ void Faulhaber3268Bx4::createOrocosInterface()
     addAttribute("attrBlockingDelay",attrBlockingDelay);
     addAttribute("attrIncrementalOdometer",attrIncrementalOdometer);
     addAttribute("attrFaulhaberCommandPdoIndex",attrFaulhaberCommandPdoIndex);
+    addAttribute("attrHomingState",attrHomingState);
 
     addProperty("propInvertDriveDirection",propInvertDriveDirection)
         .doc("Is true when you when to invert the speed command and feedback of the motor softly");
@@ -622,6 +727,9 @@ void Faulhaber3268Bx4::createOrocosInterface()
         .doc("Maximal Torque allowed in Amps");
     addProperty("propInputsTimeout",propInputsTimeout)
             .doc("Maximal delay beetween 2 commands to consider someone is still giving coherent orders, in s");
+    addProperty("propHomingSpeed",propHomingSpeed)
+            .doc("Homing speed in rad/s on the reductor output");
+
 
     addPort("inSpeedCmd",inSpeedCmd)
             .doc("Command to be used in speed mode. It must be provided in rad/s on the reductor's output");
@@ -651,6 +759,8 @@ void Faulhaber3268Bx4::createOrocosInterface()
         .doc("Provides the current mode of operation of the motor (speed,position,torque,homing,other=faulhaber)");
     addPort("outMaxTorqueTimeout",outMaxTorqueTimeout)
         .doc(" Is true when the propMaximalTorque has been reached for more propBlockingTorqueTimeout");
+    addPort("outHomingDone",outHomingDone)
+        .doc("Is true when the Homing sequence is finished. It has no sense when the motor is not in HOMING mode");
 
     addOperation("ooEnableDrive", &Faulhaber3268Bx4::enableDrive,this, OwnThread )
         .doc("Activate the power on the motor. Without a speed command it acts as a brake. Returns false if the component is not running.");
