@@ -42,12 +42,6 @@ class LittleSexControl: public OdsTaskContext
         RTT::InputPort< arp_math::EstimatedPose2D > inPosition;
 
         /**
-         * Ordre a realiser. Il change lentement
-         * il est possible de voir un changement avec readNewest() == NewData
-         */
-        RTT::InputPort< shared_ptr<orders::MotionOrder> > inOrder;
-
-        /**
          * This is the result of computation : the Twist that the robot should do
          */
         RTT::OutputPort<arp_math::Twist2D> outTwistCmd;

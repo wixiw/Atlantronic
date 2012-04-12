@@ -29,15 +29,15 @@ RosOdsItf::RosOdsItf(std::string const name):
     //TODO a remplacer par la lecture des proprietes en XML ... ce qui necessite d'ecrire le typekit
     //WLA : j'ai tenté de le générer automatiquement ça n'a pas l'air d'avoir fonctionner,
     //c'est étonnant c'est pourtant une structure simple
-    propOrderConfig.RADIUS_APPROACH_ZONE = 0.200; //20cm
-    propOrderConfig.ANGLE_ACCURACY = 0.087;//5°
-    propOrderConfig.DISTANCE_ACCURACY = 0.020;//20mm
+    propOrderConfig.RADIUS_APPROACH_ZONE = 0.010; //20cm
+    propOrderConfig.ANGLE_ACCURACY = 0.018;//1°
+    propOrderConfig.DISTANCE_ACCURACY = 0.010;//20mm
 
-    propOrderConfig.LIN_VEL_MAX = 1; //1m/s
-    propOrderConfig.ANG_VEL_MAX = 3; //3 rad/s
-    propOrderConfig.VEL_FINAL = 0.300;//300mm/s
+    propOrderConfig.LIN_VEL_MAX = 0.5; //1m/s
+    propOrderConfig.ANG_VEL_MAX = 1; //3 rad/s
+    propOrderConfig.VEL_FINAL = 0.150;//300mm/s
 
-    propOrderConfig.ORDER_TIMEOUT = 5; //5s
+    propOrderConfig.ORDER_TIMEOUT = 10; //5s
     propOrderConfig.PASS_TIMEOUT = 1; //1s
 
     propOrderConfig.FANTOM_COEF = 1;
@@ -67,6 +67,8 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
     ros::Rate r(20);
     OrderResult result;
     EstimatedPose2D pose;
+    bool tmp;
+    bool finished;
 
     //if a goal was already define it is refused
     if (m_order->getType() != NO_ORDER)
@@ -83,47 +85,54 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
 //    m_wheelBlockedTimeout = false;
 
     //TODO a remplacer par une factory plus efficace
+    char string[250];
     if (goal->move_type == "POINTCAP")
     {
         inPose.readNewest(pose);
         m_order = FantomOrder::createOrder(goal, pose, propOrderConfig);
-        ROS_INFO("MotionControl : new Fantom goal (%0.3f,%0.3f,%0.3f) reverse : %d pass %d", goal->x_des, goal->y_des,
+        sprintf( string, "new Fantom goal (%0.3f,%0.3f,%0.3f) reverse : %d pass %d", goal->x_des, goal->y_des,
                 goal->theta_des, goal->reverse, goal->passe);
+        LOG(Info) << string << endlog();
     }
     else if (goal->move_type == "CAP")
     {
         inPose.readNewest(pose);
         m_order = RotationOrder::createOrder(goal, pose, propOrderConfig);
-        ROS_INFO("MotionControl : new Rotation goal (cap=%0.3f)", goal->theta_des);
+        sprintf( string, "RosOdsItf : new Rotation goal (cap=%0.3f)", goal->theta_des);
+        LOG(Info) << string << endlog();
     }
     else if (goal->move_type == "OMNIDIRECT")
     {
         inPose.readNewest(pose);
         m_order = OmnidirectOrder::createOrder(goal, pose, propOrderConfig);
-        ROS_INFO("MotionControl : new Omnidirect goal (%0.3f,%0.3f,%0.3f) ", goal->x_des, goal->y_des,
-                goal->theta_des);
+        sprintf( string, "new Omnidirect goal (%0.3f,%0.3f,%0.3f) reverse : %d pass %d", goal->x_des, goal->y_des,
+                goal->theta_des, goal->reverse, goal->passe);
+        LOG(Info) << string << endlog();
     }
     else
     {
-        ROS_ERROR("%s: not possible", goal->move_type.c_str());
+        LOG(Error) << "order " << goal->move_type.c_str() << "is not possible" << endlog();
         goto abort;
     }
 
-    m_ooSetOrder(m_order);
+    if( m_ooSetOrder(m_order) == false )
+    {
+
+        goto abort;
+    }
 
 
     //TODO WLA mettre ça dans order
     //m_orderSelector.setWorkTimeout(15);
 
-
-    bool finished;
-    inCurrentOrderIsFinished.readNewest(finished);
+    finished = inCurrentOrderIsFinished.readNewest(tmp) == NewData && tmp;
     while (!finished)
     {
         //An interrupt has been requested
         if (m_actionServer.isPreemptRequested() || !ros::ok())
         {
-            ROS_INFO("%s: Preempted", goal->move_type.c_str());
+            LOG(Error) << goal->move_type.c_str() << " Preempted" << endlog();
+            //TODO faudrait peut être l'envoyer à LittleSexControl
             goto preempted;
         }
 
@@ -143,7 +152,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         }
         if ( inError )
         {
-            ROS_ERROR("%s: not processed due to MODE_ERROR", goal->move_type.c_str());
+            LOG(Error) << goal->move_type.c_str() << ": not processed due to MODE_ERROR" << endlog();
             goto abort;
         }
 

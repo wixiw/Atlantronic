@@ -33,8 +33,8 @@ void OmnidirectOrder::setDefaults(orders::config conf)
     //TODO RMO rapatrier la conf
     DECLIN=1.0;//en m/s2
     DECROT=2.0; //en rad/s2
-    VMAXLIN=1.0; //en m/s
-    VMAXROT=2.0; // en rad/s
+    VMAXLIN=0.5; //en m/s
+    VMAXROT=1; // en rad/s
 }
 
 shared_ptr<MotionOrder> OmnidirectOrder::createOrder( const OrderGoalConstPtr &goal, Pose2D currentPose, orders::config conf  )
@@ -62,6 +62,37 @@ shared_ptr<MotionOrder> OmnidirectOrder::createOrder( const OrderGoalConstPtr &g
     return static_cast<shared_ptr<MotionOrder>  >(order);
 }
 
+void OmnidirectOrder::switchRun(arp_math::Pose2D currentPosition)
+{
+    //dans le cas du mode PASS c'est le radius approche qui fait office de critère
+    if (getRemainingDistance(currentPosition) <= getRadiusApproachZone())
+    {
+        if (getPass())
+        {
+            Log(INFO) << "switched MODE_RUN --> MODE_PASS";
+            m_currentMode = MODE_PASS;
+            m_passTime = getTime();
+            return;
+        }
+    }
+
+    double distance_error = getRemainingDistance(currentPosition);
+    double angle_error = getRemainingAngle(currentPosition);
+
+    if (distance_error < m_distanceAccuracy && fabs(angle_error) < m_angleAccuracy)
+    {
+        Log(INFO) << getTypeString() << " switched MODE_RUN --> MODE_DONE";
+        char string [250];
+        sprintf(string,"(%.3fm,%.3fm,%.1fdeg) with e_d=%.1fmm e_cap=%.1fdeg", currentPosition.x(), currentPosition.y(),
+                        rad2deg(currentPosition.h()), distance_error * 1000, rad2deg(angle_error));
+        Log(INFO) << string << " endPoint=" << m_endPose.toString();
+        m_currentMode = MODE_DONE;
+        return;
+    }
+    testTimeout();
+
+}
+
 
 
 Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double dt)
@@ -74,9 +105,9 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
     currentPosition.getDisplacement2Matrix();
     Pose2D deltaPos_refRobot;
     deltaPos_refRobot.translation( orient_robot.inverse().toRotationMatrix() * deltaPos_refTable.translation());
-    deltaPos_refRobot.orientation( deltaPos_refTable.h() );
+    deltaPos_refRobot.orientation( betweenMinusPiAndPlusPi(deltaPos_refTable.h()) );
 
-    Log(ERROR) << "poil : " << deltaPos_refRobot.toString() << " l'autre " << deltaPos_refTable.toString() ;
+    Log(DEBUG) << "poil : " << deltaPos_refRobot.toString() << " l'autre " << deltaPos_refTable.toString() ;
 
     // brutal correction twist
     Twist2D v_correction;

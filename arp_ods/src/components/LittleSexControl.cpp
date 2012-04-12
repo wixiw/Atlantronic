@@ -23,17 +23,12 @@ LittleSexControl::LittleSexControl(const std::string& name):
         attrCurrentOrder("default")
 {
     createOrocosInterface();
-    arp_ods::orders::Logger::InitFile("arp_ods", DEBUG);
+    arp_ods::orders::Logger::InitFile("arp_ods", INFO);
     //arp_ods::orders::Logger::InitConsole("arp_ods", DEBUG);
 }
 
 void LittleSexControl::getInputs()
 {
-    if( inOrder.readNewest(attrOrder) == NewData )
-    {
-        LOG(Info) << "received a new order" << endlog();
-    }
-
     //faut-il tester que c'est bien mis à jour ?
     inPosition.readNewest(attrPosition);
 }
@@ -75,8 +70,15 @@ void LittleSexControl::setOutputs()
     // On publie la consigne
     //vel_pub_.publish(m_computedVelocityCmd);
 
-    outOrderInError.write(attrOrder->getMode() == MODE_ERROR);
-    outOrderFinished.write(isOrderFinished());
+    //si on est en erreur dans un ordre pour lequel elle a du sens on informe au dessus
+    outOrderInError.write(attrOrder->getMode() == MODE_ERROR && attrOrder->getType() != NO_ORDER);
+
+    //la première fois qu'on a finit on publie
+    if( isOrderFinished() && outOrderFinished.getLastWrittenValue() == false )
+    {
+        outOrderFinished.write( true );
+    }
+
     outTwistCmd.write(attrComputedTwistCmd);
 }
 
@@ -120,10 +122,18 @@ bool LittleSexControl::isOrderFinished()
 
 bool LittleSexControl::ooSetOrder(shared_ptr<MotionOrder> order)
 {
-    //TODO tester si y'a pas déjà un order en cours ?
-
-    attrOrder = order;
-    return true;
+    if( attrOrder->getMode() == MODE_DONE || attrOrder->getMode() == MODE_ERROR)
+    {
+        outOrderFinished.write(false);
+        LOG(Info) << "Received a new order " << order->getTypeString() << " to go to " << order->getEndPose().toString() << endlog();
+        attrOrder = order;
+        return true;
+    }
+    else
+    {
+        LOG(Error) << "Can't do a new order now, I am busy (in mode "<< attrOrder->getMode()<<"), interrupt properly (with a function that doesn't exists yet ^ ^) " << endlog();
+        return false;
+    }
 }
 
 bool LittleSexControl::ooSetVMax(double vmax)
@@ -148,8 +158,6 @@ void LittleSexControl::createOrocosInterface()
     addAttribute("attrCurrentOrder",attrCurrentOrder);
 
 
-    addPort("inOrder",inOrder)
-        .doc("");
     addEventPort("inPosition",inPosition)
         .doc("");
 

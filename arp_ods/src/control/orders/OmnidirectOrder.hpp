@@ -52,6 +52,8 @@ class OmnidirectOrder: public MotionOrder
         double VMAXLIN;
         double VMAXROT;
 
+        //surcharger pour supprimer le mode approche en mode normal. En mode PASS la distance approche est utilisée
+        void switchRun(arp_math::Pose2D currentPosition);
 
 
 };
