@@ -5,6 +5,7 @@ import rospy
 import smach
 import smach_ros
 import smach_msgs
+import os
 
 from arp_master.strat.util.CyclicState import CyclicState
 from arp_master.strat.util.CyclicActionState import CyclicActionState
@@ -78,3 +79,6 @@ class PushGoldBar(CyclicActionState):
     def createAction(self):
         pose = AmbiPoseRed(1.200,0, 0, Data.color)
         self.omnidirect(pose.x, pose.y, pose.theta)
+    
+    def executeOut(self):
+        os.system("beep -f 300 -l100 -r1") 

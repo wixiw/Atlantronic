@@ -5,6 +5,7 @@ import rospy
 import smach
 import smach_ros
 import smach_msgs
+import os
 
 from arp_master.strat.util.CyclicState import CyclicState
 from arp_master.strat.util.CyclicActionState import CyclicActionState
@@ -27,10 +28,19 @@ class Endgame(PreemptiveStateMachine):
                                              EndMatchPreempter(0),
                                              transitions={'endMatch':'endEndgame'})
             
-            PreemptiveStateMachine.add('WaitBeforeNext',
-                      WaiterState(1.0),
-                      transitions={'done':'endEndgame'})
+            PreemptiveStateMachine.add('EndGameBip',
+                      EndGameBip(),
+                      transitions={'end':'endEndgame'})
             #as initial state is not the preemptive one, it is necessary to add the information here !
-            self.setInitialState('WaitBeforeNext')
+            self.setInitialState('EndGameBip')
 
             
+class EndGameBip(CyclicState):
+    def __init__(self):
+        CyclicState.__init__(self, outcomes=['end'])
+    
+    def executeIn(self):
+        os.system("beep -f 300 -l100 -r2") 
+    
+    def executeTransitions(self):
+            return 'end'

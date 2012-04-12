@@ -5,6 +5,7 @@ import rospy
 import smach
 import smach_ros
 import smach_msgs
+import os
 
 from arp_master.strat.util.CyclicState import CyclicState
 from arp_master.strat.util.Inputs import Inputs
@@ -67,6 +68,9 @@ class TakeStartPosition(CyclicActionState):
 class WaitForMatch(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['start'])
+    
+    def executeIn(self):
+        os.system("beep -f 300 -l300 -r3") 
     
     def executeTransitions(self):
        if Inputs.getstart()==1:

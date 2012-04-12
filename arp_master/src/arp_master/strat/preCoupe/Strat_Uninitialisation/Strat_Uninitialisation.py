@@ -5,6 +5,7 @@ import rospy
 import smach
 import smach_ros
 import smach_msgs
+import os
 
 from arp_master.strat.util.CyclicState import CyclicState
 from arp_master.strat.util.CyclicActionState import CyclicActionState
@@ -31,17 +32,11 @@ class UninitialisationState(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['ok'])
 
+    def executeIn(self):
+        self.result = self.disablePower()
+        os.system("beep -f 300 -l3000") 
+        
     def executeTransitions(self):
         return 'ok'     
     
     
-#the state that will wait for the start to be pluged
-class WaitForStart(CyclicState):
-    def __init__(self):
-        CyclicState.__init__(self, outcomes=['end'])
-    
-    def executeIn(self):
-        self.result = self.disablePower()
-        
-    def executeTransitions(self):
-            return 'end'

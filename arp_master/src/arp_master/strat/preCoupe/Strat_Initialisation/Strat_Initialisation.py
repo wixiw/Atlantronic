@@ -5,6 +5,7 @@ import rospy
 import smach
 import smach_ros
 import smach_msgs
+import os
 
 from arp_master.strat.util.CyclicState import CyclicState
 from arp_master.strat.util.Inputs import Inputs
@@ -23,10 +24,14 @@ class Initialisation(smach.StateMachine):
             smach.StateMachine.add('WaitForStart', WaitForStart(),
                                    transitions={'start':'endInitialisation'})
     
+    
 #the first state: only to wait for the start to be unpluged 
 class Init(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['initstateok'])
+
+    def executeIn(self):
+        os.system("beep -f 300 -l300 -r2") 
 
     def executeTransitions(self):
        # the only condition verified to go on is that the start is not put
