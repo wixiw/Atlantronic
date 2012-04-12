@@ -135,6 +135,10 @@ class CyclicActionState(CyclicState):
 
     def omnidirect(self,x,y,theta):
         self.createMotionControlAction(x,y,theta,'OMNIDIRECT',False,False)
+        
+    def omnicap(self,theta):
+        self.createMotionControlAction(Inputs.getx(),Inputs.gety(),theta,'OMNIDIRECT',False,False)
+        
     #these are functions linked to the replay
     def registerReplayOrder(self,x,y,theta,move_type,reverse,passe):
         Data.listReplayOrders.append(ReplayOrder(x,y,theta,move_type,reverse,passe))   
