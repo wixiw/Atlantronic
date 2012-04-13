@@ -48,7 +48,28 @@ bool Localizator::configureHook()
 
 void Localizator::scanCb(RTT::base::PortInterface* portInterface)
 {
-    //TODO faire des test sur les inputs ports ?
+    sensor_msgs::LaserScan rosScan;
+    inScan.readNewest(rosScan);
+
+    lsl::LaserScan lslScan;
+    Eigen::MatrixXd polarData(3, rosScan.ranges.size());
+    //ROS_WARN("min : %f max : %f",scan->range_min, scan->range_max);
+    for (unsigned int i = 0; i != rosScan.ranges.size(); i++)
+    {
+        polarData(0,i) = rosScan.header.stamp.toSec() + i * rosScan.time_increment;
+        polarData(2,i) = rosScan.angle_min + i*rosScan.angle_increment;
+        if (rosScan.ranges[i] <= rosScan.range_max && rosScan.range_min <= rosScan.ranges[i])
+        {
+            polarData(1,i) = rosScan.ranges[i];
+        }
+        else
+        {
+            polarData(1,i) = 0.;
+        }
+    }
+    lslScan.setPolarData(polarData);
+
+    kfloc.newScan(lslScan);
 }
 
 void Localizator::odoCb(RTT::base::PortInterface* portInterface)
@@ -80,8 +101,6 @@ void Localizator::odoCb(RTT::base::PortInterface* portInterface)
 void Localizator::updateHook()
 {
     // !!!!!!!! BIG FAT WARNING : l'updateHook est appele apres chaque callback automatiquement par orocos !!!
-
-
 
     EstimatedPose2D p = kfloc.getLastEstimatedPose2D();
     EstimatedTwist2D T_r_t_t = kfloc.getLastEstimatedTwist2D(); //idem odoCB

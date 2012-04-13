@@ -11,6 +11,8 @@
 #include "RluTaskContext.hpp"
 #include <math/core>
 
+#include <sensor_msgs/LaserScan.h>
+
 #include "KFL/KFLocalizator.hpp"
 
 
@@ -36,7 +38,7 @@ class Localizator: public RluTaskContext
 
         //*****************************************************
         // Ports
-        RTT::InputPort<double> inScan;
+        RTT::InputPort<sensor_msgs::LaserScan> inScan;
         RTT::InputPort<arp_math::EstimatedTwist2D > inOdo;
 
         RTT::OutputPort<arp_math::EstimatedPose2D> outPose;
