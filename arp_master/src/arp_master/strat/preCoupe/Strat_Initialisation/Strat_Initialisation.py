@@ -20,7 +20,9 @@ class Initialisation(smach.StateMachine):
         smach.StateMachine.__init__(self,outcomes=['endInitialisation'])
         with self:
             smach.StateMachine.add('Init', Init(),
-                                   transitions={'initstateok':'WaitForStart'})
+                                   transitions={'initstateok':'WaitForOrocos'})
+            smach.StateMachine.add('WaitForOrocos', WaitForOrocos(),
+                                   transitions={'deployed':'WaitForStart'})
             smach.StateMachine.add('WaitForStart', WaitForStart(),
                                    transitions={'start':'endInitialisation'})
     
@@ -30,18 +32,30 @@ class Init(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['initstateok'])
 
-    def executeIn(self):
-        os.system("beep -f 300 -l300 -r2") 
-
     def executeTransitions(self):
        # the only condition verified to go on is that the start is not put
        if Inputs.getstart()==1:
            return 'initstateok'
 
+#the state that will wait orocos software to deploy
+class WaitForOrocos(CyclicState):
+    def __init__(self):
+        CyclicState.__init__(self, outcomes=['deployed'])
+    
+    def executeTransitions(self):
+       if Inputs.getdeployed() is True:
+            return 'deployed'
+    
+    def executeOut(self):
+        rospy.loginfo("Orocos deployed.")
+
 #the state that will wait for the start to be pluged
 class WaitForStart(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['start'])
+    
+    def executeIn(self):
+        os.system("beep -f 300 -l300 -r2") 
     
     def executeTransitions(self):
        if Inputs.getstart()==0:

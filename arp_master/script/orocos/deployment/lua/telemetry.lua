@@ -71,5 +71,3 @@ function Telemetry:report()
 	Reporting:start()
 	print("====================")
 end
-
-Telemetry:report()

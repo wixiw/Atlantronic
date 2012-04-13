@@ -22,6 +22,7 @@ MotorSimul::MotorSimul(const std::string& name):
     propEncoderResolution(3000),
     propMaximalTorque(0.5),
     propInputsTimeout(20.0),
+    propHomingSpeed(700),
     m_power(false)
 
 {
@@ -40,6 +41,9 @@ MotorSimul::MotorSimul(const std::string& name):
         .doc("Maximal Torque allowed in Amps");
     addProperty("propInputsTimeout",propInputsTimeout)
             .doc("Maximal delay beetween 2 commands to consider someone is still giving coherent orders, in s");
+    addProperty("propHomingSpeed",propHomingSpeed)
+            .doc("");
+
 
     addEventPort("inClock",inClock)
             .doc("Port to fire to wake up the component");
@@ -71,6 +75,8 @@ MotorSimul::MotorSimul(const std::string& name):
         .doc(" Is true when the propMaximalTorque has been reached for more propBlockingTorqueTimeout");
     addPort("outConnected",outConnected)
         .doc("Always true");
+    addPort("outHomingDone",outHomingDone)
+        .doc("Always true is Homing sequence under power, false in any other case");
 
     addOperation("ooEnableDrive", &MotorSimul::enableDrive,this, OwnThread )
         .doc("Activate the power on the motor. Without a speed command it acts as a brake. Returns false if the component is not running.");
@@ -262,6 +268,7 @@ void MotorSimul::runSpeed()
         outFilteredSpeedCommand.write(0);
         m_speedMeasure = 0;
     }
+    outHomingDone.write(false);
 }
 
 void MotorSimul::runTorque()
@@ -270,6 +277,7 @@ void MotorSimul::runTorque()
     {
         //TODO
     }
+    outHomingDone.write(false);
 }
 
 void MotorSimul::runPosition()
@@ -287,6 +295,7 @@ void MotorSimul::runPosition()
     {
         m_speedMeasure = 0;
     }
+    outHomingDone.write(false);
 }
 
 void MotorSimul::runHoming()
@@ -295,6 +304,7 @@ void MotorSimul::runHoming()
     {
         m_positionMeasure = 0;
         m_speedMeasure = 0;
+        outHomingDone.write(true);
     }
     else
     {
@@ -304,6 +314,7 @@ void MotorSimul::runHoming()
 
 void MotorSimul::runOther()
 {
+    outHomingDone.write(false);
 }
 
 bool MotorSimul::init()

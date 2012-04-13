@@ -68,6 +68,8 @@ namespace arp_hml
         double propMaximalTorque;
         /** Maximal delay beetween 2 commands to consider someone is still giving coherent orders*/
         double propInputsTimeout;
+        /** Homing speed in rad/s on the reductor output */
+        double propHomingSpeed;
 
         /** Clock port which trigger our activity */
         InputPort<double> inClock;
@@ -97,7 +99,9 @@ namespace arp_hml
         OutputPort<std::string> outCurrentOperationMode;
         /** Is true when the propMaximalTorque has been reached*/
         OutputPort<bool> outMaxTorqueTimeout;
-
+        /** Is true when the Homing sequence is finished. It has no sense when the motor is not in HOMING mode */
+        OutputPort<bool> outHomingDone;
+        
         /** Is always true*/
         OutputPort<bool> outConnected;
 

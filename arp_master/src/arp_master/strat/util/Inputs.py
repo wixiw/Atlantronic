@@ -9,7 +9,7 @@ from arp_core.msg import StartColor
 from arp_core.msg import Start
 from arp_core.msg import Pose
 from arp_core.msg import Velocity
-
+from std_msgs.msg import Bool
 from TableVierge import *
 
 
@@ -50,6 +50,7 @@ class Inputs:
         Inputs.rearObstacleInput=Inputs.createInput("ObstacleDetector/rear_obstacle", Obstacle)
         Inputs.listener = tf.TransformListener()
         Inputs.linearVelocityInput=Inputs.createInput("/Command/velocity",Velocity)
+        Inputs.deployed=Inputs.createInput("Master/deployed", Bool)
     
     @staticmethod
     def createInput(name,type):
@@ -71,6 +72,10 @@ class Inputs:
     @staticmethod
     def getstart():
         return Inputs.startInput.data.go
+    
+    @staticmethod
+    def getdeployed():
+        return Inputs.deployed.data.data
     
     #get obstacle will return that there is an obstacle only if the obstacle is on the table
     @staticmethod

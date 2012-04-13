@@ -8,4 +8,5 @@ configure_file(
   message("[+] configure version.h")
 
 add_subdirectory(ihm)
+add_subdirectory(orocos)
 add_subdirectory(strat)

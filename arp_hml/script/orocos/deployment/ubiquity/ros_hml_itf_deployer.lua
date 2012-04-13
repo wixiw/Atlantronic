@@ -33,7 +33,7 @@ function RosHmlItfDeployer:connect()
 	Deployer:connect("RosHmlItf.inIoFrontRightObstacle", "WoodheadIn.outBit7",cp)
 	Deployer:connect("RosHmlItf.inIoRearObstacle", "WoodheadIn.outBit8",cp)
 	
-	Deployer:connect("RosHmlItf.inIsHomingDone", "HmlMonitor.outIsHomingDone",cp)
+	Deployer:connect("RosHmlItf.inIsHomingDone", "HmlMonitor.outHomingDone",cp)
 
 --connexion ROS
 	

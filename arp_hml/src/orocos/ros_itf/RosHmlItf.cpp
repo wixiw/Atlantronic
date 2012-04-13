@@ -33,6 +33,8 @@ bool RosHmlItf::configureHook()
     res &= getOperation("HmlMonitor",   "coSetMotorPower",          m_coSetMotorPower);
     res &= getOperation("HmlMonitor",   "coSetDrivingMotorPower",   m_coSetDrivingMotorPower);
     res &= getOperation("HmlMonitor",   "coSetSteeringMotorPower",  m_coSetSteeringMotorPower);
+    getOperation("HmlMonitor",   "ooSetDrivingOperationMode ",  m_ooSetDrivingOperationMode );
+    getOperation("HmlMonitor",   "ooSetSteeringOperationMode ",  m_ooSetSteeringOperationMode );
     res &= getOperation("HmlMonitor",   "ooResetHml",               m_ooResetHml);
     //don't care if those are missing
     getOperation("HmlMonitor",          "coGetHmlVersion",             m_coGetVersion);
@@ -183,6 +185,18 @@ bool RosHmlItf::srvSetSteeringMotorPower(SetMotorPower::Request& req, SetMotorPo
     return res.success;
 }
 
+bool RosHmlItf::srvSetDrivingOperationMode(SetMotorMode::Request& req, SetMotorMode::Response& res)
+{
+    res.success = m_ooSetDrivingOperationMode(req.mode);
+    return res.success;
+}
+
+bool RosHmlItf::srvSetSteeringOperationMode(SetMotorMode::Request& req, SetMotorMode::Response& res)
+{
+    res.success = m_ooSetSteeringOperationMode(req.mode);
+    return res.success;
+}
+
 bool RosHmlItf::srvGetVersion(GetVersion::Request& req, GetVersion::Response& res)
 {
     res.version = m_coGetVersion();
@@ -309,6 +323,8 @@ void RosHmlItf::createRosInterface()
     m_srvSetMotorPower = nh.advertiseService("/Ubiquity/setMotorPower", &RosHmlItf::srvSetMotorPower, this);
     m_srvSetDrivingMotorPower = nh.advertiseService("/Ubiquity/setDrivingMotorPower", &RosHmlItf::srvSetDrivingMotorPower, this);
     m_srvSetSteeringMotorPower = nh.advertiseService("/Ubiquity/setSteeringMotorPower", &RosHmlItf::srvSetSteeringMotorPower, this);
+    m_srvSetDrivingOperationMode = nh.advertiseService("/Ubiquity/setDrivingOperationMode", &RosHmlItf::srvSetDrivingOperationMode, this);
+    m_srvSetDrivingOperationMode = nh.advertiseService("/Ubiquity/setSteeringOperationMode", &RosHmlItf::srvSetSteeringOperationMode, this);
     m_srvSetRealSimulPosition = nh.advertiseService("/Ubiquity/setRealSimulPosition", &RosHmlItf::srvSetRealSimulPosition, this);
     m_srvResetHml = nh.advertiseService("/Ubiquity/resetHml", &RosHmlItf::srvResetHml, this);
     m_srvGetVersion = nh.advertiseService("/Ubiquity/getHmlVersion", &RosHmlItf::srvGetVersion, this);

@@ -33,6 +33,7 @@
 //pour les services
 #include <arp_core/SetPosition.h>
 #include <arp_hml/SetMotorPower.h>
+#include <arp_hml/SetMotorMode.h>
 #include <arp_hml/ResetHml.h>
 #include <arp_hml/GetVersion.h>
 
@@ -74,10 +75,14 @@ namespace arp_hml
 
         /** node handle to store the service advertiser srvSetMotorPower**/
         ros::ServiceServer m_srvSetMotorPower;
-        /** node handle to store the service advertiser srvSetMotorPower**/
+        /** node handle to store the service advertiser srvSetDrivingMotorPower**/
         ros::ServiceServer m_srvSetDrivingMotorPower;
-        /** node handle to store the service advertiser srvSetMotorPower**/
+        /** node handle to store the service advertiser srvSetSteeringMotorPower**/
         ros::ServiceServer m_srvSetSteeringMotorPower;
+        /** node handle to store the service advertiser srvSetDrivingOperationMode**/
+        ros::ServiceServer m_srvSetDrivingOperationMode;
+        /** node handle to store the service advertiser srvSetSteeringOperationMode**/
+        ros::ServiceServer m_srvSetSteeringOperationMode;
         /** node handle to store the service advertiser srvResetHml**/
         ros::ServiceServer m_srvResetHml;
         /** node handle to store the service advertiser srvSetMotorPower**/
@@ -99,6 +104,16 @@ namespace arp_hml
          * ROS wrapper on the ooSetPowerMotor operation
          */
         bool srvSetSteeringMotorPower(SetMotorPower::Request& req, SetMotorPower::Response& res);
+
+        /**
+         * ROS wrapper on the ooSetPowerMotor operation
+         */
+        bool srvSetDrivingOperationMode(SetMotorMode::Request& req, SetMotorMode::Response& res);
+
+        /**
+         * ROS wrapper on the ooSetPowerMotor operation
+         */
+        bool srvSetSteeringOperationMode(SetMotorMode::Request& req, SetMotorMode::Response& res);
 
         /**
          * ROS wrapper on the HmlMonitor.ooResetHml operation
@@ -210,6 +225,10 @@ protected:
         OperationCaller<bool(bool)> m_coSetDrivingMotorPower;
         /** Pointer on the HmlMonitor ooSetSteeringMotorPower Operation**/
         OperationCaller<bool(bool)> m_coSetSteeringMotorPower;
+        /** Pointer on the HmlMonitor ooSetDrivingOperationMode Operation**/
+        OperationCaller<bool(std::string)>  m_ooSetDrivingOperationMode;
+        /** Pointer on the HmlMonitor ooSetSteeringOperationMode Operation**/
+        OperationCaller<bool(std::string)>  m_ooSetSteeringOperationMode;
         /** Pointer on the HmlMonitor ooResetHml Operation**/
         OperationCaller<bool(void)> m_ooResetHml;
         /** Pointer on the HmlMonitor ooSetPosition Operation**/
