@@ -48,7 +48,7 @@ class CircleIdentif
             /** Constructeur par défault.
              *  Il initialise des paramètres classiques non-stupides :\n
              *  \li radius = 0.04
-             *  \li rangeDelta = 0.034
+             *  \li coeffs = [1.0  0.034]
              */
             Params();
 
@@ -59,9 +59,9 @@ class CircleIdentif
 
             /**
              * Permet de vérifier que les paramètres sont consistants.\n
-             * A savoir : \n
-             * * radius > 0. \n
-             * * rangeDelta < radius
+             * A savoir :
+             * \li radius > 0.
+             * \li coeffs est non vide
              */
             bool checkConsistency() const;
 
@@ -76,6 +76,11 @@ class CircleIdentif
              * Valeur par défault : 85 pourcents du rayon (donc pour un rayon de 4cm : 0.034m)
              */
             double rangeDelta;
+
+            /**
+             * Polynomial coeff, from high order to low
+             */
+            std::vector<double> coeffs;
         };
 
     public:

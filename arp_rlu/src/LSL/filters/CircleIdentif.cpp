@@ -9,6 +9,7 @@
 #include "CircleIdentif.hpp"
 
 #include "LSL/Logger.hpp"
+#include <math.h>
 
 #include <exceptions/NotImplementedException.hpp>
 
@@ -21,8 +22,10 @@ using namespace arp_core::log;
 
 CircleIdentif::Params::Params()
 : radius(0.04)
-, rangeDelta(0.034)
+, coeffs(std::vector<double>())
 {
+    coeffs.push_back(1.);
+    coeffs.push_back(0.034);
 }
 
 std::string CircleIdentif::Params::getInfo() const
@@ -30,7 +33,12 @@ std::string CircleIdentif::Params::getInfo() const
     std::stringstream ss;
     ss << "CircleIdentif params :" << std::endl;
     ss << " [*] radius: " << radius << " (m)" << std::endl;
-    ss << " [*] rangeDelta: " << rangeDelta << " (m)" << std::endl;
+    ss << " [*] coeffs: ";
+    for(unsigned int i = 0 ; i < coeffs.size() ; i++)
+    {
+        ss << coeffs[i] << " ; ";
+    }
+    ss << "" << std::endl;
     return ss.str();
 }
 
@@ -41,9 +49,9 @@ bool CircleIdentif::Params::checkConsistency() const
         Log( WARN ) << "CircleIdentif::Params::checkConsistency" << " - " << "inconsistent parameters (radius <= 0.)";
         return false;
     }
-    if( rangeDelta > radius )
+    if( coeffs.empty() )
     {
-        Log( WARN ) << "CircleIdentif::Params::checkConsistency" << " - " << "inconsistent parameters (rangeDelta > radius)";
+        Log( WARN ) << "CircleIdentif::Params::checkConsistency" << " - " << "inconsistent parameters (coeffs is empty)";
         return false;
     }
     return true;
@@ -66,32 +74,39 @@ DetectedCircle CircleIdentif::apply(const DetectedObject & raw, const Params & p
     double acmr = raw.getApparentCartesianMeanRange();
     double acmt = raw.getApparentCartesianMeanTheta();
 
-    out.x( cartMean(0) + p.rangeDelta * cos(aov + acmt) );
-    out.y( cartMean(1) + p.rangeDelta * sin(aov + acmt) );
+    double range = 0;
+    for(unsigned int i = 0 ; i < p.coeffs.size() ; i++)
+    {
+        range += p.coeffs[i] * std::pow(acmr, p.coeffs.size()-i-1);
+//        Log( DEBUG ) << "[i = " << i << "]" << "p.coeffs[i] = " << p.coeffs[i] << "  p.coeffs.size()-i-1 = " << p.coeffs.size()-i-1;
+//        Log( DEBUG ) << "[i = " << i << "]" << "std::pow(acmr, p.coeffs.size()-i-1) = " << std::pow(acmr, p.coeffs.size()-i-1);
+//        Log( DEBUG ) << "[i = " << i << "]" << "p.coeffs[i] * std::pow(acmr, p.coeffs.size()-i-1) = " << p.coeffs[i] * std::pow(acmr, p.coeffs.size()-i-1);
+//        Log( DEBUG ) << "[i = " << i << "]" << "range = " << range;
+    }
+
+    out.x( pov(0) + range * cos(aov + acmt) );
+    out.y( pov(1) + range * sin(aov + acmt) );
 
 //    out.setApparentCenterRange(acmr + p.rangeDelta);
-    out.setApparentCenterRange( arp_math::mean(raw.getScan().getPolarData().row(1)) + p.rangeDelta );
+    out.setApparentCenterRange( range );
     out.setApparentCenterTheta(acmt);
     out.setApparentCenterTime( raw.getApparentCartesianMeanTime() );
 
-    Log( DEBUG ) << "CircleIdentif::apply - [xMean] cartMean(0)=" << cartMean(0);
-    Log( DEBUG ) << "CircleIdentif::apply - [yMean] cartMean(1)=" << cartMean(1);
-    Log( DEBUG ) << "CircleIdentif::apply - [x] pov(0)=" << pov(0);
-    Log( DEBUG ) << "CircleIdentif::apply - [y] pov(1)=" << pov(1);
-    Log( DEBUG ) << "CircleIdentif::apply - [xMean - x] cartMean(0) - pov(0)=" << cartMean(0) - pov(0);
-    Log( DEBUG ) << "CircleIdentif::apply - [yMean - y] cartMean(1) - pov(1)=" << cartMean(1) - pov(1);
-    Log( DEBUG ) << "CircleIdentif::apply - [acmr] acmr=" << cartMean(1) - pov(1);
-    Log( DEBUG ) << "CircleIdentif::apply - [atan2] aov + acmt=" << aov + acmt;
-    Log( DEBUG ) << "CircleIdentif::apply - [xDelta] p.rangeDelta * cos(aov + acmt)=" << p.rangeDelta * cos(aov + acmt);
-    Log( DEBUG ) << "CircleIdentif::apply - [yDelta] p.rangeDelta * sin(aov + acmt)=" << p.rangeDelta * sin(aov + acmt);
-    Log( DEBUG ) << "CircleIdentif::apply - [xCenter] out.x()=" << out.x();
-    Log( DEBUG ) << "CircleIdentif::apply - [yCenter] out.y()=" << out.y();
-    Log( DEBUG ) << "CircleIdentif::apply - [ranges] ranges =" << raw.getScan().getPolarData().row(1);
-    Log( DEBUG ) << "CircleIdentif::apply - [mean(range)] mean(range) =" << arp_math::mean(raw.getScan().getPolarData().row(1));
-    Log( DEBUG ) << "CircleIdentif::apply - [range] mean(range) + rangeDelta=" << out.getApparentCenterRange();
-    Log( DEBUG ) << "CircleIdentif::apply - [theta] acmt=" << out.getApparentCenterTheta();
-    Log( DEBUG ) << "CircleIdentif::apply - [time] time=" << out.getApparentCenterTime();
-    Log( DEBUG ) << "CircleIdentif::apply - --------------";
+
+//    Log( DEBUG ) << "*************************";
+//    Log( DEBUG ) << p.getInfo();
+//    Log( DEBUG ) << "pov = " << pov.transpose();
+//    Log( DEBUG ) << "cartMean = " << cartMean.transpose();
+//    Log( DEBUG ) << "aov = " << aov;
+//    Log( DEBUG ) << "acmr = " << acmr;
+//    Log( DEBUG ) << "acmt = " << acmr;
+//    Log( DEBUG ) << "***";
+//    Log( DEBUG ) << "range = " << range;
+//    Log( DEBUG ) << "out.x() = " << out.x();
+//    Log( DEBUG ) << "out.y() = " << out.y();
+//    Log( DEBUG ) << "out.getApparentCenterRange() = " << out.getApparentCenterRange();
+//    Log( DEBUG ) << "out.getApparentCenterTheta() = " << out.getApparentCenterTheta();
+//    Log( DEBUG ) << "out.getApparentCenterTime() = " << out.getApparentCenterTime();
 
     return out;
 }

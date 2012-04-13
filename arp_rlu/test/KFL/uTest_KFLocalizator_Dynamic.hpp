@@ -374,9 +374,9 @@ namespace unittest_KFLocalizator_Dynamic
                     }
                 }
 
-                BOOST_CHECK( abs(postScanEstim.x() - trueX) < 3.0 * sqrt(postScanEstim.cov()(0,0)) );
-                BOOST_CHECK( abs(postScanEstim.y() - trueY) < 3.0 * sqrt(postScanEstim.cov()(1,1)) );
-                BOOST_CHECK( abs(betweenMinusPiAndPlusPi( postScanEstim.h() - trueH )) < 3.0 * sqrt(postScanEstim.cov()(2,2)) );
+                BOOST_CHECK( abs(postScanEstim.x() - trueX) < 3.5 * sqrt(postScanEstim.cov()(0,0)) );
+                BOOST_CHECK( abs(postScanEstim.y() - trueY) < 3.5 * sqrt(postScanEstim.cov()(1,1)) );
+                BOOST_CHECK( abs(betweenMinusPiAndPlusPi( postScanEstim.h() - trueH )) < 3.5 * sqrt(postScanEstim.cov()(2,2)) );
 
 //                kfl::Log( INFO ) << "------------------------------";
 //                kfl::Log( INFO ) << "position apres le scan [time=" << time << "]:";
@@ -385,9 +385,9 @@ namespace unittest_KFLocalizator_Dynamic
 //                kfl::Log( INFO ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( postScanEstim.h() ) );
                 kfl::Log( INFO ) << "------------------------------";
                 kfl::Log( INFO ) << "erreur apres le scan [time=" << time << "]:";
-                kfl::Log( INFO ) << "  sur x (en mm): " << (postScanEstim.x() - trueX) * 1000. << " +/- " << 3000. * sqrt(postScanEstim.cov()(0,0));
-                kfl::Log( INFO ) << "  sur y (en mm): " << (postScanEstim.y() - trueY) * 1000. << " +/- " << 3000. * sqrt(postScanEstim.cov()(1,1));
-                kfl::Log( INFO ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( postScanEstim.h() - trueH ) )  << " +/- " << 3.0 * rad2deg(sqrt(postScanEstim.cov()(2,2)));
+                kfl::Log( INFO ) << "  sur x (en mm): " << (postScanEstim.x() - trueX) * 1000. << " +/- " << 3500. * sqrt(postScanEstim.cov()(0,0));
+                kfl::Log( INFO ) << "  sur y (en mm): " << (postScanEstim.y() - trueY) * 1000. << " +/- " << 3500. * sqrt(postScanEstim.cov()(1,1));
+                kfl::Log( INFO ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( postScanEstim.h() - trueH ) )  << " +/- " << 3.5 * rad2deg(sqrt(postScanEstim.cov()(2,2)));
                 kfl::Log( INFO ) << "covariance : " << postScanEstim.cov().row(0);
                 kfl::Log( INFO ) << "             " << postScanEstim.cov().row(1);
                 kfl::Log( INFO ) << "             " << postScanEstim.cov().row(2);

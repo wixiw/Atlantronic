@@ -21,16 +21,19 @@ BOOST_AUTO_TEST_CASE( Test_checkConsistency )
     BOOST_CHECK( p.checkConsistency() );
 
     p.radius = 0.06;
-    p.rangeDelta = 0.04;
+    p.coeffs = std::vector<double>();
+    BOOST_CHECK( !(p.checkConsistency()) );
+
+    p.radius = 0.06;
+    p.coeffs = std::vector<double>();
+    p.coeffs.push_back(2.0);
+    p.coeffs.push_back(-0.1);
     BOOST_CHECK( p.checkConsistency() );
 
     p.radius = -0.06;
-    p.rangeDelta = -0.08;
+    p.coeffs = std::vector<double>();
     BOOST_CHECK( !(p.checkConsistency()) );
 
-    p.radius =  0.06;
-    p.rangeDelta = 0.08;
-    BOOST_CHECK( !(p.checkConsistency()) );
 }
 
 BOOST_AUTO_TEST_CASE( Test_DefaultParams_1 )
@@ -130,7 +133,9 @@ BOOST_AUTO_TEST_CASE( Test_OtherParams_1 )
 
     lsl::CircleIdentif::Params p;
     p.radius = 0.06;
-    p.rangeDelta = 0.04;
+    p.coeffs = std::vector<double>();
+    p.coeffs.push_back(1.0);
+    p.coeffs.push_back(0.04);
     lsl::DetectedCircle recoCircle = lsl::CircleIdentif::apply(rawObject, p);
 
     BOOST_CHECK_CLOSE(recoCircle.x(), 1.3 + 0.04, 1.f);
@@ -176,7 +181,9 @@ BOOST_AUTO_TEST_CASE( Test_OtherParams_2 )
 
     lsl::CircleIdentif::Params p;
     p.radius = 0.06;
-    p.rangeDelta = 0.04;
+    p.coeffs = std::vector<double>();
+    p.coeffs.push_back(1.0);
+    p.coeffs.push_back(0.04);
     lsl::DetectedCircle recoCircle = lsl::CircleIdentif::apply(rawObject, p);
 
     BOOST_CHECK( abs(recoCircle.x()) < 0.000001 );

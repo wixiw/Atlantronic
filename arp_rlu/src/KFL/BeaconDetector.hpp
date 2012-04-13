@@ -161,6 +161,12 @@ class BeaconDetector
         bool getBeacon(double t, lsl::Circle & target, Eigen::Vector2d & meas);
 
         /**
+         * Permet de récupérer tous les clusters candidats.
+         * \remark Cette méthode est présente pour le débug seulement.\n
+         */
+        std::vector< lsl::DetectedObject > getDetectedObjects();
+
+        /**
          * Permet de récupérer tous les cercles candidats.
          * \remark Cette méthode est présente pour le débug seulement.\n
          */
@@ -190,6 +196,12 @@ class BeaconDetector
          * Paramètres du BeaconDetector
          */
         BeaconDetector::Params params;
+
+        /**
+         * Les clusters candidats.\n
+         * Ils n'ont pas (encore) été identifiés comme des cercles.
+         */
+        std::vector< lsl::DetectedObject > detectedObjects;
 
         /**
          * Les balises candidates.\n

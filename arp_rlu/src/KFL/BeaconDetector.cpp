@@ -27,7 +27,7 @@ BeaconDetector::Params::Params()
 , cip(lsl::CircleIdentif::Params())
 , tcp(lsl::TrioCircleIdentif::Params())
 , dcp(lsl::DuoCircleIdentif::Params())
-, minNbPoints(4)
+, minNbPoints(3)
 {
     mfp.width = 0;
 
@@ -38,7 +38,7 @@ BeaconDetector::Params::Params()
 
     psp.rangeThres = 0.08;
 
-    minNbPoints = 4;
+    minNbPoints = 3;
 
     cip.radius = 0.04;
     cip.rangeDelta = 0.034;
@@ -155,7 +155,7 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
 
     //*****************************
     // Filtering on candidates : do not considere too small DetectedObject and DetectedObject touching borders of initial scan
-    std::vector<DetectedObject> dObj;
+    detectedObjects.clear();
     for(unsigned int i = 0 ; i < rawDObj.size() ; i++)
     {
         if(rawDObj[i].getScan().getSize() < params.minNbPoints)
@@ -170,7 +170,7 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
         {
             continue;
         }
-        dObj.push_back( rawDObj[i] );
+        detectedObjects.push_back( rawDObj[i] );
 
     }
 
@@ -184,7 +184,7 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
 
     //*****************************
     // Interpretation as Circle
-    detectedCircles = CircleIdentif::apply(dObj, params.cip);
+    detectedCircles = CircleIdentif::apply(detectedObjects, params.cip);
 
     if(referencedBeacons.size() < 3)
     {
@@ -269,6 +269,11 @@ bool BeaconDetector::getBeacon(double t, lsl::Circle & target, Eigen::Vector2d &
         }
     }
     return false;
+}
+
+std::vector< lsl::DetectedObject > BeaconDetector::getDetectedObjects()
+{
+    return detectedObjects;
 }
 
 std::vector< lsl::DetectedCircle > BeaconDetector::getDetectedCircles()
