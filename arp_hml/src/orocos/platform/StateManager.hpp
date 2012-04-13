@@ -44,6 +44,11 @@ namespace arp_hml
 
             RTT::Property<bool>* m_propRequireCompleteHardware;
 
+            RTT::InputPort<bool> inLeftSteeringHomingDone;
+            RTT::InputPort<bool> inRightSteeringHomingDone;
+            RTT::InputPort<bool> inRearSteeringHomingDone;
+
+            RTT::OutputPort<bool> outHomingDone;
 
             /** Pointer in the Left driving ooSetOperationMode Operation **/
             RTT::OperationCaller<bool(std::string)> m_ooSetLeftDrivingOperationMode;

@@ -13,6 +13,11 @@ function HmlMonitorSimulDeployer:connect()
 	HmlMonitorSimulDeployer:connectOneMotor("LeftSteering")
 	HmlMonitorSimulDeployer:connectOneMotor("RightSteering")
 	HmlMonitorSimulDeployer:connectOneMotor("RearSteering")
+	
+	Deployer:connect("HmlMonitor.inLeftSteeringHomingDone", "LeftSteering.outHomingDone",cp)
+	Deployer:connect("HmlMonitor.inRightSteeringHomingDone", "RightSteering.outHomingDone",cp)
+	Deployer:connect("HmlMonitor.inRearSteeringHomingDone", "RearSteering.outHomingDone",cp)
+	
  --[[
 	Deployer:connect("HmlMonitor.inWoodheadInConnected", "WoodheadIn.outConnected",cp)
 	Deployer:connect("HmlMonitor.inWoodheadOutConnected", "WoodheadOut.outConnected",cp)

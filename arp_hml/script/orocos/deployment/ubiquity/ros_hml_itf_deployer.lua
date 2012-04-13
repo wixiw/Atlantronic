@@ -32,6 +32,8 @@ function RosHmlItfDeployer:connect()
 	Deployer:connect("RosHmlItf.inIoFrontLeftObstacle", "WoodheadIn.outBit4",cp)
 	Deployer:connect("RosHmlItf.inIoFrontRightObstacle", "WoodheadIn.outBit7",cp)
 	Deployer:connect("RosHmlItf.inIoRearObstacle", "WoodheadIn.outBit8",cp)
+	
+	Deployer:connect("RosHmlItf.inIsHomingDone", "HmlMonitor.outIsHomingDone",cp)
 
 --connexion ROS
 	
@@ -41,6 +43,7 @@ function RosHmlItfDeployer:connect()
 
 	Deployer:stream("RosHmlItf.outWheelBlocked",ros:topic("/Ubiquity/wheel_blocked"))
 	Deployer:stream("RosHmlItf.outEmergencyStop",ros:topic("/Ubiquity/emergency_stop"))
+	Deployer:stream("RosHmlItf.outIsHomingDone",ros:topic("/Ubiquity/homing_done"))
 	Deployer:stream("RosHmlItf.outIoStart",ros:topic("/Ubiquity/start"))
 	Deployer:stream("RosHmlItf.inIoStartColor",ros:topic("/Ubiquity/color"))
 	Deployer:stream("RosHmlItf.inIoFrontLeftObstacle",ros:topic("/Ubiquity/front_left_obstacle"))

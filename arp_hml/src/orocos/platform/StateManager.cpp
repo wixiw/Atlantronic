@@ -14,6 +14,16 @@ using namespace RTT;
 StateManager::StateManager(ARDTaskContext& owner):
     m_owner(owner)
 {
+    m_owner.addPort("inLeftSteeringHomingDone",inLeftSteeringHomingDone)
+            .doc("");
+    m_owner.addPort("inRightSteeringHomingDone",inRightSteeringHomingDone)
+            .doc("");
+    m_owner.addPort("inRearSteeringHomingDone",inRearSteeringHomingDone)
+            .doc("");
+
+    m_owner.addPort("outHomingDone",outHomingDone)
+            .doc("");
+
     m_owner.addOperation("ooSetDrivingOperationMode", &StateManager::ooSetDrivingOperationMode, this, OwnThread)
             .doc("Choose a mode of operation on driving motors")
             .arg("state","choose between spped,position,torque,other");
@@ -45,7 +55,12 @@ bool StateManager::configureHook()
 
 void StateManager::updateHook()
 {
+    bool leftDone,rightDone,rearDone;
+    inLeftSteeringHomingDone.readNewest(leftDone);
+    inLeftSteeringHomingDone.readNewest(rightDone);
+    inLeftSteeringHomingDone.readNewest(rearDone);
 
+    outHomingDone.write(leftDone && rightDone && rearDone);
 }
 
 bool StateManager::getPeersOperations()

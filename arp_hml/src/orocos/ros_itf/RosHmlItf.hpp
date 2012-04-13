@@ -142,6 +142,9 @@ namespace arp_hml
         /** Real Position of the robot, given by the simulation */
         OutputPort<Pose> outRealPosition;
 
+        /** Homing done */
+        OutputPort<std_msgs::Bool> outIsHomingDone;
+
 /*****************************************************************
  *  Interface with the INSIDE (hml !)
  *****************************************************************/
@@ -160,6 +163,9 @@ namespace arp_hml
 
         /** State of the 6 mobile base motors **/
         InputPort<arp_model::MotorState> inMotorMeasures;
+
+        /** µIs true when the 3 steering motor has done their homing */
+        InputPort<bool> inIsHomingDone;
 
         /** Input of Enable value of motors to publish to Ros **/
         InputPort<bool> inDrivingMotorsEnable;

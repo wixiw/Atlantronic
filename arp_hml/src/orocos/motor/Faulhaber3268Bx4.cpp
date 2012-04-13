@@ -30,7 +30,7 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         propEncoderResolution(3000),
         propMaximalTorque(0.5),
         propInputsTimeout(1.0),
-        propHomingSpeed(1),
+        propHomingSpeed(700),
         m_faulhaberCommandTodo(false),
         m_oldPositionMeasure(0),
         m_isMotorBlocked(false)
@@ -305,22 +305,49 @@ void Faulhaber3268Bx4::runHoming()
             case WAIT_CONFIGURE_EDGE:
                 if( !m_faulhaberCommandTodo )
                  {
-                     attrHomingState = ASK_CONFIGURE_SWITCH;
+                     attrHomingState = ASK_CONFIGURE_SWITCH1;
                  }
                 break;
-            case ASK_CONFIGURE_SWITCH:
+            case ASK_CONFIGURE_SWITCH1:
                 if( !m_faulhaberCommandTodo )
                 {
-                    //TODO ça merdoie là
                     m_faulhaberScriptCommand = (UNS8) F_CMD_SHL;
-                    UNS32 mask = 1;
-                    LOG(Info) << "mask = "<< mask << endlog();
-                    m_faulhaberScriptCommandParam = (UNS32) mask;
+                    m_faulhaberScriptCommandParam = F_ANALOG_SWICTH_MASK;
                     m_faulhaberCommandTodo = true;
-                    attrHomingState = WAIT_CONFIGURE_SWITCH;
+                    attrHomingState = WAIT_CONFIGURE_SWITCH1;
                 }
                 break;
-            case WAIT_CONFIGURE_SWITCH:
+            case WAIT_CONFIGURE_SWITCH1:
+                if( !m_faulhaberCommandTodo )
+                 {
+                     attrHomingState = ASK_CONFIGURE_SWITCH2;
+                 }
+                break;
+            case ASK_CONFIGURE_SWITCH2:
+                if( !m_faulhaberCommandTodo )
+                {
+                    m_faulhaberScriptCommand = (UNS8) F_CMD_SHN;
+                    m_faulhaberScriptCommandParam = F_ANALOG_SWICTH_MASK;
+                    m_faulhaberCommandTodo = true;
+                    attrHomingState = WAIT_CONFIGURE_SWITCH2;
+                }
+                break;
+            case WAIT_CONFIGURE_SWITCH2:
+                if( !m_faulhaberCommandTodo )
+                 {
+                     attrHomingState = ASK_CONFIGURE_SWITCH3;
+                 }
+                break;
+            case ASK_CONFIGURE_SWITCH3:
+                if( !m_faulhaberCommandTodo )
+                {
+                    m_faulhaberScriptCommand = (UNS8) F_CMD_SHA;
+                    m_faulhaberScriptCommandParam = F_ANALOG_SWICTH_MASK;
+                    m_faulhaberCommandTodo = true;
+                    attrHomingState = WAIT_CONFIGURE_SWITCH3;
+                }
+                break;
+            case WAIT_CONFIGURE_SWITCH3:
                 if( !m_faulhaberCommandTodo )
                  {
                      attrHomingState = ASK_CONFIGURE_SPEED;
@@ -330,7 +357,7 @@ void Faulhaber3268Bx4::runHoming()
                 if( !m_faulhaberCommandTodo )
                 {
                     m_faulhaberScriptCommand = (UNS8) F_CMD_HOSP;
-                    m_faulhaberScriptCommandParam = (UNS32) propHomingSpeed*propReductorValue*RAD_S_TO_RPM;
+                    m_faulhaberScriptCommandParam = (UNS32) (propHomingSpeed*propReductorValue*RAD_S_TO_RPM);
                     m_faulhaberCommandTodo = true;
                     attrHomingState = WAIT_CONFIGURE_SPEED;
                 }
@@ -351,14 +378,10 @@ void Faulhaber3268Bx4::runHoming()
                 }
                 break;
             case WAIT_HOMING:
-                if( !m_faulhaberCommandTodo )
-                {
-                    if( attrHomingDone )
-                        attrHomingState = HOMING_DONE;
-                }
+                if( attrHomingDone )
+                    attrHomingState = HOMING_DONE;
                 break;
             case HOMING_DONE:
-                //bah y'a plus qu'à attendre que les couches supéreures se reveillent
                 break;
             default:
                 LOG(Error) << "Unknow homing state : " << attrHomingState << endlog();
@@ -410,7 +433,7 @@ void Faulhaber3268Bx4::readCaptors()
 
     //lecture de l'état DS402s
     attrState = ArdDs402::getStateFromCanStatusWord( *m_ds402State );
-    attrHomingDone = *m_ds402State&=(1<<12);
+    attrHomingDone = *m_ds402State&=(1<<10);
 
     //lecture du courant (en mA)
 	double current = *m_measuredCurrent;

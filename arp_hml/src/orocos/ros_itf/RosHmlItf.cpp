@@ -63,6 +63,17 @@ void RosHmlItf::updateHook()
     //lecture du blocage roues
     readWheelBlocked();
 
+
+    bool pouette;
+    Bool homingDone;
+    if( NoData != inIsHomingDone.readNewest(pouette) )
+    {
+        homingDone.data = pouette;
+        outIsHomingDone.write(homingDone);
+    }
+
+
+
     Pose poseOut;
     Pose2D poseIn;
     if( NoData != inRealPosition.readNewest(poseIn) )
@@ -227,6 +238,9 @@ void RosHmlItf::createOrocosInterface()
          .doc("Is true when one of the 3 driving wheel is blocked");
     addPort("outRealPosition",outRealPosition)
         .doc("Position calculated by the simulation (is just a type conversion from same named input port)");
+    addPort("outIsHomingDone",outIsHomingDone)
+        .doc("Is true when the 3 steering motors have finished their homing command");
+
 
     /** Interface with INSIDE (hml !) **/
     addPort("inIoStart",inIoStart)
@@ -239,12 +253,14 @@ void RosHmlItf::createOrocosInterface()
             .doc("");
     addPort("inIoRearObstacle",inIoRearObstacle)
             .doc("");
-
     addPort("inRealPosition",inRealPosition)
             .doc("Position calculated by simulation");
-
     addPort("inMotorMeasures",inMotorMeasures)
             .doc("");
+    addPort("inIsHomingDone",inIsHomingDone)
+            .doc("");
+
+
 
     addPort("inLeftDrivingBlocked",inLeftDrivingBlocked)
             .doc("Left driving motor is blocked");
