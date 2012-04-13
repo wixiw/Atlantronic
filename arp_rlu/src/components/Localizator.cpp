@@ -21,9 +21,57 @@ Localizator::Localizator(const std::string& name)
      : RluTaskContext(name)
      , kfloc()
 {
-    arp_rlu::lsl::Logger::InitConsole("LSL", ERROR);
+    arp_rlu::lsl::Logger::InitFile("LSL", DEBUG);
     arp_rlu::kfl::Logger::InitFile("KFL", DEBUG);
     createOrocosInterface();
+
+    propParams.bufferSize = 100;
+    propParams.maxTime4OdoPrediction = 0.5;
+    propParams.referencedBeacons = std::vector< lsl::Circle >();
+    propParams.referencedBeacons.push_back( lsl::Circle( 1.5, 0., 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle(-1.5, 1., 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle(-1.5,-1., 0.04 ) );
+
+    propParams.iekfParams.defaultOdoVelTransSigma = 0.01;
+    propParams.iekfParams.defaultOdoVelRotSigma   = 0.01;
+    propParams.iekfParams.defaultLaserRangeSigma  = 0.006;
+    propParams.iekfParams.defaultLaserThetaSigma  = 0.05;
+    propParams.iekfParams.iekfMaxIt               = 10;
+    propParams.iekfParams.iekfInnovationMin       = 0.0122474;
+
+    propParams.procParams.mfp.width = 3;
+
+    propParams.procParams.pcp.minRange = 0.01 * Eigen::VectorXd::Ones(1);
+    propParams.procParams.pcp.maxRange = 10.0 * Eigen::VectorXd::Ones(1);
+    propParams.procParams.pcp.minTheta = -arp_math::PI;
+    propParams.procParams.pcp.maxTheta =  arp_math::PI;
+
+    propParams.procParams.psp.rangeThres = 0.08;
+
+    propParams.procParams.cip.radius = 0.04;
+    propParams.procParams.cip.coeffs = std::vector<double>();
+    propParams.procParams.cip.coeffs.push_back(-0.01743846);
+    propParams.procParams.cip.coeffs.push_back( 0.19259734);
+    propParams.procParams.cip.coeffs.push_back(-0.83735629);
+    propParams.procParams.cip.coeffs.push_back( 1.81203033);
+    propParams.procParams.cip.coeffs.push_back(-2.04349845);
+    propParams.procParams.cip.coeffs.push_back( 1.17177993);
+    propParams.procParams.cip.coeffs.push_back( 0.67248282);
+    propParams.procParams.cip.coeffs.push_back( 0.07096937);
+
+    propParams.procParams.tcp.radiusTolerance = 0.03;
+    propParams.procParams.tcp.distanceTolerance = 0.6;
+    propParams.procParams.tcp.maxLengthTolerance = 0.05;
+    propParams.procParams.tcp.medLengthTolerance = 0.05;
+    propParams.procParams.tcp.minLengthTolerance = 0.05;
+
+    propParams.procParams.dcp.radiusTolerance = 0.03;
+    propParams.procParams.dcp.distanceTolerance = 0.3;
+    propParams.procParams.dcp.lengthTolerance = 0.05;
+
+    propParams.procParams.minNbPoints = 3;
+
+    kfloc.setParams(propParams);
 }
 
 bool Localizator::configureHook()
@@ -140,7 +188,6 @@ void Localizator::setParams(LocalizatorParams params)
     propParams = params;
     kfloc.setParams(propParams);
     LOG(Info) << "New params defined !" << endlog();
-
 }
 
 void Localizator::createOrocosInterface()

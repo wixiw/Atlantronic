@@ -64,7 +64,13 @@ std::string BeaconDetector::Params::getInfo() const
     ss << "****************************" << std::endl;
     ss << psp.getInfo();
     ss << "****************************" << std::endl;
+    ss << "[*] minNbPoints : " << minNbPoints;
+    ss << "****************************" << std::endl;
     ss << cip.getInfo();
+    ss << "****************************" << std::endl;
+    ss << tcp.getInfo();
+    ss << "****************************" << std::endl;
+    ss << dcp.getInfo();
     ss << std::endl;
     return ss.str();
 }
