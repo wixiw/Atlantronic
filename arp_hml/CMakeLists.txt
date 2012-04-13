@@ -29,6 +29,9 @@ rosbuild_gensrv()
 rosbuild_include(arp_core ARP_common_functions)
 configure_ard_project()
 
+#generate typekit
+#orocos_typegen_headers(src/orocos/motor/FaulhaberStates.h)
+
 ###
 # end of ARD specific
 ###
