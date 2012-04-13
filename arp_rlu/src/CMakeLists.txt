@@ -15,5 +15,6 @@ add_subdirectory(KFL)
 add_subdirectory(LSL)
 
 add_subdirectory(components)
+add_subdirectory(nodes)
 
 ###################################################################################################################  
