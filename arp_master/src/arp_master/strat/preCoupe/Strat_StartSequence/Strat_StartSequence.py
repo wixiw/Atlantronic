@@ -14,6 +14,7 @@ from arp_master.strat.util.CyclicActionState import CyclicActionState
 from arp_master.strat.util.TableVierge import *
 from arp_master.strat.util.UtilARD import *
 from arp_master.strat.util.WaiterState import WaiterState
+from arp_master.strat.util.SetMotorModeState import SetMotorModeState
 from math import pi
 
 
@@ -22,8 +23,24 @@ class StartSequence(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
         with self:
-            smach.StateMachine.add('SetPower',
-                      SetPower(),
+            smach.StateMachine.add('SetInitialPosition',
+                      SetInitialPosition(),
+                      transitions={'succeeded':'SetSteeringPower','failed':'problem'})
+                        
+            smach.StateMachine.add('SetSteeringPower',
+                      SetSteeringPower(),
+                      transitions={'succeeded':'FinturretZeros','failed':'problem'})
+            
+            smach.StateMachine.add('FinturretZeros',
+                      SetMotorModeState("homing"),
+                      transitions={'succeeded':'BackToPositionTurretMode','failed':'problem'})
+            
+            smach.StateMachine.add('BackToPositionTurretMode',
+                      SetMotorModeState("position"),
+                      transitions={'succeeded':'SetDrivingPower','failed':'problem'})
+            
+            smach.StateMachine.add('SetDrivingPower',
+                      SetDrivingPower(),
                       transitions={'succeeded':'ShowReady','failed':'problem'})
             
             smach.StateMachine.add('ShowReady',
@@ -38,23 +55,55 @@ class StartSequence(smach.StateMachine):
                       WaiterState(1.0),
                       transitions={'done':'WaitForMatch'})
             
-            smach.StateMachine.add('WaitForMatch', WaitForMatch(),
-                                   transitions={'start':'gogogo'})
+            smach.StateMachine.add('WaitForMatch', 
+                      WaitForMatch(),
+                      transitions={'start':'gogogo'})
     
-            
-            
-class SetPower(CyclicState):
+    
+class SetInitialPosition(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['succeeded','failed'])
     
     def executeIn(self):
-        self.result = self.enablePower()
+        poseDepart=AmbiPoseRed(1.250,0.750,-pi,Data.color)
+        self.setPosition(poseDepart.x,poseDepart.y,poseDepart.theta)
+        self.result = True;
+    
+    def executeTransitions(self):
+        if self.result == True:
+            return 'succeeded'   
+        else:
+            return 'failed'           
+            
+class SetSteeringPower(CyclicState):
+    def __init__(self):
+        CyclicState.__init__(self, outcomes=['succeeded','failed'])
+    
+    def executeIn(self):
+        self.result = self.enableSteeringPower()
     
     def executeTransitions(self):
         if self.result == True:
             return 'succeeded'   
         else:
             return 'failed'   
+       
+###
+# Zero tourelle + retour en mode position
+###
+       
+class SetDrivingPower(CyclicState):
+    def __init__(self):
+        CyclicState.__init__(self, outcomes=['succeeded','failed'])
+    
+    def executeIn(self):
+        self.result = self.enableDrivingPower()
+    
+    def executeTransitions(self):
+        if self.result == True:
+            return 'succeeded'   
+        else:
+            return 'failed' 
        
        #on tourne un peu avant le match pour confirmer la couleur
 class ShowReady(CyclicActionState):

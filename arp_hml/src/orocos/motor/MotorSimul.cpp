@@ -127,7 +127,7 @@ void MotorSimul::getInputs()
         m_oldSpeedCommandTime = m_syncTime;
     }
     //if we did not get a speed command since a time, we assume a 0 cmd for security reasons
-    else if(m_syncTime - m_oldSpeedCommandTime > propInputsTimeout)
+    else if( arp_math::delta_t(m_oldSpeedCommandTime,m_syncTime) > propInputsTimeout)
     {
         ArdMotorItf::setSpeedCmd(0);
     }
@@ -147,7 +147,7 @@ void MotorSimul::getInputs()
         m_oldTorqueCommandTime = m_syncTime;
     }
     //if we did not get a speed command since a time, we assume a 0 cmd for security reasons
-    else if(m_syncTime - m_oldTorqueCommandTime > propInputsTimeout)
+    else if( arp_math::delta_t(m_oldTorqueCommandTime, m_syncTime ) > propInputsTimeout)
     {
         ArdMotorItf::setTorqueCmd(0);
     }

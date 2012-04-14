@@ -67,7 +67,5 @@ class WaitForStart(CyclicState):
             Data.adv_color='blue'
         else:
             Data.adv_color='red'
-        poseDepart=AmbiPoseRed(1.250,0.750,-pi,Data.color)
-        self.setPosition(poseDepart.x,poseDepart.y,poseDepart.theta)
             
     

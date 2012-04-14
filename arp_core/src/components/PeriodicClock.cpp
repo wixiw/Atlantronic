@@ -23,5 +23,7 @@ PeriodicClock::PeriodicClock(const std::string name):
 
 void PeriodicClock::updateHook()
 {
-    outClock.write(getTime());
+    timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    outClock.write(now);
 }

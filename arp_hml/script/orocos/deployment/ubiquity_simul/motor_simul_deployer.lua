@@ -19,7 +19,7 @@ function MotorSimulDeployer:load()
 	MotorSimulDeployer:loadMotor("RearSteering");
 
 	Deployer:loadComponent("Can1","arp_core::PeriodicClock")
-	Deployer:setActivity("Can1",0.010,60,1)
+	Deployer:setActivity("Can1",0.030,60,1)
 
 end
 

@@ -72,7 +72,7 @@ namespace arp_hml
         double propHomingSpeed;
 
         /** Clock port which trigger our activity */
-        InputPort<double> inClock;
+        InputPort<timespec> inClock;
 
         /** Command to be used in position mode. It must be provided in rad on the reductor's output.
          * It is not available yet. */
@@ -88,7 +88,7 @@ namespace arp_hml
         /** Provides the measured position of the encoder from CAN. It is converted in rad on the reductor's output's axe. **/
         OutputPort<double> outPosition;
         /** Sync time of the position mesure*/
-        OutputPort<double> outClock;
+        OutputPort<timespec> outClock;
         /** Provides the torque measured from CAN. In Amps**/
         OutputPort<double> outTorque;
         /** Provides a computed speed from the encoder position. In rad/s on the reductor's output's axe. */
@@ -165,11 +165,11 @@ namespace arp_hml
          bool m_power;
 
          /** Last sync time received **/
-         double m_syncTime;
+         timespec m_syncTime;
          /** Last speed command received */
-         double m_oldSpeedCommandTime;
+         timespec m_oldSpeedCommandTime;
          /** Last torque command received */
-         double m_oldTorqueCommandTime;
+         timespec m_oldTorqueCommandTime;
     };
 
 }

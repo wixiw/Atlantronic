@@ -37,11 +37,9 @@ function Telemetry:reportMotorState()
 end
 
 -- Trace la commande envoyee au robot
--- [0] : vx		
--- [1] : vy			
--- [2] : vtheta		
+-- TODO	
 function Telemetry:reportRobotCmd()
-	print("reporting pose ")
+	print("reporting Robot Cmd ")
 	Reporting=Deployer:getPeer("Reporting")
 	Reporting:reportPort("MotionControl","outTwistCmd")
 	Reporting:reportPort("KinematicBase","outLeftSteeringPositionCmd")
@@ -50,6 +48,19 @@ function Telemetry:reportRobotCmd()
 	Reporting:reportPort("KinematicBase","outLeftDrivingVelocityCmd")
 	Reporting:reportPort("KinematicBase","outRightDrivingVelocityCmd")
 	Reporting:reportPort("KinematicBase","outRearDrivingVelocityCmd")
+end
+
+-- Trace les timings
+-- TODO	
+function Telemetry:reportTiming()
+	print("reporting Timings")
+	Reporting=Deployer:getPeer("Reporting")
+	Reporting:reportData("LeftSteering","attrPeriod")
+	Reporting:reportData("RightSteering","attrPeriod")
+	Reporting:reportData("RearSteering","attrPeriod")
+	Reporting:reportData("LeftDriving","attrPeriod")
+	Reporting:reportData("RightDriving","attrPeriod")
+	Reporting:reportData("RearDriving","attrPeriod")
 end
 
 
@@ -66,7 +77,9 @@ function Telemetry:report()
 	print("début déploiment telemetry")
 	Telemetry:reportRobotState()
 	Telemetry:reportMotorState()
-	Telemetry:reportRobotCmd()
+	--Telemetry:reportRobotCmd()
+	Telemetry:reportTiming()
+	--Reporting:reportPort("Can1","outPeriod")
 	Reporting=Deployer:getPeer("Reporting")
 	Reporting:start()
 	print("====================")
