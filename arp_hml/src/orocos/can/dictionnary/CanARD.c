@@ -17,6 +17,7 @@ UNS8 LeftSteering_FaulhaberCommand = 0x0;		/* Mapped at index 0x2210, subindex 0
 UNS8 LeftSteering_FaulhaberCommandReturn = 0x0;		/* Mapped at index 0x2210, subindex 0x07 */
 UNS8 LeftSteering_FaulhaberCommandReturnCode = 0x0;		/* Mapped at index 0x2210, subindex 0x08 */
 UNS32 LeftSteering_FaulhaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2210, subindex 0x09 */
+UNS8 LeftSteering_TimeCode = 0x0;		/* Mapped at index 0x2210, subindex 0x0A */
 INTEGER32 RightSteering_MeasuredSpeed = 0x0;		/* Mapped at index 0x2220, subindex 0x01 */
 UNS16 RightSteering_Ds402State = 0x0;		/* Mapped at index 0x2220, subindex 0x02 */
 INTEGER32 RightSteering_MeasuredPosition = 0x0;		/* Mapped at index 0x2220, subindex 0x03 */
@@ -26,6 +27,7 @@ UNS8 RightSteering_FaulhaberCommand = 0x0;		/* Mapped at index 0x2220, subindex 
 UNS8 RightSteering_FaulhaberCommandReturn = 0x0;		/* Mapped at index 0x2220, subindex 0x07 */
 UNS8 RightSteering_FaulhaberCommandReturnCode = 0x0;		/* Mapped at index 0x2220, subindex 0x08 */
 UNS32 RightSteering_FaulhaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2220, subindex 0x09 */
+UNS8 RightSteering_TimeCode = 0x0;		/* Mapped at index 0x2220, subindex 0x0A */
 INTEGER32 RearSteering_MeasuredSpeed = 0x0;		/* Mapped at index 0x2230, subindex 0x01 */
 UNS16 RearSteering_Ds402State = 0x0;		/* Mapped at index 0x2230, subindex 0x02 */
 INTEGER32 RearSteering_MeasuredPosition = 0x0;		/* Mapped at index 0x2230, subindex 0x03 */
@@ -35,6 +37,7 @@ UNS8 RearSteering_FaulhaberCommand = 0x0;		/* Mapped at index 0x2230, subindex 0
 UNS8 RearSteering_FaulhaberCommandReturn = 0x0;		/* Mapped at index 0x2230, subindex 0x07 */
 UNS8 RearSteering_FaulhaberCommandReturnCode = 0x0;		/* Mapped at index 0x2230, subindex 0x08 */
 UNS32 RearSteering_FaulhaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2230, subindex 0x09 */
+UNS8 RearSteering_TimeCode = 0x0;		/* Mapped at index 0x2230, subindex 0x0A */
 INTEGER32 LeftDriving_MeasuredSpeed = 0x0;		/* Mapped at index 0x2310, subindex 0x01 */
 UNS16 LeftDriving_Ds402State = 0x0;		/* Mapped at index 0x2310, subindex 0x02 */
 INTEGER32 LeftDriving_MeasuredPosition = 0x0;		/* Mapped at index 0x2310, subindex 0x03 */
@@ -44,6 +47,7 @@ UNS8 LeftDriving_FaulhaberCommand = 0x0;		/* Mapped at index 0x2310, subindex 0x
 UNS8 LeftDriving_FaulhaberCommandReturn = 0x0;		/* Mapped at index 0x2310, subindex 0x07 */
 UNS8 LeftDriving_FaulhaberCommandReturnCode = 0x0;		/* Mapped at index 0x2310, subindex 0x08 */
 UNS32 LeftDriving_FaulhaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2310, subindex 0x09 */
+UNS8 LeftDriving_TimeCode = 0x0;		/* Mapped at index 0x2310, subindex 0x0A */
 INTEGER32 RightDriving_MeasuredSpeed = 0x0;		/* Mapped at index 0x2320, subindex 0x01 */
 UNS16 RightDriving_Ds402State = 0x0;		/* Mapped at index 0x2320, subindex 0x02 */
 INTEGER32 RightDriving_MeasuredPosition = 0x0;		/* Mapped at index 0x2320, subindex 0x03 */
@@ -53,7 +57,7 @@ UNS8 RightDriving_FaulhaberCommand = 0x0;		/* Mapped at index 0x2320, subindex 0
 UNS8 RightDriving_FaulhaberCommandReturn = 0x0;		/* Mapped at index 0x2320, subindex 0x07 */
 UNS8 RightDriving_FaulhaberCommandReturnCode = 0x0;		/* Mapped at index 0x2320, subindex 0x08 */
 UNS32 RightDriving_FaulhaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2320, subindex 0x09 */
-UNS8 RightDriving_Undefined = 0x0;		/* Mapped at index 0x2320, subindex 0x0A */
+UNS8 RightDriving_TimeCode = 0x0;		/* Mapped at index 0x2320, subindex 0x0A */
 INTEGER32 RearDriving_MeasuredSpeed = 0x0;		/* Mapped at index 0x2330, subindex 0x01 */
 UNS16 RearDriving_Ds402State = 0x0;		/* Mapped at index 0x2330, subindex 0x02 */
 INTEGER32 RearDriving_MeasuredPosition = 0x0;		/* Mapped at index 0x2330, subindex 0x03 */
@@ -63,6 +67,7 @@ UNS8 RearDriving_FaulhaberCommand = 0x0;		/* Mapped at index 0x2330, subindex 0x
 UNS8 RearDriving_FaulhaberCommandReturn = 0x0;		/* Mapped at index 0x2330, subindex 0x07 */
 UNS8 RearDriving_FaulhaberCommandReturnCode = 0x0;		/* Mapped at index 0x2330, subindex 0x08 */
 UNS32 RearDriving_FaulhaberCommandReturnParameter = 0x0;		/* Mapped at index 0x2330, subindex 0x09 */
+UNS8 RearDriving_TimeCode = 0x0;		/* Mapped at index 0x2330, subindex 0x0A */
 
 /**************************************************************************/
 /* Declaration of value range types                                       */
@@ -649,17 +654,19 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                      };
 
 /* index 0x1602 :   Receive PDO 3 Mapping. */
-                    UNS8 CanARD_highestSubIndex_obj1602 = 2; /* number of subindex - 1*/
+                    UNS8 CanARD_highestSubIndex_obj1602 = 3; /* number of subindex - 1*/
                     UNS32 CanARD_obj1602[] = 
                     {
                       0x22100320,	/* 571474720 */
-                      0x22100410	/* 571474960 */
+                      0x22100410,	/* 571474960 */
+                      0x22100A08	/* 571476488 */
                     };
                     subindex CanARD_Index1602[] = 
                      {
                        { RW, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj1602 },
                        { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1602[0] },
-                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1602[1] }
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1602[1] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1602[2] }
                      };
 
 /* index 0x1603 :   Receive PDO 4 Mapping. */
@@ -691,17 +698,19 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                      };
 
 /* index 0x1605 :   Receive PDO 6 Mapping. */
-                    UNS8 CanARD_highestSubIndex_obj1605 = 2; /* number of subindex - 1*/
+                    UNS8 CanARD_highestSubIndex_obj1605 = 3; /* number of subindex - 1*/
                     UNS32 CanARD_obj1605[] = 
                     {
                       0x22200320,	/* 572523296 */
-                      0x22200410	/* 572523536 */
+                      0x22200410,	/* 572523536 */
+                      0x22200A08	/* 572525064 */
                     };
                     subindex CanARD_Index1605[] = 
                      {
                        { RW, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj1605 },
                        { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1605[0] },
-                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1605[1] }
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1605[1] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1605[2] }
                      };
 
 /* index 0x1606 :   Receive PDO 7 Mapping. */
@@ -733,17 +742,19 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                      };
 
 /* index 0x1608 :   Receive PDO 9 Mapping. */
-                    UNS8 CanARD_highestSubIndex_obj1608 = 2; /* number of subindex - 1*/
+                    UNS8 CanARD_highestSubIndex_obj1608 = 3; /* number of subindex - 1*/
                     UNS32 CanARD_obj1608[] = 
                     {
                       0x22300320,	/* 573571872 */
-                      0x22300410	/* 573572112 */
+                      0x22300410,	/* 573572112 */
+                      0x22300A08	/* 573573640 */
                     };
                     subindex CanARD_Index1608[] = 
                      {
                        { RW, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj1608 },
                        { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1608[0] },
-                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1608[1] }
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1608[1] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1608[2] }
                      };
 
 /* index 0x1609 :   Receive PDO 10 Mapping. */
@@ -787,17 +798,19 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                      };
 
 /* index 0x160C :   Receive PDO 13 Mapping. */
-                    UNS8 CanARD_highestSubIndex_obj160C = 2; /* number of subindex - 1*/
+                    UNS8 CanARD_highestSubIndex_obj160C = 3; /* number of subindex - 1*/
                     UNS32 CanARD_obj160C[] = 
                     {
                       0x23100320,	/* 588251936 */
-                      0x23100410	/* 588252176 */
+                      0x23100410,	/* 588252176 */
+                      0x23100A08	/* 588253704 */
                     };
                     subindex CanARD_Index160C[] = 
                      {
                        { RW, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj160C },
                        { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj160C[0] },
-                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj160C[1] }
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj160C[1] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj160C[2] }
                      };
 
 /* index 0x160D :   Receive PDO 14 Mapping. */
@@ -829,17 +842,19 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                      };
 
 /* index 0x160F :   Receive PDO 16 Mapping. */
-                    UNS8 CanARD_highestSubIndex_obj160F = 2; /* number of subindex - 1*/
+                    UNS8 CanARD_highestSubIndex_obj160F = 3; /* number of subindex - 1*/
                     UNS32 CanARD_obj160F[] = 
                     {
                       0x23200320,	/* 589300512 */
-                      0x23200410	/* 589300752 */
+                      0x23200410,	/* 589300752 */
+                      0x23200A08	/* 589302280 */
                     };
                     subindex CanARD_Index160F[] = 
                      {
                        { RW, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj160F },
                        { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj160F[0] },
-                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj160F[1] }
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj160F[1] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj160F[2] }
                      };
 
 /* index 0x1610 :   Receive PDO 17 Mapping. */
@@ -871,17 +886,19 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                      };
 
 /* index 0x1612 :   Receive PDO 19 Mapping. */
-                    UNS8 CanARD_highestSubIndex_obj1612 = 2; /* number of subindex - 1*/
+                    UNS8 CanARD_highestSubIndex_obj1612 = 3; /* number of subindex - 1*/
                     UNS32 CanARD_obj1612[] = 
                     {
                       0x23300320,	/* 590349088 */
-                      0x23300410	/* 590349328 */
+                      0x23300410,	/* 590349328 */
+                      0x23300A08	/* 590350856 */
                     };
                     subindex CanARD_Index1612[] = 
                      {
                        { RW, uint8, sizeof (UNS8), (void*)&CanARD_highestSubIndex_obj1612 },
                        { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1612[0] },
-                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1612[1] }
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1612[1] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CanARD_obj1612[2] }
                      };
 
 /* index 0x1800 :   Transmit PDO 1 Parameter. */
@@ -1224,9 +1241,10 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                      };
 
 /* index 0x2210 :   Mapped variable LeftSteering */
-                    UNS8 CanARD_highestSubIndex_obj2210 = 9; /* number of subindex - 1*/
+                    UNS8 CanARD_highestSubIndex_obj2210 = 10; /* number of subindex - 1*/
                     ODCallback_t LeftSteering_callbacks[] = 
                      {
+                       NULL,
                        NULL,
                        NULL,
                        NULL,
@@ -1249,13 +1267,15 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, uint8, sizeof (UNS8), (void*)&LeftSteering_FaulhaberCommand },
                        { RW, uint8, sizeof (UNS8), (void*)&LeftSteering_FaulhaberCommandReturn },
                        { RW, uint8, sizeof (UNS8), (void*)&LeftSteering_FaulhaberCommandReturnCode },
-                       { RW, uint32, sizeof (UNS32), (void*)&LeftSteering_FaulhaberCommandReturnParameter }
+                       { RW, uint32, sizeof (UNS32), (void*)&LeftSteering_FaulhaberCommandReturnParameter },
+                       { RW, uint8, sizeof (UNS8), (void*)&LeftSteering_TimeCode }
                      };
 
 /* index 0x2220 :   Mapped variable RightSteering */
-                    UNS8 CanARD_highestSubIndex_obj2220 = 9; /* number of subindex - 1*/
+                    UNS8 CanARD_highestSubIndex_obj2220 = 10; /* number of subindex - 1*/
                     ODCallback_t RightSteering_callbacks[] = 
                      {
+                       NULL,
                        NULL,
                        NULL,
                        NULL,
@@ -1278,13 +1298,15 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, uint8, sizeof (UNS8), (void*)&RightSteering_FaulhaberCommand },
                        { RW, uint8, sizeof (UNS8), (void*)&RightSteering_FaulhaberCommandReturn },
                        { RW, uint8, sizeof (UNS8), (void*)&RightSteering_FaulhaberCommandReturnCode },
-                       { RW, uint32, sizeof (UNS32), (void*)&RightSteering_FaulhaberCommandReturnParameter }
+                       { RW, uint32, sizeof (UNS32), (void*)&RightSteering_FaulhaberCommandReturnParameter },
+                       { RW, uint8, sizeof (UNS8), (void*)&RightSteering_TimeCode }
                      };
 
 /* index 0x2230 :   Mapped variable RearSteering */
-                    UNS8 CanARD_highestSubIndex_obj2230 = 9; /* number of subindex - 1*/
+                    UNS8 CanARD_highestSubIndex_obj2230 = 10; /* number of subindex - 1*/
                     ODCallback_t RearSteering_callbacks[] = 
                      {
+                       NULL,
                        NULL,
                        NULL,
                        NULL,
@@ -1307,13 +1329,15 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, uint8, sizeof (UNS8), (void*)&RearSteering_FaulhaberCommand },
                        { RW, uint8, sizeof (UNS8), (void*)&RearSteering_FaulhaberCommandReturn },
                        { RW, uint8, sizeof (UNS8), (void*)&RearSteering_FaulhaberCommandReturnCode },
-                       { RW, uint32, sizeof (UNS32), (void*)&RearSteering_FaulhaberCommandReturnParameter }
+                       { RW, uint32, sizeof (UNS32), (void*)&RearSteering_FaulhaberCommandReturnParameter },
+                       { RW, uint8, sizeof (UNS8), (void*)&RearSteering_TimeCode }
                      };
 
 /* index 0x2310 :   Mapped variable LeftDriving */
-                    UNS8 CanARD_highestSubIndex_obj2310 = 9; /* number of subindex - 1*/
+                    UNS8 CanARD_highestSubIndex_obj2310 = 10; /* number of subindex - 1*/
                     ODCallback_t LeftDriving_callbacks[] = 
                      {
+                       NULL,
                        NULL,
                        NULL,
                        NULL,
@@ -1336,7 +1360,8 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, uint8, sizeof (UNS8), (void*)&LeftDriving_FaulhaberCommand },
                        { RW, uint8, sizeof (UNS8), (void*)&LeftDriving_FaulhaberCommandReturn },
                        { RW, uint8, sizeof (UNS8), (void*)&LeftDriving_FaulhaberCommandReturnCode },
-                       { RW, uint32, sizeof (UNS32), (void*)&LeftDriving_FaulhaberCommandReturnParameter }
+                       { RW, uint32, sizeof (UNS32), (void*)&LeftDriving_FaulhaberCommandReturnParameter },
+                       { RW, uint8, sizeof (UNS8), (void*)&LeftDriving_TimeCode }
                      };
 
 /* index 0x2320 :   Mapped variable RightDriving */
@@ -1367,13 +1392,14 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, uint8, sizeof (UNS8), (void*)&RightDriving_FaulhaberCommandReturn },
                        { RW, uint8, sizeof (UNS8), (void*)&RightDriving_FaulhaberCommandReturnCode },
                        { RW, uint32, sizeof (UNS32), (void*)&RightDriving_FaulhaberCommandReturnParameter },
-                       { RW, uint8, sizeof (UNS8), (void*)&RightDriving_Undefined }
+                       { RW, uint8, sizeof (UNS8), (void*)&RightDriving_TimeCode }
                      };
 
 /* index 0x2330 :   Mapped variable RearDriving */
-                    UNS8 CanARD_highestSubIndex_obj2330 = 9; /* number of subindex - 1*/
+                    UNS8 CanARD_highestSubIndex_obj2330 = 10; /* number of subindex - 1*/
                     ODCallback_t RearDriving_callbacks[] = 
                      {
+                       NULL,
                        NULL,
                        NULL,
                        NULL,
@@ -1396,7 +1422,8 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, uint8, sizeof (UNS8), (void*)&RearDriving_FaulhaberCommand },
                        { RW, uint8, sizeof (UNS8), (void*)&RearDriving_FaulhaberCommandReturn },
                        { RW, uint8, sizeof (UNS8), (void*)&RearDriving_FaulhaberCommandReturnCode },
-                       { RW, uint32, sizeof (UNS32), (void*)&RearDriving_FaulhaberCommandReturnParameter }
+                       { RW, uint32, sizeof (UNS32), (void*)&RearDriving_FaulhaberCommandReturnParameter },
+                       { RW, uint8, sizeof (UNS8), (void*)&RearDriving_TimeCode }
                      };
 
 /**************************************************************************/

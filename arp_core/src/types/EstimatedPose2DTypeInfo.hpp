@@ -16,7 +16,8 @@ using namespace RTT;
              a & make_nvp("x", pose.xRef());
              a & make_nvp("y", pose.yRef());
              a & make_nvp("theta", pose.hRef());
-             a & make_nvp("date", pose.dateRef());
+             //TODO à remettre quand un typekit long double sera dispo
+             //a & make_nvp("date", pose.dateRef());
              a & make_nvp("cov", pose.covRef());
       }
     }

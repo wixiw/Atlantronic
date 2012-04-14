@@ -26,8 +26,6 @@ void Syncronizator::eventCanSyncCB(RTT::base::PortInterface* portInterface)
 {
      inCanSync.readNewest(m_syncTime);
      m_syncCount = 0;
-     if( propVerbose )
-         LOG(Info) << "portCanCB " << m_syncTime << endlog();
 }
 
 void Syncronizator::eventPortCB(RTT::base::PortInterface* portInterface)
@@ -40,8 +38,8 @@ void Syncronizator::eventPortCB(RTT::base::PortInterface* portInterface)
 
     const char* name = portInterface->getName().c_str();
     int i = 0;
-    double syncValue;
-    InputPort<double>* inPort = dynamic_cast< InputPort<double>* > (portInterface);
+    timespec syncValue;
+    InputPort<timespec>* inPort = dynamic_cast< InputPort<timespec>* > (portInterface);
     if( inPort == NULL )
     {
         LOG(Error) << "failed to cast port " << name << " to an InputPort<double>" << endlog();
@@ -66,7 +64,7 @@ void Syncronizator::eventPortCB(RTT::base::PortInterface* portInterface)
     inPort->readNewest(syncValue);
 
     //on ne met à jour le compteur que si la syncronisation reçue est bien la bonne.
-    if( syncValue == m_syncTime )
+    if( syncValue.tv_sec == m_syncTime.tv_sec && syncValue.tv_nsec == m_syncTime.tv_nsec)
     {
         //pour creer le masque binaire correspondant au moteur dont on a reçu le sync il faut
         //ecrire un1 à la ième colonne du mot binaire, soit 1<<i;

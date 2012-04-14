@@ -38,21 +38,21 @@ class Syncronizator: public arp_hml::HmlTaskContext
         /** Ce port est publié à la fin de la syncronisation, des composants qui sont connectés aux ports de données peuvent
          * se trigger en eventPort sur outClock. Il contient la date des mesures sur le CAN (date de l'envoit du message SYNC)
          */
-        OutputPort<double> outClock;
+        OutputPort<timespec> outClock;
 
         /**
          * Ce port contient un condensé de toutes les mesures Hml a une date identique pour tous les moteurs.
          */
         OutputPort<arp_model::MotorState> outMotorMeasures;
 
-        InputPort<double> inCanSync;
+        InputPort<timespec> inCanSync;
 
-        InputPort<double> inLeftDrivingClock;
-        InputPort<double> inRightDrivingClock;
-        InputPort<double> inRearDrivingClock;
-        InputPort<double> inLeftSteeringClock;
-        InputPort<double> inRightSteeringClock;
-        InputPort<double> inRearSteeringClock;
+        InputPort<timespec> inLeftDrivingClock;
+        InputPort<timespec> inRightDrivingClock;
+        InputPort<timespec> inRearDrivingClock;
+        InputPort<timespec> inLeftSteeringClock;
+        InputPort<timespec> inRightSteeringClock;
+        InputPort<timespec> inRearSteeringClock;
 
         InputPort<double> inLeftDrivingVelocity;
         InputPort<double> inRightDrivingVelocity;
@@ -103,7 +103,7 @@ class Syncronizator: public arp_hml::HmlTaskContext
         void createOrocosInterface();
 
         /** contient la date de l'horloge principale */
-        double m_syncTime;
+        timespec m_syncTime;
 
         /** compte le nombre de message sync recu depuis le dernier updateHook
          * Chaque bit est mis à 1 ou 0 en fonction du moteur dont on a reçu la sync

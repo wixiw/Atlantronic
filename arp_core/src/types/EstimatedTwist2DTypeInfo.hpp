@@ -16,7 +16,8 @@ using namespace RTT;
              a & make_nvp("vx", twist.vxRef());
              a & make_nvp("vy", twist.vyRef());
              a & make_nvp("vtheta", twist.vhRef());
-             a & make_nvp("date", twist.dateRef());
+             //TODO à remettre quand un typekit long double sera dispo
+             //a & make_nvp("date", twist.dateRef());
       }
     }
   }

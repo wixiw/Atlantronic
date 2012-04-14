@@ -51,7 +51,7 @@ void KinematicBase::getInputs()
 
 void KinematicBase::run()
 {
-    double dt = 0.010; //TODO faire mieux ! mettre un vrai temps calculé depuis la derniere execution
+    double dt = 0.030; //TODO faire mieux ! mettre un vrai temps calculé depuis la derniere execution
 
 
     //filter the input command to get a reachable command that we are sure the hardware will be capable to do

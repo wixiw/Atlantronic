@@ -119,7 +119,7 @@ namespace arp_hml
         /** This attribute contains the current NMT status of the Controller node */
         e_nodeState attrCurrentNMTState;
         /** Last sync time received **/
-        double attrSyncTime;
+        timespec attrSyncTime;
         /** This is for test purposes only, when sending request to the can via the taskBrowser */
         CanDicoEntry attrTestingSdo;
 
@@ -153,8 +153,13 @@ namespace arp_hml
 
         /**
          * clock port, each node must listed this port to execute
+         * It contains the SYNC CAN message date
          */
-        OutputPort<double> outClock;
+        OutputPort<timespec> outClock;
+
+        /** Delay beetween inSync and last cycle inSync in s*/
+        OutputPort<double> outPeriod;
+
 
         /**
          * The routing stuff is delegated to this class
@@ -205,6 +210,9 @@ namespace arp_hml
         char m_baurateLocalCopy[6];
         /** This is the handler on the attached can bus. It is populated by a call to the CanFestival "canOpen" function */
         CAN_PORT m_canPort;
+
+        /** last Sync time to compute period */
+        timespec m_lastSyncTime;
     };
 
 }

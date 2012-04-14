@@ -30,14 +30,16 @@ void Odometry4Ubiquity::updateHook()
     Twist2D computedTwist;
     EstimatedTwist2D measuredTwist;
     SlippageReport report;
-
-    if( RTT::NewData != inTime.readNewest(attrTime))
+    timespec time;
+    if( RTT::NewData != inTime.readNewest(time))
     {
         //WLA->BMO : attention, si on nous appelle via une commande c'est possible que ça trigger l'updateHook
         //tu es egalement triggered après le start() il me semble
         LOG( Error ) << "No new data in inTime port : updateHook should not be externally trigger => return" << endlog();
         return;
     }
+    attrTime = time.tv_sec + (long double) (time.tv_nsec) / 1E9;
+
 
     if( RTT::NoData == inParams.readNewest(attrParams))
     {

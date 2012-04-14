@@ -39,12 +39,12 @@ Eigen::Matrix<double,3,3> EstimatedTwist2D::cov() const
     return covariance;
 }
 
-double EstimatedTwist2D::date() const
+long double EstimatedTwist2D::date() const
 {
     return estimationDate;
 }
 
-double& EstimatedTwist2D::dateRef()
+long double& EstimatedTwist2D::dateRef()
 {
     return estimationDate;
 }
@@ -54,7 +54,7 @@ void EstimatedTwist2D::cov(Eigen::Matrix<double,3,3> _cov)
     covariance = _cov;
 }
 
-void EstimatedTwist2D::date(double _date)
+void EstimatedTwist2D::date(long double _date)
 {
     estimationDate = _date;
 }

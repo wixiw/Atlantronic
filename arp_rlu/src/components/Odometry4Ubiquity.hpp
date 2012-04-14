@@ -31,14 +31,14 @@ class Odometry4Ubiquity: public RluTaskContext
         /** Buffer local pour les params */
         arp_model::UbiquityParams attrParams;
         /** Buffer local pour le temps */
-        double attrTime;
+        long double attrTime;
 
         /** The KernelQuality when getting the report fromthe model must be larger than this property, else we spawn an error*/
         double propMinKernelQuality;
         /** Norme minimale du Twist résultant des calculs d'ocométrie, en mm/s */
         double propMinVelocity;
 
-        RTT::InputPort<double> inTime;
+        RTT::InputPort<timespec> inTime;
         RTT::InputPort<arp_model::UbiquityParams> inParams;
         /** Measures from HML */
         RTT::InputPort<arp_model::MotorState> inMotorState;

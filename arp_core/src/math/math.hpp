@@ -94,10 +94,10 @@ namespace arp_math
      */
     void delta_t(struct timespec *interval, struct timespec begin,
             struct timespec now);
-    double delta_t(struct timespec begin, struct timespec now);
+    long double delta_t(struct timespec begin, struct timespec now);
 
     /** return time **/
-    double getTime(void);
+    long double getTime(void);
 }
 
 #endif /* _ARPMATH_MATH_HPP_ */

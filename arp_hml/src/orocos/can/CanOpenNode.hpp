@@ -50,7 +50,9 @@ namespace arp_hml
 
     protected:
         /** Last sync time received **/
-        double attrSyncTime;
+        timespec attrSyncTime;
+        /** Period between attrSyncTime and last attrSyncTime*/
+        double attrPeriod;
 
         /** CAN adress of the node */
         nodeID_t propNodeId;
@@ -70,7 +72,12 @@ namespace arp_hml
         /**
          * Clock port which trigger our activity
          */
-        InputPort<double> inMasterClock;
+        InputPort<timespec> inMasterClock;
+
+        /**
+         * Period related to inMasterClock date
+         */
+        InputPort<double> inMasterPeriod;
 
         /**
          * port from which we receive the bootUp frame of our node from a CanOpenController
@@ -148,9 +155,6 @@ namespace arp_hml
          * Shared structure with CanOpenController
          */
         CanNodeIdCard m_nodeIdCard;
-
-
-
 
     };
 

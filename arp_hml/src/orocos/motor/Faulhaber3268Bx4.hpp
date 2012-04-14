@@ -63,11 +63,6 @@ namespace arp_hml
          */
         ArdDs402::enum_DS402_state attrState;
 
-        /**
-         * This attributre is used by the readCaptors loop to compute the speed with position of motor.
-         * In a way, it is close to the period of the component.
-         */
-        double attrPeriod;
         /** time for which the propMaximalTorque has been reached */
         double attrBlockingDelay;
         /** brut value of the odometer */
@@ -104,7 +99,7 @@ namespace arp_hml
         /** Provides the measured position of the encoder from CAN. It is converted in rad on the reductor's output's axe. **/
         OutputPort<double> outPosition;
         /** Sync time of the position mesure*/
-        OutputPort<double> outClock;
+        OutputPort<timespec> outClock;
         /** Provides the torque measured from CAN. In Amps**/
         OutputPort<double> outTorque;
         /** Provides a computed speed from the encoder position. In rad/s on the reductor's output's axe. */
@@ -279,6 +274,7 @@ namespace arp_hml
          */
         INTEGER32* m_measuredPosition;
         INTEGER16* m_measuredCurrent;
+        UNS8* m_measuredPeriod;
         UNS8* m_faulhaberCommand;
         UNS32* m_faulhaberCommandParameter;
         UNS8* m_faulhaberCommandReturn;
@@ -296,11 +292,11 @@ namespace arp_hml
         /** Last used position for speed computation */
         double m_oldPositionMeasure;
         /** Time of last speed computation */
-        double m_oldPositionMeasureTime;
+        timespec m_oldPositionMeasureTime;
         /** Last speed command received */
-        double m_oldSpeedCommandTime;
+        timespec m_oldSpeedCommandTime;
         /** Last torque command received */
-        double m_oldTorqueCommandTime;
+        timespec m_oldTorqueCommandTime;
         /** is motor blocked */
         bool m_isMotorBlocked;
 

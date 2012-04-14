@@ -39,26 +39,32 @@ UNS8* CanARDDictionnaryAccessor::getUNS8Pointer(string componentName, string var
 	IF_ACCESSOR_CASE(LeftSteering_FaulhaberCommandReturn);
 	IF_ACCESSOR_CASE(LeftSteering_FaulhaberCommandReturnCode);
 	IF_ACCESSOR_CASE(LeftSteering_FaulhaberCommand);
+    IF_ACCESSOR_CASE(LeftSteering_TimeCode);
 
     IF_ACCESSOR_CASE(RightSteering_FaulhaberCommandReturn);
     IF_ACCESSOR_CASE(RightSteering_FaulhaberCommandReturnCode);
     IF_ACCESSOR_CASE(RightSteering_FaulhaberCommand);
+    IF_ACCESSOR_CASE(RightSteering_TimeCode);
 
     IF_ACCESSOR_CASE(RearSteering_FaulhaberCommandReturn);
     IF_ACCESSOR_CASE(RearSteering_FaulhaberCommandReturnCode);
     IF_ACCESSOR_CASE(RearSteering_FaulhaberCommand);
+    IF_ACCESSOR_CASE(RearSteering_TimeCode);
 
 	IF_ACCESSOR_CASE(LeftDriving_FaulhaberCommandReturn);
 	IF_ACCESSOR_CASE(LeftDriving_FaulhaberCommandReturnCode);
 	IF_ACCESSOR_CASE(LeftDriving_FaulhaberCommand);
+    IF_ACCESSOR_CASE(LeftDriving_TimeCode);
 
 	IF_ACCESSOR_CASE(RightDriving_FaulhaberCommandReturn);
 	IF_ACCESSOR_CASE(RightDriving_FaulhaberCommandReturnCode);
 	IF_ACCESSOR_CASE(RightDriving_FaulhaberCommand);
+    IF_ACCESSOR_CASE(RightDriving_TimeCode);
 
     IF_ACCESSOR_CASE(RearDriving_FaulhaberCommandReturn);
     IF_ACCESSOR_CASE(RearDriving_FaulhaberCommandReturnCode);
     IF_ACCESSOR_CASE(RearDriving_FaulhaberCommand);
+    IF_ACCESSOR_CASE(RearDriving_TimeCode);
 
 	return NULL;
 }

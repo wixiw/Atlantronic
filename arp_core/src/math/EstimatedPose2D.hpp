@@ -22,15 +22,15 @@ class EstimatedPose2D : public Pose2D
 
     Eigen::Matrix<double,3,3> cov() const;
     Eigen::Matrix<double,3,3>& covRef();
-    double date() const;
-    double& dateRef();
+    long double date() const;
+    long double& dateRef();
 
     void cov(Eigen::Matrix<double,3,3>) ;
-    void date(double);
+    void date(long double);
 
     private:
     Eigen::Matrix<double,3,3> covariance;
-    double estimationDate;
+    long double estimationDate;
 };
 }
 

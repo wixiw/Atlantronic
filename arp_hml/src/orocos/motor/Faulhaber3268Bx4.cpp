@@ -39,6 +39,7 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
 
     m_measuredPosition = CanARDDictionnaryAccessor::getINTEGER32Pointer(name,"MeasuredPosition");
     m_measuredCurrent = CanARDDictionnaryAccessor::getINTEGER16Pointer(name,"MeasuredCurrent");
+    m_measuredPeriod = CanARDDictionnaryAccessor::getUNS8Pointer(name,"TimeCode");
     m_faulhaberCommand = CanARDDictionnaryAccessor::getUNS8Pointer(name,"FaulhaberCommand");
     m_faulhaberCommandParameter = CanARDDictionnaryAccessor::getUNS32Pointer(name,"FaulhaberCommandParameter");
     m_faulhaberCommandReturn = CanARDDictionnaryAccessor::getUNS8Pointer(name,"FaulhaberCommandReturn");
@@ -48,7 +49,7 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
 
     ArdMotorItf::setOperationMode(ArdMotorItf::SPEED_CONTROL);
     outDriveEnable.write(false);
-    m_oldPositionMeasureTime = getTime();
+    clock_gettime(CLOCK_MONOTONIC, &m_oldPositionMeasureTime);
 }
 
 bool Faulhaber3268Bx4::checkProperties()
@@ -152,7 +153,7 @@ void Faulhaber3268Bx4::getInputs()
     	m_oldSpeedCommandTime = attrSyncTime;
     }
     //if we did not get a speed command since a time, we assume a 0 cmd for security reasons
-    else if(attrSyncTime - m_oldSpeedCommandTime > propInputsTimeout)
+    else if(arp_math::delta_t(m_oldSpeedCommandTime,attrSyncTime) > propInputsTimeout)
     {
         ArdMotorItf::setSpeedCmd(0);
     }
@@ -173,7 +174,7 @@ void Faulhaber3268Bx4::getInputs()
     	m_oldTorqueCommandTime = attrSyncTime;
     }
     //if we did not get a speed command since a time, we assume a 0 cmd for security reasons
-    else if(attrSyncTime - m_oldTorqueCommandTime > propInputsTimeout)
+    else if(arp_math::delta_t(m_oldTorqueCommandTime,attrSyncTime) > propInputsTimeout)
     {
         ArdMotorItf::setTorqueCmd(0);
     }
@@ -438,10 +439,14 @@ void Faulhaber3268Bx4::readCaptors()
     //lecture du courant (en mA)
 	double current = *m_measuredCurrent;
 	m_torqueMeasure = current/1000;
+
+    //lecture de la période (en ms) à enregistrer dans attribut en s
+	//ATTENTION : on passe outre le port inMasterPeriod
+	//TODO gerer le cas 0xFF
+    attrPeriod = (double)(*m_measuredPeriod)/1000.0;
 	LeaveMutex();
 
 	//calcul de la vitesse
-	attrPeriod = attrSyncTime - m_oldPositionMeasureTime;
 	if( attrPeriod > 0 )
 	{
 	    m_speedMeasure = (m_positionMeasure - m_oldPositionMeasure)/attrPeriod;
@@ -734,7 +739,6 @@ void Faulhaber3268Bx4::createOrocosInterface()
     addAttribute("attrVelocityCmd",m_speedCommand);
     addAttribute("attrPositionCmd",m_positionCommand);
     addAttribute("attrTorqueCmd",m_torqueCommand);
-    addAttribute("attrPeriod",attrPeriod);
     addAttribute("attrBlockingDelay",attrBlockingDelay);
     addAttribute("attrIncrementalOdometer",attrIncrementalOdometer);
     addAttribute("attrFaulhaberCommandPdoIndex",attrFaulhaberCommandPdoIndex);

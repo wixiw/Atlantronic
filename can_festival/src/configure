@@ -88,7 +88,7 @@ test=conftest
 rm -f $test $test.c
 
 if [ "$XENO_CONFIG" = "" ]; then
-	XENO_CONFIG=/usr/xenomai/bin/xeno-config
+	XENO_CONFIG=/usr/bin/xeno-config
 fi
 
 if [ "$RTAI_CONFIG" = "" ]; then
@@ -483,8 +483,8 @@ fi
 
 if [ "$SUB_TIMERS_DRIVER" = "xeno" ]; then
 	RT_LIB_DIR=`$XENO_CONFIG --library-dir`\ -Wl,-rpath\ `$XENO_CONFIG --library-dir`
-    SUB_EXE_CFLAGS=$SUB_EXE_CFLAGS\ `$XENO_CONFIG --xeno-ldflags`\ -L$RT_LIB_DIR\ -lnative\ -lrtdm
-	SUB_PROG_CFLAGS=$SUB_PROG_CFLAGS\ -DUSE_XENO\ `$XENO_CONFIG --xeno-cflags`
+    SUB_EXE_CFLAGS=$SUB_EXE_CFLAGS\ -L$RT_LIB_DIR\ `$XENO_CONFIG --skin=native --ldflags`\ `$XENO_CONFIG --skin=rtdm --ldflags`\  
+	SUB_PROG_CFLAGS=$SUB_PROG_CFLAGS\ -DUSE_XENO\ `$XENO_CONFIG --skin=native --cflags`\ `$XENO_CONFIG --skin=rtdm --cflags`
     RTCAN_SOCKET=1
 fi
 

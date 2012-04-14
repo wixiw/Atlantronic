@@ -28,6 +28,7 @@ CanOpenNode::CanOpenNode(const std::string& name):
     updateNodeIdCard();
 
     addAttribute("attrSyncTime", attrSyncTime);
+    addAttribute("attrPeriod",attrPeriod);
 
     addProperty("propNodeId",propNodeId)
         .doc("CAN adress of the node");
@@ -127,10 +128,19 @@ bool CanOpenNode::configureHook()
         LOG(Error) << "failed to configure : Controller TaskContext not found (is it a peer ?)" << endlog();
         goto failedUnregister;
     }
-    else if( !inMasterClock.connectTo(tc->getPort("outClock")) )
+    else
     {
-        LOG(Error) << "failed to configure : inMasterClock failed to connect to outClock" << endlog();
-        goto failedUnregister;
+        if( !inMasterClock.connectTo(tc->getPort("outClock")) )
+        {
+            LOG(Error) << "failed to configure : inMasterClock failed to connect to outClock" << endlog();
+            goto failedUnregister;
+        }
+
+        if( !inMasterPeriod.connectTo(tc->getPort("outPeriod")) )
+        {
+            LOG(Error) << "failed to configure : inMasterPeriod failed to connect to outPeriod" << endlog();
+            goto failedUnregister;
+        }
     }
 
     if( inBootUpFrame.connected()==false )
@@ -196,6 +206,7 @@ void CanOpenNode::updateHook()
 {
     //Récupération de la date du cycle CAN
     inMasterClock.readNewest(attrSyncTime);
+    inMasterPeriod.readNewest(attrPeriod);
 
     HmlTaskContext::updateHook();
 

@@ -23,6 +23,7 @@ extern UNS8 LeftSteering_FaulhaberCommand;		/* Mapped at index 0x2210, subindex 
 extern UNS8 LeftSteering_FaulhaberCommandReturn;		/* Mapped at index 0x2210, subindex 0x07 */
 extern UNS8 LeftSteering_FaulhaberCommandReturnCode;		/* Mapped at index 0x2210, subindex 0x08 */
 extern UNS32 LeftSteering_FaulhaberCommandReturnParameter;		/* Mapped at index 0x2210, subindex 0x09 */
+extern UNS8 LeftSteering_TimeCode;		/* Mapped at index 0x2210, subindex 0x0A */
 extern INTEGER32 RightSteering_MeasuredSpeed;		/* Mapped at index 0x2220, subindex 0x01 */
 extern UNS16 RightSteering_Ds402State;		/* Mapped at index 0x2220, subindex 0x02 */
 extern INTEGER32 RightSteering_MeasuredPosition;		/* Mapped at index 0x2220, subindex 0x03 */
@@ -32,6 +33,7 @@ extern UNS8 RightSteering_FaulhaberCommand;		/* Mapped at index 0x2220, subindex
 extern UNS8 RightSteering_FaulhaberCommandReturn;		/* Mapped at index 0x2220, subindex 0x07 */
 extern UNS8 RightSteering_FaulhaberCommandReturnCode;		/* Mapped at index 0x2220, subindex 0x08 */
 extern UNS32 RightSteering_FaulhaberCommandReturnParameter;		/* Mapped at index 0x2220, subindex 0x09 */
+extern UNS8 RightSteering_TimeCode;		/* Mapped at index 0x2220, subindex 0x0A */
 extern INTEGER32 RearSteering_MeasuredSpeed;		/* Mapped at index 0x2230, subindex 0x01 */
 extern UNS16 RearSteering_Ds402State;		/* Mapped at index 0x2230, subindex 0x02 */
 extern INTEGER32 RearSteering_MeasuredPosition;		/* Mapped at index 0x2230, subindex 0x03 */
@@ -41,6 +43,7 @@ extern UNS8 RearSteering_FaulhaberCommand;		/* Mapped at index 0x2230, subindex 
 extern UNS8 RearSteering_FaulhaberCommandReturn;		/* Mapped at index 0x2230, subindex 0x07 */
 extern UNS8 RearSteering_FaulhaberCommandReturnCode;		/* Mapped at index 0x2230, subindex 0x08 */
 extern UNS32 RearSteering_FaulhaberCommandReturnParameter;		/* Mapped at index 0x2230, subindex 0x09 */
+extern UNS8 RearSteering_TimeCode;		/* Mapped at index 0x2230, subindex 0x0A */
 extern INTEGER32 LeftDriving_MeasuredSpeed;		/* Mapped at index 0x2310, subindex 0x01 */
 extern UNS16 LeftDriving_Ds402State;		/* Mapped at index 0x2310, subindex 0x02 */
 extern INTEGER32 LeftDriving_MeasuredPosition;		/* Mapped at index 0x2310, subindex 0x03 */
@@ -50,6 +53,7 @@ extern UNS8 LeftDriving_FaulhaberCommand;		/* Mapped at index 0x2310, subindex 0
 extern UNS8 LeftDriving_FaulhaberCommandReturn;		/* Mapped at index 0x2310, subindex 0x07 */
 extern UNS8 LeftDriving_FaulhaberCommandReturnCode;		/* Mapped at index 0x2310, subindex 0x08 */
 extern UNS32 LeftDriving_FaulhaberCommandReturnParameter;		/* Mapped at index 0x2310, subindex 0x09 */
+extern UNS8 LeftDriving_TimeCode;		/* Mapped at index 0x2310, subindex 0x0A */
 extern INTEGER32 RightDriving_MeasuredSpeed;		/* Mapped at index 0x2320, subindex 0x01 */
 extern UNS16 RightDriving_Ds402State;		/* Mapped at index 0x2320, subindex 0x02 */
 extern INTEGER32 RightDriving_MeasuredPosition;		/* Mapped at index 0x2320, subindex 0x03 */
@@ -59,7 +63,7 @@ extern UNS8 RightDriving_FaulhaberCommand;		/* Mapped at index 0x2320, subindex 
 extern UNS8 RightDriving_FaulhaberCommandReturn;		/* Mapped at index 0x2320, subindex 0x07 */
 extern UNS8 RightDriving_FaulhaberCommandReturnCode;		/* Mapped at index 0x2320, subindex 0x08 */
 extern UNS32 RightDriving_FaulhaberCommandReturnParameter;		/* Mapped at index 0x2320, subindex 0x09 */
-extern UNS8 RightDriving_Undefined;		/* Mapped at index 0x2320, subindex 0x0A */
+extern UNS8 RightDriving_TimeCode;		/* Mapped at index 0x2320, subindex 0x0A */
 extern INTEGER32 RearDriving_MeasuredSpeed;		/* Mapped at index 0x2330, subindex 0x01 */
 extern UNS16 RearDriving_Ds402State;		/* Mapped at index 0x2330, subindex 0x02 */
 extern INTEGER32 RearDriving_MeasuredPosition;		/* Mapped at index 0x2330, subindex 0x03 */
@@ -69,5 +73,6 @@ extern UNS8 RearDriving_FaulhaberCommand;		/* Mapped at index 0x2330, subindex 0
 extern UNS8 RearDriving_FaulhaberCommandReturn;		/* Mapped at index 0x2330, subindex 0x07 */
 extern UNS8 RearDriving_FaulhaberCommandReturnCode;		/* Mapped at index 0x2330, subindex 0x08 */
 extern UNS32 RearDriving_FaulhaberCommandReturnParameter;		/* Mapped at index 0x2330, subindex 0x09 */
+extern UNS8 RearDriving_TimeCode;		/* Mapped at index 0x2330, subindex 0x0A */
 
 #endif // CANARD_H

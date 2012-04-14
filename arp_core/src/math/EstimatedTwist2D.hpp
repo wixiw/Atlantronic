@@ -21,18 +21,18 @@ class EstimatedTwist2D : public Twist2D
     EstimatedTwist2D(double _vx, double _vy, double _vh = 0.);
 
     Eigen::Matrix<double,3,3> cov() const;
-    double date() const;
-    double& dateRef();
+    long double date() const;
+    long double& dateRef();
 
     void cov(Eigen::Matrix<double,3,3>) ;
-    void date(double);
+    void date(long double);
 
     //create a simple Twist similar to us
     Twist2D toTwist();
 
     private:
     Eigen::Matrix<double,3,3> covariance;
-    double estimationDate;
+    long double estimationDate;
 };
 }
 

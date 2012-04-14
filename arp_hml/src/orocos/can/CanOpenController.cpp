@@ -10,7 +10,7 @@
 
 #include "CanOpenController.hpp"
 #include "orocos/can/wrappers/can_festival_ARD_master_wrapper.hpp"
-#include "math/math.hpp"
+#include "math/core"
 
 using namespace arp_hml;
 using namespace arp_core;
@@ -29,6 +29,9 @@ CanOpenController::CanOpenController(const std::string& name) :
             propPdoMaxAwaitedDelay(propSyncPeriod/2),
             m_dispatcher(*this), m_canPort(NULL)
 {
+
+    clock_gettime(CLOCK_MONOTONIC, &m_lastSyncTime);
+
     addAttribute("attrCurrentNMTState", attrCurrentNMTState);
     addAttribute("attrSyncTime", attrSyncTime);
     addAttribute("sdo", attrTestingSdo);
@@ -53,6 +56,7 @@ CanOpenController::CanOpenController(const std::string& name) :
     addPort("inBootUpReceived", inBootUpReceived) .doc(
             "his port is connected to the CanFestival thread to dispatch the boot event to registred Device Components");
     addPort("outClock", outClock) .doc("");
+    addPort("outPeriod", outPeriod) .doc("");
     addEventPort("inSync", inSync) .doc(
             "wakes up the component on SYNC message");
 
@@ -194,9 +198,10 @@ bool CanOpenController::startHook()
 void CanOpenController::updateHook()
 {
     //Récupération de la date du cycle CAN
-    timespec syncTime;
-    inSync.readNewest(syncTime);
-    attrSyncTime = syncTime.tv_sec + (double)(syncTime.tv_nsec)/1E9;
+    inSync.readNewest(attrSyncTime);
+    //on se permet le double parce qu'on sait que la periode est petite.
+    double period = arp_math::delta_t(m_lastSyncTime, attrSyncTime);
+    m_lastSyncTime = attrSyncTime;
 
     HmlTaskContext::updateHook();
 
@@ -209,6 +214,9 @@ void CanOpenController::updateHook()
     //wake up slave activities of all registered nodes after a certain amount of time to wait for PDOs
     usleep(propPdoMaxAwaitedDelay*1E6);
 
+    //TODO problèmes avec les timing
+    //outPeriod.write(period);
+    outPeriod.write(propSyncPeriod);
     outClock.write(attrSyncTime);
 }
 
