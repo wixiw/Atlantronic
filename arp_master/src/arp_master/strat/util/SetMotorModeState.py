@@ -10,14 +10,29 @@ from Inputs import Inputs
 from Data import Data
 from CyclicState import CyclicState
 
-class SetMotorModeState(CyclicState):
+class SetSteeringMotorModeState(CyclicState):
     def __init__(self, mode):
         CyclicState.__init__(self, outcomes=['succeeded','failed'])
         self.mode = mode
     
     def executeIn(self):
-        self.result = True
-        #self.result = setMotorOperationMode(self.modes)
+        self.result = self.setSteeringMotorMode(self.mode)
+        rospy.loginfo("A CODER !!")
+    
+    def executeTransitions(self):
+        if self.result == True:
+            return 'succeeded'   
+        else:
+            return 'failed'
+        
+        
+class SetDrivingMotorModeState(CyclicState):
+    def __init__(self, mode):
+        CyclicState.__init__(self, outcomes=['succeeded','failed'])
+        self.mode = mode
+    
+    def executeIn(self):
+        self.result = self.setDrivingMotorMode(self.mode)
         rospy.loginfo("A CODER !!")
     
     def executeTransitions(self):

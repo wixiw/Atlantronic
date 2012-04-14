@@ -14,7 +14,7 @@ from arp_master.strat.util.CyclicActionState import CyclicActionState
 from arp_master.strat.util.TableVierge import *
 from arp_master.strat.util.UtilARD import *
 from arp_master.strat.util.WaiterState import WaiterState
-from arp_master.strat.util.SetMotorModeState import SetMotorModeState
+from arp_master.strat.util.SetMotorModeState import SetSteeringMotorModeState
 from math import pi
 
 
@@ -29,14 +29,18 @@ class StartSequence(smach.StateMachine):
                         
             smach.StateMachine.add('SetSteeringPower',
                       SetSteeringPower(),
-                      transitions={'succeeded':'FinturretZeros','failed':'problem'})
+                      transitions={'succeeded':'AskTurretZeros','failed':'problem'})
             
-            smach.StateMachine.add('FinturretZeros',
-                      SetMotorModeState("homing"),
+            smach.StateMachine.add('AskTurretZeros',
+                      SetSteeringMotorModeState("homing"),
+                      transitions={'succeeded':'FindTurretZeros','failed':'problem'})
+            
+            smach.StateMachine.add('FindTurretZeros',
+                      FindTurretZeros(),
                       transitions={'succeeded':'BackToPositionTurretMode','failed':'problem'})
             
             smach.StateMachine.add('BackToPositionTurretMode',
-                      SetMotorModeState("position"),
+                      SetSteeringMotorModeState("position"),
                       transitions={'succeeded':'SetDrivingPower','failed':'problem'})
             
             smach.StateMachine.add('SetDrivingPower',
@@ -91,6 +95,15 @@ class SetSteeringPower(CyclicState):
 ###
 # Zero tourelle + retour en mode position
 ###
+
+class FindTurretZeros(CyclicState):
+    def __init__(self):
+        CyclicState.__init__(self, outcomes=['succeeded','failed'])
+    
+    def executeTransitions(self):
+        if Inputs.gethomingdone() == True:
+            return 'succeeded'   
+
        
 class SetDrivingPower(CyclicState):
     def __init__(self):

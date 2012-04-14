@@ -29,7 +29,6 @@ HmlMonitorSimulDeployer:load()
 print("... connect components")
 JoystickDeployer:connect()
 Joystick=Deployer:getPeer("Joystick")
---Joystick:getProperty("propDevName"):set("/dev/input/js1") --je sais pas pourquoi la vm fait chier avec ça
 MotorSimulDeployer:connect()
 Syncronizator:connect()
 UbiquitySimulDeployer:connect()

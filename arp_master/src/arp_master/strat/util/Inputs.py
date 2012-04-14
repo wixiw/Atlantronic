@@ -51,6 +51,7 @@ class Inputs:
         Inputs.listener = tf.TransformListener()
         Inputs.linearVelocityInput=Inputs.createInput("/Command/velocity",Velocity)
         Inputs.deployed=Inputs.createInput("Master/deployed", Bool)
+        Inputs.homingdone=Inputs.createInput("/Ubiquity/homing_done", Bool)
     
     @staticmethod
     def createInput(name,type):
@@ -76,6 +77,10 @@ class Inputs:
     @staticmethod
     def getdeployed():
         return Inputs.deployed.data.data
+    
+    @staticmethod
+    def gethomingdone():
+        return Inputs.homingdone.data.data
     
     #get obstacle will return that there is an obstacle only if the obstacle is on the table
     @staticmethod

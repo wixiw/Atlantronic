@@ -33,8 +33,8 @@ bool RosHmlItf::configureHook()
     res &= getOperation("HmlMonitor",   "coSetMotorPower",          m_coSetMotorPower);
     res &= getOperation("HmlMonitor",   "coSetDrivingMotorPower",   m_coSetDrivingMotorPower);
     res &= getOperation("HmlMonitor",   "coSetSteeringMotorPower",  m_coSetSteeringMotorPower);
-    getOperation("HmlMonitor",   "ooSetDrivingOperationMode ",  m_ooSetDrivingOperationMode );
-    getOperation("HmlMonitor",   "ooSetSteeringOperationMode ",  m_ooSetSteeringOperationMode );
+    getOperation("HmlMonitor",   "ooSetDrivingOperationMode",  m_ooSetDrivingOperationMode );
+    getOperation("HmlMonitor",   "ooSetSteeringOperationMode",  m_ooSetSteeringOperationMode );
     res &= getOperation("HmlMonitor",   "ooResetHml",               m_ooResetHml);
     //don't care if those are missing
     getOperation("HmlMonitor",          "coGetHmlVersion",             m_coGetVersion);
@@ -99,7 +99,7 @@ void RosHmlItf::readIo()
 	}
 
     StartColor startColor;
-    if(NewData==inIoStart.readNewest(io))
+    if(NewData==inIoStartColor.readNewest(io))
     {
         if( io )
             startColor.color = "red";
@@ -175,13 +175,13 @@ bool RosHmlItf::srvSetMotorPower(SetMotorPower::Request& req, SetMotorPower::Res
 
 bool RosHmlItf::srvSetDrivingMotorPower(SetMotorPower::Request& req, SetMotorPower::Response& res)
 {
-    res.success = m_coSetSteeringMotorPower(req.powerOn);
+    res.success = m_coSetDrivingMotorPower(req.powerOn);
     return res.success;
 }
 
 bool RosHmlItf::srvSetSteeringMotorPower(SetMotorPower::Request& req, SetMotorPower::Response& res)
 {
-    res.success = m_coSetDrivingMotorPower(req.powerOn);
+    res.success = m_coSetSteeringMotorPower(req.powerOn);
     return res.success;
 }
 

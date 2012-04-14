@@ -12,6 +12,7 @@ from Data import Data
 #import module for ros services
 from arp_core.srv import SetPosition
 from arp_hml.srv import SetMotorPower
+from arp_hml.srv import SetMotorMode
 from arp_ods.srv import SetVMax
 
 # the cyclicstate is a modification of the smach standard state machine, so as it is SYNCHRONOUS
@@ -66,6 +67,8 @@ class CyclicState(smach.StateMachine):
         self.initSetMotorPower()
         self.initSetDrivingMotorPower()
         self.initSetSteeringMotorPower()
+        self.initSetDrivingMotorOperationMode()
+        self.initSetSteeringMotorOperationMode()
         self.initSetVMaxClient()
 
     def initSetVMaxClient(self):
@@ -137,6 +140,33 @@ class CyclicState(smach.StateMachine):
             rospy.logerr("Position could not disable Steering MotorPower")
             return False
     #----------------------------------------------------
+    
+    
+    def initSetDrivingMotorOperationMode(self):
+        self.setDrivingMotorOperationMode_srv=rospy.ServiceProxy("Ubiquity/setDrivingOperationMode",SetMotorMode)
+    def setDrivingMotorMode(self,mode):
+        try:
+            self.setDrivingMotorOperationMode_srv(mode)
+            return True;
+        except rospy.ServiceException, e:
+            rospy.logerr("Position could not switch a Driving motor to a new mode")
+            return False
+        
+    def initSetSteeringMotorOperationMode(self):
+        self.setSteeringMotorOperationMode_srv=rospy.ServiceProxy("Ubiquity/setSteeringOperationMode",SetMotorMode)
+    def setSteeringMotorMode(self,mode):
+        try:
+            self.setSteeringMotorOperationMode_srv(mode)
+            return True;
+        except rospy.ServiceException, e:
+            rospy.logerr("Position could not switch a Steering motor to a new mode")
+            return False
+    
+    
+    
+    
+    
+    
     
     
     def setVMax(self,v):
