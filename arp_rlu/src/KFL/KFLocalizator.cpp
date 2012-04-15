@@ -5,6 +5,8 @@
  *      Author: Boris
  */
 
+#include <iomanip>
+
 #include "KFLocalizator.hpp"
 
 #include "KFL/Logger.hpp"
@@ -198,11 +200,15 @@ bool KFLocalizator::initialize(const arp_math::EstimatedPose2D & pose)
     bayesian->init(initStateVar, initStateCov, filterParams);
 
     updateBuffer(initDate);
+
+    kfl::Log( DEBUG ) << "KFLocalizator::initialize - (x=" << pose.x() << ", y=" << pose.y() << " h=" << rad2deg(betweenMinusPi2AndPlusPi2(pose.h())) << " deg)";
     return true;
 }
 
 bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D odoVel)
 {
+    double startTime = getTime();
+
     if(circularBuffer.empty())
     {
         Log( ERROR ) << "KFLocalizator::newOdoVelocity - Internal Circular Buffer is empty (maybe you forgot to initialize) => return false";
@@ -213,13 +219,13 @@ bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D odoVel)
 
     if( lastEstim.date() >= odoVel.date() )
     {
-        Log( ERROR ) << "KFLocalizator::newOdoVelocity - Last estimation date (" << lastEstim.date() << ") is posterior or same than odo velocity date (" << odoVel.date() << ") => return false";
+        Log( ERROR ) << "KFLocalizator::newOdoVelocity - Last estimation date (" << std::setprecision (9) << lastEstim.date() << ") is posterior or same than odo velocity date (" << odoVel.date() << ") => return false";
         return false;
     }
 
     if( lastEstim.date() + params.maxTime4OdoPrediction < odoVel.date() )
     {
-        Log( WARN ) << "KFLocalizator::newOdoVelocity - Time betwee EstimatedTwist2D date (" << odoVel.date() << ") and last estimation date (" << lastEstim.date() << ") is strangely big and superior than" << params.maxTime4OdoPrediction << "). "
+        Log( WARN ) << "KFLocalizator::newOdoVelocity - Time between EstimatedTwist2D date (" << odoVel.date() << ") and last estimation date (" << lastEstim.date() << ") is strangely big and superior than" << params.maxTime4OdoPrediction << "). "
              << "maybe because of an initalization date error or a scheduling fault => return false";
         return false;
     }
@@ -238,11 +244,19 @@ bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D odoVel)
     bayesian->predict( input, dt, predictParams );
 
     updateBuffer(odoVel.date(), odoVel);
+
+    double stopTime = getTime();
+    Log( DEBUG ) << "KFLocalizator::newOdoVelocity - New odo : dt=" << dt << " (sec)  vx=" << odoVel.vx() << " (m/s)  vy=" << odoVel.vy() << " (m/s)  vh=" << rad2deg(odoVel.vh()) << " (deg/s)  - compute time=" << (stopTime - startTime)*1000. << " (ms)";
     return true;
 }
 
 bool KFLocalizator::newScan(lsl::LaserScan scan)
 {
+    double startTime = getTime();
+
+    Log( DEBUG ) << "KFLocalizator::newScan - *************************************************************";
+    Log( DEBUG ) << "KFLocalizator::newScan - enter";
+
     if(circularBuffer.empty())
     {
         Log( ERROR ) << "KFLocalizator::newScan - Internal Circular Buffer is empty (maybe you forgot to initialize it) => return false";
@@ -266,6 +280,7 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
         Log( WARN ) << "KFLocalizator::newScan - Not enough history in circular buffer => return false";
         return false;
     }
+
 
     //***************************************
     // back to the past
@@ -293,6 +308,8 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
         odoCovFromBuffer(i) = circularBuffer[i].second.cov();
     }
 
+    double startInterpTime = arp_math::getTime();
+
     Eigen::VectorXd tt = scan.getTimeData();
     Eigen::VectorXd xx = Interpolator::transInterp(tt, ttFromBuffer, xxFromBuffer);
     Eigen::VectorXd yy = Interpolator::transInterp(tt, ttFromBuffer, yyFromBuffer);
@@ -305,6 +322,7 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
 
     popBufferUntilADate(tt(0));
 
+    kfl::Log( INFO ) << "KFLocalizator::newScan - Interpolation Computation Time :" << arp_math::getTime() - startInterpTime;
 
     if(circularBuffer.empty())
     {
@@ -312,15 +330,13 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
         return false;
     }
 
-    double endBITPTime = arp_math::getTime();
-    kfl::Log( INFO ) << "Back in the Past Computation Time :" << endBITPTime - startBITPTime;
+    kfl::Log( INFO ) << "KFLocalizator::newScan - Back in the Past Computation Time :" << arp_math::getTime() - startBITPTime;
     //***************************************
 
 
     double startBPTime = arp_math::getTime();
     beaconDetector.process(scan, tt, xx, yy, hh);
-    double endBPTime = arp_math::getTime();
-    kfl::Log( INFO ) << "BeaconDetector Computation Time :" << endBPTime - startBPTime;
+    kfl::Log( INFO ) << "BeaconDetector Computation Time :" << arp_math::getTime() - startBPTime;
 
     Log( DEBUG ) << "KFLocalizator::newScan - " << beaconDetector.getFoundBeacons().size() << " beacons(s) detected in scan";
 
@@ -415,8 +431,15 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
     double endUpdateTime = arp_math::getTime();
     kfl::Log( INFO ) << "Update Computation Time :" << endUpdateTime - startUpdateTime;
 
-    KFLocalizator::updateBuffer(tt(tt.size()-1), EstimatedTwist2D(vx(tt.size()-1), vy(tt.size()-1), vh(tt.size()-1)));
+    EstimatedTwist2D T;
+    T.vx( vx(tt.size()-1) );
+    T.vy( vy(tt.size()-1) );
+    T.vh( vh(tt.size()-1) );
+    T.cov( odoCovs(tt.size()-1) );
+    T.date(tt(tt.size()-1));
+    KFLocalizator::updateBuffer(tt(tt.size()-1), T);
 
+    Log( DEBUG ) << "KFLocalizator::newScan - Total computation time =" << (getTime() - startTime)*1000. << " (ms)";
     return false;
 }
 
@@ -468,5 +491,11 @@ void KFLocalizator::popBufferUntilADate(const double date)
             return;
         }
     }
+}
+
+
+std::string KFLocalizator::getPerformanceReport()
+{
+    return beaconDetector.getPerformanceReport();
 }
 

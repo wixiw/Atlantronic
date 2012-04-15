@@ -237,6 +237,11 @@ class KFLocalizator
          */
         arp_math::EstimatedTwist2D getLastEstimatedTwist2D();
 
+        /**
+         * Permet d'obtenir un rapport sur les timings
+         */
+        std::string getPerformanceReport();
+
 
     protected:
         /**

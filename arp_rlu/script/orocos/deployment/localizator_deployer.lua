@@ -18,6 +18,7 @@ end
 
 function LocalizatorDeployer:connect()
 	Deployer:connect(me..".inOdo","Odometry.outTwist",cp)
+	Deployer:stream(me..".inScan",ros:topic("/top_scan"))
 	Deployer:addPeer("Reporting", me)
 	LocalizatorDeployer:check(me)
 end

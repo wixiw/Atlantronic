@@ -23,7 +23,7 @@
 #include <LSL/identificators/TrioCircleIdentif.hpp>
 #include <LSL/identificators/DuoCircleIdentif.hpp>
 
-
+#include <timer/StatTimer.hpp>
 
 namespace arp_rlu
 {
@@ -185,6 +185,11 @@ class BeaconDetector
          */
         void setParams(kfl::BeaconDetector::Params);
 
+        /**
+         * Permet d'obtenir un rapport sur les timings
+         */
+        std::string getPerformanceReport();
+
     protected:
         /**
          * Remise à zéro du traitement.\n
@@ -223,6 +228,17 @@ class BeaconDetector
          * Temps mini entre deux mesures du scan
          */
         double deltaTime;
+
+        arp_core::StatTimer mfTimer;
+        arp_core::StatTimer pcTimer;
+        arp_core::StatTimer clTimer;
+        arp_core::StatTimer cartTimer;
+        arp_core::StatTimer psTimer;
+        arp_core::StatTimer fiTimer;
+        arp_core::StatTimer ciTimer;
+        arp_core::StatTimer tcTimer;
+        arp_core::StatTimer dcTimer;
+        arp_core::StatTimer globalTimer;
 
 };
 

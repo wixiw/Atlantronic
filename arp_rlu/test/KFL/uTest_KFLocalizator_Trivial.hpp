@@ -66,8 +66,8 @@ BOOST_AUTO_TEST_CASE( test_Static )
 
     kfl::BeaconDetector::Params     procParams;
     procParams.mfp.width = 3;
-    procParams.pcp.minRange = 0.01 * Eigen::VectorXd::Ones(1);
-    procParams.pcp.maxRange = 10.0 * Eigen::VectorXd::Ones(1);
+    procParams.pcp.minRange = 0.01;
+    procParams.pcp.maxRange = 10.0;
     procParams.pcp.minTheta = -PI;
     procParams.pcp.maxTheta = PI;
     procParams.psp.rangeThres = 0.08;
@@ -262,8 +262,8 @@ BOOST_AUTO_TEST_CASE( test_Bad_InitTime )
 
     kfl::BeaconDetector::Params     procParams;
     procParams.mfp.width = 3;
-    procParams.pcp.minRange = 0.01 * Eigen::VectorXd::Ones(1);
-    procParams.pcp.maxRange = 10.0 * Eigen::VectorXd::Ones(1);
+    procParams.pcp.minRange = 0.01;
+    procParams.pcp.maxRange = 10.0;
     procParams.pcp.minTheta = -PI;
     procParams.pcp.maxTheta = PI;
     procParams.psp.rangeThres = 0.08;
@@ -424,8 +424,8 @@ BOOST_AUTO_TEST_CASE( test_V_constante )
 
     kfl::BeaconDetector::Params     procParams;
     procParams.mfp.width = 3;
-    procParams.pcp.minRange = 0.01 * Eigen::VectorXd::Ones(1);
-    procParams.pcp.maxRange = 10.0 * Eigen::VectorXd::Ones(1);
+    procParams.pcp.minRange = 0.01;
+    procParams.pcp.maxRange = 10.0;
     procParams.pcp.minTheta = -PI;
     procParams.pcp.maxTheta = PI;
     procParams.psp.rangeThres = 0.08;
@@ -625,8 +625,8 @@ BOOST_AUTO_TEST_CASE( test_acc )
 
     kfl::BeaconDetector::Params     procParams;
     procParams.mfp.width = 3;
-    procParams.pcp.minRange = 0.01 * Eigen::VectorXd::Ones(1);
-    procParams.pcp.maxRange = 10.0 * Eigen::VectorXd::Ones(1);
+    procParams.pcp.minRange = 0.01;
+    procParams.pcp.maxRange = 10.0;
     procParams.pcp.minTheta = -PI;
     procParams.pcp.maxTheta = PI;
     procParams.psp.rangeThres = 0.08;

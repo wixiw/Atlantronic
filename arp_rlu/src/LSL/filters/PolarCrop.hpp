@@ -13,6 +13,8 @@
 #include "LSL/filters/ParamsInterface.hpp"
 #include "LSL/LaserScan.hpp"
 
+#include <timer/StatTimer.hpp>
+
 namespace arp_rlu
 {
 
@@ -44,10 +46,10 @@ class PolarCrop
             public:
             /** Constructeur par défault.
              *  Il initialise des paramètres classiques non-stupides :\n
-             *  \li minRange = 0.1 * Eigen::Ones(1)\n
-             *  \li maxRange = 10.0 * Eigen::Ones(1)\n
-             *  \li minTheta = -pi\n
-             *  \li maxTheta = pi\n
+             *  \li minRange = 0.1
+             *  \li maxRange = 10.0
+             *  \li minTheta = -pi
+             *  \li maxTheta = pi
              */
             Params();
 
@@ -58,29 +60,21 @@ class PolarCrop
 
             /**
              * Permet de vérifier que les paramètres sont consistants.\n
-             * A savoir :\n
-             * \li minRange ou maxRange est de taille nulle \n
-             * \li minRange et maxRange contiennent des valeurs non-négatives \n
-             * \li minRange < maxRange pour chaque élément \n
+             * A savoir :
+             * \li minRange < maxRange
              * \li minTheta < maxTheta
              */
             bool checkConsistency() const;
 
             /**
-             * Range minimal.\n
-             * La taille du vecteur peut être de 1 ou de N, avec N la taille du scan à traiter.\n
-             * Si le vecteur est de taille 1, le même range minimal est utilisé pour tous les points.\n
-             * Si le vecteur est de taille N, chaque élément du vecteur définit le range minimal pour chaque point du scan.
+             * Range minimal.
              */
-            Eigen::VectorXd minRange;
+            double minRange;
 
             /**
-             * Range maximal.\n
-             * La taille du vecteur peut être de 1 ou de N, avec N la taille du scan à traiter.\n
-             * Si le vecteur est de taille 1, le même range maximal est utilisé pour tous les points.\n
-             * Si le vecteur est de taille N, chaque élément du vecteur définit le range maximal pour chaque point du scan.
+             * Range maximal.
              */
-            Eigen::VectorXd maxRange;
+            double maxRange;
 
             /**
              * Angle minimal.
@@ -102,8 +96,6 @@ class PolarCrop
          */
         static LaserScan apply(const LaserScan & ls, const Params & p = Params());
 
-
-    protected:
 
 };
 

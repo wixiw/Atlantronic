@@ -71,9 +71,19 @@ bool LaserScan::computeCartesianData(Eigen::VectorXd ttc, Eigen::VectorXd xxc, E
     }
     else
     {
-        xx = Interpolator::transInterp(tt, ttc, xxc);
-        yy = Interpolator::transInterp(tt, ttc, yyc);
-        hh = Interpolator::rotInterp(tt, ttc, hhc);
+        if( ttc.size() != n )
+
+        {
+            xx = Interpolator::transInterp(tt, ttc, xxc);
+            yy = Interpolator::transInterp(tt, ttc, yyc);
+            hh = Interpolator::rotInterp(tt, ttc, hhc);
+        }
+        else
+        {
+            xx = xxc;
+            yy = yyc;
+            hh = hhc;
+        }
     }
 
     if( xx.size() != n || hh.size() != n || hh.size() != n )
@@ -84,14 +94,19 @@ bool LaserScan::computeCartesianData(Eigen::VectorXd ttc, Eigen::VectorXd xxc, E
 
     Eigen::MatrixXd newdata(8, n);
     newdata.topRows(3) = data.topRows(3);
-    for(int i = 0; i < n; i++)
-    {
-        newdata(3, i) = xx[i] + data(1, i) * cos(data(2, i) + hh[i]);
-        newdata(4, i) = yy[i] + data(1, i) * sin(data(2, i) + hh[i]);
-        newdata(5, i) = xx[i];
-        newdata(6, i) = yy[i];
-        newdata(7, i) = hh[i];
-    }
+    //    for(int i = 0; i < n; i++)
+    //    {
+    //        newdata(3, i) = xx[i] + data(1, i) * cos(data(2, i) + hh[i]);
+    //        newdata(4, i) = yy[i] + data(1, i) * sin(data(2, i) + hh[i]);
+    //        newdata(5, i) = xx[i];
+    //        newdata(6, i) = yy[i];
+    //        newdata(7, i) = hh[i];
+    //    }
+    newdata.row(3) = xx + data.row(1).transpose().cwiseProduct( (data.row(2).transpose() + hh).array().cos().matrix() );
+    newdata.row(4) = yy + data.row(1).transpose().cwiseProduct( (data.row(2).transpose() + hh).array().sin().matrix() );
+    newdata.row(5) = xx;
+    newdata.row(6) = yy;
+    newdata.row(7) = hh;
     data = newdata;
     return true;
 }

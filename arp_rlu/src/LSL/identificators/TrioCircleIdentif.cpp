@@ -78,20 +78,20 @@ std::vector< std::pair< std::vector<DetectedCircle>, std::vector<Circle> > > Tri
     if( !p.checkConsistency() )
     {
         Log( ERROR ) << "TrioCircleIdentif::apply" << " - " << "Parameters are not consistent => Return empty";
-        return out;
+        return std::vector< std::pair< std::vector<DetectedCircle>, std::vector<Circle> > >();
     }
 
     if( vdc.size() < 3 )
     {
         Log( DEBUG ) << "TrioCircleIdentif::apply - Less than 3 DetectedCircle (actually " << vdc.size() << ")  => return empty";
-        return out;
+        return std::vector< std::pair< std::vector<DetectedCircle>, std::vector<Circle> > >();
     }
 
     for( std::vector<std::vector<Circle> >::const_iterator vrcIt = vrc.begin() ; vrcIt != vrc.end() ; ++vrcIt )
     {
         if( vrcIt->size() != 3 )
         {
-            Log( WARN ) << "TrioCircleIdentif::apply - Triangle rejected because reference Circle vector is not size 3 (actually " << vrcIt->size() << ")";
+//            Log( WARN ) << "TrioCircleIdentif::apply - Triangle rejected because reference Circle vector is not size 3 (actually " << vrcIt->size() << ")";
             continue;
         }
 
@@ -144,22 +144,27 @@ std::vector< std::pair< std::vector<DetectedCircle>, std::vector<Circle> > > Tri
                     lengths.minCoeff(&iMin);
                     lengths.maxCoeff(&iMax);
                     int iMed = 3 - iMin - iMax;
+                    if( iMed >= 3 || iMed < 0)
+                    {
+                        Log( DEBUG ) << "TrioCircleIdentif::apply - Triangle rejected because triangle is equilateral" ;
+                        continue;
+                    }
 
                     if( abs(lengths[iMax] - refLengths[iRefMax]) > p.maxLengthTolerance )
                     {
-                        Log( DEBUG ) << "TrioCircleIdentif::apply - Triangle rejected because deltaMaxLength (" << abs(lengths[iMax] - refLengths[iRefMax]) << " > " << p.maxLengthTolerance << ")" ;
+//                        Log( DEBUG ) << "TrioCircleIdentif::apply - Triangle rejected because deltaMaxLength (" << abs(lengths[iMax] - refLengths[iRefMax]) << " > " << p.maxLengthTolerance << ")" ;
                         continue;
                     }
 
                     if( abs(lengths[iMed] - refLengths[iRefMed]) > p.medLengthTolerance )
                     {
-                        Log( DEBUG ) << "TrioCircleIdentif::apply - Triangle rejected because deltaMedLength (" << abs(lengths[iMed] - refLengths[iRefMed]) << " > " << p.medLengthTolerance << ")" ;
+//                        Log( DEBUG ) << "TrioCircleIdentif::apply - Triangle rejected because deltaMedLength (" << abs(lengths[iMed] - refLengths[iRefMed]) << " > " << p.medLengthTolerance << ")" ;
                         continue;
                     }
 
                     if( abs(lengths[iMin] - refLengths[iRefMin]) > p.minLengthTolerance )
                     {
-                        Log( DEBUG ) << "TrioCircleIdentif::apply - Triangle rejected because deltaMinLength (" << abs(lengths[iMin] - refLengths[iRefMin]) << " > " << p.minLengthTolerance << ")" ;
+//                        Log( DEBUG ) << "TrioCircleIdentif::apply - Triangle rejected because deltaMinLength (" << abs(lengths[iMin] - refLengths[iRefMin]) << " > " << p.minLengthTolerance << ")" ;
                         continue;
                     }
 

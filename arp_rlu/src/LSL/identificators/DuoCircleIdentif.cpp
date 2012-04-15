@@ -88,7 +88,7 @@ std::vector< std::pair< std::pair<DetectedCircle, DetectedCircle>, std::pair<Cir
                 double length = sqrt( vect[0]*vect[0] + vect[1]*vect[1] );
                 if( abs(length - refLength) > p.lengthTolerance )
                 {
-                    Log( DEBUG ) << "DuoCircleIdentif::apply - Segment rejected because deltaLength (" << abs(length - refLength) << ") > p.lengthTolerance (" << p.lengthTolerance << ")";
+//                    Log( DEBUG ) << "DuoCircleIdentif::apply - Segment rejected because deltaLength (" << abs(length - refLength) << ") > p.lengthTolerance (" << p.lengthTolerance << ")";
                     continue;
                 }
 
@@ -112,7 +112,7 @@ std::vector< std::pair< std::pair<DetectedCircle, DetectedCircle>, std::pair<Cir
                 std::vector< std::pair<DetectedCircle, Circle> > sorted = SoloCircleIdentif::apply(dc, rc, soloParams);
                 if( sorted.size() != 2 )
                 {
-                    Log( DEBUG ) << "DuoCircleIdentif::apply - Segment rejected because it did not passed SoloCircleIdentif";
+//                    Log( DEBUG ) << "DuoCircleIdentif::apply - Segment rejected because it did not passed SoloCircleIdentif";
                     continue;
                 }
 

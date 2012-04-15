@@ -246,7 +246,7 @@ namespace arp_hml
         static const int F_CMD_HOC = 0x5B;
 
         ///configure homing : speed
-        static const int F_CMD_HOSP = 0x24 ;
+        static const int F_CMD_HOSP = 0x78 ;
 
         ///configure homing : speed
         static const int F_CMD_GOHOSEQ = 0x2F ;

@@ -73,8 +73,8 @@ namespace unittest_KFLocalizator_Static
 
         kfl::BeaconDetector::Params     procParams;
         procParams.mfp.width = 3;
-        procParams.pcp.minRange = 0.01 * Eigen::VectorXd::Ones(1);
-        procParams.pcp.maxRange = 10.0 * Eigen::VectorXd::Ones(1);
+        procParams.pcp.minRange = 0.01;
+        procParams.pcp.maxRange = 10.0;
         procParams.pcp.minTheta = -PI;
         procParams.pcp.maxTheta = PI;
         procParams.psp.rangeThres = 0.08;

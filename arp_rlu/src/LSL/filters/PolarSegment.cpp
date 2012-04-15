@@ -66,7 +66,8 @@ std::vector<DetectedObject> PolarSegment::apply(const LaserScan & raw, const Par
     MatrixXd rawCartesian = raw.getCartesianData();
     unsigned int index = 0;
     double deltaTheta = (rawPolar.block(2,1,1,raw.getSize()-1) - rawPolar.block(2,0,1,raw.getSize()-1)).minCoeff();
-    for(unsigned int i = 1 ; i < raw.getSize() ; i++)
+    unsigned int N = raw.getSize();
+    for(unsigned int i = 1 ; i < N ; i++)
     {
         if( abs(rawPolar(1,i) - rawPolar(1,i-1)) > p.rangeThres || rawPolar(2,i) - rawPolar(2,i-1) > 1.5*deltaTheta )
         {
@@ -81,7 +82,7 @@ std::vector<DetectedObject> PolarSegment::apply(const LaserScan & raw, const Par
         }
     }
     LaserScan ls;
-    ls.setPolarData( rawPolar.block(0, index, 3, raw.getSize()-index) );
+    ls.setPolarData( rawPolar.block(0, index, 3, N-index) );
     if(b)
     {
         ls.computeCartesianData( rawCartesian.row(0), rawCartesian.row(3), rawCartesian.row(4), rawCartesian.row(5) );

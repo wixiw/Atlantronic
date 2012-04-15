@@ -106,7 +106,6 @@ then
 	--exclude ".hg" \
 	--exclude ".tb_history"\
 	--exclude "*.log"\
-	--exclude "src"\
 	--exclude "reports.dat"\
 	--exclude "doc"
 
@@ -125,7 +124,6 @@ else
 		--exclude ".hg"\
 		--exclude ".tb_history"\
 		--exclude "*.log" \
-		--exclude "src"\
 		--exclude "doc"
 	else
 		echo -e $ROUGE "Please provide an ard package name or the ard stack name." -e $NORMAL

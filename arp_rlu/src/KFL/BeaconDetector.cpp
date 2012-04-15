@@ -31,8 +31,8 @@ BeaconDetector::Params::Params()
 {
     mfp.width = 0;
 
-    pcp.minRange = 0.01 * VectorXd::Ones(1);
-    pcp.maxRange = 10.0 * VectorXd::Ones(1);
+    pcp.minRange = 0.01;
+    pcp.maxRange = 10.0;
     pcp.minTheta = -PI;
     pcp.maxTheta = PI;
 
@@ -124,12 +124,15 @@ BeaconDetector::~BeaconDetector()
 
 bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::VectorXd xx, Eigen::VectorXd yy, Eigen::VectorXd hh)
 {
+    globalTimer.Start();
+
     // Clear last result
     foundBeacons.clear();
 
     if(ls.getSize() == 0)
     {
         Log( NOTICE ) << "BeaconDetector::process" << " - " << "Scan is empty => return false";
+        globalTimer.Stop();
         return false;
     }
 
@@ -137,20 +140,31 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
 
     //*****************************
     // Median filtering
+    mfTimer.Start();
     LaserScan scan_0 = MedianFilter::apply(ls, params.mfp);
+    mfTimer.Stop();
 //    export_json( scan_0, "./BeaconDetector__process__scan_0.json" );
 
     //*****************************
     // Polar croping
+    pcTimer.Start();
     LaserScan scan_1 = PolarCrop::apply(scan_0, params.pcp);
+    pcTimer.Stop();
+    clTimer.Start();
     scan_1.cleanUp();
+    clTimer.Stop();
+    cartTimer.Start();
     scan_1.computeCartesianData(tt, xx, yy, hh);
+    cartTimer.Stop();
+//    pcTimer.Stop();
 //    export_json( scan_1, "./BeaconDetector__process__scan_1.json" );
 
 
     //*****************************
     // Segmentation
+    psTimer.Start();
     std::vector<DetectedObject> rawDObj = PolarSegment::apply( scan_1, params.psp);
+    psTimer.Stop();
 
 //    for(unsigned int i = 0 ; i < rawDObj.size() ; i++)
 //    {
@@ -160,7 +174,11 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
 //    }
 
     //*****************************
-    // Filtering on candidates : do not considere too small DetectedObject and DetectedObject touching borders of initial scan
+    // Filtering on candidates : do not consider :
+    // * too small DetectedObject
+    // * DetectedObject touching borders of initial scan
+    // * TODO : DetectedObject out of enlarged table
+    fiTimer.Start();
     detectedObjects.clear();
     for(unsigned int i = 0 ; i < rawDObj.size() ; i++)
     {
@@ -177,8 +195,8 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
             continue;
         }
         detectedObjects.push_back( rawDObj[i] );
-
     }
+    fiTimer.Stop();
 
 //    for(unsigned int i = 0 ; i < dObj.size() ; i++)
 //    {
@@ -190,11 +208,14 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
 
     //*****************************
     // Interpretation as Circle
+    ciTimer.Start();
     detectedCircles = CircleIdentif::apply(detectedObjects, params.cip);
+    ciTimer.Stop();
 
     if(referencedBeacons.size() < 3)
     {
         Log( ERROR ) << "BeaconDetector::process - Less than 3 beacons registered (actually "<< referencedBeacons.size() << ") => return false";
+        globalTimer.Stop();
         return false;
     }
 
@@ -202,6 +223,7 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
 
     //*****************************
     // Find Triangle
+    tcTimer.Start();
     std::vector< std::vector<Circle> > vrc;
     vrc.push_back(referencedBeacons);
     std::vector< std::pair< std::vector<DetectedCircle>, std::vector<Circle> > > triangle;
@@ -221,12 +243,16 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
         foundBeacons.push_back( std::make_pair( triangle[0].first[iSecond], triangle[0].second[iSecond] ) );
         foundBeacons.push_back( std::make_pair( triangle[0].first[iThird],  triangle[0].second[iThird] ) );
         Log( DEBUG ) << "BeaconDetector::process - Triangle detected";
+        tcTimer.Stop();
+        globalTimer.Stop();
         return true;
     }
     Log( DEBUG ) << "BeaconDetector::process - Triangle detection failed => try segment detection...";
+    tcTimer.Stop();
 
     //*****************************
     // Find Segment
+    dcTimer.Start();
     std::vector< std::pair<Circle,Circle> > refSegments;
     refSegments.push_back( std::make_pair( referencedBeacons[1], referencedBeacons[2] ) );
     refSegments.push_back( std::make_pair( referencedBeacons[0], referencedBeacons[2] ) );
@@ -249,9 +275,14 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
             foundBeacons.push_back( std::make_pair(segments[0].first.first, segments[0].second.first ) );
         }
         Log( DEBUG ) << "BeaconDetector::process - Segment [ (" << foundBeacons[0].second.x() << "," << foundBeacons[0].second.y() << ") ; (" << foundBeacons[1].second.x() << "," << foundBeacons[1].second.y() << ") ] detected";
+        dcTimer.Stop();
+        globalTimer.Stop();
         return true;
     }
     Log( DEBUG ) << "BeaconDetector::process - Neither triangle nor segment has been detected :-(";
+
+    dcTimer.Stop();
+    globalTimer.Stop();
     return false;
 }
 
@@ -297,4 +328,61 @@ void BeaconDetector::setParams(kfl::BeaconDetector::Params p)
 {
     params = p;
     return;
+}
+
+
+std::string BeaconDetector::getPerformanceReport()
+{
+    std::stringstream info;
+    info << "============================================" << std::endl;
+    info << "BeaconDetector Performance Report (ms)" << std::endl;
+    info << "--------------------------------------------" << std::endl;
+    info << "  [*] Number of samples used : " << globalTimer.GetRawRefreshTime().size() << std::endl;
+    info << "  [*] Period          : mean=" << globalTimer.GetMeanRefreshTime()*1000.;
+    info << "  , stddev=" << sqrt(globalTimer.GetStdDevRefreshTime())*1000.;
+    info << "  , min=" << globalTimer.GetMinRefreshTime()*1000.;
+    info << "  , max=" << globalTimer.GetMaxRefreshTime()*1000. << std::endl;
+    info << "  [*] Global Duration : mean=" << globalTimer.GetMeanElapsedTime()*1000.;
+    info << "  , stddev=" << sqrt(globalTimer.GetStdDevElapsedTime())*1000.;
+    info << "  , min=" << globalTimer.GetMinElapsedTime()*1000.;
+    info << "  , max=" << globalTimer.GetMaxElapsedTime()*1000. << std::endl;
+    info << "--------------------------------------------" << std::endl;
+    info << "  [#] MedianFilter duration    : mean=" << mfTimer.GetMeanElapsedTime()*1000.;
+    info << "  , stddev=" << sqrt(mfTimer.GetStdDevElapsedTime())*1000.;
+    info << "  , min=" << mfTimer.GetMinElapsedTime()*1000.;
+    info << "  , max=" << mfTimer.GetMaxElapsedTime()*1000. << std::endl;
+    info << "  [#] PolarCrop duration       : mean=" << pcTimer.GetMeanElapsedTime()*1000.;
+    info << "  , stddev=" << sqrt(pcTimer.GetStdDevElapsedTime())*1000.;
+    info << "  , min=" << pcTimer.GetMinElapsedTime()*1000.;
+    info << "  , max=" << pcTimer.GetMaxElapsedTime()*1000.<< std::endl;
+    info << "  [#] CleanUp duration         : mean=" << clTimer.GetMeanElapsedTime()*1000.;
+    info << "  , stddev=" << sqrt(clTimer.GetStdDevElapsedTime())*1000.;
+    info << "  , min=" << clTimer.GetMinElapsedTime()*1000.;
+    info << "  , max=" << clTimer.GetMaxElapsedTime()*1000.<< std::endl;
+    info << "  [#] Cartesian Compute duration : mean=" << cartTimer.GetMeanElapsedTime()*1000.;
+    info << "  , stddev=" << sqrt(cartTimer.GetStdDevElapsedTime())*1000.;
+    info << "  , min=" << cartTimer.GetMinElapsedTime()*1000.;
+    info << "  , max=" << cartTimer.GetMaxElapsedTime()*1000.<< std::endl;
+    info << "  [#] PolarSegment duration    : mean=" << psTimer.GetMeanElapsedTime()*1000.;
+    info << "  , stddev=" << sqrt(psTimer.GetStdDevElapsedTime())*1000.;
+    info << "  , min=" << psTimer.GetMinElapsedTime()*1000.;
+    info << "  , max=" << psTimer.GetMaxElapsedTime()*1000.<< std::endl;
+    info << "  [#] Filtering duration       : mean=" << fiTimer.GetMeanElapsedTime()*1000.;
+    info << "  , stddev=" << sqrt(fiTimer.GetStdDevElapsedTime())*1000.;
+    info << "  , min=" << fiTimer.GetMinElapsedTime()*1000.;
+    info << "  , max=" << fiTimer.GetMaxElapsedTime()*1000.<< std::endl;
+    info << "  [#] CircleIdentif duration   : mean=" << ciTimer.GetMeanElapsedTime()*1000.;
+    info << "  , stddev=" << sqrt(ciTimer.GetStdDevElapsedTime())*1000.;
+    info << "  , min=" << ciTimer.GetMinElapsedTime()*1000.;
+    info << "  , max=" << ciTimer.GetMaxElapsedTime()*1000.<< std::endl;
+    info << "  [#] Triangle Detect duration : mean=" << tcTimer.GetMeanElapsedTime()*1000.;
+    info << "  , stddev=" << sqrt(tcTimer.GetStdDevElapsedTime())*1000.;
+    info << "  , min=" << tcTimer.GetMinElapsedTime()*1000.;
+    info << "  , max=" << tcTimer.GetMaxElapsedTime()*1000.<< std::endl;
+    info << "  [#] Segment Detect duration : mean=" << dcTimer.GetMeanElapsedTime()*1000.;
+    info << "  , stddev=" << sqrt(dcTimer.GetStdDevElapsedTime())*1000.;
+    info << "  , min=" << dcTimer.GetMinElapsedTime()*1000.;
+    info << "  , max=" << dcTimer.GetMaxElapsedTime()*1000.<< std::endl;
+    info << "============================================" << std::endl;
+    return info.str();
 }
