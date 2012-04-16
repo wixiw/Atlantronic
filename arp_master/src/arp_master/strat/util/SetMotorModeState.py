@@ -17,7 +17,6 @@ class SetSteeringMotorModeState(CyclicState):
     
     def executeIn(self):
         self.result = self.setSteeringMotorMode(self.mode)
-        rospy.loginfo("A CODER !!")
     
     def executeTransitions(self):
         if self.result == True:
@@ -33,7 +32,6 @@ class SetDrivingMotorModeState(CyclicState):
     
     def executeIn(self):
         self.result = self.setDrivingMotorMode(self.mode)
-        rospy.loginfo("A CODER !!")
     
     def executeTransitions(self):
         if self.result == True:

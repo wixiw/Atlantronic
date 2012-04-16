@@ -31,14 +31,22 @@ class AmbiPoseRed:
             self.x=x
             self.y=y
             self.theta=theta
-        if color=='blue':
+        elif color=='purple':
             self.x=-x
             self.y=y
             self.theta=normalizeAngle(pi-theta)
+        else:
+            self.x=0
+            self.y=0
+            self.theta=0
+            rospy.loginfo("AmbiPoseRed : default case : color not defined !!")
             
 class AmbiCapRed:
     def __init__(self,angle,color):
         if color=='red':
             self.angle=angle
-        if color=='blue':
-            self.angle=normalizeAngle(pi-angle)  
+        elif color=='purple':
+                self.angle=normalizeAngle(pi-angle)  
+        else:
+            self.angle=0
+            rospy.loginfo("AmbiCapRed : default case : color not defined !!")
