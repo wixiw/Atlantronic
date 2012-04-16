@@ -221,7 +221,7 @@ bool ARDTaskContext::loadStateMachines()
     return res;
 }
 
-bool ARDTaskContext::coLog(LoggerLevel level, string s)
+void ARDTaskContext::coLog(LoggerLevel level, string s)
 {
 	LOG(level) << s << endlog();
 }

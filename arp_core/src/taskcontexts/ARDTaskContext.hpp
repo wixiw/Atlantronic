@@ -11,8 +11,7 @@
 #include <iostream>
 #include <fstream>
 
-//TODO WLA a remettre plus tard, bug Orocos
-//#include <rtt/typekit/Types.hpp>
+#include <rtt/typekit/Types.hpp>
 #include <rtt/RTT.hpp>
 #include <rtt/scripting/Scripting.hpp>
 #include <rtt/marsh/Marshalling.hpp>
@@ -188,7 +187,7 @@ namespace arp_core
         virtual bool loadStateMachines();
 
         /** Permet de logger en script */
-        bool coLog(RTT::LoggerLevel level, std::string s);
+        void coLog(RTT::LoggerLevel level, std::string s);
 
 
     };

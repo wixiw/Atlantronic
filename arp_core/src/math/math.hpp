@@ -36,7 +36,6 @@ namespace arp_math
 
     /**
      * Return any angle in -pi +pi
-     * TODO faire les tests unitaires !!!!!!!!!
      */
 
     double betweenMinusPiAndPlusPi( double angle);

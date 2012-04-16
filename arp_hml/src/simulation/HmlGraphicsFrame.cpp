@@ -27,7 +27,7 @@ HmlGraphicsFrame::HmlGraphicsFrame():
           wxSize(length_in_pixel, width_in_pixel),
           wxDEFAULT_FRAME_STYLE)
 {
-	m_color.color = "red";
+	m_color.color = "purple";
 	m_start.go = true;
 	m_obstacle.detected = false;
 	m_rearObstacle.data = false;

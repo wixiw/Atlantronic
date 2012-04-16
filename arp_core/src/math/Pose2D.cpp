@@ -21,7 +21,7 @@ Pose2D::Pose2D(double _x, double _y, double _h)
 : positionTranslation(Vector2(_x, _y))
 , positionRotation(Rotation2(_h))
 {
-    ;
+    int truc;
 }
 
 

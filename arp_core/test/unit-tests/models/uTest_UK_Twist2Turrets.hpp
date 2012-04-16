@@ -64,7 +64,6 @@ BOOST_AUTO_TEST_CASE( UK_Twist2Turrets_InverseModel )
     arp_math::Twist2D twist(7.3,0,0);
     arp_math::Twist2D twistZero;
     arp_model::TurretState turretCmd;
-    arp_model::SlippageReport splippage;
     bool res;
 
     res = arp_model::UbiquityKinematics::twist2Turrets(twist, turretCmd, params);
