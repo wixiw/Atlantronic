@@ -107,11 +107,11 @@ class Move2(CyclicActionState):
 
 class Move3(CyclicActionState):
     def createAction(self):
-        self.omnidirect_cpoint(0.5,0,0,0.5,0,0)   
+        self.omnidirect_cpoint(0.3,0,0,0,-0.4,0)   
 
 class Move4(CyclicActionState):
     def createAction(self):
-        self.omnidirect_cpoint(0.5,0,0,0.5,0,pi/2)   
+        self.omnidirect_cpoint(0.3,0,0,0,-0.4,pi/2)   
         
 ########################## EXECUTABLE 
 #shall be always at the end ! so that every function is defined before

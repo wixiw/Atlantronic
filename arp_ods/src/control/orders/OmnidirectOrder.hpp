@@ -46,6 +46,11 @@ class OmnidirectOrder: public MotionOrder
          */
         virtual arp_math::Twist2D computeSpeed(arp_math::Pose2D currentPosition, double dt);
 
+        /*
+         * returns the error on position between actual an objective,  in table referential
+         */
+        arp_math::Pose2D getPositionError(arp_math::Pose2D currentPosition);
+
     protected:
         double DECLIN;
         double DECROT;

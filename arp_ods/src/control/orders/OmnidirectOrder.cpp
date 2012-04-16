@@ -56,7 +56,7 @@ shared_ptr<MotionOrder> OmnidirectOrder::createOrder( const OrderGoalConstPtr &g
     cpoint.x(goal->x_cpoint);
     cpoint.y(goal->y_cpoint);
     cpoint.h(goal->theta_cpoint);
-    order->setCpoint(end);
+    order->setCpoint(cpoint);
 
     end.x(goal->x_des);
     end.y(goal->y_des);
@@ -85,8 +85,10 @@ void OmnidirectOrder::switchRun(arp_math::Pose2D currentPosition)
         }
     }
 
-    double distance_error = getRemainingDistance(currentPosition);
-    double angle_error = getRemainingAngle(currentPosition);
+    //position error in table referential
+    Pose2D deltaPos_refTable=getPositionError(currentPosition);
+    double distance_error = deltaPos_refTable.vectNorm();
+    double angle_error = deltaPos_refTable.h();
 
     if (distance_error < m_distanceAccuracy && fabs(angle_error) < m_angleAccuracy)
     {
@@ -102,23 +104,29 @@ void OmnidirectOrder::switchRun(arp_math::Pose2D currentPosition)
 
 }
 
+Pose2D OmnidirectOrder::getPositionError(arp_math::Pose2D currentPosition)
+{
+    Rotation2 orient_robot(currentPosition.h());
+
+    //position of the control point on the table
+    Pose2D current_cpoint_position;
+    current_cpoint_position.translation( currentPosition.translation() + orient_robot.toRotationMatrix()*m_cpoint.translation());
+    current_cpoint_position.orientation( betweenMinusPiAndPlusPi(currentPosition.h()+m_cpoint.h()) );
+
+    //position error
+    Pose2D deltaPos_refTable=m_endPose-current_cpoint_position;
+
+    return deltaPos_refTable;
+
+}
 
 
 Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double dt)
 {
     Rotation2 orient_robot(currentPosition.h());
 
-    /* NE FONCTIONNE PAS. LE CALCUL EST SUREMENT FAUX
-    //position of the control point on the table
-    Pose2D current_cpoint_position;
-    current_cpoint_position.translation( currentPosition.translation() + orient_robot.toRotationMatrix()*m_cpoint.translation());
-    current_cpoint_position.orientation( betweenMinusPiAndPlusPi(currentPosition.h()+m_cpoint.h()) );
-     */
-
-    //position error
-
-    //Pose2D deltaPos_refTable=m_endPose-current_cpoint_position;
-    Pose2D deltaPos_refTable=m_endPose-currentPosition;
+    //position error in table referential
+    Pose2D deltaPos_refTable=getPositionError(currentPosition);
 
     //position error in robot referential
     Pose2D deltaPos_refRobot;
@@ -126,11 +134,16 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
     deltaPos_refRobot.orientation( betweenMinusPiAndPlusPi(deltaPos_refTable.h()) );
 
     // brutal correction twist. with constant acceleration   v = sqrt ( 2 . acc) . sqrt( d )
-    Twist2D v_correction;
+    Twist2D v_correction_cpoint;
     double speedcorrection=sqrt2(2*DECLIN)*sqrt2(deltaPos_refRobot.vectNorm());
-    v_correction.vx(speedcorrection*std::cos(deltaPos_refRobot.vectAngle()));
-    v_correction.vy(speedcorrection*std::sin(deltaPos_refRobot.vectAngle()));
-    v_correction.vh(sqrt2(2*DECROT)*sqrt2(deltaPos_refRobot.h()));
+    v_correction_cpoint.vx(speedcorrection*std::cos(deltaPos_refRobot.vectAngle()));
+    v_correction_cpoint.vy(speedcorrection*std::sin(deltaPos_refRobot.vectAngle()));
+    v_correction_cpoint.vh(sqrt2(2*DECROT)*sqrt2(deltaPos_refRobot.h()));
+
+    //transfer of the twist to robot referential
+    Twist2D v_correction_ref;
+    Pose2D ref_cpoint(-m_cpoint.x(),-m_cpoint.y(),0);
+    v_correction_ref=v_correction_cpoint.transport(ref_cpoint);
 
     //saturation of twist: limit max linear speed/acc;  and max rotation speed/acc
     Twist2D v_correction_saturated;
@@ -138,12 +151,20 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
     double vmaxrot=std::min(VMAXROT,std::fabs(m_v_correction_old.vh())+dt*DECROT);
     //double vmaxlin=std::min(VMAXLIN,100.0);
     //double vmaxrot=std::min(VMAXROT,100.0);
-    double satvlin=v_correction.speedNorm()/vmaxlin;
-    double satvrot=std::fabs(v_correction.vh())/vmaxrot;
+    double satvlin=v_correction_ref.speedNorm()/vmaxlin;
+    double satvrot=std::fabs(v_correction_ref.vh())/vmaxrot;
     double sat=std::max(satvlin,std::max( satvrot,1.0));
-    v_correction_saturated = v_correction * (1/sat);
+    v_correction_saturated = v_correction_ref * (1/sat);
 
     m_v_correction_old=v_correction_saturated;
+
+    Log(INFO) << " -------------------------";
+    Log(INFO) << " deltaPos_refTable=" << deltaPos_refTable.toString();
+    Log(INFO) << " deltaPos_refRobot=" << deltaPos_refRobot.toString();
+    Log(INFO) << " v_correction_cpoint=" << v_correction_cpoint.toString();
+    Log(INFO) << " v_correction_ref=" << v_correction_ref.toString();
+    Log(INFO) << " v_correction_saturated=" << v_correction_saturated.toString();
+
 
     return v_correction_saturated;
 
