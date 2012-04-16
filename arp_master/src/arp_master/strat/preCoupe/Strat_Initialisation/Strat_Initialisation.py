@@ -21,9 +21,11 @@ class Initialisation(smach.StateMachine):
         with self:
             smach.StateMachine.add('Init', Init(),
                                    transitions={'initstateok':'WaitForOrocos'})
-            smach.StateMachine.add('WaitForOrocos', WaitForOrocos(),
+            smach.StateMachine.add('WaitForOrocos', 
+                                   WaitForOrocos(),
                                    transitions={'deployed':'WaitForStart'})
-            smach.StateMachine.add('WaitForStart', WaitForStart(),
+            smach.StateMachine.add('WaitForStart', 
+                                   WaitForStart(),
                                    transitions={'start':'endInitialisation'})
     
     
