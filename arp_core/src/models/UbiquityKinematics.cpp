@@ -84,9 +84,9 @@ bool UbiquityKinematics::turrets2Motors(const TurretState & iTSbrut,
     iTS.driving = deltaCmd.driving;
 
     //ajout a la position brute du moteur le delta de commande, et paf ca fait la consigne a envoyer au prochain step
-    oMS.steering.left.position = iMS.steering.left.position + deltaCmd.steering.left.position/iParams.getTurretRatio() + iParams.getLeftTurretZero();
-    oMS.steering.right.position = iMS.steering.right.position + deltaCmd.steering.right.position/iParams.getTurretRatio() + iParams.getRightTurretZero();
-    oMS.steering.rear.position = iMS.steering.rear.position + deltaCmd.steering.rear.position/iParams.getTurretRatio() + iParams.getRearTurretZero();
+    oMS.steering.left.position = iMS.steering.left.position + deltaCmd.steering.left.position/iParams.getTurretRatio();
+    oMS.steering.right.position = iMS.steering.right.position + deltaCmd.steering.right.position/iParams.getTurretRatio();
+    oMS.steering.rear.position = iMS.steering.rear.position + deltaCmd.steering.rear.position/iParams.getTurretRatio();
 
     //mise a jour des vitesses de traction
     oMS.driving.left.velocity = (2*iTS.driving.left.velocity/iParams.getLeftWheelDiameter() - iMS.steering.left.velocity*iParams.getTurretRatio())
