@@ -13,12 +13,14 @@
 #include <boost/shared_ptr.hpp>
 #include <math/core>
 
+using namespace arp_math;
+
 namespace arp_ods{ namespace orders
 {
 
 enum OrderType
 {
-    NO_ORDER, STAY_IN_POSITION, TRANSLATE, ROTATE, FANTOM, OMNIDIRECT
+    NO_ORDER, STAY_IN_POSITION, TRANSLATE, ROTATE, FANTOM, OMNIDIRECT, OPENLOOP
 };
 
 
@@ -50,7 +52,7 @@ class MotionOrder: public ModeSelector
          * @param currentPosition : current Robot position
          * @param dt : time since last call
          */
-        virtual arp_math::Twist2D computeSpeed(arp_math::Pose2D currentPosition, double dt);
+        virtual Twist2D computeSpeed(Pose2D currentPosition, double dt);
 
         /**
          * Use this to filter begin, end and current point with m_reverse
@@ -58,7 +60,7 @@ class MotionOrder: public ModeSelector
          * In any case a normalization in [-PI;PI] is done so you should use this function in any case
          * @param p : pose to convert
          */
-        arp_math::Pose2D reversePosition(arp_math::Pose2D p);
+        Pose2D reversePosition(Pose2D p);
 
         /**
          * Factory to create an order with default parameters from the order
@@ -68,7 +70,7 @@ class MotionOrder: public ModeSelector
          * @param conf : automation parameters (gains)
          * @return : a MotionOrder to execute
          */
-        static boost::shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, arp_math::Pose2D currentPose, orders::config conf  );
+        static boost::shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, Pose2D currentPose, orders::config conf  );
 
         /**
          * Returns the type of the order
@@ -96,6 +98,10 @@ class MotionOrder: public ModeSelector
         OrderType m_type;
         /** reverse type of motion */
         bool m_reverse;
+        /** twist in case of openloop */
+        Twist2D m_openloop_twist;
+        /** duration of the command in case of openloop */
+        double m_openloop_duration;
         /** unique ID of the order */
         int m_id;
 

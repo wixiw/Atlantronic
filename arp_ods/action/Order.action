@@ -1,11 +1,15 @@
 #goal definition
-string move_type #could be: POINTCAP ; CAP
+string move_type
 float64 x_des
 float64 y_des
 float64 theta_des
 float64 x_cpoint
 float64 y_cpoint
 float64 theta_cpoint
+float64 x_speed
+float64 y_speed
+float64 theta_speed
+float64 openloop_duration
 bool reverse
 bool passe
 ---

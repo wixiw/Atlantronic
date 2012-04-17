@@ -13,6 +13,7 @@
 #include "ModeSelector.hpp"
 #include "MotionOrder.hpp"
 #include "OmnidirectOrder.hpp"
+#include "OpenloopOrder.hpp"
 
 using namespace boost;
 

@@ -96,10 +96,10 @@ class CyclicActionState(CyclicState):
              
     # generic motioncontrol action creator.
     def createMotionControlAction(self,x,y,theta,move_type,reverse,passe):
-        self.createMotionControlAction_cpoint(0,0,0,x,y,theta,move_type,reverse,passe)
+        self.createMotionControlAction_cpoint(0,0,0,x,y,theta,move_type,reverse,passe,0,0,0,0)
  
      # motioncontrol action creator with a control point
-    def createMotionControlAction_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x,y,theta,move_type,reverse,passe):
+    def createMotionControlAction_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x,y,theta,move_type,reverse,passe,x_speed,y_speed,theta_speed,openloop_duration):
         self.client = actionlib.SimpleActionClient('MotionControl', OrderAction)
         goal=OrderGoal()
         goal.x_des=x
@@ -111,6 +111,10 @@ class CyclicActionState(CyclicState):
         goal.move_type=move_type
         goal.reverse=reverse
         goal.passe=passe
+        goal.x_speed=x_speed
+        goal.y_speed=y_speed
+        goal.theta_speed=theta_speed
+        goal.openloop_duration=openloop_duration
         
         self.registerReplayOrder_cpoint(x_cpoint,y_cpoint,theta_cpoint,x,y,theta,move_type,reverse,passe)
             
@@ -145,10 +149,13 @@ class CyclicActionState(CyclicState):
         self.createMotionControlAction(x,y,theta,'OMNIDIRECT',False,False)
     
     def omnidirect_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x,y,theta):
-        self.createMotionControlAction_cpoint(x_cpoint,y_cpoint,theta_cpoint,x,y,theta,'OMNIDIRECT',False,False)    
+        self.createMotionControlAction_cpoint(x_cpoint,y_cpoint,theta_cpoint,x,y,theta,'OMNIDIRECT',False,False,0,0,0,0)    
         
     def omnicap(self,theta):
-        self.createMotionControlAction(Inputs.getx(),Inputs.gety(),theta,'OMNIDIRECT',False,False)
+        self.createMotionControlAction(Inputs.getx(),Inputs.gety(),theta,'OMNIDIRECT',False,False,0,0,0,0)
+        
+    def openloop_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x_speed,y_speed,theta_speed,openloop_duration):
+        self.createMotionControlAction_cpoint(x_cpoint,y_cpoint,theta_cpoint,0,0,0,'OPENLOOP',False,False,x_speed,y_speed,theta_speed,openloop_duration)
         
     #these are functions linked to the replay
     def registerReplayOrder_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x,y,theta,move_type,reverse,passe):

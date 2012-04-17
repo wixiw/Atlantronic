@@ -94,6 +94,14 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
                 goal->theta_des, goal->reverse, goal->passe);
         LOG(Info) << string << endlog();
     }
+    else if (goal->move_type == "OPENLOOP")
+    {
+        inPose.readNewest(pose);
+        m_order = OpenloopOrder::createOrder(goal, pose, propOrderConfig);
+        sprintf( string, "new Openloop goal Twist:(%0.3f,%0.3f,%0.3f) time : %0.3f ", goal->x_speed, goal->y_speed,
+                goal->theta_speed, goal->openloop_duration);
+        LOG(Info) << string << endlog();
+    }
     else
     {
         LOG(Error) << "order " << goal->move_type.c_str() << "is not possible" << endlog();
