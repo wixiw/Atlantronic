@@ -158,12 +158,16 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
 
     m_v_correction_old=v_correction_saturated;
 
-    Log(INFO) << " -------------------------";
-    Log(INFO) << " deltaPos_refTable=" << deltaPos_refTable.toString();
-    Log(INFO) << " deltaPos_refRobot=" << deltaPos_refRobot.toString();
-    Log(INFO) << " v_correction_cpoint=" << v_correction_cpoint.toString();
-    Log(INFO) << " v_correction_ref=" << v_correction_ref.toString();
-    Log(INFO) << " v_correction_saturated=" << v_correction_saturated.toString();
+    //TODO WLA to RMO : mets des attributs Orocos si tu as besoin de voir des choses ^ ^
+    // de toutes façons tu fais des variables locales à chaque cycle, autant en faire des variables membres
+    // et une fois membre ça coute rien d'ajouter le addAttribute qui va bien pour le voir dans Orocos sans pourrir les logs.
+    // Les logs sont là pour des événements par pour du continu.
+    //Log(INFO) << " -------------------------";
+    //Log(INFO) << " deltaPos_refTable=" << deltaPos_refTable.toString();
+    //Log(INFO) << " deltaPos_refRobot=" << deltaPos_refRobot.toString();
+    //Log(INFO) << " v_correction_cpoint=" << v_correction_cpoint.toString();
+    //Log(INFO) << " v_correction_ref=" << v_correction_ref.toString();
+    //Log(INFO) << " v_correction_saturated=" << v_correction_saturated.toString();
 
 
     return v_correction_saturated;
