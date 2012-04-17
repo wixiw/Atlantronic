@@ -33,17 +33,16 @@ RosOdsItf::RosOdsItf(std::string const name):
     propOrderConfig.ANGLE_ACCURACY = 0.018;//1°
     propOrderConfig.DISTANCE_ACCURACY = 0.010;//20mm
 
-    propOrderConfig.LIN_VEL_MAX = 0.5; //1m/s
-    propOrderConfig.ANG_VEL_MAX = 1; //3 rad/s
-    propOrderConfig.VEL_FINAL = 0.150;//300mm/s
+    propOrderConfig.LIN_VEL_MAX = 0.5;
+    propOrderConfig.ANG_VEL_MAX = 1.0;
+    propOrderConfig.VEL_FINAL = 0.150;
 
-    propOrderConfig.ORDER_TIMEOUT = 10; //5s
-    propOrderConfig.PASS_TIMEOUT = 1; //1s
+    propOrderConfig.ORDER_TIMEOUT = 10.0;
+    propOrderConfig.PASS_TIMEOUT = 1.0;
 
-    propOrderConfig.FANTOM_COEF = 1;
-    propOrderConfig.ROTATION_D_GAIN = 0;
-    propOrderConfig.ROTATION_GAIN = 1;
-    propOrderConfig.TRANSLATION_GAIN = 1;
+    propOrderConfig.LIN_DEC=1.0;
+    propOrderConfig.ANG_DEC=2.0;
+
 }
 
 bool RosOdsItf::configureHook()
@@ -86,22 +85,8 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
 
     //TODO a remplacer par une factory plus efficace
     char string[250];
-    if (goal->move_type == "POINTCAP")
-    {
-        inPose.readNewest(pose);
-        m_order = FantomOrder::createOrder(goal, pose, propOrderConfig);
-        sprintf( string, "new Fantom goal (%0.3f,%0.3f,%0.3f) reverse : %d pass %d", goal->x_des, goal->y_des,
-                goal->theta_des, goal->reverse, goal->passe);
-        LOG(Info) << string << endlog();
-    }
-    else if (goal->move_type == "CAP")
-    {
-        inPose.readNewest(pose);
-        m_order = RotationOrder::createOrder(goal, pose, propOrderConfig);
-        sprintf( string, "RosOdsItf : new Rotation goal (cap=%0.3f)", goal->theta_des);
-        LOG(Info) << string << endlog();
-    }
-    else if (goal->move_type == "OMNIDIRECT")
+
+    if (goal->move_type == "OMNIDIRECT")
     {
         inPose.readNewest(pose);
         m_order = OmnidirectOrder::createOrder(goal, pose, propOrderConfig);

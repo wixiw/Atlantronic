@@ -35,15 +35,29 @@ enum mode
         /** Order timeout*/
         double ORDER_TIMEOUT;
 
-        /**Constantes issues des rosparam*/
-         double FANTOM_COEF;
+        /**
+         * final velocity
+         */
          double VEL_FINAL;
-         double ROTATION_GAIN;
-         double ROTATION_D_GAIN;
-         double TRANSLATION_GAIN;
 
+         /*
+          * maximum linear speed
+          */
          double LIN_VEL_MAX;
+         /*
+          * maximum angular speed
+          */
          double ANG_VEL_MAX;
+
+         /*
+          * linear deceleration (for point approach) in m/s2
+          */
+         double LIN_DEC;
+         /*
+          * angular deceleration (for point approach) in rad/s2
+          */
+         double ANG_DEC;
+
     };
 
 
@@ -59,9 +73,9 @@ class ModeSelector
         ModeSelector();
 
         /**
-         * Define configurable attributes to their default values
+         * Define configurable attributes
          */
-        virtual void setDefaults(arp_ods::orders::config conf);
+        virtual void setConf(arp_ods::orders::config conf);
 
         /**
          * Call this function every cycle to check if a new mode is available.
@@ -71,7 +85,7 @@ class ModeSelector
 
         /**
          * Switch the mode back to MODE_INIT
-         * be carefull when doing this.
+         * be careful when doing this.
          */
         void resetMode();
 
@@ -122,26 +136,17 @@ class ModeSelector
          */
         mode getMode() const;
 
-        double getRadiusApproachZone() const;
-        double getRadiusInitZone() const;
-        double getAngleAccuracy() const;
-        double getDistanceAccurancy() const;
+
 
         /**
          * Define the pass mode
          */
         void setPass(bool pass);
 
-        void setRadiusApproachZone(double m_radiusApproachZone);
-        void setRadiusInitZone(double m_radiusInitZone);
-
-        void setAngleAccuracy(double m_angleAccuracy);
-        void setDistanceAccurancy(double m_distanceAccurancy);
         void setBeginPose(arp_math::Pose2D beginPose);
         void setEndPose(arp_math::Pose2D endPose);
         void setCpoint(arp_math::Pose2D cpoint);
-        void setPassTimeout(double timeout);
-        void setOrderTimeout(double timeout);
+
 
     protected:
         /** Pose of the expected begin of the move */
@@ -159,17 +164,8 @@ class ModeSelector
         /** mode of operation*/
         mode m_currentMode;
 
-        /** This parameter defines the INIT mode area in m*/
-        double m_radiusInitZone;
-
-        /** This parameter defines the APPROACH mode area in m*/
-        double m_radiusApproachZone;
-
-        /** This parameter defines the condition in distance to end motion in m*/
-        double m_distanceAccuracy;
-
-        /** This parameter defines the condition in angle to end motion in rad*/
-        double m_angleAccuracy;
+        /** configuration */
+        config m_conf;
 
         /** Date at which we entered the PASS mode */
         double m_passTime;
@@ -177,11 +173,6 @@ class ModeSelector
         /** Date at which we entered the INIT mode **/
         double m_initTime;
 
-        /** Pass timeout */
-        double m_passTimeout;
-
-        /** order timeout */
-        double m_orderTimeout;
 
         /**
          * This function is called by switchMode when m_currentMode==MODE_INIT

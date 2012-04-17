@@ -32,11 +32,6 @@ class OmnidirectOrder: public MotionOrder
         OmnidirectOrder(MotionOrder);
 
         /**
-         * Define configurable attributes to their default values
-         */
-        virtual void setDefaults(orders::config conf);
-
-        /**
          * Override to define specific parameters
          */
         static shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, arp_math::Pose2D currentPose, orders::config conf  );
@@ -52,10 +47,6 @@ class OmnidirectOrder: public MotionOrder
         arp_math::Pose2D getPositionError(arp_math::Pose2D currentPosition);
 
     protected:
-        double DECLIN;
-        double DECROT;
-        double VMAXLIN;
-        double VMAXROT;
 
         /*
          * twist of precedent turn

@@ -12,9 +12,6 @@
 
 #include "ModeSelector.hpp"
 #include "MotionOrder.hpp"
-#include "StayInPosition.hpp"
-#include "FantomOrder.hpp"
-#include "RotationOrder.hpp"
 #include "OmnidirectOrder.hpp"
 
 using namespace boost;

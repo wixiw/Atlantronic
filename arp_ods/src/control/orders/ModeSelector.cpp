@@ -54,12 +54,21 @@ ModeSelector::ModeSelector()
     m_passTime = 0;
     // -1 is used to recognize non initialized time
     m_initTime = -1;
-    m_angleAccuracy = -1;
-    m_distanceAccuracy = -1;
-    m_radiusInitZone = -1;
-    m_radiusApproachZone = -1;
-    m_passTimeout = -1;
-    m_orderTimeout = -1;
+
+    //conf
+    m_conf.ANGLE_ACCURACY = -1.0;
+    m_conf.DISTANCE_ACCURACY = -1.0;
+    m_conf.RADIUS_APPROACH_ZONE = -1.0;
+    m_conf.DISTANCE_ACCURACY = -1.0;
+    m_conf.ANGLE_ACCURACY = -1.0;
+    m_conf.PASS_TIMEOUT = -1.0;
+    m_conf.ORDER_TIMEOUT = -1.0;
+    m_conf.VEL_FINAL = -1.0;
+    m_conf.LIN_VEL_MAX = -1.0;
+    m_conf.ANG_VEL_MAX = -1.0;
+    m_conf.LIN_DEC = -1.0;
+    m_conf.ANG_DEC = -1.0;
+
 }
 
 void ModeSelector::resetMode()
@@ -67,13 +76,9 @@ void ModeSelector::resetMode()
     m_currentMode = MODE_INIT;
 }
 
-void ModeSelector::setDefaults(config conf)
+void ModeSelector::setConf(config conf)
 {
-    m_angleAccuracy = conf.ANGLE_ACCURACY;
-    m_distanceAccuracy = conf.DISTANCE_ACCURACY;
-    m_radiusApproachZone = conf.RADIUS_APPROACH_ZONE;
-    m_passTimeout = conf.PASS_TIMEOUT;
-    m_orderTimeout = conf.ORDER_TIMEOUT;
+    m_conf=conf;
 }
 
 void ModeSelector::switchInit(arp_math::Pose2D currentPosition)
@@ -86,7 +91,7 @@ void ModeSelector::switchInit(arp_math::Pose2D currentPosition)
 
 void ModeSelector::switchRun(arp_math::Pose2D currentPosition)
 {
-    if (getRemainingDistance(currentPosition) <= getRadiusApproachZone())
+    if (getRemainingDistance(currentPosition) <= m_conf.RADIUS_APPROACH_ZONE)
     {
         if (getPass())
         {
@@ -110,7 +115,7 @@ void ModeSelector::switchApproach(arp_math::Pose2D currentPosition)
     double distance_error = getRemainingDistance(currentPosition);
     double angle_error = getRemainingAngle(currentPosition);
 
-    if (distance_error < m_distanceAccuracy && fabs(angle_error) < m_angleAccuracy)
+    if (distance_error < m_conf.DISTANCE_ACCURACY && fabs(angle_error) < m_conf.ANGLE_ACCURACY)
     {
         Log(INFO) << "switched MODE_APPROACH --> MODE_DONE";
         char string [250];
@@ -138,7 +143,7 @@ void ModeSelector::switchPass(arp_math::Pose2D currentPosition)
 {
     double t = getTime();
     double dt = t - m_passTime;
-    if (dt < 0 || dt > m_passTimeout)
+    if (dt < 0 || dt > m_conf.PASS_TIMEOUT)
     {
         Log(INFO) << "switched MODE_PASS --> MODE_DONE because of dt= "<< dt;
         m_currentMode = MODE_DONE;
@@ -181,7 +186,6 @@ double ModeSelector::getRemainingDistance(arp_math::Pose2D currentPosition)
 double ModeSelector::getRemainingAngle(arp_math::Pose2D currentPosition)
 {
     double e_theta = currentPosition.angleTo(m_endPose);
-    //Log(DEBUG) << "e_theta "<< e_theta;
     return e_theta;
 }
 
@@ -215,49 +219,9 @@ mode ModeSelector::getMode() const
     return m_currentMode;
 }
 
-double ModeSelector::getRadiusApproachZone() const
-{
-    return m_radiusApproachZone;
-}
-
-double ModeSelector::getAngleAccuracy() const
-{
-    return m_angleAccuracy;
-}
-
-double ModeSelector::getDistanceAccurancy() const
-{
-    return m_distanceAccuracy;
-}
-
 void ModeSelector::setPass(bool pass)
 {
     m_pass = pass;
-}
-
-void ModeSelector::setPassTimeout(double timeout)
-{
-    m_passTimeout = timeout;
-}
-
-void ModeSelector::setOrderTimeout(double timeout)
-{
-    m_orderTimeout = timeout;
-}
-
-void ModeSelector::setRadiusApproachZone(double m_radiusApproachZone)
-{
-    this->m_radiusApproachZone = m_radiusApproachZone;
-}
-
-void ModeSelector::setAngleAccuracy(double m_angleAccuracy)
-{
-    this->m_angleAccuracy = m_angleAccuracy;
-}
-
-void ModeSelector::setDistanceAccurancy(double m_distanceAccurancy)
-{
-    this->m_distanceAccuracy = m_distanceAccurancy;
 }
 
 void ModeSelector::setBeginPose(Pose2D beginPose)
@@ -284,7 +248,7 @@ void ModeSelector::testTimeout()
     double t = getTime();
     double dt = t - m_initTime;
 
-    if (m_initTime != -1 and dt > m_orderTimeout)
+    if (m_initTime != -1 and dt > m_conf.ORDER_TIMEOUT)
     {
         Log(INFO) << "switched from " << getMode() << " to MODE_ERROR because of dt=" << dt;
         m_currentMode = MODE_ERROR;

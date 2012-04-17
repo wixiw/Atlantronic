@@ -26,10 +26,7 @@ MotionOrder::MotionOrder(const MotionOrder& order):
     m_pass = order.m_pass;
     m_beginPose = order.m_beginPose;
     m_endPose = order.m_endPose;
-    m_angleAccuracy = order.m_angleAccuracy;
-    m_distanceAccuracy = order.m_distanceAccuracy;
-    m_radiusApproachZone = order.m_radiusApproachZone;
-    m_radiusInitZone = order.m_radiusInitZone;
+    m_conf=order.m_conf;
     //m_id != m_id !!
 }
 
@@ -83,7 +80,7 @@ shared_ptr<MotionOrder> MotionOrder::createOrder( const OrderGoalConstPtr &goal,
     order->setReverse(goal->reverse);
     order->setPass(goal->passe);
 
-    order->setDefaults(conf);
+    order->setConf(conf);
 
     return order;
 }
@@ -119,6 +116,7 @@ std::string MotionOrder::getTypeString() const
             return "ORDER_UNKNOW";
             break;
     }
+    return "ERROR";
 }
 
 void MotionOrder::setReverse(bool reverse)
