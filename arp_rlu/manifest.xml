@@ -1,22 +1,21 @@
 <package>
-    <description brief="Orocos arp_rlu Component package">
-        This package contains the components of the arp_rlu package
-    </description>
-    <author>ARD, http://team-ard.com</author>
-    <license>BSD</license>
-    <url>http://88.191.124.77/redmine/projects/positionnnement/wiki</url>
-    <depend package="rtt" />
-    <depend package="arp_core" />
-    <depend package="rtt_arp_core" />
-    <depend package="arp_hml" />
-    <depend package="std_srvs" />
-    <depend package="std_msgs" />
-    <depend package="tf" />
-    <depend package="nav_msgs" />
-    <depend package="roscpp"/>
-    <depend package="roslib"/>
-    <depend package="sensor_msgs"/>
-    <depend package="geometry_msgs"/>
-    <depend package="bfl"/>
+	<description brief="Orocos arp_rlu Component package">This package contains the components of the arp_rlu package</description>
+	<author>ARD, http://team-ard.com</author>
+	<license>BSD</license>
+	<url>http://88.191.124.77/redmine/projects/positionnnement/wiki</url>
+	<depend package="rtt" />
+	<depend package="arp_core" />
+	<depend package="rtt_arp_core" />
+	<depend package="arp_hml" />
+	<depend package="std_srvs" />
+	<depend package="std_msgs" />
+	<depend package="tf" />
+	<depend package="nav_msgs" />
+	<depend package="roscpp"/>
+	<depend package="roslib"/>
+	<depend package="sensor_msgs"/>
+	<depend package="geometry_msgs"/>
+	<depend package="bfl"/>
+	<!--empeche le build local <rosdep name="eigen" />-->
 </package>
 

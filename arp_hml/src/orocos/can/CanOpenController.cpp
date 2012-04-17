@@ -10,11 +10,12 @@
 
 #include "CanOpenController.hpp"
 #include "orocos/can/wrappers/can_festival_ARD_master_wrapper.hpp"
-#include "math/core"
+#include <math/core>
 
 using namespace arp_hml;
 using namespace arp_core;
 using namespace std;
+using namespace Eigen;
 
 ORO_CREATE_COMPONENT_LIBRARY()
 ORO_LIST_COMPONENT_TYPE( arp_hml::CanOpenController)

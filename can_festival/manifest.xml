@@ -7,7 +7,6 @@
     
     <depend package="rtt" />
     <depend package="ocl" />
-    <depend package="eigen" />
     <depend package="rosbuild" />
 	
 	<export>

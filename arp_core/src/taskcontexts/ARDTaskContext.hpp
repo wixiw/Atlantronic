@@ -11,7 +11,8 @@
 #include <iostream>
 #include <fstream>
 
-#include <rtt/typekit/Types.hpp>
+//TODO WLA decidement il merde toujours celui là
+//#include <rtt/typekit/Types.hpp>
 #include <rtt/RTT.hpp>
 #include <rtt/scripting/Scripting.hpp>
 #include <rtt/marsh/Marshalling.hpp>

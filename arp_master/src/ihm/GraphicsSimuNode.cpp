@@ -7,6 +7,9 @@
 
 #include "GraphicsSimuFrame.hpp"
 
+using namespace arp_math;
+using namespace Eigen;
+
 namespace arp_master
 {
 

@@ -1,26 +1,25 @@
 <package>
-    <description brief="Orocos arp_hml Component package">
-        This package contains the components of the arp_hml package
-    </description>
-    <author>ARD, http://team-ard.com</author>
-    <license>BSD</license>
-    <url>http://88.191.124.77/redmine/projects/hardware/wiki</url>
+	<description brief="Orocos arp_hml Component package">This package contains the components of the arp_hml package</description>
+	<author>ARD, http://team-ard.com</author>
+	<license>BSD</license>
+	<url>http://88.191.124.77/redmine/projects/hardware/wiki</url>
 	<depend package="roscpp"/>
 	<depend package="rospy"/>
-    <depend package="arp_core" />
-    <depend package="arp_ihm" />
-    <!--  Desactivated in waiting newer Advantech version <depend package="advantech_susi" />-->
-    <depend package="socket_can" />
-    <depend package="can_festival" />
-    <depend package="rtt" />
-    <depend package="rtt_std_msgs"/>
-  	<depend package="rtt_arp_core"/>
+	<depend package="arp_core" />
+	<depend package="arp_ihm" />
+	<!-- Desactivated in waiting newer Advantech version <depend package="advantech_susi"
+		/>-->
+	<depend package="socket_can" />
+	<depend package="can_festival" />
+	<depend package="rtt" />
+	<depend package="rtt_std_msgs"/>
+	<depend package="rtt_arp_core"/>
 	<depend package="std_msgs" />
 	<depend package="sensor_msgs" />
 	<depend package="std_srvs" />
 	<rosdep name="wxwidgets"/>
 	<depend package="tf" />
 	<depend package="hokuyo_node" />
-	
+	<!--empeche le build local <rosdep name="eigen" />-->
 </package>
 

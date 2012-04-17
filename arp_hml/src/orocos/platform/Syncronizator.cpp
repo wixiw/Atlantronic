@@ -11,6 +11,7 @@
 using namespace arp_core;
 using namespace arp_model;
 using namespace arp_hml;
+using namespace Eigen;
 
 ORO_LIST_COMPONENT_TYPE( arp_hml::Syncronizator )
 
