@@ -68,7 +68,7 @@ function configure_apt
 	deb-src http://debian.ens-cachan.fr/ftp/debian/ squeeze main contrib non-free
 
 	deb http://security.debian.org/ squeeze/updates main contrib
-	deb-src http://security.debian.org/ squeeze/updates main contrib" > /etc/apt/sources/list
+	deb-src http://security.debian.org/ squeeze/updates main contrib
 
 	# squeeze-updates, previously known as 'volatile'
 	deb http://debian.ens-cachan.fr/ftp/debian/ squeeze-updates main contrib
@@ -94,7 +94,6 @@ function configure_boot
 	else
 		sed -i "s|GRUB_CMDLINE_LINUX_DEFAULT=\"quiet\"|GRUB_CMDLINE_LINUX_DEFAULT=\"quiet splash init=/sbin/init_ro console=tty1 console=ttyS0,115200\"|" /etc/default/grub
 		
-		echo "
 		echo "serial --unit=1 --speed=115200"  >> /etc/grub.d/00_header
 		echo "terminal serial" >> /etc/grub.d/00_header
 	fi
@@ -577,7 +576,7 @@ function configure_init_scripts
 	#ajout des bips de démarrage
 	sed -i "s|log_action_msg \"Will now halt\"|#beeps;\r\n\t/usr/bin/beep -f 300 -l 300\r\n\t/usr/bin/beep -f 285 -l 300\r\n\t/usr/bin/beep -f 270 -l 500\r\n\r\n\tlog_action_msg \"Will now halt\"|" /etc/init.d/halt 
 	sed -i "s|log_action_msg \"Will now restart\"|\r\n\t#beeps;\r\n\t/usr/bin/beep -f 300 -l 300\r\n\t/usr/bin/beep -f 285 -l 300\r\n\t/usr/bin/beep -f 270 -l 300\r\n\t/usr/bin/beep -f 300 -l 300\r\n\r\n\tlog_action_msg \"Will now restart\"|" /etc/init.d/reboot 
-	echo "
+
 }
 
 ###
