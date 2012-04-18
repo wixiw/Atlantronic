@@ -65,5 +65,5 @@ post_install_cleaning
 cecho green "Succeed !"
 df / -h
 if [ $IS_HOST == "false" ]; then
-	cecho bluegreen "Don't forget to do an 'install all' from eclipse to complete the ros folder."
+	cecho blue "Don't forget to do an 'install all' from eclipse to complete the ros folder."
 fi
