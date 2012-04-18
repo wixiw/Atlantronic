@@ -1,7 +1,7 @@
 #!/bin/bash -e
 # auteur : WLA
 # data : 18/04/2012
-# version 9.3
+# version 10.0
 #
 # Ce script contient les fonctions qui seront appelées lors du bootstrap
 
@@ -65,20 +65,21 @@ function configure_apt
 	cecho yellow "Configuring APT..."
 	cp /etc/apt/sources.list /etc/apt/sources.list.origin 
 	echo "deb http://debian.ens-cachan.fr/ftp/debian/ squeeze main contrib non-free
-deb-src http://debian.ens-cachan.fr/ftp/debian/ squeeze main contrib non-free
+	deb-src http://debian.ens-cachan.fr/ftp/debian/ squeeze main contrib non-free
 
-deb http://security.debian.org/ squeeze/updates main contrib
-deb-src http://security.debian.org/ squeeze/updates main contrib" > /etc/apt/sources/list
+	deb http://security.debian.org/ squeeze/updates main contrib
+	deb-src http://security.debian.org/ squeeze/updates main contrib" > /etc/apt/sources/list
 
-# squeeze-updates, previously known as 'volatile'
-deb http://debian.ens-cachan.fr/ftp/debian/ squeeze-updates main contrib
-deb-src http://debian.ens-cachan.fr/ftp/debian/ squeeze-updates main contrib" > /etc/apt/sources.list
+	# squeeze-updates, previously known as 'volatile'
+	deb http://debian.ens-cachan.fr/ftp/debian/ squeeze-updates main contrib
+	deb-src http://debian.ens-cachan.fr/ftp/debian/ squeeze-updates main contrib" > /etc/apt/sources.list
 	
+	apt-get update -f
 }
 
 ###
 #
-function configure_grub
+function configure_boot
 {
 	cecho yellow  "Configuring grub.."
 	
@@ -108,7 +109,30 @@ function configure_grub
 	sed -i "s/#GRUB_DISABLE_LINUX_RECOVERY=\"true\"/GRUB_DISABLE_LINUX_RECOVERY=\"true\"/" /etc/default/grub
 
 	#little bip to say 'I'm booting'
-	sed -i "s/#GRUB_INIT_TUNE=\"480 440 1\"/GRUB_INIT_TUNE=\"120 270 1 285 1 300 1\"/" /etc/default/grub
+	sed -i "s/#GRUB_INIT_TUNE=\"480 440 1\"/GRUB_INIT_TUNE=\"$GRUB_INIT_SOUND\"/" /etc/default/grub
+	
+	#suppression du checkdisk (seulement sur les targets)
+	if [ $IS_HOST == "false" ]; then
+		cecho yellow "Suppression du checkdisk au boot..."
+		sed -i "s/\/               ext2    errors=remount-ro 0       1/\/               ext2    errors=remount-ro 0       0/" /etc/fstab
+	fi
+	
+	#correction de la ligne cdrom
+	echo "/dev/hdc	/media/cdrom0	udf,iso9660	user,noauto	0	0" >> /etc/fstab
+	
+	#creation du repertoire de conf pour ce qui est lie a l'OS
+	cecho yellow "Creating OS conf folder"
+	mkdir /opt/conf -p
+	echo "You *may* create empty files here to configure the way ARD's OS load :
+	_ /opt/conf/MATCH : autostart main binairies for matches. 
+	_ /opt/conf/RO : load a read only filesystem to protect the flash
+	
+	You *must* have a /opt/conf/OS containing either 'gnulinux' or 'xenomai' to select Orocos flavor." > /opt/conf/README
+	echo "gnulinux" > /opt/conf/OS
+	
+##
+# TODO :  get sbin_init
+#faire un chmod +x dessus
 }
 
 ###
@@ -199,7 +223,7 @@ function install_kernel
 	
 	#correction des liens symboliques pour les sources noyau
 	if [ $IS_HOST == "true" ]; then
-		cecho yellow $JAUNE "Correcting VM kernel modules links" $NORMAL
+		cecho yellow "Correcting VM kernel modules links"
 		cd /lib/modules/$KERNEL_VM_VERSION
 		rm build
 		rm sources
@@ -239,10 +263,10 @@ function configure_network
 	#configuration des addresses réseau
 	echo "
 	127.0.0.1       vm      arp_ihm
-	10.0.0.29       alpha.team-ard.com      alpha
-	10.0.0.41       beta.team-ard.com       beta
-	10.0.0.253      aksys   aksys
-	88.191.124.77   wixibox
+	$ALPHA_IP       alpha.team-ard.com      alpha
+	$BETA_IP        beta.team-ard.com       beta
+	$ACKSYS_VM_IP   acksys   acksys
+	$WIXIBOX	    wixibox
 
 	" >> /etc/hosts
 }
@@ -263,6 +287,9 @@ function install_osdeps
 	cecho blue "liste des paquets a installer : $PAQUET_LIST"
 	apt-get update --fix-missing
 	apt-get install $PAQUET_LIST -y
+	
+	#mise a jour de pip
+	sudo pip install -U pip
 }
 
 
@@ -321,6 +348,24 @@ function configure_user_profiles
 		#workaround pour compenser le fait que sudo ne soit pas present sans faire d'erreur
 		echo "alias sudo=''" >> /root/.bashrc
 	fi
+	
+	
+	#installation des scripts utilitaires Ard
+	cecho yellow "Installation des script utilitaires d'ARD"
+	#download de l'archive
+	cd /opt
+	wget ftp://ard_user:robotik@wixibox/34%20-%20Info/Dependance/Ard/color.sh
+	dos2unix color.sh
+	wget ftp://ard_user:robotik@wixibox/34%20-%20Info/Dependance/Ard/env.sh
+	dos2unix env.sh
+	
+	#configuration des droits sur le scheduler RT
+	echo "ard hard rtprio 90" >> /etc/security/limits.conf 
+	echo "ulimit -r 90" >> /opt/env.sh
+
+	#droits sudo pour l'ihm
+	echo "www-data	ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+	
 }
 
 ###
@@ -329,12 +374,22 @@ function getting_medias
 {
 	#récupération des images ARD
 	cecho yellow "Récupération des images ..."
-	cd /boot/grub
-	wget ftp://ard_user:robotik@$WIXIBOX/34%20-%20Info/Dependance/Linux/OS_Target/os-v6.02/Logo-ARD.tga
-
+	
+	#recuperation du logo de boot et de l'ecran de fond
 	if [ $IS_HOST == "true" ]; then
-		cd /home/ard/Pictures
-		wget ftp://ard_user:robotik@$WIXIBOX/$WALLPAPER_PATH
+		IMG_PATH="/home/ard/Pictures"
+	else
+		IMG_PATH="/root"
+	fi
+	cd $IMG_PATH
+	wget ftp://ard_user:robotik@88.191.124.77/0%20-%20Docs%20de%20ref/0%20-%20Medias/Logo/Logo-ARD_800_600_fonce.jpg
+
+	echo "
+	#wallpaper pour ARD
+	GRUB_BACKGROUND=\"$IMG_PATH/Logo-ARD_800_600_fonce.jpg\"
+	" >> /etc/default/grub
+	if [ $IS_HOST == "true" ]; then
+		wget ftp://ard_user:robotik@88.191.124.77/0%20-%20Docs%20de%20ref/0%20-%20Medias/Wallpaper/wallpaper_vm9.jpg
 	fi
 }
 
@@ -357,7 +412,7 @@ function install_ros
 	fi
 	
 	#ROS distribution ARD, pour tout le monde
-	cecho yellow "Installation des addons ROS d'ARD" $NORMAL
+	cecho yellow "Installation des addons ROS d'ARD"
 	#download de l'archive
 	cd /tmp
 	wget ftp://ard_user:robotik@wixibox/34%20-%20Info/Dependance/ROS/$ROS_ADDONS_VERSION
@@ -392,6 +447,10 @@ function install_eclipse
 		
 		rm /tmp/$ECLIPSE_VERSION
 	fi
+	
+	#recuperation d'une version d'ard
+	cd /opt
+	svn co svn://88.191.124.77/ARP/trunk ard --username hudson --password robotik --non-interactive
 }
 
 ###
@@ -427,10 +486,12 @@ function post_install_cleaning
 #
 function configuring_web_server
 {	
+	cecho yellow "Configuration d'apache2 ... "
 	#configuration de apache
 	ln -s /opt/ard/arp_ihm/script/linux/arp_ihm.apache2 /etc/apache2/sites-available/arp_ihm
 	a2dissite default
 	a2ensite arp_ihm
+	/etc/init.d/apache2 reload
 }
 
 ###
@@ -474,6 +535,8 @@ function installing_ssh_keys
 		wget ftp://ard_user:robotik@$WIXIBOX/34%20-%20Info/Dependance/Ard/SSH/id_rsa_vm.pub
 		cat id_rsa_vm.pub >> authorized_keys
 	fi
+	
+	echo "UseDNS no" >> /etc/ssh/sshd_config
 }
 
 ###
@@ -489,14 +552,20 @@ function configure_init_scripts
 	chmod +x /opt/boot.sh
 	if [ $IS_HOST == "false" ]; then
 		cd /etc/init.d
+		chmod +x /opt/ard/arp_core/script/linux/ard_autostart.sh 
+		chmod +x /opt/ard/arp_core/script/linux/ard_boot_ro.sh 
+		chmod +x /opt/ard/arp_hml/script/linux/ard_can.sh 
+		chmod +x /opt/ard/arp_ihm/script/linux/ard_ihm_launcher.sh
+
 		ln -sf /opt/ard/arp_core/script/linux/ard_boot_ro.sh
 		ln -sf /opt/ard/arp_core/script/linux/ard_autostart.sh
 		ln -sf /opt/ard/arp_hml/script/linux/ard_can.sh
+		ln -sf /opt/ard/arp_ihm/script/linux/ard_ihm_launcher.sh
 		
 		insserv ard_can.sh
 		insserv ard_autostart.sh
 	fi
-	
+
 	#desactivation de fancontrol sur la cible qui galere a booter
 	if [ $IS_HOST == "false" ]; then
 		insserv fancontrol -r
@@ -505,4 +574,23 @@ function configure_init_scripts
 	#creation des regles udev
 	ln -sf /opt/ard/arp_hml/script/linux/udev_ubiquity.rules /etc/udev/rules.d/10-udev_ubiquity.rules
 
+	#ajout des bips de démarrage
+	sed -i "s|log_action_msg \"Will now halt\"|#beeps;\r\n\t/usr/bin/beep -f 300 -l 300\r\n\t/usr/bin/beep -f 285 -l 300\r\n\t/usr/bin/beep -f 270 -l 500\r\n\r\n\tlog_action_msg \"Will now halt\"|" /etc/init.d/halt 
+	sed -i "s|log_action_msg \"Will now restart\"|\r\n\t#beeps;\r\n\t/usr/bin/beep -f 300 -l 300\r\n\t/usr/bin/beep -f 285 -l 300\r\n\t/usr/bin/beep -f 270 -l 300\r\n\t/usr/bin/beep -f 300 -l 300\r\n\r\n\tlog_action_msg \"Will now restart\"|" /etc/init.d/reboot 
+	echo "
+}
+
+###
+#
+function prepare_next_update
+{
+	#creation du fichier de version
+	echo $ARD_VERSION > /opt/kernel/ard-vm-version
+	
+	
+	#récupération du script d'update
+	cd /opt/kernel
+	wget ftp://ard_user:robotik@88.191.124.77/34%20-%20Info/Publication/livraison_v$ARD_VERSION/check_update-$ARD_VERSION.0.sh
+	dos2unix check_update-$ARD_VERSION.0.sh
+	ln -sf check_update-$ARD_VERSION.0.sh check_update.sh
 }

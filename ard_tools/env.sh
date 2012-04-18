@@ -9,7 +9,7 @@ export ROS_PARALLEL_JOBS=-j4
 . /opt/ard/env.sh
 
 #ajout du path pour bricoler en LUA
-RTTLUA_MODULES=/opt/ros_addons/orocos_toolchain/ocl/lua/modules/?.lua
+RTTLUA_MODULES=`rospack find ocl`/lua/modules/?.lua
 if [ "x$LUA_PATH" == "x" ]; then
     LUA_PATH=";;"
 fi
@@ -30,7 +30,7 @@ alias rosalpha='ROS_MASTER_URI=http://alpha:11311'
 alias ard-update='bash /opt/kernel/check_update.sh'
 alias ard-clean-build='find /opt -name build | xargs rm -rf'
 alias myip="sudo ifconfig | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'"
-
+alias ard-stress='stress --cpu 2 --io 1 --vm 1 --vm-bytes 128M'
 #alias Linux utiles
 export LS_OPTIONS='--color=auto -h'
 eval "`dircolors`"
@@ -48,6 +48,7 @@ cecho "yellow" "Chargement des variables d'environement ARD fait. Ubiquity is on
 
 #configuration de ccache
 export CCACHE_DIR=/home/ard/ccache/compilation.cache
+ccache -M 2G
 export CCACHE_HARDLINK=1
 export PATH=/home/ard/ccache:$PATH
 export DISTCC_HOSTS="localhost"
