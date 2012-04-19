@@ -28,9 +28,9 @@ check_wixibox
 #########
 
 create_folders
+configure_apt
 install_osdeps #on ne peut pas attendre la phase 2 puisque certains fichiers de config sont à revoir
 populated_rc.local
-configure_apt
 configure_boot
 create_SYA
 configure_network
