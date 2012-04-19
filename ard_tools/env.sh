@@ -53,5 +53,8 @@ export PATH=/home/ard/ccache:$PATH
 export DISTCC_HOSTS="localhost"
 export CCACHE_PREFIX=distcc
 
+#configuration des priorites de thread RT
+ulimit -r 90
+
 #message de fin
 cecho "yellow" "Chargement des variables d'environement ARD fait. Ubiquity is on the road !"
