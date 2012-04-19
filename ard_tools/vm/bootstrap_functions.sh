@@ -265,6 +265,7 @@ function configure_network
 		allow-hotplug wlan_robot
 		iface wlan_robot inet static
 		address $IP_ADDRESS
+		gateway 192.168.1.1
 		netmask 255.255.255.0
 		auto wlan_robot" > /etc/network/interfaces
 	else
@@ -385,10 +386,8 @@ function configure_user_profiles
 	cecho yellow "Installation des script utilitaires d'ARD"
 	#download de l'archive
 	cd /opt
-	wget ftp://ard_user:robotik@wixibox/34%20-%20Info/Dependance/Ard/color.sh
-	dos2unix color.sh
-	wget ftp://ard_user:robotik@wixibox/34%20-%20Info/Dependance/Ard/env.sh
-	dos2unix env.sh
+	ln -sf /opt/ard/ard_tools/vm/color.sh
+	ln -sf /opt/ard/ard_tools/env.sh
 	
 	#configuration des droits sur le scheduler RT
 	echo "ard hard rtprio 90" >> /etc/security/limits.conf 
@@ -438,7 +437,7 @@ function install_ros
 	#extraction
 		cd /opt
 		tar -xf /tmp/$ROS_VERSION
-		ln -sf /opt/ros-$ROS_DISTRIBUTION_update /opt/ros
+	ln -sf /opt/ros-${ROS_DISTRIBUTION}_update /opt/ros
 		echo $ROS_VERSION > /opt/ros/ard-version 
 		rm /tmp/$ROS_VERSION -f
 	fi
@@ -450,6 +449,7 @@ function install_ros
 	wget ftp://ard_user:robotik@wixibox/34%20-%20Info/Dependance/ROS/$ROS_ADDONS_VERSION
 	
 	#extraction
+	cd /opt
 	tar -xf /tmp/$ROS_ADDONS_VERSION
 	ln -sf /opt/ros_addons-$ROS_DISTRIBUTION /opt/ros_addons
 	echo $ROS_ADDONS_VERSION > /opt/ros/ard-version 
