@@ -72,12 +72,12 @@ function configure_apt
 	echo "deb http://debian.ens-cachan.fr/ftp/debian/ squeeze main contrib non-free
 	deb-src http://debian.ens-cachan.fr/ftp/debian/ squeeze main contrib non-free
 
-	deb http://security.debian.org/ squeeze/updates main contrib
-	deb-src http://security.debian.org/ squeeze/updates main contrib
-
 	# squeeze-updates, previously known as 'volatile'
 	deb http://debian.ens-cachan.fr/ftp/debian/ squeeze-updates main contrib
-	deb-src http://debian.ens-cachan.fr/ftp/debian/ squeeze-updates main contrib" > /etc/apt/sources.list
+	deb-src http://debian.ens-cachan.fr/ftp/debian/ squeeze-updates main contrib
+	
+	deb http://security.debian.org/ squeeze/updates main contrib
+	deb-src http://security.debian.org/ squeeze/updates main contrib" > /etc/apt/sources.list
 	
 	apt-get update -f
 }
@@ -250,16 +250,16 @@ function configure_network
 		cecho yellow "Définition du double réseau vm..."
 		echo "# This file describes the network interfaces available on your system
 		# and how to activate them. For more information, see interfaces(5).
-			# The loopback network interface
+		# The loopback network interface
 		auto lo
 		iface lo inet loopback
 		
-			# The primary LAN DHCP network interface
+		# The primary LAN DHCP network interface
 		allow-hotplug eth0
 		iface eth0 inet dhcp
 		auto eth0
 	
-			# The secondary robot WLAN interface
+		# The secondary robot WLAN interface
 		allow-hotplug wlan_robot
 		iface wlan_robot inet static
 		address $IP_ADDRESS
