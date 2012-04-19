@@ -41,7 +41,7 @@ TARGET_DEBIAN_PACKAGES=$BOOST_PACKAGES" "$OROCOS_PACKAGES" "$TOOLS_PACKAGES" "$W
 
 VM_TOOLS_PACKAGES="sshfs filezilla cmake cmake-curses-gui kst meld kernel-package ketchup gitk sloccount magicfilter ccache distcc distcc-pump distccmon-gnome xpdf git-core"
 VM_PYTHON_PACKAGES="python python-wxgtk2.8 python-qt4 python-wxtools python-scipy python-qt4 python-pip"
-VM_DEBIAN_PACKAGES=$TARGET_DEBIAN_PACKAGES" "$VM_TOOLS_PACKAGES" "$VM_PYTHON_PACKAGES" libzzip-0-13 libomnithread3-dev omniidl omniorb omniorb-nameserver libomniorb4-dev wx2.8-i18n libwxgtk2.8-dev libgtk2.0-dev doxygen graphviz  openjdk-6-jre dkms libsvn-java"
+VM_DEBIAN_PACKAGES=$TARGET_DEBIAN_PACKAGES" "$VM_TOOLS_PACKAGES" "$VM_PYTHON_PACKAGES" libzzip-0-13 libomnithread3-dev omniidl omniorb omniorb-nameserver libomniorb4-dev wx2.8-i18n libwxgtk2.8-dev libgtk2.0-dev doxygen graphviz  openjdk-6-jre dkms libsvn-java libboost1.42-all-dev"
  
 GRUB_INIT_SOUND="360 270 1 285 1 300 1"
 

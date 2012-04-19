@@ -66,6 +66,9 @@ install_eclipse
 # PHASE 3 : cleaning 
 #########
 
+cecho yellow "Updating search file cache..."
+updatedb
+
 prepare_next_update
 post_install_cleaning
 
