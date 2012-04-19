@@ -439,6 +439,7 @@ function install_ros
 		cd /opt
 		tar -xf /tmp/$ROS_VERSION
 		ln -sf /opt/ros-$ROS_DISTRIBUTION_update /opt/ros
+		echo $ROS_VERSION > /opt/ros/ard-version 
 		rm /tmp/$ROS_VERSION -f
 	fi
 	
@@ -451,6 +452,7 @@ function install_ros
 	#extraction
 	tar -xf /tmp/$ROS_ADDONS_VERSION
 	ln -sf /opt/ros_addons-$ROS_DISTRIBUTION /opt/ros_addons
+	echo $ROS_ADDONS_VERSION > /opt/ros/ard-version 
 	rm /tmp/$ROS_ADDONS_VERSION -f
 }
 
