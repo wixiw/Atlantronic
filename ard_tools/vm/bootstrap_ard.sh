@@ -28,6 +28,8 @@ check_wixibox
 #########
 
 #recuperation d'une version d'ard
+cecho yellow "Get ard repository ..."
+cecho blue "it will hang a bit, it's normal (quiet option), it works in background"
 cd /opt
 svn co svn://88.191.124.77/ARP/trunk ard --username hudson --password robotik --non-interactive --quiet
 

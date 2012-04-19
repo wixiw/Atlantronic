@@ -231,8 +231,8 @@ function install_kernel
 	if [ $IS_HOST == "true" ]; then
 		cecho yellow "Correcting VM kernel modules links"
 		cd /lib/modules/$KERNEL_VM_VERSION
-		rm build
-		rm sources
+		rm build -f
+		rm sources -f
 		ln -sf /usr/src/linux-headers-$KERNEL_VM_VERSION build
 		ln -sf /usr/src/linux-headers-$KERNEL_VM_VERSION sources
 	fi
