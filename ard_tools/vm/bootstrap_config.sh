@@ -1,7 +1,9 @@
-#!/bin/bash -ex
+#!/bin/bash
 # auteur : WLA
 # data : 18/04/2012
 # version 10.0
+
+set -e
 
 # This script contains configuration variablesfor the bootstrap_ard.sh script.
 
@@ -34,7 +36,7 @@ XENOMAI_ARD_VERSION=$XENOMAI_VERSION"-ard1"
 BOOST_PACKAGES="libboost-program-options1.42.0  libboost-serialization1.42.0 libboost-filesystem1.42.0  libboost-thread1.42.0 libboost-signals1.42.0 libboost-regex1.42.0"
 OROCOS_PACKAGES="libreadline6 liblua5.1-0 lua5.1 omniorb4 omniidl4 omniorb4-nameserver libomniorb4-1 liblog4cxx10"
 TOOLS_PACKAGES="sysv-rc-conf mc rsync gdb localepurge deborphan debfoster subversion git mercurial ccze beep dos2unix valgrind sudo setserial stress"
-WEB_PACKAGES="apache2 mysql-server phpmyadmin"
+WEB_PACKAGES="resolvconf apache2 mysql-server phpmyadmin"
 TARGET_DEBIAN_PACKAGES=$BOOST_PACKAGES" "$OROCOS_PACKAGES" "$TOOLS_PACKAGES" "$WEB_PACKAGES" lm-sensors ruby python-setuptools python-yaml python-paramiko python-numpy python-serial"
 
 VM_TOOLS_PACKAGES="sshfs filezilla cmake cmake-curses-gui kst meld kernel-package ketchup gitk sloccount magicfilter ccache distcc distcc-pump distccmon-gnome xpdf git-core"

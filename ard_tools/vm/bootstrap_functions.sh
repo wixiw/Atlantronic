@@ -1,9 +1,11 @@
-#!/bin/bash -e
+#!/bin/bash
 # auteur : WLA
 # data : 18/04/2012
 # version 10.0
 #
 # Ce script contient les fonctions qui seront appelées lors du bootstrap
+
+set -e
 
 ###
 # use this to check if the wixibox servcies are available
@@ -51,6 +53,9 @@ function populated_rc.local
 #update the Message Of The Day each boot
 echo \"---------------------------------------------------------------------
 Linux $HOSTNAME `uname -r` # `date` i686\" > /etc/motd
+
+udevadm control --reload-rules
+udevadm trigger
 
 #beeping to say hello
 beep -f 300 -l 500
@@ -268,6 +273,12 @@ function configure_network
 	$WIXIBOX	    wixibox
 
 	" >> /etc/hosts
+
+	#modifying DNS timeout
+	echo "timeout:1" >> /etc/resolvconf/resolv.conf.d/tail
+	if [ $IS_HOST == "false" ]; then
+		echo "" > /etc/resolvconf/resolv.conf.d/original
+	fi
 }
 
 ###
@@ -406,7 +417,7 @@ function install_ros
 	#extraction
 		cd /opt
 		tar -xf /tmp/$ROS_VERSION
-		ln -sf /opt/ros-$ROS_DISTRIBUTION /opt/ros
+		ln -sf /opt/ros-$ROS_DISTRIBUTION_update /opt/ros
 		rm /tmp/$ROS_VERSION -f
 	fi
 	
@@ -449,7 +460,7 @@ function install_eclipse
 	
 	#recuperation d'une version d'ard
 	cd /opt
-	svn co svn://88.191.124.77/ARP/trunk ard --username hudson --password robotik --non-interactive
+	svn co svn://88.191.124.77/ARP/trunk ard --username hudson --password robotik --non-interactive --quiet
 }
 
 ###
@@ -516,6 +527,7 @@ function installing_ssh_keys
 		cd /home/ard/.ssh
 		wget ftp://ard_user:robotik@$WIXIBOX/34%20-%20Info/Dependance/Ard/SSH/id_rsa_vm
 		mv id_rsa_vm id_rsa
+		chmod go-r id_rsa
 	
 		wget ftp://ard_user:robotik@$WIXIBOX/34%20-%20Info/Dependance/Ard/SSH/id_rsa_vm.pubi
 		mv id_rsa_vm.pub id_rsa.pub
@@ -527,6 +539,7 @@ function installing_ssh_keys
 		cd /root/.ssh
 		wget ftp://ard_user:robotik@$WIXIBOX/34%20-%20Info/Dependance/Ard/SSH/id_rsa_beta
 		mv id_rsa_beta id_rsa
+		chmod go-r id_rsa
 	
 		wget ftp://ard_user:robotik@$WIXIBOX/34%20-%20Info/Dependance/Ard/SSH/id_rsa_beta.pub
 		mv id_rsa_beta.pub id_rsa.pub
