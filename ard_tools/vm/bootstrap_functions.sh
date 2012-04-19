@@ -95,9 +95,9 @@ function configure_boot
 	#add no apic to vm to let them boot properly, *DON'T* do that for target else caninterrupts won't come any more.
 	#choose the ro init script on target.
 	if [ $IS_HOST == "true" ]; then
-		sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"quiet\"/GRUB_CMDLINE_LINUX_DEFAULT=\"quiet splash noapic\"/" /etc/default/grub
+		sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"quiet\"/GRUB_CMDLINE_LINUX_DEFAULT=\"quiet splash noapic rootfstype=ext4\"/" /etc/default/grub
 	else
-		sed -i "s|GRUB_CMDLINE_LINUX_DEFAULT=\"quiet\"|GRUB_CMDLINE_LINUX_DEFAULT=\"quiet splash init=/sbin/init_ro console=tty1 console=ttyS0,115200\"|" /etc/default/grub
+		sed -i "s|GRUB_CMDLINE_LINUX_DEFAULT=\"quiet\"|GRUB_CMDLINE_LINUX_DEFAULT=\"quiet splash ootfstype=ext4 init=/sbin/init_ro console=tty1 console=ttyS0,115200\"|" /etc/default/grub
 		
 		echo "serial --unit=1 --speed=115200"  >> /etc/grub.d/00_header
 		echo "terminal serial" >> /etc/grub.d/00_header
