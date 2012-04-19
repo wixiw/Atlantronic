@@ -529,7 +529,7 @@ function installing_ssh_keys
 		mv id_rsa_vm id_rsa
 		chmod go-r id_rsa
 	
-		wget ftp://ard_user:robotik@$WIXIBOX/34%20-%20Info/Dependance/Ard/SSH/id_rsa_vm.pubi
+		wget ftp://ard_user:robotik@$WIXIBOX/34%20-%20Info/Dependance/Ard/SSH/id_rsa_vm.pub
 		mv id_rsa_vm.pub id_rsa.pub
 	
 		wget ftp://ard_user:robotik@$WIXIBOX/34%20-%20Info/Dependance/Ard/SSH/id_rsa_beta.pub
