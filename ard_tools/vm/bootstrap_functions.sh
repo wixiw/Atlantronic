@@ -244,25 +244,44 @@ function install_kernel
 function configure_network
 {
 	cecho yellow "Configuration du réseau ..."
-	#ajout de l'IP fixe
-	cecho yellow "Définition d'un IP fixe..."
-	echo "# This file describes the network interfaces available on your system
-	# and how to activate them. For more information, see interfaces(5).
-	# The loopback network interface
-	auto lo
-	iface lo inet loopback
 	
-	# The primary LAN DHCP network interface
-	allow-hotplug eth02
-	iface eth0 inet dhcp
-	auto eth0
-
-	# The secondary robot WLAN interface
-	allow-hotplug wlan_robot
-	iface wlan_robot inet static
-	address $IP_ADDRESS
-	netmask 255.255.255.0
-	auto wlan_robot" > /etc/network/interfaces
+	if [ $IS_HOST == "true" ]; then
+		#ajout de l'IP fixe
+		cecho yellow "Définition du double réseau vm..."
+		echo "# This file describes the network interfaces available on your system
+		# and how to activate them. For more information, see interfaces(5).
+			# The loopback network interface
+		auto lo
+		iface lo inet loopback
+		
+			# The primary LAN DHCP network interface
+		allow-hotplug eth0
+		iface eth0 inet dhcp
+		auto eth0
+	
+			# The secondary robot WLAN interface
+		allow-hotplug wlan_robot
+		iface wlan_robot inet static
+		address $IP_ADDRESS
+		netmask 255.255.255.0
+		auto wlan_robot" > /etc/network/interfaces
+	else
+		#ajout de l'IP fixe
+		cecho yellow "Définition du réseau IP fixe target..."
+		echo "# This file describes the network interfaces available on your system
+		# and how to activate them. For more information, see interfaces(5).
+		# The loopback network interface
+		auto lo
+		iface lo inet loopback
+		
+		# The primary LAN DHCP network interface
+		allow-hotplug eth0
+		iface eth0 inet static
+		address $IP_ADDRESS
+		netmask 255.255.255.0
+		auto eth0" > /etc/network/interfaces
+	fi
+	
 
 	#configuration des addresses réseau
 	echo "
