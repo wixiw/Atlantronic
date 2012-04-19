@@ -35,6 +35,12 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
          double & quality
     )
 {
+    Log(INFO) << "welcome to the wonderful filter----------------- ";
+    Log(INFO) << "desiredTwist="<< desiredTwist.toString() << " phi=" << desiredTwist.speedAngle() << " v=" << desiredTwist.speedNorm();
+    Log(INFO) << "currentTwist="<< currentTwist.toString() << " phi=" << currentTwist.speedAngle() << " v=" << currentTwist.speedNorm();
+
+
+
     //commandes moteurs qui permettent de produire le currentTwist
     MotorState desiredMS;
     //Variable intermédiaires pour les modèle qu'on utilisera pas
@@ -44,6 +50,17 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
 
     if( !params.check() )
         return false;
+
+
+    // pour debug: je vais calculer le twist moi meme...
+    if( UbiquityKinematics::motors2Twist(currentMS, ioTS, currentTwist, oSR, params) == false )
+            {
+                Log(ERROR) << "failed to compute forcing speed model";
+                quality = -200;
+                return false;
+            }
+
+    Log(INFO) << "currentTwist a partir moteurs="<< currentTwist.toString() << " phi=" << currentTwist.speedAngle() << " v=" << currentTwist.speedNorm();
 
 
 
@@ -62,7 +79,6 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
         }
         Log(INFO) << "Robot starting, forcing min speed, new Twist=" << currentTwist.toString();
     }
-
 
     //cas de l'arrêt du robot : on prend l'état des tourelles actuel, on conserve l'orientation des tourelles et on colle une vitesse nulle
     //ceci revient à ne pas filtrer le twist  les choses se feront toutes seules
@@ -101,22 +117,31 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
     }
 
     //Else we have to use the dichotomy
-    Twist2D delta = desiredTwist - currentTwist;
-    double k = 0.5;
+    Twist2D lowLimit;
+    Twist2D upLimit;
+    Twist2D delta;
     Twist2D testedTwist;
-    Log(INFO) << "LOOP(init) desiredTwist="<< desiredTwist.toString() << " current=" <<  currentTwist.toString() << " delta=" << delta.toString();
+    //double k = 0.5;
+
+    upLimit=desiredTwist;
+    lowLimit=currentTwist;
+
+
+    //Log(INFO) << "LOOP(init) desiredTwist="<< desiredTwist.toString() << " current=" <<  currentTwist.toString() << " delta=" << delta.toString();
+
     for(int nbLoops = 2 ; nbLoops < 50 ; nbLoops++  )
     {
         //we take a Twist on the barycentre of desiredTwist to currentTwist weighted by k (the dichotomy is on k)
-        testedTwist = delta*k + currentTwist;
+        delta = (upLimit-lowLimit)*0.5;
+        testedTwist = lowLimit+delta;
 
         //TODO a virer
-        Log(INFO) << "LOOP("<< nbLoops<< ") : testedTwist=" << testedTwist.toString() << " phi=" << testedTwist.speedAngle() << " v=" << testedTwist.speedNorm()<< " k=" << k;
+        //Log(INFO) << "LOOP("<< nbLoops<< ") : testedTwist=" << testedTwist.toString() << " phi=" << testedTwist.speedAngle() << " v=" << testedTwist.speedNorm() ;
 
         //compute motor state related to testedTwist
         if( UbiquityKinematics::twist2Motors(testedTwist, currentMS, ioTS, desiredMS, params) == false )
         {
-            Log(ERROR) << "fail to compute in loop model loop=" << nbLoops << " k=" << k ;
+            Log(ERROR) << "fail to compute in loop model loop=" << nbLoops ;
             quality = -2;
             return false;
         }
@@ -124,12 +149,13 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
         //else we should be less aggressive and find a Twist closer to currentTwist
         if( isMotorStateReachable( desiredMS, currentMS, params, dt ) )
         {
-            k = k + 1.0/pow(2,nbLoops);
             //we always register the last correct Twist to get it at the end of the loop
             acceptableTwist = testedTwist;
+
+            lowLimit=testedTwist;
         }
         else
-            k = k - 1.0/pow(2,nbLoops);
+            upLimit=testedTwist;
 
         //TODO a virer
         //Log(INFO) << "LOOP("<< nbLoops<< ") : desiredMS=" << desiredMS.toString();
@@ -145,12 +171,13 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
     if( currentTwist == acceptableTwist && currentTwist != desiredTwist)
     {
         Log(ERROR) << "The solution is to take the last cmd twist ... :( : testedTwist="
-                << testedTwist.toString() << " k=" << k << " delta=" << delta.toString();
+                << testedTwist.toString() << " delta=" << delta.toString();
         Log(INFO) << "acceptableTwist=" << acceptableTwist.toString() << " currentTwist=" << currentTwist.toString() << " desiredTwist=" << desiredTwist.toString();
         quality = -3;
         return false;
     }
     else
+        Log(INFO) << "SOLUTION : acceptableTwist " << acceptableTwist.toString();
         return true;
 }
 
@@ -178,6 +205,8 @@ bool KinematicFilter::isMotorStateReachable(const arp_model::MotorState & desire
     bool isRearDrivingSpeedReachable = fabs(desiredMS.driving.rear.velocity) <= fabs(measuredMS.driving.rear.velocity) + params.getMaxDrivingAcc()*dt
             && fabs(measuredMS.driving.rear.velocity) - params.getMaxDrivingDec()*dt <= fabs(desiredMS.driving.rear.velocity)
             && fabs(desiredMS.driving.rear.velocity) <= params.getMaxDrivingSpeed();
+
+    //Log(INFO) << "reachable: "<<isLeftTurretReachable<< ", "<<isRightTurretReachable<< ", "<<isRearTurretReachable<< ", "<<isLeftDrivingSpeedReachable<< ", "<<isRightDrivingSpeedReachable<< ", "<<isRearDrivingSpeedReachable;
 
     return isLeftTurretReachable && isRightTurretReachable && isRearTurretReachable
             && isLeftDrivingSpeedReachable && isRightDrivingSpeedReachable && isRearDrivingSpeedReachable;
