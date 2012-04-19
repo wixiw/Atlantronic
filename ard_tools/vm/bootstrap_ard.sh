@@ -27,6 +27,10 @@ check_wixibox
 # PHASE 1 : system configuration
 #########
 
+#recuperation d'une version d'ard
+cd /opt
+svn co svn://88.191.124.77/ARP/trunk ard --username hudson --password robotik --non-interactive --quiet
+
 create_folders
 configure_apt
 install_osdeps #on ne peut pas attendre la phase 2 puisque certains fichiers de config sont à revoir

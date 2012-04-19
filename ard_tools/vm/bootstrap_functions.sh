@@ -501,10 +501,6 @@ function install_eclipse
 		rm /tmp/$ECLIPSE_VERSION
 	fi
 	
-	#recuperation d'une version d'ard
-	cd /opt
-	svn co svn://88.191.124.77/ARP/trunk ard --username hudson --password robotik --non-interactive --quiet
-	
 	#compilation d'ard
 	if [ $IS_HOST == "true" ]; then
 		. /opt/ard/ard_tools/env.sh
