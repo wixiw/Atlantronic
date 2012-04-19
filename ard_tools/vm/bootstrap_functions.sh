@@ -455,6 +455,21 @@ function install_ros
 	echo $ROS_ADDONS_VERSION > /opt/ros/ard-version 
 	rm /tmp/$ROS_ADDONS_VERSION -f
 	
+	#bricolage avec assimp : bug ROS
+	cecho yellow "Installing Assimp2..."
+	svn checkout https://vcs@kforge.ros.org/rosrelease/sourcedeps/assimp/ /tmp/assimp --quiet
+	cd /tmp/assimp
+	tar -xf assimp--2.0.863-sdk.tar
+	cd assimp--2.0.863-sdk
+	mkdir -p build
+	cd build
+	cmake .. -DCMAKE_INSTALL_PREFIX=/usr
+	make
+	make install
+	bash -c "echo 2ed0b9954bcb2572c0dade8f849b9260 > /usr/include/assimp/assimp-version.installed"
+
+	
+	
 	#installation des dépendances
 	if [ $IS_HOST == "true" ]; then
 		. /opt/env.sh
