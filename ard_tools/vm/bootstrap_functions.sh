@@ -505,6 +505,13 @@ function install_eclipse
 	#recuperation d'une version d'ard
 	cd /opt
 	svn co svn://88.191.124.77/ARP/trunk ard --username hudson --password robotik --non-interactive --quiet
+	
+	#compilation d'ard
+	if [ $IS_HOST == "true" ]; then
+		. /opt/env.sh
+		rosmake arp_master	
+	fi
+	
 }
 
 ###

@@ -5,5 +5,9 @@
 
 . ard/ard_tools/env.sh
 
+export PATH=/var/lib/jenkins/ccache:$PATH
+export CCACHE_DIR=/var/lib/jenkins/ccache/jenkins.cache
+ccache -M 3G
+
 cd ard/arp_core
 make -j2
