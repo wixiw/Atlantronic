@@ -189,6 +189,8 @@ function install_kernel
 		cd /usr/src
 		mkdir linux-$KERNEL_BASE_VERSION -p
 		ln -sf /usr/src/linux-$KERNEL_BASE_VERSION linux
+		#effacement du dossier s'il existe deja
+		rm linux/* -Rf
 		cd linux
 		ketchup -G $KERNEL_BASE_VERSION
 	fi
