@@ -7,6 +7,7 @@
 
 #if DEBUG env variable is set to something, use x option whihc prints each executed line
 [ -n "$DEBUG" ] && set -x
+set -e
 
 #check root user
 if [[ $UID -ne 0 ]]; then
@@ -31,7 +32,7 @@ populated_rc.local
 configure_apt
 configure_boot
 create_SYA
-configure_networks
+configure_network
 configure_version_systems
 configure_user_profiles
 configuring_web_server
