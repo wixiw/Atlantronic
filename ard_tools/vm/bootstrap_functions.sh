@@ -361,7 +361,7 @@ function configure_user_profiles
 	echo "#ARP env
 	ROUGE='\\033[1;31m'
 	NORMAL='\\033[0;39m'
-	. /opt/env.sh
+	. /opt/ard/ard_tools.sh
 	if [ \$? != 0 ]; then
 	    echo -e \$ROUGE 'Failed to load ARD env variables. Check if you /opt folder contains the rigth stuff'  \$NORMAL
 	fi" >> /etc/bash.bashrc
@@ -391,7 +391,6 @@ function configure_user_profiles
 	
 	#configuration des droits sur le scheduler RT
 	echo "ard hard rtprio 90" >> /etc/security/limits.conf 
-	echo "ulimit -r 90" >> /opt/env.sh
 
 	#droits sudo pour l'ihm
 	echo "www-data	ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
@@ -472,7 +471,7 @@ function install_ros
 	
 	#installation des dépendances
 	if [ $IS_HOST == "true" ]; then
-		. /opt/env.sh
+		. /opt/ard/ard_tools/env.sh
 		rosdep install -a -y	
 	fi
 }
@@ -485,7 +484,7 @@ function install_eclipse
 	if [ $IS_HOST == "true" ]; then
 		cecho yellow "Installation d'eclipse $ECLIPSE_VERSION ..."
 		echo "#!/bin/bash
-		. /opt/env.sh
+		. /opt/ard/ard_tools/env.sh
 		/usr/bin/eclipse/eclipse">/usr/bin/eclipse.sh
 
 		chmod 755 /usr/bin/eclipse.sh
@@ -508,7 +507,7 @@ function install_eclipse
 	
 	#compilation d'ard
 	if [ $IS_HOST == "true" ]; then
-		. /opt/env.sh
+		. /opt/ard/ard_tools/env.sh
 		rosmake arp_master	
 	fi
 	
