@@ -188,7 +188,7 @@ function install_kernel
 	if [ $IS_HOST == "true" ]; then
 		cd /usr/src
 		mkdir linux-$KERNEL_BASE_VERSION -p
-		ln -s /usr/src/linux-$KERNEL_BASE_VERSION linux
+		ln -sf /usr/src/linux-$KERNEL_BASE_VERSION linux
 		cd linux
 		ketchup -G $KERNEL_BASE_VERSION
 	fi
@@ -517,7 +517,7 @@ function configuring_web_server
 {	
 	cecho yellow "Configuration d'apache2 ... "
 	#configuration de apache
-	ln -s /opt/ard/arp_ihm/script/linux/arp_ihm.apache2 /etc/apache2/sites-available/arp_ihm
+	ln -sf /opt/ard/arp_ihm/script/linux/arp_ihm.apache2 /etc/apache2/sites-available/arp_ihm
 	a2dissite default
 	a2ensite arp_ihm
 	/etc/init.d/apache2 reload
