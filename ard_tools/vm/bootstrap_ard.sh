@@ -40,6 +40,7 @@ configuring_web_server
 configuring_compilators
 installing_ssh_keys
 configure_init_scripts
+getting_medias
 
 #suppression du probleme avec exim4
 sed -i "s|dc_local_interfaces='127.0.0.1 ; ::1'|dc_local_interfaces='127.0.0.1'|" /etc/exim4/update-exim4.conf.conf
