@@ -3,7 +3,7 @@
 
 #This scrip is executed in the parent dir of ard
 
-. /opt/env.sh
+. ard/ard_tools/env.sh
 
 cd ard/arp_core
 make -j2

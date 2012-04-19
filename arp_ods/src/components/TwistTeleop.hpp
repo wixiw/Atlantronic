@@ -30,7 +30,7 @@ class TwistTeleop: public OdsTaskContext
 
         arp_math::Twist2D attrTwistCmdB4Filter;
         arp_math::Twist2D attrTwistCmdCdg;
-        arp_math::EstimatedTwist2D attrInTwist;
+        arp_math::EstimatedTwist2D attrLastTwist;
 
         RTT::OutputPort<arp_math::Twist2D> outTwistCmd;
         //commandes joystick

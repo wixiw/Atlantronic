@@ -152,7 +152,7 @@ class CyclicActionState(CyclicState):
         self.createMotionControlAction_cpoint(x_cpoint,y_cpoint,theta_cpoint,x,y,theta,'OMNIDIRECT',False,False,0,0,0,0)    
         
     def omnicap(self,theta):
-        self.createMotionControlAction(Inputs.getx(),Inputs.gety(),theta,'OMNIDIRECT',False,False,0,0,0,0)
+        self.createMotionControlAction(Inputs.getx(),Inputs.gety(),theta,'OMNIDIRECT',False,False)
         
     def openloop_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x_speed,y_speed,theta_speed,openloop_duration):
         self.createMotionControlAction_cpoint(x_cpoint,y_cpoint,theta_cpoint,0,0,0,'OPENLOOP',False,False,x_speed,y_speed,theta_speed,openloop_duration)

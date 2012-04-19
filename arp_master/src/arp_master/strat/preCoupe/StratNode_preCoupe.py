@@ -64,11 +64,12 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
                                    transitions={'endInitialisation':'StartSequence'})
             smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(),
-                                   transitions={'gogogo':'Opening','problem':'end'})
+                                   transitions={'gogogo':'Middlegame','problem':'end'})
+            #transitions={'gogogo':'Opening','problem':'end'})
             smach.StateMachine.add('Opening', Strat_Opening.Opening(),
                                     transitions={'endOpening':'Middlegame','problem':'Middlegame'})
             smach.StateMachine.add('Middlegame', Strat_Middlegame.Middlegame(),
-                                    transitions={'endMiddlegame':'Endgame'})
+                                    transitions={'endMiddlegame':'Endgame', 'problem':'end'})
             smach.StateMachine.add('Endgame', Strat_Endgame.Endgame(),
                                     transitions={'endEndgame':'Uninitialisation'})
             smach.StateMachine.add('Uninitialisation', Strat_Uninitialisation.Uninitialisation(),

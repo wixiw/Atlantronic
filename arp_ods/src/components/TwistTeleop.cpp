@@ -19,12 +19,12 @@ ORO_LIST_COMPONENT_TYPE( arp_ods::TwistTeleop )
 TwistTeleop::TwistTeleop(const std::string& name):
         OdsTaskContext(name),
         propLinearGain(0.3),
-        propAngularGain(1),
+        propAngularGain(3),
         propLinearAcc(1),
-        propAngularAcc(3),
-        propFilter(false)
+        propAngularAcc(1),
+        propFilter(true)
 {
-    addAttribute("attrInTwist",attrInTwist);
+    addAttribute("attrInTwist",attrLastTwist);
     addAttribute("attrTwistCmdCdg",attrTwistCmdCdg);
     addAttribute("attrTwistCmdB4Filter",attrTwistCmdB4Filter);
     addProperty("propLinearGain",propLinearGain);
@@ -58,27 +58,18 @@ void TwistTeleop::updateHook()
     inYSpeed.readNewest(vy);
     inThetaSpeed.readNewest(vtheta);
     inParams.readNewest(params);
-    inTwist.readNewest(attrInTwist);
+    inTwist.readNewest(attrLastTwist);
 
 
     //on veut piloter en "carthesien" au centre du robot
     Twist2D twistCdg(-vy*propLinearGain,-vx*propLinearGain,-vtheta*propAngularGain);
     attrTwistCmdCdg = twistCdg;
     //mais le robot se pilote au centre des tourelles :(
-    Twist2D twistRef = twistCdg.transport(params.getChassisCenter().inverse());
-    attrTwistCmdB4Filter = twistRef;
-    //filtrage des accélérations
-    if( getPeriod() != 0.0)
-    {
-        Vector3 limits(propLinearAcc,propLinearAcc,propAngularAcc);
-        twistRef.limitFirstDerivate(attrInTwist, limits,  getPeriod());
-    }
+    Twist2D attrTwistCmdB4Filter = twistCdg.transport(params.getChassisCenter().inverse());
+    Twist2D twistRef = attrTwistCmdB4Filter;
 
-    //le filtre d'accélération est desactivable par propriete
-    if (propFilter == true )
         outTwistCmd.write(twistRef);
-    else
-        outTwistCmd.write(attrTwistCmdB4Filter);
+
 
 }
 

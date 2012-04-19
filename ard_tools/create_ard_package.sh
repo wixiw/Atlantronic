@@ -16,6 +16,7 @@ BLANCLAIR="\\033[1;08m"
 JAUNE="\\033[1;33m" 
 CYAN="\\033[1;36m" 
 
+set -e
 
 #vaut 0 quand on n'a pas commence
 creation_state=0
@@ -62,7 +63,7 @@ create_folder_structure()
 	echo "[*] Moving default sources into src folder ..."
 	mv $package_name/*.?pp $package_name/src
 
-	cp default/version.h.in $package_name/src
+	cp ard_tools/default/version.h.in $package_name/src
 }
 
 ###
@@ -71,9 +72,9 @@ create_folder_structure()
 edit_cmakelists()
 {
 	echo "[*] Editing CMakelists.txt ..."
-	cp default/CMakeLists.txt $package_name/CMakeLists.txt
+	cp ard_tools/default/CMakeLists.txt $package_name/CMakeLists.txt
 	sed -i "s/@PROJECT_NAME@/$package_name/" $package_name/CMakeLists.txt
-	cp default/cmake/* $package_name/cmake
+	cp ard_tools/default/cmake/* $package_name/cmake
 	sed -i "s/XXX/$package_name/" $package_name/cmake/ARP_project_names.cmake
 	
 	#creation des CMakeFiles de src
@@ -105,7 +106,7 @@ configure_ros()
 	echo "ROS_PACKAGE_PATH=\$ROS_PACKAGE_PATH:\`rosstack find ard\`/$package_name" >> env.sh
 
 	echo "[*] Editing manifest.xml ..."
-	cp default/manifest.xml $package_name
+	cp ard_tools/default/manifest.xml $package_name
 	sed -i "/^PACKAGE_NAME /s/=/= $package_name/" $package_name/manifest.xml
 }
 
@@ -190,12 +191,12 @@ create_scripts()
 
 	echo "[*] Generating install_taget script ..."
 	echo "# ARD $package_name install target script file (auto generated file, you shouldn't edit)" > $package_name/script/linux/install_target_$package_name.sh
-	echo "\`rosstack find ard\`/default/script/install_target.sh $package_name \$1" > $package_name/script/linux/install_target_$package_name.sh
+	echo "\`rosstack find ard\`/ard_tools/default/script/install_target.sh $package_name \$1" > $package_name/script/linux/install_target_$package_name.sh
 	chmod +x $package_name/script/linux/install_target_$package_name.sh
 
 	echo "[*] Generating gen_doc script ..."
 	echo "# ARD $package_name documentation generation script file (auto generated file, you shouldn't edit)" > $package_name/script/linux/gen_doc_$package_name.sh
-	echo "\`rosstack find ard\`/default/script/gen_doc.sh $package_name" > $package_name/script/linux/gen_doc_$package_name.sh
+	echo "\`rosstack find ard\`/ard_tools/default/script/gen_doc.sh $package_name" > $package_name/script/linux/gen_doc_$package_name.sh
 	chmod +x $package_name/script/linux/gen_doc_$package_name.sh
 }
 

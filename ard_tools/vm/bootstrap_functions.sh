@@ -454,6 +454,12 @@ function install_ros
 	ln -sf /opt/ros_addons-$ROS_DISTRIBUTION /opt/ros_addons
 	echo $ROS_ADDONS_VERSION > /opt/ros/ard-version 
 	rm /tmp/$ROS_ADDONS_VERSION -f
+	
+	#installation des dépendances
+	if [ $IS_HOST == "true" ]; then
+		. /opt/env.sh
+		rosdep install -a -y	
+	fi
 }
 
 ###

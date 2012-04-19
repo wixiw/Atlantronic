@@ -48,7 +48,7 @@ cecho "yellow" "Chargement des variables d'environement ARD fait. Ubiquity is on
 
 #configuration de ccache
 export CCACHE_DIR=/home/ard/ccache/compilation.cache
-ccache -M 2G
+ccache -M 2G 2&>1
 export CCACHE_HARDLINK=1
 export PATH=/home/ard/ccache:$PATH
 export DISTCC_HOSTS="localhost"

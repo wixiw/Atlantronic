@@ -80,10 +80,10 @@ class CyclicState(smach.StateMachine):
         
     def setPosition(self,x,y,theta):
         self.setPosition_loc(x,y,theta)
-        try:
-            self.setPosition_simu(x,y,theta)
-        except rospy.ServiceException, e:
-            rospy.logerr("Position could not be set on simulator")
+        #try:
+            #self.setPosition_simu(x,y,theta)
+       # except rospy.ServiceException, e:
+        #    rospy.logerr("Position could not be set on simulator")
     
     
     #----------------------------------------------------

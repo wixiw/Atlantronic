@@ -383,6 +383,12 @@ void Faulhaber3268Bx4::runHoming()
                     attrHomingState = HOMING_DONE;
                 break;
             case HOMING_DONE:
+                if( !m_faulhaberCommandTodo )
+                {
+                    m_faulhaberScriptCommand = (UNS8) F_CMD_V;
+                    m_faulhaberScriptCommandParam = (UNS32) 0;
+                    m_faulhaberCommandTodo = true;
+                }
                 break;
             default:
                 LOG(Error) << "Unknow homing state : " << attrHomingState << endlog();

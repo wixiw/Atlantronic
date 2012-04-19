@@ -25,30 +25,39 @@ from math import *
 
 class Middlegame(PreemptiveStateMachine):
     def __init__(self):
-        PreemptiveStateMachine.__init__(self,outcomes=['endMiddlegame'])
+        PreemptiveStateMachine.__init__(self,outcomes=['endMiddlegame','problem'])
         with self:      
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
                                              EndMatchPreempter(-5.0),
                                              transitions={'endMatch':'endMiddlegame'})
 
+            PreemptiveStateMachine.add('GotoFirstBottle',
+                      GotoFirstBottle(),
+                      transitions={'succeeded':'GotoSecondBottle', 'aborted':'problem'})
+            #as initial state is not the preemptive one, it is necessary to add the information here !
+            self.setInitialState('GotoFirstBottle')
+            
+            PreemptiveStateMachine.add('GotoSecondBottle',
+                      GotoSecondBottle(),
+                      transitions={'succeeded':'WaitBeforeNext', 'aborted':'problem'})
+            
             PreemptiveStateMachine.add('WaitBeforeNext',
                       WaiterState(1.0),
                       transitions={'done':'endMiddlegame'})
-            #as initial state is not the preemptive one, it is necessary to add the information here !
-            self.setInitialState('WaitBeforeNext')
+
 
 
 ############### Ordres de motion
 
-class EtatA(CyclicActionState):
+class GotoFirstBottle(CyclicActionState):
     def createAction(self):
-        pose = AmbiPoseRed(0.7, 0.7,0, Data.color)
-        self.pointcap(pose.x, pose.y, pose.theta)
+        pose = AmbiPoseRed(0.200,-0.800, -pi/2, Data.color)
+        self.omnidirect(pose.x, pose.y, pose.theta)
 
-class EtatB(CyclicActionState):
+class GotoSecondBottle(CyclicActionState):
     def createAction(self):
-        pose = AmbiPoseRed(-0.7,-0.7,pi, Data.color)
-        self.pointcap(pose.x, pose.y, pose.theta)
+        pose = AmbiPoseRed(-0.600,-0.800, -pi/2, Data.color)
+        self.omnidirect(pose.x, pose.y, pose.theta)
          
 ################# REVERSER
 class ReverseOrder(CyclicActionState):
