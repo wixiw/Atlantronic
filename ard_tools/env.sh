@@ -3,6 +3,9 @@ export EDITOR=gedit
 export ROS_HOME=/opt/ros
 export ROS_PARALLEL_JOBS=-j4
 
+#configuration des couleurs de log
+. /opt/ard/ard_tools/vm/color.sh
+
 #chargement des scripts d'environnement des sous modules.
 . /opt/ros/setup.bash
 . /opt/ros_addons/env.sh
@@ -42,14 +45,13 @@ alias l='ls $LS_OPTIONS -lA'
 force_color_prompt=yes
 PS1='${debian_chroot:+($debian_chroot)}\[\033[01;35m\]\u@\h\[\033[00m\](`cat /opt/kernel/ard-vm-version`):\[\033[01;34m\]\w\[\033[00m\]\$ '
 
-#configuration des couleurs de log
-. /opt/color.sh
-cecho "yellow" "Chargement des variables d'environement ARD fait. Ubiquity is on the road !"
-
 #configuration de ccache
 export CCACHE_DIR=/home/ard/ccache/compilation.cache
-ccache -M 2G 2&>1
+ccache -M 2G 2&>/dev/null
 export CCACHE_HARDLINK=1
 export PATH=/home/ard/ccache:$PATH
 export DISTCC_HOSTS="localhost"
 export CCACHE_PREFIX=distcc
+
+#message de fin
+cecho "yellow" "Chargement des variables d'environement ARD fait. Ubiquity is on the road !"
