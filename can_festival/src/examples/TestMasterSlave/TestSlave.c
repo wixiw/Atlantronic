@@ -4,7 +4,7 @@
 #include "TestSlave.h"
 
 /**************************************************************************/
-/* Declaration of the mapped variables                                    */
+/* Declaration of mapped variables                                        */
 /**************************************************************************/
 UNS8 SlaveMap1 = 0x0;		/* Mapped at index 0x2000, subindex 0x00 */
 UNS8 SlaveMap2 = 0x0;		/* Mapped at index 0x2001, subindex 0x00 */
@@ -21,7 +21,7 @@ INTEGER16 SlaveMap12 = 0x0;		/* Mapped at index 0x200B, subindex 0x00 */
 INTEGER16 SlaveMap13 = 0x4D2;		/* Mapped at index 0x200C, subindex 0x00 */
 
 /**************************************************************************/
-/* Declaration of the value range types                                   */
+/* Declaration of value range types                                       */
 /**************************************************************************/
 
 #define valueRange_EMC 0x9F /* Type for index 0x1003 subindex 0x00 (only set of value 0 is possible) */
@@ -135,7 +135,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                     UNS32 TestSlave_obj1010_Save_All_Parameters = 0x0;	/* 0 */
                     UNS32 TestSlave_obj1010_Save_Communication_Parameters = 0x0;	/* 0 */
                     UNS32 TestSlave_obj1010_Save_Application_Parameters = 0x0;	/* 0 */
-                    UNS32 TestSlave_obj1010_Save_Manufacturer_Parameters = 0x0;	/* 0 */
+                    UNS32 TestSlave_obj1010_Save_Manufacturer_Parameters_1 = 0x0;	/* 0 */
                     ODCallback_t TestSlave_Index1010_callbacks[] = 
                      {
                        NULL,
@@ -150,7 +150,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, uint32, sizeof (UNS32), (void*)&TestSlave_obj1010_Save_All_Parameters },
                        { RW, uint32, sizeof (UNS32), (void*)&TestSlave_obj1010_Save_Communication_Parameters },
                        { RW, uint32, sizeof (UNS32), (void*)&TestSlave_obj1010_Save_Application_Parameters },
-                       { RW, uint32, sizeof (UNS32), (void*)&TestSlave_obj1010_Save_Manufacturer_Parameters }
+                       { RW, uint32, sizeof (UNS32), (void*)&TestSlave_obj1010_Save_Manufacturer_Parameters_1 }
                      };
 
 /* index 0x1011 :   Restore Default Parameters. */
@@ -158,7 +158,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                     UNS32 TestSlave_obj1011_Restore_All_Default_Parameters = 0x0;	/* 0 */
                     UNS32 TestSlave_obj1011_Restore_Communication_Default_Parameters = 0x0;	/* 0 */
                     UNS32 TestSlave_obj1011_Restore_Application_Default_Parameters = 0x0;	/* 0 */
-                    UNS32 TestSlave_obj1011_Restore_Manufacturer_Default_Parameters = 0x0;	/* 0 */
+                    UNS32 TestSlave_obj1011_Restore_Manufacturer_Defined_Default_Parameters_1 = 0x0;	/* 0 */
                     ODCallback_t TestSlave_Index1011_callbacks[] = 
                      {
                        NULL,
@@ -173,7 +173,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, uint32, sizeof (UNS32), (void*)&TestSlave_obj1011_Restore_All_Default_Parameters },
                        { RW, uint32, sizeof (UNS32), (void*)&TestSlave_obj1011_Restore_Communication_Default_Parameters },
                        { RW, uint32, sizeof (UNS32), (void*)&TestSlave_obj1011_Restore_Application_Default_Parameters },
-                       { RW, uint32, sizeof (UNS32), (void*)&TestSlave_obj1011_Restore_Manufacturer_Default_Parameters }
+                       { RW, uint32, sizeof (UNS32), (void*)&TestSlave_obj1011_Restore_Manufacturer_Defined_Default_Parameters_1 }
                      };
 
 /* index 0x1014 :   Emergency COB ID. */
@@ -510,6 +510,10 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, int16, sizeof (INTEGER16), (void*)&SlaveMap13 }
                      };
 
+/**************************************************************************/
+/* Declaration of pointed variables                                       */
+/**************************************************************************/
+
 const indextable TestSlave_objdict[] = 
 {
   { (subindex*)TestSlave_Index1000,sizeof(TestSlave_Index1000)/sizeof(TestSlave_Index1000[0]), 0x1000},
@@ -602,7 +606,7 @@ const indextable * TestSlave_scanIndexOD (UNS16 wIndex, UNS32 * errorCode, ODCal
  */
 s_PDO_status TestSlave_PDO_status[5] = {s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer};
 
-quick_index TestSlave_firstIndex = {
+const quick_index TestSlave_firstIndex = {
   10, /* SDO_SVR */
   0, /* SDO_CLT */
   0, /* PDO_RCV */
@@ -611,7 +615,7 @@ quick_index TestSlave_firstIndex = {
   16 /* PDO_TRS_MAP */
 };
 
-quick_index TestSlave_lastIndex = {
+const quick_index TestSlave_lastIndex = {
   10, /* SDO_SVR */
   0, /* SDO_CLT */
   0, /* PDO_RCV */
@@ -620,7 +624,7 @@ quick_index TestSlave_lastIndex = {
   20 /* PDO_TRS_MAP */
 };
 
-UNS16 TestSlave_ObjdictSize = sizeof(TestSlave_objdict)/sizeof(TestSlave_objdict[0]); 
+const UNS16 TestSlave_ObjdictSize = sizeof(TestSlave_objdict)/sizeof(TestSlave_objdict[0]); 
 
 CO_Data TestSlave_Data = CANOPEN_NODE_DATA_INITIALIZER(TestSlave);
 

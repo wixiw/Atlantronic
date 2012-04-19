@@ -21,10 +21,10 @@
 from os.path import join as opj
 
 CC = "gcc"
-PROG_CFLAGS = " -DDEBUG_ERR_CONSOLE_ON -g -DCO_ENABLE_LSS -DCO_ENABLE_LSS_FS"
+PROG_CFLAGS = " -fPIC -DDEBUG_ERR_CONSOLE_ON -g -DCO_ENABLE_LSS -DCO_ENABLE_LSS_FS"
 EXE_CFLAGS = " -lpthread -lrt -ldl"
 OS_NAME = "Linux"
-ARCH_NAME = "x86"
+ARCH_NAME = "x86_64"
 PREFIX = "/opt/ard/can_festival"
 TARGET = "unix"
 CAN_DRIVER = "can_socket"
