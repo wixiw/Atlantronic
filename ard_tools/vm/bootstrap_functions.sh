@@ -484,6 +484,11 @@ function install_ros
 		. /opt/ard/ard_tools/env.sh
 		rosdep install -a -y	
 	fi
+	
+	#correction de env.sh on utilise pas rosinstall pour le moment
+	cp /opt/setup.sh /opt/setup.sh.origine
+	ln -sf /opt/ard/ard_tools/setup.sh /opt/ros/setup.sh
+
 }
 
 ###
