@@ -99,8 +99,9 @@ function configure_boot
 	else
 		sed -i "s|GRUB_CMDLINE_LINUX_DEFAULT=\"quiet\"|GRUB_CMDLINE_LINUX_DEFAULT=\"quiet splash ootfstype=ext4 init=/sbin/init_ro console=tty1 console=ttyS0,115200\"|" /etc/default/grub
 		
-		echo "serial --unit=1 --speed=115200"  >> /etc/grub.d/00_header
-		echo "terminal serial" >> /etc/grub.d/00_header
+		#attention echo dans le echo
+		echo "echo \"serial --unit=1 --speed=115200\"
+		echo \"terminal serial\"" >> /etc/grub.d/00_header
 	fi
 	
 	#change boot screen size
@@ -311,7 +312,9 @@ function install_osdeps
 	if [ $IS_HOST == "true" ]; then
 		PAQUET_LIST=$VM_DEBIAN_PACKAGES
 	else
-		PAQUET_LIST=$TARGET_DEBIAN_PACKAGES
+		PAQUET_LIST=TARGET_DEBIAN_PACKAGES=$BOOST_PACKAGES" "$OROCOS_PACKAGES" "$TOOLS_PACKAGES
+		
+		PAQUET_LIST2=$WEB_PACKAGES" lm-sensors ruby python-setuptools python-yaml python-paramiko python-numpy python-serial"
 	fi
 	
 	#installation des paquets manquants
@@ -319,9 +322,15 @@ function install_osdeps
 	cecho blue "liste des paquets a installer : $PAQUET_LIST"
 	apt-get update --fix-missing
 	apt-get install $PAQUET_LIST -y
-	
+	#probleme de place memoire :(
+	if [ $IS_HOST == "false" ]; then
+		apt-get clean
+		apt-get install $PAQUET_LIST2 -y
+	else
+		
 	#mise a jour de pip
-	sudo pip install -U pip
+	pip install -U pip
+	pip install -U rosinstall vcstools
 }
 
 
@@ -437,7 +446,7 @@ function install_ros
 		cd /opt
 		tar -xf /tmp/$ROS_VERSION
 	ln -sf /opt/ros-${ROS_DISTRIBUTION}_update /opt/ros
-		echo $ROS_VERSION > /opt/ros/ard-version 
+		echo $ROS_VERSION > /opt/ros-${ROS_DISTRIBUTION}_update/ard-version 
 		rm /tmp/$ROS_VERSION -f
 	fi
 	
@@ -451,7 +460,7 @@ function install_ros
 	cd /opt
 	tar -xf /tmp/$ROS_ADDONS_VERSION
 	ln -sf /opt/ros_addons-$ROS_DISTRIBUTION /opt/ros_addons
-	echo $ROS_ADDONS_VERSION > /opt/ros/ard-version 
+	echo $ROS_ADDONS_VERSION > /opt/ros_addons-$ROS_DISTRIBUTION/ard-version 
 	rm /tmp/$ROS_ADDONS_VERSION -f
 	
 	#bricolage avec assimp : bug ROS
@@ -463,7 +472,7 @@ function install_ros
 	mkdir -p build
 	cd build
 	cmake .. -DCMAKE_INSTALL_PREFIX=/usr
-	make
+	make -j3
 	make install
 	bash -c "echo 2ed0b9954bcb2572c0dade8f849b9260 > /usr/include/assimp/assimp-version.installed"
 

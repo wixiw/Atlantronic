@@ -28,8 +28,6 @@
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.130284372" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.640232574" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 								<option id="gnu.cpp.compiler.option.include.paths.444131619" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/opt/ros/orocos_toolchain_ros/rtt/install/include"/>
-									<listOptionValue builtIn="false" value="/opt/ros/orocos_toolchain_ros/ocl/install/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/messages/std_msgs/include/std_msgs"/>
 									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/clients/cpp/roscpp/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/geometry_msgs/msg_gen/cpp/include"/>
@@ -37,17 +35,15 @@
 									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/nav_msgs/msg_gen/cpp/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros/geometry/tf/include/tf"/>
 									<listOptionValue builtIn="false" value="/opt/ros/driver_common/driver_base/include"/>
-									<listOptionValue builtIn="false" value="/opt/ros/laser_drivers/hokuyo_node/include"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ard_electric/arp_core/msg_gen/cpp/include}&quot;"/>
 									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/messages/std_msgs/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros_addons/orocos_toolchain/install/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros_addons/laser_drivers/hokuyo_node/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1393136034" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.1829666111" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
 								<option id="gnu.c.compiler.option.include.paths.386838343" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/opt/ros/orocos_toolchain_ros/rtt/install/include"/>
-									<listOptionValue builtIn="false" value="/opt/ros/orocos_toolchain_ros/ocl/install/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/messages/std_msgs/include/std_msgs"/>
 									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/clients/cpp/roscpp/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/geometry_msgs/msg_gen/cpp/include"/>
@@ -55,10 +51,10 @@
 									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/nav_msgs/msg_gen/cpp/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros/geometry/tf/include/tf"/>
 									<listOptionValue builtIn="false" value="/opt/ros/driver_common/driver_base/include"/>
-									<listOptionValue builtIn="false" value="/opt/ros/laser_drivers/hokuyo_node/include"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ard_electric/arp_core/msg_gen/cpp/include}&quot;"/>
 									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/messages/std_msgs/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros_addons/orocos_toolchain/install/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros_addons/laser_drivers/hokuyo_node/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.399882191" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -71,8 +67,6 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.base.491831498" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base">
 								<option id="gnu.both.asm.option.include.paths.2002055351" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/opt/ros/orocos_toolchain_ros/rtt/install/include"/>
-									<listOptionValue builtIn="false" value="/opt/ros/orocos_toolchain_ros/ocl/install/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/messages/std_msgs/include/std_msgs"/>
 									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/clients/cpp/roscpp/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/geometry_msgs/msg_gen/cpp/include"/>
@@ -80,10 +74,10 @@
 									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/nav_msgs/msg_gen/cpp/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros/geometry/tf/include/tf"/>
 									<listOptionValue builtIn="false" value="/opt/ros/driver_common/driver_base/include"/>
-									<listOptionValue builtIn="false" value="/opt/ros/laser_drivers/hokuyo_node/include"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ard_electric/arp_core/msg_gen/cpp/include}&quot;"/>
 									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/messages/std_msgs/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros_addons/orocos_toolchain/install/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros_addons/laser_drivers/hokuyo_node/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.2146203453" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
