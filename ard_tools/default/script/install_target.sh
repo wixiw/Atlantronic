@@ -18,6 +18,8 @@
 # sh install.sh arp_core 192.168.1.29
 #
 
+set -e 
+
 HOSTNAME=`cat /etc/hostname`
 
 VERT="\\033[1;32m" 

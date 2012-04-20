@@ -370,7 +370,7 @@ function configure_user_profiles
 	echo "#ARP env
 	ROUGE='\\033[1;31m'
 	NORMAL='\\033[0;39m'
-	. /opt/ard/ard_tools.sh
+	. /opt/ard/ard_tools/env.sh
 	if [ \$? != 0 ]; then
 	    echo -e \$ROUGE 'Failed to load ARD env variables. Check if you /opt folder contains the rigth stuff'  \$NORMAL
 	fi" >> /etc/bash.bashrc
