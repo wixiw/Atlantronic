@@ -325,7 +325,7 @@ function install_osdeps
 	else
 		PAQUET_LIST=$BOOST_PACKAGES" "$OROCOS_PACKAGES" "$TOOLS_PACKAGES
 		
-		PAQUET_LIST2=TARGET_DEBIAN_PACKAGES
+		PAQUET_LIST2=$TARGET_DEBIAN_PACKAGES
 	fi
 	
 	#installation des paquets manquants
