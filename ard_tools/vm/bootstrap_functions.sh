@@ -326,7 +326,7 @@ function install_osdeps
 	if [ $IS_HOST == "false" ]; then
 		apt-get clean
 		apt-get install $PAQUET_LIST2 -y
-	else
+	fi
 		
 	#mise a jour de pip
 	pip install -U pip
