@@ -323,9 +323,9 @@ function install_osdeps
 	if [ $IS_HOST == "true" ]; then
 		PAQUET_LIST=$VM_DEBIAN_PACKAGES
 	else
-		PAQUET_LIST=TARGET_DEBIAN_PACKAGES=$BOOST_PACKAGES" "$OROCOS_PACKAGES" "$TOOLS_PACKAGES
+		PAQUET_LIST=$BOOST_PACKAGES" "$OROCOS_PACKAGES" "$TOOLS_PACKAGES
 		
-		PAQUET_LIST2=$WEB_PACKAGES" lm-sensors ruby python-setuptools python-yaml python-paramiko python-numpy python-serial"
+		PAQUET_LIST2=TARGET_DEBIAN_PACKAGES
 	fi
 	
 	#installation des paquets manquants
@@ -333,7 +333,7 @@ function install_osdeps
 	cecho blue "liste des paquets a installer : $PAQUET_LIST"
 	apt-get update --fix-missing
 	apt-get install $PAQUET_LIST -y
-	#probleme de place memoire :(
+	#probleme de place memoire sur la cible :(
 	if [ $IS_HOST == "false" ]; then
 		apt-get clean
 		apt-get install $PAQUET_LIST2 -y
