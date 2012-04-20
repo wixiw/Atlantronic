@@ -465,6 +465,11 @@ function install_ros
 
 	
 	#installation des dépendances
+	cd /tmp
+	wget ftp://ard_user:robotik@wixibox/34%20-%20Info/Dependance/OpenCv/opencv_ard-10.0.tgz
+	tar -xf opencv_ard-10.0.tgz
+	mv opencv /opt/opencv
+
 	if [ $IS_HOST == "true" ]; then
 		
 		#bricolage avec assimp : bug ROS
