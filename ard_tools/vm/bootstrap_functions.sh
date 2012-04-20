@@ -544,8 +544,9 @@ function post_install_cleaning
 		rm -rf /tmp/*
 	fi
 
+	# a voir; ça supprime des paquets sans dépendances sur lesquels on s'appuie
 	#suppression des paquets orphelins
-	deborphan | xargs apt-get -y remove --purge
+	#deborphan | xargs apt-get -y remove --purge
 }
 
 ###
