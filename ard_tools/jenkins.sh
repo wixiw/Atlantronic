@@ -10,3 +10,5 @@ export CCACHE_DIR=/var/lib/jenkins/ccache/jenkins.cache
 ccache -M 3G
 
 rosmake arp_master
+
+ard/test_all.sh
