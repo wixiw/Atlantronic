@@ -8,6 +8,17 @@
 set -e
 
 ###
+# Use this when you have low HDD memory or if you want to write large files quickly
+# you should only call this on targets
+function mount_tmpOnRam
+{
+	if [ $IS_HOST == "false" ]; then
+		echo "tmpToRam /tmp tmpfs defaults 0 0" >> /etc/fstab
+		mount /tmp
+	fi
+}
+
+###
 # use this to check if the wixibox servcies are available
 # at present time respondign to a ping is enougth
 function check_wixibox

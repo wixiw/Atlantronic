@@ -27,6 +27,8 @@ check_wixibox
 # PHASE 1 : system configuration
 #########
 
+mount_tmpOnRam
+
 #recuperation d'une version d'ard
 cecho yellow "Get ard repository ..."
 cecho blue "it will hang a bit, it's normal (quiet option), it works in background"
