@@ -34,9 +34,9 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_consistency )
     curmotors.driving.left.velocity = 1/(params.getTractionRatio()*params.getLeftWheelDiameter()/2);
     curmotors.driving.right.velocity = 1/(params.getTractionRatio()*params.getRightWheelDiameter()/2);
     curmotors.driving.rear.velocity = 1/(params.getTractionRatio()*params.getRearWheelDiameter()/2);
-    curmotors.steering.left.position = 0 + params.getLeftTurretZero()*params.getTurretRatio();
-    curmotors.steering.right.position = 0 + params.getRightTurretZero()*params.getTurretRatio();
-    curmotors.steering.rear.position = 0 + params.getRearTurretZero()*params.getTurretRatio();
+    curmotors.steering.left.position = params.getLeftTurretZero();
+    curmotors.steering.right.position = params.getRightTurretZero();
+    curmotors.steering.rear.position = params.getRearTurretZero();
 
     success = UbiquityKinematics::motors2Twist( curmotors,turrets,twist,slippage,params);
     BOOST_CHECK_EQUAL( success , true);
