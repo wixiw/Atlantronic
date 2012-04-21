@@ -53,9 +53,9 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_consistency )
     BOOST_CHECK_CLOSE( motors.driving.left.velocity , 1/(params.getTractionRatio()*params.getLeftWheelDiameter()/2) , 1E-6);
     BOOST_CHECK_CLOSE( motors.driving.right.velocity , 1/(params.getTractionRatio()*params.getRightWheelDiameter()/2) , 1E-6);
     BOOST_CHECK_CLOSE( motors.driving.rear.velocity , 1/(params.getTractionRatio()*params.getRearWheelDiameter()/2) , 1E-6);
-    BOOST_CHECK_CLOSE( motors.steering.left.position , 0 + params.getLeftTurretZero()*params.getTurretRatio() , 1E-6);
-    BOOST_CHECK_CLOSE( motors.steering.right.position , 0 + params.getRightTurretZero()*params.getTurretRatio() , 1E-6);
-    BOOST_CHECK_CLOSE( motors.steering.rear.position , 0 + params.getRearTurretZero()*params.getTurretRatio() , 1E-6);
+    BOOST_CHECK_CLOSE( motors.steering.left.position , params.getLeftTurretZero() , 1E-6);
+    BOOST_CHECK_CLOSE( motors.steering.right.position , params.getRightTurretZero() , 1E-6);
+    BOOST_CHECK_CLOSE( motors.steering.rear.position , params.getRearTurretZero() , 1E-6);
 
 
 }
