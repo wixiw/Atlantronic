@@ -13,6 +13,14 @@ include_directories( ${wxWidgets_INCLUDE_DIRS} )
 find_package(Eigen REQUIRED)
 include_directories(${Eigen_INCLUDE_DIRS})
 
+
+include_directories("/opt/ard/can_festival/include")
+include_directories("/opt/ard/can_festival/include/canfestival")
+include_directories("/usr/include/xenomai")
+
+link_directories("/opt/ard/can_festival/lib")
+
+
 rosbuild_add_boost_directories()
 
 ####################################################################################################################

@@ -1,13 +1,15 @@
 #!/bin/bash
 
-if [ $OROCOS_TARGET == "xenomai" ]
-then
-	TIMERS="xeno"
-fi
-if [ $OROCOS_TARGET == "gnulinux" ]
-then
-	TIMERS="unix"
-fi
+#if [ $OROCOS_TARGET == "xenomai" ]
+"then
+#	TIMERS="xeno"
+#fi
+#if [ $OROCOS_TARGET == "gnulinux" ]
+#then
+#	TIMERS="unix"
+#fi
+
+TIMERS="xeno"
 
 if [ $# == 1 ]
 then

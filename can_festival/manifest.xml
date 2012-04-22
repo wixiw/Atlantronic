@@ -9,11 +9,11 @@
     <depend package="ocl" />
     <depend package="rosbuild" />
 	
-	<export>
+	<!--<export>
 		<cpp os="gnulinux" cflags="-I${prefix}/include -I${prefix}/include/canfestival" lflags="-L${prefix}/lib -llibcanfestival_unix.a -llibcanfestival.a"/>
 		<rosbuild cmake_directory="${prefix}/cmake"/>
-	</export>
-	<!--
+	</export>-->
+<!--
 	<export>
 		<cpp os="xenomai" cflags="-I${prefix}/include -I${prefix}/include/canfestival -I/usr/include/xenomai" lflags="-L${prefix}/lib -llibcanfestival_unix.a -llibcanfestival.a -L/usr/lib -Wl,-rpath /usr/lib -lnative -lxenomai -lpthread -lrtdm -ldl"/>
 		<rosbuild cmake_directory="${prefix}/cmake"/>

@@ -17,8 +17,8 @@ using namespace std_msgs;
 
 HmlGraphicsFrame::HmlGraphicsFrame():
 	m_nodeHandle(),
+    start_pub(),
 	color_pub(),
-	start_pub(),
 	obstacle_pub(),
 	wxFrame(NULL,
           wxID_ANY,
