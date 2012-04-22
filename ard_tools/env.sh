@@ -18,6 +18,8 @@ if [ "x$LUA_PATH" == "x" ]; then
 fi
 export LUA_PATH="$LUA_PATH;$RTTLUA_MODULES"
 
+#ajout d'opencv aux paths
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/opencv/lib/pkgconfig
 
 #alias ARD
 alias du='du --max-depth=1 -h'

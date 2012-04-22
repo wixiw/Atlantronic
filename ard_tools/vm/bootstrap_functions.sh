@@ -255,6 +255,7 @@ function install_kernel
 # This function configures 2 network interfaces :
 # _ a LAN dhcp client for dev network
 # _ a WLAN static IP on 10.0.0.X to manipulate the robot
+# on the host we let the network-manager managing all this as there are dhcp everywhere now
 function configure_network
 {
 	cecho yellow "Configuration du réseau ..."
@@ -269,17 +270,17 @@ function configure_network
 		iface lo inet loopback
 		
 		# The primary LAN DHCP network interface
-		allow-hotplug eth0
-		iface eth0 inet dhcp
-		auto eth0
+		#allow-hotplug eth0
+		#iface eth0 inet dhcp
+		#auto eth0
 	
 		# The secondary robot WLAN interface
-		allow-hotplug wlan_robot
-		iface wlan_robot inet static
-		address $IP_ADDRESS
-		gateway 192.168.1.1
-		netmask 255.255.255.0
-		auto wlan_robot" > /etc/network/interfaces
+		#allow-hotplug wlan_robot
+		#iface wlan_robot inet static
+		#address $IP_ADDRESS
+		#gateway 192.168.1.1
+		#netmask 255.255.255.0
+		#auto wlan_robot" > /etc/network/interfaces
 	else
 		#ajout de l'IP fixe
 		cecho yellow "Définition du réseau IP fixe target..."
@@ -337,11 +338,11 @@ function install_osdeps
 	if [ $IS_HOST == "false" ]; then
 		apt-get clean
 		apt-get install $PAQUET_LIST2 -y
+	else
+		#mise a jour de pip
+		pip install -U pip
+		pip install -U rosinstall vcstools
 	fi
-		
-	#mise a jour de pip
-	pip install -U pip
-	pip install -U rosinstall vcstools
 }
 
 
@@ -443,7 +444,7 @@ function getting_medias
 }
 
 ###
-# 
+# attention sur la cible on n'installa pas le dossier ros, charge à install target de le faire
 function install_ros
 {
 	#installation de ROS nature (on ne l'installe pas sur la cible c'est trop gros)
@@ -499,11 +500,21 @@ function install_ros
 	
 		. /opt/ard/ard_tools/env.sh
 		rosdep install -a -y	
+		
+		#correction de env.sh on utilise pas rosinstall pour le moment
+		cp /opt/ros/setup.sh /opt/ros/setup.sh.origine
+		ln -sf /opt/ard/ard_tools/setup.sh /opt/ros/setup.sh
+		
+		#bricolages avec opencv
+		cd /opt/opencv/lib/pkgconfig
+		ln -sf opencv.pc opencv2.3.pc
+		ln -sf opencv2.3.pc opencv-2.3.1.pc
+		ln -s /opt/opencv/share/OpenCV/OpenCVConfig.cmake /usr/share/cmake-2.8/Modules
+		cd /usr/share/cmake-2.8/Modules/
+		wget ftp://ard_user:robotik@88.191.124.77/34%20-%20Info/Dependance/OpenCv/FindOpenCV.cmake
 	fi
 	
-	#correction de env.sh on utilise pas rosinstall pour le moment
-	cp /opt/setup.sh /opt/setup.sh.origine
-	ln -sf /opt/ard/ard_tools/setup.sh /opt/ros/setup.sh
+
 
 }
 
