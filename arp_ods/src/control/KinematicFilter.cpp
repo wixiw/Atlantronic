@@ -35,10 +35,14 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
          double & quality
     )
 {
-    Log(INFO) << "welcome to the wonderful filter----------------- ";
-    Log(INFO) << "desiredTwist="<< desiredTwist.toString() << " phi=" << desiredTwist.speedAngle() << " v=" << desiredTwist.speedNorm();
-    Log(INFO) << "currentTwist="<< currentTwist.toString() << " phi=" << currentTwist.speedAngle() << " v=" << currentTwist.speedNorm();
-
+    if (currentMS.steering.left.position!=0.0)
+        Log(INFO) << "welcome to the wonderful filter--------------------------------------------- ";
+    else
+        Log(INFO) << "welcome to the wonderful filter----- ";
+    Log(INFO) << "desiredTwist=                                "<< desiredTwist.toString() << " phi=" << desiredTwist.speedAngle() << " v=" << desiredTwist.speedNorm();
+    Log(INFO) << "currentTwist=                                "<< currentTwist.toString() << " phi=" << currentTwist.speedAngle() << " v=" << currentTwist.speedNorm();
+    Log(INFO) << "current steering motors                 :    " << "("<< currentMS.steering.left.position << " , " << currentMS.steering.right.position << " , " << currentMS.steering.rear.position << ")";
+    Log(INFO) << "----------";
 
 
     //commandes moteurs qui permettent de produire le currentTwist
@@ -51,7 +55,7 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
     if( !params.check() )
         return false;
 
-
+/*
     // pour debug: je vais calculer le twist moi meme...
     if( UbiquityKinematics::motors2Twist(currentMS, ioTS, currentTwist, oSR, params) == false )
             {
@@ -61,11 +65,12 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
             }
 
     Log(INFO) << "currentTwist a partir moteurs="<< currentTwist.toString() << " phi=" << currentTwist.speedAngle() << " v=" << currentTwist.speedNorm();
-
-
+    Log(INFO) << "turrets resultantes           " << "("<< ioTS.steering.left.position << " , " << ioTS.steering.right.position << " , " << ioTS.steering.rear.position << ")";
+    Log(INFO) << "---";
+*/
 
     //cas du départ du robot :  si la mesure est autour de 0 on considère que le robot se déplace quand même un peu vers l'avant pour
-    //que le twist définissent bien la configuration de tourelle.
+    //que le twist définisse bien la configuration de tourelle.
     if( currentTwist.speedNorm() <= minStartSpeed )
     {
         currentMS.driving.left.velocity = minStartSpeed/0.066*2;
@@ -77,7 +82,14 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
             quality = -200;
             return false;
         }
-        Log(INFO) << "Robot starting, forcing min speed, new Twist=" << currentTwist.toString();
+
+        Log(INFO) << "Robot starting, forcing min speed, new Twist=" << currentTwist.toString() << " phi=" << currentTwist.speedAngle() << " v=" << currentTwist.speedNorm();
+        Log(INFO) << "turrets after redefinition:                  " << "("<< ioTS.steering.left.position << " , " << ioTS.steering.right.position << " , " << ioTS.steering.rear.position << ")";
+        MotorState updatedMS;
+        UbiquityKinematics::twist2Motors(currentTwist, currentMS,ioTS,updatedMS,params);
+        Log(INFO) << "turrets after recomputation from new twist:  " << "("<< ioTS.steering.left.position << " , " << ioTS.steering.right.position << " , " << ioTS.steering.rear.position << ")";
+        Log(INFO) << "motors after recomputation from new twist:   " << "("<< updatedMS.steering.left.position << " , " << updatedMS.steering.right.position << " , " << updatedMS.steering.rear.position << ")";
+        Log(INFO) << "---";
     }
 
     //cas de l'arrêt du robot : on prend l'état des tourelles actuel, on conserve l'orientation des tourelles et on colle une vitesse nulle
@@ -106,6 +118,7 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
         return true;
     }
     //Log(INFO) << "desiredMS : " << desiredMS.toString();
+    Log(INFO) << "desired twist turrets:      " << "("<< ioTS.steering.left.position << " , " << ioTS.steering.right.position << " , " << ioTS.steering.rear.position << ")";
 
     //the case desiredTwist == currentTwist should be covered before, if we are here it is a bug.
     //we check this twice as it is a singularity of the quality fraction
@@ -136,7 +149,7 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
         testedTwist = lowLimit+delta;
 
         //TODO a virer
-        //Log(INFO) << "LOOP("<< nbLoops<< ") : testedTwist=" << testedTwist.toString() << " phi=" << testedTwist.speedAngle() << " v=" << testedTwist.speedNorm() ;
+        Log(INFO) << "LOOP("<< nbLoops<< ") : testedTwist=" << testedTwist.toString() << " phi=" << testedTwist.speedAngle() << " v=" << testedTwist.speedNorm() ;
 
         //compute motor state related to testedTwist
         if( UbiquityKinematics::twist2Motors(testedTwist, currentMS, ioTS, desiredMS, params) == false )
@@ -145,17 +158,24 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
             quality = -2;
             return false;
         }
+
+        Log(INFO) << "tested twist  turrets:  " << "("<< ioTS.steering.left.position << " , " << ioTS.steering.right.position << " , " << ioTS.steering.rear.position << ")";
+
         //check if this motor state would be OK. If yes we can try to find a newer Twist closer to desiredTwist,
         //else we should be less aggressive and find a Twist closer to currentTwist
         if( isMotorStateReachable( desiredMS, currentMS, params, dt ) )
         {
+            Log(INFO) << "GOOOOD...going toward desired";
             //we always register the last correct Twist to get it at the end of the loop
             acceptableTwist = testedTwist;
 
             lowLimit=testedTwist;
         }
         else
+        {
+            Log(INFO) << "BAAAAD...going toward current";
             upLimit=testedTwist;
+        }
 
         //TODO a virer
         //Log(INFO) << "LOOP("<< nbLoops<< ") : desiredMS=" << desiredMS.toString();
@@ -186,28 +206,35 @@ bool KinematicFilter::isMotorStateReachable(const arp_model::MotorState & desire
                                 const arp_model::UbiquityParams & params,
                                 const double & dt)
 {
-    //for steerings, desired state must be in [mesure - v*dt; mesure + v*dt]
-    bool isLeftTurretReachable = fabs(desiredMS.steering.left.position) <= fabs(measuredMS.steering.left.position) + params.getMaxSteeringSpeed()*dt
-            && fabs(measuredMS.steering.left.position) - params.getMaxSteeringSpeed()*dt <= fabs(desiredMS.steering.left.position);
-    bool isRightTurretReachable = fabs(desiredMS.steering.right.position) <= fabs(measuredMS.steering.right.position) + params.getMaxSteeringSpeed()*dt
-            && fabs(measuredMS.steering.right.position) - params.getMaxSteeringSpeed()*dt <= fabs(desiredMS.steering.right.position);
-    bool isRearTurretReachable = fabs(desiredMS.steering.rear.position) <= fabs(measuredMS.steering.rear.position) + params.getMaxSteeringSpeed()*dt
-            && fabs(measuredMS.steering.rear.position) - params.getMaxSteeringSpeed()*dt <= fabs(desiredMS.steering.rear.position);
-    //TODO tenir compte de l'accélération de tourelle ?
 
-    //for driving, disired state must be in [mesure - v*dt; mesure + v*dt] and slower than max speeds.
-    bool isLeftDrivingSpeedReachable = fabs(desiredMS.driving.left.velocity) <= fabs(measuredMS.driving.left.velocity) + params.getMaxDrivingAcc()*dt
-            && fabs(measuredMS.driving.left.velocity) - params.getMaxDrivingDec()*dt <= fabs(desiredMS.driving.left.velocity)
-            && fabs(desiredMS.driving.left.velocity) <= params.getMaxDrivingSpeed();
-    bool isRightDrivingSpeedReachable = fabs(desiredMS.driving.right.velocity) <= fabs(measuredMS.driving.right.velocity) + params.getMaxDrivingAcc()*dt
-            && fabs(measuredMS.driving.right.velocity) - params.getMaxDrivingDec()*dt <= fabs(desiredMS.driving.right.velocity)
-            && fabs(desiredMS.driving.right.velocity) <= params.getMaxDrivingSpeed();
-    bool isRearDrivingSpeedReachable = fabs(desiredMS.driving.rear.velocity) <= fabs(measuredMS.driving.rear.velocity) + params.getMaxDrivingAcc()*dt
-            && fabs(measuredMS.driving.rear.velocity) - params.getMaxDrivingDec()*dt <= fabs(desiredMS.driving.rear.velocity)
-            && fabs(desiredMS.driving.rear.velocity) <= params.getMaxDrivingSpeed();
+
+    //for steering, desired speed must be under threshold
+    bool isLeftTurretReachable = fabs(betweenMinusPiAndPlusPi(desiredMS.steering.left.position -measuredMS.steering.left.position)) <= params.getMaxSteeringMotorSpeed()*dt;
+    bool isRightTurretReachable = fabs(betweenMinusPiAndPlusPi(desiredMS.steering.right.position-measuredMS.steering.right.position)) <= params.getMaxSteeringMotorSpeed()*dt;
+    bool isRearTurretReachable = fabs(betweenMinusPiAndPlusPi(desiredMS.steering.rear.position-measuredMS.steering.rear.position)) <= params.getMaxSteeringMotorSpeed()*dt;
+/*
+    Log(INFO) << "fabs( "<<desiredMS.steering.left.position <<"-"<<measuredMS.steering.left.position<<") ="<< fabs(desiredMS.steering.left.position -measuredMS.steering.left.position)<<"<="<<params.getMaxSteeringMotorSpeed()*dt<<" : "<<isLeftTurretReachable;
+    Log(INFO) << "fabs( "<<desiredMS.steering.right.position <<"-"<<measuredMS.steering.right.position<<") ="<< fabs(desiredMS.steering.right.position -measuredMS.steering.right.position)<<"<="<<params.getMaxSteeringMotorSpeed()*dt<<" : "<<isRightTurretReachable;
+    Log(INFO) << "fabs( "<<desiredMS.steering.rear.position <<"-"<<measuredMS.steering.rear.position<<") ="<< fabs(desiredMS.steering.rear.position -measuredMS.steering.rear.position)<<"<="<<params.getMaxSteeringMotorSpeed()*dt<<" : "<<isRearTurretReachable;
+*/
+
+    //for driving,   desired speed and acceleration must be under threshold
+/*
+    bool isLeftDrivingSpeedReachable = fabs(desiredMS.driving.left.velocity-measuredMS.driving.left.velocity) <= params.getMaxDrivingMotorAcc()*dt;
+            //&& fabs(desiredMS.driving.left.velocity) <= params.getMaxDrivingSpeed();
+
+    Log(INFO) << "fabs(desiredMS.driving.left.velocity-measuredMS.driving.left.velocity)"<<fabs(desiredMS.driving.left.velocity-measuredMS.driving.left.velocity);
+    Log(INFO) << "params.getMaxDrivingAcc()"<<params.getMaxDrivingAcc();
+    Log(INFO) << "params.getMaxDrivingAcc()*dt"<<params.getMaxDrivingAcc()*dt;
+
+    bool isRightDrivingSpeedReachable = fabs(desiredMS.driving.right.velocity-measuredMS.driving.right.velocity) <=  params.getMaxDrivingMotorAcc()*dt;
+            //&& fabs(desiredMS.driving.right.velocity) <= params.getMaxDrivingSpeed();
+    bool isRearDrivingSpeedReachable = fabs(desiredMS.driving.rear.velocity-measuredMS.driving.rear.velocity) <=  params.getMaxDrivingMotorAcc()*dt;
+            //&& fabs(desiredMS.driving.rear.velocity) <= params.getMaxDrivingSpeed();
+*/
 
     //Log(INFO) << "reachable: "<<isLeftTurretReachable<< ", "<<isRightTurretReachable<< ", "<<isRearTurretReachable<< ", "<<isLeftDrivingSpeedReachable<< ", "<<isRightDrivingSpeedReachable<< ", "<<isRearDrivingSpeedReachable;
 
-    return isLeftTurretReachable && isRightTurretReachable && isRearTurretReachable
-            && isLeftDrivingSpeedReachable && isRightDrivingSpeedReachable && isRearDrivingSpeedReachable;
+    return isLeftTurretReachable && isRightTurretReachable && isRearTurretReachable;
+            //&& isLeftDrivingSpeedReachable && isRightDrivingSpeedReachable && isRearDrivingSpeedReachable;
 }

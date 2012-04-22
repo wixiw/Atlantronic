@@ -26,9 +26,9 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_consistency )
     bool success;
 
     // j'initialise les zeros tourelles au hasard
-    params.setLeftTurretZero(1.45);
-    params.setRightTurretZero(454.54);
-    params.setRearTurretZero(-42.1);
+    params.setLeftTurretZero(5.8471);
+    params.setRightTurretZero(7.17852);
+    params.setRearTurretZero(-4.43757);
 
     //une petite marche avant de 1 M/s
     curmotors.driving.left.velocity = 1/(params.getTractionRatio()*params.getLeftWheelDiameter()/2);
@@ -53,6 +53,42 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_consistency )
     BOOST_CHECK_CLOSE( motors.driving.left.velocity , 1/(params.getTractionRatio()*params.getLeftWheelDiameter()/2) , 1E-6);
     BOOST_CHECK_CLOSE( motors.driving.right.velocity , 1/(params.getTractionRatio()*params.getRightWheelDiameter()/2) , 1E-6);
     BOOST_CHECK_CLOSE( motors.driving.rear.velocity , 1/(params.getTractionRatio()*params.getRearWheelDiameter()/2) , 1E-6);
+    BOOST_CHECK_CLOSE( motors.steering.left.position , params.getLeftTurretZero() , 1E-6);
+    BOOST_CHECK_CLOSE( motors.steering.right.position , params.getRightTurretZero() , 1E-6);
+    BOOST_CHECK_CLOSE( motors.steering.rear.position , params.getRearTurretZero() , 1E-6);
+
+
+}
+
+BOOST_AUTO_TEST_CASE( UbiquityKinematics_nullspeed )
+{
+    UbiquityParams params;
+    TurretState turrets;
+    MotorState curmotors;
+    MotorState motors;
+    SlippageReport slippage;
+    Twist2D twist;
+    bool success;
+
+    // j'initialise les zeros tourelles au hasard
+    params.setLeftTurretZero(5.8471);
+    params.setRightTurretZero(7.17852);
+    params.setRearTurretZero(-4.43757);
+
+    twist=Twist2D(0,0,0);
+
+    curmotors.driving.left.velocity = 0;
+    curmotors.driving.right.velocity = 0;
+    curmotors.driving.rear.velocity = 0;
+    curmotors.steering.left.position = 0;
+    curmotors.steering.right.position = 0;
+    curmotors.steering.rear.position = 0;
+
+    success = UbiquityKinematics::twist2Motors( twist,curmotors,turrets,motors,params);
+
+    BOOST_CHECK_CLOSE( turrets.steering.left.position , 0.0 , 1E-6);
+    BOOST_CHECK_CLOSE( turrets.steering.right.position , 0.0 , 1E-6);
+    BOOST_CHECK_CLOSE( turrets.steering.rear.position , 0.0 , 1E-6);
     BOOST_CHECK_CLOSE( motors.steering.left.position , params.getLeftTurretZero() , 1E-6);
     BOOST_CHECK_CLOSE( motors.steering.right.position , params.getRightTurretZero() , 1E-6);
     BOOST_CHECK_CLOSE( motors.steering.rear.position , params.getRearTurretZero() , 1E-6);

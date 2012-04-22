@@ -69,20 +69,7 @@ BOOST_AUTO_TEST_CASE( KinematicFilter_isReachable_driving_success )
     success = KinematicFilter::isMotorStateReachable( desiredMS, currentMS, params, dt );
     BOOST_CHECK( success );
 
-    //-1/2 dec dt
-    dt = 0.010;
-    desiredMS = MotorState();
-    desiredMS.driving.left.velocity = -params.getMaxDrivingDec()*dt/2;
-    success = KinematicFilter::isMotorStateReachable( desiredMS, currentMS, params, dt );
-    BOOST_CHECK( success );
-    desiredMS = MotorState();
-    desiredMS.driving.right.velocity = -params.getMaxDrivingDec()*dt/2;
-    success = KinematicFilter::isMotorStateReachable( desiredMS, currentMS, params, dt );
-    BOOST_CHECK( success );
-    desiredMS = MotorState();
-    desiredMS.driving.rear.velocity = -params.getMaxDrivingDec()*dt/2;
-    success = KinematicFilter::isMotorStateReachable( desiredMS, currentMS, params, dt );
-    BOOST_CHECK( success );
+
 }
 
 BOOST_AUTO_TEST_CASE( KinematicFilter_isReachable_driving_fail )
@@ -138,20 +125,6 @@ BOOST_AUTO_TEST_CASE( KinematicFilter_isReachable_driving_fail )
     success = KinematicFilter::isMotorStateReachable( desiredMS, currentMS, params, dt );
     BOOST_CHECK( !success );
 
-    //decceleration trop forte
-    dt = 0.010;
-    desiredMS = MotorState();
-    desiredMS.driving.left.velocity = -params.getMaxDrivingDec()*dt*2;
-    success = KinematicFilter::isMotorStateReachable( desiredMS, currentMS, params, dt );
-    BOOST_CHECK( !success );
-    desiredMS = MotorState();
-    desiredMS.driving.right.velocity = -params.getMaxDrivingDec()*dt*2;
-    success = KinematicFilter::isMotorStateReachable( desiredMS, currentMS, params, dt );
-    BOOST_CHECK( !success );
-    desiredMS = MotorState();
-    desiredMS.driving.rear.velocity = -params.getMaxDrivingDec()*dt*2;
-    success = KinematicFilter::isMotorStateReachable( desiredMS, currentMS, params, dt );
-    BOOST_CHECK( !success );
 }
 
 //---------

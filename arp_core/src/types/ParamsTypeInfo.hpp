@@ -31,8 +31,6 @@ using namespace RTT;
              a & make_nvp("maxSteeringSpeed",         params.getMaxSteeringSpeedRef());
              a & make_nvp("maxDrivingAcc",         params.getMaxDrivingAccRef());
              a & make_nvp("maxSteeringAcc",           params.getMaxSteeringAccRef());
-             a & make_nvp("maxDrivingDec",         params.getMaxDrivingDecRef());
-             a & make_nvp("maxSteeringDec",           params.getMaxSteeringDecRef());
              a & make_nvp("maxDrivingTorque",      params.getMaxDrivingTorqueRef());
              a & make_nvp("maxSteeringTorque",        params.getMaxSteeringTorqueRef());
       }

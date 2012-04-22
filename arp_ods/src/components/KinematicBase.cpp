@@ -17,14 +17,16 @@ using namespace arp_ods;
 using namespace RTT;
 using namespace std;
 
+
 ORO_LIST_COMPONENT_TYPE( arp_ods::KinematicBase )
 
 KinematicBase::KinematicBase(const std::string& name):
         OdsTaskContext(name),
         propMinSpeed(0.001)
 {
-    //arp_model::Logger::InitFile("arp_model", DEBUG);
     createOrocosInterface();
+    arp_model::Logger::InitFile("arp_model", DEBUG);
+    //arp_model::Logger::InitConsole("arp_model", DEBUG);
 }
 
 void KinematicBase::updateHook()
@@ -53,15 +55,17 @@ void KinematicBase::run()
 {
     double dt = 0.030; //TODO faire mieux ! mettre un vrai temps calculé depuis la derniere execution
 
-
+/*
     //filter the input command to get a reachable command that we are sure the hardware will be capable to do
-//    if( KinematicFilter::filterTwist(attrTwistCmd, attrCurrentTwist,
-//                                    attrMotorsCurrentState, attrParams,
-//                                    dt, propMinSpeed, attrAcceptableTwist, attrQuality) == false )
-//    {
-//        //TODO remettre en erreur
-//        LOG(Info) << "Failed to filter desired twist to an acceptable twist" << endlog();
-//    }
+    if( KinematicFilter::filterTwist(attrTwistCmd, attrCurrentTwist,
+                                    attrMotorsCurrentState, attrParams,
+                                    dt, propMinSpeed, attrAcceptableTwist, attrQuality) == false )
+    {
+        //TODO remettre en erreur
+        LOG(Info) << "Failed to filter desired twist to an acceptable twist" << endlog();
+    }*/
+
+    //TODO ceci annule le filtrage
     attrAcceptableTwist = attrTwistCmd;
 
     //compute the motor commands to do the filtered twist command
@@ -71,12 +75,18 @@ void KinematicBase::run()
         LOG(Info) << "Failed to compute Turrets Cmd" << endlog();
     }
 
+    Log(INFO) << "welcome back to kinematic base----- ";
+    Log(INFO) << "acceptable Twist=                                "<< attrAcceptableTwist.toString() << " phi=" << attrAcceptableTwist.speedAngle() << " v=" << attrAcceptableTwist.speedNorm();
+    Log(INFO) << "command for steering motors                 :    " << "("<< attrMotorStateCommand.steering.left.position << " , " << attrMotorStateCommand.steering.right.position << " , " << attrMotorStateCommand.steering.rear.position << ")";
+    Log(INFO) << "command for turrets                 :            " <<"("<< attrTurretState.steering.left.position << " , " << attrTurretState.steering.right.position << " , " << attrTurretState.steering.rear.position << ")";
+
+    /*
     //gestion du cas pas de vitesse pour ne pas bouger les tourelles
     //TODO a supprimer avec le filtre ?
     if( attrAcceptableTwist.speedNorm() <= propMinSpeed )
     {
         attrMotorStateCommand.steering = attrMotorsCurrentState.steering;
-    }
+    }*/
 }
 
 void KinematicBase::setOutputs()

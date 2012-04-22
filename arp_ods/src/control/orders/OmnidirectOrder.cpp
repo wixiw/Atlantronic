@@ -55,11 +55,14 @@ shared_ptr<MotionOrder> OmnidirectOrder::createOrder( const OrderGoalConstPtr &g
 
     order->setConf(conf);
 
+
+
     return static_cast<shared_ptr<MotionOrder>  >(order);
 }
 
 void OmnidirectOrder::switchRun(arp_math::Pose2D currentPosition)
 {
+
     //dans le cas du mode PASS c'est le radius approche qui fait office de critère
     if (getRemainingDistance(currentPosition) <= m_conf.RADIUS_APPROACH_ZONE)
     {

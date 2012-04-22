@@ -114,6 +114,9 @@ std::string MotionOrder::getTypeString() const
         case OMNIDIRECT:
             return "OMNIDIRECT";
             break;
+        case OPENLOOP:
+            return "OPENLOOP";
+            break;
         default:
             return "ORDER_UNKNOW";
             break;

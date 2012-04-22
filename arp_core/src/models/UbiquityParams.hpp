@@ -35,13 +35,16 @@ class UbiquityParams
         double getTractionRatio() const;
         double getTurretRatio() const;
         double getMaxDrivingAcc() const;
-        double getMaxDrivingDec() const;
         double getMaxDrivingSpeed() const;
         double getMaxDrivingTorque() const;
         double getMaxSteeringAcc() const;
-        double getMaxSteeringDec() const;
         double getMaxSteeringSpeed() const;
         double getMaxSteeringTorque() const;
+
+        double getMaxSteeringMotorAcc() const;
+        double getMaxSteeringMotorSpeed() const;
+        double getMaxDrivingMotorAcc() const;
+        double getMaxDrivingMotorSpeed() const;
 
         double& getLeftTurretZeroRef();
         double& getRearTurretZeroRef();
@@ -56,11 +59,9 @@ class UbiquityParams
         double& getTractionRatioRef();
         double& getTurretRatioRef();
         double& getMaxDrivingAccRef();
-        double& getMaxDrivingDecRef();
         double& getMaxDrivingSpeedRef();
         double& getMaxDrivingTorqueRef();
         double& getMaxSteeringAccRef();
-        double& getMaxSteeringDecRef();
         double& getMaxSteeringSpeedRef();
         double& getMaxSteeringTorqueRef();
 
@@ -109,8 +110,6 @@ class UbiquityParams
         double m_maxDrivingSpeed;
         /** Acceleration maximale en m/s2 qu'une roue peut fournir au sol */
         double m_maxDrivingAcc;
-        /** Deceleration maximale en m/s2 qu'une roue peut fournir au sol */
-        double m_maxDrivingDec;
         /** Couple maximal en Nm qu'une roue peut fournir au sol */
         double m_maxDrivingTorque;
 
@@ -122,8 +121,6 @@ class UbiquityParams
         double m_maxSteeringSpeed;
         /** Acceleration maximale en rad/s2 que la tourelle peut avoir par rapport au chassis */
         double m_maxSteeringAcc;
-        /** Decceleration maximale en rad/s2 que la tourelle peut avoir par rapport au chassis */
-        double m_maxSteeringDec;
         /** Couple maximal en Nm que la tourelle peut fournir par rapport au chassis */
         double m_maxSteeringTorque;
 

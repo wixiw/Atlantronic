@@ -28,11 +28,9 @@ UbiquityParams::UbiquityParams():
         m_turretRatio(0.25),
         m_maxDrivingSpeed(1),
         m_maxDrivingAcc(1),
-        m_maxDrivingDec(1),
         m_maxDrivingTorque(-1),
         m_maxSteeringSpeed(125),
         m_maxSteeringAcc(52),
-        m_maxSteeringDec(52),
         m_maxSteeringTorque(-1)
 {
 }
@@ -80,9 +78,9 @@ bool UbiquityParams::check() const
     }
 
     //on verifie que les vitesses max de traction/direction ont du sens
-    if( m_maxDrivingSpeed <= 0.1 || m_maxDrivingSpeed >= 3 || m_maxSteeringSpeed <= 1 || m_maxSteeringSpeed >= 300)
+    if( m_maxDrivingSpeed <= 0.1 || m_maxDrivingSpeed >= 10 || m_maxSteeringSpeed <= 1 || m_maxSteeringSpeed >= 300)
     {
-        Log( ERROR ) << "Max speeds incorect";
+        Log( ERROR ) << "Max speeds incorrect";
         res = false;
     }
 
@@ -94,8 +92,8 @@ bool UbiquityParams::check() const
 //        return false;
 //    }
 
-    //on a pas de raison de mettre des valeurs diffentes en acc et dec
-    if( m_maxSteeringAcc <= 1 || m_maxSteeringDec <= 1 || m_maxSteeringAcc != m_maxSteeringDec )
+    //acc ne peut pas etre negatif
+    if( m_maxSteeringAcc <= 0 )
     {
         Log( ERROR ) << "Max steering acc incorect";
         res = false;
@@ -167,15 +165,9 @@ double UbiquityParams::getTurretRatio() const
     return m_turretRatio;
 }
 
-
 double UbiquityParams::getMaxDrivingAcc() const
 {
     return m_maxDrivingAcc;
-}
-
-double UbiquityParams::getMaxDrivingDec() const
-{
-    return m_maxDrivingDec;
 }
 
 double UbiquityParams::getMaxDrivingSpeed() const
@@ -193,10 +185,6 @@ double UbiquityParams::getMaxSteeringAcc() const
     return m_maxSteeringAcc;
 }
 
-double UbiquityParams::getMaxSteeringDec() const
-{
-    return m_maxSteeringDec;
-}
 
 double UbiquityParams::getMaxSteeringSpeed() const
 {
@@ -207,6 +195,25 @@ double UbiquityParams::getMaxSteeringTorque() const
 {
     return m_maxSteeringTorque;
 }
+
+double UbiquityParams::getMaxSteeringMotorAcc() const
+{
+    return  m_maxSteeringAcc/m_turretRatio;
+}
+double UbiquityParams::getMaxSteeringMotorSpeed() const
+{
+    return m_maxSteeringSpeed/m_turretRatio;
+}
+double UbiquityParams::getMaxDrivingMotorAcc() const
+{
+    return m_maxDrivingAcc/m_tractionRatio/(m_leftWheelDiameter+m_rightWheelDiameter+m_rearWheelDiameter)/6;
+}
+double UbiquityParams::getMaxDrivingMotorSpeed() const
+{
+    return m_maxDrivingSpeed/m_tractionRatio/(m_leftWheelDiameter+m_rightWheelDiameter+m_rearWheelDiameter)/6;
+}
+
+
 
 Pose2D UbiquityParams::getChassisCenter() const
 {
@@ -277,10 +284,6 @@ double& UbiquityParams::getMaxDrivingAccRef()
     return m_maxDrivingAcc;
 }
 
-double& UbiquityParams::getMaxDrivingDecRef()
-{
-    return m_maxDrivingDec;
-}
 
 double& UbiquityParams::getMaxDrivingSpeedRef()
 {
@@ -295,11 +298,6 @@ double& UbiquityParams::getMaxDrivingTorqueRef()
 double& UbiquityParams::getMaxSteeringAccRef()
 {
     return m_maxSteeringAcc;
-}
-
-double& UbiquityParams::getMaxSteeringDecRef()
-{
-    return m_maxSteeringDec;
 }
 
 double& UbiquityParams::getMaxSteeringSpeedRef()
