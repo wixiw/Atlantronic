@@ -1,7 +1,15 @@
-#!/bin/sh
+#!/bin/bash
+
+echo "****** ARD **********"
+echo "****** ARD **********"
+
+mount -t ext4 8:2 /opt
 
 if [ -f /opt/conf/RO ]; then 
-	ERROR_FILE=last_init_error.txt
+	echo "****** ARD ********** Mounting RO"
+	echo "****** ARD **********"
+	echo "****** ARD **********"
+	ERROR_FILE=last_boot_error.txt
 
 	mount -t sysfs -o nodev,noexec,nosuid none /sys
 	mount -t proc -o nodev,noexec,nosuid none /proc
@@ -85,5 +93,8 @@ if [ -f /opt/conf/RO ]; then
 	 exec /sbin/init' < dev/console > dev/console 2>&1
 
 else
+	echo "****** ARD ********** Mounting RW"
+	echo "****** ARD **********"
+	echo "****** ARD **********"
 	exec /sbin/init;
 fi

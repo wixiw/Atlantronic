@@ -108,7 +108,7 @@ function configure_boot
 	if [ $IS_HOST == "true" ]; then
 		sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"quiet\"/GRUB_CMDLINE_LINUX_DEFAULT=\"quiet splash noapic rootfstype=ext4\"/" /etc/default/grub
 	else
-		sed -i "s|GRUB_CMDLINE_LINUX_DEFAULT=\"quiet\"|GRUB_CMDLINE_LINUX_DEFAULT=\"quiet splash ootfstype=ext4 init=/sbin/init_ro console=tty1 console=ttyS0,115200\"|" /etc/default/grub
+		sed -i "s|GRUB_CMDLINE_LINUX_DEFAULT=\"quiet\"|GRUB_CMDLINE_LINUX_DEFAULT=\"quiet splash rootfstype=ext4 init=/sbin/init_ro.sh console=tty1 console=ttyS0,115200\"|" /etc/default/grub
 		
 		#attention echo dans le echo
 		echo "echo \"serial --unit=1 --speed=115200\"
@@ -647,7 +647,9 @@ function configure_init_scripts
 	cecho yellow "Configuring init scripts ..."
 	#recuperation des scripts de boot :
 	cd /sbin
-	wget ftp://ard_user:robotik@wixibox/34%20-%20Info/Dependance/Ard/init_ro
+	svn export svn://88.191.124.77/ARP/trunk/ard_tools/kernel/init_ro
+	chmod +x init_ro.sh
+	dos2unix init_ro.sh
 	
 	echo "#roslaunch arp_master stratD.launch > /opt/match.log" > /opt/boot.sh
 	chmod +x /opt/boot.sh
