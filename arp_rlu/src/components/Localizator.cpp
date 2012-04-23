@@ -108,7 +108,7 @@ void Localizator::updateHook()
     EstimatedTwist2D T_r_t_t; //je ne sais pas le vrai nom mais je rajoute un t pour dire qu'il y a un bricolage pour etre dans le repere de la table
     if( RTT::NewData == inOdo.read(T_r_t) )
     {
-        LOG( Info ) << "Localizator::newOdo - t=" << std::setprecision(9) << T_r_t.date() << " (sec)" << endlog();
+        //LOG( Info ) << "Localizator::newOdo - t=" << std::setprecision(9) << T_r_t.date() << " (sec)" << endlog();
 
         //changement de repère de T_r_t
         Eigen::Vector3d T;
@@ -141,7 +141,7 @@ void Localizator::updateHook()
     {
         double dateBeg = rosScan.header.stamp.toSec() - m_monotonicTimeToRealTime;
         double dateEnd = dateBeg + (rosScan.ranges.size()-1) * rosScan.time_increment;
-        LOG( Info ) << "Localizator::newScan - tbeg=" << std::setprecision (9) << dateBeg << " (sec)   - tend=" << dateEnd << "  - duration=" << (dateEnd - dateBeg) << " (sec)" << endlog();
+        //LOG( Info ) << "Localizator::newScan - tbeg=" << std::setprecision (9) << dateBeg << " (sec)   - tend=" << dateEnd << "  - duration=" << (dateEnd - dateBeg) << " (sec)" << endlog();
 
         lsl::LaserScan lslScan;
         Eigen::MatrixXd polarData(3, rosScan.ranges.size());
