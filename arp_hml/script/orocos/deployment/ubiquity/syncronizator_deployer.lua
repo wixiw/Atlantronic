@@ -6,7 +6,7 @@ me = "Syncronizator"
 
 function Syncronizator:load()
 	Deployer:loadComponent(me,"arp_hml::Syncronizator")
-	Deployer:setActivity(me,0,30,1)
+	Deployer:setActivity(me,0,30,rtt.globals.ORO_SCHED_RT)
 end
 
 

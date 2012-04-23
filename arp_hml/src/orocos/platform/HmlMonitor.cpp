@@ -88,7 +88,6 @@ bool HmlMonitor::configureHook()
     if( hasPeer("RearSteering") || propRequireCompleteHardware )
         res &= getOperation("RearSteering",     "coReset",  m_coResetRearSteering);
 
-
     return res;
 }
 
@@ -133,8 +132,6 @@ void HmlMonitor::updateHook()
 
 void HmlMonitor::cleanupHook()
 {
-    Monitor::cleanupHook();
-
     //stop and unconfigure busses
    vector<TaskContext*>::reverse_iterator  i;
    for ( i = m_monitoredBusList.rbegin() ; i != m_monitoredBusList.rend() ; i++ )
@@ -151,8 +148,9 @@ void HmlMonitor::cleanupHook()
            tc->cleanup();
        }
    }
-}
 
+   Monitor::cleanupHook();
+}
 
 //-----------------------------------------------------
 

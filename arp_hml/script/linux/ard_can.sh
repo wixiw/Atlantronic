@@ -16,7 +16,7 @@
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
-DESC="can drivers "
+DESC="can drivers"
 NAME="ard_can"
 PIDFILE=/var/run/ard_can.pid
 SCRIPTNAME=/etc/init.d/ard_can
@@ -36,13 +36,14 @@ CAN_OPTS="irq=10,10 mem=0xD0000,0xD0200 ocr=0x5e,0x5e cdr=0,0"
 . /lib/lsb/init-functions
 
 . /opt/color.sh
+. /opt/ard/env.sh
 
 #
 # Function that starts the daemon/service
 #
 do_start()
 {
-	if [[ $OROCOS_TARGET == "xenomai" ]] 
+	if [[ $CAN_FLAVOR == "xenomai" ]] 
 	then
 		cecho yellow "Starting Xenomai can ..."
 		modprobe xeno_can_mem $CAN_OPTS

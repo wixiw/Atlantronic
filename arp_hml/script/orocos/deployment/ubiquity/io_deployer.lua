@@ -5,10 +5,10 @@ IoDeployer = ComposantDeployer:new()
 
 function IoDeployer:load()
 	Deployer:loadComponent("WoodheadIn","arp_hml::WoodheadIn")
-	Deployer:setActivity("WoodheadIn",0,30,1)
+	Deployer:setActivity("WoodheadIn",0,30,rtt.globals.ORO_SCHED_RT)
 
 	Deployer:loadComponent("WoodheadOut","arp_hml::WoodheadOut")
-	Deployer:setActivity("WoodheadOut",0,30,1)
+	Deployer:setActivity("WoodheadOut",0,30,rtt.globals.ORO_SCHED_RT)
 end
 
 function IoDeployer:connect()

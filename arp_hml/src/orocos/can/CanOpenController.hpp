@@ -89,7 +89,8 @@ namespace arp_hml
         void ooResetSdoBuffers();
 
         /**
-         * Use this operation to send a PDO
+         * Use this operation to send a PDO.
+         * If you are under xenomai you must run in primary mode
          * @param pdoNumber : number of the PDO on the CanFestival table (!! it is *NOT* the COBID !!)
          */
         bool coSendPdo(int pdoNumber);

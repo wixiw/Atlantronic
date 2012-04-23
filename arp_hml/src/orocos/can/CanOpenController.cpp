@@ -576,19 +576,35 @@ bool CanOpenController::coSendPdo(int pdoNumber)
 {
     Message pdo;
     memset(&pdo, 0, sizeof(pdo));
+    bool res = false;
 
     EnterMutex();
     if (buildPDO (&CanARD_Data, pdoNumber, &pdo))
     {
+        LeaveMutex();
         LOG(Error) << "coSendPdo: build PDO " << pdoNumber << " failed" << endlog();
-        return 0;
+        return false;
     }
     CanARD_Data.PDO_status[pdoNumber].last_message = pdo;
-    canSend (CanARD_Data.canHandle, &pdo);
+    res = canSend (CanARD_Data.canHandle, &pdo);
+    if( res )
+    {
+        LeaveMutex();
+        LOG(Error) << "coSendPdo: failed to send PDO " << std::hex << pdo.cob_id << " "
+                << pdo.data[0] << "."
+                << pdo.data[1] << "."
+                << pdo.data[2] << "."
+                << pdo.data[3] << "."
+                << pdo.data[4] << "."
+                << pdo.data[5] << "."
+                << pdo.data[6] << "."
+                << pdo.data[7] << "."
+                << std::dec << endlog();
+        return false;
+    }
 
     LeaveMutex();
-
-    return true;
+    return false;
 }
 
 bool CanOpenController::coSendNmtCmd(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd, double timeout)
@@ -613,7 +629,7 @@ bool CanOpenController::coSendNmtCmd(nodeID_t nodeId, enum_DS301_nmtStateRequest
     LeaveMutex();
     if( cmdResult )
     {
-        LOG(Error) << "coSendNmtCmd : failed to send NMT command 0x" << std::hex << nodeId << "; for command " << nmtStateCmd << endlog();
+        LOG(Error) << "coSendNmtCmd : failed to send NMT command to node 0x" << std::hex << nodeId << "; for command " << nmtStateCmd << endlog();
         goto failed;
     }
 

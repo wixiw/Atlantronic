@@ -116,7 +116,6 @@ bool Faulhaber3268Bx4::configureHook()
         goto fail;
     }
 
-
     goto success;
 
     fail:

@@ -6,7 +6,7 @@ local me = "HmlCmdMockup";
 
 function HmlCmdMockupDeployer:load()
 	Deployer:loadComponent(me,"arp_hml::HmlCmdMockup")
-	Deployer:setActivity(me,0.100,10,1)
+	Deployer:setActivity(me,0.100,0,rtt.globals.ORO_SCHED_OTHER)
 end
 
 

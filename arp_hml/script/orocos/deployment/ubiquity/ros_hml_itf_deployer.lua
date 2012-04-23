@@ -5,7 +5,7 @@ RosHmlItfDeployer = ComposantDeployer:new()
 
 function RosHmlItfDeployer:load()
 	Deployer:loadComponent("RosHmlItf","arp_hml::RosHmlItf")
-	Deployer:setActivity("RosHmlItf",0.050,10,1)
+	Deployer:setActivity("RosHmlItf",0.050,10,rtt.globals.ORO_SCHED_RT)
 end
 
 

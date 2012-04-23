@@ -16,16 +16,16 @@ using namespace arp_core;
 using namespace std_msgs;
 
 HmlGraphicsFrame::HmlGraphicsFrame():
-	m_nodeHandle(),
-    start_pub(),
-	color_pub(),
-	obstacle_pub(),
-	wxFrame(NULL,
+    wxFrame(NULL,
           wxID_ANY,
           wxT("Hml Simulation"),
           wxDefaultPosition, 
           wxSize(length_in_pixel, width_in_pixel),
-          wxDEFAULT_FRAME_STYLE)
+          wxDEFAULT_FRAME_STYLE),
+	m_nodeHandle(),
+    start_pub(),
+	color_pub(),
+	obstacle_pub()
 {
 	m_color.color = "purple";
 	m_start.go = true;

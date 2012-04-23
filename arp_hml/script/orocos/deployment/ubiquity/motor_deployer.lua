@@ -6,7 +6,7 @@ MotorDeployer = ComposantDeployer:new()
 function MotorDeployer:loadMotor(name)
 	--sched_type 1 = RT 
 	Deployer:loadComponent(name,"arp_hml::Faulhaber3268Bx4")
-	Deployer:setActivity(name,0,40,1)
+	Deployer:setActivity(name,0,40,rtt.globals.ORO_SCHED_RT)
 end
 
 function MotorDeployer:load()
