@@ -71,6 +71,7 @@ then
 	stack_list=`rosstack depends ard`
 	for stack in $stack_list
 	do
+		echo -e $BLEU  "Syncing $stack" $NORMAL
 		#si c'est un package de ros_addons
 		if [ -d /opt/ros_addons/$stack ] ; then
 			rsync  -avzh `rosstack find $stack` root@$2:/opt/ros_addons \
