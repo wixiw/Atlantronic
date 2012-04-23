@@ -119,7 +119,11 @@ canSend_driver (CAN_HANDLE fd0, Message const * m)
   res = CAN_SEND (*(int *) fd0, &frame, sizeof (frame), 0);
   if (res < 0)
     {
-      fprintf (stderr, "Send failed: %s\n", strerror (CAN_ERRNO (res)));
+      fprintf (stderr, "Send failed (id:%x data : %x.%x.%x.%x.%x.%x.%x.%x) : %s\n",
+              frame.can_id,
+              frame.data[0],frame.data[1],frame.data[2],frame.data[3],
+              frame.data[4],frame.data[5],frame.data[6],frame.data[7],
+              strerror (CAN_ERRNO (res)));
       return 1;
     }
 
