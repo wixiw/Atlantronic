@@ -9,6 +9,10 @@ class StartSequence(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
         with self:
+            smach.StateMachine.add('SetInitialPosition',
+                                   SetInitialPosition(0,0,0 ),
+                                   transitions={'succeeded':'SetPower','failed':'problem'})            
+            
             smach.StateMachine.add('SetPower',
                       SetPower(),
                       transitions={'succeeded':'Recal_hor_bord','failed':'problem'})

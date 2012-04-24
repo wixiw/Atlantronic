@@ -7,20 +7,27 @@ import roslib; roslib.load_manifest('arp_master')
 from arp_master import *
 import os
 
-# the main state machine
-# it is composed of 2 states: init and wait for start
+
+#
+# This is the default a0 level state in any strategy. 
+# _ It checks if the initial state is as expected
+# _ It waits for Orocos to be up
+# _ it waits for the start to be plugged in
+#
+##################################################
+
 class Initialisation(smach.StateMachine):
     def __init__(self):
-        smach.StateMachine.__init__(self,outcomes=['endInitialisation'])
+        smach.StateMachine.__init__(self,outcomes=['endInitialisation','failed'])
         with self:
             smach.StateMachine.add('Init', Init(),
-                                   transitions={'initstateok':'WaitForOrocos'})
+                                   transitions={'initstateok':'WaitForOrocos','timeout':'failed'})
             smach.StateMachine.add('WaitForOrocos', 
                                    WaitForOrocos(),
-                                   transitions={'deployed':'WaitForStart'})
+                                   transitions={'deployed':'WaitForStart','timeout':'failed'})
             smach.StateMachine.add('WaitForStart', 
                                    WaitForStart(),
-                                   transitions={'start':'endInitialisation'})
+                                   transitions={'start':'endInitialisation','timeout':'failed'})
     
     
 #the first state: only to wait for the start to be unpluged 

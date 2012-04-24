@@ -13,7 +13,7 @@ class StartSequence(smach.StateMachine):
         smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
         with self:
             smach.StateMachine.add('SetInitialPosition',
-                      SetInitialPosition(),
+                      SetInitialPosition(1.250,0.750,-pi),
                       transitions={'succeeded':'SetSteeringPower','failed':'problem'})
                         
             smach.StateMachine.add('SetSteeringPower',
@@ -52,21 +52,7 @@ class StartSequence(smach.StateMachine):
                       WaitForMatch(),
                       transitions={'start':'gogogo'})
     
-    
-class SetInitialPosition(CyclicState):
-    def __init__(self):
-        CyclicState.__init__(self, outcomes=['succeeded','failed'])
-    
-    def executeIn(self):
-        poseDepart=AmbiPoseRed(1.250,0.750,-pi,Data.color)
-        self.setPosition(poseDepart.x,poseDepart.y,poseDepart.theta)
-        self.result = True;
-    
-    def executeTransitions(self):
-        if self.result == True:
-            return 'succeeded'   
-        else:
-            return 'failed'           
+      
             
 class SetSteeringPower(CyclicState):
     def __init__(self):

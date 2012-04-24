@@ -16,21 +16,21 @@ from arp_ods.msg import *
 class CyclicActionState(CyclicState):
     
     def __init__(self):
-        smach.StateMachine.__init__(self,outcomes=['succeeded','aborted'])
-        self.preemptiveStates=[]
+        CyclicState.__init__(self,outcomes=['succeeded','timeout'])
+        self.timeout = 10
         self.lastStart=None
-        self.initClients()
         try:
             self.blinding_period=rospy.get_param("/blinding_period")
         except KeyError:
             rospy.logerr("Failed to find a rosparam : /blinding_period") 
             self.blinding_period=0
-        
+   
     
     # the main execute function
     #it overrides the one of CyclicState
     #here, transitions are handled automatically (succeded or aborted following action result)   
     def execute(self,userdata):
+        self.timeIn=rospy.get_rostime().secs
         Inputs.update()
         self.actionCreated = False
         #this should always be overrided !
@@ -52,6 +52,9 @@ class CyclicActionState(CyclicState):
                     self.client.cancel_all_goals()
                     return label
                 
+            #check if the timeout is fired
+            if (self.timeout != 0 and rospy.get_rostime().secs-self.timeIn>self.timeout):
+                return 'timeout'
             #is the order terminated ?
             self.trans=self.executeClientTransition()  
                      
@@ -62,6 +65,7 @@ class CyclicActionState(CyclicState):
             Data.stateMachineRate.sleep()
             Inputs.update()
         rospy.logerr("boucle d'etat cassee par le shutdown")
+        return "shutdown"
         
         
     #this is the transition function. It checks if the order has succeded or not, following action status
@@ -73,7 +77,7 @@ class CyclicActionState(CyclicState):
         
         if state==actionlib.GoalStatus.ABORTED or state==actionlib.GoalStatus.REJECTED or state==actionlib.GoalStatus.LOST or state==actionlib.GoalStatus.PREEMPTED or self.isFrontObstacle() or self.isRearObstacle():
             self.client.cancel_all_goals()
-            return 'aborted'  
+            return 'timeout'  
         #all others are considered "waiting"
         #Possible States Are: PENDING, ACTIVE, RECALLED, REJECTED, PREEMPTED, ABORTED, SUCCEEDED, LOST
     

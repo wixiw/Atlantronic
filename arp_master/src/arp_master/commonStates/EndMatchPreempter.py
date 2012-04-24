@@ -5,6 +5,7 @@ import roslib; roslib.load_manifest('arp_master')
 
 from arp_master import *
 
+# This state allows you to check if the end match timer is fired. It should be present in *every* operationnal state machine
 class EndMatchPreempter(PreemptiveCyclicState):
     def __init__(self,offset):
         PreemptiveCyclicState.__init__(self, outcomes=['endMatch'])

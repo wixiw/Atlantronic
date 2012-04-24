@@ -17,21 +17,14 @@ from arp_hml.srv import SetMotorPower
 from arp_hml.srv import SetMotorMode
 from arp_ods.srv import SetVMax
 
-# the cyclicstate is a modification of the smach standard state machine, so as it is SYNCHRONOUS
-# the cyclic state also implements all interfaces with outside of arp_master
-# the cyclic state may have an internal timer that fires a timeout transition to prevent being stalled (timeout in seconds)
+# the TimedCyclicState is a Cyclic state that will fired a "timeout" transition upon a certain delay
 
-class CyclicState(smach.StateMachine):
-    def __init__(self,outcomes):
-        outcomes.append('timeout')
-        smach.StateMachine.__init__(self,outcomes)
-        self.preemptiveStates=[]
-        self.initClients()
-        self.timeout=0
+class TimedCyclicState(CyclicState):
+    def __init__(self,outcomesIn, timeout):
+        CyclicState.__init__(self,outcomes=[outcomesIn,'timeout'])
     
     # the strategic derivation of smach functions. allow to be synchrone and to call functions that will be overrided by my children
     def execute(self,userdata):
-        self.timeIn=rospy.get_rostime().secs
         Inputs.update()
         self.executeIn()
         while(not rospy.is_shutdown()):
@@ -44,11 +37,7 @@ class CyclicState(smach.StateMachine):
                 preempted=state.preemptionCondition()
                 if preempted:
                     return label
-
-
-            #check if the timeout is fired
-            if (self.timeout != 0 and rospy.get_rostime().secs-self.timeIn>self.timeout):
-                return 'timeout'
+             
             #normal transitions
             trans=self.executeTransitions()
             if trans!=None:
@@ -57,7 +46,6 @@ class CyclicState(smach.StateMachine):
             Data.stateMachineRate.sleep()
             Inputs.update()
         rospy.logerr("boucle d'etat cassee par le shutdown")
-        return "shutdown"
         
     # if executeIn, While or Out are not overiden by children, then they will just do nothing.
     def executeIn(self):

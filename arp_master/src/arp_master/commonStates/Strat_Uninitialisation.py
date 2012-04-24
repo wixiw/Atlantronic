@@ -6,13 +6,18 @@ import roslib; roslib.load_manifest('arp_master')
 from arp_master import *
 import os
 
+#
+# This is the default a5 level state for any strategy
+#
+######################################################
+
 class Uninitialisation(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['endUninitialisation'])
         with self:
             smach.StateMachine.add('UninitialisationState',
                       UninitialisationState(),
-                      transitions={'ok':'endUninitialisation'})
+                      transitions={'ok':'endUninitialisation','timeout':'endUninitialisation'})
       
 class UninitialisationState(CyclicState):
     def __init__(self):
