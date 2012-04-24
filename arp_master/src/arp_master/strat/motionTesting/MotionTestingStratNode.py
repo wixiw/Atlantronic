@@ -1,22 +1,9 @@
 #!/usr/bin/env python
+
+#libraries for ROS
 import roslib; roslib.load_manifest('arp_master')
-import rospy
-# library for the state machine
-import smach
-import smach_ros
-import smach_msgs
-# import the definition of the messages
-from arp_core.msg import Obstacle
-from arp_core.msg import StartColor
-from arp_core.msg import Start
-#import the other strat modules    
-from arp_master.strat.util.CyclicState import CyclicState
-from arp_master.strat.util.CyclicActionState import CyclicActionState
 
-from arp_master.strat.util.Inputs import Inputs
-from arp_master.strat.util.Data import Data
-
-from math import *
+from arp_master import *
 
 ###########################  TEMPORAL BEHAVIOR
 
@@ -39,8 +26,13 @@ class MotionTestingStratNode():
         rospy.loginfo("Welcome to the Motion tester.")
         rospy.loginfo("I will execute sequence when start is unplugged.")
         rospy.loginfo("******************************************************")
-    
+        
+        # initialise the smach introspection server to view the state machine with :
+        #  rosrun smach_viewer smach_viewer.py
+        sis = smach_ros.IntrospectionServer('strat_server', sm, '/SratNode_vierge')
+        sis.start()
         sm.execute()
+        sis.stop()
 
     
 ############################## STATE MACHINE
@@ -119,4 +111,12 @@ class Move4(CyclicActionState):
 if __name__ == '__main__':
     try:
         MotionTestingStratNode()
-    except rospy.ROSInterruptException: pass
+    except smach.InvalidTransitionError:
+        rospy.loginfo("handling smach.InvalidTransitionError ...")
+        rospy.loginfo("Exiting")
+        pass
+    
+    except rospy.ROSInterruptException: 
+        rospy.loginfo("handling rospy.ROSInterruptException ...")
+        rospy.loginfo("Exiting")
+        pass
