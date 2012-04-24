@@ -1,7 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" id="node3" href="$group__timer.html#gad7fee43b8a44cf8b7036853593044037" title="Acquire mutex." alt="" coords="168,5,256,35"/>
-<area shape="rect" id="node5" href="$group__timer.html#ga73d9a4eb941fb20cf6b597840510394b" title="Release mutex." alt="" coords="165,58,259,89"/>
-<area shape="rect" id="node7" href="$group__timer.html#ga11c2616d78f06ed9144ef662f757b128" title="Set an alarm to execute a callback function when expired." alt="" coords="175,111,249,142"/>
-<area shape="rect" id="node9" href="$group__timer.html#ga4dccc204d52176bd547ab34d6858f5ba" title="Get the time elapsed since latest timer occurence." alt="" coords="308,85,423,115"/>
-<area shape="rect" id="node11" href="$group__timer.html#gab8d05dee70f04b5c5190ab00e84da106" title="Set a timerfor a given time." alt="" coords="329,138,401,169"/>
-</map>

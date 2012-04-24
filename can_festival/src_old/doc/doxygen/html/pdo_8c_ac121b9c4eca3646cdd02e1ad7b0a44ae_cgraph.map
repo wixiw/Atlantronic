@@ -1,5 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" id="node3" href="$group__pdo.html#ga95c3686cda4e9e6f7c847d2d0bb88fe8" title="Function iterates on all TPDO and look TPDO transmit type and content change before sending it..." alt="" coords="165,5,283,35"/>
-<area shape="rect" id="node5" href="$pdo_8c.html#a889902163641f6fc8039550cb11ec320" title="Copy all the data to transmit in process_var Prepare the PDO defined at index to be sent *pwCobId : r..." alt="" coords="331,5,408,35"/>
-<area shape="rect" id="node7" href="$pdo_8c.html#ae468510c9f77f502207d961d26389918" title="CopyBits" alt="" coords="456,5,531,35"/>
-</map>

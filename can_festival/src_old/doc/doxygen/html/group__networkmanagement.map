@@ -1,5 +1,0 @@
-<map id="structs" name="structs">
-<area shape="rect" id="node1" href="$group__nmtmaster.html" title="NMT master provides mechanisms that control and monitor the state of nodes and their behavior in the ..." alt="" coords="327,5,420,35"/>
-<area shape="rect" id="node2" href="$group__nmtslave.html" title="The NMT Slave methods are called automatically when a NMT message from Master are received..." alt="" coords="331,58,416,89"/>
-<area shape="rect" id="node3" href="$group__userapi.html" title="User API" alt="" coords="5,31,80,62"/>
-</map>
