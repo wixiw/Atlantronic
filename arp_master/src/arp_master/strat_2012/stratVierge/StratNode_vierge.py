@@ -6,12 +6,12 @@ import roslib; roslib.load_manifest('arp_master')
 from arp_master import *
 
 #import the main state machines substates     
-from initialisation import Strat_Initialisation
-from startSequence import Strat_StartSequence
-from opening import Strat_Opening
-from middleGame import Strat_Middlegame
-from endGame import Strat_Endgame
-from uninitialisation import Strat_Uninitialisation
+from a0_initialisation import Strat_Initialisation
+from a1_startSequence import Strat_StartSequence
+from a2_opening import Strat_Opening
+from a3_middleGame import Strat_Middlegame
+from a4_endGame import Strat_Endgame
+from a5_uninitialisation import Strat_Uninitialisation
 
 
 ###########################  TEMPORAL BEHAVIOR
