@@ -188,6 +188,8 @@ function create_SYA
 	
 	echo "#run this script in SYA mode to remount L in read write mode. You can try the last commented line to change the keyboard language
 	mount -w -o remount /
+	mknod -m 600 /dev/sda2 b 8 2
+	mount -t ext4 /dev/sda2 /opt    
 #dpkg-reconfigure console-data" > /opt/kernel/sya.sh
 }
 
