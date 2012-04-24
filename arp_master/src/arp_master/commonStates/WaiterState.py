@@ -1,14 +1,9 @@
 #!/usr/bin/env python
 
+#libraries for ROS
 import roslib; roslib.load_manifest('arp_master')
-import rospy
-import smach
-import smach_ros
-import smach_msgs
 
-from Inputs import Inputs
-from Data import Data
-from CyclicState import CyclicState
+from arp_master import *
 
 class WaiterState(CyclicState):
     def __init__(self,waitTime):
