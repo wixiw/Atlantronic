@@ -6,7 +6,7 @@
 	<!-- pas besoin pour le moment <include file="$(find arp_rlu)/script/ros/launch/arp_rlu_ros.launch"/> -->
 	<node 	name="ArpOrocos" 
 		pkg="ocl" 
-		type="deployer-corba-xenomai" 
+		type="deployer-corba" 
 		args="-s $(find arp_master)/script/orocos/deployment/deploy_arp_master_manual.ops --" 
 		output="screen"
 		respawn="false"
