@@ -1,17 +1,11 @@
 #!/usr/bin/env python
 
+
+#libraries for ROS
 import roslib; roslib.load_manifest('arp_master')
-import rospy
-import smach
-import smach_ros
-import smach_msgs
+
+from arp_master import *
 import os
-
-from arp_master.strat.util.CyclicState import CyclicState
-from arp_master.strat.util.Inputs import Inputs
-from arp_master.strat.util.Data import Data
-from arp_master.strat.util.TableVierge import *
-
 
 # the main state machine
 # it is composed of 2 states: init and wait for start

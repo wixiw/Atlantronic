@@ -40,13 +40,11 @@ class MainStateMachine(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['end'])
         with self:
-            smach.StateMachine.add('Init', Init(),
-                                   transitions={'initstateok':'WaitForStartPlug'})
-            smach.StateMachine.add('WaitForStartPlug', WaitForStartPlug(),
-                                   transitions={'startplug':'WaitForStartUnplug'})
+            smach.StateMachine.add('Initialisation', 
+                                   Initialisation(),
+                                   transitions={'endInitialisation':'WaitForStartUnplug'}) #=> utilisation de l'etat commun
             smach.StateMachine.add('WaitForStartUnplug', WaitForStartUnplug(),
                                    transitions={'startunplug':'Move1'})
-            
             
             smach.StateMachine.add('Move1', Move1(),
                                    transitions={'succeeded':'Move2', 'aborted':'end'})
@@ -58,23 +56,6 @@ class MainStateMachine(smach.StateMachine):
                                    transitions={'succeeded':'Move1', 'aborted':'end'})            
 
 
-class Init(CyclicState):
-    def __init__(self):
-        CyclicState.__init__(self, outcomes=['initstateok'])
-
-    def executeTransitions(self):
-       # the only condition verified to go on is that the start is not put
-       if Inputs.getstart()==1:
-           return 'initstateok'
-        
-class WaitForStartPlug(CyclicState):
-    def __init__(self):
-        CyclicState.__init__(self, outcomes=['startplug'])
-    
-    def executeTransitions(self):
-       if Inputs.getstart()==0:
-            return 'startplug'
-        
 class WaitForStartUnplug(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['startunplug'])

@@ -5,13 +5,13 @@ import roslib; roslib.load_manifest('arp_master')
 
 from arp_master import *
 
-class Middlegame(PreemptiveStateMachine):
+class MiddleGame(PreemptiveStateMachine):
     def __init__(self):
-        PreemptiveStateMachine.__init__(self,outcomes=['endMiddlegame'])
+        PreemptiveStateMachine.__init__(self,outcomes=['endMiddleGame'])
         with self:      
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
                                              EndMatchPreempter(-5.0),
-                                             transitions={'endMatch':'endMiddlegame'})
+                                             transitions={'endMatch':'endMiddleGame'})
             # other states
             PreemptiveStateMachine.add('EtatA',
                       EtatA(),
@@ -25,7 +25,7 @@ class Middlegame(PreemptiveStateMachine):
 
             PreemptiveStateMachine.add('ReverseOrder',
                       ReverseOrder(),
-                      transitions={'succeeded':'endMiddlegame', 'aborted':'endMiddlegame'})
+                      transitions={'succeeded':'endMiddleGame', 'aborted':'endMiddleGame'})
 
 
 ############### Ordres de motion

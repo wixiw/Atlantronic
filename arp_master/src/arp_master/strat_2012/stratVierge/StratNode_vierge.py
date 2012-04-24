@@ -6,12 +6,12 @@ import roslib; roslib.load_manifest('arp_master')
 from arp_master import *
 
 #import the main state machines substates     
-from a0_initialisation import Strat_Initialisation
+#from a0_initialisation import Strat_Initialisation => utilisation de l'etat commun
 from a1_startSequence import Strat_StartSequence
 from a2_opening import Strat_Opening
-from a3_middleGame import Strat_Middlegame
-from a4_endGame import Strat_Endgame
-from a5_uninitialisation import Strat_Uninitialisation
+from a3_middleGame import Strat_MiddleGame
+from a4_endGame import Strat_EndGame
+#from a5_uninitialisation import Strat_Uninitialisation => utilisation de l'etat commun
 
 
 ###########################  TEMPORAL BEHAVIOR
@@ -59,11 +59,11 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(),
                                    transitions={'gogogo':'Opening','problem':'end'})
             smach.StateMachine.add('Opening', Strat_Opening.Opening(),
-                                    transitions={'endOpening':'Middlegame','problem':'Middlegame'})
-            smach.StateMachine.add('Middlegame', Strat_Middlegame.Middlegame(),
-                                    transitions={'endMiddlegame':'Endgame'})
-            smach.StateMachine.add('Endgame', Strat_Endgame.Endgame(),
-                                    transitions={'endEndgame':'Uninitialisation'})
+                                    transitions={'endOpening':'MiddleGame','problem':'MiddleGame'})
+            smach.StateMachine.add('MiddleGame', Strat_MiddleGame.MiddleGame(),
+                                    transitions={'endMiddleGame':'EndGame'})
+            smach.StateMachine.add('EndGame', Strat_EndGame.EndGame(),
+                                    transitions={'endEndGame':'Uninitialisation'})
             smach.StateMachine.add('Uninitialisation', Strat_Uninitialisation.Uninitialisation(),
                                     transitions={'endUninitialisation':'end'})
 
@@ -74,4 +74,7 @@ class MainStateMachine(smach.StateMachine):
 if __name__ == '__main__':
     try:
         StratNode_vierge()
-    except rospy.ROSInterruptException: pass
+    except rospy.ROSInterruptException: 
+        rospy.loginfo("handling rospy.ROSInterruptException ...")
+        rospy.loginfo("Exiting")
+        pass

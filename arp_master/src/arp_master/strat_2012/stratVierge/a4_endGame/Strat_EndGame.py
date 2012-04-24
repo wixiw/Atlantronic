@@ -5,17 +5,17 @@ import roslib; roslib.load_manifest('arp_master')
 
 from arp_master import *
 
-class Endgame(PreemptiveStateMachine):
+class EndGame(PreemptiveStateMachine):
     def __init__(self):
-        PreemptiveStateMachine.__init__(self,outcomes=['endEndgame'])
+        PreemptiveStateMachine.__init__(self,outcomes=['endEndGame'])
         with self:
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
                                              EndMatchPreempter(0),
-                                             transitions={'endMatch':'endEndgame'})
+                                             transitions={'endMatch':'endEndGame'})
             
             PreemptiveStateMachine.add('FinalDrop',
                       FinalDrop(),
-                      transitions={'succeeded':'endEndgame','aborted':'FinalDrop'})
+                      transitions={'succeeded':'endEndGame','aborted':'FinalDrop'})
             self.setInitialState('FinalDrop')
 
 class FinalDrop(CyclicActionState):
