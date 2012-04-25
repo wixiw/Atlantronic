@@ -77,9 +77,6 @@ class Move1(CyclicActionState):
         self.omnidirect(0.5,0.5,pi/2)
         
 class Move2(CyclicActionState):
-    def __init__(self):
-        CyclicActionState.__init__(self)
-        self.timeout=0.5
     def createAction(self):
         self.openloop_cpoint(0,0,0,0,0.5,0,2.0)       
 

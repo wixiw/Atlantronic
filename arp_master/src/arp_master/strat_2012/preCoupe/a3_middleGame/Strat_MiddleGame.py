@@ -16,17 +16,14 @@ class MiddleGame(PreemptiveStateMachine):
 
             PreemptiveStateMachine.add('GotoFirstBottle',
                       GotoFirstBottle(),
-                      transitions={'succeeded':'GotoSecondBottle', 'aborted':'problem'})
+                      transitions={'succeeded':'GotoSecondBottle', 'timeout':'problem'})
             #as initial state is not the preemptive one, it is necessary to add the information here !
             self.setInitialState('GotoFirstBottle')
             
             PreemptiveStateMachine.add('GotoSecondBottle',
                       GotoSecondBottle(),
-                      transitions={'succeeded':'WaitBeforeNext', 'aborted':'problem'})
-            
-            PreemptiveStateMachine.add('WaitBeforeNext',
-                      WaiterState(1.0),
-                      transitions={'done':'endMiddleGame'})
+                      transitions={'succeeded':'endMiddleGame', 'timeout':'problem'})
+        
 
 
 

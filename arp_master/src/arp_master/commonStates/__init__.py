@@ -5,4 +5,5 @@ from MotorManagement import *
 from Waiting import *
 from SetPosition import *
 from Strat_Initialisation import *
+from Strat_StartSequence import *
 from Strat_Uninitialisation import *

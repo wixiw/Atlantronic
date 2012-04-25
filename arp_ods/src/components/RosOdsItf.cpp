@@ -193,7 +193,6 @@ void RosOdsItf::createOrocosInterface()
     addPort("inPose",inPose);
     addPort("inCurrentOrderIsFinished",inCurrentOrderIsFinished);
     addPort("inCurrentOrderIsInError",inCurrentOrderIsInError);
-    addPort("outOrder",outOrder);
 }
 
 void RosOdsItf::createRosInterface()

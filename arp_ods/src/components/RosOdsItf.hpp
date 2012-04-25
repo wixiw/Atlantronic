@@ -31,7 +31,6 @@ class RosOdsItf: public OdsTaskContext
         RTT::InputPort<arp_math::EstimatedPose2D> inPose;
         RTT::InputPort<bool> inCurrentOrderIsFinished;
         RTT::InputPort<bool> inCurrentOrderIsInError;
-        RTT::OutputPort< shared_ptr<orders::MotionOrder> > outOrder;
 
         /**
          * Actionlib server.

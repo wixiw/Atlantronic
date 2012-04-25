@@ -15,7 +15,7 @@ from arp_master import *
 # pour realiser un homing se referer a la fonction FindSteeringZero
 class SetSteeringMotorModeState(CyclicState):
     def __init__(self, mode):
-        CyclicState.__init__(self, outcomes=['succeeded','failed'])
+        CyclicState.__init__(self, outcomes=['succeeded','timeout'])
         self.mode = mode
     
     def executeIn(self):
@@ -25,13 +25,13 @@ class SetSteeringMotorModeState(CyclicState):
         if self.result == True:
             return 'succeeded'   
         else:
-            return 'failed'
+            return 'timeout'
         
 # Permet de faire un homing sur les moteurs de directions pour definir les 0
 # Pensez a mettre la puissance steering avant, et a repasser en mode position apres :D
 class FindSteeringZero(CyclicState):
     def __init__(self):
-        CyclicState.__init__(self, outcomes=['succeeded','failed'])
+        CyclicState.__init__(self, outcomes=['succeeded','timeout'])
         self.srvResult = False
 
     
@@ -40,7 +40,7 @@ class FindSteeringZero(CyclicState):
         
     def executeTransitions(self):
         if self.srvResult == False:
-            return 'failed'
+            return 'timeout'
         if self.srvResult == True and Inputs.gethomingdone() == True:
             return 'succeeded'   
         
@@ -48,7 +48,7 @@ class FindSteeringZero(CyclicState):
 # normalement on utilise que "speed" et "torque"
 class SetDrivingMotorModeState(CyclicState):
     def __init__(self, mode):
-        CyclicState.__init__(self, outcomes=['succeeded','failed'])
+        CyclicState.__init__(self, outcomes=['succeeded','timeout'])
         self.mode = mode
     
     def executeIn(self):
@@ -58,13 +58,13 @@ class SetDrivingMotorModeState(CyclicState):
         if self.result == True:
             return 'succeeded'   
         else:
-            return 'failed'
+            return 'timeout'
         
         
 #Steering power management            
 class SetSteeringPower(CyclicState):
     def __init__(self):
-        CyclicState.__init__(self, outcomes=['succeeded','failed'])
+        CyclicState.__init__(self, outcomes=['succeeded','timeout'])
     
     def executeIn(self):
         self.result = self.enableSteeringPower()
@@ -73,12 +73,12 @@ class SetSteeringPower(CyclicState):
         if self.result == True:
             return 'succeeded'   
         else:
-            return 'failed'   
+            return 'timeout'   
 
 #Driving power management       
 class SetDrivingPower(CyclicState):
     def __init__(self):
-        CyclicState.__init__(self, outcomes=['succeeded','failed'])
+        CyclicState.__init__(self, outcomes=['succeeded','timeout'])
     
     def executeIn(self):
         self.result = self.enableDrivingPower()
@@ -87,7 +87,7 @@ class SetDrivingPower(CyclicState):
         if self.result == True:
             return 'succeeded'   
         else:
-            return 'failed' 
+            return 'timeout' 
         
         
         

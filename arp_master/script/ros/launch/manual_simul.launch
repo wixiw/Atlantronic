@@ -5,6 +5,7 @@
 	<!-- pas besoin pour le moment <include file="$(find arp_ods)/script/ros/launch/arp_ods_ros.launch"/> -->
 	<!-- pas besoin pour le moment <include file="$(find arp_rlu)/script/ros/launch/arp_rlu_ros.launch"/> -->
 	<node name="GraphicsSimu"     pkg="arp_master"  type="GraphicsSimuNode"     args="/Ubiquity/simuRealPose" output="screen" launch-prefix="nice"/>
+	<node name="ManualStratNode"   pkg="arp_master"  type="ManualStratNode.py"     args="" output="screen"/>
 	<node 	name="ArpOrocos" 
 		pkg="ocl" 
 		type="deployer-corba" 

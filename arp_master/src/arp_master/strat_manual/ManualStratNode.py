@@ -23,13 +23,13 @@ class ManualStratNode():
     
         #welcome message
         rospy.loginfo("******************************************************")
-        rospy.loginfo("Welcome to the Motion tester.")
+        rospy.loginfo("Welcome to the Manual monitoring strat.")
         rospy.loginfo("I will execute sequence when start is unplugged.")
         rospy.loginfo("******************************************************")
         
         # initialise the smach introspection server to view the state machine with :
         #  rosrun smach_viewer smach_viewer.py
-        sis = smach_ros.IntrospectionServer('strat_server', sm, '/SratNode_vierge')
+        sis = smach_ros.IntrospectionServer('strat_server', sm, '/ManualStratNode')
         sis.start()
         sm.execute()
         sis.stop()
@@ -40,61 +40,19 @@ class MainStateMachine(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['end'])
         with self:
-            smach.StateMachine.add('Initialisation', 
-                                   Initialisation(),
-                                   transitions={'endInitialisation':'SetInitialPosition'}) #=> utilisation de l'etat commun
-            smach.StateMachine.add('SetInitialPosition',
-                                   SetInitialPosition(0,0,0 ),
-                                   transitions={'succeeded':'WaitForStartUnplug','failed':'problem'})            
-            smach.StateMachine.add('WaitForStartUnplug', WaitForStartUnplug(),
-                                   transitions={'startunplug':'Move1'})
-            
-            smach.StateMachine.add('Move1', Move1(),
-                                   transitions={'succeeded':'Move2', 'aborted':'end'})
-            smach.StateMachine.add('Move2', Move2(),
-                                   transitions={'succeeded':'Move3', 'aborted':'end'})
-            smach.StateMachine.add('Move3', Move3(),
-                                   transitions={'succeeded':'Move4', 'aborted':'end'})
-            smach.StateMachine.add('Move4', Move4(),
-                                   transitions={'succeeded':'Move1', 'aborted':'end'})            
+            smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
+                                   transitions={'endInitialisation':'StartSequence', 'failed':'end'})
+            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(0,0,0),
+                                   transitions={'gogogo':'end','problem':'end'}) 
 
-
-class WaitForStartUnplug(CyclicState):
-    def __init__(self):
-        CyclicState.__init__(self, outcomes=['startunplug'])
-    
-    def executeTransitions(self):
-       if Inputs.getstart()==1:
-            return 'startunplug'
-        
-    def executeOut(self):
-        self.setPosition(0,0,0)
-        self.enablePower()
-   
-
-        
-class Move1(CyclicActionState):
-    def createAction(self):
-        self.omnidirect(0.5,0.5,pi/2)
-        
-class Move2(CyclicActionState):
-    def createAction(self):
-        self.openloop_cpoint(0,0,0,0,0.5,0,2.0)       
-
-class Move3(CyclicActionState):
-    def createAction(self):
-        self.omnidirect_cpoint(0.3,0,0,0,-0.4,0)   
-
-class Move4(CyclicActionState):
-    def createAction(self):
-        self.omnidirect_cpoint(0.3,0,0,0,-0.4,pi/2)   
+     
         
 ########################## EXECUTABLE 
 #shall be always at the end ! so that every function is defined before
 # main function, called by ros
 if __name__ == '__main__':
     try:
-        MotionTestingStratNode()
+        ManualStratNode()
     except smach.InvalidTransitionError:
         rospy.loginfo("handling smach.InvalidTransitionError ...")
         rospy.loginfo("Exiting")

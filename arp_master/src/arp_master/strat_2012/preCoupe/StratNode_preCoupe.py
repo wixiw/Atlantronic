@@ -2,7 +2,7 @@
 import roslib; roslib.load_manifest('arp_master')
 import rospy
 
-import arp_master
+from arp_master import *
 
 #import the main state machines substates     
 #from a0_initialisation import Strat_Initialisation => utilisation de l'etat commun
@@ -54,7 +54,7 @@ class MainStateMachine(smach.StateMachine):
         smach.StateMachine.__init__(self,outcomes=['end'])
         with self:
             smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
-                                   transitions={'endInitialisation':'StartSequence'})
+                                   transitions={'endInitialisation':'StartSequence', 'failed':'end'})
             smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(),
                                    transitions={'gogogo':'MiddleGame','problem':'end'})
             #transitions={'gogogo':'Opening','problem':'end'})

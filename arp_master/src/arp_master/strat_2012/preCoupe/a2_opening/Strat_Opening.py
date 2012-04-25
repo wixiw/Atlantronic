@@ -16,25 +16,21 @@ class Opening(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('GotoOutStartPos',
                       GotoOutStartPos(),
-                      transitions={'succeeded':'TurnToGoldBar', 'aborted':'problem'})
+                      transitions={'succeeded':'TurnToGoldBar', 'timeout':'problem'})
             
             self.setInitialState('GotoOutStartPos')
             
             PreemptiveStateMachine.add('TurnToGoldBar',
                       TurnToGoldBar(),
-                      transitions={'succeeded':'GoToGoldBar', 'aborted':'problem'})
+                      transitions={'succeeded':'GoToGoldBar', 'timeout':'problem'})
             
             PreemptiveStateMachine.add('GoToGoldBar',
                       GoToGoldBar(),
-                      transitions={'succeeded':'PushGoldBar', 'aborted':'problem'})
+                      transitions={'succeeded':'PushGoldBar', 'timeout':'problem'})
             
             PreemptiveStateMachine.add('PushGoldBar',
                       PushGoldBar(),
-                      transitions={'succeeded':'WaitBeforeNext', 'aborted':'problem'})
-            
-            PreemptiveStateMachine.add('WaitBeforeNext',
-                      WaiterState(1.0),
-                      transitions={'done':'endOpening'})
+                      transitions={'succeeded':'endOpening', 'timeout':'problem'})
                         
             
         

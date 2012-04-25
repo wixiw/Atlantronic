@@ -15,7 +15,7 @@ class EndGame(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('EndGameBip',
                       EndGameBip(),
-                      transitions={'end':'endEndGame'})
+                      transitions={'end':'endEndGame', 'timeout':'endEndGame'})
             #as initial state is not the preemptive one, it is necessary to add the information here !
             self.setInitialState('EndGameBip')
 
