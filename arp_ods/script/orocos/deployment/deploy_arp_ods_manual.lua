@@ -27,10 +27,6 @@ OdsMonitorDeployer:addToMonitor("MotionControl")
 --OdsMonitorDeployer:addToMonitor("RosOdsItf")
 OdsMonitorDeployer:start();
 
---mise automatique de la puissance
-HmlMonitor = Deployer:getPeer("HmlMonitor")
-HmlMonitor:coSetMotorPower(true);
-
 
 print("fin déploiment arp_ods")
 print("====================")

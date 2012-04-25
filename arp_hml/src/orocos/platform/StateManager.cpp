@@ -57,8 +57,8 @@ void StateManager::updateHook()
 {
     bool leftDone,rightDone,rearDone;
     inLeftSteeringHomingDone.readNewest(leftDone);
-    inLeftSteeringHomingDone.readNewest(rightDone);
-    inLeftSteeringHomingDone.readNewest(rearDone);
+    inRightSteeringHomingDone.readNewest(rightDone);
+    inRearSteeringHomingDone.readNewest(rearDone);
 
     outHomingDone.write(leftDone && rightDone && rearDone);
 }

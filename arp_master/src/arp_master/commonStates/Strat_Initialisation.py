@@ -6,7 +6,7 @@ import roslib; roslib.load_manifest('arp_master')
 
 from arp_master import *
 import os
-
+from Waiting import *
 
 #
 # This is the default a0 level state in any strategy. 
@@ -52,23 +52,5 @@ class WaitForOrocos(CyclicState):
     def executeOut(self):
         rospy.loginfo("Orocos deployed.")
 
-#the state that will wait for the start to be pluged
-class WaitForStart(CyclicState):
-    def __init__(self):
-        CyclicState.__init__(self, outcomes=['start'])
-    
-    def executeIn(self):
-        os.system("beep -f 300 -l300 -r2") 
-    
-    def executeTransitions(self):
-       if Inputs.getstart()==0:
-            return 'start'
-        
-    def executeOut(self):
-        Data.color=Inputs.getcolor()
-        if Data.color=='red':
-            Data.adv_color='blue'
-        else:
-            Data.adv_color='red'
             
     

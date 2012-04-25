@@ -9,6 +9,7 @@ import os
 #
 # Those states allows the robot to wait for something.
 # * WaiterState is waiting a timer to fired.
+# * WaitForStart is waiting for a start to be plugged
 # * WaitForMatch is waiting for a start unplug (will record start time)
 ############################################################
 
@@ -18,6 +19,29 @@ class WaiterState(CyclicState):
         self.timeout = waitTime
         
         
+
+
+#the state that will wait for the start to be pluged
+class WaitForStart(CyclicState):
+    def __init__(self):
+        CyclicState.__init__(self, outcomes=['start'])
+    
+    def executeIn(self):
+        os.system("beep -f 300 -l300 -r2") 
+    
+    def executeTransitions(self):
+       if Inputs.getstart()==0:
+            return 'start'
+        
+    def executeOut(self):
+        Data.color=Inputs.getcolor()
+        if Data.color=='red':
+            Data.adv_color='blue'
+        else:
+            Data.adv_color='red'
+        rospy.loginfo("Start plugged")
+
+#wait for start to be plugged out
 class WaitForMatch(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['start'])
@@ -32,4 +56,3 @@ class WaitForMatch(CyclicState):
     def executeOut(self):
         #je note le temps de debut de match
         Data.start_time=rospy.get_rostime()
-

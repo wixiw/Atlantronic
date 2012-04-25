@@ -32,6 +32,7 @@ class SetSteeringMotorModeState(CyclicState):
 class FindSteeringZero(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['succeeded','timeout'])
+        self.timeout = 10
         self.srvResult = False
 
     

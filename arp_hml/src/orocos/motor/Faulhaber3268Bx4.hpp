@@ -63,6 +63,8 @@ namespace arp_hml
          */
         ArdDs402::enum_DS402_state attrState;
 
+        OutputPort<int> outStateBrut;
+
         /** time for which the propMaximalTorque has been reached */
         double attrBlockingDelay;
         /** brut value of the odometer */
@@ -73,7 +75,7 @@ namespace arp_hml
         /** Only used in running homing */
         HomingState attrHomingState;
         /** is true when homing is finished */
-        bool attrHomingDone;
+        bool attrHardNotify;
 
         /** Is true when you when to invert the speed command and feedback of the motor softly **/
         bool propInvertDriveDirection;
@@ -250,6 +252,8 @@ namespace arp_hml
 
         ///configure homing : speed
         static const int F_CMD_GOHOSEQ = 0x2F ;
+
+        static const int F_CMD_HN = 0x76;
 
         /*
          * Faulhaber return codes should be clear

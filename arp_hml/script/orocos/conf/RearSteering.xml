@@ -22,4 +22,8 @@
 		</description>
 		<value>1</value>
 	</simple>
+	<simple name="propHomingSpeed" type="double">
+		<description>Homing speed in rad/s on the reductor output</description>
+		<value>10</value>
+	</simple>
 </properties>

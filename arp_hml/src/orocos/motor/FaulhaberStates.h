@@ -24,6 +24,7 @@ namespace arp_hml
             WAIT_CONFIGURE_SPEED,
             ASK_HOMING,
             WAIT_HOMING,
+            SET_NULL_SPEED,
             HOMING_DONE,
             NOT_IN_HOMNG_MODE
         };

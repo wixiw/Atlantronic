@@ -24,7 +24,7 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         attrState(ArdDs402::UnknownDs402State),
         attrBlockingDelay(0),
         attrHomingState(NOT_IN_HOMNG_MODE),
-        attrHomingDone(false),
+        attrHardNotify(false),
         propInvertDriveDirection(false),
         propReductorValue(14),
         propEncoderResolution(3000),
@@ -203,7 +203,11 @@ void Faulhaber3268Bx4::setOutputs()
 
     //publication de la fin de sequence homing
     if( attrHomingState == HOMING_DONE && getOperationMode() == HOMING )
+    {
+        if( outHomingDone.getLastWrittenValue() == false )
+            LOG(Info) << "Homing Done" << endlog();
         outHomingDone.write(true);
+    }
     else
         outHomingDone.write(false);
 
@@ -378,16 +382,21 @@ void Faulhaber3268Bx4::runHoming()
                 }
                 break;
             case WAIT_HOMING:
-                if( attrHomingDone )
-                    attrHomingState = HOMING_DONE;
-                break;
-            case HOMING_DONE:
-                if( !m_faulhaberCommandTodo )
+                if( attrHardNotify )
                 {
                     m_faulhaberScriptCommand = (UNS8) F_CMD_V;
                     m_faulhaberScriptCommandParam = (UNS32) 0;
                     m_faulhaberCommandTodo = true;
+                    attrHomingState = SET_NULL_SPEED;
                 }
+                break;
+            case SET_NULL_SPEED:
+                if( !m_faulhaberCommandTodo )
+                {
+                    attrHomingState = HOMING_DONE;
+                }
+                break;
+            case HOMING_DONE:
                 break;
             default:
                 LOG(Error) << "Unknow homing state : " << attrHomingState << endlog();
@@ -439,7 +448,8 @@ void Faulhaber3268Bx4::readCaptors()
 
     //lecture de l'état DS402s
     attrState = ArdDs402::getStateFromCanStatusWord( *m_ds402State );
-    attrHomingDone = *m_ds402State&=(1<<10);
+    outStateBrut.write(*m_ds402State);
+    attrHardNotify = *m_ds402State&=(1<<14);
 
     //lecture du courant (en mA)
 	double current = *m_measuredCurrent;
@@ -604,13 +614,13 @@ bool Faulhaber3268Bx4::setOperationMode(ArdMotorItf::operationMode_t operationMo
 		    if( ArdMotorItf::HOMING == operationMode )
 		    {
 		        attrHomingState = ASK_CONFIGURE_EDGE;
-		        attrHomingDone = false;
+		        attrHardNotify = false;
 		    }
 		    //desinit de l'état homing
 		    else
 		    {
 		        attrHomingState = NOT_IN_HOMNG_MODE;
-		        attrHomingDone = false;
+		        attrHardNotify = false;
 		    }
 
 			ArdMotorItf::setOperationMode(operationMode);
@@ -741,6 +751,7 @@ unsigned int Faulhaber3268Bx4::getError()
 void Faulhaber3268Bx4::createOrocosInterface()
 {
     addAttribute("attrState",attrState);
+    addPort("outStateBrut",outStateBrut);
     addAttribute("attrVelocityCmd",m_speedCommand);
     addAttribute("attrPositionCmd",m_positionCommand);
     addAttribute("attrTorqueCmd",m_torqueCommand);

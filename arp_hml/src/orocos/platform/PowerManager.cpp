@@ -244,7 +244,7 @@ bool PowerManager::coSetDrivingMotorPower(bool powerOn)
         goto failed;
     }
 
-    LOGS(Info) << "ooSetSteeringMotorPower : returning to speed mode" << endlog();
+    LOGS(Info) << "ooSetDrivingMotorPower : returning to speed mode" << endlog();
 
     //remise en mode vitesse des moteurs
     if( m_ooSetDrivingOperationMode("speed") == false )

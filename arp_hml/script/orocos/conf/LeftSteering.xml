@@ -18,8 +18,12 @@
 	<simple name="propInvertDriveDirection" type="boolean">
 		<description>
 			Is true when you when to invert the speed command and feedback of the motor
-				softly
+softly
 		</description>
 		<value>1</value>
+	</simple>
+	<simple name="propHomingSpeed" type="double">
+		<description>Homing speed in rad/s on the reductor output</description>
+		<value>10</value>
 	</simple>
 </properties>
