@@ -130,6 +130,14 @@ class Twist2D
          */
         void limitFirstDerivate(Twist2D lastTwist, Vector3 limits, double period);
 
+        /**
+         * Permet de construire un Twist à partir d'une représentation polaire
+         * @param normV : la norme de la vitesse dans le plan x,y
+         * @param angV : l'angle de la vitesse par rapport à l'axe x.
+         * @param vh : vitesse angulaire
+         */
+        static Twist2D createFromPolar(double normV, double angV, double vh);
+
     protected:
         Vector2 vitesseTranslation;
         double vitesseRotation;

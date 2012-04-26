@@ -252,6 +252,7 @@ bool PowerManager::coSetDrivingMotorPower(bool powerOn)
         LOGS(Error) << "m_ooSetDrivingOperationMode : could not switch back to speed mode." << endlog();
         goto failed;
     }
+    LOGS(Info) << "m_ooSetDrivingOperationMode : POWER=" << powerOn << endlog();
     goto success;
 
     failed:
@@ -316,6 +317,8 @@ bool PowerManager::coSetSteeringMotorPower(bool powerOn)
         LOGS(Error) << "ooSetSteeringMotorPower : could not switch back to position mode." << endlog();
         goto failed;
     }
+
+    LOGS(Info) << "ooSetSteeringMotorPower : POWER=" << powerOn << endlog();
     goto success;
 
     failed:

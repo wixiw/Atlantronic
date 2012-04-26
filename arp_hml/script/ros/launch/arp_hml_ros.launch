@@ -51,5 +51,5 @@
 		output="screen" >
 	</node>
 	
-	<node name="DynamixelManager"   pkg="arp_hml"  type="DynamixelManager.py" args="" output="screen" respawn="true" />
+	<node name="DynamixelManager"   pkg="arp_hml"  type="DynamixelManager.py" args="" output="screen" respawn="false" />
 </launch>

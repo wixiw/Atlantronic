@@ -4,6 +4,7 @@
 import roslib; roslib.load_manifest('arp_master')
 
 from arp_master import *
+from std_msgs.msg import Bool
 
 ###########################  TEMPORAL BEHAVIOR
 
@@ -43,9 +44,21 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
                                    transitions={'endInitialisation':'StartSequence', 'failed':'end'})
             smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(0,0,0),
-                                   transitions={'gogogo':'end','problem':'end'}) 
+                                   transitions={'gogogo':'Run','problem':'end'}) 
+            smach.StateMachine.add('Run', Run(),
+                                   transitions={'exit':'end','timeout':'end'}) 
 
      
+class Run(CyclicState):
+    def __init__(self):
+        CyclicState.__init__(self,outcomes=['exit'])
+        self.pub = rospy.Publisher('/Strat/go', Bool)
+        
+    def executeIn(self):
+        self.pub.publish(Bool(True))
+        
+    def executeTransitions(self):
+        return
         
 ########################## EXECUTABLE 
 #shall be always at the end ! so that every function is defined before

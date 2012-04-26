@@ -186,3 +186,52 @@ BOOST_AUTO_TEST_CASE( Twist2_DerivateLimit )
     BOOST_CHECK_CLOSE( target.vy() ,  4, 1E-6);
     BOOST_CHECK_CLOSE( target.vh() ,  6, 1E-6);
 }
+
+BOOST_AUTO_TEST_CASE( Twist2_CreateFromPolar )
+{
+    Twist2D twistCart,twistPolar;
+
+    twistPolar = Twist2D::createFromPolar(0,0,0);
+    twistCart = Twist2D();
+    BOOST_CHECK( twistPolar == twistCart );
+
+    twistPolar = Twist2D::createFromPolar(0,0,1);
+    twistCart = Twist2D(0,0,1);
+    BOOST_CHECK( twistPolar == twistCart );
+
+    twistPolar = Twist2D::createFromPolar(0,1,0);
+    twistCart = Twist2D(0,0,0);
+    BOOST_CHECK( twistPolar == twistCart );
+
+    twistPolar = Twist2D::createFromPolar(0,1,0);
+    twistCart = Twist2D(0,0,0);
+    BOOST_CHECK( twistPolar == twistCart );
+
+    twistPolar = Twist2D::createFromPolar(1,0,0);
+    twistCart = Twist2D(1,0,0);
+    BOOST_CHECK( twistPolar == twistCart );
+
+    twistPolar = Twist2D::createFromPolar(1,M_PI,0);
+    twistCart = Twist2D(-1,0,0);
+    BOOST_CHECK_CLOSE( twistPolar.vx(), twistCart.vx(), 1E-6 );
+    BOOST_CHECK_SMALL( twistPolar.vy(), 1E-6 );
+    BOOST_CHECK_SMALL( twistPolar.vh(), 1E-6 );
+
+    twistPolar = Twist2D::createFromPolar(1,M_PI/2,0);
+    twistCart = Twist2D(0,1,0);
+    BOOST_CHECK_SMALL( twistPolar.vx(), 1E-6 );
+    BOOST_CHECK_CLOSE( twistPolar.vy(), twistCart.vy(), 1E-6 );
+    BOOST_CHECK_SMALL( twistPolar.vh(), 1E-6 );
+
+    twistPolar = Twist2D::createFromPolar(1,-M_PI/2,0);
+    twistCart = Twist2D(0,-1,0);
+    BOOST_CHECK_SMALL( twistPolar.vx(), 1E-6 );
+    BOOST_CHECK_CLOSE( twistPolar.vy(), twistCart.vy(), 1E-6 );
+    BOOST_CHECK_SMALL( twistPolar.vh(), 1E-6 );
+
+    twistPolar = Twist2D::createFromPolar(1,M_PI/4,2.7);
+    twistCart = Twist2D(sqrt(2)/2,sqrt(2)/2,2.7);
+    BOOST_CHECK_CLOSE( twistPolar.vx(), twistCart.vx(), 1E-6 );
+    BOOST_CHECK_CLOSE( twistPolar.vy(), twistCart.vy(), 1E-6 );
+    BOOST_CHECK_CLOSE( twistPolar.vh(), twistCart.vh(), 1E-6 );
+}

@@ -176,3 +176,12 @@ void Twist2D::limitFirstDerivate(Twist2D lastTwist, Vector3 limits, double perio
     vy( firstDerivateLimitation(vy(),lastTwist.vy(), period, -fabs(limits[1]), fabs(limits[1])) );
     vh( firstDerivateLimitation(vh(),lastTwist.vh(), period, -fabs(limits[2]), fabs(limits[2])) );
 }
+
+Twist2D Twist2D::createFromPolar(double normV, double angV, double vh)
+{
+    Twist2D t;
+    t.vx(normV*cos(angV));
+    t.vy(normV*sin(angV));
+    t.vh(vh);
+    return t;
+}
