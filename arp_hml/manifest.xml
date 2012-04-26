@@ -22,8 +22,8 @@
 	<depend package="hokuyo_node" />
 	<depend package="actionlib" />
 	<depend package="actionlib_msgs" />
-	<depend package="dynamixel_msgs" />
-	<depend package="dynamixel_controllers" />
+	<!-- a remettre sur vm10.0 <depend package="dynamixel_msgs" /> -->
+	<!-- a remettre sur vm10.0 <depend package="dynamixel_controllers" /> -->
 	<!--empeche le build local <rosdep name="eigen" />-->
 </package>
 
