@@ -1,0 +1,16 @@
+#goal definition
+float64 left_finger
+float64 right_finger
+float64 left_claw
+float64 right_claw
+---
+#result definition
+bool success
+
+---
+#feedback
+float64 left_finger_pos
+float64 right_finger_pos
+float64 left_claw_pos
+float64 right_claw_pos
+
