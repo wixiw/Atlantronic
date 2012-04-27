@@ -9,4 +9,3 @@ configure_file(
 
 add_subdirectory(ihm)
 add_subdirectory(orocos)
-add_subdirectory(strat)
