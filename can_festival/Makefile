@@ -11,3 +11,4 @@ debug:
 
 clean:
 	make -C src clean
+	rm lib/*

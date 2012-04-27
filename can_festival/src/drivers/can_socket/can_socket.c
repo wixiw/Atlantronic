@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #ifdef RTCAN_SOCKET
 #include "rtdm/rtcan.h"
+#define CAN_FLAVOR "rtcan"
 #define CAN_IFNAME     "rtcan%s"
 #define CAN_SOCKET     rt_dev_socket
 #define CAN_CLOSE      rt_dev_close
@@ -53,6 +54,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define AF_CAN PF_CAN
 #endif
 //#include "af_can.h"
+#define CAN_FLAVOR "can"
 #define CAN_IFNAME     "can%s"
 #define CAN_SOCKET     socket
 #define CAN_CLOSE      close
@@ -119,11 +121,15 @@ canSend_driver (CAN_HANDLE fd0, Message const * m)
   res = CAN_SEND (*(int *) fd0, &frame, sizeof (frame), 0);
   if (res < 0)
     {
-      fprintf (stderr, "Send failed (id:%x data : %x.%x.%x.%x.%x.%x.%x.%x) : %s\n",
+      fprintf (stderr, "%s : Send failed (id:%x data : %x.%x.%x.%x.%x.%x.%x.%x) : %s (res=%d)\n",
+              CAN_FLAVOR,
               frame.can_id,
               frame.data[0],frame.data[1],frame.data[2],frame.data[3],
               frame.data[4],frame.data[5],frame.data[6],frame.data[7],
-              strerror (CAN_ERRNO (res)));
+              strerror (CAN_ERRNO (res)),
+              res);
+      fprintf(stderr, "%s : ",
+              CAN_FLAVOR);
       return 1;
     }
 

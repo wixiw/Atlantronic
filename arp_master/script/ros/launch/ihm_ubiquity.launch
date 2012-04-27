@@ -16,14 +16,20 @@
 			args="-d $(find arp_hml)/script/ros/hml.vcg"
 	/>
 	
+	<node 	name="monitor" 
+			pkg="runtime_motinor" 
+			type="monitor" 
+			respawn="false" 
+			output="screen" 
+	/>
 	
-	<node 	name="Taskbrowser" 
+	<!--<node 	name="Taskbrowser" 
 		pkg="ocl" 
 		type="ctaskbrowser-gnulinux" 
-		args="Deployer -ORBInitRef NameService=corbaloc:iiop:192.168.1.41:2809/NameService --" 
+		args="Deployer -ORBInitRef NameService=corbaloc:iiop:192.168.1.41:2809/NameService " ajouter deux tirets à la fin des arguments 
 		output="screen"
 		respawn="false"
 		required="false"
-	/>
+	/>-->
 			
 </launch>
