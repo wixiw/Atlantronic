@@ -53,11 +53,12 @@ void TwistTeleop::updateHook()
 
     UbiquityParams params;
     double vx,vy,vtheta;
-    bool deadMan,power,expert,ready;
+    bool deadMan,power,expert;
+    std_msgs::Bool ready;
     double linAcc, rotAcc, linVel, rotVel;
 
     //on ne commence pas tant que la strat n'a pas fini son boulot, sinon y'a interférence.
-    if( inBootUpDone.readNewest(ready) == NoData || !ready )
+    if( inBootUpDone.readNewest(ready) == NoData || !ready.data )
         return;
 
 
