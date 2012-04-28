@@ -56,7 +56,9 @@ bool HmlMonitor::configureHook()
         }
         else
         {
+            LOG(Info) << "Configuring " << tc->getName() << endlog();
             res &= tc->configure();
+            LOG(Info) << "Starting " << tc->getName() << endlog();
             res &= tc->start();
         }
     }
@@ -144,7 +146,9 @@ void HmlMonitor::cleanupHook()
        }
        else
        {
+           LOG(Info) << "Stopping " << tc->getName() << endlog();
            tc->stop();
+           LOG(Info) << "Cleaning  " << tc->getName() << endlog();
            tc->cleanup();
        }
    }
