@@ -4,7 +4,7 @@
 <meta charset="ISO-8859-1">
 <meta http-equiv="Content-type" content="text/html;charset=ISO-8859-1" />
 <meta name="author" content="Advanced Robotics Design" />
-<meta http-equiv="refresh" content="1;URL='index.php'" />
+<meta http-equiv="refresh" content="12;URL='index.php'" />
 <meta HTTP-EQUIV="pragma" CONTENT="no-cache" />
 <link rel="stylesheet" href="ard.css" />
 <title>ARP IHM</title>
