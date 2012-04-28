@@ -21,6 +21,7 @@
 #include "EstimatedPose2DTypeInfo.hpp"
 #include "EstimatedTwist2DTypeInfo.hpp"
 #include "ParamsTypeInfo.hpp"
+#include "TimeSpecTypeInfo.hpp"
 
 using namespace RTT;
 using namespace arp_core;
@@ -41,7 +42,7 @@ bool CoreTypeKit::loadTypes()
     res &= types::Types()->addType( new EstimatedPose2DTypeInfo() );
     res &= types::Types()->addType( new EstimatedTwist2DTypeInfo() );
     res &= types::Types()->addType( new ParamsTypeInfo() );
-
+    res &= types::Types()->addType( new TimeSpecTypeInfo() );
     return res;
 }
 
