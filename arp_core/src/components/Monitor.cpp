@@ -59,6 +59,9 @@ bool Monitor::configureHook()
         }
     }
 
+    if( res )
+        LOG(Info) << "All peers configured successfully" << endlog();
+
     return res;
 }
 
@@ -82,6 +85,9 @@ bool Monitor::startHook()
             res &= tc->start();
         }
     }
+
+    if( res )
+        LOG(Info) << "All peers started successfully" << endlog();
 
     return res;
 }
