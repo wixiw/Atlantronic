@@ -17,12 +17,12 @@ CORBA="-corba"
 
 cd `rospack find arp_hml`
 
-if [ $1 == "debug" ]
+if [[ $1 == "debug" ]]
 then
 	cecho yellow "You probably need to copy paste this into gdb :"
 	cecho yellow "run -s $ROOT_DEPLOYMENT_FILE"
 	gdb  `rosstack find orocos_toolchain`/install/bin/deployer$CORBA-$OROCOS_TARGET
-else if [ $1 == "simu" ] 
+else if [[ $1 == "simu" ]] 
 	then
 		cecho yellow "SIMU"
 		cecho yellow "running : rosrun ocl deployer$CORBA-$OROCOS_TARGET -s $ROOT_DEPLOYMENT_FILE_SIMUL"
