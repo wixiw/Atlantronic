@@ -6,6 +6,9 @@ from math import *
 from UtilARD import *
 
 class TableVierge:
+    def __init__(self):
+        pass
+    
     def init():
         Table.HWALL_Y=rospy.get_param('/Table/HWALL_Y')
         Table.VWALL_X=rospy.get_param('/Table/VWALL_X')

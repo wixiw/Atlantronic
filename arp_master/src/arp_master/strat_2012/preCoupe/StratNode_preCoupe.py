@@ -12,6 +12,12 @@ from a3_middleGame import Strat_MiddleGame
 from a4_endGame import Strat_EndGame
 #from a5_... =>utilisation de l'etat commun
 
+#from arp_master.strat_2012 import Table2012
+#from arp_master.strat_2012 import Robot2012
+
+###### Variables globales
+#Table = Table2012();
+#Robot = Robot2012();
 
 ###########################  TEMPORAL BEHAVIOR
 
@@ -22,8 +28,8 @@ class StratNode_preCoupe():
         #creation of the node
         rospy.init_node('StratNode')
         # recuperation des parametres
-        Table.init()
-        Robot.init()
+        #Table.init()
+        #Robot.init()
         #creation of the cadencer for all states
         Data.stateMachineRate =rospy.Rate(10)
         #linking of the input in Inputs to the topics

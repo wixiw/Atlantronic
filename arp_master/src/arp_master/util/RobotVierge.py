@@ -4,6 +4,5 @@ import rospy
 
 
 class RobotVierge:
-    @staticmethod
     def init():
         pass

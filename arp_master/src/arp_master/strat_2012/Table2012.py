@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 import roslib; roslib.load_manifest('arp_master')
-import rospy
-from rospy import loginfo
-
 from arp_master.util import *
 
 class Table2012(TableVierge):
