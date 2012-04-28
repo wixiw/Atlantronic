@@ -68,9 +68,9 @@ do_start()
 #
 do_stop()
 {
-	if [[ $OROCOS_TARGET == "xenomai" ]] 
+	if [[ $CAN_FLAVOR  == "xenomai" ]] 
 	then
-		cecho yellow "Stopping Gnulinux can ..."
+		cecho yellow "Stopping Xenomai can ..."
 		rmmod xeno_can_mem xeno_can_sja1000 xeno_can
 	else
 		cecho yellow "Stoppping Gnulinux can ..."
