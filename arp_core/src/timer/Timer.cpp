@@ -7,8 +7,8 @@
  */
 
 #include "Timer.hpp"
-#include <ros/ros.h>
 
+using namespace arp_math;
 using namespace arp_core;
 
 Timer::Timer()
@@ -20,13 +20,16 @@ Timer::~Timer()
 {
 }
 
-double Timer::GetTime()
+long double Timer::GetTime()
 {
-    return ros::WallTime::now().toSec() - t0;
+    return getTime() - t0;
 }
 
-void Timer::ResetTime()
+long double Timer::ResetTime()
 {
-    t0 = ros::WallTime::now().toSec();
+    long double now = getTime();
+    long double delay = now - t0;
+    t0 = now;
+    return delay;
 }
 

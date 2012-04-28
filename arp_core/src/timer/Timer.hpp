@@ -8,6 +8,8 @@
 #ifndef _ARP_CORE_TIMER_HPP_
 #define _ARP_CORE_TIMER_HPP_
 
+#include "math/core"
+
 namespace arp_core
 {
     class Timer
@@ -15,11 +17,11 @@ namespace arp_core
     public:
         Timer();
         ~Timer();
-        double GetTime();
-        void ResetTime();
+        long double GetTime();
+        long double ResetTime();
 
     private:
-        double t0;
+        long double t0;
     };
 }
 

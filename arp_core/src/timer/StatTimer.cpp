@@ -10,6 +10,7 @@
 #include <numeric>
 #include <algorithm>
 #include <iostream>
+#include <sstream>
 
 using namespace arp_core;
 
@@ -27,8 +28,7 @@ StatTimer::~StatTimer()
 
 void StatTimer::Start()
 {
-    double t = this->GetTime();
-    this->ResetTime();
+    long double t =  this->ResetTime();
     refreshTimeVector.push_back( t );
     while( refreshTimeVector.size() > maxBufferSize )
         refreshTimeVector.erase( refreshTimeVector.begin() );
@@ -62,7 +62,7 @@ unsigned int StatTimer::GetMaxBufferSize() const
     return maxBufferSize;
 }
 
-std::vector<double> StatTimer::GetRawElapsedTime() const
+std::vector<long double> StatTimer::GetRawElapsedTime() const
 {
     return elapsedTimeVector;
 }
@@ -90,8 +90,8 @@ double StatTimer::GetStdDevElapsedTime() const
         return 0.0;
 
     double mean = this->GetMeanElapsedTime();
-    std::vector<double> diff;
-    for(std::vector<double>::const_iterator it = elapsedTimeVector.begin(); it != elapsedTimeVector.end(); ++it)
+    std::vector<long double> diff;
+    for(std::vector<long double>::const_iterator it = elapsedTimeVector.begin(); it != elapsedTimeVector.end(); ++it)
         diff.push_back( (*it) - mean );
 
     return std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0) / (double)elapsedTimeVector.size();
@@ -111,7 +111,7 @@ double StatTimer::GetMaxElapsedTime() const
     return *(std::max_element(elapsedTimeVector.begin(), elapsedTimeVector.end() ));
 }
 
-std::vector<double> StatTimer::GetRawRefreshTime() const
+std::vector<long double> StatTimer::GetRawRefreshTime() const
 {
     return refreshTimeVector;
 }
@@ -139,8 +139,8 @@ double StatTimer::GetStdDevRefreshTime() const
         return 0.0;
 
     double mean = this->GetMeanRefreshTime();
-    std::vector<double> diff;
-    for(std::vector<double>::const_iterator it = refreshTimeVector.begin(); it != refreshTimeVector.end(); ++it)
+    std::vector<long double> diff;
+    for(std::vector<long double>::const_iterator it = refreshTimeVector.begin(); it != refreshTimeVector.end(); ++it)
         diff.push_back( (*it) - mean );
 
     return std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0) / (double)refreshTimeVector.size();
@@ -160,3 +160,31 @@ double StatTimer::GetMaxRefreshTime() const
     return *(std::max_element(refreshTimeVector.begin(), refreshTimeVector.end() ));
 }
 
+std::string StatTimer::GetReport() const
+{
+    std::stringstream info;
+    info << "==============================================" << std::endl;
+    info << " Performance Report (ms)" << std::endl;
+    info << "----------------------------------------------" << std::endl;
+    info << "  [*] Number of samples used : " << GetRawRefreshTime().size() << std::endl;
+    info << "  [*] Actual loop period   : mean=" << GetMeanRefreshTime() * 1000.0;
+    info << "  , stddev=" << GetStdDevRefreshTime() * 1000.0;
+    info << "  , min=" << GetMinRefreshTime() * 1000.0;
+    info << "  , max=" << GetMaxRefreshTime() * 1000.0;
+    info << "  , last=" << GetLastRefreshTime() * 1000.0 << std::endl;
+    /*info << "  [*] Raw actual loop periods :  ( ";
+     for(std::vector<long double>::const_iterator it = GetRawRefreshTime().begin(); it != GetRawRefreshTime().end(); ++it)
+     info << (*it) * 1000.0 << " ";
+     info << " )" << std::endl;*/
+    info << "  [*] Loop duration    : mean=" << GetMeanElapsedTime() * 1000.0;
+    info << "  , stddev=" << GetStdDevElapsedTime() * 1000.0;
+    info << "  , min=" << GetMinElapsedTime() * 1000.0;
+    info << "  , max=" << GetMaxElapsedTime() * 1000.0;
+    info << "  , last=" << GetLastElapsedTime() * 1000.0 << std::endl;
+    /*info << "  [*] Raw loop durations :  ( ";
+     for(std::vector<long double>::const_iterator it = GetRawElapsedTime().begin(); it != GetRawElapsedTime().end(); ++it)
+     info << (*it) * 1000.0 << " ";
+     info << " )" << std::endl; */
+
+    return info.str();
+}

@@ -27,23 +27,25 @@ namespace arp_core
         void SetMaxBufferSize(const unsigned int s);
         unsigned int GetMaxBufferSize() const;
 
-        std::vector<double> GetRawElapsedTime() const;
+        std::vector<long double> GetRawElapsedTime() const;
         double GetLastElapsedTime() const;
         double GetMeanElapsedTime() const;
         double GetStdDevElapsedTime() const;
         double GetMinElapsedTime() const;
         double GetMaxElapsedTime() const;
 
-        std::vector<double> GetRawRefreshTime() const;
+        std::vector<long double> GetRawRefreshTime() const;
         double GetLastRefreshTime() const;
         double GetMeanRefreshTime() const;
         double GetStdDevRefreshTime() const;
         double GetMinRefreshTime() const;
         double GetMaxRefreshTime() const;
 
+        std::string GetReport() const;
+
     protected :
-        std::vector<double> refreshTimeVector;
-        std::vector<double> elapsedTimeVector;
+        std::vector<long double> refreshTimeVector;
+        std::vector<long double> elapsedTimeVector;
         unsigned int maxBufferSize;
         double lastResetTime;
     } ;
