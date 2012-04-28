@@ -147,12 +147,18 @@ void delta_t(struct timespec *interval, struct timespec begin, struct timespec n
 }
 
 //on utilise un long double pour le calcul de temps pour des raisons de précision numérique
+long double timespec2Double(timespec now)
+{
+    long double time = now.tv_sec + (long double) (now.tv_nsec) / 1E9;
+    return time;
+}
+
+//on utilise un long double pour le calcul de temps pour des raisons de précision numérique
 long double delta_t(struct timespec begin, struct timespec now)
 {
     timespec delay;
     delta_t(&delay, begin, now);
-    long double time = delay.tv_sec + (long double) (delay.tv_nsec) / 1E9;
-    return  time;
+    return  timespec2Double(delay);
 }
 
 //on utilise un long double pour le calcul de temps pour des raisons de précision numérique
@@ -160,8 +166,7 @@ long double getTime(void)
 {
     timespec now;
     clock_gettime(CLOCK_MONOTONIC, &now);
-    long double time = now.tv_sec + (long double) (now.tv_nsec) / 1E9;
-    return time;
+    return timespec2Double(now);
 }
 
 }

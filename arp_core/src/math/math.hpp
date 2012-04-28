@@ -88,6 +88,11 @@ namespace arp_math
     double d_abs(double x);
 
     /**
+     * transforme un time spec en double
+     */
+    long double timespec2Double(timespec);
+
+    /**
      * Elapsed time between begin and now, using data type timespec.
      * Return values simply to indicate return point
      */
