@@ -15,3 +15,4 @@
 #include "uTest_Math.hpp"
 #include "uTest_Interpolator.hpp"
 #include "uTest_Stats.hpp"
+#include "uTest_ICRSpeed.hpp"
