@@ -54,6 +54,7 @@ bool Monitor::configureHook()
         }
         else
         {
+            LOG(Info) << "Configuring " << tc->getName() << endlog();
             res &= tc->configure();
         }
     }
@@ -77,6 +78,7 @@ bool Monitor::startHook()
         }
         else
         {
+            LOG(Info) << "Starting " << tc->getName() << endlog();
             res &= tc->start();
         }
     }
@@ -132,6 +134,7 @@ void Monitor::stopHook()
         }
         else
         {
+            LOG(Info) << "Stopping " << tc->getName() << endlog();
             tc->stop();
         }
     }
@@ -152,6 +155,7 @@ void Monitor::cleanupHook()
        }
        else
        {
+           LOG(Info) << "Cleaning " << tc->getName() << endlog();
            tc->cleanup();
        }
    }
