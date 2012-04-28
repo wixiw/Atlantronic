@@ -33,94 +33,7 @@ CanOpenController::CanOpenController(const std::string& name) :
 
     clock_gettime(CLOCK_MONOTONIC, &m_lastSyncTime);
 
-    addAttribute("attrCurrentNMTState", attrCurrentNMTState);
-    addAttribute("attrSyncTime", attrSyncTime);
-    addAttribute("sdo", attrTestingSdo);
-
-    addProperty("propCanFestivalDriverName", propCanFestivalDriverName) .doc(
-            "contains the name of the can driver library that will be loaded dynamically");
-    addProperty("propBusName", propBusName) .doc(
-            "contains the name of the bus attached to the CanController");
-    addProperty("propBaudRate", propBaudRate) .doc(
-            "contains the baudrate of the attached bus (10K,250K,500K,1000K, ...)");
-    addProperty("propNodeId", propNodeId) .doc(
-            "contains the nodeID of the Controller node on the attached bus (in decimal)");
-    addProperty("propMasterMaxBootDelay", propMasterMaxBootDelay) .doc(
-            "defines the maximal allowed duration for master bootup (in ms)");
-    addProperty("propSyncPeriod", propSyncPeriod) .doc(
-            "delay between 2 SYNC messages in s ");
-    addProperty("propPdoMaxAwaitedDelay", propPdoMaxAwaitedDelay ).doc("");
-    //TODO WLA mettre la doc sur les 2 prop ci dessus et les mettre dans check prop
-
-    addPort("inControllerNmtState", inControllerNmtState) .doc(
-            "This port is connected to the CanFestival thread to populate attrCurrentNMTState");
-    addPort("inBootUpReceived", inBootUpReceived) .doc(
-            "his port is connected to the CanFestival thread to dispatch the boot event to registred Device Components");
-    addPort("outClock", outClock) .doc("");
-    addPort("outPeriod", outPeriod) .doc("");
-    addEventPort("inSync", inSync) .doc(
-            "wakes up the component on SYNC message");
-
-    /**
-     * Register/Unregister
-     */
-    addOperation("ooRegisterNewNode", &CanOpenDispatcher::ooRegisterNewNode,
-            &m_dispatcher, OwnThread) .doc(
-            "This operation allows a Device Component to register in the CanController. Returns true if the node has been registred successfully") .arg(
-            "node", "the 'idCard' of the node who wants to be added");
-    addOperation("ooUnregisterNode", &CanOpenDispatcher::ooUnregisterNode,
-            &m_dispatcher, OwnThread) .doc(
-            "This operation allows a Device Component to unregister from the CanController. Returns true if the node has been unregistred successfully") .arg(
-            "node", "the nodeId of the node who wants to be removed");
-
-    /**
-     * SDO and dictionnary Access
-     */
-    addOperation("coWriteInLocalDico", &CanOpenController::coWriteInLocalDico,
-            this, ClientThread) .doc(
-            "This operation allows anyone in the application to write in the local dictionnary") .arg(
-            "dicoEntry",
-            "a structure containing the information to write in the local dictionnary");
-    addOperation("coReadInLocalDico", &CanOpenController::coReadInLocalDico,
-            this, ClientThread) .doc(
-            "This operation allows anyone in the application to read the value of the local dictionnary entry") .arg(
-            "dicoEntry",
-            "a structure containing the information to read from the local dictionnary. The result value is written in the receivedData param.");
-    addOperation("coWriteInRemoteDico",
-            &CanOpenController::coWriteInRemoteDico, this, ClientThread) .doc(
-            "This operation allows anyone in the application to write in a remote dictionnary") .arg(
-            "dicoEntry",
-            "a structure containing the information to write in a remote dictionnary this is done via sdo. ");
-    addOperation("coReadInRemoteDico", &CanOpenController::coReadInRemoteDico,
-            this, ClientThread) .doc(
-            "This operation allows anyone in the application to read from a remote dictionnary. It returns an int you have to convert depending of the type value") .arg(
-            "dicoEntry",
-            "a structure containing the information to read from the remote dictionnary. The result value is written in the dicoEntry.value entry.") .arg(
-            "receivedData",
-            "the value read from Can, it is the caller responsibility to conver it into the right format");
-    addOperation("ooResetSdoBuffers", &CanOpenController::ooResetSdoBuffers,
-            this, OwnThread) .doc(
-            "This operation allows to reset all the SDO emission lines. It should be use with care as it is a very intrusive behavior.");
-    addOperation("coSendPdo", &CanOpenController::coSendPdo,
-            this, ClientThread) .doc("This operation allows anyone in the application to send a PDO. The PDO is automatically built from mapping information (you are so supposed to have updated the dico first).").arg(
-            "pdoNumber","Number of the PDO in the dictionnay");
-    addOperation("coSendNmtCmd", &CanOpenController::coSendNmtCmd,
-            this, ClientThread) .doc("This operation allows anyone in the application to request a new slave node NMT state. Take care it is a blocking operation, don't use in operationnal");
-
-    /**
-     * Others
-     */
-    addOperation("ooSetSyncPeriod", &CanOpenController::ooSetSyncPeriod, this,
-            OwnThread) .doc("define a new period for SYNC object") .arg(
-            "period", "in s.");
-
-    /**
-     * Debug Operations
-     */
-    addOperation("ooPrintRegisteredNodes",
-            &CanOpenDispatcher::ooPrintRegisteredNodes, &m_dispatcher,
-            OwnThread) .doc(
-            "DEBUG purposes : this operation prints in the console the registred nodes.");
+    createOrocosInterface();
 }
 
 CanOpenController::~CanOpenController()
@@ -666,4 +579,96 @@ bool CanOpenController::ooSetSyncPeriod(double period)
 {
     CanDicoEntry dicoEntry(0xFF, 0x1006, 0x00, (int) (period * 1E6), 0, 4);
     return coWriteInLocalDico(dicoEntry);
+}
+
+void CanOpenController::createOrocosInterface()
+{
+    addAttribute("attrCurrentNMTState", attrCurrentNMTState);
+      addAttribute("attrSyncTime", attrSyncTime);
+      addAttribute("sdo", attrTestingSdo);
+
+      addProperty("propCanFestivalDriverName", propCanFestivalDriverName) .doc(
+              "contains the name of the can driver library that will be loaded dynamically");
+      addProperty("propBusName", propBusName) .doc(
+              "contains the name of the bus attached to the CanController");
+      addProperty("propBaudRate", propBaudRate) .doc(
+              "contains the baudrate of the attached bus (10K,250K,500K,1000K, ...)");
+      addProperty("propNodeId", propNodeId) .doc(
+              "contains the nodeID of the Controller node on the attached bus (in decimal)");
+      addProperty("propMasterMaxBootDelay", propMasterMaxBootDelay) .doc(
+              "defines the maximal allowed duration for master bootup (in ms)");
+      addProperty("propSyncPeriod", propSyncPeriod) .doc(
+              "delay between 2 SYNC messages in s ");
+      addProperty("propPdoMaxAwaitedDelay", propPdoMaxAwaitedDelay ).doc("");
+      //TODO WLA mettre la doc sur les 2 prop ci dessus et les mettre dans check prop
+
+      addPort("inControllerNmtState", inControllerNmtState) .doc(
+              "This port is connected to the CanFestival thread to populate attrCurrentNMTState");
+      addPort("inBootUpReceived", inBootUpReceived) .doc(
+              "his port is connected to the CanFestival thread to dispatch the boot event to registred Device Components");
+      addPort("outClock", outClock) .doc("");
+      addPort("outPeriod", outPeriod) .doc("");
+      addEventPort("inSync", inSync) .doc(
+              "wakes up the component on SYNC message");
+
+      /**
+       * Register/Unregister
+       */
+      addOperation("ooRegisterNewNode", &CanOpenDispatcher::ooRegisterNewNode,
+              &m_dispatcher, OwnThread) .doc(
+              "This operation allows a Device Component to register in the CanController. Returns true if the node has been registred successfully") .arg(
+              "node", "the 'idCard' of the node who wants to be added");
+      addOperation("ooUnregisterNode", &CanOpenDispatcher::ooUnregisterNode,
+              &m_dispatcher, OwnThread) .doc(
+              "This operation allows a Device Component to unregister from the CanController. Returns true if the node has been unregistred successfully") .arg(
+              "node", "the nodeId of the node who wants to be removed");
+
+      /**
+       * SDO and dictionnary Access
+       */
+      addOperation("coWriteInLocalDico", &CanOpenController::coWriteInLocalDico,
+              this, ClientThread) .doc(
+              "This operation allows anyone in the application to write in the local dictionnary") .arg(
+              "dicoEntry",
+              "a structure containing the information to write in the local dictionnary");
+      addOperation("coReadInLocalDico", &CanOpenController::coReadInLocalDico,
+              this, ClientThread) .doc(
+              "This operation allows anyone in the application to read the value of the local dictionnary entry") .arg(
+              "dicoEntry",
+              "a structure containing the information to read from the local dictionnary. The result value is written in the receivedData param.");
+      addOperation("coWriteInRemoteDico",
+              &CanOpenController::coWriteInRemoteDico, this, ClientThread) .doc(
+              "This operation allows anyone in the application to write in a remote dictionnary") .arg(
+              "dicoEntry",
+              "a structure containing the information to write in a remote dictionnary this is done via sdo. ");
+      addOperation("coReadInRemoteDico", &CanOpenController::coReadInRemoteDico,
+              this, ClientThread) .doc(
+              "This operation allows anyone in the application to read from a remote dictionnary. It returns an int you have to convert depending of the type value") .arg(
+              "dicoEntry",
+              "a structure containing the information to read from the remote dictionnary. The result value is written in the dicoEntry.value entry.") .arg(
+              "receivedData",
+              "the value read from Can, it is the caller responsibility to conver it into the right format");
+      addOperation("ooResetSdoBuffers", &CanOpenController::ooResetSdoBuffers,
+              this, OwnThread) .doc(
+              "This operation allows to reset all the SDO emission lines. It should be use with care as it is a very intrusive behavior.");
+      addOperation("coSendPdo", &CanOpenController::coSendPdo,
+              this, ClientThread) .doc("This operation allows anyone in the application to send a PDO. The PDO is automatically built from mapping information (you are so supposed to have updated the dico first).").arg(
+              "pdoNumber","Number of the PDO in the dictionnay");
+      addOperation("coSendNmtCmd", &CanOpenController::coSendNmtCmd,
+              this, ClientThread) .doc("This operation allows anyone in the application to request a new slave node NMT state. Take care it is a blocking operation, don't use in operationnal");
+
+      /**
+       * Others
+       */
+      addOperation("ooSetSyncPeriod", &CanOpenController::ooSetSyncPeriod, this,
+              OwnThread) .doc("define a new period for SYNC object") .arg(
+              "period", "in s.");
+
+      /**
+       * Debug Operations
+       */
+      addOperation("ooPrintRegisteredNodes",
+              &CanOpenDispatcher::ooPrintRegisteredNodes, &m_dispatcher,
+              OwnThread) .doc(
+              "DEBUG purposes : this operation prints in the console the registred nodes.");
 }

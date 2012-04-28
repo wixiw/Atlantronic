@@ -214,6 +214,9 @@ namespace arp_hml
 
         /** last Sync time to compute period */
         timespec m_lastSyncTime;
+
+        /** Utility function to deport non functionnal code to the end of file */
+        void createOrocosInterface();
     };
 
 }
