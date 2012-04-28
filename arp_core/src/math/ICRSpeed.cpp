@@ -5,46 +5,44 @@
  *      Author: romain
  */
 
-#include <math/ICRSpeed.hpp>
+#include "math/ICRSpeed.hpp"
+#include <iostream>
 
 using namespace arp_math;
 
-std::ostream &operator<<( std::ostream &flux, arp_math::ICRSpeed const& t)
+std::ostream &operator<<(std::ostream &flux, arp_math::ICRSpeed const& t)
 {
     return flux << t.toString();
 }
 
-ICRSpeed::ICRSpeed(double _ro, double _alpha,double _q):
-        ro(_ro),
-        alpha(_alpha),
-        q(_q){}
+ICRSpeed::ICRSpeed(double ro, double alpha, double q) :
+        m_ro(ro), m_alpha(alpha), m_q(q)
+{
+}
 
+ICRSpeed::ICRSpeed(Twist2D twist)
+{
+    double v;
+    double ro;
+    double alpha;
+    double q;
+    v = sqrt(twist.vx() * twist.vx() + twist.vy() * twist.vy());
 
-ICRSpeed::ICRSpeed(Twist2D _twist)
-        {
-        double _v;
-        double _ro;
-        double _alpha;
-        double _q;
-        _v=sqrt(_twist.vx()*_twist.vx()+_twist.vy()*_twist.vy());
+    if (twist.vh() != 0.0)
+        ro = atan(v / twist.vh());
+    else
+        ro = PI / 2.0;
+    if (twist.vx() != 0 or twist.vy() != 0)
+        alpha = atan2(twist.vy(), twist.vx());
+    else
+        alpha = PI / 2.0;
+    q = v + twist.vh();
 
-        if (_twist.vh()!=0.0)
-            _ro=atan(_v/_twist.vh());
-        else
-            _ro=PI/2.0;
-        if (_twist.vx()!=0 or _twist.vy()!=0)
-            _alpha=atan2(_twist.vy(),_twist.vx());
-        else
-            _alpha=PI/2.0;
-        _q=_v+_twist.vh();
+    m_ro = ro;
+    m_alpha = alpha;
+    m_q = q;
 
-        m_ro=_ro;
-        m_alpha=_alpha;
-        m_q=_q;
-
-        }
-
-
+}
 
 double ICRSpeed::ro() const
 {
@@ -76,46 +74,45 @@ double& ICRSpeed::qRef()
     return m_q;
 }
 
-void ICRSpeed::ro(double _ro)
+void ICRSpeed::ro(double ro)
 {
-    m_ro = _ro;
+    m_ro = ro;
 }
 
-void ICRSpeed::alpha(double _alpha)
+void ICRSpeed::alpha(double alpha)
 {
-    m_alpha = _alpha;
+    m_alpha = alpha;
 }
 
-void ICRSpeed::q(double _q)
+void ICRSpeed::q(double q)
 {
-    m_q = _q;
+    m_q = q;
 }
 
 Twist2D ICRSpeed::twist()
 {
-    double _v;
-    double _vx;
-    double _vy;
-    double _vh;
+    double v;
+    double vx;
+    double vy;
+    double vh;
 
-
-    if (m_ro==PI/2.0)
-       _v=m_q;
-    else if (m_ro==0.0)
-       _v=0.0;
+    if (m_ro == PI / 2.0)
+        v = m_q;
+    else if (m_ro == 0.0)
+        v = 0.0;
     else
-       _v=m_q/(1+1/tan(m_ro));
+        v = m_q / (1 + 1 / tan(m_ro));
 
-    _vx=_v*cos(m_alpha);
-    _vy=_v*sin(m_alpha);
-    _vh=m_q-_v;
+    vx = v * cos(m_alpha);
+    vy = v * sin(m_alpha);
+    vh = m_q - v;
 
-    return Twist2D(_vx,_vy,_vh);
+    return Twist2D(vx, vy, vh);
 }
 
 std::string ICRSpeed::toString() const
 {
-    std::ostringstream  s;
+    std::ostringstream s;
     s << "(" << ro() << "," << alpha() << "," << q() << ")";
     return s.str();
 }

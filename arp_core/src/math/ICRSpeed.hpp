@@ -8,10 +8,10 @@
 #ifndef _ARP_MATH_ICRSPEED_HPP_
 #define _ARP_MATH_ICRSPEED_HPP_
 
-#include <math/math.hpp>
-#include <math/Pose2D.hpp>
-#include <math/Twist2D.hpp>
-#include <iostream>
+#include "math/math.hpp"
+#include "math/Pose2D.hpp"
+#include "math/Twist2D.hpp"
+#include <string.h>
 
 namespace arp_math
 {
@@ -34,11 +34,11 @@ class ICRSpeed
 
         /** Constructeur principal.
          * Il permet une initialisation par défaut (à zéro) de la vitesse, avec un CIR à l'infini pour aller tout droit */
-        ICRSpeed(double _ro = PI/2.0, double _alpha = PI/2.0,double _q=0);
+        ICRSpeed(double ro = PI/2.0, double alpha = PI/2.0,double q=0);
 
         /** Constructeur secondaire.
          * Il permet d'initialiser les vitesses avec un twist. */
-        ICRSpeed(Twist2D _twist);
+        ICRSpeed(Twist2D twist);
 
 
         /** \returns atan(distance IRC) */
@@ -56,9 +56,9 @@ class ICRSpeed
         double& qRef();
 
 
-        void ro(double _ro);
+        void ro(double ro);
         void alpha(double _alpha);
-        void q(double _q);
+        void q(double q);
 
         /** returns a equivalent twist */
         Twist2D twist();

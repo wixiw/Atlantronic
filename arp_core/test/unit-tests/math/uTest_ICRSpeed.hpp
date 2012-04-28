@@ -13,12 +13,12 @@ using namespace std;
 BOOST_AUTO_TEST_CASE( ICRSpeed_Default_Constructor )
 {
 	// Test default constructor
-	/*ICRSpeed a;
+	ICRSpeed a;
 	BOOST_CHECK( a.ro() == PI/2.0 );
 	BOOST_CHECK( a.alpha() == PI/2.0 );
-	BOOST_CHECK( a.q() == 0.0 );*/
+	BOOST_CHECK( a.q() == 0.0 );
 }
-/*
+
 BOOST_AUTO_TEST_CASE( ICRSpeed_Accessors )
 {
     ICRSpeed a;
@@ -86,4 +86,4 @@ BOOST_AUTO_TEST_CASE( ICRSpeed_Consistency )
     BOOST_CHECK_CLOSE( twist_from.vx() , twist_back.vx() ,1e-6);
     BOOST_CHECK_CLOSE( twist_from.vy() , twist_back.vy() ,1e-6);
     BOOST_CHECK_CLOSE( twist_from.vh() , twist_back.vh() ,1e-6);
-}*/
+}
