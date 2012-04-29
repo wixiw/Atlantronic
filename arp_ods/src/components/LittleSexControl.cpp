@@ -20,7 +20,9 @@ LittleSexControl::LittleSexControl(const std::string& name):
         OdsTaskContext(name),
         attrOrder(orders::defaultOrder),
         attrVMax(1.0),
-        attrCurrentOrder("default")
+        attrCurrentOrder("default"),
+        m_oldTime(0.0)
+
 {
     createOrocosInterface();
     arp_ods::orders::Logger::InitFile("arp_ods", INFO);
@@ -46,29 +48,32 @@ void LittleSexControl::updateHook()
     attrOrder->switchMode(attrPosition);
 
     // calcule les consignes
-    //TODO recuperer le dt depuis le dernier appel = inClock - lastInClock
-    double dt = 0.01;
-    attrComputedTwistCmd = attrOrder->computeSpeed(attrPosition,dt);
-
-    //check wheel blocked
-    checkWheelBlocked();
+    attrComputedTwistCmd = attrOrder->computeSpeed(attrPosition,getDt());
 
     //publish computed value
     setOutputs();
 }
 
+double LittleSexControl::getDt()
+{
+    double time=arp_math::getTime();
+    if (m_oldTime==0.0)
+        {
+        //first time here
+        m_oldTime=time;
+        return 0.01;
+        }
+    else
+        {
+        double dt=time-m_oldTime;
+        m_oldTime=time;
+        return dt;
+        }
+}
+
 void LittleSexControl::setOutputs()
 {
-    //TODO a mettre a jour pour 2012
-    //saturation des consignes
-    //m_computedVelocityCmd.linear = saturate(m_computedVelocityCmd.linear, -m_vMax, m_vMax);
-    //m_computedVelocityCmd.angular = saturate(m_computedVelocityCmd.angular, -m_orderConfig.ANG_VEL_MAX,
-     //       m_orderConfig.ANG_VEL_MAX);
-
-    //ROS_WARN("linear=%0.3f angular=%0.3f",m_computedVelocityCmd.linear,m_computedVelocityCmd.angular);
-
-    // On publie la consigne
-    //vel_pub_.publish(m_computedVelocityCmd);
+    // no filtering of twist command, as it shall be the job of kinematicbase.
 
     //si on est en erreur dans un ordre pour lequel elle a du sens on informe au dessus
     outOrderInError.write(attrOrder->getMode() == MODE_ERROR && attrOrder->getType() != NO_ORDER);
@@ -82,31 +87,7 @@ void LittleSexControl::setOutputs()
     outTwistCmd.write(attrComputedTwistCmd);
 }
 
-void LittleSexControl::checkWheelBlocked()
-{
-    //TODO a mettre a jour pour 2012
-//    //si les roues sont bloquées et que le timer est à 0 c'est qu'on vient de commencer à bloquer
-//    if( m_wheelBlocked )
-//    {
-//        if( m_blockTime == 0)
-//        {
-//            m_blockTime = getTime();
-//        }
-//        else
-//        {
-//            double delay = getTime() - m_blockTime;
-//            if( delay < 0 ||  delay > WHEEL_BLOCKED_TIMEOUT )
-//            {
-//                m_wheelBlockedTimeout = true;
-//            }
-//        }
-//    }
-//    else
-//    {
-//        m_blockTime = 0;
-//        m_wheelBlockedTimeout = false;
-//    }
-}
+
 
 bool LittleSexControl::isOrderFinished()
 {
@@ -160,6 +141,7 @@ void LittleSexControl::createOrocosInterface()
 
     addEventPort("inPosition",inPosition)
         .doc("");
+
 
     addPort("outTwistCmd",outTwistCmd)
             .doc("");

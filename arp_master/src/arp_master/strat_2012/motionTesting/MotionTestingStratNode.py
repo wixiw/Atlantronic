@@ -82,7 +82,7 @@ class Move2(CyclicActionState):
 
 class Move3(CyclicActionState):
     def createAction(self):
-        self.omnidirect_cpoint(0.3,0,0,0,-0.4,0)   
+        self.omnidirect(Inputs.getx(),Inputs.gety(),0)   
 
 class Move4(CyclicActionState):
     def createAction(self):

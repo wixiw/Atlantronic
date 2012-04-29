@@ -13,6 +13,10 @@ function HmlMonitorSimulDeployer:connect()
 	HmlMonitorSimulDeployer:connectOneMotor("LeftSteering")
 	HmlMonitorSimulDeployer:connectOneMotor("RightSteering")
 	HmlMonitorSimulDeployer:connectOneMotor("RearSteering")
+-- connection des ports de blocage pour la simul	
+	Deployer:connect("LeftDriving.inBlockMotor", "RosHmlItf.outBlockRobot",cp)
+	Deployer:connect("RightDriving.inBlockMotor", "RosHmlItf.outBlockRobot",cp)
+	Deployer:connect("RearDriving.inBlockMotor", "RosHmlItf.outBlockRobot",cp)
 	
 	Deployer:connect("HmlMonitor.inLeftSteeringHomingDone", "LeftSteering.outHomingDone",cp)
 	Deployer:connect("HmlMonitor.inRightSteeringHomingDone", "RightSteering.outHomingDone",cp)

@@ -12,6 +12,7 @@ end
 function RosOdsItfDeployer:connect()
 	Deployer:connect(me..".inCurrentOrderIsFinished","MotionControl.outOrderFinished",cp)
 	Deployer:connect(me..".inCurrentOrderIsInError","MotionControl.outOrderInError",cp)
+	Deployer:connect(me..".inRobotBlocked","KinematicBase.outRobotBlocked",cp)
 	Deployer:addPeer(me,"MotionControl");
 	
 	RluMonitor = Deployer:getPeer("RluMonitor");

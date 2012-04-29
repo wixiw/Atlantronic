@@ -53,6 +53,8 @@ MotorSimul::MotorSimul(const std::string& name):
             .doc("Command to be used in position mode. It must be provided in rad on the reductor's output. It is not available yet.");
     addPort("inTorqueCmd",inTorqueCmd)
             .doc("Command to be used in torque mode. This mode is not available yes");
+    addPort("inBlockMotor",inBlockMotor)
+                .doc("order from outside to block the motor");
 
     addPort("outFilteredSpeedCommand",outFilteredSpeedCommand)
             .doc("");
@@ -118,6 +120,8 @@ void MotorSimul::getInputs()
 {
     //Récupération de la date du cycle CAN
     inClock.readNewest(m_syncTime);
+
+    inBlockMotor.readNewest(m_blockMotor);
 
     //read last speed command
     double speedCmd = 0;
@@ -257,11 +261,16 @@ bool MotorSimul::coWaitEnable(double timeout)
 
 void MotorSimul::runSpeed()
 {
-    if( m_power )
+    if( m_power and !m_blockMotor)
     {
         //ne pas changer la commande qui correspond a priori a une conception interne d'un vrai moteur
         outFilteredSpeedCommand.write(m_speedCommand);
         m_speedMeasure = m_speedCommand;
+    }
+    else if (m_blockMotor)
+    {
+        outFilteredSpeedCommand.write(m_speedCommand);
+        m_speedMeasure = 0;
     }
     else
     {

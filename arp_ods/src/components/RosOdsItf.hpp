@@ -32,6 +32,9 @@ class RosOdsItf: public OdsTaskContext
         RTT::InputPort<bool> inCurrentOrderIsFinished;
         RTT::InputPort<bool> inCurrentOrderIsInError;
 
+        RTT::InputPort<bool> inRobotBlocked;
+
+
         /**
          * Actionlib server.
          * Simple version is perfect here.

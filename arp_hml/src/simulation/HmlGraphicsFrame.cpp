@@ -52,7 +52,7 @@ HmlGraphicsFrame::HmlGraphicsFrame():
 	obstacle_pub = m_nodeHandle.advertise<Obstacle>("ObstacleDetector/front_obstacle", 1);
 	rear_obstacle_pub = m_nodeHandle.advertise<Bool>("Ubiquity/rear_obstacle", 1);
 	emergency_pub = m_nodeHandle.advertise<Bool>("Ubiquity/emergency_stop", 1);
-	wheel_blocked_pub = m_nodeHandle.advertise<Bool>("Ubiquity/wheel_blocked", 1);
+	wheel_blocked_pub = m_nodeHandle.advertise<Bool>("Simul/block_robot", 1);
 
 	ROS_INFO("Starting HmlGraphics with node name %s", ros::this_node::getName().c_str()) ;
 }

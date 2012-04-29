@@ -160,6 +160,9 @@ namespace arp_hml
         /** Homing done */
         OutputPort<std_msgs::Bool> outIsHomingDone;
 
+        /** Order from simulation to block the wheels         */
+        InputPort<std_msgs::Bool> inBlockRobot;
+
 /*****************************************************************
  *  Interface with the INSIDE (hml !)
  *****************************************************************/
@@ -194,6 +197,9 @@ namespace arp_hml
         InputPort<bool> inLeftSteeringBlocked;
         InputPort<bool> inRightSteeringBlocked;
         InputPort<bool> inRearSteeringBlocked;
+
+        /** order of blocking robot */
+        OutputPort<bool> outBlockRobot;
 
         /** Speed command for the motors in rad/s on the reductor output axe **/
         OutputPort<double> outLeftDrivingSpeedCmd;
@@ -255,6 +261,10 @@ protected:
          * Read if wheel are blocked
          */
         void readWheelBlocked();
+        /*
+         * read if someone asked for a robot blockage
+         */
+        void readBlockRobot();
 
         /**
          * create the Orocos interface (creation of ports, commands, attributes, ...)

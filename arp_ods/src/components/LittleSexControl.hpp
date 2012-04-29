@@ -88,10 +88,6 @@ class LittleSexControl: public OdsTaskContext
          */
         void getInputs();
 
-        /**
-         * Check if wheel are blocked
-         */
-        void checkWheelBlocked();
 
         /**
          * Test if the current order is finished
@@ -108,6 +104,16 @@ class LittleSexControl: public OdsTaskContext
          * Create ports/operation/Properties/Attributes/...
          */
         void createOrocosInterface();
+
+
+        /*
+         * time of last call
+         */
+        double m_oldTime;
+        /*
+         * get the dt since last call
+         */
+        double getDt();
 };
 
 } /* namespace arp_ods */

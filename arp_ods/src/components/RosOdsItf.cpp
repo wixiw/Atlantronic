@@ -69,7 +69,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
     bool tmp;
     bool finished;
 
-    //if a goal was already define it is refused
+    //if a goal was already defined it is refused
     if (m_order->getType() != NO_ORDER)
     {
         ROS_ERROR(
@@ -78,10 +78,6 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         goto abort;
     }
 
-    //annulation du blocage avant de partir pour ne pas s'en repayer un
-    //TODO a voir comment on met ca en 2012
-//    m_blockTime = 0;
-//    m_wheelBlockedTimeout = false;
 
     //TODO a remplacer par une factory plus efficace
     char string[250];
@@ -129,14 +125,6 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
             goto preempted;
         }
 
-        //TODO a voir comment on met ca en 2012
-//        //Blocage
-//        if( m_wheelBlockedTimeout )
-//        {
-//            ROS_INFO("%s: WheelBlocked, canceling move", goal->move_type.c_str());
-//            goto abort;
-//        }
-
         //If order is in error something went wrong
         bool inError;
         if( inCurrentOrderIsInError.readNewest(inError) != NewData )
@@ -149,7 +137,17 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
             goto abort;
         }
 
+        //robot is blocked ?
+        bool blocked;
+        inRobotBlocked.readNewest(blocked);
+        if(blocked)
+        {
+            LOG(Error) << goal->move_type.c_str() << ": not processed due to Robot Blockage detection" << endlog();
+            goto abort;
+        }
+
         r.sleep();
+
         if( inCurrentOrderIsFinished.readNewest(finished) != NewData )
         {
             finished = false;
@@ -193,6 +191,7 @@ void RosOdsItf::createOrocosInterface()
     addPort("inPose",inPose);
     addPort("inCurrentOrderIsFinished",inCurrentOrderIsFinished);
     addPort("inCurrentOrderIsInError",inCurrentOrderIsInError);
+    addPort("inRobotBlocked",inRobotBlocked);
 }
 
 void RosOdsItf::createRosInterface()

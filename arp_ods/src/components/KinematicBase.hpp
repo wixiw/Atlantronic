@@ -56,6 +56,7 @@ class KinematicBase: public OdsTaskContext
 
         RTT::OutputPort<double> outFiltrationFeedback;
         RTT::OutputPort<arp_math::Twist2D> outFilteredTwist;
+        RTT::OutputPort<bool> outRobotBlocked;
 
         /**
          * Utility functions to help the developper te separate :
@@ -74,6 +75,37 @@ class KinematicBase: public OdsTaskContext
          * Utility function to hide at the end of the file the verbose Orocos interface declarations
          */
         void createOrocosInterface();
+        /*
+         * time of last computation
+         */
+        double m_oldTime;
+        /*
+         *  time since last computation
+         */
+        double getDt();
+
+        /*
+         * define if robot has been blocked for timeout time
+         */
+        bool attrRobotBlockedTimeout;
+        /*
+         * time I began to block
+         */
+        double attrBlockTime;
+        /*
+         * timeout for the robot to be considered blocked
+         */
+        double propRobotBlockedTimeout;
+
+        /**
+         * Check if wheel are blocked
+         */
+        void checkRobotBlocked();
+        /*
+         * check if measured twist and commanded twist are ok
+         */
+        bool consistencyMeasuredvsCommanded();
+
 };
 
 } /* namespace arp_ods */

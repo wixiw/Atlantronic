@@ -127,10 +127,10 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
 
     // brutal correction twist. with constant acceleration   v = sqrt ( 2 . acc) . sqrt( d )
     Twist2D v_correction_cpoint;
-    double speedcorrection=sqrt2(2*m_conf.LIN_DEC)*sqrt2(deltaPos_refCpoint.vectNorm());
+    double speedcorrection=sqrt2(2.0*m_conf.LIN_DEC)*sqrt2(deltaPos_refCpoint.vectNorm());
     v_correction_cpoint.vx(speedcorrection*std::cos(deltaPos_refCpoint.vectAngle()));
     v_correction_cpoint.vy(speedcorrection*std::sin(deltaPos_refCpoint.vectAngle()));
-    v_correction_cpoint.vh(sqrt2(2*m_conf.ANG_DEC)*sqrt2(deltaPos_refCpoint.h()));
+    v_correction_cpoint.vh(sqrt2(2.0*m_conf.ANG_DEC)*sqrt2(deltaPos_refCpoint.h()));
 
     //transfer of the twist to robot referential
     Twist2D v_correction_ref;
@@ -143,7 +143,7 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
     double satvlin=v_correction_ref.speedNorm()/vmaxlin;
     double satvrot=std::fabs(v_correction_ref.vh())/vmaxrot;
     double sat=std::max(satvlin,std::max( satvrot,1.0));
-    v_correction_saturated = v_correction_ref * (1/sat);
+    v_correction_saturated = v_correction_ref * (1.0/sat);
 
     m_v_correction_old=v_correction_saturated;
 

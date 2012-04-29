@@ -65,6 +65,8 @@ void RosHmlItf::updateHook()
     //lecture du blocage roues
     readWheelBlocked();
 
+    //lecture de la demande de blocage robot
+    readBlockRobot();
 
     bool pouette;
     Bool homingDone;
@@ -163,6 +165,12 @@ void RosHmlItf::readWheelBlocked()
     outWheelBlocked.write(blocked);
 }
 
+void RosHmlItf::readBlockRobot()
+{
+    Bool blockRobot;
+    inBlockRobot.readNewest(blockRobot);
+    outBlockRobot.write(blockRobot.data);
+}
 
 //--------------------------------------------------------------------------------------------------
 
@@ -254,7 +262,8 @@ void RosHmlItf::createOrocosInterface()
         .doc("Position calculated by the simulation (is just a type conversion from same named input port)");
     addPort("outIsHomingDone",outIsHomingDone)
         .doc("Is true when the 3 steering motors have finished their homing command");
-
+    addPort("inBlockRobot",inBlockRobot)
+            .doc("Is true when in simulation someone is asking to arbitrary block the wheels");
 
     /** Interface with INSIDE (hml !) **/
     addPort("inIoStart",inIoStart)
@@ -288,6 +297,9 @@ void RosHmlItf::createOrocosInterface()
             .doc("Right steering motor is blocked");
     addPort("inRearSteeringBlocked",inRearSteeringBlocked)
             .doc("Rear steering motor is blocked");
+
+    addPort("outBlockRobot",outBlockRobot)
+                .doc("Is true when in simulation someone is asking to arbitrary block the wheels");
 
     addPort("outLeftDrivingSpeedCmd",outLeftDrivingSpeedCmd)
             .doc("Speed command for the left driving motor in rad/s on the reductor output");

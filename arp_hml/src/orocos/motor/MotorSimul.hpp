@@ -82,6 +82,9 @@ namespace arp_hml
         /** Command to be used in torque mode. This mode is not available yes **/
         InputPort<double> inTorqueCmd;
 
+        /** for simulation only: blockage of the motor */
+        InputPort<bool> inBlockMotor;
+
         OutputPort<double> outFilteredSpeedCommand;
         OutputPort<double> outFilteredPositionCommand;
 
@@ -163,6 +166,8 @@ namespace arp_hml
     private:
          /** Memory of the power state in the motor */
          bool m_power;
+         /** Memory of blocking state */
+         bool m_blockMotor;
 
          /** Last sync time received **/
          timespec m_syncTime;

@@ -42,6 +42,8 @@ function RosHmlItfDeployer:connect()
 	Deployer:stream("RosHmlItf.outMotorsEnable",ros:topic("/Ubiquity/motor_power"))
 
 	Deployer:stream("RosHmlItf.outWheelBlocked",ros:topic("/Ubiquity/wheel_blocked"))
+	Deployer:stream("RosHmlItf.inBlockRobot",ros:topic("Simul/block_robot"))
+	
 	Deployer:stream("RosHmlItf.outEmergencyStop",ros:topic("/Ubiquity/emergency_stop"))
 	Deployer:stream("RosHmlItf.outIsHomingDone",ros:topic("/Ubiquity/homing_done"))
 	Deployer:stream("RosHmlItf.outIoStart",ros:topic("/Ubiquity/start"))

@@ -10,6 +10,14 @@ def normalizeAngle(angle):
 
 def intersectCircle(x0,y0,r0,x1,y1,r1):
     #see http://paulbourke.net/geometry/2circle/ for justif
+    
+    #compute the intersection of 2 circles
+    #x0,y0,r0 is the first circle
+    #x1,y1,r1 the second circle
+    #RETURN:
+    # x3_1, y3_1 the first point of intersection
+    # x3_2, y3_2 the second intersection
+    
     d=sqrt((x0-x1)**2+(y0-y1)**2)
     if d>r0+r1:
         return

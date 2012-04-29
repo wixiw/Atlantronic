@@ -120,7 +120,7 @@ class Twist2D
         /**
          * Calcul la distance entre 2 Twist.
          * @param twist : Twist2D dont on veut la distance par rapport à nous
-         * @param coef : coefficients de ponderation pour le calcul de la distance = sqrt(coef(0)2*theta2+coef(1)2*x2 + coef(2)2*y()2)
+         * @param coef : coefficients de ponderation pour le calcul de la distance
          * @return la distance
          */
         double distanceTo(Twist2D twist, Vector3 coef) const;
