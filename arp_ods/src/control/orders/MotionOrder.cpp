@@ -42,6 +42,7 @@ Twist2D MotionOrder::computeSpeed(Pose2D currentPosition, double dt)
 {
     Twist2D v;
     v.vx(0);
+    v.vy(0);
     v.vh(0);
     return v;
 }

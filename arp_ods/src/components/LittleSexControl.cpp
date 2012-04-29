@@ -103,18 +103,19 @@ bool LittleSexControl::isOrderFinished()
 
 bool LittleSexControl::ooSetOrder(shared_ptr<MotionOrder> order)
 {
-    if( attrOrder->getMode() == MODE_DONE || attrOrder->getMode() == MODE_ERROR)
-    {
+    /*if( attrOrder->getMode() == MODE_DONE || attrOrder->getMode() == MODE_ERROR)
+    {*/
+        // l'ordre peut etre casse par l'etage du dessus en cas de detection d'erreur, et un nouvel ordre rempile
         outOrderFinished.write(false);
         LOG(Info) << "Received a new order " << order->getTypeString() << " to go to " << order->getEndPose().toString() << endlog();
         attrOrder = order;
         return true;
-    }
+   /* }
     else
     {
         LOG(Error) << "Can't do a new order now, I am busy (in mode "<< attrOrder->getMode()<<"), interrupt properly (with a function that doesn't exists yet ^ ^) " << endlog();
         return false;
-    }
+    }*/
 }
 
 bool LittleSexControl::ooSetVMax(double vmax)

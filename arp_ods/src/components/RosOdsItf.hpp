@@ -88,6 +88,10 @@ class RosOdsItf: public OdsTaskContext
          */
         void createOrocosInterface();
         void createRosInterface();
+        /*
+         * time it has blocked
+         */
+        double m_blockTime;
 };
 
 } /* namespace arp_rlu */

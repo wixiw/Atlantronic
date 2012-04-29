@@ -50,13 +50,13 @@ class MainStateMachine(smach.StateMachine):
                                    transitions={'startunplug':'Move1', 'timeout':'end'})
             
             smach.StateMachine.add('Move1', Move1(),
-                                   transitions={'succeeded':'Move2', 'timeout':'end'})
+                                   transitions={'succeeded':'Move2', 'timeout':'Move4'})
             smach.StateMachine.add('Move2', Move2(),
-                                   transitions={'succeeded':'Move3', 'timeout':'end'})
+                                   transitions={'succeeded':'Move3', 'timeout':'Move1'})
             smach.StateMachine.add('Move3', Move3(),
-                                   transitions={'succeeded':'Move4', 'timeout':'end'})
+                                   transitions={'succeeded':'Move4', 'timeout':'Move4'})
             smach.StateMachine.add('Move4', Move4(),
-                                   transitions={'succeeded':'Move1', 'timeout':'end'})            
+                                   transitions={'succeeded':'Move1', 'timeout':'Move1'})            
 
 
 class WaitForStartUnplug(CyclicState):
