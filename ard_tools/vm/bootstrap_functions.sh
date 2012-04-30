@@ -441,7 +441,7 @@ function getting_medias
 	GRUB_BACKGROUND=\"$IMG_PATH/Logo-ARD_800_600_fonce.jpg\"
 	" >> /etc/default/grub
 	if [ $IS_HOST == "true" ]; then
-		wget ftp://ard_user:robotik@88.191.124.77/0%20-%20Docs%20de%20ref/0%20-%20Medias/Wallpaper/wallpaper_vm9.jpg
+		wget ftp://ard_user:robotik@88.191.124.77/0%20-%20Docs%20de%20ref/0%20-%20Medias/Wallpaper/wallpaper_vm10.jpg
 	fi
 }
 

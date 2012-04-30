@@ -22,8 +22,6 @@ export LUA_PATH="$LUA_PATH;$RTTLUA_MODULES"
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/opencv/lib/pkgconfig
 
 #alias ARD
-alias du='du --max-depth=1 -h'
-alias df='df -h'
 alias alpha='ssh root@alpha'
 alias beta='ssh root@beta'
 alias vm='ssh root@vm'
@@ -33,7 +31,7 @@ alias ard-install-beta='/opt/ard/default/script/install_target.sh ard beta'
 alias rosbeta='ROS_MASTER_URI=http://beta:11311'
 alias rosalpha='ROS_MASTER_URI=http://alpha:11311'
 alias ard-update='bash /opt/kernel/check_update.sh'
-alias ard-clean-build='find /opt -name build | xargs rm -rf'
+alias ard-clean-build='find /opt -name build | xargs rm -rf; find /opt/ros_addons  -name build | xargs rm -rf;strip /opt/ros/*;strip /opt/ros_addons/*'
 alias myip="sudo ifconfig | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'"
 alias ard-stress='stress --cpu 2 --io 1 --vm 1 --vm-bytes 128M'
 #alias Linux utiles
@@ -42,6 +40,8 @@ eval "`dircolors`"
 alias ls='ls $LS_OPTIONS'
 alias ll='ls $LS_OPTIONS -l'
 alias l='ls $LS_OPTIONS -lA'
+alias du='du --max-depth=1 | sort -nr | cut -f 2-|xargs -i du -sh {};du -sch .'
+alias df='df -h'
 
 #configuration du prompt
 force_color_prompt=yes
