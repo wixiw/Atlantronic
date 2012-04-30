@@ -42,7 +42,7 @@ bool TwistTeleop::configureHook()
 {
     bool res = OdsTaskContext::configureHook();
 
-    res &= getOperation("HmlMonitor", "coSetMotorPower", m_coSetMotorPower);
+    //res &= getOperation("HmlMonitor", "ooSetMotorPower", m_coSetMotorPower);
 
     return res;
 }
@@ -104,47 +104,23 @@ void TwistTeleop::updateHook()
     vtheta = pow(vtheta,3);
 
 
-    if (deadMan == true)
+    attrAngularCmd = firstDerivateLimitation(-vtheta*rotVel, attrOldAngularCmd, 0.010, -rotAcc, rotAcc);
+    attrOldAngularCmd = attrAngularCmd;
+
+    attrSpeedCmd = firstDerivateLimitation( linVel*max(fabs(vx),fabs(vy)), attrOldSpeedCmd, 0.010 , -linAcc, linAcc);
+    attrOldSpeedCmd = attrSpeedCmd;
+
+    if( fabs(attrSpeedCmd) <= 0.010 )
     {
-        attrAngularCmd = firstDerivateLimitation(-vtheta*rotVel, attrOldAngularCmd, getPeriod(), -rotAcc, rotAcc);
-        attrOldAngularCmd = attrAngularCmd;
-
-        attrSpeedCmd = firstDerivateLimitation( linVel*max(fabs(vx),fabs(vy)), attrOldSpeedCmd, getPeriod(), -linAcc, linAcc);
-        attrOldSpeedCmd = attrSpeedCmd;
-
-        if( fabs(attrSpeedCmd) <= 0.010 )
-        {
-            attrSpeedDirection = 0;
-        }
-        else
-        {
-            //attention c'est bien atan2(y,x) et j'ai bien mis le x dans le y et inversement, c'est lié au repère du joystick
-            attrSpeedDirection= atan2(-vx, -vy);
-        }
-
-        //LOG(Info) << "Sending : " << attrSpeedDirection << ", "  << attrAngularCmd << ", " << attrSpeedCmd << endlog();
-
-        if( power == false )
-        {
-            if( !m_coSetMotorPower(true) )
-                LOG(Error) << "Failed to set motor power on" << endlog();
-        }
+        attrSpeedDirection = 0;
     }
     else
     {
-        attrSpeedCmd = 0;
-        attrOldSpeedCmd = 0;
-        attrAngularCmd = 0;
-        attrOldAngularCmd = 0;
-
-        //LOG(Info) << "Not Sending." << endlog();
-
-        if( power == true )
-        {
-            if( !m_coSetMotorPower(false) )
-                LOG(Error) << "Failed to set motor power off" << endlog();
-        }
+        //attention c'est bien atan2(y,x) et j'ai bien mis le x dans le y et inversement, c'est lié au repère du joystick
+        attrSpeedDirection= atan2(-vx, -vy);
     }
+
+    //LOG(Info) << "Sending : " << attrSpeedDirection << ", "  << attrAngularCmd << ", " << attrSpeedCmd << endlog();
 
 
     attrTwistCmdCdg = Twist2D::createFromPolar(attrSpeedCmd,attrSpeedDirection, attrAngularCmd);

@@ -140,7 +140,7 @@ void LittleSexControl::createOrocosInterface()
     addAttribute("attrCurrentOrder",attrCurrentOrder);
 
 
-    addEventPort("inPosition",inPosition)
+    addPort("inPosition",inPosition)
         .doc("");
 
 

@@ -180,7 +180,7 @@ void KinematicBase::createOrocosInterface()
     addProperty("propMinSpeed", propMinSpeed).doc("");
     addProperty("propRobotBlockedTimeout", propRobotBlockedTimeout).doc("");
 
-    addEventPort("inTwistCmd", inTwistCmd).doc("");
+    addPort("inTwistCmd", inTwistCmd).doc("");
     addPort("inCurrentTwist", inCurrentTwist).doc("");
     addPort("inMotorState", inMotorState).doc("");
     addPort("inParams", inParams).doc("");
