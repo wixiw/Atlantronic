@@ -8,12 +8,16 @@
 #include "Interpolator.hpp"
 #include <exceptions/NotImplementedException.hpp>
 
+#include <iostream>
+
 using namespace arp_math;
 using namespace Eigen;
 
+
 Eigen::VectorXd Interpolator::transInterp(Eigen::VectorXd  tt,
         Eigen::VectorXd ttc,
-        Eigen::VectorXd yyc)
+        Eigen::VectorXd yyc,
+        Eigen::VectorXi ii)
 {
     // ttc & yyc have different sizes
     if(ttc.size() != yyc.size())
@@ -40,10 +44,20 @@ Eigen::VectorXd Interpolator::transInterp(Eigen::VectorXd  tt,
     }
 
     // N > 1 & P > 0
+    Eigen::VectorXi indices;
+    if( ii.size() == tt.size() )
+    {
+        indices = ii;
+    }
+    else
+    {
+        indices = find(tt, ttc);
+    }
+
     Eigen::VectorXd ret = Eigen::VectorXd(tt.size());
     for(unsigned int i = 0 ; i<tt.size() ; i++)
     {
-        int index = find(tt[i], ttc);
+        int index = indices[i];
         if(index < 0)
         {
             ret[i] = yyc[0] - (ttc[0]-tt[i])*(yyc[1]-yyc[0])/(ttc[1]-ttc[0]);
@@ -62,7 +76,8 @@ Eigen::VectorXd Interpolator::transInterp(Eigen::VectorXd  tt,
 
 Eigen::VectorXd Interpolator::rotInterp(Eigen::VectorXd tt,
         Eigen::VectorXd ttc,
-        Eigen::VectorXd hhc)
+        Eigen::VectorXd hhc,
+        Eigen::VectorXi ii)
 {
     // ttc & yyc have different sizes
     if(ttc.size() != hhc.size())
@@ -89,10 +104,20 @@ Eigen::VectorXd Interpolator::rotInterp(Eigen::VectorXd tt,
     }
 
     // N > 1 & P > 0
+    Eigen::VectorXi indices;
+    if( ii.size() == tt.size() )
+    {
+        indices = ii;
+    }
+    else
+    {
+        indices = find(tt, ttc);
+    }
+
     Eigen::VectorXd ret = Eigen::VectorXd(tt.size());
     for(unsigned int i = 0 ; i<tt.size() ; i++)
     {
-        int index = find(tt[i], ttc);
+        int index = indices[i];
         if(index < 0)
         {
             ret[i] = hhc[0] - (ttc[0]-tt[i])*betweenMinusPiAndPlusPi(hhc[1]-hhc[0])/(ttc[1]-ttc[0]);
@@ -113,6 +138,7 @@ Eigen::VectorXd Interpolator::rotInterp(Eigen::VectorXd tt,
 Eigen::Array< Eigen::Matrix3d, Dynamic, 1 > Interpolator::covInterp(Eigen::VectorXd  tt,
         Eigen::VectorXd ttc,
         Eigen::Array< Eigen::Matrix3d, Dynamic, 1 > covc,
+        Eigen::VectorXi ii,
         double epsilon,
         Eigen::Vector3d minimum)
 {
@@ -146,10 +172,20 @@ Eigen::Array< Eigen::Matrix3d, Dynamic, 1 > Interpolator::covInterp(Eigen::Vecto
     }
 
     // N > 1 & P > 0
+    Eigen::VectorXi indices;
+    if( ii.size() == tt.size() )
+    {
+        indices = ii;
+    }
+    else
+    {
+        indices = find(tt, ttc);
+    }
+
     Eigen::Array< Eigen::Matrix3d, Dynamic, 1 > ret(tt.size());
     for(unsigned int k = 0 ; k<tt.size() ; k++)
     {
-        int index = find(tt[k], ttc);
+        int index = indices[k];
         if(index < 0)
         {
             ret[k] = covc[0].array() - (ttc[0]-tt[k])*(covc[1].array()-covc[0].array())/(ttc[1]-ttc[0]);
@@ -176,7 +212,7 @@ Eigen::Array< Eigen::Matrix3d, Dynamic, 1 > Interpolator::covInterp(Eigen::Vecto
                 else
                 {
                     double m = (ret[k](i,j) + ret[k](j,i)) / 2.;
-//                    ret[k](i,j) = m > 0. ? m : 0.;
+                    //                    ret[k](i,j) = m > 0. ? m : 0.;
                     ret[k](i,j) = m;
                     ret[k](j,i) = ret[k](i,j);
                 }
@@ -221,3 +257,79 @@ int Interpolator::find(double t, Eigen::VectorXd ttc)
     }
     return ttc.size()-1;
 }
+
+
+
+Eigen::VectorXi Interpolator::find(Eigen::VectorXd tt, Eigen::VectorXd ttc)
+{
+    Eigen::VectorXi out = - Eigen::VectorXi::Ones(tt.size());
+
+    if( ttc.size() == 0 )
+    {
+        return out;
+    }
+
+    if( ttc.size() == 1)
+    {
+        for(unsigned int i = 0 ; i < tt.size() ; i++)
+        {
+            if( tt[i] >= ttc[0] )
+            {
+                out[i] = 0;
+            }
+        }
+        return out;
+    }
+
+    unsigned int i = 0;
+    unsigned int ic = 0;
+    while(i < tt.size())
+    {
+        if( ic == 0)
+        {
+            if(tt[i] < ttc[0])
+            {
+                out[i] = -1;
+                i++;
+                continue;
+            }
+            else
+            {
+                if(tt[i] < ttc[ic+1])
+                {
+                    out[i] = ic;
+                    i++;
+                    continue;
+                }
+                else
+                {
+                    ic++;
+                    continue;
+                }
+            }
+        }
+        else if( ic == ttc.size()-1 )
+        {
+            out[i] = ic;
+            i++;
+            continue;
+        }
+        else // ic < ttc.size() - 1
+        {
+            if( ttc[ic] <= tt[i] && tt[i] < ttc[ic+1] )
+            {
+                out[i] = ic;
+                i++;
+                continue;
+            }
+            else
+            {
+                ic++;
+                continue;
+            }
+        }
+    }
+
+    return out;
+}
+

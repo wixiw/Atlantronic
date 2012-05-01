@@ -25,12 +25,14 @@ namespace arp_math
 class Interpolator
 {
     public:
+
         /**
          * Permet de réaliser un interpolation linéaire temporelle sur des données en translation.
          * \param tt est un vecteur de temps en seconde de taille P. Il correspond aux points pour lesquels nous
          * voulons connaître la valeur..
          * \param ttc est un vecteur de temps en seconde de taille N. Il correspond aux temps (abscisses) des points de contrôle. Les temps doivent être croissants.
          * \param yyc est un vecteur de valeurs de taille N. Il correspond aux valeurs (ordonnées) des points de contrôle.
+         * \param ii est un vecteur d'indices de taille P. Il donne les bornes inférieures de l'encadrant des valeurs du vecteur tt dans le vecteur ttc.
          * \returns un vecteur de taille P correspondant aux valeurs des instants tt.
          * \remarks Si ttc et yyc ne sont pas de même taille, transInterp renvoie un vecteur vide.
          * \remarks Si N vaut 0, transInterp renvoie un vecteur vide.
@@ -39,8 +41,9 @@ class Interpolator
          * \remarks Si des temps de tt sont supérieurs à la dernière valeur de ttc, transInterp renvoie pour ces temps des valeurs conformes à la dernière pente des points de contrôle.
          */
         static Eigen::VectorXd transInterp(Eigen::VectorXd tt,
-                                           Eigen::VectorXd ttc,
-                                           Eigen::VectorXd yyc);
+                Eigen::VectorXd ttc,
+                Eigen::VectorXd yyc,
+                Eigen::VectorXi ii = Eigen::VectorXi(0));
 
         /**
          * Permet de réaliser un interpolation linéaire temporelle sur des données en rotation.
@@ -50,6 +53,7 @@ class Interpolator
          * \param ttc est un vecteur de temps en seconde de taille N. Il correspond aux temps (abscisses) des points de contrôle. Les temps doivent être croissants.
          * \param hhc est un vecteur d'angles en radians de taille N. Il correspond aux angles (ordonnées) des points de contrôle.\n
          * Les angles de hhc n'ont pas besoin d'être compris entre des bornes particulières.
+         * \param ii est un vecteur d'indices de taille P. Il donne les bornes inférieures de l'encadrant des valeurs du vecteur tt dans le vecteur ttc.
          * \returns un vecteur de taille P correspondant aux angles des instants tt. Ces angles sont compris entre -PI (exclu) et PI (inclu).
          * \remarks Si ttc et hhc ne sont pas de même taille, rotInterp renvoie un vecteur vide.
          * \remarks Si N vaut 0, rotInterp renvoie un vecteur vide.
@@ -58,8 +62,9 @@ class Interpolator
          * \remarks Si des temps de tt sont supérieurs à la dernière valeur de ttc, rotInterp renvoie pour ces temps des valeurs conformes à la dernière pente des points de contrôle.
          */
         static Eigen::VectorXd rotInterp(Eigen::VectorXd tt,
-                                         Eigen::VectorXd ttc,
-                                         Eigen::VectorXd hhc);
+                Eigen::VectorXd ttc,
+                Eigen::VectorXd hhc,
+                Eigen::VectorXi ii = Eigen::VectorXi(0));
 
         /**
          * Permet de réaliser un interpolation linéaire temporelle sur des covariances.\n
@@ -82,6 +87,7 @@ class Interpolator
          * \param[in] ttc est un vecteur de temps en seconde de taille N. Il correspond aux temps (abscisses) des covariances de contrôle. Les temps doivent être croissants.
          * \param[in] covc est un vecteur de covariances de taille N. Il correspond aux covariances de contrôle.\n
          * Les covariances doivent être symétriques et positives.
+         * \param ii est un vecteur d'indices de taille P. Il donne les bornes inférieures de l'encadrant des valeurs du vecteur tt dans le vecteur ttc.
          * \param[in] epsilon Cet epsilon (noté \f$\epsilon\f$) est utilisé pour assurer la stricte positivité des termes diaguonaux. epsilon doit être strictement positif. En dessous de cet epsilon, l'interpolation suit une décroissance exponentielle (voir remarque).
          * \param[in] minimum Ce vecteur (noté \f$m\f$) définit les bornes minimales des trois termes diaguonaux des covariances résultantes. Les coefficients de \f$m\f$ doit être strictement positif et strictement inférieur à \f$\epsilon\f$.
          * \returns un vecteur de covariances de taille P correspondant aux covariances aux instants tt. Ces covariances sont symétriques et positives.
@@ -92,10 +98,11 @@ class Interpolator
          * \remarks Si des temps de tt sont supérieurs à la dernière valeur de ttc, covInterp renvoie pour ces temps des valeurs conformes à la dernière pente des points de contrôle.
          */
         static Eigen::Array< Eigen::Matrix3d, Eigen::Dynamic, 1 > covInterp(Eigen::VectorXd tt,
-                                                                     Eigen::VectorXd ttc,
-                                                                     Eigen::Array< Eigen::Matrix3d, Eigen::Dynamic, 1 > covc,
-                                                                     double epsilon = 1e-6,
-                                                                     Eigen::Vector3d minimum = Eigen::Vector3d(1e-9,1e-9,1e-9));
+                Eigen::VectorXd ttc,
+                Eigen::Array< Eigen::Matrix3d, Eigen::Dynamic, 1 > covc,
+                Eigen::VectorXi ii = Eigen::VectorXi(0),
+                double epsilon = 1e-6,
+                Eigen::Vector3d minimum = Eigen::Vector3d(1e-9,1e-9,1e-9));
 
         /**
          * Permet de trouver la borne inférieure de l'encadrant d'une valeur dans un vecteur.
@@ -111,6 +118,21 @@ class Interpolator
          * \remarks Si N vaut 1, find renvoie -1 si t < ttc[0] et 0 si ttc[0] <= t.
          */
         static int find(double t, Eigen::VectorXd ttc);
+
+        /**
+         * Permet de trouver les bornes inférieures de l'encadrant des valeurs du vecteur tt dans le vecteur ttc.
+         * \param tt est un vecteur de temps en seconde de taille P.
+         * \param ttc est un vecteur de temps en seconde de taille N.
+         * \warning Les temps ttc et tt DOIVENT être croissants.
+         * \returns le vecteur des indices (taille P) des bornes inférieures encadrant les tt[i] dans le vecteur ttc.\n
+         * Par exemple:\n
+         * \li si ttc[k] <= tt[i] < ttc[k+1] avec k compris entre 0 et N-2 inclus, find retournera un vecteur qui aura k pour i-ème valeur.
+         * \li si ttc[N-1] <= tt[i], find retournera un vecteur qui aura N-1 comme i-ème valeur.
+         * \li si tt[i] < ttc[0], find retournera -1.
+         * \remarks Si N vaut 0, find renvoie un vecteur de taille P qui contient que des -1.
+         * \remarks Si N vaut 1, find renvoie un vecteur qui contient -1 pour i-ème valeur si tt[i] < ttc[0] et 0 si ttc[0] <= tt[i].
+         */
+        static Eigen::VectorXi find(Eigen::VectorXd tt, Eigen::VectorXd ttc);
 };
 
 }
