@@ -338,11 +338,11 @@ std::string BeaconDetector::getPerformanceReport()
     info << "BeaconDetector Performance Report (ms)" << std::endl;
     info << "--------------------------------------------" << std::endl;
     info << "  [*] Number of samples used : " << globalTimer.GetRawRefreshTime().size() << std::endl;
-    info << "  [*] Period          : mean=" << globalTimer.GetMeanRefreshTime()*1000.;
+    info << "  [*] Period                 : mean=" << globalTimer.GetMeanRefreshTime()*1000.;
     info << "  , stddev=" << sqrt(globalTimer.GetStdDevRefreshTime())*1000.;
     info << "  , min=" << globalTimer.GetMinRefreshTime()*1000.;
     info << "  , max=" << globalTimer.GetMaxRefreshTime()*1000. << std::endl;
-    info << "  [*] Global Duration : mean=" << globalTimer.GetMeanElapsedTime()*1000.;
+    info << "  [*] Global Duration        : mean=" << globalTimer.GetMeanElapsedTime()*1000.;
     info << "  , stddev=" << sqrt(globalTimer.GetStdDevElapsedTime())*1000.;
     info << "  , min=" << globalTimer.GetMinElapsedTime()*1000.;
     info << "  , max=" << globalTimer.GetMaxElapsedTime()*1000. << std::endl;

@@ -74,9 +74,10 @@ bool LaserScan::computeCartesianData(Eigen::VectorXd ttc, Eigen::VectorXd xxc, E
         if( ttc.size() != n )
 
         {
-            xx = Interpolator::transInterp(tt, ttc, xxc);
-            yy = Interpolator::transInterp(tt, ttc, yyc);
-            hh = Interpolator::rotInterp(tt, ttc, hhc);
+            Eigen::VectorXi indices = Interpolator::find(tt, ttc);
+            xx = Interpolator::transInterp(tt, ttc, xxc, indices);
+            yy = Interpolator::transInterp(tt, ttc, yyc, indices);
+            hh = Interpolator::rotInterp(tt, ttc, hhc, indices);
         }
         else
         {

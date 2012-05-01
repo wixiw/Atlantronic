@@ -21,10 +21,10 @@ BOOST_AUTO_TEST_SUITE( unittest_dummy )
 BOOST_AUTO_TEST_CASE( testdummy )
 {
     //  arp_rlu::kfl::Logger::InitNull("uT_KFL", DEBUG);
-    arp_rlu::kfl::Logger::InitConsole("uT_KFL", DEBUG);
+    arp_rlu::kfl::Logger::InitConsole("uT_KFL", NOTICE);
 //      arp_rlu::kfl::Logger::InitFile("uT_KFL", DEBUG);
 
-//    arp_rlu::lsl::Logger::InitConsole("uT_LSL", DEBUG);
+    arp_rlu::lsl::Logger::InitConsole("uT_LSL", NOTICE);
 
 }
 BOOST_AUTO_TEST_SUITE_END()

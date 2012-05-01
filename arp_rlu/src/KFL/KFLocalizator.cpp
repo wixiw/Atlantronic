@@ -226,7 +226,7 @@ bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D odoVel)
     if( lastEstim.date() + params.maxTime4OdoPrediction < odoVel.date() )
     {
         Log( WARN ) << "KFLocalizator::newOdoVelocity - Time between EstimatedTwist2D date (" << odoVel.date() << ") and last estimation date (" << lastEstim.date() << ") is strangely big and superior than" << params.maxTime4OdoPrediction << "). "
-             << "maybe because of an initalization date error or a scheduling fault => return false";
+                << "maybe because of an initalization date error or a scheduling fault => return false";
         return false;
     }
 
@@ -311,14 +311,16 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
     double startInterpTime = arp_math::getTime();
 
     Eigen::VectorXd tt = scan.getTimeData();
-    Eigen::VectorXd xx = Interpolator::transInterp(tt, ttFromBuffer, xxFromBuffer);
-    Eigen::VectorXd yy = Interpolator::transInterp(tt, ttFromBuffer, yyFromBuffer);
-    Eigen::VectorXd hh = Interpolator::rotInterp(tt, ttFromBuffer, hhFromBuffer);
-    Eigen::Array< Eigen::Matrix3d, Eigen::Dynamic, 1 > covs = Interpolator::covInterp(tt, ttFromBuffer, covFromBuffer, 1.e-6, Eigen::Vector3d(1.e-9,1.e-9,1.e-9));
-    Eigen::VectorXd vx = Interpolator::transInterp(tt, ttFromBuffer, vxFromBuffer);
-    Eigen::VectorXd vy = Interpolator::transInterp(tt, ttFromBuffer, vyFromBuffer);
-    Eigen::VectorXd vh = Interpolator::transInterp(tt, ttFromBuffer, vhFromBuffer); // transInterp and not rotInterp because vh is not borned
-    Eigen::Array< Eigen::Matrix3d, Eigen::Dynamic, 1 > odoCovs = Interpolator::covInterp(tt, ttFromBuffer, odoCovFromBuffer, 1.e-9, Eigen::Vector3d(1.e-12,1.e-12,1.e-12));
+//    Eigen::VectorXi indices = Interpolator::find(tt, ttc);
+    Eigen::VectorXi indices = Eigen::VectorXi(0);
+    Eigen::VectorXd xx = Interpolator::transInterp(tt, ttFromBuffer, xxFromBuffer, indices);
+    Eigen::VectorXd yy = Interpolator::transInterp(tt, ttFromBuffer, yyFromBuffer, indices);
+    Eigen::VectorXd hh = Interpolator::rotInterp(tt, ttFromBuffer, hhFromBuffer, indices);
+    Eigen::Array< Eigen::Matrix3d, Eigen::Dynamic, 1 > covs = Interpolator::covInterp(tt, ttFromBuffer, covFromBuffer, indices, 1.e-6, Eigen::Vector3d(1.e-9,1.e-9,1.e-9));
+    Eigen::VectorXd vx = Interpolator::transInterp(tt, ttFromBuffer, vxFromBuffer, indices);
+    Eigen::VectorXd vy = Interpolator::transInterp(tt, ttFromBuffer, vyFromBuffer, indices);
+    Eigen::VectorXd vh = Interpolator::transInterp(tt, ttFromBuffer, vhFromBuffer, indices); // transInterp and not rotInterp because vh is not borned
+    Eigen::Array< Eigen::Matrix3d, Eigen::Dynamic, 1 > odoCovs = Interpolator::covInterp(tt, ttFromBuffer, odoCovFromBuffer, indices, 1.e-9, Eigen::Vector3d(1.e-12,1.e-12,1.e-12));
 
     popBufferUntilADate(tt(0));
 
@@ -359,13 +361,13 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
 
     KFLStateVar BITPEstimVar = bayesian->getEstimate();
     KFLStateCov BITPEstimCov = bayesian->getCovariance();
-//    Log( DEBUG ) << "KFLocalizator::newScan - estimée in the past [time=" << tt[0] << "]";
-//    Log( DEBUG ) << "  sur x (en m): " << BITPEstimVar(0);
-//    Log( DEBUG ) << "  sur y (en m): " << BITPEstimVar(1);
-//    Log( DEBUG ) << "  en cap (deg) : " << rad2deg( BITPEstimVar(2) );
-//    Log( DEBUG ) << "covariance : " << BITPEstimCov.row(0);
-//    Log( DEBUG ) << "             " << BITPEstimCov.row(1);
-//    Log( DEBUG ) << "             " << BITPEstimCov.row(2);
+    //    Log( DEBUG ) << "KFLocalizator::newScan - estimée in the past [time=" << tt[0] << "]";
+    //    Log( DEBUG ) << "  sur x (en m): " << BITPEstimVar(0);
+    //    Log( DEBUG ) << "  sur y (en m): " << BITPEstimVar(1);
+    //    Log( DEBUG ) << "  en cap (deg) : " << rad2deg( BITPEstimVar(2) );
+    //    Log( DEBUG ) << "covariance : " << BITPEstimCov.row(0);
+    //    Log( DEBUG ) << "             " << BITPEstimCov.row(1);
+    //    Log( DEBUG ) << "             " << BITPEstimCov.row(2);
 
     //    Log( DEBUG ) << "KFLocalizator::newScan - i=" << 0 << "  - time=" << tt(0) << "  - yy=" << yy(0) << " (m)  - vy=" << vy(0) << " (m/s)  - preOdoY=" << preUpEstim(1);
 
@@ -380,13 +382,13 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
         {
             KFLStateVar preEstimStateVar = bayesian->getEstimate();
             KFLStateCov preEstimStateCov = bayesian->getCovariance();
-//            Log( DEBUG ) << "KFLocalizator::newScan - pre intermediaire estim [time=" << tt[i] << "]";
-//            Log( DEBUG ) << "  sur x (en m): " << preEstimStateVar(0);
-//            Log( DEBUG ) << "  sur y (en m): " << preEstimStateVar(1);
-//            Log( DEBUG ) << "  en cap (deg) : " << rad2deg( preEstimStateVar(2) );
-//            Log( DEBUG ) << "covariance : " << preEstimStateCov.row(0);
-//            Log( DEBUG ) << "             " << preEstimStateCov.row(1);
-//            Log( DEBUG ) << "             " << preEstimStateCov.row(2);
+            //            Log( DEBUG ) << "KFLocalizator::newScan - pre intermediaire estim [time=" << tt[i] << "]";
+            //            Log( DEBUG ) << "  sur x (en m): " << preEstimStateVar(0);
+            //            Log( DEBUG ) << "  sur y (en m): " << preEstimStateVar(1);
+            //            Log( DEBUG ) << "  en cap (deg) : " << rad2deg( preEstimStateVar(2) );
+            //            Log( DEBUG ) << "covariance : " << preEstimStateCov.row(0);
+            //            Log( DEBUG ) << "             " << preEstimStateCov.row(1);
+            //            Log( DEBUG ) << "             " << preEstimStateCov.row(2);
 
             BFLWrapper::UpdateParams updateParams;
             updateParams.laserRangeSigma = params.iekfParams.defaultLaserRangeSigma;
@@ -399,13 +401,13 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
 
             KFLStateVar postEstimStateVar = bayesian->getEstimate();
             KFLStateCov postEstimStateCov = bayesian->getCovariance();
-//            Log( DEBUG ) << "KFLocalizator::newScan - post intermediaire estim [time=" << tt[i] << "]";
-//            Log( DEBUG ) << "  sur x (en m): " << postEstimStateVar(0);
-//            Log( DEBUG ) << "  sur y (en m): " << postEstimStateVar(1);
-//            Log( DEBUG ) << "  en cap (deg) : " << rad2deg( postEstimStateVar(2) );
-//            Log( DEBUG ) << "covariance : " << postEstimStateCov.row(0);
-//            Log( DEBUG ) << "             " << postEstimStateCov.row(1);
-//            Log( DEBUG ) << "             " << postEstimStateCov.row(2);
+            //            Log( DEBUG ) << "KFLocalizator::newScan - post intermediaire estim [time=" << tt[i] << "]";
+            //            Log( DEBUG ) << "  sur x (en m): " << postEstimStateVar(0);
+            //            Log( DEBUG ) << "  sur y (en m): " << postEstimStateVar(1);
+            //            Log( DEBUG ) << "  en cap (deg) : " << rad2deg( postEstimStateVar(2) );
+            //            Log( DEBUG ) << "covariance : " << postEstimStateCov.row(0);
+            //            Log( DEBUG ) << "             " << postEstimStateCov.row(1);
+            //            Log( DEBUG ) << "             " << postEstimStateCov.row(2);
         }
 
         KFLSysInput input;

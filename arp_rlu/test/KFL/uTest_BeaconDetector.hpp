@@ -82,12 +82,12 @@ namespace unittest_BeaconDetector
         unsigned int nbObjects = docResults.getIntegerData( docResults.getChild( docResults.root(), "nbObjects") );
 
         BOOST_CHECK_EQUAL( nbObjects, vdc.size() );
-        Log( DEBUG ) << "test_DetectedCircle_" << xpName  << " - " << "vdc.size()=" << vdc.size();
+        Log( DEBUG ) << "unittest_BeaconDetector_" << xpName  << " - " << "vdc.size()=" << vdc.size();
 
-        Log( DEBUG ) << "test_DetectedCircle_" << xpName  << " - " << "Beacon found by C++ :";
+        Log( DEBUG ) << "unittest_BeaconDetector_" << xpName  << " - " << "Beacon found by C++ :";
         for(unsigned int i = 0 ; i < vdc.size() ; i++)
         {
-            Log( DEBUG ) << "test_DetectedCircle_" << xpName << " - "
+            Log( DEBUG ) << "unittest_BeaconDetector_" << xpName << " - "
                     << "   dc[" << i << "]"
                     << "  vdc[i].x()=" << vdc[i].x()
                     << "  vdc[i].y()=" << vdc[i].y()
@@ -95,7 +95,7 @@ namespace unittest_BeaconDetector
                     << "  vdc[i].scanSize=" << vdc[i].getScan().getSize();
         }
 
-        Log( DEBUG ) << "test_DetectedCircle_" << xpName  << " - " << "Compare with python :";
+        Log( DEBUG ) << "unittest_BeaconDetector_" << xpName  << " - " << "Compare with python :";
         for(unsigned int i = 0 ; i < nbObjects ; i++)
         {
             std::stringstream ss;
@@ -103,7 +103,7 @@ namespace unittest_BeaconDetector
             double xCenter = docResults.getFloatData( docResults.getChild( docResults.getChild(docResults.root(), ss.str()), "xCenter") );
             double yCenter = docResults.getFloatData( docResults.getChild( docResults.getChild(docResults.root(), ss.str()), "yCenter") );
 
-            Log( DEBUG ) << "test_DetectedCircle_" << xpName << " - "
+            Log( DEBUG ) << "unittest_BeaconDetector_" << xpName << " - "
                     << "   dc[" << i << "]"
                     << "  xCenter=" << xCenter
                     << "  yCenter=" << yCenter
@@ -116,8 +116,8 @@ namespace unittest_BeaconDetector
         }
 
         std::vector< std::pair<lsl::Circle, Eigen::Vector2d > > measures;
-        Log( DEBUG ) << "test_DetectedCircle_" << xpName << " - " << "measures vector created";
-        Log( DEBUG ) << "test_DetectedCircle_" << xpName << " - " << "tt.size()=" << tt.size();
+        Log( DEBUG ) << "unittest_BeaconDetector_" << xpName << " - " << "measures vector created";
+        Log( DEBUG ) << "unittest_BeaconDetector_" << xpName << " - " << "tt.size()=" << tt.size();
         for(int i = 0 ; i < tt.size() ; i++)
         {
             lsl::Circle target;
@@ -125,14 +125,14 @@ namespace unittest_BeaconDetector
             if( obj.getBeacon(tt[i], target, meas) )
             {
                 measures.push_back( std::make_pair(target, meas) );
-                Log( DEBUG ) << "test_DetectedCircle_" << xpName << " - " << "measure[" << measures.size() << "]:";
-                Log( DEBUG ) << "test_DetectedCircle_" << xpName << " - " << "  * xTarget=" << target.x();
-                Log( DEBUG ) << "test_DetectedCircle_" << xpName << " - " << "  * yTarget=" << target.y();
-                Log( DEBUG ) << "test_DetectedCircle_" << xpName << " - " << "  * range=" << meas(0);
-                Log( DEBUG ) << "test_DetectedCircle_" << xpName << " - " << "  * theta=" << meas(1);
+                Log( DEBUG ) << "unittest_BeaconDetector_" << xpName << " - " << "measure[" << measures.size() << "]:";
+                Log( DEBUG ) << "unittest_BeaconDetector_" << xpName << " - " << "  * xTarget=" << target.x();
+                Log( DEBUG ) << "unittest_BeaconDetector_" << xpName << " - " << "  * yTarget=" << target.y();
+                Log( DEBUG ) << "unittest_BeaconDetector_" << xpName << " - " << "  * range=" << meas(0);
+                Log( DEBUG ) << "unittest_BeaconDetector_" << xpName << " - " << "  * theta=" << meas(1);
             }
         }
-        Log( DEBUG ) << "test_DetectedCircle_" << xpName << " - " << "measures done (measures.size()=" << measures.size() << ")";
+        Log( DEBUG ) << "unittest_BeaconDetector_" << xpName << " - " << "measures done (measures.size()=" << measures.size() << ")";
 
 
         vjson::JsonDocument docMeas;
@@ -142,11 +142,11 @@ namespace unittest_BeaconDetector
         unsigned int nbMeas = docMeas.getIntegerData( docMeas.getChild( docMeas.root(), "nbMeas") );
         BOOST_CHECK_EQUAL(measures.size(), nbMeas);
 
-        Log( DEBUG ) << "test_DetectedCircle_" << xpName << " - " << "results comparison";
+        Log( DEBUG ) << "unittest_BeaconDetector_" << xpName << " - " << "results comparison";
 
         for(unsigned int i = 0 ; i < nbMeas ; i++)
         {
-            Log( DEBUG ) << "test_DetectedCircle_" << xpName << " - " << "measures[" << i << "]:";
+            Log( DEBUG ) << "unittest_BeaconDetector_" << xpName << " - " << "measures[" << i << "]:";
 
             std::stringstream ss;
             ss << "meas_" << i;
@@ -158,10 +158,10 @@ namespace unittest_BeaconDetector
             lsl::Circle target = measures[i].first;
             Eigen::Vector2d meas = measures[i].second;
 
-            Log( DEBUG ) << "test_DetectedCircle_" << xpName << " - " << "  * xTarget=" << target.x() << "   vs trueXBeacon=" << trueXBeacon;
-            Log( DEBUG ) << "test_DetectedCircle_" << xpName << " - " << "  * yTarget=" << target.y() << "   vs trueYBeacon=" << trueYBeacon;
-            Log( DEBUG ) << "test_DetectedCircle_" << xpName << " - " << "  * range="   << meas(0)    << "   vs trueRange="   << trueRange;
-            Log( DEBUG ) << "test_DetectedCircle_" << xpName << " - " << "  * theta="   << meas(1)    << "   vs trueTheta="   << trueTheta;
+            Log( DEBUG ) << "unittest_BeaconDetector_" << xpName << " - " << "  * xTarget=" << target.x() << "   vs trueXBeacon=" << trueXBeacon;
+            Log( DEBUG ) << "unittest_BeaconDetector_" << xpName << " - " << "  * yTarget=" << target.y() << "   vs trueYBeacon=" << trueYBeacon;
+            Log( DEBUG ) << "unittest_BeaconDetector_" << xpName << " - " << "  * range="   << meas(0)    << "   vs trueRange="   << trueRange;
+            Log( DEBUG ) << "unittest_BeaconDetector_" << xpName << " - " << "  * theta="   << meas(1)    << "   vs trueTheta="   << trueTheta;
 
 
             BOOST_CHECK_CLOSE( target.x(), trueXBeacon, 1.f);
@@ -169,6 +169,8 @@ namespace unittest_BeaconDetector
             BOOST_CHECK( abs(meas(0) - trueRange) < 0.015 );
             BOOST_CHECK( abs(meas(1) - trueTheta) < 0.01);
         }
+
+        Log( NOTICE ) << "unittest_BeaconDetector_" << xpName << " perfs :\n" << obj.getPerformanceReport();
     }
 }
 
