@@ -511,7 +511,7 @@ function install_ros
 		cd /opt/opencv/lib/pkgconfig
 		ln -sf opencv.pc opencv2.3.pc
 		ln -sf opencv2.3.pc opencv-2.3.1.pc
-		ln -s /opt/opencv/share/OpenCV/OpenCVConfig.cmake /usr/share/cmake-2.8/Modules
+		ln -sf /opt/opencv/share/OpenCV/OpenCVConfig.cmake /usr/share/cmake-2.8/Modules
 		cd /usr/share/cmake-2.8/Modules/
 		wget ftp://ard_user:robotik@88.191.124.77/34%20-%20Info/Dependance/OpenCv/FindOpenCV.cmake
 	fi
