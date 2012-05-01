@@ -17,7 +17,7 @@ namespace arp_core
     class StatTimer : public Timer
     {
     public :
-        StatTimer( int nMax = 20 ) ;
+        StatTimer( int nMax = 100 ) ;
         ~StatTimer() ;
 
         void Start();
