@@ -649,7 +649,7 @@ function configure_init_scripts
 	cecho yellow "Configuring init scripts ..."
 	#recuperation des scripts de boot :
 	cd /sbin
-	svn export svn://88.191.124.77/ARP/trunk/ard_tools/kernel/init_ro
+	svn export svn://88.191.124.77/ARP/trunk/ard_tools/kernel/init_ro.sh --username hudson --password robotik --non-interactive
 	chmod +x init_ro.sh
 	dos2unix init_ro.sh
 	
