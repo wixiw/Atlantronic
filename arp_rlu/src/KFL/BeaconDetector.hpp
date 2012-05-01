@@ -63,12 +63,17 @@ class BeaconDetector
             public:
             /** Constructeur par défault.
              *  Il initialise des paramètres classiques non-stupides :\n
-             *  mfp => voir constructeur par défault de lsl::MedianFilter::Params \n
-             *  pcp => voir constructeur par défault de lsl::PolarCrop::Params \n
-             *  psp => voir constructeur par défault de lsl::PolarSegment::Params \n
-             *  cip => voir constructeur par défault de lsl::CircleIdentif::Params \n
-             *  tcp => voir constructeur par défault de lsl::CircleIdentif::Params \n
-             *  dcp => voir constructeur par défault de lsl::CircleIdentif::Params \n
+             *  \li mfp => voir constructeur par défault de lsl::MedianFilter::Params
+             *  \li pcp => voir constructeur par défault de lsl::PolarCrop::Params
+             *  \li psp => voir constructeur par défault de lsl::PolarSegment::Params
+             *  \li cip => voir constructeur par défault de lsl::CircleIdentif::Params
+             *  \li tcp => voir constructeur par défault de lsl::CircleIdentif::Params
+             *  \li dcp => voir constructeur par défault de lsl::CircleIdentif::Params
+             *  \li minNbPoints = 3
+             *  \li xMin = -1.8
+             *  \li xMax =  1.8
+             *  \li yMin = -1.3
+             *  \li yMax =  1.3
              */
             Params();
 
@@ -118,6 +123,26 @@ class BeaconDetector
              * Nombre minimal de point pour qu'un DetectedObject soit considéré comme une balise potentielle.
              */
             unsigned int minNbPoints;
+
+            /**
+             * Minimum cartésien selon X
+             */
+            double xMin;
+
+            /**
+             * Maximum cartésien selon X
+             */
+            double xMax;
+
+            /**
+             * Minimum cartésien selon Y
+             */
+            double yMin;
+
+            /**
+             * Maximum cartésien selon Y
+             */
+            double yMax;
 
         };
 

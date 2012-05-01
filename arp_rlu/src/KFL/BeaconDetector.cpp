@@ -40,6 +40,11 @@ BeaconDetector::Params::Params()
 
     minNbPoints = 3;
 
+    xMin = -1.8;
+    xMax =  1.8;
+    yMin = -1.3;
+    yMax =  1.3;
+
     cip.radius = 0.04;
     cip.rangeDelta = 0.034;
 
@@ -71,6 +76,12 @@ std::string BeaconDetector::Params::getInfo() const
     ss << tcp.getInfo();
     ss << "****************************" << std::endl;
     ss << dcp.getInfo();
+    ss << "****************************" << std::endl;
+    ss << " [*] minNbPoints : " << minNbPoints << std::endl;
+    ss << " [*] xMin        : " << xMin << " (m)" << std::endl;
+    ss << " [*] xMax        : " << xMax << " (m)" << std::endl;
+    ss << " [*] yMin        : " << yMin << " (m)" << std::endl;
+    ss << " [*] yMax        : " << yMax << " (m)" << std::endl;
     ss << std::endl;
     return ss.str();
 }
@@ -177,7 +188,7 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
     // Filtering on candidates : do not consider :
     // * too small DetectedObject
     // * DetectedObject touching borders of initial scan
-    // * TODO : DetectedObject out of enlarged table
+    // * DetectedObject out of enlarged table
     fiTimer.Start();
     detectedObjects.clear();
     for(unsigned int i = 0 ; i < rawDObj.size() ; i++)
@@ -191,6 +202,14 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
             continue;
         }
         if( rawDObj[i].getScan().getPolarData()(2,rawDObj[i].getScan().getSize()-1) == scan_0.getPolarData()(2,scan_0.getSize()-1) )
+        {
+            continue;
+        }
+        if( (rawDObj[i].getCartesianMean()[0] < params.xMin) || (rawDObj[i].getCartesianMean()[0] > params.xMax) )
+        {
+            continue;
+        }
+        if( (rawDObj[i].getCartesianMean()[1] < params.yMin) || (rawDObj[i].getCartesianMean()[1] > params.yMax) )
         {
             continue;
         }
