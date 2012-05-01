@@ -50,13 +50,15 @@ class MainStateMachine(smach.StateMachine):
                                    transitions={'startunplug':'Move1', 'timeout':'end'})
             
             smach.StateMachine.add('Move1', Move1(),
-                                   transitions={'succeeded':'Move2', 'timeout':'Move4'})
+                                   transitions={'succeeded':'Move2', 'timeout':'Debloque'})
             smach.StateMachine.add('Move2', Move2(),
-                                   transitions={'succeeded':'Move3', 'timeout':'Move1'})
+                                   transitions={'succeeded':'Move3', 'timeout':'Debloque'})
             smach.StateMachine.add('Move3', Move3(),
-                                   transitions={'succeeded':'Move4', 'timeout':'Move4'})
+                                   transitions={'succeeded':'Move4', 'timeout':'Debloque'})
             smach.StateMachine.add('Move4', Move4(),
-                                   transitions={'succeeded':'Move1', 'timeout':'Move1'})            
+                                   transitions={'succeeded':'Move1', 'timeout':'Debloque'})   
+            smach.StateMachine.add('Debloque', Debloque(),
+                                   transitions={'succeeded':'Move1', 'timeout':'Debloque'})          
 
 
 class WaitForStartUnplug(CyclicState):
@@ -87,6 +89,10 @@ class Move3(CyclicActionState):
 class Move4(CyclicActionState):
     def createAction(self):
         self.omnidirect_cpoint(0.3,0,0,0,-0.4,pi/2)   
+        
+class Debloque(CyclicActionState):
+    def createAction(self):
+        self.replay(1.0)  
         
 ########################## EXECUTABLE 
 #shall be always at the end ! so that every function is defined before

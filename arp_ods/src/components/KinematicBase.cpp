@@ -135,7 +135,7 @@ void KinematicBase::checkRobotBlocked()
 bool KinematicBase::consistencyMeasuredvsCommanded()
 {
     // distance bewteen twist. thetap is given a coefficient 0.04=0.2² to represent the speed at a 20cm lever
-    double speederror = attrCurrentTwist.distanceTo(attrAcceptableTwist, Vector3(1.0, 1.0, 0.2));
+    double speederror = attrCurrentTwist.distanceTo(attrAcceptableTwist, 1.0,0.2);
 
     //////////////////////
     Log(INFO) << ">> KinematicBase::consistencyMeasuredvsCommanded()";
@@ -180,8 +180,8 @@ void KinematicBase::createOrocosInterface()
     addProperty("propMinSpeed", propMinSpeed).doc("");
     addProperty("propRobotBlockedTimeout", propRobotBlockedTimeout).doc("");
 
-    addPort("inTwistCmd", inTwistCmd).doc("");
-    addPort("inCurrentTwist", inCurrentTwist).doc("");
+    addEventPort("inTwistCmd", inTwistCmd).doc("");
+    addEventPort("inCurrentTwist", inCurrentTwist).doc("");
     addPort("inMotorState", inMotorState).doc("");
     addPort("inParams", inParams).doc("");
 

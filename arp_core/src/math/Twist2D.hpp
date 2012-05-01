@@ -123,7 +123,7 @@ class Twist2D
          * @param coef : coefficients de ponderation pour le calcul de la distance
          * @return la distance
          */
-        double distanceTo(Twist2D twist, Vector3 coef) const;
+        double distanceTo(Twist2D twist, double coefTrans, double coefRot) const;
 
         /**
          * Filtre la dérivée premiere temporelle

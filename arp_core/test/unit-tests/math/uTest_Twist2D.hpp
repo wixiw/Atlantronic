@@ -61,25 +61,19 @@ BOOST_AUTO_TEST_CASE( Twist2_distance )
     Vector3 coef2(0,1,0);
     Vector3 coef3(0,0,1);
     Vector3 coef(1,1,1);
-    BOOST_CHECK_EQUAL( a.distanceTo(zero,coef) , 1 );
-    BOOST_CHECK_EQUAL( a.distanceTo(zero,2*coef) , 2 );
-    BOOST_CHECK_EQUAL( a.distanceTo(zero,coef1) , 0 );
-    BOOST_CHECK_EQUAL( a.distanceTo(zero,coef2) , 1 );
-    BOOST_CHECK_EQUAL( a.distanceTo(zero,coef3) , 0 );
+    BOOST_CHECK_EQUAL( a.distanceTo(zero,1,1) , 1 );
+    BOOST_CHECK_EQUAL( a.distanceTo(zero,2,2) , 2 );
+    BOOST_CHECK_EQUAL( a.distanceTo(zero,0,1) , 0 );
 
-    BOOST_CHECK_EQUAL( b.distanceTo(zero,coef) , 1 );
-    BOOST_CHECK_EQUAL( b.distanceTo(zero,2*coef) , 2 );
-    BOOST_CHECK_EQUAL( b.distanceTo(zero,coef1) , 0 );
-    BOOST_CHECK_EQUAL( b.distanceTo(zero,coef2) , 0 );
-    BOOST_CHECK_EQUAL( b.distanceTo(zero,coef3) , 1 );
+    BOOST_CHECK_EQUAL( b.distanceTo(zero,1,1) , 1 );
+    BOOST_CHECK_EQUAL( b.distanceTo(zero,2,2) , 2 );
+    BOOST_CHECK_EQUAL( b.distanceTo(zero,0,1) , 0 );
 
-    BOOST_CHECK_EQUAL( c.distanceTo(zero,coef) , 1 );
-    BOOST_CHECK_EQUAL( c.distanceTo(zero,2*coef) , 2 );
-    BOOST_CHECK_EQUAL( c.distanceTo(zero,coef1) , 1 );
-    BOOST_CHECK_EQUAL( c.distanceTo(zero,coef2) , 0 );
-    BOOST_CHECK_EQUAL( c.distanceTo(zero,coef3) , 0 );
+    BOOST_CHECK_EQUAL( c.distanceTo(zero,1,1) , 1 );
+    BOOST_CHECK_EQUAL( c.distanceTo(zero,2,2) , 2 );
+    BOOST_CHECK_EQUAL( c.distanceTo(zero,0,1) , 1 );
 
-    BOOST_CHECK_EQUAL( d.distanceTo(zero,coef) , 3 );
+    BOOST_CHECK_EQUAL( d.distanceTo(zero,1,1) , 3 );
 }
 
 BOOST_AUTO_TEST_CASE( Twist2_Equal )

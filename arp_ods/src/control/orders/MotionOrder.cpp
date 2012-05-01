@@ -9,6 +9,7 @@
 #include "MotionOrder.hpp"
 #include "control/orders/orders.h"
 
+
 using namespace arp_math;
 using namespace arp_ods;
 using namespace orders;
@@ -118,6 +119,10 @@ std::string MotionOrder::getTypeString() const
         case OPENLOOP:
             return "OPENLOOP";
             break;
+        case REPLAY:
+            return "REPLAY";
+            break;
+
         default:
             return "ORDER_UNKNOW";
             break;
@@ -133,5 +138,10 @@ void MotionOrder::setReverse(bool reverse)
 void MotionOrder::setId(int id)
 {
     m_id = id;
+}
+
+void MotionOrder::setTwistBuffer(TwistBuffer twistBuffer )
+{
+    m_twistBuffer = twistBuffer;
 }
 

@@ -10,6 +10,7 @@
 
 #include "taskcontexts/OdsTaskContext.hpp"
 #include "control/orders/orders.h"
+#include "control/TwistBuffer.hpp"
 #include <math/core>
 
 namespace arp_ods
@@ -41,6 +42,9 @@ class LittleSexControl: public OdsTaskContext
          */
         RTT::InputPort< arp_math::EstimatedPose2D > inPosition;
 
+        /** Measure of the current robot Twist */
+        RTT::InputPort<arp_math::EstimatedTwist2D> inCurrentTwist;
+
         /**
          * This is the result of computation : the Twist that the robot should do
          */
@@ -67,6 +71,10 @@ class LittleSexControl: public OdsTaskContext
          * Buffer for current robot position
          */
         arp_math::EstimatedPose2D attrPosition;
+        /*
+         * buffer for current twist
+         */
+        EstimatedTwist2D attrCurrentTwist;
 
         /**
          * Buffer for input order
@@ -74,12 +82,12 @@ class LittleSexControl: public OdsTaskContext
         shared_ptr<orders::MotionOrder>  attrOrder;
 
         /**
-         * Local variable to stock the max velocity that we were aked to follow
+         * Local variable to stock the max velocity that we were asked to follow
          */
         double attrVMax;
 
         /**
-         * Current order type to debug
+         * Current order type
          */
         std::string attrCurrentOrder;
 
@@ -114,6 +122,22 @@ class LittleSexControl: public OdsTaskContext
          * get the dt since last call
          */
         double getDt();
+        /*
+         * dt for this loop
+         */
+        double attrDt;
+        /*
+         * buffer of twist for replaying backward
+         */
+        TwistBuffer m_twistBuffer;
+        /*
+         * function called to store the twist in the buffer
+         */
+        void storeTwist();
+        /*
+         * minimum speed for twist that is stored
+         */
+        static const double MIN_STORED_TWIST_SPEED=0.005;
 };
 
 } /* namespace arp_ods */

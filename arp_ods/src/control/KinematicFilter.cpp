@@ -194,11 +194,10 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
         //Log(INFO) << "LOOP("<< nbLoops<< ") : desiredMS=" << desiredMS.toString();
     }
 
-    //gains to uniformize units. we take 20cm for the angle gain.
+    // we take 20cm for the angle gain.
     //That mean a rotation speed as the same weigth as a linear speed on a turret that would be at 20cm from the reference
-    Vector3 coef(1.0,1.0,0.2);
     //compute quality index (no division by 0 since we ensured desiredTwist != currentTwist)
-    quality = (desiredTwist.distanceTo(currentTwist,coef) - desiredTwist.distanceTo(acceptableTwist,coef))/desiredTwist.distanceTo(currentTwist,coef);
+    quality = (desiredTwist.distanceTo(currentTwist,1.0,0.2) - desiredTwist.distanceTo(acceptableTwist,1.0,0.2))/desiredTwist.distanceTo(currentTwist,1.0,0.2);
 
     //we don't accept to stay at the same place when having a command
     if( currentTwist == acceptableTwist && currentTwist != desiredTwist)

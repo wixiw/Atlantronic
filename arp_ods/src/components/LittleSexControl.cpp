@@ -21,7 +21,8 @@ LittleSexControl::LittleSexControl(const std::string& name):
         attrOrder(orders::defaultOrder),
         attrVMax(1.0),
         attrCurrentOrder("default"),
-        m_oldTime(0.0)
+        m_oldTime(0.0),
+        m_twistBuffer()
 
 {
     createOrocosInterface();
@@ -33,6 +34,7 @@ void LittleSexControl::getInputs()
 {
     //faut-il tester que c'est bien mis à jour ?
     inPosition.readNewest(attrPosition);
+    inCurrentTwist.readNewest(attrCurrentTwist);
 }
 
 void LittleSexControl::updateHook()
@@ -42,13 +44,19 @@ void LittleSexControl::updateHook()
     //bufferise inputs
     getInputs();
 
+    //note the dt for this turn
+    attrDt=getDt();
+
+    //note the twist reliazed for this turn
+    storeTwist();
+
     attrCurrentOrder = attrOrder->getTypeString();
 
     //compute current order mode
     attrOrder->switchMode(attrPosition);
 
     // calcule les consignes
-    attrComputedTwistCmd = attrOrder->computeSpeed(attrPosition,getDt());
+    attrComputedTwistCmd = attrOrder->computeSpeed(attrPosition,attrDt);
 
     //publish computed value
     setOutputs();
@@ -71,6 +79,8 @@ double LittleSexControl::getDt()
         }
 }
 
+
+
 void LittleSexControl::setOutputs()
 {
     // no filtering of twist command, as it shall be the job of kinematicbase.
@@ -78,7 +88,7 @@ void LittleSexControl::setOutputs()
     //si on est en erreur dans un ordre pour lequel elle a du sens on informe au dessus
     outOrderInError.write(attrOrder->getMode() == MODE_ERROR && attrOrder->getType() != NO_ORDER);
 
-    //la première fois qu'on a finit on publie
+    //la première fois qu'on a fini on publie
     if( isOrderFinished() && outOrderFinished.getLastWrittenValue() == false )
     {
         outOrderFinished.write( true );
@@ -87,7 +97,13 @@ void LittleSexControl::setOutputs()
     outTwistCmd.write(attrComputedTwistCmd);
 }
 
-
+void LittleSexControl::storeTwist()
+{
+    if( attrCurrentTwist.distanceTo(Twist2D(0,0,0),1,0.2) >= MIN_STORED_TWIST_SPEED )
+    {
+        m_twistBuffer.addTwist(attrCurrentTwist,attrDt);
+    }
+}
 
 bool LittleSexControl::isOrderFinished()
 {
@@ -109,6 +125,14 @@ bool LittleSexControl::ooSetOrder(shared_ptr<MotionOrder> order)
         outOrderFinished.write(false);
         LOG(Info) << "Received a new order " << order->getTypeString() << " to go to " << order->getEndPose().toString() << endlog();
         attrOrder = order;
+        // oui je sais willy c'est dégueulasse mais éh, c'est pas à RosOsdItf de stocker des informations sur le comportement du robot. c'est a LittleSexcontrol.
+        // les ordres devraient etre créés ici c'est ca le probleme
+        // et pis RosOdsItf devrait etre une simple passerelle
+        // j'aurais pas du mettre le controle de blocage robot la bas
+        // mais je l'ai mis car le cassage des ordres se fait la bas
+        // moralité refaire l'archi.
+        attrOrder->setTwistBuffer(m_twistBuffer);
+
         return true;
    /* }
     else
@@ -138,11 +162,13 @@ void LittleSexControl::createOrocosInterface()
     addAttribute("attrOrder",attrOrder);
     addAttribute("attrVMax",attrVMax);
     addAttribute("attrCurrentOrder",attrCurrentOrder);
+    addAttribute("attrDt",attrDt);
+    addAttribute("attrCurrentTwist",attrCurrentTwist);
 
-
-    addPort("inPosition",inPosition)
+    addEventPort("inPosition",inPosition)
         .doc("");
-
+    addEventPort("inCurrentTwist",inCurrentTwist)
+            .doc("");
 
     addPort("outTwistCmd",outTwistCmd)
             .doc("");

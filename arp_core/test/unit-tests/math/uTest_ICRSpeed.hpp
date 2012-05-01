@@ -43,9 +43,9 @@ BOOST_AUTO_TEST_CASE( ICRSpeed_Consistency )
     //zero speed twist should give an ICRSpeed as the default
     Twist2D twist_b(0,0,0);
     ICRSpeed ICR_b(twist_b);
-    BOOST_CHECK_CLOSE( twist_a.vx() , PI/2.0 ,1e-6);
-    BOOST_CHECK_CLOSE( twist_a.vy() , PI/2.0 ,1e-6 );
-    BOOST_CHECK_CLOSE( twist_a.vh() , 0.0 ,1e-6);
+    BOOST_CHECK_CLOSE( ICR_b.ro() , PI/2.0 ,1e-6);
+    BOOST_CHECK_CLOSE( ICR_b.alpha() , PI/2.0 ,1e-6 );
+    BOOST_CHECK_CLOSE( ICR_b.q() , 0.0 ,1e-6);
 
     // going from twist to ICRSpeed back to twist should be ok
     Twist2D twist_from;
@@ -62,7 +62,9 @@ BOOST_AUTO_TEST_CASE( ICRSpeed_Consistency )
     twist_from=Twist2D(0,1,0);
     ICR_to=ICRSpeed(twist_from);
     twist_back=ICR_to.twist();
-    BOOST_CHECK_CLOSE( twist_from.vx() , twist_back.vx() ,1e-6);
+    //c'est bien gentil boost check close mais la tolerance est un pourcentage des arguments et comme j'ai un argument à 0 j'ai un fail alors que ca allait bien
+    //http://www.boost.org/doc/libs/1_34_1/libs/test/doc/components/test_tools/floating_point_comparison.html
+    BOOST_CHECK_SMALL( twist_from.vx() - twist_back.vx() ,1e-6);
     BOOST_CHECK_CLOSE( twist_from.vy() , twist_back.vy() ,1e-6);
     BOOST_CHECK_CLOSE( twist_from.vh() , twist_back.vh() ,1e-6);
 

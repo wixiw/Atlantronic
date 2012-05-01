@@ -158,6 +158,9 @@ class CyclicActionState(CyclicState):
     def openloop_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x_speed,y_speed,theta_speed,openloop_duration):
         self.createMotionControlAction_cpoint(x_cpoint,y_cpoint,theta_cpoint,0,0,0,'OPENLOOP',False,False,x_speed,y_speed,theta_speed,openloop_duration)
         
+    def replay(self,replay_duration):
+        self.createMotionControlAction_cpoint(0,0,0,0,0,0,'REPLAY',False,False,0,0,0,replay_duration)
+           
     #these are functions linked to the replay
     def registerReplayOrder_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x,y,theta,move_type,reverse,passe):
         Data.listReplayOrders.append(ReplayOrder(x_cpoint,y_cpoint,theta_cpoint,x,y,theta,move_type,reverse,passe))   

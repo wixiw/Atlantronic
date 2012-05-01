@@ -12,6 +12,8 @@
 #include <arp_ods/OrderAction.h>
 #include <boost/shared_ptr.hpp>
 #include <math/core>
+#include "control/TwistBuffer.hpp"
+
 
 using namespace arp_math;
 
@@ -20,7 +22,7 @@ namespace arp_ods{ namespace orders
 
 enum OrderType
 {
-    NO_ORDER, STAY_IN_POSITION, TRANSLATE, ROTATE, FANTOM, OMNIDIRECT, OPENLOOP
+    NO_ORDER, STAY_IN_POSITION, TRANSLATE, ROTATE, FANTOM, OMNIDIRECT, OPENLOOP, REPLAY
 };
 
 
@@ -92,6 +94,10 @@ class MotionOrder: public ModeSelector
          * this allows to distinguish unique orders
          */
         void setId(int id);
+        /*
+         * set
+         */
+        void setTwistBuffer(TwistBuffer twistBuffer );
 
     protected:
         /** type of the current order */
@@ -104,6 +110,10 @@ class MotionOrder: public ModeSelector
         double m_openloop_duration;
         /** unique ID of the order */
         int m_id;
+        /*
+         * buffer of twist for replaying backward
+         */
+        TwistBuffer m_twistBuffer;
 
 
 };

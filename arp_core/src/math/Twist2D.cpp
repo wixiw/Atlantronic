@@ -162,12 +162,12 @@ Twist2D Twist2D::transport(Pose2D p) const
     return Twist2D(res);
 }
 
-double Twist2D::distanceTo(Twist2D other, Vector3 coef) const
+double Twist2D::distanceTo(Twist2D other, double coefTrans, double coefRot) const
 {
     double dh2 = (vh()-other.vh())*(vh()-other.vh());
     double dx2 = (vx()-other.vx())*(vx()-other.vx());
     double dy2 = (vy()-other.vy())*(vy()-other.vy());
-    return sqrt(coef(2)*coef(2)*dh2 + coef(0)*coef(0)*dx2 + coef(1)*coef(1)*dy2);
+    return sqrt(coefRot*coefRot*dh2 + coefTrans*coefTrans*dx2 + coefTrans*coefTrans*dy2);
 }
 
 void Twist2D::limitFirstDerivate(Twist2D lastTwist, Vector3 limits, double period)

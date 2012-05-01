@@ -14,6 +14,7 @@
 #include "MotionOrder.hpp"
 #include "OmnidirectOrder.hpp"
 #include "OpenloopOrder.hpp"
+#include "ReplayOrder.hpp"
 
 using namespace boost;
 
