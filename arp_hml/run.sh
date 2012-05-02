@@ -12,7 +12,8 @@ ROOT_DEPLOYMENT_FILE_SIMUL="`rospack find arp_hml`/script/orocos/deployment/depl
 #
 CORBA="-corba"
 
-
+roscore&
+sleep 2
 . /opt/color.sh
 
 cd `rospack find arp_hml`
