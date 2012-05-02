@@ -115,11 +115,6 @@ class Twist2D
          */
         double distanceTo(Twist2D twist, double coefTrans, double coefRot) const;
 
-        /**
-         * Filtre la dérivée premiere temporelle
-         */
-        void limitFirstDerivate(Twist2D lastTwist, Vector3 limits, double period);
-
     protected:
         Vector2 vitesseTranslation;
         double vitesseRotation;

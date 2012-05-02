@@ -11,6 +11,7 @@ configure_file(
 
 add_subdirectory(components)
 add_subdirectory(math)
+add_subdirectory(filters)
 add_subdirectory(models)
 add_subdirectory(taskcontexts)
 add_subdirectory(timer)

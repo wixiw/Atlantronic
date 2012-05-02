@@ -366,7 +366,7 @@ BOOST_AUTO_TEST_CASE( transInterp_N1 )
 
     VectorXd result = Interpolator::transInterp(tt, ttc, yyc);
     BOOST_CHECK_EQUAL( result.size(), 3 );
-    for(unsigned int i = 0 ; i < tt.size() ; i++)
+    for(int i = 0 ; i < tt.size() ; i++)
     {
         BOOST_CHECK_EQUAL( result[i], yyc[0] );
     }
@@ -424,7 +424,7 @@ BOOST_AUTO_TEST_CASE( transInterp_ii_N1 )
 
     VectorXd result = Interpolator::transInterp(tt, ttc, yyc, ii);
     BOOST_CHECK_EQUAL( result.size(), 3 );
-    for(unsigned int i = 0 ; i < tt.size() ; i++)
+    for(int i = 0 ; i < tt.size() ; i++)
     {
         BOOST_CHECK_EQUAL( result[i], yyc[0] );
     }
@@ -502,7 +502,7 @@ BOOST_AUTO_TEST_CASE( rotInterp_N1 )
 
     VectorXd result = Interpolator::rotInterp(tt, ttc, yyc);
     BOOST_CHECK_EQUAL( result.size(), 3 );
-    for(unsigned int i = 0 ; i < tt.size() ; i++)
+    for(int i = 0 ; i < tt.size() ; i++)
     {
         BOOST_CHECK_EQUAL( result[i], yyc[0] );
     }
@@ -581,7 +581,7 @@ BOOST_AUTO_TEST_CASE( rotInterp_ii_N1 )
 
     VectorXd result = Interpolator::rotInterp(tt, ttc, yyc, ii);
     BOOST_CHECK_EQUAL( result.size(), 3 );
-    for(unsigned int i = 0 ; i < tt.size() ; i++)
+    for(int i = 0 ; i < tt.size() ; i++)
     {
         BOOST_CHECK_EQUAL( result[i], yyc[0] );
     }
@@ -657,12 +657,12 @@ BOOST_AUTO_TEST_CASE( covInterp_N1 )
     VectorXd tt  = VectorXd::Random(3);
     VectorXd ttc = VectorXd::Random(1);
     Eigen::Array< Eigen::Matrix3d, Eigen::Dynamic, 1 > covc(1);
-    for(unsigned int k = 0 ; k < covc.size() ; k++)
+    for(int k = 0 ; k < covc.size() ; k++)
     {
         covc[k] = Eigen::Matrix3d::Random();
-        for(unsigned int i = 0 ; i < 3 ; i++)
+        for(int i = 0 ; i < 3 ; i++)
         {
-            for(unsigned int j = i ; j < 3 ; j++)
+            for(int j = i ; j < 3 ; j++)
             {
                 double m = (covc[k](i,j) + covc[k](j,i)) / 2.;
 //                covc[k](i,j) = m > 0. ? m : 0.;
@@ -674,11 +674,11 @@ BOOST_AUTO_TEST_CASE( covInterp_N1 )
 
     Eigen::Array< Eigen::Matrix3d, Eigen::Dynamic, 1 > result = Interpolator::covInterp(tt, ttc, covc);
     BOOST_CHECK_EQUAL( result.size(), 3 );
-    for(unsigned int k = 0 ; k < tt.size() ; k++)
+    for(int k = 0 ; k < tt.size() ; k++)
     {
-        for(unsigned int i = 0 ; i < 3 ; i++)
+        for(int i = 0 ; i < 3 ; i++)
         {
-            for(unsigned int j = 0 ; j < 3 ; j++)
+            for(int j = 0 ; j < 3 ; j++)
             {
                 BOOST_CHECK_EQUAL( result[k](i,j), covc[0](i,j) );
             }
@@ -729,11 +729,11 @@ BOOST_AUTO_TEST_CASE( covInterp_N3_P5_1 )
     Eigen::Array< Eigen::Matrix3d, Eigen::Dynamic, 1 > result = Interpolator::covInterp(tt, ttc, covc, Eigen::VectorXi(0), epsilon, minimum);
     BOOST_CHECK_EQUAL( result.size(), tt.size() );
 
-    for(unsigned int k = 0 ; k < tt.size() ; k++)
+    for(int k = 0 ; k < tt.size() ; k++)
     {
-        for(unsigned int i = 0 ; i < 3 ; i++)
+        for(int i = 0 ; i < 3 ; i++)
         {
-            for(unsigned int j = 0 ; j < 3 ; j++)
+            for(int j = 0 ; j < 3 ; j++)
             {
                 if(j == i)
                 {
@@ -777,12 +777,12 @@ BOOST_AUTO_TEST_CASE( covInterp_ii_N1 )
     VectorXd tt  = VectorXd::Random(3);
     VectorXd ttc = VectorXd::Random(1);
     Eigen::Array< Eigen::Matrix3d, Eigen::Dynamic, 1 > covc(1);
-    for(unsigned int k = 0 ; k < covc.size() ; k++)
+    for(int k = 0 ; k < covc.size() ; k++)
     {
         covc[k] = Eigen::Matrix3d::Random();
-        for(unsigned int i = 0 ; i < 3 ; i++)
+        for(int i = 0 ; i < 3 ; i++)
         {
-            for(unsigned int j = i ; j < 3 ; j++)
+            for(int j = i ; j < 3 ; j++)
             {
                 double m = (covc[k](i,j) + covc[k](j,i)) / 2.;
 //                covc[k](i,j) = m > 0. ? m : 0.;
@@ -795,11 +795,11 @@ BOOST_AUTO_TEST_CASE( covInterp_ii_N1 )
 
     Eigen::Array< Eigen::Matrix3d, Eigen::Dynamic, 1 > result = Interpolator::covInterp(tt, ttc, covc, ii);
     BOOST_CHECK_EQUAL( result.size(), 3 );
-    for(unsigned int k = 0 ; k < tt.size() ; k++)
+    for(int k = 0 ; k < tt.size() ; k++)
     {
-        for(unsigned int i = 0 ; i < 3 ; i++)
+        for(int i = 0 ; i < 3 ; i++)
         {
-            for(unsigned int j = 0 ; j < 3 ; j++)
+            for(int j = 0 ; j < 3 ; j++)
             {
                 BOOST_CHECK_EQUAL( result[k](i,j), covc[0](i,j) );
             }
@@ -852,11 +852,11 @@ BOOST_AUTO_TEST_CASE( covInterp_ii_N3_P5_1 )
     Eigen::Array< Eigen::Matrix3d, Eigen::Dynamic, 1 > result = Interpolator::covInterp(tt, ttc, covc, ii, epsilon, minimum);
     BOOST_CHECK_EQUAL( result.size(), tt.size() );
 
-    for(unsigned int k = 0 ; k < tt.size() ; k++)
+    for(int k = 0 ; k < tt.size() ; k++)
     {
-        for(unsigned int i = 0 ; i < 3 ; i++)
+        for(int i = 0 ; i < 3 ; i++)
         {
-            for(unsigned int j = 0 ; j < 3 ; j++)
+            for(int j = 0 ; j < 3 ; j++)
             {
                 if(j == i)
                 {
