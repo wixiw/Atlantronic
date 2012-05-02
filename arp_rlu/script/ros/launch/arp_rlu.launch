@@ -1,0 +1,4 @@
+<!-- ARD arp_rlu main launch file -->
+<launch>
+	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
+</launch>
