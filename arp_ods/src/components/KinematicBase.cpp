@@ -42,7 +42,7 @@ void KinematicBase::getInputs()
     inMotorState.readNewest(attrMotorsCurrentState);
     inTwistCmd.readNewest(attrTwistCmd);
     inCurrentTwist.readNewest(inTwist);
-    attrCurrentTwist = inTwist.toTwist();
+    attrCurrentTwist = (Twist2D)inTwist;
     inParams.readNewest(attrParams);
 
 }
