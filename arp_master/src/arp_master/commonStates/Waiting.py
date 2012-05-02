@@ -18,6 +18,8 @@ class WaiterState(CyclicState):
         CyclicState.__init__(self, outcomes=[])
         self.timeout = waitTime
         
+    def executeTransitions(self):
+            return
         
 
 

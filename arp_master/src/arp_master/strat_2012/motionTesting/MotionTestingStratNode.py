@@ -58,7 +58,9 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('Move4', Move4(),
                                    transitions={'succeeded':'Move1', 'timeout':'Debloque'})   
             smach.StateMachine.add('Debloque', Debloque(),
-                                   transitions={'succeeded':'Move1', 'timeout':'Debloque'})          
+                                   transitions={'succeeded':'Wait', 'timeout':'Debloque'})     
+            smach.StateMachine.add('Wait', WaiterState(2.0),
+                                   transitions={'timeout':'Move1'})           
 
 
 class WaitForStartUnplug(CyclicState):
