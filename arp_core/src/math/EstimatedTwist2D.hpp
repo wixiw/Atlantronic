@@ -16,9 +16,8 @@ namespace arp_math
 class EstimatedTwist2D : public Twist2D
 {
     public:
-    EstimatedTwist2D(Twist2D &);
-    EstimatedTwist2D(Vector2 _transVel = Vector2(0., 0.), double _vh = 0.);
-    EstimatedTwist2D(double _vx, double _vy, double _vh = 0.);
+    EstimatedTwist2D(Twist2D &, long double date = 0., Eigen::Matrix<double,3,3> cov = Eigen::Matrix<double,3,3>::Identity());
+    EstimatedTwist2D(double _vx = 0, double _vy = 0, double _vh = 0., long double date = 0., Eigen::Matrix<double,3,3> cov = Eigen::Matrix<double,3,3>::Identity());
 
     Eigen::Matrix<double,3,3> cov() const;
     long double date() const;
@@ -27,8 +26,11 @@ class EstimatedTwist2D : public Twist2D
     void cov(Eigen::Matrix<double,3,3>) ;
     void date(long double);
 
-    //create a simple Twist similar to us
-    Twist2D toTwist();
+    /**
+     * Transporte et réduit le EstimatedTwist2D courant dans le nouveau repère
+     * définit par la Pose2D du nouveau repère dans l'ancien.
+     */
+    EstimatedTwist2D transport(Pose2D p) const;
 
     private:
     Eigen::Matrix<double,3,3> covariance;

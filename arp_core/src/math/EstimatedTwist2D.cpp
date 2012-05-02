@@ -10,26 +10,18 @@
 
 using namespace arp_math;
 
-EstimatedTwist2D::EstimatedTwist2D(Twist2D & _t)
+EstimatedTwist2D::EstimatedTwist2D(Twist2D & _t, long double date, Eigen::Matrix<double,3,3> cov)
 : Twist2D(_t)
-, estimationDate(0.)
-, covariance(Eigen::Matrix<double,3,3>::Identity())
+, estimationDate(date)
+, covariance(cov)
 {
     ;
 }
 
-EstimatedTwist2D::EstimatedTwist2D(Vector2 _transVel, double _vh)
-: Twist2D(_transVel, _vh)
-, estimationDate(0.)
-, covariance(Eigen::Matrix<double,3,3>::Identity())
-{
-    ;
-}
-
-EstimatedTwist2D::EstimatedTwist2D(double _vx, double _vy, double _vh)
+EstimatedTwist2D::EstimatedTwist2D(double _vx, double _vy, double _vh, long double date, Eigen::Matrix<double,3,3> cov)
 : Twist2D(_vx, _vy, _vh)
-, estimationDate(0.)
-, covariance(Eigen::Matrix<double,3,3>::Identity())
+, estimationDate(date)
+, covariance(cov)
 {
     ;
 }
@@ -59,8 +51,8 @@ void EstimatedTwist2D::date(long double _date)
     estimationDate = _date;
 }
 
-Twist2D EstimatedTwist2D::toTwist()
+EstimatedTwist2D EstimatedTwist2D::transport(Pose2D p) const
 {
-    Twist2D t(vx(),vy(),vh());
-    return t;
+    Vector3 res =  p.inverse().getBigAdjoint()*getTVector();
+    return EstimatedTwist2D();
 }

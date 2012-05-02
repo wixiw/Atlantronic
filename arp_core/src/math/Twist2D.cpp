@@ -14,18 +14,9 @@ std::ostream &operator<<( std::ostream &flux, arp_math::Twist2D const& t)
     return flux << t.toString();
 }
 
-Twist2D::Twist2D(Vector2 _vitesseTranslation, double _vitesseRotation):
-        vitesseTranslation(_vitesseTranslation),
-        vitesseRotation(_vitesseRotation){}
-
-
 Twist2D::Twist2D(double _vx, double _vy, double _vh):
         vitesseTranslation(_vx, _vy),
         vitesseRotation(_vh){}
-
-Twist2D::Twist2D(Vector3 T):
-        vitesseTranslation(T[1], T[2]),
-        vitesseRotation(T[0]){}
 
 double Twist2D::vx() const
 {
@@ -159,7 +150,7 @@ Vector3 Twist2D::getTVector() const
 Twist2D Twist2D::transport(Pose2D p) const
 {
     Vector3 res =  p.inverse().getBigAdjoint()*getTVector();
-    return Twist2D(res);
+    return Twist2DBuilder::createFromCartesianRepr(res);
 }
 
 double Twist2D::distanceTo(Twist2D other, double coefTrans, double coefRot) const
@@ -177,7 +168,8 @@ void Twist2D::limitFirstDerivate(Twist2D lastTwist, Vector3 limits, double perio
     vh( firstDerivateLimitation(vh(),lastTwist.vh(), period, -fabs(limits[2]), fabs(limits[2])) );
 }
 
-Twist2D Twist2D::createFromPolar(double normV, double angV, double vh)
+
+Twist2D Twist2DBuilder::createFromPolarRepr(double normV, double angV, double vh)
 {
     Twist2D t;
     t.vx(normV*cos(angV));
@@ -185,3 +177,33 @@ Twist2D Twist2D::createFromPolar(double normV, double angV, double vh)
     t.vh(vh);
     return t;
 }
+
+Twist2D Twist2DBuilder::createFromCartesianRepr(double vx, double vy, double vh)
+{
+    Twist2D t;
+    t.vx(vx);
+    t.vy(vy);
+    t.vh(vh);
+    return t;
+}
+
+Twist2D Twist2DBuilder::createFromCartesianRepr(Vector2 _vitesseTranslation, double _vitesseRotation)
+{
+    Twist2D t;
+    t.vx(_vitesseTranslation[0]);
+    t.vy(_vitesseTranslation[1]);
+    t.vh(_vitesseRotation);
+    return t;
+}
+
+Twist2D Twist2DBuilder::createFromCartesianRepr(Vector3 T)
+{
+    Twist2D t;
+    t.vx(T[1]);
+    t.vy(T[2]);
+    t.vh(T[0]);
+    return t;
+}
+
+
+

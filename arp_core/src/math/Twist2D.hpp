@@ -31,20 +31,10 @@ class Twist2D
     public:
 
         /** Constructeur principal.
-         * Il permet une initialisation par défaut (à zéro) de la vitesse */
-        Twist2D(Vector2 _vitesseTranslation = Vector2(0, 0),
-                double _vitesseRotation = 0);
-
-        /** Constructeur secondaire.
          * Il permet d'initialiser les vitesses avec 3 double. */
-        Twist2D(double _vx,
-                double _vy,
+        Twist2D(double _vx = 0,
+                double _vy = 0,
                 double _vh = 0);
-
-        /**
-         * Permet de construire le Twist à partir de sa représentation vectorielle (omega, vx, vy)
-         */
-        Twist2D(Vector3 T);
 
         /** \returns la vitesse de translation selon l'axe x en m/s */
         double vx() const;
@@ -130,14 +120,6 @@ class Twist2D
          */
         void limitFirstDerivate(Twist2D lastTwist, Vector3 limits, double period);
 
-        /**
-         * Permet de construire un Twist à partir d'une représentation polaire
-         * @param normV : la norme de la vitesse dans le plan x,y
-         * @param angV : l'angle de la vitesse par rapport à l'axe x.
-         * @param vh : vitesse angulaire
-         */
-        static Twist2D createFromPolar(double normV, double angV, double vh);
-
     protected:
         Vector2 vitesseTranslation;
         double vitesseRotation;
@@ -145,6 +127,35 @@ class Twist2D
 };
 
 std::ostream &operator<<( std::ostream &flux, arp_math::Twist2D const& t);
+
+
+class Twist2DBuilder
+{
+    public:
+        /**
+         * Permet de construire le Twist à partir de sa représentation cartésienne
+         */
+        static Twist2D createFromCartesianRepr(double vx, double vy, double vh = 0);
+
+        /**
+         * Permet de construire le Twist à partir de sa représentation cartésienne
+         */
+        static Twist2D createFromCartesianRepr(Vector2 _vitesseTranslation = Vector2(0, 0), double _vitesseRotation = 0);
+
+        /**
+         * Permet de construire le Twist à partir de sa représentation vectorielle (omega, vx, vy)
+         */
+        static Twist2D createFromCartesianRepr(Vector3 T);
+
+
+        /**
+         * Permet de construire le Twist à partir de sa représentation polaire
+         * \param[in] normV est la norme de la vitesse linéaire
+         * \param[in] angV est l'angle de la vitesse linéaire
+         * \param[in] vh est la norme de la vitesse de rotation
+         */
+        static Twist2D createFromPolarRepr(double normV, double angV, double vh);
+};
 
 }
 
