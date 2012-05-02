@@ -9,6 +9,10 @@
 
 #include "orocos/can/CanOpenNode.hpp"
 #include <rtt/scripting/ProgramInterface.hpp>
+//pourle mlockall
+#include <sys/mman.h>
+#include <errno.h>
+#include "wus.hpp"
 
 using namespace arp_hml;
 using namespace arp_core;
@@ -19,6 +23,7 @@ CanOpenNode::CanOpenNode(const std::string& name):
 	HmlTaskContext(name),
     propNodeId(int(0xFF)),
     propNmtTimeout(1.000),
+    propDeviceBootTime(0.4),
     propCanOpenControllerName("Can1"),
     propCanConfigurationScript(""),
     propResetFirst(true),
@@ -26,6 +31,10 @@ CanOpenNode::CanOpenNode(const std::string& name):
     inBootUpFrame()
 {
     updateNodeIdCard();
+
+    //recuperation du signal envoye lors du switch en mode secondaire xenomai pour afficher une backtrace
+    signal(SIGXCPU, warn_upon_switch);
+
 
     addAttribute("attrSyncTime", attrSyncTime);
     addAttribute("attrPeriod",attrPeriod);
@@ -41,7 +50,7 @@ CanOpenNode::CanOpenNode(const std::string& name):
     addProperty("propResetFirst",propResetFirst)
         .doc("Require a CAN node reset during configure. As the controller is already doing it, it is usually not usefull");
 
-    addEventPort("inMasterClock",inMasterClock)
+    addPort("inMasterClock",inMasterClock)
     		.doc("");
     addPort("inBootUpFrame",inBootUpFrame)
             .doc("port from which we receive the BootUp Frame of our node from a CanOpenController");
@@ -50,6 +59,13 @@ CanOpenNode::CanOpenNode(const std::string& name):
 
     addOperation("coRegister", &CanOpenNode::coRegister, this, ClientThread)
     		.doc("use this operation in deployment to register the node into the CanOpenController");
+
+    addOperation("coSendPdo", &CanOpenNode::coSendPdo,
+            this, ClientThread) .doc("This operation allows anyone in the application to send a PDO. The PDO is automatically built from mapping information (you are so supposed to have updated the dico first).").arg(
+            "pdoNumber","Number of the PDO in the dictionnay");
+
+    addOperation("coSendNmtCmd", &CanOpenNode::coSendNmtCmd,
+            this, ClientThread) .doc("This operation allows anyone in the application to request a new slave node NMT state. Take care it is a blocking operation, don't use in operationnal");
 
     outConnected.write(false);
 }
@@ -186,7 +202,7 @@ bool CanOpenNode::startHook()
         goto failed;
 
     //envoit de la requête de start au noeud
-    if( m_coSendNmtCmd(propNodeId, StartNode, propNmtTimeout) == false )
+    if( coSendNmtCmd(propNodeId, StartNode, propNmtTimeout) == false )
     {
         LOG(Error)  << "startHook : timeout has expired, impossible to get into operational NMT state for node 0x"<< std::hex << propNodeId << endlog();
         goto failed;
@@ -194,6 +210,8 @@ bool CanOpenNode::startHook()
 
     LOG(Info) << "CanOpenNode::startHook : done" << endlog();
     outConnected.write(true);
+
+
     return true;
 
     failed:
@@ -222,7 +240,7 @@ void CanOpenNode::updateHook()
 void CanOpenNode::stopHook()
 {
     //envoit de la requête de stop au noeud
-    if( m_coSendNmtCmd(propNodeId, StopNode, propNmtTimeout) == false )
+    if( coSendNmtCmd(propNodeId, StopNode, propNmtTimeout) == false )
     {
         LOG(Error)  << "stopHook : timeout has expired, impossible to get into operational NMT state for node 0x"<< std::hex << propNodeId << endlog();
         goto failed;
@@ -254,8 +272,6 @@ bool CanOpenNode::connectOperations()
     res &= getOperation(propCanOpenControllerName, "ooUnregisterNode",          m_ooUnregister);
     res &= getOperation(propCanOpenControllerName, "coWriteInRemoteDico",       m_coWriteInRemoteDico);
     res &= getOperation(propCanOpenControllerName, "coReadInRemoteDico",        m_coReadInRemoteDico);
-    res &= getOperation(propCanOpenControllerName, "coSendPdo",                 m_coSendPdo);
-    res &= getOperation(propCanOpenControllerName, "coSendNmtCmd",              m_coSendNmtCmd);
 
     return res;
 }
@@ -263,7 +279,6 @@ bool CanOpenNode::connectOperations()
 bool CanOpenNode::resetNode()
 {
     bool bootUp;
-    double chrono = 0.0;
 
     LOG(Info) << "Sending a CAN reset to node 0x" << std::hex << propNodeId << endlog();
 
@@ -274,19 +289,16 @@ bool CanOpenNode::resetNode()
     };
 
     //envoit de la requête de reset au noeud
-    if( m_coSendNmtCmd(propNodeId, ResetNode, propNmtTimeout) == false )
+    if( coSendNmtCmd(propNodeId, ResetNode, propNmtTimeout) == false )
     {
         LOG(Error) << "resetNode : Node 0x" << std::hex << propNodeId << " failed to send the NMT change request" << endlog();
         goto failed;
     }
 
     //attente du bootup
-    whileTimeout ( inBootUpFrame.read(bootUp) != NewData , propNmtTimeout, 0.050);
-    IfWhileTimeoutExpired(propNmtTimeout)
-    {
-        LOG(Error) << "resetNode : Node 0x" << std::hex << propNodeId << " is waiting for a bootUp frame ..." << endlog();
-        goto failed;
-    }
+    if ( inBootUpFrame.read(bootUp) != NewData )
+        LOG(Warning) << "resetNode : Node 0x" << std::hex << propNodeId << " is waiting for a bootUp frame ... anyway don't care, go on" << endlog();
+
 
     LOG(Info) << "resetNode : success ! "  << endlog();
     goto success;
@@ -337,3 +349,138 @@ bool CanOpenNode::configureNode()
     	return true;
 }
 
+
+bool CanOpenNode::coSendPdo(int pdoNumber)
+{
+    Message pdo;
+    memset(&pdo, 0, sizeof(pdo));
+    bool res = false;
+    
+    EnterMutex();
+    if (buildPDO (&CanARD_Data, pdoNumber, &pdo))
+    {
+        LeaveMutex();
+        LOG(Error) << "coSendPdo: build PDO " << pdoNumber << " failed" << endlog();
+        return false;
+    }
+    CanARD_Data.PDO_status[pdoNumber].last_message = pdo;
+    res = canSend (CanARD_Data.canHandle, &pdo);
+    if( res )
+    {
+        LeaveMutex();
+        LOG(Error) << "coSendPdo: failed to send PDO 0x" << std::hex << pdo.cob_id << " "
+                << pdo.data[0] << "."
+                << pdo.data[1] << "."
+                << pdo.data[2] << "."
+                << pdo.data[3] << "."
+                << pdo.data[4] << "."
+                << pdo.data[5] << "."
+                << pdo.data[6] << "."
+                << pdo.data[7] << "."
+                << std::dec << endlog();
+        return false;
+    }
+
+    LeaveMutex();
+    return true;
+}
+
+
+bool CanOpenNode::coSendNmtCmd(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd, double timeout)
+{
+    int cmdResult = 0;
+    double chrono = 0;
+    if( nodeId <= 0 || nodeId >= 0xFF )
+    {
+        LOG(Error) << "dispatchNmtState : Node 0x" <<  std::hex << nodeId  << " is out of Node ID bounds " << endlog();
+        goto failed;
+    }
+
+    if( nmtStateCmd == UnknownRequest )
+    {
+        LOG(Error) << "coSendNmtCmd :  failed you can not ask for the UnknownRequest" << endlog();
+        goto failed;
+    }
+
+    //send NMT cmd
+    EnterMutex();
+    cmdResult = masterSendNMTstateChange(&CanARD_Data, (UNS8) nodeId, (UNS8) nmtStateCmd);
+    LeaveMutex();
+    if( cmdResult )
+    {
+        LOG(Error) << "coSendNmtCmd : failed to send NMT command to node 0x" << std::hex << nodeId << "; for command " << nmtStateCmd << endlog();
+        goto failed;
+    }
+
+    //on laisse le temps au device de booter si on a demandé un reset
+    if( nmtStateCmd == NMT_Reset_Node ||  nmtStateCmd == NMT_Reset_Comunication )
+        usleep(propDeviceBootTime*1E6);
+
+    //send the NMT state request
+    EnterMutex();
+    cmdResult = masterRequestNodeState (&CanARD_Data, (UNS8) nodeId);
+    LeaveMutex();
+    if( cmdResult )
+    {
+        LOG(Error) << "coSendNmtCmd : failed to send NMT state request 0x" << std::hex << nodeId << " for command " << nmtStateCmd << endlog();
+        goto failed;
+    }
+
+   //polling on the NMT state because CAN Festival is not doing node guarding properly ...
+   whileTimeout( !isNmtStateChangeDone(nmtStateCmd, nodeId) , timeout, 0.010 )
+   //si le timeout est explosé c'est que ça a foiré
+   IfWhileTimeoutExpired(timeout)
+   {
+        LOG(Error) << "coSendNmtCmd : timeout expired 0x" << std::hex << nodeId << " for command " << nmtStateCmd << endlog();
+        goto failed;
+   }
+
+   //here everything is OK.
+   goto success;
+
+    failed:
+        return false;
+    success:
+        return true;
+
+}
+
+bool CanOpenNode::isNmtStateChangeDone(enum_DS301_nmtStateRequest nmtCmd, nodeID_t nodeId)
+{
+    bool res = false;
+    enum_nodeState nmtState;
+
+    EnterMutex();
+    nmtState = CanARD_Data.NMTable[nodeId];
+    LeaveMutex();
+
+    switch( nmtCmd )
+    {
+        case StartNode:
+            if( nmtState == ::Operational)
+                res = true;
+            break;
+        case StopNode:
+            if( nmtState == ::Stopped)
+                res = true;
+            break;
+        case EnterPreOp:
+            if( nmtState == ::Pre_operational)
+                res = true;
+            break;
+        case ResetNode:
+        case ResetComunication:
+            if( nmtState == ::Initialisation ||
+                nmtState == ::Disconnected ||
+                nmtState == ::Connecting ||
+                nmtState == ::Preparing ||
+                nmtState == ::Pre_operational
+                    )
+                res = true;
+            break;
+        case UnknownRequest:
+            break;
+    }
+
+    return res;
+}

@@ -19,6 +19,7 @@ PeriodicClock::PeriodicClock(const std::string name):
            ARDTaskContext(name,ros::package::getPath("arp_core"))
 {
     addPort("outClock",outClock);
+    addPort("outTrigger",outTrigger);
 }
 
 void PeriodicClock::updateHook()
@@ -26,4 +27,5 @@ void PeriodicClock::updateHook()
     timespec now;
     clock_gettime(CLOCK_MONOTONIC, &now);
     outClock.write(now);
+    outTrigger.write(0);
 }

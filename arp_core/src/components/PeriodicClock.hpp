@@ -21,6 +21,7 @@ class PeriodicClock: public ARDTaskContext
 
     protected:
         RTT::OutputPort<timespec> outClock;
+        RTT::OutputPort<int> outTrigger;
 };
 
 } /* namespace arp_core */

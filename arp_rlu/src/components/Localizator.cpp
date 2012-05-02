@@ -205,11 +205,9 @@ void Localizator::createOrocosInterface()
 {
     addProperty("propParams",propParams);
 
-    //    addEventPort("inScan",inScan, boost::bind(&Localizator::scanCb,this,_1))
-    addEventPort("inScan",inScan)
+    addPort("inScan",inScan)
     .doc("LaserScan from LRF");
-    //    addEventPort("inOdo",inOdo , boost::bind(&Localizator::odoCb,this,_1))
-    addEventPort("inOdo",inOdo)
+    addPort("inOdo",inOdo)
     .doc("Estimation from odometry of T_robot_table_p_robot_r_robot : Twist of robot reference frame relative to table frame, reduced and expressed in robot reference frame.\n It is an EstimatedTwist, so it contains Twist, estimation date (in sec) and covariance matrix.");
     addPort("outPose",outPose)
     .doc("Last estimation of H_robot_table.\n Cette estimée est datée et dispose d'une matrice de covariance.");

@@ -165,9 +165,9 @@ void LittleSexControl::createOrocosInterface()
     addAttribute("attrDt",attrDt);
     addAttribute("attrCurrentTwist",attrCurrentTwist);
 
-    addEventPort("inPosition",inPosition)
+    addPort("inPosition",inPosition)
         .doc("");
-    addEventPort("inCurrentTwist",inCurrentTwist)
+    addPort("inCurrentTwist",inCurrentTwist)
             .doc("");
 
     addPort("outTwistCmd",outTwistCmd)

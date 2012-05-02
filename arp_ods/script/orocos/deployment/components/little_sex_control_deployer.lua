@@ -5,7 +5,7 @@ local me = "MotionControl"
 
 function LittleSexControlDeployer:load()
 	Deployer:loadComponent(me,"arp_ods::LittleSexControl");
-	Deployer:setActivity(me,0.0,25,1);
+	Deployer:setMasterSlaveActivity("MotionScheduler", me)
 end
 
 

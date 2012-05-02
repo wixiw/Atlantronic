@@ -39,7 +39,7 @@ function HmlMonitorSimulDeployer:connect()
 	HmlMonitorSimulDeployer:addToMonitor("RosHmlItf")
 	HmlMonitorSimulDeployer:addToMonitor("UbiquitySimul")
 	HmlMonitorSimulDeployer:addToMonitor("Syncronizator")
-
+	HmlMonitorSimulDeployer:addToMonitor("MockSched")
 
 	--HmlMonitorDeployer:registerToSql();
 	HmlMonitorSimulDeployer:check("HmlMonitor")

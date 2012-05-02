@@ -5,7 +5,7 @@ local me = "MotionControl"
 
 function TwistTeleopDeployer:load()
 	Deployer:loadComponent(me,"arp_ods::TwistTeleop");
-	Deployer:setActivity(me,0.050,25,1);
+	Deployer:setMasterSlaveActivity("MotionScheduler", me)
 end
 
 

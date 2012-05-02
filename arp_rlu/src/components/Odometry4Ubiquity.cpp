@@ -30,15 +30,13 @@ void Odometry4Ubiquity::updateHook()
     Twist2D computedTwist;
     EstimatedTwist2D measuredTwist;
     SlippageReport report;
-    timespec time;
-    if( RTT::NewData != inTime.readNewest(time))
+    if( RTT::NewData != inTime.readNewest(attrTime))
     {
         //WLA->BMO : attention, si on nous appelle via une commande c'est possible que ça trigger l'updateHook
         //tu es egalement triggered après le start() il me semble
         LOG( Error ) << "No new data in inTime port : updateHook should not be externally trigger => return" << endlog();
         return;
     }
-    attrTime = time.tv_sec + (long double) (time.tv_nsec) / 1E9;
 
 
     if( RTT::NoData == inParams.readNewest(attrParams))
@@ -97,7 +95,7 @@ void Odometry4Ubiquity::updateHook()
     covariance(2,2) = sigmaHOdo * sigmaHOdo;
     measuredTwist.cov( covariance );
 
-    measuredTwist.date( attrTime );
+    measuredTwist.date( timespec2Double(attrTime) );
 
     //TODO : seuiller à l'arret pour eviter de derriver quand on bouge pas
 
@@ -118,7 +116,7 @@ void Odometry4Ubiquity::createOrocosInterface()
     addProperty("propMinKernelQuality",propMinKernelQuality)
         .doc("");
 
-    addEventPort("inTime",inTime)
+    addPort("inTime",inTime)
             .doc("time in second.\n This port is used as trigger.\n This time is used as date of sensors data.");
     addPort("inParams",inParams)
             .doc("UbiquityParams : model parameters");

@@ -11,6 +11,8 @@
 #include "orocos/taskcontexts/HmlTaskContext.hpp"
 #include "orocos/can/ard_can_types.hpp"
 #include <canfestival/canfestival.h>
+#include "orocos/can/dictionnary/CanARD.h"
+#include <native/task.h>
 
 using namespace arp_core;
 
@@ -59,6 +61,9 @@ namespace arp_hml
 
         /** Timeout before considering a node is not responding to a NMT request (in s) */
         double propNmtTimeout;
+
+        /** Time required to boot the device from a reset command (in s)*/
+        double propDeviceBootTime;
 
         /** name of the CanOpenController this component will connect*/
         std::string propCanOpenControllerName;
@@ -109,15 +114,6 @@ namespace arp_hml
          */
         OperationCaller<bool(CanDicoEntry,int*)> m_coReadInRemoteDico;
 
-        /**
-         * handler on a CanOpenController operation to send a PDO from its COB ID
-         */
-        OperationCaller<bool(int)> m_coSendPdo;
-
-        /**
-         * handler on a CanOpenController operation to manage NMT state
-         */
-        OperationCaller<bool(nodeID_t, enum_DS301_nmtStateRequest, double)> m_coSendNmtCmd;
 
         /**
          * use this operation in deployment to register the node into the CanOpenController
@@ -150,11 +146,46 @@ namespace arp_hml
          */
         bool configureNode();
 
+
+        /**
+         * Use this operation to send a PDO.
+         * If you are under xenomai you must run in primary mode
+         * @param pdoNumber : number of the PDO on the CanFestival table (!! it is *NOT* the COBID !!)
+         */
+        bool coSendPdo(int pdoNumber);
+
+        /**
+         * Use this operation to emit an NMT state change request for a node.
+         * This operation will do some polling on the NMT state with PDO request
+         * So don't use this operation in operationnal ! (only for booting and configuring).
+         * It's a blocking function.
+         * It will send 2 things :
+         * _ the NMT cmd request with OOO#cmd.nodeId
+         * _ an NMT state reques 700+nodeId#R
+         * and wait for the 700+nodeId#nmtState message to come.
+         * @param nodeId : node ID of the slave node to which we send the request
+         * @param nmtStateCmd : new NMT state in which we would like the node to be
+         * @param timeout : timeout on the polling
+         */
+        bool coSendNmtCmd(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd, double timeout);
+
+        /**
+         * Compares an NMT state to a sended NMT command.
+         * The NMT state is get from CanARD_Data.NMTable[nodeId]
+         * @param nmtCmd : the NMT command sended to the slave node
+         * @param nodeId : Id of the node to whoch the command has been sended
+         * @return true is the NMT cmd has been processed
+         */
+        bool isNmtStateChangeDone(enum_DS301_nmtStateRequest nmtCmd, nodeID_t nodeId);
+
     private:
         /**
          * Shared structure with CanOpenController
          */
         CanNodeIdCard m_nodeIdCard;
+
+        //TODO workaround en attendant xenomai sous Orocos
+        RT_TASK rt_task_desc;
 
     };
 

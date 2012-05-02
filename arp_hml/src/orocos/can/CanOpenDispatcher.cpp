@@ -21,7 +21,7 @@ CanOpenDispatcher::CanOpenDispatcher(TaskContext& tc):
 	setColog(tc.getOperation("coLog"));
 }
 
-void CanOpenDispatcher::setColog(OperationCaller<bool(LoggerLevel,string)> colog)
+void CanOpenDispatcher::setColog(OperationCaller<void(LoggerLevel,string)> colog)
 {
 	m_coLog = colog;
 }
@@ -192,6 +192,35 @@ void CanOpenDispatcher::unRegisterAll()
 		ooUnregisterNode((*it).first);
 	}
 }
+
+void CanOpenDispatcher::triggerAll()
+{
+    map< nodeID_t, nodeRegistration_t* >::iterator it;
+
+    for ( it = m_registeredNodes.begin(); it!=m_registeredNodes.end(); ++it)
+    {
+        if( (*it).second->task->update() == false )
+        {
+            stringstream s;
+            s << "CanOpenDispatcher::triggerAll: Failed to trigger slave node " <<  (*it).second->task->getName() << endlog();
+            m_coLog(Error,s.str());
+        }
+    }
+
+    //TODO workaround ajout du scheduler motion control, c'est moche mais c'est la vie
+    TaskContext* motionScheduler = m_parent.getPeer("MotionScheduler");
+    if( motionScheduler != NULL )
+    {
+        motionScheduler->update();
+    }
+    else
+    {
+        stringstream s;
+        s << "CanOpenDispatcher::triggerAll: Failed to find MotionScheduler (not in perr list)." << endlog();
+        m_coLog(Error,s.str());
+    }
+}
+
 
 void CanOpenDispatcher::ooPrintRegisteredNodes()
 {

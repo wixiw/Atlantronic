@@ -45,7 +45,7 @@ MotorSimul::MotorSimul(const std::string& name):
             .doc("");
 
 
-    addEventPort("inClock",inClock)
+    addPort("inClock",inClock)
             .doc("Port to fire to wake up the component");
     addPort("inSpeedCmd",inSpeedCmd)
             .doc("Command to be used in speed mode. It must be provided in rad/s on the reductor's output");

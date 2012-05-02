@@ -21,14 +21,14 @@
 from os.path import join as opj
 
 CC = "gcc"
-PROG_CFLAGS = " -DDEBUG_ERR_CONSOLE_ON -g -DCO_ENABLE_LSS -DCO_ENABLE_LSS_FS"
-EXE_CFLAGS = " -lpthread -lrt -ldl"
+PROG_CFLAGS = " -DUSE_XENO -I/usr/include/xenomai -D_GNU_SOURCE -D_REENTRANT -Wall -Werror-implicit-function-declaration -pipe -D__XENO__ -I/usr/include/xenomai -D_GNU_SOURCE -D_REENTRANT -Wall -Werror-implicit-function-declaration -pipe -D__XENO__ -DDEBUG_ERR_CONSOLE_ON -g -DCO_ENABLE_LSS -DCO_ENABLE_LSS_FS"
+EXE_CFLAGS = " -L/usr/lib -Wl,-rpath /usr/lib -lnative -L/usr/lib -lxenomai -lpthread -lrt -lrtdm -L/usr/lib -lxenomai -lpthread -lrt  -ldl"
 OS_NAME = "Linux"
 ARCH_NAME = "x86"
 PREFIX = "/opt/ard/can_festival"
 TARGET = "unix"
 CAN_DRIVER = "can_socket"
-TIMERS_DRIVER = "timers_unix"
+TIMERS_DRIVER = "timers_xeno"
 
 
 def getCFLAGS(Cpth):

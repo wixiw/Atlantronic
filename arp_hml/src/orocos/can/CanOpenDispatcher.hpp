@@ -41,7 +41,7 @@ namespace arp_hml
         /**
          * Define the m_colog attribute
          */
-        void setColog(RTT::OperationCaller<bool(RTT::LoggerLevel,std::string)> colog);
+        void setColog(RTT::OperationCaller<void(RTT::LoggerLevel,std::string)> colog);
 
         /**
          * This operation allows a Device Component to register in the CanController
@@ -78,6 +78,11 @@ namespace arp_hml
         void unRegisterAll();
 
         /**
+         * Trigger all registered nodes as slave peers
+         */
+        void triggerAll();
+
+        /**
          * DEBUG Purposes : this operation prints in the console the registred nodes.
          */
         void ooPrintRegisteredNodes();
@@ -107,7 +112,7 @@ namespace arp_hml
         /**
          * Handle on the logger
          */
-        RTT::OperationCaller<bool(RTT::LoggerLevel,std::string)> m_coLog;
+        RTT::OperationCaller<void(RTT::LoggerLevel,std::string)> m_coLog;
     };
 
 }

@@ -11,28 +11,30 @@ print("début déploiment arp_hml")
 Deployer:import("arp_hml");
 
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/joystick_deployer.lua");
-dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity_simul/hml_monitor_simul_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/ros_hml_itf_deployer.lua");
-dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity_simul/motor_simul_deployer.lua");
-dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity_simul/ubiquity_simul_deployer.lua");
+dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity_simul/hml_monitor_simul_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/syncronizator_deployer.lua");
+dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity_simul/motor_simul_deployer.lua");
+dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/scheduler_deployer.lua");
+dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity_simul/ubiquity_simul_deployer.lua");
 
 -- chargement de l'interface HML
 print("... load components")
-JoystickDeployer:load()
 MotorSimulDeployer:load()
+SchedulerDeployer:load()
 Syncronizator:load()
-UbiquitySimulDeployer:load()
+JoystickDeployer:load()
 RosHmlItfDeployer:load()
+UbiquitySimulDeployer:load()
 HmlMonitorSimulDeployer:load()
 
 print("... connect components")
-JoystickDeployer:connect()
-Joystick=Deployer:getPeer("Joystick")
 MotorSimulDeployer:connect()
+SchedulerDeployer:connect()
 Syncronizator:connect()
-UbiquitySimulDeployer:connect()
+JoystickDeployer:connect()
 RosHmlItfDeployer:connect()
+UbiquitySimulDeployer:connect()
 HmlMonitorSimulDeployer:connect()
 
 print("... start components")

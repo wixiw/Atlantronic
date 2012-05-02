@@ -11,6 +11,8 @@
 #include "orocos/taskcontexts/HmlTaskContext.hpp"
 #include "orocos/can/ard_can_types.hpp"
 #include "orocos/can/CanOpenDispatcher.hpp"
+#include <native/task.h>
+#include <timer/StatTimer.hpp>
 
 namespace arp_hml
 {
@@ -37,7 +39,8 @@ namespace arp_hml
         bool configureHook();
 
         /**
-         *
+         * Set CAN to Operationnal state
+         * Activate WUS
          */
         bool startHook();
 
@@ -45,6 +48,11 @@ namespace arp_hml
          * Overloaded to update the attrCurrentNMTState value
          */
         void updateHook();
+
+        /**
+         * Deactivate xenomai WUS
+         */
+        void stopHook();
 
         /**
          * Stop CanFestival related stuff.
@@ -89,32 +97,15 @@ namespace arp_hml
         void ooResetSdoBuffers();
 
         /**
-         * Use this operation to send a PDO.
-         * If you are under xenomai you must run in primary mode
-         * @param pdoNumber : number of the PDO on the CanFestival table (!! it is *NOT* the COBID !!)
-         */
-        bool coSendPdo(int pdoNumber);
-
-        /**
-         * Use this operation to emit an NMT state change request for a node.
-         * This operation will do some polling on the NMT state with PDO request
-         * So don't use this operation in operationnal ! (only for booting and configuring).
-         * It's a blocking function.
-         * It will send 2 things :
-         * _ the NMT cmd request with OOO#cmd.nodeId
-         * _ an NMT state reques 700+nodeId#R
-         * and wait for the 700+nodeId#nmtState message to come.
-         * @param nodeId : node ID of the slave node to which we send the request
-         * @param nmtStateCmd : new NMT state in which we would like the node to be
-         * @param timeout : timeout on the polling
-         */
-        bool coSendNmtCmd(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd, double timeout);
-
-        /**
          * define a new period for SYNC object
          * param : periode in s.
          */
         bool ooSetSyncPeriod(double period);
+
+        /**
+         * Generate a timer report. Use this for debug only
+         */
+        void ooTimeReport();
 
     protected:
         /** This attribute contains the current NMT status of the Controller node */
@@ -138,6 +129,11 @@ namespace arp_hml
         double propSyncPeriod;
         /** Delay max beetween the sync order and the time we consider all PDO to be received*/
         double propPdoMaxAwaitedDelay;
+        /** Set to true to register timings for be abble to generate reports. You should let this to false when not debugging */
+        bool propTimeReporting;
+        /** Activate xenomai WUS */
+        bool propWUS;
+
 
         /**
          * This port is connected to the CanFestival thread to populate attrCurrentNMTState
@@ -191,15 +187,6 @@ namespace arp_hml
         bool openCanBus();
 
         /**
-         * Compares an NMT state to a sended NMT command.
-         * The NMT state is get from CanARD_Data.NMTable[nodeId]
-         * @param nmtCmd : the NMT command sended to the slave node
-         * @param nodeId : Id of the node to whoch the command has been sended
-         * @return true is the NMT cmd has been processed
-         */
-        bool isNmtStateChangeDone(enum_DS301_nmtStateRequest nmtCmd, nodeID_t nodeId);
-
-        /**
          * Is derivated to disable the autocheck
          */
         virtual bool checkInputsPorts();
@@ -215,8 +202,15 @@ namespace arp_hml
         /** last Sync time to compute period */
         timespec m_lastSyncTime;
 
+        /** Timer to record and generate time reports */
+        arp_core::StatTimer m_timer;
+
         /** Utility function to deport non functionnal code to the end of file */
         void createOrocosInterface();
+
+        //TODO workaround en attendant xenomai sous Orocos
+        RT_TASK rt_task_desc;
+
     };
 
 }

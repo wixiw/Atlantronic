@@ -6,7 +6,7 @@ local me = "Localizator"
 
 function LocalizatorDeployer:load()
 	Deployer:loadComponent(me, "arp_rlu::Localizator")
-	Deployer:setActivity(me, 0.0, 10, 1)
+	Deployer:setMasterSlaveActivity("MotionScheduler", me)
 end
 
 

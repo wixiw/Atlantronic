@@ -6,7 +6,7 @@ local me = "Odometry"
 
 function OdometryDeployer:load()
 	Deployer:loadComponent(me, "arp_rlu::Odometry4Ubiquity")
-	Deployer:setActivity(me, 0.0, 10, 1)
+	Deployer:setMasterSlaveActivity("MotionScheduler", me)
 end
 
 

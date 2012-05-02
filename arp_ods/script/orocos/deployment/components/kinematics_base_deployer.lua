@@ -5,7 +5,7 @@ local me = "KinematicBase"
 
 function KinematicBaseDeployer:load()
 	Deployer:loadComponent(me,"arp_ods::KinematicBase");
-	Deployer:setActivity(me,0.0,26,1);
+	Deployer:setMasterSlaveActivity("MotionScheduler", me)
 end
 
 

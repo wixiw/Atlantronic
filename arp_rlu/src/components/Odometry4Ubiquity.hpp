@@ -31,7 +31,7 @@ class Odometry4Ubiquity: public RluTaskContext
         /** Buffer local pour les params */
         arp_model::UbiquityParams attrParams;
         /** Buffer local pour le temps */
-        long double attrTime;
+        timespec attrTime;
 
         /** The KernelQuality when getting the report fromthe model must be larger than this property, else we spawn an error*/
         double propMinKernelQuality;

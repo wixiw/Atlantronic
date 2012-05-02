@@ -2,11 +2,11 @@ dofile("/opt/ard/arp_core/script/orocos/deployment/component_deployer_object.lua
 
 
 Syncronizator = ComposantDeployer:new()
-me = "Syncronizator"
+local me = "Syncronizator"
 
 function Syncronizator:load()
 	Deployer:loadComponent(me,"arp_hml::Syncronizator")
-	Deployer:setActivity(me,0,30,rtt.globals.ORO_SCHED_RT)
+	Deployer:setMasterSlaveActivity("MotionScheduler", me)
 end
 
 
@@ -21,8 +21,6 @@ end
 
 
 function Syncronizator:connect()
-
-	Syncronizator:connectMotorMeasure("Clock");
 	Syncronizator:connectMotorMeasure("Position");
 	Syncronizator:connectMotorMeasure("Velocity");
 	Syncronizator:connectMotorMeasure("Torque");

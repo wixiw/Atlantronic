@@ -21,6 +21,7 @@
 	<depend package="arp_ods" />
 	<depend package="arp_rlu" />
 	<rosdep name="wxwidgets"/>
+	<rosdep name="runtime_monitor"/>
 	<!--empeche le build local <rosdep name="eigen" />-->
 </package>
 

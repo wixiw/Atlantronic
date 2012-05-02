@@ -14,5 +14,6 @@
   <depend stack="ros" /> <!-- rosbuild, roslib -->
   <depend stack="ros_comm" /> <!-- std_msgs, rosconsole, rospy, roscpp, std_srvs -->
   <depend stack="rtt_ros_comm" />
+  <depend stack="diagnostics_monitors" />
   <!-- a remettre en vm 10.0 <depend stack="dynamixel_motor" />-->
 </stack>

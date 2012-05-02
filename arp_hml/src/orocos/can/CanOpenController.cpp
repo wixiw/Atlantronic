@@ -8,6 +8,11 @@
 #include <string.h>
 #include <rtt/Component.hpp>
 
+//pourle mlockall
+#include <sys/mman.h>
+#include <errno.h>
+#include "wus.hpp"
+
 #include "CanOpenController.hpp"
 #include "orocos/can/wrappers/can_festival_ARD_master_wrapper.hpp"
 #include <math/core>
@@ -26,12 +31,19 @@ CanOpenController::CanOpenController(const std::string& name) :
             propCanFestivalDriverName(
                     "/opt/ard/can_festival/lib/libcanfestival_can_socket.so"),
             propBusName("can0"), propBaudRate("1000K"), propNodeId(0),
-            propMasterMaxBootDelay(0.050), propSyncPeriod(0.010),
+            propMasterMaxBootDelay(0.500), propSyncPeriod(0.010),
             propPdoMaxAwaitedDelay(propSyncPeriod/2),
-            m_dispatcher(*this), m_canPort(NULL)
+            propTimeReporting(true),
+            propWUS(false),
+            m_dispatcher(*this),
+            m_canPort(NULL),
+            m_timer(3000)
 {
 
     clock_gettime(CLOCK_MONOTONIC, &m_lastSyncTime);
+
+    //recuperation du signal envoye lors du switch en mode secondaire xenomai pour afficher une backtrace
+    signal(SIGXCPU, warn_upon_switch);
 
     createOrocosInterface();
 }
@@ -50,6 +62,18 @@ bool CanOpenController::checkInputsPorts()
 bool CanOpenController::configureHook()
 {
     bool res = HmlTaskContext::configureHook();
+
+    //shadowing = going to xenomai primary mode == task switch to hard RT
+    mlockall(MCL_CURRENT | MCL_FUTURE);
+    int ret = rt_task_shadow(&rt_task_desc, getName().c_str(), 60, T_FPU );
+    if (ret)
+    {
+        log(Error) << "rt_task_shadow failed with : " << strerror(-ret) << endlog();
+        res = false;
+    }
+    else
+        log(Info) << "Shadowing ok" << endlog();
+
 
     //Initialize all CanFestival related stuff (shared datas, wrappers, timers loop, loading drivers,...)
     res &= initializeCanFestival();
@@ -72,13 +96,20 @@ bool CanOpenController::configureHook()
         else
         {
             LOG(Error)
+                    << "****************    !!!!!       ************************"
+                    << endlog();
+            LOG(Error)
                     << "failed to Configure : took too much time to transit into Pre-Operationnal state"
+                    << endlog();
+            LOG(Error)
+                    << "It is possible that you forgot to reset the AU button. For an unknown reason it is blocking everything under wenomai"
+                    << endlog();
+            LOG(Error)
+                    << "****************    !!!!!       ************************"
                     << endlog();
             res = false;
         }
     }
-
-    usleep(1.000 * 1E6);
 
     return res;
 }
@@ -100,8 +131,18 @@ bool CanOpenController::startHook()
     else
     {
         LOG(Info) << propBusName << " NMT Master in Operationnal state" << endlog();
-        usleep(0.100 * 1E6);
+        //on laisse du temps parce qu'un reset node general a ete envoye et il faut leur laisser le temps de finir
+        //pour ne pas partir avec des devices en vrac
+        usleep(1.000 * 1E6);
     }
+
+    if( propTimeReporting )
+    {
+        m_timer.Start();
+        m_timer.Stop();
+        m_timer.ResetStat();
+    }
+
 
     return res;
 }
@@ -111,6 +152,43 @@ bool CanOpenController::startHook()
  */
 void CanOpenController::updateHook()
 {
+    //TODO workarounf WLA : je ne sais pas pourquoi la tache RT disparait... du coup je la reforce ici
+    //c'est over moche
+    int ret;
+    RT_TASK* task;
+
+    //tic
+    if( propTimeReporting )
+        m_timer.Start();
+
+    task = rt_task_self ();
+    if( task == NULL )
+    {
+        LOG(Info) << "CanOpenController On n'est PAS RT, going RT" << endlog();
+        //shadowing = going to xenomai primary mode == task switch to hard RT
+        mlockall(MCL_CURRENT | MCL_FUTURE);
+        ret = rt_task_shadow(&rt_task_desc, "workaround", 40, T_FPU );
+        if (ret)
+        {
+            log(Error) << "rt_task_shadow failed with : " << strerror(-ret) << endlog();
+        }
+        else
+            log(Info) << "Shadowing ok" << endlog();
+    }
+
+    //active ou pas les WUS
+    if( propWUS )
+    {
+        rt_task_set_mode(0, T_WARNSW , NULL);
+    }
+    else
+    {
+        rt_task_set_mode(T_WARNSW, 0 , NULL);
+    }
+
+
+    //TODO fin workaround
+
     //Récupération de la date du cycle CAN
     inSync.readNewest(attrSyncTime);
     //on se permet le double parce qu'on sait que la periode est petite.
@@ -128,11 +206,26 @@ void CanOpenController::updateHook()
     //wake up slave activities of all registered nodes after a certain amount of time to wait for PDOs
     usleep(propPdoMaxAwaitedDelay*1E6);
 
-    //TODO problèmes avec les timing
-    //outPeriod.write(period);
-    outPeriod.write(propSyncPeriod);
+    outPeriod.write(period);
     outClock.write(attrSyncTime);
+
+    //scheduling de tous les peers
+    m_dispatcher.triggerAll();
+
+    //tac
+    if( propTimeReporting )
+        m_timer.Stop();
 }
+
+void CanOpenController::stopHook()
+{
+    if( propWUS )
+    {
+        if( rt_task_set_mode(T_WARNSW, 0 , NULL) )
+            log(Error) << "Failed to desactivate warn upon switchs" << endlog();
+    }
+}
+
 
 void CanOpenController::cleanupHook()
 {
@@ -276,46 +369,6 @@ bool CanOpenController::openCanBus()
     return res;
 }
 
-bool CanOpenController::isNmtStateChangeDone(enum_DS301_nmtStateRequest nmtCmd, nodeID_t nodeId)
-{
-    bool res = false;
-    enum_nodeState nmtState;
-
-    EnterMutex();
-    nmtState = CanARD_Data.NMTable[nodeId];
-    LeaveMutex();
-
-    switch( nmtCmd )
-    {
-        case StartNode:
-            if( nmtState == ::Operational)
-                res = true;
-            break;
-        case StopNode:
-            if( nmtState == ::Stopped)
-                res = true;
-            break;
-        case EnterPreOp:
-            if( nmtState == ::Pre_operational)
-                res = true;
-            break;
-        case ResetNode:
-        case ResetComunication:
-            if( nmtState == ::Initialisation ||
-                nmtState == ::Disconnected ||
-                nmtState == ::Connecting ||
-                nmtState == ::Preparing ||
-                nmtState == ::Pre_operational
-                    )
-                res = true;
-            break;
-        case UnknownRequest:
-            break;
-    }
-
-    return res;
-}
-
 bool CanOpenController::coWriteInLocalDico(CanDicoEntry dicoEntry)
 {
     int writeResult;
@@ -388,6 +441,9 @@ bool CanOpenController::coWriteInRemoteDico(CanDicoEntry dicoEntry)
     }
     else
     {
+        //on attend pour laisser le CAN respirer
+        usleep(1000);
+
         //check received SDO
         UNS32 abortCode;
         EnterMutex();
@@ -415,8 +471,8 @@ bool CanOpenController::coWriteInRemoteDico(CanDicoEntry dicoEntry)
         }
         else
         {
-            LOG(Error) << "Failed to send SDO "<< std::hex << dicoEntry.index<< ":" << std::hex << dicoEntry.subindex << " to node " << std::hex << dicoEntry.nodeId << ": writeResult="
-                    << writeResult << " abortCode=" << std::hex << (unsigned int) abortCode
+            LOG(Error) << "Failed to send SDO 0x"<< std::hex << dicoEntry.index<< ":" << std::hex << dicoEntry.subindex << " to node 0x" << std::hex << dicoEntry.nodeId << ": writeResult="
+                    << writeResult << " abortCode=0x" << std::hex << (unsigned int) abortCode
                     << endlog();
             res = false;
         }
@@ -485,100 +541,20 @@ void CanOpenController::ooResetSdoBuffers()
     LeaveMutex();
 }
 
-bool CanOpenController::coSendPdo(int pdoNumber)
-{
-    Message pdo;
-    memset(&pdo, 0, sizeof(pdo));
-    bool res = false;
-
-    EnterMutex();
-    if (buildPDO (&CanARD_Data, pdoNumber, &pdo))
-    {
-        LeaveMutex();
-        LOG(Error) << "coSendPdo: build PDO " << pdoNumber << " failed" << endlog();
-        return false;
-    }
-    CanARD_Data.PDO_status[pdoNumber].last_message = pdo;
-    res = canSend (CanARD_Data.canHandle, &pdo);
-    if( res )
-    {
-        LeaveMutex();
-        LOG(Error) << "coSendPdo: failed to send PDO " << std::hex << pdo.cob_id << " "
-                << pdo.data[0] << "."
-                << pdo.data[1] << "."
-                << pdo.data[2] << "."
-                << pdo.data[3] << "."
-                << pdo.data[4] << "."
-                << pdo.data[5] << "."
-                << pdo.data[6] << "."
-                << pdo.data[7] << "."
-                << std::dec << endlog();
-        return false;
-    }
-
-    LeaveMutex();
-    return false;
-}
-
-bool CanOpenController::coSendNmtCmd(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd, double timeout)
-{
-    int cmdResult = 0;
-    double chrono = 0;
-    if( nodeId <= 0 || nodeId >= 0xFF )
-    {
-        LOG(Error) << "dispatchNmtState : Node 0x" <<  std::hex << nodeId  << " is out of Node ID bounds " << endlog();
-        goto failed;
-    }
-
-    if( nmtStateCmd == UnknownRequest )
-    {
-        LOG(Error) << "coSendNmtCmd :  failed you can not ask for the UnknownRequest" << endlog();
-        goto failed;
-    }
-
-    //send NMT cmd
-    EnterMutex();
-    cmdResult = masterSendNMTstateChange(&CanARD_Data, (UNS8) nodeId, (UNS8) nmtStateCmd);
-    LeaveMutex();
-    if( cmdResult )
-    {
-        LOG(Error) << "coSendNmtCmd : failed to send NMT command to node 0x" << std::hex << nodeId << "; for command " << nmtStateCmd << endlog();
-        goto failed;
-    }
-
-    //send the NMT state request
-    EnterMutex();
-    cmdResult = masterRequestNodeState (&CanARD_Data, (UNS8) nodeId);
-    LeaveMutex();
-    if( cmdResult )
-    {
-        LOG(Error) << "coSendNmtCmd : failed to send NMT state request 0x" << std::hex << nodeId << " for command " << nmtStateCmd << endlog();
-        goto failed;
-    }
-
-   //polling on the NMT state because CAN Festival is not doing node guarding properly ...
-   whileTimeout( !isNmtStateChangeDone(nmtStateCmd, nodeId) , timeout, 0.010 )
-   //si le timeout est explosé c'est que ça a foiré
-   IfWhileTimeoutExpired(timeout)
-   {
-        LOG(Error) << "coSendNmtCmd : timeout expired " << std::hex << nodeId << " for command" << nmtStateCmd << endlog();
-        goto failed;
-   }
-
-   //here everything is OK.
-   goto success;
-
-    failed:
-        return false;
-    success:
-        return true;
-
-}
-
 bool CanOpenController::ooSetSyncPeriod(double period)
 {
+    //propSyncPeriod = period;
     CanDicoEntry dicoEntry(0xFF, 0x1006, 0x00, (int) (period * 1E6), 0, 4);
     return coWriteInLocalDico(dicoEntry);
+}
+
+
+void CanOpenController::ooTimeReport()
+{
+    if( !isRunning() || !propTimeReporting )
+        cout << "Time Stats are disabled. The component must be in running state with propTimereporting=true." << endl;
+    else
+        cout << m_timer.GetReport() << endl;
 }
 
 void CanOpenController::createOrocosInterface()
@@ -601,6 +577,8 @@ void CanOpenController::createOrocosInterface()
               "delay between 2 SYNC messages in s ");
       addProperty("propPdoMaxAwaitedDelay", propPdoMaxAwaitedDelay ).doc("");
       //TODO WLA mettre la doc sur les 2 prop ci dessus et les mettre dans check prop
+      addProperty("propTimeReporting",propTimeReporting);
+      addProperty("propWUS",propWUS);
 
       addPort("inControllerNmtState", inControllerNmtState) .doc(
               "This port is connected to the CanFestival thread to populate attrCurrentNMTState");
@@ -651,12 +629,6 @@ void CanOpenController::createOrocosInterface()
       addOperation("ooResetSdoBuffers", &CanOpenController::ooResetSdoBuffers,
               this, OwnThread) .doc(
               "This operation allows to reset all the SDO emission lines. It should be use with care as it is a very intrusive behavior.");
-      addOperation("coSendPdo", &CanOpenController::coSendPdo,
-              this, ClientThread) .doc("This operation allows anyone in the application to send a PDO. The PDO is automatically built from mapping information (you are so supposed to have updated the dico first).").arg(
-              "pdoNumber","Number of the PDO in the dictionnay");
-      addOperation("coSendNmtCmd", &CanOpenController::coSendNmtCmd,
-              this, ClientThread) .doc("This operation allows anyone in the application to request a new slave node NMT state. Take care it is a blocking operation, don't use in operationnal");
-
       /**
        * Others
        */
@@ -671,4 +643,6 @@ void CanOpenController::createOrocosInterface()
               &CanOpenDispatcher::ooPrintRegisteredNodes, &m_dispatcher,
               OwnThread) .doc(
               "DEBUG purposes : this operation prints in the console the registred nodes.");
+      addOperation("coTimeReport", &CanOpenController::ooTimeReport, this, ClientThread).doc("Computes and prints time reports.");
+
 }
