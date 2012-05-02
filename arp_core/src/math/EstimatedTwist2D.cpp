@@ -14,6 +14,8 @@ using namespace arp_math;
 
 EstimatedTwist2D::EstimatedTwist2D(Twist2D _t)
 : Twist2D(_t)
+, covariance(Covariance3::Identity())
+, estimationDate(0.)
 {
     ;
 }
@@ -48,14 +50,6 @@ EstimatedTwist2D EstimatedTwist2D::transport(Pose2D p) const
     Vector3 v = p.inverse().getBigAdjoint()*getTVector();
     EstimatedTwist2D out( MathFactory::createTwist2DFromCartesianRepr( v ) );
     out.date( date() );
-
-    std::cout << "cov:\n" << cov() << std::endl;
-    std::cout << "p:\n (" << p.toString() << std::endl;
-    std::cout << "p.inverse():\n" << p.inverse().toString() << std::endl;
-    std::cout << "p.inverse().getBigAdjoint():\n" << p.inverse().getBigAdjoint() << std::endl;
-    std::cout << "(p.inverse().getBigAdjoint()).inverse():\n" << (p.inverse().getBigAdjoint()).inverse() << std::endl;
-    std::cout << "new cov:\n" << p.inverse().getBigAdjoint() * cov() * (p.inverse().getBigAdjoint()).inverse() << std::endl;
-
-    out.cov( p.inverse().getBigAdjoint() * cov() * (p.inverse().getBigAdjoint()).inverse() );
+    out.cov( p.inverse().getBigAdjoint() * cov() * (p.inverse().getBigAdjoint()).transpose() );
     return out;
 }
