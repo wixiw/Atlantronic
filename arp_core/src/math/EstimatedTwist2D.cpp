@@ -10,18 +10,16 @@
 
 using namespace arp_math;
 
-EstimatedTwist2D::EstimatedTwist2D(Twist2D & _t, long double date, Eigen::Matrix<double,3,3> cov)
+EstimatedTwist2D::EstimatedTwist2D(Twist2D _t)
 : Twist2D(_t)
-, estimationDate(date)
-, covariance(cov)
 {
     ;
 }
 
 EstimatedTwist2D::EstimatedTwist2D(double _vx, double _vy, double _vh, long double date, Eigen::Matrix<double,3,3> cov)
 : Twist2D(_vx, _vy, _vh)
-, estimationDate(date)
 , covariance(cov)
+, estimationDate(date)
 {
     ;
 }
@@ -53,6 +51,9 @@ void EstimatedTwist2D::date(long double _date)
 
 EstimatedTwist2D EstimatedTwist2D::transport(Pose2D p) const
 {
-    Vector3 res =  p.inverse().getBigAdjoint()*getTVector();
-    return EstimatedTwist2D();
+    Vector3 v = p.inverse().getBigAdjoint()*getTVector();
+    EstimatedTwist2D out( Twist2DBuilder::createFromCartesianRepr( v ) );
+    out.date( date() );
+    out.cov( p.inverse().getBigAdjoint() * cov() * (p.inverse().getBigAdjoint()).inverse() );
+    return out;
 }
