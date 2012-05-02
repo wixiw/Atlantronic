@@ -125,6 +125,37 @@ void Monitor::updateHook()
     }
 }
 
+void Monitor::errorHook()
+{
+    ARDTaskContext::errorHook();
+    bool isEveryOneRunning = true;
+
+    vector<TaskContext*>::iterator i;
+    for ( i = m_monitoredList.begin() ; i != m_monitoredList.end() ; i++ )
+    {
+        TaskContext* tc = (*i);
+
+        if( tc == NULL )
+        {
+            LOG(Error) << "m_monitoredList should not contain null values ! (error)" << endlog();
+            error();
+        }
+        else
+        {
+            if( !tc->isRunning() )
+            {
+                LOG(Error) << tc->getName() << " is still not Running ! (error)" << endlog();
+                isEveryOneRunning = false;
+            }
+        }
+    }
+
+    if( isEveryOneRunning )
+    {
+        recover();
+    }
+}
+
 void Monitor::stopHook()
 {
     ARDTaskContext::stopHook();

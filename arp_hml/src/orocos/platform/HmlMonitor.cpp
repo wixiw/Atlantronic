@@ -246,7 +246,7 @@ string HmlMonitor::coGetHmlVersion()
     return ARP_HML_VERSION;
 }
 
-bool HmlMonitor::ooResetHml()
+bool HmlMonitor::coResetHml()
 {
     bool res = true;
     res &= m_coResetWoodheadOut();
@@ -282,7 +282,7 @@ void HmlMonitor::addOrocosInterface()
             .arg("peerName","Name of the bus peer to add to the list");
     addOperation("coGetHmlVersion",&HmlMonitor::coGetHmlVersion, this, ClientThread)
             .doc("Returns a string containing HML version");
-    addOperation("ooResetHml",&HmlMonitor::ooResetHml, this, OwnThread)
+    addOperation("coResetHml",&HmlMonitor::coResetHml, this, ClientThread)
         .doc("Ask all cane node to reset. Could be usefull after an emergency stop");
 
 }

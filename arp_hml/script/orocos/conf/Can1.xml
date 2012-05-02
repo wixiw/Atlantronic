@@ -15,6 +15,6 @@
 	</simple>
 	<simple name="propSyncPeriod" type="double">
 		<description></description>
-		<value>0.01</value>
+		<value>0.010</value>
 	</simple>
 </properties>

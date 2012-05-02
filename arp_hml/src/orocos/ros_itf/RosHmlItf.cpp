@@ -35,7 +35,7 @@ bool RosHmlItf::configureHook()
     res &= getOperation("HmlMonitor",   "coSetSteeringMotorPower",  m_coSetSteeringMotorPower);
     getOperation("HmlMonitor",   "ooSetDrivingOperationMode",  m_ooSetDrivingOperationMode );
     getOperation("HmlMonitor",   "ooSetSteeringOperationMode",  m_ooSetSteeringOperationMode );
-    res &= getOperation("HmlMonitor",   "ooResetHml",               m_ooResetHml);
+    res &= getOperation("HmlMonitor",   "coResetHml",               m_coResetHml);
     //don't care if those are missing
     getOperation("HmlMonitor",          "coGetHmlVersion",             m_coGetVersion);
 
@@ -228,7 +228,7 @@ bool RosHmlItf::srvSetRealSimulPosition(SetPosition::Request& req, SetPosition::
 
 bool RosHmlItf::srvResetHml(ResetHml::Request& req, ResetHml::Response& res)
 {
-    res.success = m_ooResetHml();
+    res.success = m_coResetHml();
     return res.success;
 }
 

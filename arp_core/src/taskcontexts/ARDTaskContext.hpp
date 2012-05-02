@@ -11,8 +11,9 @@
 #include <iostream>
 #include <fstream>
 
-//TODO WLA decidement il merde toujours celui là
-//#include <rtt/typekit/Types.hpp>
+//accelerateur de compilation
+#include <rtt/typekit/Types.hpp>
+
 #include <rtt/RTT.hpp>
 #include <rtt/scripting/Scripting.hpp>
 #include <rtt/marsh/Marshalling.hpp>

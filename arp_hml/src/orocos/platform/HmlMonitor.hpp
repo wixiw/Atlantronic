@@ -69,7 +69,7 @@ namespace arp_hml
          * Send a reset node to all Can nodes.
          * TODO this is a workaround, Can1 should be abble to do it alone
          */
-        bool ooResetHml();
+        bool coResetHml();
 
         /** Decide weather complete hardware must be present or not */
         bool propRequireCompleteHardware;

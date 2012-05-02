@@ -13,7 +13,6 @@ RightDriving.start();
 Io.start();
 
 //Definition des couples
-//TODO WLA post coupe faire mieux
 LeftDriving.ooSetOperationMode("other");
 RightDriving.ooSetOperationMode("other");
 LeftDriving.ooFaulhaberCmd(0x81,LeftDriving.propMaximalTorque*1000); 

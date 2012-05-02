@@ -153,12 +153,18 @@ void PowerManager::readDriveEnable()
     bool rightSteeringEnable = false;
     bool rearSteeringEnable = false;
 
-    inLeftDrivingEnable.readNewest(leftDrivingEnable);
-    inRightDrivingEnable.readNewest(rightDrivingEnable);
-    inRearDrivingEnable.readNewest(rearDrivingEnable);
-    inLeftSteeringEnable.readNewest(leftSteeringEnable);
-    inRightSteeringEnable.readNewest(rightSteeringEnable);
-    inRearSteeringEnable.readNewest(rearSteeringEnable);
+    if( inLeftDrivingEnable.readNewest(leftDrivingEnable) != NewData )
+        leftDrivingEnable = false;
+    if( inRightDrivingEnable.readNewest(rightDrivingEnable) != NewData )
+        rightDrivingEnable = false;
+    if( inRearDrivingEnable.readNewest(rearDrivingEnable) != NewData )
+        rearDrivingEnable = false;
+    if( inLeftSteeringEnable.readNewest(leftSteeringEnable) != NewData )
+        leftSteeringEnable = false;;
+    if( inRightSteeringEnable.readNewest(rightSteeringEnable) != NewData )
+        rightSteeringEnable = false;
+    if( inRearSteeringEnable.readNewest(rearSteeringEnable) != NewData )
+        rearSteeringEnable = false;
 
     outDrivingEnable.write( leftDrivingEnable && rightDrivingEnable && rearDrivingEnable );
     outSteeringEnable.write( leftSteeringEnable && rightSteeringEnable && rearSteeringEnable );

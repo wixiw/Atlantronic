@@ -11,7 +11,9 @@ end
 
 function LastComponentDeployer:connect()
 	Deployer:stream("LastComponent.outDeployed",ros:topic("/Master/deployed"))
+end
 
+function LastComponentDeployer:start()
 	LastComponent = Deployer:getPeer("LastComponent");
 	LastComponent:configure();
 	LastComponent:start();

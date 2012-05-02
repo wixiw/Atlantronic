@@ -20,5 +20,10 @@ dofile("/opt/ard/arp_master/script/orocos/deployment/lua/last_component.lua");
 LastComponentDeployer:load();
 LastComponentDeployer:connect();
 
+Scheduler = Deployer:getPeer("MotionScheduler");
+Scheduler:start();
+
+LastComponentDeployer:start();
+
 print("fin déploiment arp_master")
 print("====================")

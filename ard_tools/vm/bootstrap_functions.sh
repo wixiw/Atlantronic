@@ -145,15 +145,12 @@ function configure_boot
 	
 	You *must* have a /opt/conf/OS containing either 'gnulinux' or 'xenomai' to select Orocos flavor." > /opt/conf/README
 	echo "gnulinux" > /opt/conf/OS
-	
-##
-# TODO :  get sbin_init
-#faire un chmod +x dessus
 }
 
 ###
 # SYA is a simple recovery mode that allow to do things even if the target is in bad mood
-# TODO : revoir SYA, je pense qu'il marche plus. Revoir aussi les insmod ext2 peut être outdated
+# TODO : revoir SYA, je pense qu'il marche plus. Revoir aussi les insmod ext2 peut être outdated, 
+# en particulier le montage de la partition /opt doit poser problème. /dev ne contient pas sdaX
 function create_SYA
 {
 	if [ $IS_HOST == "true" ]; then
@@ -420,8 +417,7 @@ function configure_user_profiles
 	
 }
 
-###
-# TODO tester que l'image n'existe pas deja
+
 function getting_medias
 {
 	#récupération des images ARD

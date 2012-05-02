@@ -48,6 +48,11 @@ namespace arp_core
         virtual void updateHook();
 
         /**
+         * Recover when all components returns to running state.
+         */
+        virtual void errorHook();
+
+        /**
          * Stop all peers previously registered by the addMonitoredPeer command
          * The configuration is done in the reverse order in which elements where inserted
          */

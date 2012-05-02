@@ -85,12 +85,11 @@ bool UbiquityParams::check() const
     }
 
     //on verifie que les accelerations de traction on du sens
-    //TODO à remplir quand on les aura
-//    if( m_maxDrivingAcc <= 0 || m_maxDrivingAcc >= 15 || m_maxDrivingDec <= 0 || m_maxDrivingDec >= 15)
-//    {
-//        cerr << "Max drivign acc incorect" << endl;
-//        return false;
-//    }
+    if( m_maxDrivingAcc <= 0 || m_maxDrivingAcc >= 11 )
+    {
+        cerr << "Max drivign acc incorect" << endl;
+        return false;
+    }
 
     //acc ne peut pas etre negatif
     if( m_maxSteeringAcc <= 0 )

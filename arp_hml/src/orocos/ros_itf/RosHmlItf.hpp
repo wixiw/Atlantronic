@@ -236,7 +236,7 @@ protected:
         /** Pointer on the HmlMonitor ooSetSteeringOperationMode Operation**/
         OperationCaller<bool(std::string)>  m_ooSetSteeringOperationMode;
         /** Pointer on the HmlMonitor ooResetHml Operation**/
-        OperationCaller<bool(void)> m_ooResetHml;
+        OperationCaller<bool(void)> m_coResetHml;
         /** Pointer on the HmlMonitor ooSetPosition Operation**/
         OperationCaller<bool(arp_math::Pose2D)> m_ooSetPosition;
         /** Pointer on the HmlMonitor coGetVersion Operation**/
