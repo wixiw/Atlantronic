@@ -7,7 +7,6 @@
 
 #include "Faulhaber3268Bx4.hpp"
 #include <rtt/Component.hpp>
-#include "orocos/can/dictionnary/CanARD.h"
 #include "orocos/can/wrappers/CanARDDictionnaryAccessor.hpp"
 #include <math/math.hpp>
 
@@ -31,6 +30,7 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         propMaximalTorque(0.5),
         propInputsTimeout(20.0),
         propHomingSpeed(4),
+        propBlockingTorqueTimeout(0.500),
         m_faulhaberCommandTodo(false),
         m_oldPositionMeasure(0),
         m_isMotorBlocked(false)
@@ -103,6 +103,7 @@ bool Faulhaber3268Bx4::configureHook()
     }
     for( i = 0 ; i< numberOfPdo ; i++ )
     {
+        //cout << "tested PDO in dico : [" << i << "] 0x" << std::hex << CanARD_Data.PDO_status[i].last_message.cob_id << std::dec << endl;
         if( CanARD_Data.PDO_status[i].last_message.cob_id == 0x300 + propNodeId )
         {
             attrFaulhaberCommandPdoIndex = i;
@@ -190,7 +191,10 @@ void Faulhaber3268Bx4::setOutputs()
     outTorque.write( ArdMotorItf::getTorqueMeasure() );
 
     //publication du blocage
-    outMaxTorqueTimeout.write( m_isMotorBlocked );
+    if( m_isMotorBlocked && attrBlockingDelay >= propBlockingTorqueTimeout )
+        outMaxTorqueTimeout.write( true );
+    else
+        outMaxTorqueTimeout.write(false);
 
     //publication du mode d'operation
     outCurrentOperationMode.write( getStringFromMode(getOperationMode()) );
@@ -279,9 +283,7 @@ void Faulhaber3268Bx4::runPosition()
         *m_faulhaberCommand = F_CMD_LA;
         *m_faulhaberCommandParameter = position;
         LeaveMutex();
-        m_coSendPdo(attrFaulhaberCommandPdoIndex);
-
-        usleep(500);
+        coSendPdo(attrFaulhaberCommandPdoIndex);
 
         EnterMutex();
         *m_faulhaberCommand = F_CMD_M;
@@ -424,11 +426,11 @@ void Faulhaber3268Bx4::runOther()
 
 		if( outLastSentCommandReturn.getLastWrittenValue() != F_RET_OK )
 		{
-			LOG(Error) << "faulhaber command " << (int) m_faulhaberScriptCommand << " failed : return code " << outLastSentCommandReturn.getLastWrittenValue() << endlog();
+			LOG(Error) << "faulhaber command 0x" << std::hex << (int) m_faulhaberScriptCommand << " failed : return code " << std::dec << outLastSentCommandReturn.getLastWrittenValue() << endlog();
 		}
 		else
 		{
-			LOG(Info) << "faulhaber " << (int) m_faulhaberScriptCommand << " command succeed with return "<< outLastSentCommandReturn.getLastWrittenValue() << endlog();
+			LOG(Info) << "faulhaber 0x"  << std::hex <<  (int) m_faulhaberScriptCommand << " command succeed with return " << std::hex << outLastSentCommandReturn.getLastWrittenValue() << endlog();
 			m_faulhaberCommandTodo = false;
 		}
 	}
@@ -474,6 +476,8 @@ void Faulhaber3268Bx4::readCaptors()
 	m_oldPositionMeasureTime = attrSyncTime;
 
 	//détection du blocage
+	//*0.95 certainement parce que le moteur étant limité hardwarement à propMaximalTorque,
+	//on ne peut pas le dépasser.
 	if( fabs(ArdMotorItf::getTorqueMeasure()) >= propMaximalTorque*0.95 )
 	{
 	    attrBlockingDelay += attrPeriod;
@@ -751,7 +755,6 @@ unsigned int Faulhaber3268Bx4::getError()
 void Faulhaber3268Bx4::createOrocosInterface()
 {
     addAttribute("attrState",attrState);
-    addPort("outStateBrut",outStateBrut);
     addAttribute("attrVelocityCmd",m_speedCommand);
     addAttribute("attrPositionCmd",m_positionCommand);
     addAttribute("attrTorqueCmd",m_torqueCommand);
@@ -772,7 +775,8 @@ void Faulhaber3268Bx4::createOrocosInterface()
             .doc("Maximal delay beetween 2 commands to consider someone is still giving coherent orders, in s");
     addProperty("propHomingSpeed",propHomingSpeed)
             .doc("Homing speed in rad/s on the reductor output");
-
+    addProperty("propBlockingTorqueTimeout",propBlockingTorqueTimeout)
+            .doc("Timeout before thinking a wheel is blocked. See outMaxTorqueTimeout");
 
     addPort("inSpeedCmd",inSpeedCmd)
             .doc("Command to be used in speed mode. It must be provided in rad/s on the reductor's output");
@@ -782,6 +786,8 @@ void Faulhaber3268Bx4::createOrocosInterface()
     addPort("inTorqueCmd",inTorqueCmd)
             .doc("Command to be used in torque mode. This mode is not available yes");
 
+    addPort("outStateBrut",outStateBrut)
+        .doc("Debug port to see the motor CAN state value");
     addPort("outPosition",outPosition)
         .doc("Provides the measured position of the encoder from CAN. It is converted in rad on the reductor's output's axe.");
     addPort("outClock",outClock)
@@ -801,7 +807,7 @@ void Faulhaber3268Bx4::createOrocosInterface()
     addPort("outCurrentOperationMode",outCurrentOperationMode)
         .doc("Provides the current mode of operation of the motor (speed,position,torque,homing,other=faulhaber)");
     addPort("outMaxTorqueTimeout",outMaxTorqueTimeout)
-        .doc(" Is true when the propMaximalTorque has been reached for more propBlockingTorqueTimeout");
+        .doc(" Is true when the propMaximalTorque has been reached (at 95%)for more propBlockingTorqueTimeout");
     addPort("outHomingDone",outHomingDone)
         .doc("Is true when the Homing sequence is finished. It has no sense when the motor is not in HOMING mode");
 

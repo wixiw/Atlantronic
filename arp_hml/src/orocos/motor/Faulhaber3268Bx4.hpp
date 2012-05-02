@@ -89,6 +89,8 @@ namespace arp_hml
         double propInputsTimeout;
         /** Homing speed in rad/s on the reductor output */
         double propHomingSpeed;
+        /** Timeout before thinking a wheel is blocked */
+        double propBlockingTorqueTimeout;
 
         /** Command to be used in position mode. It must be provided in rad on the reductor's output.
          * It is not available yet. */

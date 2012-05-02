@@ -25,16 +25,7 @@ HmlMonitor::HmlMonitor(const std::string& name):
 {
     attrProjectRootPath = ros::package::getPath("arp_hml");
 
-    addProperty("propRequireCompleteHardware", propRequireCompleteHardware)
-        .doc("Decide weather complete hardware must be present or not");
-
-    addOperation("ooAddHmlBusMonitoredPeer", &HmlMonitor::addHmlBusMonitoredPeer, this, OwnThread)
-            .doc("Add a peer to the bus monitored list. This list is different because those components are configured and start before the others")
-            .arg("peerName","Name of the bus peer to add to the list");
-    addOperation("coGetHmlVersion",&HmlMonitor::coGetHmlVersion, this, ClientThread)
-            .doc("Returns a string containing HML version");
-    addOperation("ooResetHml",&HmlMonitor::ooResetHml, this, OwnThread)
-        .doc("Ask all cane node to reset. Could be usefull after an emergency stop");
+    addOrocosInterface();
 }
 
 //------------------------------------------------------------------------------------------------------------------
@@ -129,8 +120,28 @@ void HmlMonitor::updateHook()
     m_powerManager.updateHook();
     //manage motor mode of operation
     m_stateManager.updateHook();
+
+    //monitor blocking wheels
+    monitorBlockedMotors();
 }
 
+void HmlMonitor::monitorBlockedMotors()
+{
+    bool leftDrivingBlocked, rightDrivingBlocked, rearDrivingBlocked;
+    bool leftSteeringBlocked, rightSteeringBlocked, rearSteeringBlocked;
+
+    inLeftDrivingBlocked.readNewest(leftDrivingBlocked);
+    inRightDrivingBlocked.readNewest(rightDrivingBlocked);
+    inRearDrivingBlocked.readNewest(rearDrivingBlocked);
+    inLeftSteeringBlocked.readNewest(leftSteeringBlocked);
+    inRightSteeringBlocked.readNewest(rightSteeringBlocked);
+    inRearSteeringBlocked.readNewest(rearSteeringBlocked);
+
+    outOneDrivingIsBlocked.write(leftDrivingBlocked || rightDrivingBlocked || rearDrivingBlocked);
+    outAllDrivingAreBlocked.write(leftDrivingBlocked && rightDrivingBlocked && rearDrivingBlocked);
+    outOneSteeringIsBlocked.write(leftSteeringBlocked || rightSteeringBlocked || rearSteeringBlocked);
+    outAllSteeringAreBlocked.write(leftSteeringBlocked && rightSteeringBlocked && rearSteeringBlocked);
+}
 
 void HmlMonitor::cleanupHook()
 {
@@ -247,4 +258,31 @@ bool HmlMonitor::ooResetHml()
     res &= m_coResetRightSteering();
     res &= m_coResetRearSteering();
     return false;
+}
+
+void HmlMonitor::addOrocosInterface()
+{
+    addProperty("propRequireCompleteHardware", propRequireCompleteHardware)
+        .doc("Decide weather complete hardware must be present or not");
+
+    addPort("inLeftDrivingBlocked",inLeftDrivingBlocked);
+    addPort("inRightDrivingBlocked",inRightDrivingBlocked);
+    addPort("inRearDrivingBlocked",inRearDrivingBlocked);
+    addPort("inLeftSteeringBlocked",inLeftSteeringBlocked);
+    addPort("inRightSteeringBlocked",inRightSteeringBlocked);
+    addPort("inRearSteeringBlocked",inRearSteeringBlocked);
+
+    addPort("outOneDrivingIsBlocked",outOneDrivingIsBlocked);
+    addPort("outAllDrivingAreBlocked",outAllDrivingAreBlocked);
+    addPort("outOneSteeringIsBlocked",outOneSteeringIsBlocked);
+    addPort("outAllSteeringAreBlocked",outAllSteeringAreBlocked);
+
+    addOperation("ooAddHmlBusMonitoredPeer", &HmlMonitor::addHmlBusMonitoredPeer, this, OwnThread)
+            .doc("Add a peer to the bus monitored list. This list is different because those components are configured and start before the others")
+            .arg("peerName","Name of the bus peer to add to the list");
+    addOperation("coGetHmlVersion",&HmlMonitor::coGetHmlVersion, this, ClientThread)
+            .doc("Returns a string containing HML version");
+    addOperation("ooResetHml",&HmlMonitor::ooResetHml, this, OwnThread)
+        .doc("Ask all cane node to reset. Could be usefull after an emergency stop");
+
 }

@@ -59,6 +59,13 @@ function HmlMonitorDeployer:connect()
 	Deployer:connect("HmlMonitor.inRightSteeringHomingDone", "RightSteering.outHomingDone",cp)
 	Deployer:connect("HmlMonitor.inRearSteeringHomingDone", "RearSteering.outHomingDone",cp)
 
+	Deployer:connect("HmlMonitor.inLeftDrivingBlocked", "LeftDriving.outMaxTorqueTimeout",cp)
+	Deployer:connect("HmlMonitor.inRightDrivingBlocked", "RightDriving.outMaxTorqueTimeout",cp)
+	Deployer:connect("HmlMonitor.inRearDrivingBlocked", "RearDriving.outMaxTorqueTimeout",cp)
+	Deployer:connect("HmlMonitor.inLeftSteeringBlocked", "LeftSteering.outMaxTorqueTimeout",cp)
+	Deployer:connect("HmlMonitor.inRightSteeringBlocked", "RightSteering.outMaxTorqueTimeout",cp)
+	Deployer:connect("HmlMonitor.inRearSteeringBlocked", "RearSteering.outMaxTorqueTimeout",cp)
+
 --ajout au monitor
 
 	HmlMonitorDeployer:addToBusMonitor("Can1")
@@ -96,6 +103,8 @@ function HmlMonitorDeployer:start()
 	RightSteering = HmlMonitor:getPeer("RightSteering")
 	RearSteering = HmlMonitor:getPeer("RearSteering")
 
+	print("setting motor mode")
+
 	LeftDriving:ooSetOperationMode("other");
 	RightDriving:ooSetOperationMode("other");
 	RearDriving:ooSetOperationMode("other");
@@ -103,6 +112,7 @@ function HmlMonitorDeployer:start()
 	RightSteering:ooSetOperationMode("other");
 	RearSteering:ooSetOperationMode("other");
 
+	print("setting torques")
 	LeftDriving:ooFaulhaberCmd(0x81,RearDriving:getProperty("propMaximalTorque"):get()*1000); 
 	RightDriving:ooFaulhaberCmd(0x81,RearDriving:getProperty("propMaximalTorque"):get()*1000);
 	RearDriving:ooFaulhaberCmd(0x81,RearDriving:getProperty("propMaximalTorque"):get()*1000);  
@@ -115,7 +125,7 @@ function HmlMonitorDeployer:start()
 	LeftSteering:ooFaulhaberCmd(0x80,RearSteering:getProperty("propMaximalTorque"):get()*1000);
 	RightSteering:ooFaulhaberCmd(0x80,RearSteering:getProperty("propMaximalTorque"):get()*1000);
 	RearSteering:ooFaulhaberCmd(0x80,RearSteering:getProperty("propMaximalTorque"):get()*1000);
-	
+	print("sleep")
 	
 	RearDriving:ooSleep(1);
 

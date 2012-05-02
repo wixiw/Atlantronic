@@ -39,6 +39,11 @@ namespace arp_hml
         virtual void updateHook();
 
         /**
+         * Check if some motors are blocked
+         */
+        void monitorBlockedMotors();
+
+        /**
          * Cleanup all peers previously registered by the addHmlMonitoredPeer command
          * The configuration is done in the reversed order in which elements where inserted
          */
@@ -73,6 +78,18 @@ namespace arp_hml
         /** List of peers to monitor */
         std::vector<RTT::TaskContext*> m_monitoredBusList;
 
+        RTT::InputPort<bool> inLeftDrivingBlocked;
+        RTT::InputPort<bool> inRightDrivingBlocked;
+        RTT::InputPort<bool> inRearDrivingBlocked;
+        RTT::InputPort<bool> inLeftSteeringBlocked;
+        RTT::InputPort<bool> inRightSteeringBlocked;
+        RTT::InputPort<bool> inRearSteeringBlocked;
+
+        RTT::OutputPort<bool> outOneDrivingIsBlocked;
+        RTT::OutputPort<bool> outAllDrivingAreBlocked;
+        RTT::OutputPort<bool> outOneSteeringIsBlocked;
+        RTT::OutputPort<bool> outAllSteeringAreBlocked;
+
 
         /** Pointer in the Woodhead 8 out coReset Operation**/
         RTT::OperationCaller<bool(void)> m_coResetWoodheadOut;
@@ -93,6 +110,9 @@ namespace arp_hml
 
         PowerManager m_powerManager;
         StateManager m_stateManager;
+
+        /** Helper function to deport Orocos interface setting up at the end of file*/
+        void addOrocosInterface();
     };
 }
 
