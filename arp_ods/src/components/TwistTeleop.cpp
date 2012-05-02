@@ -123,7 +123,7 @@ void TwistTeleop::updateHook()
     //LOG(Info) << "Sending : " << attrSpeedDirection << ", "  << attrAngularCmd << ", " << attrSpeedCmd << endlog();
 
 
-    attrTwistCmdCdg = Twist2DBuilder::createFromPolarRepr(attrSpeedCmd,attrSpeedDirection, attrAngularCmd);
+    attrTwistCmdCdg = MathFactory::createTwist2DFromPolarRepr(attrSpeedCmd,attrSpeedDirection, attrAngularCmd);
     //mais le robot se pilote au centre des tourelles :(
     Twist2D twistRef = attrTwistCmdCdg.transport(params.getChassisCenter().inverse());
 

@@ -1,5 +1,6 @@
 #include <rtt/types/StructTypeInfo.hpp>
 #include "math/EstimatedPose2D.hpp"
+#include "math/MathFactory.hpp"
 #include <ostream>
 #include <istream>
 #include <boost/lexical_cast.hpp>
@@ -38,7 +39,7 @@ using namespace RTT;
 
   EstimatedPose2D createEstimatedPose2D(double x, double y, double angle)
   {
-      return EstimatedPose2D(x,y,angle);
+      return MathFactory::createEstimatedPose2D(x,y,angle, 0., Covariance3::Identity());
   }
 
   // The RTT helper class which uses the above function behind the scenes:

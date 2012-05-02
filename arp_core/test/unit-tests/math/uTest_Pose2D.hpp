@@ -8,6 +8,7 @@
 // TODO BMO: test unitaire pour l'opérateur <<
 
 #include "math/Pose2D.hpp"
+#include <math/MathFactory.hpp>
 #include <iostream>
 using namespace std;
 using namespace arp_math;
@@ -64,7 +65,7 @@ BOOST_AUTO_TEST_CASE( Pose2D_Other_Constructors )
 	BOOST_CHECK( b.h() == M_PI/2 );
 	BOOST_CHECK( b.translation() == Vector2(1,2) );
 
-	Pose2D c(Vector2(3,4), Rotation2(M_PI/6));
+	Pose2D c = MathFactory::createPose2D(Vector2(3,4), Rotation2(M_PI/6));
 	BOOST_CHECK( c.h() == M_PI/6 );
 	BOOST_CHECK( c.translation() == Vector2(3,4) );
 }

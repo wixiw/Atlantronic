@@ -16,14 +16,13 @@ namespace arp_math
 class EstimatedTwist2D : public Twist2D
 {
     public:
-    EstimatedTwist2D(Twist2D t);
-    EstimatedTwist2D(double _vx = 0, double _vy = 0, double _vh = 0., long double date = 0., Eigen::Matrix<double,3,3> cov = Eigen::Matrix<double,3,3>::Identity());
+    EstimatedTwist2D(Twist2D t = Twist2D());
 
-    Eigen::Matrix<double,3,3> cov() const;
+    Covariance3 cov() const;
     long double date() const;
     long double& dateRef();
 
-    void cov(Eigen::Matrix<double,3,3>) ;
+    void cov(Covariance3) ;
     void date(long double);
 
     /**
@@ -33,7 +32,7 @@ class EstimatedTwist2D : public Twist2D
     EstimatedTwist2D transport(Pose2D p) const;
 
     private:
-    Eigen::Matrix<double,3,3> covariance;
+    Covariance3 covariance;
     long double estimationDate;
 };
 }

@@ -10,6 +10,7 @@
 #include <boost/test/included/unit_test.hpp>
 #include <boost/bind.hpp>
 
+#include "uTest_MathFactory.hpp"
 #include "uTest_Pose2D.hpp"
 #include "uTest_Twist2D.hpp"
 #include "uTest_EstimatedTwist2D.hpp"

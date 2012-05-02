@@ -6,6 +6,7 @@
  */
 
 #include <math/Twist2D.hpp>
+#include <math/MathFactory.hpp>
 
 using namespace arp_math;
 
@@ -150,7 +151,7 @@ Vector3 Twist2D::getTVector() const
 Twist2D Twist2D::transport(Pose2D p) const
 {
     Vector3 res =  p.inverse().getBigAdjoint()*getTVector();
-    return Twist2DBuilder::createFromCartesianRepr(res);
+    return MathFactory::createTwist2DFromCartesianRepr(res);
 }
 
 double Twist2D::distanceTo(Twist2D other, double coefTrans, double coefRot) const
@@ -161,42 +162,6 @@ double Twist2D::distanceTo(Twist2D other, double coefTrans, double coefRot) cons
     return sqrt(coefRot*coefRot*dh2 + coefTrans*coefTrans*dx2 + coefTrans*coefTrans*dy2);
 }
 
-
-Twist2D Twist2DBuilder::createFromPolarRepr(double normV, double angV, double vh)
-{
-    Twist2D t;
-    t.vx(normV*cos(angV));
-    t.vy(normV*sin(angV));
-    t.vh(vh);
-    return t;
-}
-
-Twist2D Twist2DBuilder::createFromCartesianRepr(double vx, double vy, double vh)
-{
-    Twist2D t;
-    t.vx(vx);
-    t.vy(vy);
-    t.vh(vh);
-    return t;
-}
-
-Twist2D Twist2DBuilder::createFromCartesianRepr(Vector2 _vitesseTranslation, double _vitesseRotation)
-{
-    Twist2D t;
-    t.vx(_vitesseTranslation[0]);
-    t.vy(_vitesseTranslation[1]);
-    t.vh(_vitesseRotation);
-    return t;
-}
-
-Twist2D Twist2DBuilder::createFromCartesianRepr(Vector3 T)
-{
-    Twist2D t;
-    t.vx(T[1]);
-    t.vy(T[2]);
-    t.vh(T[0]);
-    return t;
-}
 
 
 

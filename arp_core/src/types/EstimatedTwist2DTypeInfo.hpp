@@ -1,5 +1,6 @@
 #include <rtt/types/StructTypeInfo.hpp>
 #include "math/EstimatedTwist2D.hpp"
+#include "math/MathFactory.hpp"
 #include <ostream>
 #include <istream>
 #include <boost/lexical_cast.hpp>
@@ -37,7 +38,7 @@ using namespace RTT;
 
   EstimatedTwist2D createEstimatedTwist2D(double vx, double vy, double vangle)
   {
-      return EstimatedTwist2D(vx,vy,vangle);
+      return MathFactory::createEstimatedTwist2DFromCartesianRepr(vx,vy,vangle, 0., Covariance3::Identity());
   }
 
   // The RTT helper class which uses the above function behind the scenes:

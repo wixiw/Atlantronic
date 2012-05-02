@@ -124,34 +124,6 @@ class Twist2D
 std::ostream &operator<<( std::ostream &flux, arp_math::Twist2D const& t);
 
 
-class Twist2DBuilder
-{
-    public:
-        /**
-         * Permet de construire le Twist à partir de sa représentation cartésienne
-         */
-        static Twist2D createFromCartesianRepr(double vx, double vy, double vh = 0);
-
-        /**
-         * Permet de construire le Twist à partir de sa représentation cartésienne
-         */
-        static Twist2D createFromCartesianRepr(Vector2 _vitesseTranslation = Vector2(0, 0), double _vitesseRotation = 0);
-
-        /**
-         * Permet de construire le Twist à partir de sa représentation vectorielle (omega, vx, vy)
-         */
-        static Twist2D createFromCartesianRepr(Vector3 T);
-
-
-        /**
-         * Permet de construire le Twist à partir de sa représentation polaire
-         * \param[in] normV est la norme de la vitesse linéaire
-         * \param[in] angV est l'angle de la vitesse linéaire
-         * \param[in] vh est la norme de la vitesse de rotation
-         */
-        static Twist2D createFromPolarRepr(double normV, double angV, double vh);
-};
-
 }
 
 #endif /* _ARP_MATH_TWIST2D_HPP_ */

@@ -16,21 +16,19 @@ namespace arp_math
 class EstimatedPose2D : public Pose2D
 {
     public:
-    EstimatedPose2D(Pose2D &);
-    EstimatedPose2D(Vector2 _translation = Vector2(0., 0.), Rotation2 _orientation = Rotation2(0.));
-    EstimatedPose2D(double _x, double _y, double _h = 0.);
+    EstimatedPose2D(Pose2D p = Pose2D());
 
-    Eigen::Matrix<double,3,3> cov() const;
-    Eigen::Matrix<double,3,3>& covRef();
+    Covariance3 cov() const;
+    Covariance3& covRef();
     long double date() const;
     long double& dateRef();
 
-    void cov(Eigen::Matrix<double,3,3>) ;
+    void cov(Covariance3) ;
     void date(long double);
 
     private:
-    Eigen::Matrix<double,3,3> covariance;
     long double estimationDate;
+    Covariance3 covariance;
 };
 }
 

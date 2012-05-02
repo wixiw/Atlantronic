@@ -6,16 +6,10 @@
  */
 
 #include "Pose2D.hpp"
+#include <math/MathFactory.hpp>
 #include <iostream>
 
 using namespace arp_math;
-
-Pose2D::Pose2D(Vector2 _positionTranslation, Rotation2 _positionRotation)
-: positionTranslation(_positionTranslation)
-, positionRotation(_positionRotation)
-{
-    ;
-}
 
 Pose2D::Pose2D(double _x, double _y, double _h)
 : positionTranslation(Vector2(_x, _y))
@@ -170,12 +164,12 @@ double Pose2D::vectAngle() const
 
 Pose2D Pose2D::operator+(const Pose2D& b) const
 {
-	return Pose2D( this->translation() + b.translation() , this->angle() + b.angle() );
+	return MathFactory::createPose2D( this->translation() + b.translation() , Rotation2(this->angle() + b.angle()) );
 }
 
 Pose2D Pose2D::operator-(const Pose2D& b) const
 {
-	return Pose2D( this->translation() - b.translation() , this->angle() - b.angle() );
+	return MathFactory::createPose2D( this->translation() - b.translation() , Rotation2(this->angle() - b.angle()) );
 }
 
 std::ostream& operator <<(std::ostream& os, Pose2D _pose)

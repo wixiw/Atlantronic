@@ -38,13 +38,9 @@ class Pose2D
 {
     public:
 
-        /** Constructeur principal 1.
-         * Il permet une initialisation par défaut de la Pose2D à partir d'un Vector2 et d'une Rotation2 */
-        Pose2D(Vector2 _translation = Vector2(0., 0.), Rotation2 _orientation = Rotation2(0.));
-
-        /** Constructeur principal 2.
+        /** Constructeur principal.
          * Il permet une initialisation par défaut de la Pose2D à partir de 3 double */
-        Pose2D(double _x, double _y, double _h = 0.);
+        Pose2D(double _x = 0., double _y = 0., double _h = 0.);
 
         // Getters
         /** \returns la partie translation. Il s'agit d'un Eigen::Vector de taille 2 en m */

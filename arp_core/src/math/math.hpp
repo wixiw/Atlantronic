@@ -21,6 +21,7 @@ namespace arp_math
     typedef Eigen::Vector2d Vector2;
     typedef Eigen::Vector3d Vector3;
     typedef Eigen::Rotation2D<double> Rotation2;
+    typedef Eigen::Matrix<double,3,3> Covariance3;
 
     const double PI = std::acos(-1.0);
 
