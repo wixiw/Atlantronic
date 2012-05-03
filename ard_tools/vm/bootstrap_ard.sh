@@ -63,6 +63,9 @@ install_xenomai
 install_ros
 install_eclipse
 
+#correction d'un bug dans le projet eclipse
+cd /opt/ard
+svn switch --relocate svn://88.191.124.77 svn://wixibox
 
 #########
 # PHASE 3 : cleaning 
