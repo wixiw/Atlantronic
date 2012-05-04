@@ -24,7 +24,7 @@ SCRIPTNAME="/etc/init.d/$NAME.sh"
 
 
 # Exit if the environnement variables are not present
-if [ -x "/opt/env.sh" ] ; then
+if [ ! -x "/opt/env.sh" ] ; then
 	echo "ERROR ($NAME) : The /opt/env.sh script is not present"
 	exit 0
 else
@@ -92,7 +92,7 @@ do_start()
 	else
 		#S=start m=create pid file b=go to background v=verbose
 		start-stop-daemon -Smbv -x $SUDO $DAEMON $1 $2 -p $PIDFILE 
-		
+		cecho blue "start-stop-daemon -Smbv -x $SUDO $DAEMON $1 $2 -p $PIDFILE"
 		cecho yellow "Launching a deamon on IHM request with param : $1 $2"
 	fi
 }
