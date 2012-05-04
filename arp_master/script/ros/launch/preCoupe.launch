@@ -8,7 +8,7 @@
 	
 	<node 	name="ArpOrocos" 
 		pkg="ocl" 
-		type="deployer-corba-gnulinux" 
+		type="cdeployer-gnulinux" 
 		args="-s $(find arp_master)/script/orocos/deployment/deploy_arp_master.ops --" 
 		output="screen"
 		respawn="false"
