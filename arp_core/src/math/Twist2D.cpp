@@ -142,9 +142,9 @@ bool Twist2D::operator !=(Twist2D other) const
 Vector3 Twist2D::getTVector() const
 {
     Vector3 T;
-    T[0] = vx();
-    T[1] = vy();
-    T[2] = vh();
+    T[0] = vh();
+    T[1] = vx();
+    T[2] = vy();
     return T;
 }
 

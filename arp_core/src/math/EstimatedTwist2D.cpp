@@ -12,7 +12,7 @@
 
 using namespace arp_math;
 
-EstimatedTwist2D::EstimatedTwist2D(const Twist2D & _t)
+EstimatedTwist2D::EstimatedTwist2D(Twist2D _t)
 : Twist2D(_t)
 , covariance(Covariance3::Identity())
 , estimationDate(0.)
@@ -35,12 +35,12 @@ long double& EstimatedTwist2D::dateRef()
     return estimationDate;
 }
 
-void EstimatedTwist2D::cov(const Covariance3 & _cov)
+void EstimatedTwist2D::cov(Covariance3 _cov)
 {
     covariance = _cov;
 }
 
-void EstimatedTwist2D::date(const long double & _date)
+void EstimatedTwist2D::date(long double _date)
 {
     estimationDate = _date;
 }

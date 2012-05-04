@@ -16,14 +16,14 @@ namespace arp_math
 class EstimatedTwist2D : public Twist2D
 {
     public:
-    EstimatedTwist2D(const Twist2D & t = Twist2D());
+    EstimatedTwist2D(Twist2D t = Twist2D());
 
     Covariance3 cov() const;
     long double date() const;
     long double& dateRef();
 
-    void cov(const Covariance3 &) ;
-    void date(const long double &);
+    void cov(Covariance3) ;
+    void date(long double);
 
     /**
      * Transporte et réduit le EstimatedTwist2D courant dans le nouveau repère

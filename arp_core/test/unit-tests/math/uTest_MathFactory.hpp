@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE( MathFactory_Twist2D_CartesianRepr_Vector3 )
         double vx = rand() / (double)RAND_MAX * 20 - 10.;
         double vy = rand() / (double)RAND_MAX * 20 - 10.;
         double vh = rand() / (double)RAND_MAX * 20 - 10.;
-        Twist2D t = MathFactory::createTwist2DFromCartesianRepr(arp_math::Vector3(vx,vy,vh));
+        Twist2D t = MathFactory::createTwist2DFromCartesianRepr(arp_math::Vector3(vh,vx,vy));
         BOOST_CHECK_EQUAL( t.vx() , vx );
         BOOST_CHECK_EQUAL( t.vy() , vy );
         BOOST_CHECK_EQUAL( t.vh() , vh );
@@ -211,7 +211,7 @@ BOOST_AUTO_TEST_CASE( MathFactory_EstimatedTwist2D_CartesianRepr_Vector3 )
         double date = rand() / (double)RAND_MAX * 20;
         Covariance3 cov = Covariance3::Random();
         cov = (cov + cov.transpose()) * 0.5;
-        EstimatedTwist2D t = MathFactory::createEstimatedTwist2DFromCartesianRepr(arp_math::Vector3(vx,vy,vh), date, cov);
+        EstimatedTwist2D t = MathFactory::createEstimatedTwist2DFromCartesianRepr(arp_math::Vector3(vh,vx,vy), date, cov);
         BOOST_CHECK_EQUAL( t.vx() , vx );
         BOOST_CHECK_EQUAL( t.vy() , vy );
         BOOST_CHECK_EQUAL( t.vh() , vh );

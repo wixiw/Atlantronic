@@ -39,27 +39,27 @@ namespace arp_math
      * Return any angle in -pi +pi
      */
 
-    double betweenMinusPiAndPlusPi( const double angle);
-    Rotation2 betweenMinusPiAndPlusPi(const Rotation2 & rot);
-    double betweenZeroAndTwoPi( const double angle);
+    double betweenMinusPiAndPlusPi( double angle);
+    Rotation2 betweenMinusPiAndPlusPi(Rotation2 rot);
+    double betweenZeroAndTwoPi( double angle);
 
-    double betweenMinusPiAndPlusPi( const double angle);
-    double betweenZeroAndTwoPi( const double angle);
-    double betweenMinusPi2AndPlusPi2(const double angle);
-    double betweenZeroAndPi(const double angle);
+    double betweenMinusPiAndPlusPi( double angle);
+    double betweenZeroAndTwoPi( double angle);
+    double betweenMinusPi2AndPlusPi2(double angle);
+    double betweenZeroAndPi(double angle);
 
-    double deg2rad(const double deg);
-    double rad2deg(const double rad);
+    double deg2rad(double deg);
+    double rad2deg(double rad);
 
     /**
      * Return "value" saturated to min or max
      */
-    double saturate(const double value, const double min, const double max);
+    double saturate(double value, double min, double max);
 
     /**
      *  Return sqrt(value), but if value is negative return negative sqrt(value)
      */
-    double sqrt2(const double value);
+    double sqrt2(double value);
 
     /**
      * Return f(x) = extrapolated value between startValue and endValue, but with respect to the position of "x" between startLimit and endLimit
@@ -75,23 +75,23 @@ namespace arp_math
      *                  startlimit endlimit
      *
      */
-    double smoothStep(const double x, const double startValue, const double startLimit,
-            const double endValue, const double endLimit);
+    double smoothStep(double x, double startValue, double startLimit,
+            double endValue, double endLimit);
 
     /**
      * Limite la dérivée première d'une fonction
      */
-    double firstDerivateLimitation(const double input, const double lastOutput, const double period, const double vmin, const double vmax);
+    double firstDerivateLimitation(double input, double lastOutput, double period, double vmin, double vmax);
 
     /**
      * absolute value for floats
      */
-    double d_abs(const double x);
+    double d_abs(double x);
 
     /**
      * transforme un time spec en double
      */
-    long double timespec2Double(const timespec &);
+    long double timespec2Double(timespec);
 
     /**
      * Elapsed time between begin and now, using data type timespec.

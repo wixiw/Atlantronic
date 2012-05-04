@@ -10,7 +10,7 @@
 
 using namespace arp_math;
 
-EstimatedPose2D::EstimatedPose2D(const Pose2D & _p)
+EstimatedPose2D::EstimatedPose2D(Pose2D _p)
 : Pose2D(_p)
 , estimationDate(0.)
 , covariance(Covariance3::Identity())
@@ -38,12 +38,12 @@ long double& EstimatedPose2D::dateRef()
     return estimationDate;
 }
 
-void EstimatedPose2D::cov(const Covariance3 & _cov)
+void EstimatedPose2D::cov(Covariance3 _cov)
 {
     covariance = _cov;
 }
 
-void EstimatedPose2D::date(const long double & _date)
+void EstimatedPose2D::date(long double _date)
 {
     estimationDate = _date;
 }

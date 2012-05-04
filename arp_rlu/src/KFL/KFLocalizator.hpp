@@ -166,21 +166,6 @@ class KFLocalizator
                 double maxTime4OdoPrediction;
 
                 /**
-                 * Position du repère odo dans le ropère de référence du robot
-                 */
-                arp_math::Pose2D H_odo_robot;
-
-                /**
-                 * Position du repère hky dans le ropère de référence du robot
-                 */
-                arp_math::Pose2D H_hky_robot;
-
-                /**
-                 * Covariance de l'initialisation par défault
-                 */
-                arp_math::Covariance3 defaultInitCovariance;
-
-                /**
                  * Position des balises (circulaires) sur la table
                  */
                 std::vector< lsl::Circle > referencedBeacons;
@@ -230,10 +215,9 @@ class KFLocalizator
 
         /**
          * Cette méthode sert à donner au localisateur une nouvelle mesure odo.
-         * \param[in] T_odo_table_p_odo_r_odo la mesure odo sous forme d'une estimation de Twist2D. Cette estimation est datée.\n
-         * Il s'agit du Twist du repère odo par rapport au repère table, projeté et réduit dans le repère odo.
+         * \param[in] odoVel la mesure odo sous forme d'une estimation de Twist2D. Cette estimation est datée.
          */
-        bool newOdoVelocity(arp_math::EstimatedTwist2D T_odo_table_p_odo_r_odo);
+        bool newOdoVelocity(arp_math::EstimatedTwist2D odoVel);
 
         /**
          * Cette méthode sert à donner au localisateur une nouvelle mesure laser.

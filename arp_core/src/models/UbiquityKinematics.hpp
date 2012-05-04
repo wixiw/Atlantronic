@@ -99,7 +99,7 @@ class UbiquityKinematics
                 const UbiquityParams & iParams);
 
         /**
-         * Echainement des modèles indirects de tourelle et cinématique
+         * Echainement des indirect modèles direct de tourelle et cinématique
          * @param oTS : [out] the intermediate computation of Turret State. Should be only used for debug or user feedback
          */
         static bool twist2Motors(const arp_math::Twist2D & iTw,

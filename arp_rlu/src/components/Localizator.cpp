@@ -32,8 +32,6 @@ Localizator::Localizator(const std::string& name)
 
     LOG( Debug ) << "New params defined !" << endlog();
 
-    propParams.defaultInitCovariance = Vector3(0.01, 0.01, 0.01).asDiagonal();
-
     propParams.bufferSize = 100;
     propParams.maxTime4OdoPrediction = 0.5;
     propParams.referencedBeacons = std::vector< lsl::Circle >();
@@ -186,8 +184,9 @@ void Localizator::updateHook()
 
 bool Localizator::ooInitialize(double x, double y, double theta)
 {
-    long double initDate = arp_math::getTime();
-    EstimatedPose2D pose = MathFactory::createEstimatedPose2D(x,y,theta, initDate, propParams.defaultInitCovariance);
+    EstimatedPose2D pose(x,y,theta);
+    double initDate = arp_math::getTime();
+    pose.date( initDate );
 
     LOG(Info) << "initialize to " << pose.toString() << " with date : "  << initDate <<  " (sec)" << endlog();
 

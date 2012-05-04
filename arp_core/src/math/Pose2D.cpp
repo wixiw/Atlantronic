@@ -15,6 +15,7 @@ Pose2D::Pose2D(double _x, double _y, double _h)
 : positionTranslation(Vector2(_x, _y))
 , positionRotation(Rotation2(_h))
 {
+    int truc;
 }
 
 
@@ -65,17 +66,11 @@ double Pose2D::angle() const
     return positionRotation.angle();
 }
 
-
-Eigen::Matrix<double,2,2> Pose2D::getRotationMatrix() const
-{
-    return this->orientation().toRotationMatrix();
-}
-
 Eigen::Matrix<double,3,3> Pose2D::getDisplacement2Matrix() const
 {
 	Eigen::Matrix<double,3,3> mat = Eigen::Matrix<double,3,3>::Identity();
-	mat.topLeftCorner<2,2>() = this->getRotationMatrix();
-	mat.topRightCorner<2,1>() = this->translation();
+	mat.topLeftCorner(2,2) = this->orientation().toRotationMatrix();
+	mat.topRightCorner(2,1) = this->translation();
 	return mat;
 }
 
@@ -111,8 +106,9 @@ void Pose2D::angle(double _heading)
 
 Pose2D Pose2D::inverse() const
 {
-    Pose2D p = MathFactory::createPose2D( this->orientation().inverse().toRotationMatrix() * (-this->translation()),
-                                          this->orientation().inverse() );
+    Pose2D p;
+    p.translation(-this->translation());
+    p.orientation(this->orientation().inverse());
     return p;
 }
 
@@ -136,10 +132,11 @@ bool Pose2D::operator ==(Pose2D other) const
 BigAdjoint2 Pose2D::getBigAdjoint() const
 {
     BigAdjoint2 Ad = BigAdjoint2::Identity();
-    Eigen::Matrix<double,2,2> R = this->getRotationMatrix();
-    Ad(0,2) = y();
-    Ad(1,2) = -x();
-    Ad.topLeftCorner(2,2) = R;
+    Eigen::Matrix<double,2,2> R = this->orientation().toRotationMatrix();
+    Ad(0,0) = 1;
+    Ad(1,0) = y();
+    Ad(2,0) = -x();
+    Ad.bottomRightCorner(2,2) = R;
     return Ad;
 }
 
@@ -165,20 +162,14 @@ double Pose2D::vectAngle() const
     return std::atan2(y() , x());
 }
 
-Pose2D Pose2D::operator*(const Pose2D& b) const
+Pose2D Pose2D::operator+(const Pose2D& b) const
 {
-    return MathFactory::createPose2D( this->orientation().toRotationMatrix() * b.translation() + this->translation() ,
-                                      this->orientation() * b.orientation() );
+	return MathFactory::createPose2D( this->translation() + b.translation() , Rotation2(this->angle() + b.angle()) );
 }
 
-Vector2 Pose2D::operator*(const Vector2& v) const
+Pose2D Pose2D::operator-(const Pose2D& b) const
 {
-    Vector3 v_;
-    v_.head<2>() = v;
-    v_(2) = 1.;
-
-    Vector3 res = this->getDisplacement2Matrix() * v_;
-    return res.head<2>();
+	return MathFactory::createPose2D( this->translation() - b.translation() , Rotation2(this->angle() - b.angle()) );
 }
 
 std::ostream& operator <<(std::ostream& os, Pose2D _pose)
