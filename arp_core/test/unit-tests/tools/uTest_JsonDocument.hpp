@@ -15,13 +15,13 @@ BOOST_AUTO_TEST_SUITE( unittest_JsonDocument )
 BOOST_AUTO_TEST_CASE( test_parse )
 {
     vjson::JsonDocument doc;
-    doc.parse("../ressource/unittest/scan.json");
+    BOOST_CHECK( doc.parse( (ros::package::getPath("arp_core") + "/ressource/unittest/scan.json").c_str() ));
 }
 
 BOOST_AUTO_TEST_CASE( test_getChildNames )
 {
     vjson::JsonDocument doc;
-    BOOST_CHECK( doc.parse("../ressource/unittest/scan.json") );
+    BOOST_CHECK( doc.parse( (ros::package::getPath("arp_core") + "/ressource/unittest/scan.json").c_str() ) );
 
     std::vector< std::string > vs = doc.getChildNames(doc.root());
 
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE( test_getChildNames )
 BOOST_AUTO_TEST_CASE( test_getChildTypes )
 {
     vjson::JsonDocument doc;
-    doc.parse("../ressource/unittest/scan.json");
+    BOOST_CHECK( doc.parse( (ros::package::getPath("arp_core") + "/ressource/unittest/scan.json").c_str() ) );
 
     std::vector< json_type > vs = doc.getChildTypes(doc.root());
 
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE( test_getChildTypes )
 BOOST_AUTO_TEST_CASE( test_getChild_name )
 {
     vjson::JsonDocument doc;
-    doc.parse("../ressource/unittest/scan.json");
+    BOOST_CHECK( doc.parse( (ros::package::getPath("arp_core") + "/ressource/unittest/scan.json").c_str() ) );
 
     {
         json_value * child = doc.getChild(doc.root(), "range");
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE( test_getChild_name )
 BOOST_AUTO_TEST_CASE( test_getChild_index )
 {
     vjson::JsonDocument doc;
-    doc.parse("../ressource/unittest/scan.json");
+    BOOST_CHECK( doc.parse( (ros::package::getPath("arp_core") + "/ressource/unittest/scan.json").c_str() ) );
 
     {
         json_value * child = doc.getChild(doc.root(), 0);
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE( test_getChild_index )
 BOOST_AUTO_TEST_CASE( test_getIntegerData )
 {
     vjson::JsonDocument doc;
-    doc.parse("../ressource/unittest/scan.json" );
+    BOOST_CHECK( doc.parse( (ros::package::getPath("arp_core") + "/ressource/unittest/scan.json").c_str() ) );
 
     json_value * child = doc.getChild(doc.root(), "size");
 
@@ -134,7 +134,7 @@ BOOST_AUTO_TEST_CASE( test_getIntegerData )
 BOOST_AUTO_TEST_CASE( test_getStringData )
 {
     vjson::JsonDocument doc;
-    doc.parse("../ressource/unittest/scan.json" );
+    BOOST_CHECK( doc.parse( (ros::package::getPath("arp_core") + "/ressource/unittest/scan.json").c_str() ) );
 
     json_value * child = doc.getChild(doc.root(), "type");
 
@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE( test_getStringData )
 BOOST_AUTO_TEST_CASE( test_getFloatData )
 {
     vjson::JsonDocument doc;
-    doc.parse("../ressource/unittest/scan.json" );
+    BOOST_CHECK( doc.parse( (ros::package::getPath("arp_core") + "/ressource/unittest/scan.json").c_str() ) );
 
     json_value * child = doc.getChild(doc.root(), "tt");
 

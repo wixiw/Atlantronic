@@ -97,7 +97,7 @@ class Twist2D
         bool operator !=(Twist2D other) const;
 
         /**
-         * Retourne le Twist sous forme de Vecteur 3 (omega,vx,vy)
+         * Retourne le Twist sous forme de Vecteur 3 (vx,vy,omega)
          */
         Vector3 getTVector() const;
 

@@ -70,6 +70,12 @@ class Pose2D
          * de la rotation. Le vecteur colonne 2x1 du bloc haut droit est constitué du vecteur translation */
         Displacement2 getDisplacement2Matrix() const;
 
+        /**
+         * \returns la matrice symétrique 2x2 correspondant à la partie rotation.\n
+         * Il s'agit d'un racourcis de this->orientation().toMatrixRotation()
+         */
+        Eigen::Matrix<double,2,2> getRotationMatrix() const;
+
         // Setters
         /** Permet de modifier la partie translation.
          * \param _translation Vector2 qui correspond à la partie translation que l'on souhaite en m */
@@ -98,7 +104,8 @@ class Pose2D
         /** Permet de calculer l'inverse de la Pose2D.
          * La Pose2D inverse a un vecteur translation et un angle opposés à ceux initiaux.
          * \remarks l'objet n'est pas modifié.
-         * \returns la Pose2D inversée */
+         * \returns la Pose2D inversée
+         * \warning l'inverse n'est pas l'opposé ! Il s'agit de l'inverse tel que la Pose2D composée avec son inverse donne la Pose2D nulle. */
         Pose2D inverse() const;
 
         /**
@@ -148,8 +155,37 @@ class Pose2D
          * rotation. La précision utilisée est ici celle des double. */
         bool operator ==(Pose2D _other) const;
 
-        Pose2D operator+(const Pose2D& other) const;
-        Pose2D operator-(const Pose2D& other) const;
+        /**
+         * Les Pose2D évoluent dans le groupe spécial euclidien nommé SE(2)\n
+         * L'opérateur * représente la loi de composition interne de ce groupe.\n
+         * Elle est très pratique pour réaliser des changements de repère.\n
+         * Ex :
+         * \li soit H_1_0 une Pose2D correspondant à la position d'un repère 1 par rapport à un repère 0
+         * \li soit H_2_1 une Pose2D correspondant à la position d'un repère 2 par rapport au repère 1
+         * \li soit H_2_0 une Pose2D correspondant à la position du repère 2 par rapport au repère 0
+         * \li soit H_0_2 une Pose2D correspondant à la position du repère 0 par rapport au repère 2
+         * Alors :
+         * \li H_2_0 = H_1_0 * H_2_1;
+         * \li H_0_2 = H_2_0.inverse();
+         * \li H_0_2 = H_2_1.inverse() * H_1_0.inverse();
+         */
+        Pose2D operator*(const Pose2D& other) const;
+
+        /**
+         * Permet de changer un point de repère de référence. \n
+         * Ex :
+         * \li soit v1 un Vector2 exprimé dans un repère 1
+         * \li soit H_1_0 une Pose2D correspondant à la position du repère 1 par rapport à un repère 0
+         * \li soit v2 le vecteur v1 exprimé dans le repère 0
+         * Alors :
+         * \li v2 = H_1_0 * v1;
+         * \li v1 = H_1_0.inverse() * v2;
+         * \warning cette méthode s'applique sur un point, pas sur un vecteur. La nuance vient qu'on prend pas en compte seulement
+         * les orientatations des deux repères, mais aussi le déport de leurs origines.
+         */
+        Vector2 operator*(const Vector2& v) const;
+
+
 };
 
 std::ostream operator <<(std::ostream os, arp_math::Pose2D _pose);

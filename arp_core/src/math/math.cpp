@@ -10,61 +10,61 @@
 namespace arp_math
 {
 
-Rotation2 betweenMinusPiAndPlusPi(Rotation2 rot)
+Rotation2 betweenMinusPiAndPlusPi(const Rotation2 &     rot)
 {
     double angle = betweenMinusPiAndPlusPi(rot.angle());
     return Rotation2(angle);
 }
 
-double betweenMinusPiAndPlusPi(double angle)
+double betweenMinusPiAndPlusPi(const double angle)
 {
-    angle = betweenZeroAndTwoPi( angle );
-    if (angle > PI)
+    double a = betweenZeroAndTwoPi( angle );
+    if (a > PI)
     {
-        angle = angle - 2 * PI;
+        a = a - 2 * PI;
     }
-    if (angle <= -PI)
+    if (a <= -PI)
     {
-        angle = angle + 2 * PI;
+        a = a + 2 * PI;
     }
-    return angle;
+    return a;
 }
 
-double betweenMinusPi2AndPlusPi2(double angle)
+double betweenMinusPi2AndPlusPi2(const double angle)
 {
-    angle = betweenZeroAndPi( angle );
-    if (angle > M_PI_2)
+    double a = betweenZeroAndPi( angle );
+    if (a > M_PI_2)
     {
-        angle = angle - PI;
+        a = a - PI;
     }
-    if (angle <= -M_PI_2)
+    if (a <= -M_PI_2)
     {
-        angle = angle + PI;
+        a = a + PI;
     }
-    return angle;
+    return a;
 }
 
-double betweenZeroAndTwoPi(double angle)
+double betweenZeroAndTwoPi(const double angle)
 {
     return fmod( fmod(angle, 2 * PI) + 4. * PI, 2 * PI);
 }
 
-double betweenZeroAndPi(double angle)
+double betweenZeroAndPi(const double angle)
 {
     return fmod( fmod(angle, PI) + 2. * PI, PI);
 }
 
-double deg2rad(double deg)
+double deg2rad(const double deg)
 {
     return deg * (PI / 180);
 }
 
-double rad2deg(double rad)
+double rad2deg(const double rad)
 {
     return rad * (180 / PI);
 }
 
-double saturate(double value, double min, double max)
+double saturate(const double value, const double min, const double max)
 {
     if (value < min)
         return min;
@@ -73,16 +73,16 @@ double saturate(double value, double min, double max)
     return value;
 }
 
-double sqrt2(double value)
+double sqrt2(const double value)
 {
     if (value > 0)
         return sqrt(value);
-    if (value < 0)
+    else
         return -sqrt(-value);
     return 0;
 }
 
-double smoothStep(double x, double startValue, double startLimit, double endValue, double endLimit)
+double smoothStep(const double x, const double startValue, const double startLimit, const double endValue, const double endLimit)
 {
     //il s'agit d'une fonction toute simple qui permet de trouver la valeur intermediaire entre deux valeurs corresponsdant à des modes de calculs différents
 
@@ -105,7 +105,7 @@ double smoothStep(double x, double startValue, double startLimit, double endValu
 
 }
 
-double firstDerivateLimitation(double input, double lastOutput, double period, double vmin, double vmax)
+double firstDerivateLimitation(const double input, const double lastOutput, const double period, const double vmin, const double vmax)
 {
     double output=0;
     double derivate=0;
@@ -147,7 +147,7 @@ void delta_t(struct timespec *interval, struct timespec begin, struct timespec n
 }
 
 //on utilise un long double pour le calcul de temps pour des raisons de précision numérique
-long double timespec2Double(timespec now)
+long double timespec2Double(const timespec & now)
 {
     long double time = now.tv_sec + (long double) (now.tv_nsec) / 1E9;
     return time;

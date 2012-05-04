@@ -8,7 +8,6 @@
 // TODO BMO: test unitaire pour l'opérateur <<
 
 #include "math/Pose2D.hpp"
-#include <math/MathFactory.hpp>
 #include <iostream>
 using namespace std;
 using namespace arp_math;
@@ -65,7 +64,7 @@ BOOST_AUTO_TEST_CASE( Pose2D_Other_Constructors )
 	BOOST_CHECK( b.h() == M_PI/2 );
 	BOOST_CHECK( b.translation() == Vector2(1,2) );
 
-	Pose2D c = MathFactory::createPose2D(Vector2(3,4), Rotation2(M_PI/6));
+	Pose2D c(Vector2(3,4), Rotation2(M_PI/6));
 	BOOST_CHECK( c.h() == M_PI/6 );
 	BOOST_CHECK( c.translation() == Vector2(3,4) );
 }
@@ -117,9 +116,9 @@ BOOST_AUTO_TEST_CASE( Pose2D_BigAdjoint )
     Eigen::Matrix<double,3,3> mat3;
     double cosA = std::cos(M_PI_2);
     double sinA = std::sin(M_PI_2);
-    mat3 << 1, 0,       0,
-            0, cosA,    -sinA,
-            0, sinA,   cosA   ;
+    mat3 << cosA,    -sinA, 0,
+            sinA,     cosA, 0,
+            0 ,       0 , 1;
 
     res = quartTour.getBigAdjoint();
     for( int i = 0 ; i< 3 ; i++ )
@@ -142,9 +141,9 @@ BOOST_AUTO_TEST_CASE( Pose2D_BigAdjoint )
     Pose2D demitour(0,0,2.16);
     cosA = std::cos(2.16);
     sinA = std::sin(2.16);
-    mat3 << 1, 0,       0,
-            0, cosA,    -sinA,
-            0, sinA,   cosA   ;
+    mat3 << cosA,    -sinA, 0,
+            sinA,     cosA, 0,
+            0 ,       0 , 1;
 
     res = demitour.getBigAdjoint();
     for( int i = 0 ; i< 3 ; i++ )
@@ -164,9 +163,9 @@ BOOST_AUTO_TEST_CASE( Pose2D_BigAdjoint )
     }
 
     Pose2D p(3,2,2.16);
-    mat3 << 1, 0,       0,
-            2, cosA,    -sinA,
-            -3, sinA,   cosA   ;
+    mat3 << cosA,    -sinA, 2,
+            sinA,     cosA, -3,
+            0 ,       0 , 1;
 
     res = p.getBigAdjoint();
 
