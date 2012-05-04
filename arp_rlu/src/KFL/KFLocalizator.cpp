@@ -26,10 +26,14 @@ using namespace arp_core::log;
 KFLocalizator::Params::Params()
 : bufferSize(100)
 , maxTime4OdoPrediction(0.5)
+, H_odo_robot()
+, H_hky_robot()
+, defaultInitCovariance(Covariance3::Identity())
 , referencedBeacons()
 , iekfParams(KFLocalizator::IEKFParams())
 , procParams(BeaconDetector::Params())
 {
+    defaultInitCovariance.diagonal() << 0.01, 0.01, 0.01;
 }
 
 std::string KFLocalizator::Params::getInfo() const
@@ -205,8 +209,10 @@ bool KFLocalizator::initialize(const arp_math::EstimatedPose2D & pose)
     return true;
 }
 
-bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D odoVel)
+bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D T_odo_table_p_odo_r_odo)
 {
+    arp_math::EstimatedTwist2D odoVel = T_odo_table_p_odo_r_odo;
+
     double startTime = getTime();
 
     if(circularBuffer.empty())
@@ -231,6 +237,8 @@ bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D odoVel)
     }
 
     double dt = odoVel.date() - lastEstim.date();
+
+    arp_math::EstimatedTwist2D T_hky_table_p_hky_r_hky;
 
     KFLSysInput input;
     input(0) = odoVel.vx();

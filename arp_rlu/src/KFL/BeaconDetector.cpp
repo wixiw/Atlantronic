@@ -40,10 +40,10 @@ BeaconDetector::Params::Params()
 
     minNbPoints = 3;
 
-    xMin = -1.8;
-    xMax =  1.8;
-    yMin = -1.3;
-    yMax =  1.3;
+    xMin = -2.0;
+    xMax =  2.0;
+    yMin = -1.5;
+    yMax =  1.5;
 
     cip.radius = 0.04;
     cip.rangeDelta = 0.034;
@@ -238,7 +238,11 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
         return false;
     }
 
-    Log( DEBUG ) << "BeaconDetector::process - " << detectedCircles.size() << " circles detected";
+    Log( DEBUG ) << "BeaconDetector::process - " << detectedCircles.size() << " circles detected : ";
+    for(int i = 0 ; i < detectedCircles.size() ; i++)
+    {
+        Log( DEBUG ) << "BeaconDetector::process -      [" << i << "] x:" << detectedCircles[i].x() << " - y:" << detectedCircles[i].y() << " - r:" << detectedCircles[i].r();
+    }
 
     //*****************************
     // Find Triangle
