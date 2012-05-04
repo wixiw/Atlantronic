@@ -23,7 +23,7 @@ PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 
 # Exit if the environnement variables are not present
-if [ -x "/opt/env.sh" ] ; then
+if [ ! -x "/opt/env.sh" ] ; then
 	echo "ERROR : The /opt/env.sh script is not present : $DAEMON"
 	exit 0
 else

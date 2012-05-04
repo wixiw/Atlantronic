@@ -1,9 +1,12 @@
 #!/bin/bash
 
-echo "****** ARD **********"
-echo "****** ARD **********"
+#echo "****** ARD **********"
+#echo "****** ARD **********"
 
-/bin/mount -n -t tmpfs tmpfs /mnt -o size=64M
+/bin/mount -n -t tmpfs tmpfs /mnt -o size=256M
+
+#montage de la partition /dev/sda2  d'habitude sur /opt pour aller
+# chercher le fichier de conf /opt/conf/RO
 mkdir -p /mnt/optearly
 mknod -m 600 /mnt/optdev  b 8 2
 mount -t ext4 /mnt/optdev /mnt/optearly
@@ -12,7 +15,7 @@ if [ -f /mnt/optearly/conf/RO ]; then
 	echo "****** ARD ********** Mounting RO"
 
 	umount /mnt/optearly
-	rm /opt/optdev
+	rm /mnt/optdev
 	
 	ERROR_FILE=last_boot_error.txt
 
@@ -48,7 +51,7 @@ if [ -f /mnt/optearly/conf/RO ]; then
 
 	rm ${ROOT_PARTITION}
 
-	echo "****** ARD ********** phase 1"
+	#echo "****** ARD ********** phase 1"
 
 	mkdir /mnt/old_root
 	mkdir /mnt/new_root
@@ -65,12 +68,12 @@ if [ -f /mnt/optearly/conf/RO ]; then
 	# on se place dans new_root et on prepare le dossier mnt/.old qui va recevoir l'ancien point de montage /.
 	cd /mnt/new_root
 	mkdir mnt/.old
-	echo "****** ARD ********** phase 2"
+	#echo "****** ARD ********** phase 2"
 	# deplacement de sys, proc et dev (peuplé par le noyau)
 	mount --move /sys /mnt/new_root/sys
 	#mount --move /dev /mnt/new_root/dev
 	mount --move /proc /mnt/new_root/proc
-	echo "****** ARD ********** phase 3"
+	#echo "****** ARD ********** phase 3"
 	# ATTENTION : ne rien faire ici, on a deplace /proc et certains programmes ont besoin d'ouvrir
 	# des fichiers sur /proc. Le traitement doit etre realise avant.
 	# Ici, tout est pret pour le pivot_root
@@ -90,18 +93,23 @@ if [ -f /mnt/optearly/conf/RO ]; then
 	#
 	# Il est indispensable de faire exec chroot puis exec /sbin/init pour lancer sh puis /sbin/init avec le pid 1. 
 	pivot_root . mnt/.old
-	echo "****** ARD **********  finished pivot"
-	echo "****** ARD **********"
+	#echo "****** ARD **********  finished pivot"
+	#echo "****** ARD **********"
 	exec chroot . sh -c \
 	'mount --move /mnt/.old/mnt/old_root /mnt/old_root; \
 	 mount --move /mnt/.old/mnt /mnt/lost_on_reboot; \
 	 umount /mnt/.old; \
+	 rm -f "/etc/rcS.d"/S[0-9][0-9]checkroot.sh; \
+	 touch /RO; \
 	 rmdir /mnt/.old /mnt/lost_on_reboot/old_root /mnt/lost_on_reboot/new_root; \
 	 exec /sbin/init' < dev/console > dev/console 2>&1
 
 else
+	umount /mnt/optearly
+	rm /mnt/optdev
+	
 	echo "****** ARD ********** Mounting RW"
-	echo "****** ARD **********"
-	echo "****** ARD **********"
+	#echo "****** ARD **********"
+	#echo "****** ARD **********"
 	exec /sbin/init;
 fi
