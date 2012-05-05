@@ -99,8 +99,8 @@ BOOST_AUTO_TEST_CASE( EstimatedTwist2_Transport_Rotation_2 )
     BOOST_CHECK_EQUAL( res.vh() ,  ground.vh() );
     BOOST_CHECK_EQUAL( res.date(), a.date() );
     Covariance3 covRes = res.cov();
-    BOOST_CHECK_EQUAL( covRes(0,0), cov(0,0) );
-    BOOST_CHECK_EQUAL( covRes(1,1), cov(2,2) );
-    BOOST_CHECK_EQUAL( covRes(2,2), cov(1,1) );
+    BOOST_CHECK_EQUAL( covRes(0,0), cov(1,1) );
+    BOOST_CHECK_EQUAL( covRes(1,1), cov(0,0) );
+    BOOST_CHECK_EQUAL( covRes(2,2), cov(2,2) );
 }
 

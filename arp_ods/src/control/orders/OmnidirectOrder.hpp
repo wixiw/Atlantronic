@@ -13,7 +13,6 @@
 #include <boost/shared_ptr.hpp>
 #include <math/core>
 
-using namespace boost;
 
 namespace arp_ods{ namespace orders
 {
@@ -34,7 +33,7 @@ class OmnidirectOrder: public MotionOrder
         /**
          * Override to define specific parameters
          */
-        static shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, arp_math::Pose2D currentPose, orders::config conf  );
+        static boost::shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, arp_math::Pose2D currentPose, orders::config conf  );
 
         /**
          *

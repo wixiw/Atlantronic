@@ -16,15 +16,20 @@ namespace arp_math
 class EstimatedPose2D : public Pose2D
 {
     public:
-    EstimatedPose2D(Pose2D p = Pose2D());
+    EstimatedPose2D(const Pose2D & p = Pose2D());
 
     Covariance3 cov() const;
     Covariance3& covRef();
     long double date() const;
     long double& dateRef();
 
-    void cov(Covariance3) ;
-    void date(long double);
+    void cov(const Covariance3 &) ;
+    void date(const long double &);
+
+    /**
+     * Il s'agit du même opérateur que celui de Pose2D mais cette version déplace aussi la covariance de l'EstimatedPose2D
+     */
+    EstimatedPose2D operator*(const Pose2D& other) const;
 
     private:
     long double estimationDate;

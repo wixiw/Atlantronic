@@ -11,6 +11,7 @@ using namespace arp_math;
 using namespace arp_ods;
 using namespace orders;
 using namespace arp_core::log;
+using namespace boost;
 
 OmnidirectOrder::OmnidirectOrder() :
     MotionOrder()
@@ -97,17 +98,25 @@ void OmnidirectOrder::switchRun(arp_math::Pose2D currentPosition)
 
 Pose2D OmnidirectOrder::getPositionError(arp_math::Pose2D currentPosition)
 {
-    Rotation2 orient_robot(currentPosition.h());
+//    Rotation2 orient_robot(currentPosition.h());
+//
+//    //position of the control point on the table
+//    Pose2D current_cpoint_position;
+//    current_cpoint_position.translation( currentPosition.translation() + orient_robot.toRotationMatrix()*m_cpoint.translation());
+//    current_cpoint_position.orientation( betweenMinusPiAndPlusPi(currentPosition.h()+m_cpoint.h()) );
 
-    //position of the control point on the table
-    Pose2D current_cpoint_position;
-    current_cpoint_position.translation( currentPosition.translation() + orient_robot.toRotationMatrix()*m_cpoint.translation());
-    current_cpoint_position.orientation( betweenMinusPiAndPlusPi(currentPosition.h()+m_cpoint.h()) );
+    // La version sans les mains des 4 lignes du dessus :
+    Pose2D current_cpoint_position = currentPosition * m_cpoint;
+
+    // Pourquoi ?
+    // currentPosition est la pose du robot dans le repère de la table
+    // m_cpoint est la pose du point de controle dans le repère du robot
+    // pour avoir le point de controle dans le repère de la table, il suffit de composer (opérateur *) les deux poses
+
 
     //position error
-    Pose2D deltaPos_refTable=m_endPose-current_cpoint_position;
-
-    return deltaPos_refTable;
+    return MathFactory::createPose2D(m_endPose.translation() - current_cpoint_position.translation() ,
+                                     Rotation2(m_endPose.angle() - current_cpoint_position.angle()) );
 
 }
 

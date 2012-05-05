@@ -184,9 +184,10 @@ void Localizator::updateHook()
 
 bool Localizator::ooInitialize(double x, double y, double theta)
 {
-    EstimatedPose2D pose(x,y,theta);
     double initDate = arp_math::getTime();
-    pose.date( initDate );
+
+    Covariance3 cov = Vector3(0.01, 0.01, 0.001).asDiagonal();
+    EstimatedPose2D pose = MathFactory::createEstimatedPose2D(x,y,theta, initDate, cov);
 
     LOG(Info) << "initialize to " << pose.toString() << " with date : "  << initDate <<  " (sec)" << endlog();
 

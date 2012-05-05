@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_nullspeed )
 
     // j'initialise les zeros tourelles au hasard
     params.setLeftTurretZero(5.8471);
-    params.setRightTurretZero(7.17852);
+    params.setRightTurretZero(6.17852);
     params.setRearTurretZero(-4.43757);
 
     twist=Twist2D(0,0,0);
