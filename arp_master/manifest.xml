@@ -20,8 +20,10 @@
 	<depend package="arp_ihm" />
 	<depend package="arp_ods" />
 	<depend package="arp_rlu" />
+	<depend package="runtime_monitor"/>
+	
 	<rosdep name="wxwidgets"/>
-	<rosdep name="runtime_monitor"/>
+	
 	<!--empeche le build local <rosdep name="eigen" />-->
 </package>
 
