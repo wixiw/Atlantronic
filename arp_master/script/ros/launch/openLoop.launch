@@ -1,0 +1,18 @@
+<launch>
+	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
+	<include file="$(find arp_master)/script/ros/launch/rosparam.launch"/>
+	<include file="$(find arp_hml)/script/ros/launch/arp_hml_ros.launch"/>
+	<!-- pas besoin pour le moment <include file="$(find arp_ods)/script/ros/launch/arp_ods_ros.launch"/> -->
+	<!-- pas besoin pour le moment <include file="$(find arp_rlu)/script/ros/launch/arp_rlu_ros.launch"/> -->
+	<node name="StratNode_preCoupe"   pkg="arp_master"  type="OpenLoopStratNode.py"     args="" output="screen"/>
+	
+	<node 	name="ArpOrocos" 
+		pkg="ocl" 
+		type="cdeployer-gnulinux" 
+		args="-s $(find arp_master)/script/orocos/deployment/deploy_arp_master.ops --" 
+		output="screen"
+		respawn="false"
+		required="true"
+		/>
+
+</launch>

@@ -57,14 +57,6 @@ class MotionOrder: public ModeSelector
         virtual Twist2D computeSpeed(Pose2D currentPosition, double dt);
 
         /**
-         * Use this to filter begin, end and current point with m_reverse
-         * If m_reverse is true, p.theta = p.theta+PI. p.x and p.y are unchanged.
-         * In any case a normalization in [-PI;PI] is done so you should use this function in any case
-         * @param p : pose to convert
-         */
-        Pose2D reversePosition(Pose2D p);
-
-        /**
          * Factory to create an order with default parameters from the order
          * TODO il faudrait une vraie Factory en dehors, parce que là c'est un peu Joe La Bricole
          * @param goal : action lib goal to process
@@ -85,11 +77,6 @@ class MotionOrder: public ModeSelector
         std::string getTypeString() const;
 
         /**
-         * Define the reverse mode
-         */
-        void setReverse(bool reverse);
-
-        /**
          * Define the id of the order. If a unique ID is set,
          * this allows to distinguish unique orders
          */
@@ -102,8 +89,6 @@ class MotionOrder: public ModeSelector
     protected:
         /** type of the current order */
         OrderType m_type;
-        /** reverse type of motion */
-        bool m_reverse;
         /** twist in case of openloop */
         Twist2D m_openloop_twist;
         /** duration of the command in case of openloop */

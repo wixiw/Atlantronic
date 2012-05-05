@@ -104,10 +104,10 @@ void TwistTeleop::updateHook()
     vtheta = pow(vtheta,3);
 
 
-    attrAngularCmd = firstDerivateLimitation(-vtheta*rotVel, attrOldAngularCmd, 0.010, -rotAcc, rotAcc);
+    attrAngularCmd = firstDerivateLimitation(-vtheta*rotVel, attrOldAngularCmd, attrDt, -rotAcc, rotAcc);
     attrOldAngularCmd = attrAngularCmd;
 
-    attrSpeedCmd = firstDerivateLimitation( linVel*max(fabs(vx),fabs(vy)), attrOldSpeedCmd, 0.010 , -linAcc, linAcc);
+    attrSpeedCmd = firstDerivateLimitation( linVel*max(fabs(vx),fabs(vy)), attrOldSpeedCmd, attrDt , -linAcc, linAcc);
     attrOldSpeedCmd = attrSpeedCmd;
 
     if( fabs(attrSpeedCmd) <= 0.010 )

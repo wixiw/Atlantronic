@@ -11,9 +11,6 @@ class Data:
     color='NONE'
     adv_color='NONE'
 
-    #derniers ordres. utilise pour le replay
-    listReplayOrders=[]
-    
     #temps lies a la detection adversaire
     timeObstacle=0
     timeRearObstacle=0

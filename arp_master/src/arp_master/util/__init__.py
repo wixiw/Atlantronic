@@ -8,6 +8,5 @@ from math import *
 
 from Data import *
 from Inputs import *
-from ReplayOrder import *
 from TableVierge import *
 from UtilARD import *

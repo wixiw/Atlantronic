@@ -77,14 +77,6 @@ class KinematicBase: public OdsTaskContext
          * Utility function to hide at the end of the file the verbose Orocos interface declarations
          */
         void createOrocosInterface();
-        /*
-         * time of last computation
-         */
-        double m_oldTime;
-        /*
-         *  time since last computation
-         */
-        double getDt();
 
         /*
          * define if robot has been blocked for timeout time

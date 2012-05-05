@@ -19,7 +19,7 @@ class StartSequence(smach.StateMachine):
             
             smach.StateMachine.add('Recal_hor_bord',
                       Recal_hor_bord(),
-                      transitions={'succeeded':'SetPos_hor_bord','aborted':'SetPos_hor_bord'})
+                      transitions={'succeeded':'SetPos_hor_bord','timeout':'SetPos_hor_bord'})
             
             smach.StateMachine.add('SetPos_hor_bord',
                       SetPos_hor_bord(),
@@ -27,16 +27,16 @@ class StartSequence(smach.StateMachine):
          
             smach.StateMachine.add('Retour_hor_bord',
                       Retour_hor_bord(),
-                      transitions={'succeeded':'hor_to_vert','aborted':'problem'})
+                      transitions={'succeeded':'hor_to_vert','timeout':'problem'})
 
             smach.StateMachine.add('hor_to_vert',
                       hor_to_vert(),
-                      transitions={'succeeded':'Recal_vert_bord','aborted':'problem'})
+                      transitions={'succeeded':'Recal_vert_bord','timeout':'problem'})
 
 
             smach.StateMachine.add('Recal_vert_bord',
                       Recal_vert_bord(),
-                      transitions={'succeeded':'SetPos_vert_bord','aborted':'SetPos_vert_bord'})
+                      transitions={'succeeded':'SetPos_vert_bord','timeout':'SetPos_vert_bord'})
 
             smach.StateMachine.add('SetPos_vert_bord',
                       SetPos_vert_bord(),
@@ -44,11 +44,11 @@ class StartSequence(smach.StateMachine):
 
             smach.StateMachine.add('Retour_vert_bord',
                       Retour_vert_bord(),
-                      transitions={'succeeded':'Turn_for_match','aborted':'problem'})
+                      transitions={'succeeded':'Turn_for_match','timeout':'problem'})
 
             smach.StateMachine.add('Turn_for_match',
                       Turn_for_match(),
-                      transitions={'succeeded':'WaitForMatch','aborted':'problem'})
+                      transitions={'succeeded':'WaitForMatch','timeout':'problem'})
 
 
             smach.StateMachine.add('WaitForMatch', WaitForMatch(),

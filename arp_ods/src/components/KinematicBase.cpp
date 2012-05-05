@@ -23,8 +23,7 @@ KinematicBase::KinematicBase(const std::string& name) :
         OdsTaskContext(name),
         propMinSpeed(0.001),
         propRobotBlockedTimeout(2.0),
-        propMaxSpeedDiff(0.040),
-        m_oldTime(0.0)
+        propMaxSpeedDiff(0.040)
 {
     createOrocosInterface();
     //A ne pas mettre sur le robot pour des problemes de place (ou nettoyer les logs pour qu'ils ne grossissent pas trop vite)
@@ -56,13 +55,11 @@ void KinematicBase::run()
 {
     Log(INFO) << ">> KinematicBase::run()   -----------------------------";
 
-    double dt = getDt();
-
     //check robot blocked
     checkRobotBlocked();
 
     //filter the input command to get a reachable command that we are sure the hardware will be capable to do
-//    if (KinematicFilter::filterTwist(attrTwistCmd, attrCurrentTwist, attrMotorsCurrentState, attrParams, dt,
+//    if (KinematicFilter::filterTwist(attrTwistCmd, attrCurrentTwist, attrMotorsCurrentState, attrParams, attrDt,
 //            propMinSpeed, attrAcceptableTwist, attrQuality) == false)
 //    {
 //        LOG(Error) << "Failed to filter desired twist to an acceptable twist" << endlog();
@@ -78,9 +75,9 @@ void KinematicBase::run()
         LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
     }
 
-    Log(INFO) << "cur Twist=               " << attrCurrentTwist.toString();
-    Log(INFO) << "attrMotorsCurrentState=  " <<attrMotorsCurrentState.toString();
-    Log(INFO) << "acceptable Twist=        " << attrAcceptableTwist.toString();
+    Log(DEBUG) << "cur Twist=               " << attrCurrentTwist.toString();
+    Log(DEBUG) << "attrMotorsCurrentState=  " <<attrMotorsCurrentState.toString();
+    Log(DEBUG) << "acceptable Twist=        " << attrAcceptableTwist.toString();
 
 
 
@@ -93,23 +90,6 @@ void KinematicBase::run()
         attrMotorStateCommand.steering = attrMotorsCurrentState.steering;
     }
     Log(INFO) << "<< KinematicBase::run()";
-}
-
-double KinematicBase::getDt()
-{
-    double time = arp_math::getTime();
-    if (m_oldTime == 0.0)
-    {
-        //first time here
-        m_oldTime = time;
-        return 0.01;
-    }
-    else
-    {
-        double dt = time - m_oldTime;
-        m_oldTime = time;
-        return dt;
-    }
 }
 
 void KinematicBase::checkRobotBlocked()

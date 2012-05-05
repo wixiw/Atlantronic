@@ -15,17 +15,17 @@ class Opening(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('GotoMilieu',
                       GotoMilieu(),
-                      transitions={'succeeded':'WaitBeforeNext', 'aborted':'ReverseOrder'})
+                      transitions={'succeeded':'WaitBeforeNext', 'timeout':'ReverseOrder'})
             
             self.setInitialState('GotoMilieu')
             
             PreemptiveStateMachine.add('ReverseOrder',
                       ReverseOrder(),
-                      transitions={'succeeded':'GotoMilieu', 'aborted':'GotoMilieu'})
+                      transitions={'succeeded':'GotoMilieu', 'timeout':'GotoMilieu'})
             
             PreemptiveStateMachine.add('WaitBeforeNext',
                       WaiterState(1.0),
-                      transitions={'done':'endOpening'})
+                      transitions={'timeout':'endOpening'})
                         
             
         
@@ -40,5 +40,4 @@ class GotoMilieu(CyclicActionState):
 ################# REVERSER
 class ReverseOrder(CyclicActionState):
     def createAction(self):
-        order=Data.listReplayOrders.pop() #retourne le dernier element et l'enleve de la liste
-        self.executeReplayOrder(order)
+        self.replay(1.0)  

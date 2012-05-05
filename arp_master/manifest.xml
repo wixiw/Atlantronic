@@ -21,7 +21,7 @@
 	<depend package="arp_ods" />
 	<depend package="arp_rlu" />
 	
-	<! TODO : introduit bizarrement un link sur wxwidget :( --<depend package="runtime_monitor"/>-->
+	<!-- TODO : introduit bizarrement un link sur wxwidget :( <depend package="runtime_monitor"/> -->
 	
 	<rosdep name="wxwidgets"/>
 	

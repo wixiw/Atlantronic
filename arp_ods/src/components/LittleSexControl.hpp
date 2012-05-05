@@ -113,19 +113,6 @@ class LittleSexControl: public OdsTaskContext
          */
         void createOrocosInterface();
 
-
-        /*
-         * time of last call
-         */
-        double m_oldTime;
-        /*
-         * get the dt since last call
-         */
-        double getDt();
-        /*
-         * dt for this loop
-         */
-        double attrDt;
         /*
          * buffer of twist for replaying backward
          */

@@ -77,6 +77,8 @@ namespace arp_core
         virtual bool configureHook();
         /** Callback de Démarrage */
         virtual bool startHook();
+        /** Calcule le temps de cycle (attention au premier cycle la période est nulle */
+        void updateHook();
         /** Callback d'Arrêt */
         virtual void stopHook();
         /** Callback de Déconfiguration */
@@ -142,6 +144,10 @@ namespace arp_core
         std::string attrStateMachinePath;
         /** Used by configuration programs to set a success flag */
         bool attrScriptRes;
+        /** cycle time*/
+        timespec attrUpdateTime;
+        /** cycle duration*/
+        double attrDt;
 
         /** Interface de scripting Orocos (ods,ops) */
         boost::shared_ptr<RTT::Scripting> scripting;

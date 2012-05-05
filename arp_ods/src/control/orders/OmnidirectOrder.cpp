@@ -51,7 +51,6 @@ shared_ptr<MotionOrder> OmnidirectOrder::createOrder( const OrderGoalConstPtr &g
     end.h(goal->theta_des);
     order->setEndPose(end);
 
-    order->setReverse(goal->reverse);
     order->setPass(goal->passe);
 
     order->setConf(conf);

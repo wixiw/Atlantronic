@@ -15,17 +15,17 @@ class MiddleGame(PreemptiveStateMachine):
             # other states
             PreemptiveStateMachine.add('EtatA',
                       EtatA(),
-                      transitions={'succeeded':'EtatB', 'aborted':'ReverseOrder'})
+                      transitions={'succeeded':'EtatB', 'timeout':'ReverseOrder'})
             #as initial state is not the preemptive one, it is necessary to add the information here !
             self.setInitialState('EtatA')
             
             PreemptiveStateMachine.add('EtatB',
                       EtatB(),
-                      transitions={'succeeded':'EtatA', 'aborted':'ReverseOrder'})
+                      transitions={'succeeded':'EtatA', 'timeout':'ReverseOrder'})
 
             PreemptiveStateMachine.add('ReverseOrder',
                       ReverseOrder(),
-                      transitions={'succeeded':'endMiddleGame', 'aborted':'endMiddleGame'})
+                      transitions={'succeeded':'endMiddleGame', 'timeout':'endMiddleGame'})
 
 
 ############### Ordres de motion
@@ -43,5 +43,4 @@ class EtatB(CyclicActionState):
 ################# REVERSER
 class ReverseOrder(CyclicActionState):
     def createAction(self):
-        order=Data.listReplayOrders.pop() #retourne le dernier element et l'enleve de la liste
-        self.executeReplayOrder(order) 
+        self.replay(1.0)  

@@ -41,7 +41,7 @@ RosOdsItf::RosOdsItf(std::string const name):
     propOrderConfig.ORDER_TIMEOUT = 10.0;
     propOrderConfig.PASS_TIMEOUT = 1.0;
 
-    propOrderConfig.LIN_DEC=1.0;
+    propOrderConfig.LIN_DEC=4.0;
     propOrderConfig.ANG_DEC=2.0;
 
 }
@@ -87,8 +87,8 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
     {
         inPose.readNewest(pose);
         m_order = OmnidirectOrder::createOrder(goal, pose, propOrderConfig);
-        sprintf( string, "new Omnidirect goal (%0.3f,%0.3f,%0.3f) reverse : %d pass %d", goal->x_des, goal->y_des,
-                goal->theta_des, goal->reverse, goal->passe);
+        sprintf( string, "new Omnidirect goal (%0.3f,%0.3f,%0.3f) pass %d", goal->x_des, goal->y_des,
+                goal->theta_des, goal->passe);
         LOG(Info) << string << endlog();
     }
     else if (goal->move_type == "OPENLOOP")
@@ -150,12 +150,12 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         bool blocked;
         double time=getTime();
         inRobotBlocked.readNewest(blocked);
-        /*if(blocked and time-m_blockTime>1.0) //1 of occultation, to allow the beginning of the new motion
+        if(blocked and time-m_blockTime>1.0) //1 of occultation, to allow the beginning of the new motion
         {
             LOG(Error) << goal->move_type.c_str() << ": not processed due to Robot Blockage detection" << endlog();
             m_blockTime= time;
             goto abort;
-        }*/
+        }
 
         r.sleep();
 

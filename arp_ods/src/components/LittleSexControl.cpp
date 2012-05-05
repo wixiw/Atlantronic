@@ -21,7 +21,6 @@ LittleSexControl::LittleSexControl(const std::string& name):
         attrOrder(orders::defaultOrder),
         attrVMax(1.0),
         attrCurrentOrder("default"),
-        m_oldTime(0.0),
         m_twistBuffer()
 
 {
@@ -44,9 +43,6 @@ void LittleSexControl::updateHook()
     //bufferise inputs
     getInputs();
 
-    //note the dt for this turn
-    attrDt=getDt();
-
     //note the twist reliazed for this turn
     storeTwist();
 
@@ -61,24 +57,6 @@ void LittleSexControl::updateHook()
     //publish computed value
     setOutputs();
 }
-
-double LittleSexControl::getDt()
-{
-    double time=arp_math::getTime();
-    if (m_oldTime==0.0)
-        {
-        //first time here
-        m_oldTime=time;
-        return 0.01;
-        }
-    else
-        {
-        double dt=time-m_oldTime;
-        m_oldTime=time;
-        return dt;
-        }
-}
-
 
 
 void LittleSexControl::setOutputs()
@@ -162,7 +140,6 @@ void LittleSexControl::createOrocosInterface()
     addAttribute("attrOrder",attrOrder);
     addAttribute("attrVMax",attrVMax);
     addAttribute("attrCurrentOrder",attrCurrentOrder);
-    addAttribute("attrDt",attrDt);
     addAttribute("attrCurrentTwist",attrCurrentTwist);
 
     addPort("inPosition",inPosition)

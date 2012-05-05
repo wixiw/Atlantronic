@@ -42,5 +42,4 @@ class GotoSecondBottle(CyclicActionState):
 ################# REVERSER
 class ReverseOrder(CyclicActionState):
     def createAction(self):
-        order=Data.listReplayOrders.pop() #retourne le dernier element et l'enleve de la liste
-        self.executeReplayOrder(order) 
+        self.replay(1.0)  

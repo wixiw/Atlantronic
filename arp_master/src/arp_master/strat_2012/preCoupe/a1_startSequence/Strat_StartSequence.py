@@ -30,7 +30,7 @@ class StartSequence(smach.StateMachine):
             
             smach.StateMachine.add('SetDrivingPower',
                       SetDrivingPower(),
-                      transitions={'succeeded':'ShowReady','timeout':'problem'})
+                      transitions={'succeeded':'WaitForMatch','timeout':'problem'})
             
             smach.StateMachine.add('ShowReady',
                       ShowReady(),
@@ -50,10 +50,10 @@ class StartSequence(smach.StateMachine):
 #on tourne un peu avant le match pour confirmer la couleur
 class ShowReady(CyclicActionState):
     def createAction(self):
-        self.omnicap(AmbiCapRed(-pi+0.8,Data.color).angle)
+        self.cap(AmbiCapRed(-pi+0.8,Data.color).angle)
         
 class TakeStartPosition(CyclicActionState):
     def createAction(self):
-       self.omnicap(AmbiCapRed(-pi,Data.color).angle)
+       self.cap(AmbiCapRed(-pi,Data.color).angle)
       
         

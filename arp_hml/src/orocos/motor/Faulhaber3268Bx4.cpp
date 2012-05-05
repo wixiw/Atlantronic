@@ -28,7 +28,7 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         propReductorValue(14),
         propEncoderResolution(3000),
         propMaximalTorque(0.5),
-        propInputsTimeout(20.0),
+        propInputsTimeout(1.0),
         propHomingSpeed(4),
         propBlockingTorqueTimeout(0.500),
         m_faulhaberCommandTodo(false),

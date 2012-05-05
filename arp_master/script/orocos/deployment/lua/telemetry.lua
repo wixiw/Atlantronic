@@ -64,6 +64,15 @@ function Telemetry:reportTiming()
 	Reporting:reportPort("Can1","outPeriod")
 end
 
+-- Trace le joystick
+--
+function Telemetry:reportJoystick()
+	print("reporting Joystick")
+	Reporting=Deployer:getPeer("Reporting")
+	Reporting:reportPort("Joystick","outX1")
+	Reporting:reportPort("Joystick","outY1")
+	Reporting:reportPort("Joystick","outX2")
+end
 
 -- Enregistre les ports à plotter et lances l'enregistrement
 -- pour voir les résultats :
@@ -76,11 +85,17 @@ end
 function Telemetry:report()
 	print("====================")
 	print("début déploiment telemetry")
+	Telemetry:reportJoystick()
+	Telemetry:reportRobotCmd()
 	Telemetry:reportRobotState()
 	--Telemetry:reportMotorState()
-	Telemetry:reportRobotCmd()
 	--Telemetry:reportTiming()
+	
+
+	
+	
 	Reporting=Deployer:getPeer("Reporting")
 	Reporting:start()
+	
 	print("====================")
 end

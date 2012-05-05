@@ -40,6 +40,7 @@ class TwistTeleop: public OdsTaskContext
         double attrSpeedDirection;
         double attrAngularCmd;
         double attrOldAngularCmd;
+
         arp_math::Twist2D attrTwistCmdCdg;
 
         RTT::OutputPort<arp_math::Twist2D> outTwistCmd;
@@ -58,6 +59,10 @@ class TwistTeleop: public OdsTaskContext
 
         void createOrocosItf();
 
+        /*
+         * time of last call
+         */
+        double m_oldTime;
 };
 
 } /* namespace arp_ods */

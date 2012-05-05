@@ -46,7 +46,7 @@ class GotoOutStartPos(CyclicActionState):
 
 class TurnToGoldBar(CyclicActionState):
     def createAction(self):
-        self.omnicap(AmbiCapRed(-pi/2, Data.color).angle)
+        self.cap(AmbiCapRed(-pi/2, Data.color).angle)
         
         
 class GoToGoldBar(CyclicActionState):

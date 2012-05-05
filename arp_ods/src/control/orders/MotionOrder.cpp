@@ -23,7 +23,6 @@ MotionOrder::MotionOrder(const MotionOrder& order):
         ModeSelector()
 {
     m_type = order.m_type;
-    m_reverse = order.m_reverse;
     m_pass = order.m_pass;
     m_beginPose = order.m_beginPose;
     m_endPose = order.m_endPose;
@@ -34,7 +33,7 @@ MotionOrder::MotionOrder(const MotionOrder& order):
 }
 
 MotionOrder::MotionOrder() :
-   ModeSelector(), m_type(NO_ORDER), m_reverse(false)
+   ModeSelector(), m_type(NO_ORDER)
 {
 
 }
@@ -46,22 +45,6 @@ Twist2D MotionOrder::computeSpeed(Pose2D currentPosition, double dt)
     v.vy(0);
     v.vh(0);
     return v;
-}
-
-Pose2D MotionOrder::reversePosition(Pose2D p)
-{
-    Pose2D ret;
-    ret.x(p.x());
-    ret.y(p.y());
-    if( m_reverse )
-    {
-        ret.h(normalizeAngle(p.h() + PI));
-    }
-    else
-    {
-        ret.h(normalizeAngle(p.h()));
-    }
-    return ret;
 }
 
 shared_ptr<MotionOrder> MotionOrder::createOrder( const OrderGoalConstPtr &goal, Pose2D currentPose, orders::config conf )
@@ -81,7 +64,6 @@ shared_ptr<MotionOrder> MotionOrder::createOrder( const OrderGoalConstPtr &goal,
     end.h(goal->theta_des);
     order->setEndPose(end);
 
-    order->setReverse(goal->reverse);
     order->setPass(goal->passe);
 
     order->setConf(conf);
@@ -128,11 +110,6 @@ std::string MotionOrder::getTypeString() const
             break;
     }
     return "ERROR";
-}
-
-void MotionOrder::setReverse(bool reverse)
-{
-    m_reverse = reverse;
 }
 
 void MotionOrder::setId(int id)

@@ -6,45 +6,46 @@
  */
 
 #include "ARDTaskContext.hpp"
+#include "math/core"
 
 using namespace arp_core;
 using namespace RTT;
 using namespace base;
 using namespace std;
+using namespace arp_math;
 
 ARDTaskContext::ARDTaskContext(const std::string& name, const std::string projectRootPath) :
-    TaskContext(name, PreOperational),
-    propEnableLog(true),
-    propAutoLoadScript(""),
-    propAutoLoadStateMachines(""),
-    attrProjectRootPath(projectRootPath),
-    attrPropertyPath("script/orocos/conf"),
-    attrScriptPath("script/orocos/ops"),
-    attrStateMachinePath("script/orocos/osd"),
-    /* TODO WLA logger(dynamic_cast<OCL::logging::Category*>(&log4cpp::Category::getInstance("ard")))*/
-    logger(name)
+        TaskContext(name, PreOperational), propEnableLog(true), propAutoLoadScript(""), propAutoLoadStateMachines(""), attrProjectRootPath(
+                projectRootPath), attrPropertyPath("script/orocos/conf"), attrScriptPath("script/orocos/ops"), attrStateMachinePath(
+                "script/orocos/osd"), attrDt(0.0),
+        /* TODO WLA logger(dynamic_cast<OCL::logging::Category*>(&log4cpp::Category::getInstance("ard")))*/
+        logger(name)
 {
-    addProperty("propAutoLoadScript", propAutoLoadScript)
-        .doc("If non empty, the component will automatically load this script during configure() (le dossier ops est automatiquement ajouté, l'extension est mise par le soft)");
-    addProperty("propAutoLoadStateMachines",propAutoLoadStateMachines)
-        .doc("If non empty, the component will automatically load this state machine during configure() (le dossier fsm-osd est automatiquement ajouté, l'extension est mise par le soft)");
-    addProperty("propEnableLog", propEnableLog)
-        .doc("If set to true the composant is allowed to write in the log file, if set to false it will not log anything. Use it when a component is spamming log and this annoys you");
+    addProperty("propAutoLoadScript", propAutoLoadScript).doc(
+            "If non empty, the component will automatically load this script during configure() (le dossier ops est automatiquement ajouté, l'extension est mise par le soft)");
+    addProperty("propAutoLoadStateMachines", propAutoLoadStateMachines).doc(
+            "If non empty, the component will automatically load this state machine during configure() (le dossier fsm-osd est automatiquement ajouté, l'extension est mise par le soft)");
+    addProperty("propEnableLog", propEnableLog).doc(
+            "If set to true the composant is allowed to write in the log file, if set to false it will not log anything. Use it when a component is spamming log and this annoys you");
 
-    addAttribute("attrProjectRootPath",attrProjectRootPath);
-    addAttribute("attrPropertyPath",attrPropertyPath);
-    addAttribute("attrScriptPath",attrScriptPath);
-    addAttribute("attrStateMachinePath",attrStateMachinePath);
-    addAttribute("attrScriptRes",attrScriptRes);
+    addAttribute("attrProjectRootPath", attrProjectRootPath);
+    addAttribute("attrPropertyPath", attrPropertyPath);
+    addAttribute("attrScriptPath", attrScriptPath);
+    addAttribute("attrStateMachinePath", attrStateMachinePath);
+    addAttribute("attrScriptRes", attrScriptRes);
+    addAttribute("attrUpdateTime", attrUpdateTime);
+    addAttribute("attrDt", attrDt);
 
-    addOperation("coLog", &ARDTaskContext::coLog, this, ClientThread )
-        .doc("This Client Operation allows to log from script. It's non real time. Level are NONE=-1,ERROR=0,WARNING=1,INFO=2,DEBUG=3")
-        .arg("level","The log level")
-        .arg("string","The string to log");
-    addOperation("coReset", &ARDTaskContext::coReset, this, ClientThread )
-        .doc("This Client Operation allows reset the component");
-    addOperation("ooWriteProperties", &ARDTaskContext::ooWriteProperties, this, OwnThread )
-          .doc("Write current Component properties to disk");
+    addOperation("coLog", &ARDTaskContext::coLog, this, ClientThread).doc(
+            "This Client Operation allows to log from script. It's non real time. Level are NONE=-1,ERROR=0,WARNING=1,INFO=2,DEBUG=3").arg(
+            "level", "The log level").arg("string", "The string to log");
+    addOperation("coReset", &ARDTaskContext::coReset, this, ClientThread).doc(
+            "This Client Operation allows reset the component");
+    addOperation("ooWriteProperties", &ARDTaskContext::ooWriteProperties, this, OwnThread).doc(
+            "Write current Component properties to disk");
+
+    attrUpdateTime.tv_sec = 0.0;
+    attrUpdateTime.tv_nsec = 0.0;
 
 }
 
@@ -58,10 +59,10 @@ bool ARDTaskContext::configureHook()
 {
     bool res = TaskContext::configureHook();
 
-    if ( /* TODO logger==NULL*/ false )
+    if ( /* TODO logger==NULL*/false)
     {
         res &= false;
-        cerr << "Logger is badly initialised '"  << "'" << endl;
+        cerr << "Logger is badly initialised '" << "'" << endl;
     }
     else
     {
@@ -79,6 +80,25 @@ bool ARDTaskContext::startHook()
     bool res = TaskContext::startHook();
 
     return res;
+}
+
+void ARDTaskContext::updateHook()
+{
+   TaskContext::updateHook();
+
+    timespec time;
+    clock_gettime(CLOCK_MONOTONIC, &time);
+    if (attrUpdateTime.tv_nsec == 0.0 && attrUpdateTime.tv_sec == 0.0)
+    {
+        //first time here
+        attrUpdateTime = time;
+        attrDt = 0.0;
+    }
+    else
+    {
+        attrDt = delta_t(attrUpdateTime,time);
+        attrUpdateTime = time;
+    }
 }
 
 void ARDTaskContext::stopHook()
@@ -100,19 +120,19 @@ void ARDTaskContext::cleanupHook()
 //       marshalling->writeProperties(fileName);
 //   }
 
-   //dechargement de tous les programs
-   for( itProg = progList.begin() ; itProg != progList.end() ; itProg++ )
-   {
-       scripting->unloadProgram((*itProg));
-   }
+//dechargement de tous les programs
+    for (itProg = progList.begin(); itProg != progList.end(); itProg++)
+    {
+        scripting->unloadProgram((*itProg));
+    }
 
-   //dechargement de toutes les states machines
-   for( itFsm = fsmList.begin() ; itFsm != fsmList.end() ; itFsm++ )
-   {
-       scripting->unloadStateMachine((*itFsm));
-   }
+    //dechargement de toutes les states machines
+    for (itFsm = fsmList.begin(); itFsm != fsmList.end(); itFsm++)
+    {
+        scripting->unloadStateMachine((*itFsm));
+    }
 
-   TaskContext::cleanupHook();
+    TaskContext::cleanupHook();
 }
 
 //------------------------------------------------------------------------------------------------------------------
@@ -123,7 +143,7 @@ bool ARDTaskContext::loadPlugins()
 
     //ajout du plugin de scripting
     scripting = this->getProvider<RTT::Scripting>("scripting");
-    if( scripting == NULL )
+    if (scripting == NULL)
     {
         LOG(Error) << "Interface de scripting non chargée" << endlog();
         res &= false;
@@ -131,7 +151,7 @@ bool ARDTaskContext::loadPlugins()
 
     //ajout du plugin de marshalling
     marshalling = this->getProvider<RTT::Marshalling>("marshalling");
-    if( marshalling == NULL )
+    if (marshalling == NULL)
     {
         LOG(Error) << "Interface de marschalling non chargée" << endlog();
         res &= false;
@@ -144,13 +164,13 @@ bool ARDTaskContext::loadProperties()
 {
     bool res = true;
     //nom du fichier à rechercher
-    string fileName = attrProjectRootPath + "/" + attrPropertyPath  + "/" + getName() + ".xml";
+    string fileName = attrProjectRootPath + "/" + attrPropertyPath + "/" + getName() + ".xml";
 
-    if( marshalling != NULL)
+    if (marshalling != NULL)
     {
-        if( std::ifstream( fileName.c_str() ) )
+        if (std::ifstream(fileName.c_str()))
         {
-            if( marshalling->updateProperties(fileName) == false )
+            if (marshalling->updateProperties(fileName) == false)
             {
                 LOG(Error) << "Configure failed, error while reading " << fileName << endlog();
                 res &= false;
@@ -170,9 +190,9 @@ bool ARDTaskContext::loadProperties()
     }
 
     //vérification de la valeur des propriétés
-    if( res )
+    if (res)
     {
-         res &= checkProperties();
+        res &= checkProperties();
     }
 
     return res;
@@ -180,17 +200,17 @@ bool ARDTaskContext::loadProperties()
 
 bool ARDTaskContext::loadPrograms()
 {
-    bool res    = true;
-    string path ;
+    bool res = true;
+    string path;
 
-    if( propAutoLoadScript == "" )
+    if (propAutoLoadScript == "")
     {
         LOG(Info) << "no auto loaded script" << endlog();
         res &= true;
     }
     else
     {
-        path = attrProjectRootPath + "/" + attrScriptPath + "/" +propAutoLoadScript + ".ops";
+        path = attrProjectRootPath + "/" + attrScriptPath + "/" + propAutoLoadScript + ".ops";
 
         //on tente de charger le programme, on renvoit une erreur si on ne le trouve pas
         res &= scripting->loadPrograms(path);
@@ -201,11 +221,11 @@ bool ARDTaskContext::loadPrograms()
 
 bool ARDTaskContext::loadStateMachines()
 {
-    bool res    = true;
-    string path ;
+    bool res = true;
+    string path;
 
     //si la propriété est vide on ne charge rien
-    if( propAutoLoadStateMachines == "" )
+    if (propAutoLoadStateMachines == "")
     {
         LOG(Info) << "no auto loaded fsm" << endlog();
         res &= true;
@@ -223,9 +243,8 @@ bool ARDTaskContext::loadStateMachines()
 
 void ARDTaskContext::coLog(LoggerLevel level, string s)
 {
-	LOG(level) << s << endlog();
+    LOG(level) << s << endlog();
 }
-
 
 bool ARDTaskContext::checkProperties()
 {
@@ -263,7 +282,7 @@ bool ARDTaskContext::coReset()
     res &= configure();
     res &= start();
 
-    if( !res )
+    if (!res)
     {
         LOG(Error) << "Failed to reset" << endlog();
     }
@@ -275,19 +294,20 @@ bool ARDTaskContext::ooWriteProperties()
 {
     bool res = true;
 
-
     //vérification de la valeur des propriétés
-    if( checkProperties() == false )
+    if (checkProperties() == false)
     {
-        LOG(Warning) << "ooWriteProperties : checkProperties failed ! Properties saved may be unloadable next time" << endlog();;
+        LOG(Warning) << "ooWriteProperties : checkProperties failed ! Properties saved may be unloadable next time"
+                << endlog();
+        ;
     }
 
     //nom du fichier à rechercher
-    string fileName = attrProjectRootPath + "/" + attrPropertyPath  + "/" + getName() + ".xml";
+    string fileName = attrProjectRootPath + "/" + attrPropertyPath + "/" + getName() + ".xml";
 
-    if( marshalling != NULL)
+    if (marshalling != NULL)
     {
-        if( marshalling->writeProperties(fileName) == false )
+        if (marshalling->writeProperties(fileName) == false)
         {
             LOG(Error) << "ooWriteProperties : error while writing properties in file " << fileName << endlog();
             res &= false;
@@ -304,8 +324,6 @@ bool ARDTaskContext::ooWriteProperties()
         LOG(Error) << "coWriteProperties : Marshalling is not ready" << endlog();
         res &= false;
     }
-
-
 
     return res;
 }
