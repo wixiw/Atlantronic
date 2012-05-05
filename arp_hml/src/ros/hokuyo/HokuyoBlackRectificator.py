@@ -13,7 +13,7 @@ class HokuyoBlackRectificator():
         rospy.spin()
 
     def callback(self, data):
-        rospy.loginfo(rospy.get_name() + "bite !")
+        rospy.loginfo(rospy.get_name() + "bite a Boris !")
         
 
 

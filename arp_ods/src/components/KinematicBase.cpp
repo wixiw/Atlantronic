@@ -20,10 +20,15 @@ using namespace std;
 ORO_LIST_COMPONENT_TYPE( arp_ods::KinematicBase)
 
 KinematicBase::KinematicBase(const std::string& name) :
-        OdsTaskContext(name), propMinSpeed(0.001), m_oldTime(0.0), propRobotBlockedTimeout(2.0)
+        OdsTaskContext(name),
+        propMinSpeed(0.001),
+        propRobotBlockedTimeout(2.0),
+        propMaxSpeedDiff(0.040),
+        m_oldTime(0.0)
 {
     createOrocosInterface();
-    arp_model::Logger::InitFile("arp_model", DEBUG);
+    //A ne pas mettre sur le robot pour des problemes de place (ou nettoyer les logs pour qu'ils ne grossissent pas trop vite)
+    //arp_model::Logger::InitFile("arp_model", DEBUG);
     //arp_model::Logger::InitConsole("arp_model", DEBUG);
 }
 
@@ -57,11 +62,14 @@ void KinematicBase::run()
     checkRobotBlocked();
 
     //filter the input command to get a reachable command that we are sure the hardware will be capable to do
-    if (KinematicFilter::filterTwist(attrTwistCmd, attrCurrentTwist, attrMotorsCurrentState, attrParams, dt,
-            propMinSpeed, attrAcceptableTwist, attrQuality) == false)
-    {
-        LOG(Error) << "Failed to filter desired twist to an acceptable twist" << endlog();
-    }
+//    if (KinematicFilter::filterTwist(attrTwistCmd, attrCurrentTwist, attrMotorsCurrentState, attrParams, dt,
+//            propMinSpeed, attrAcceptableTwist, attrQuality) == false)
+//    {
+//        LOG(Error) << "Failed to filter desired twist to an acceptable twist" << endlog();
+//    }
+
+    //TODO WLA desactivation du filtre
+    attrAcceptableTwist = attrTwistCmd;
 
     //compute the motor commands to do the filtered twist command
     if (UbiquityKinematics::twist2Motors(attrAcceptableTwist, attrMotorsCurrentState, attrTurretState,
@@ -147,7 +155,7 @@ bool KinematicBase::consistencyMeasuredvsCommanded()
 
 
     // 20 mm/s difference accepted
-    return speederror < 0.02;
+    return speederror < propMaxSpeedDiff;
 }
 
 void KinematicBase::setOutputs()
@@ -179,6 +187,8 @@ void KinematicBase::createOrocosInterface()
 
     addProperty("propMinSpeed", propMinSpeed).doc("");
     addProperty("propRobotBlockedTimeout", propRobotBlockedTimeout).doc("");
+    addProperty("propMaxSpeedDiff", propMaxSpeedDiff).doc("Max distance between commanded and measured Speed before declaring the robot is blocked (in m/s)");
+
 
     addPort("inTwistCmd", inTwistCmd).doc("");
     addPort("inCurrentTwist", inCurrentTwist).doc("");

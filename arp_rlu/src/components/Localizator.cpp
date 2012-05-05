@@ -24,8 +24,9 @@ Localizator::Localizator(const std::string& name)
 : RluTaskContext(name)
 , kfloc()
 {
-    arp_rlu::lsl::Logger::InitFile("LSL", DEBUG);
-    arp_rlu::kfl::Logger::InitFile("KFL", DEBUG);
+    //A ne pas mettre sur le robot pour des problemes de place (ou nettoyer les logs pour qu'ils ne grossissent pas trop vite)
+    //arp_rlu::lsl::Logger::InitFile("LSL", DEBUG);
+    //arp_rlu::kfl::Logger::InitFile("KFL", DEBUG);
     createOrocosInterface();
 
     m_monotonicTimeToRealTime = ros::Time::now().toSec() - getTime();

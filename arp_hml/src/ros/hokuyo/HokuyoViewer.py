@@ -19,7 +19,6 @@ class HokuyoViewer():
 
     def callback(self, data):
         if self.goon is True:
-            rospy.loginfo(rospy.get_name() + "bite !")
             self.plot(data)
             self.goon = False;
         

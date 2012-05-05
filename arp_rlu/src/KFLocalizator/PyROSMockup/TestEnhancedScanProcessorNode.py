@@ -100,7 +100,7 @@ class TestEnhancedScanProcessor():
     for i,o in enumerate(self.scanproc.foundBeacons):
       rospy.loginfo("Object [%d]  x:%f - y:%f with apparent radius:%f", i, o.xCenter, o.yCenter, o.radius)
       
-    rospy.logdebug("bite")
+    rospy.logdebug("bite a Boris")
     
     # clear
     self.fig.clear()

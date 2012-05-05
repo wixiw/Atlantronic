@@ -7,7 +7,7 @@
 	<node name="ManualStratNode"   pkg="arp_master"  type="ManualStratNode.py"     args="" output="screen"/>
 	<node 	name="ArpOrocos" 
 		pkg="ocl" 
-		type="cdeployer-gnulinux" 
+		type="deployer-corba-gnulinux" 
 		args="-s $(find arp_master)/script/orocos/deployment/deploy_arp_master_manual.ops --" 
 		output="screen"
 		respawn="false"

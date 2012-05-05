@@ -34,8 +34,8 @@ RosOdsItf::RosOdsItf(std::string const name):
     propOrderConfig.ANGLE_ACCURACY = 0.018;//1°
     propOrderConfig.DISTANCE_ACCURACY = 0.010;//20mm
 
-    propOrderConfig.LIN_VEL_MAX = 0.5;
-    propOrderConfig.ANG_VEL_MAX = 1.0;
+    propOrderConfig.LIN_VEL_MAX = 1.0;
+    propOrderConfig.ANG_VEL_MAX = 5.0;
     propOrderConfig.VEL_FINAL = 0.150;
 
     propOrderConfig.ORDER_TIMEOUT = 10.0;

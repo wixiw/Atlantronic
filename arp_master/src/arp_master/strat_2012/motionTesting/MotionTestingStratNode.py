@@ -40,15 +40,11 @@ class MainStateMachine(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['end'])
         with self:
-            smach.StateMachine.add('Initialisation', 
-                                   Initialisation(),
-                                   transitions={'endInitialisation':'SetInitialPosition','failed':'end'}) #=> utilisation de l'etat commun
-            smach.StateMachine.add('SetInitialPosition',
-                                   SetInitialPosition(0,0,0 ),
-                                   transitions={'succeeded':'WaitForStartUnplug','timeout':'end'})            
-            smach.StateMachine.add('WaitForStartUnplug', WaitForStartUnplug(),
-                                   transitions={'startunplug':'Move1', 'timeout':'end'})
-            
+            smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
+                                   transitions={'endInitialisation':'StartSequence', 'failed':'end'})
+            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(0,0,0),
+                                   transitions={'gogogo':'Move1','problem':'end'})  
+                       
             smach.StateMachine.add('Move1', Move1(),
                                    transitions={'succeeded':'Move2', 'timeout':'Debloque'})
             smach.StateMachine.add('Move2', Move2(),
@@ -56,6 +52,10 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('Move3', Move3(),
                                    transitions={'succeeded':'Move4', 'timeout':'Debloque'})
             smach.StateMachine.add('Move4', Move4(),
+                                   transitions={'succeeded':'Move5', 'timeout':'Debloque'})
+            smach.StateMachine.add('Move5', Move5(),
+                                   transitions={'succeeded':'Move6', 'timeout':'Debloque'})
+            smach.StateMachine.add('Move6', Move6(),
                                    transitions={'succeeded':'Move1', 'timeout':'Debloque'})   
             smach.StateMachine.add('Debloque', Debloque(),
                                    transitions={'succeeded':'Wait', 'timeout':'Debloque'})     
@@ -78,19 +78,39 @@ class WaitForStartUnplug(CyclicState):
         
 class Move1(CyclicActionState):
     def createAction(self):
-        self.omnidirect(0.5,0.5,pi/2)
+        self.openloop_cpoint( x_cpoint=0.000, y_cpoint=0.000,theta_cpoint=0.000,
+                              x_speed=0.200,y_speed=0.000,theta_speed=0.000,
+                              openloop_duration=2.500)
         
 class Move2(CyclicActionState):
     def createAction(self):
-        self.openloop_cpoint(0,0,0,0,0.5,0,2.0)       
+        self.openloop_cpoint( x_cpoint=0.000, y_cpoint=0.000,theta_cpoint=0.000,
+                      x_speed=-0.200,y_speed=0.000,theta_speed=0.000,
+                      openloop_duration=2.500)   
+        
 
 class Move3(CyclicActionState):
     def createAction(self):
-        self.omnidirect(Inputs.getx(),Inputs.gety(),0)   
+        self.openloop_cpoint( x_cpoint=0.000, y_cpoint=0.000,theta_cpoint=0.000,
+                      x_speed=0.000,y_speed=0.200,theta_speed=0.000,
+                      openloop_duration=2.500)     
 
 class Move4(CyclicActionState):
     def createAction(self):
-        self.omnidirect_cpoint(0.3,0,0,0,-0.4,pi/2)   
+        self.openloop_cpoint( x_cpoint=0.000, y_cpoint=0.000,theta_cpoint=0.000,
+                      x_speed=0.000,y_speed=-0.200,theta_speed=0.000,
+                      openloop_duration=2.500)    
+        
+class Move5(CyclicActionState):
+    def createAction(self):
+        self.openloop_cpoint( x_cpoint=0.000, y_cpoint=0.000,theta_cpoint=0.000,
+                      x_speed=0.000,y_speed=-0.000,theta_speed=1.000,
+                      openloop_duration=5.000)    
+class Move6(CyclicActionState):
+    def createAction(self):
+        self.openloop_cpoint( x_cpoint=0.000, y_cpoint=0.000,theta_cpoint=0.000,
+                      x_speed=0.000,y_speed=-0.000,theta_speed=-1.000,
+                      openloop_duration=5.000)    
         
 class Debloque(CyclicActionState):
     def createAction(self):

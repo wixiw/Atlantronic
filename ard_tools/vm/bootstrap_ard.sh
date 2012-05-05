@@ -33,7 +33,8 @@ mount_tmpOnRam
 cecho yellow "Get ard repository ..."
 cecho blue "it will hang a bit, it's normal (quiet option), it works in background"
 cd /opt
-svn co svn://88.191.124.77/ARP/trunk ard --username hudson --password robotik --non-interactive --quiet
+export wixibox=88.191.124.77
+svn co svn://wixibox/ARP/trunk ard --username hudson --password robotik --non-interactive --quiet
 
 create_folders
 configure_apt

@@ -34,6 +34,8 @@ class KinematicBase: public OdsTaskContext
         double attrQuality;
 
         double propMinSpeed;
+        /** Distance maximale du twist mesuré au twist commandé en m/s avant de détecter un blocage*/
+        double propMaxSpeedDiff;
 
         /** Clock port which trigger our activity. contains the Twist command we ha to try to do on the robot*/
         RTT::InputPort<arp_math::Twist2D> inTwistCmd;

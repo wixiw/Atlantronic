@@ -1,4 +1,4 @@
-#Tue Apr 24 16:06:11 CEST 2012
+#Sat May 05 19:24:30 CEST 2012
 eclipse.preferences.version=1
 encoding//arp_master/src/arp_master=US-ASCII
 encoding//arp_ods/test/temporal_planif/test_planif.py=utf-8
@@ -11,6 +11,7 @@ encoding//arp_rlu/src/KFLocalizator/PyMockup/ScanProcessor2.py=utf-8
 encoding//arp_rlu/src/KFLocalizator/PyMockup/clusterize.py=utf-8
 encoding//arp_rlu/src/KFLocalizator/PyMockup/kmeans.py=utf-8
 encoding//arp_rlu/src/KFLocalizator/PyMockup/ransac.py=utf-8
+encoding//arp_rlu/src/KFLocalizator/PyROSMockup/TestEnhancedScanProcessorNode.py=utf-8
 encoding//arp_rlu/test/KFLocalizator/PyMockup/tests/params_KFLocalizator_Dynamic.py=utf-8
 encoding//arp_rlu/test/KFLocalizator/PyMockup/tests/params_KFLocalizator_Static.py=utf-8
 encoding//arp_rlu/test/KFLocalizator/PyMockup/tests/test_EnhancedScanProcessor.py=utf-8
