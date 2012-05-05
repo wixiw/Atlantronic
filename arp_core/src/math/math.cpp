@@ -105,22 +105,21 @@ double smoothStep(const double x, const double startValue, const double startLim
 
 }
 
-double firstDerivateLimitation(const double input, const double lastOutput, const double period, const double vmin, const double vmax)
+double firstDerivateLimitation(const double input, const double lastOutput, const double period, const double dmin, const double dmax)
 {
     double output=0;
     double derivate=0;
 
-    if( period > 0 && vmin < vmax)
+    if( period > 0 && dmin < dmax)
     {
         //calcul de la derivée
         derivate = (input - lastOutput)/period;
 
-
         //filtrage
-        if( derivate > fabs(vmax) )
-            output = lastOutput + fabs(vmax)*period;
-        else if( derivate < -fabs(vmin) )
-            output = lastOutput -fabs(vmin)*period;
+        if( derivate > fabs(dmax) )
+            output = lastOutput + fabs(dmax)*period;
+        else if( derivate < -fabs(dmin) )
+            output = lastOutput -fabs(dmin)*period;
         else
             output = input;
     }

@@ -246,11 +246,11 @@ void ModeSelector::setCpoint(Pose2D cpoint)
 void ModeSelector::testTimeout()
 {
     double t = getTime();
-    double dt = t - m_initTime;
+    double time_elapsed = t - m_initTime;
 
-    if (m_initTime != -1 and dt > m_conf.ORDER_TIMEOUT)
+    if (m_initTime != -1 and time_elapsed > m_conf.ORDER_TIMEOUT)
     {
-        Log(INFO) << "switched from " << getMode() << " to MODE_ERROR because of dt=" << dt;
+        Log(INFO) << "switched from " << getMode() << " to MODE_ERROR because of dt=" << time_elapsed;
         m_currentMode = MODE_ERROR;
         return;
     }

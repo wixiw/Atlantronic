@@ -150,12 +150,12 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         bool blocked;
         double time=getTime();
         inRobotBlocked.readNewest(blocked);
-        if(blocked and time-m_blockTime>1.0) //1 of occultation, to allow the beginning of the new motion
+        /*if(blocked and time-m_blockTime>1.0) //1 of occultation, to allow the beginning of the new motion
         {
             LOG(Error) << goal->move_type.c_str() << ": not processed due to Robot Blockage detection" << endlog();
             m_blockTime= time;
             goto abort;
-        }
+        }*/
 
         r.sleep();
 

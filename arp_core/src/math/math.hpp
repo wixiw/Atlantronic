@@ -81,7 +81,7 @@ namespace arp_math
     /**
      * Limite la dérivée première d'une fonction
      */
-    double firstDerivateLimitation(const double input, const double lastOutput, const double period, const double vmin, const double vmax);
+    double firstDerivateLimitation(const double input, const double lastOutput, const double period, const double dmin, const double dmax);
 
     /**
      * absolute value for floats

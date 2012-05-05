@@ -26,7 +26,7 @@ LittleSexControl::LittleSexControl(const std::string& name):
 
 {
     createOrocosInterface();
-    arp_ods::orders::Logger::InitFile("arp_ods", INFO);
+    //arp_ods::orders::Logger::InitFile("arp_ods", DEBUG);
     //arp_ods::orders::Logger::InitConsole("arp_ods", DEBUG);
 }
 

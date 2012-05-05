@@ -78,9 +78,9 @@ void KinematicBase::run()
         LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
     }
 
-
-    Log(INFO) << "acceptable Twist=                                " << attrAcceptableTwist.toString() << " phi="
-            << attrAcceptableTwist.speedAngle() << " v=" << attrAcceptableTwist.speedNorm();
+    Log(INFO) << "cur Twist=               " << attrCurrentTwist.toString();
+    Log(INFO) << "attrMotorsCurrentState=  " <<attrMotorsCurrentState.toString();
+    Log(INFO) << "acceptable Twist=        " << attrAcceptableTwist.toString();
 
 
 
