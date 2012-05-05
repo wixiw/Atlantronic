@@ -20,7 +20,8 @@
 	<depend package="arp_ihm" />
 	<depend package="arp_ods" />
 	<depend package="arp_rlu" />
-	<depend package="runtime_monitor"/>
+	
+	<! TODO : introduit bizarrement un link sur wxwidget :( --<depend package="runtime_monitor"/>-->
 	
 	<rosdep name="wxwidgets"/>
 	
