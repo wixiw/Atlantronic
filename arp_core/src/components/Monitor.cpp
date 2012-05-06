@@ -144,7 +144,7 @@ void Monitor::errorHook()
         {
             if( !tc->isRunning() )
             {
-                LOG(Error) << tc->getName() << " is still not Running ! (error)" << endlog();
+                LOG(Debug) << tc->getName() << " is still not Running ! (error)" << endlog();
                 isEveryOneRunning = false;
             }
         }
