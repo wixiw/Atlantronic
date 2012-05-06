@@ -15,6 +15,8 @@
 
 #include <boost/circular_buffer.hpp>
 
+#include <timer/StatTimer.hpp>
+
 namespace arp_rlu
 {
 
@@ -282,6 +284,9 @@ class KFLocalizator
          * Buffer circulaire stockant les estimations de Pose et de Twist
          */
         boost::circular_buffer< std::pair< arp_math::EstimatedPose2D, arp_math::EstimatedTwist2D > > circularBuffer;
+
+        arp_core::StatTimer newOdoVelTimer;
+        arp_core::StatTimer newScanTimer;
 
     protected:
         /**

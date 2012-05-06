@@ -146,6 +146,8 @@ KFLocalizator::KFLocalizator()
 , beaconDetector()
 , bayesian(NULL)
 , circularBuffer(boost::circular_buffer< std::pair< arp_math::EstimatedPose2D, arp_math::EstimatedTwist2D > >(params.bufferSize))
+, newOdoVelTimer()
+, newScanTimer()
 {
     bayesian = new BFLWrapper();
     setParams(params);
@@ -215,7 +217,7 @@ bool KFLocalizator::initialize(const arp_math::EstimatedPose2D & H_robot_table)
 
 bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D T_odo_table_p_odo_r_odo)
 {
-    double startTime = getTime();
+    newOdoVelTimer.Start();
 
     if(circularBuffer.empty())
     {
@@ -241,9 +243,9 @@ bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D T_odo_table_p_odo_
     double dt = T_odo_table_p_odo_r_odo.date() - lastEstim.date();
 
     Log( DEBUG ) << "KFLocalizator::newOdoVelocity - T_odo_table_p_odo_r_odo :"
-                 << "  vx=" << T_odo_table_p_odo_r_odo.vx() << " (m/s)"
-                 << "  vy=" << T_odo_table_p_odo_r_odo.vy() << " (m/s)"
-                 << "  vh=" << rad2deg(T_odo_table_p_odo_r_odo.vh()) << " (deg/s)";
+            << "  vx=" << T_odo_table_p_odo_r_odo.vx() << " (m/s)"
+            << "  vy=" << T_odo_table_p_odo_r_odo.vy() << " (m/s)"
+            << "  vh=" << rad2deg(T_odo_table_p_odo_r_odo.vh()) << " (deg/s)";
     Log( DEBUG ) << "  covariance : " << T_odo_table_p_odo_r_odo.cov().row(0);
     Log( DEBUG ) << "               " << T_odo_table_p_odo_r_odo.cov().row(1);
     Log( DEBUG ) << "               " << T_odo_table_p_odo_r_odo.cov().row(2);
@@ -252,9 +254,9 @@ bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D T_odo_table_p_odo_
     arp_math::EstimatedTwist2D T_hky_table_p_hky_r_hky = T_odo_table_p_odo_r_odo.transport( H_hky_odo );
 
     Log( DEBUG ) << "KFLocalizator::newOdoVelocity - T_hky_table_p_hky_r_hky :"
-                 << "  vx=" << T_hky_table_p_hky_r_hky.vx() << " (m/s)"
-                 << "  vy=" << T_hky_table_p_hky_r_hky.vy() << " (m/s)"
-                 << "  vh=" << rad2deg(T_hky_table_p_hky_r_hky.vh()) << " (deg/s)";
+            << "  vx=" << T_hky_table_p_hky_r_hky.vx() << " (m/s)"
+            << "  vy=" << T_hky_table_p_hky_r_hky.vy() << " (m/s)"
+            << "  vh=" << rad2deg(T_hky_table_p_hky_r_hky.vh()) << " (deg/s)";
     Log( DEBUG ) << "  covariance : " << T_hky_table_p_hky_r_hky.cov().row(0);
     Log( DEBUG ) << "               " << T_hky_table_p_hky_r_hky.cov().row(1);
     Log( DEBUG ) << "               " << T_hky_table_p_hky_r_hky.cov().row(2);
@@ -263,9 +265,9 @@ bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D T_odo_table_p_odo_
     EstimatedTwist2D T_hky_table_p_table_r_hky = T_hky_table_p_hky_r_hky.changeProjection( H_hky_table.inverse() );
 
     Log( DEBUG ) << "KFLocalizator::newOdoVelocity - T_hky_table_p_table_r_hky :"
-                 << "  vx=" << T_hky_table_p_table_r_hky.vx() << " (m/s)"
-                 << "  vy=" << T_hky_table_p_table_r_hky.vy() << " (m/s)"
-                 << "  vh=" << rad2deg(T_hky_table_p_table_r_hky.vh()) << " (deg/s)";
+            << "  vx=" << T_hky_table_p_table_r_hky.vx() << " (m/s)"
+            << "  vy=" << T_hky_table_p_table_r_hky.vy() << " (m/s)"
+            << "  vh=" << rad2deg(T_hky_table_p_table_r_hky.vh()) << " (deg/s)";
     Log( DEBUG ) << "  covariance : " << T_hky_table_p_table_r_hky.cov().row(0);
     Log( DEBUG ) << "               " << T_hky_table_p_table_r_hky.cov().row(1);
     Log( DEBUG ) << "               " << T_hky_table_p_table_r_hky.cov().row(2);
@@ -274,13 +276,13 @@ bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D T_odo_table_p_odo_
 
     updateBuffer(T_hky_table_p_table_r_hky.date(), T_hky_table_p_table_r_hky);
 
-    double stopTime = getTime();
+    newOdoVelTimer.Stop();
     return true;
 }
 
 bool KFLocalizator::newScan(lsl::LaserScan scan)
 {
-    double startTime = getTime();
+    newScanTimer.Start();
 
     Log( DEBUG ) << "KFLocalizator::newScan - *************************************************************";
     Log( DEBUG ) << "KFLocalizator::newScan - enter";
@@ -339,7 +341,7 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
     double startInterpTime = arp_math::getTime();
 
     Eigen::VectorXd tt = scan.getTimeData();
-//    Eigen::VectorXi indices = Interpolator::find(tt, ttc);
+    //    Eigen::VectorXi indices = Interpolator::find(tt, ttc);
     Eigen::VectorXi indices = Eigen::VectorXi(0);
     Eigen::VectorXd xx = Interpolator::transInterp(tt, ttFromBuffer, xxFromBuffer, indices);
     Eigen::VectorXd yy = Interpolator::transInterp(tt, ttFromBuffer, yyFromBuffer, indices);
@@ -464,7 +466,7 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
     T.date(tt(tt.size()-1));
     KFLocalizator::updateBuffer(tt(tt.size()-1), T);
 
-    Log( DEBUG ) << "KFLocalizator::newScan - Total computation time =" << (getTime() - startTime)*1000. << " (ms)";
+    newScanTimer.Stop();
     return false;
 }
 
@@ -501,7 +503,7 @@ void KFLocalizator::updateBuffer(const long double & date, const EstimatedTwist2
 {
     KFLStateVar estimStateVar = bayesian->getEstimate();
     KFLStateCov estimStateCov = bayesian->getCovariance();
-//
+    //
     arp_math::EstimatedPose2D estimPose;
     estimPose.date( date );
     estimPose.x( estimStateVar(0) );
@@ -533,6 +535,31 @@ void KFLocalizator::popBufferUntilADate(const double date)
 
 std::string KFLocalizator::getPerformanceReport()
 {
-    return beaconDetector.getPerformanceReport();
+    std::stringstream info;
+    info << "============================================" << std::endl;
+    info << "newOdoVelocity Performance Report (ms)" << std::endl;
+    info << "  [*] Number of samples used : " << newOdoVelTimer.GetRawRefreshTime().size() << std::endl;
+    info << "  [*] Period                 : mean=" << newOdoVelTimer.GetMeanRefreshTime()*1000.;
+    info << "  , stddev=" << sqrt(newOdoVelTimer.GetStdDevRefreshTime())*1000.;
+    info << "  , min=" << newOdoVelTimer.GetMinRefreshTime()*1000.;
+    info << "  , max=" << newOdoVelTimer.GetMaxRefreshTime()*1000. << std::endl;
+    info << "  [*] Global Duration        : mean=" << newOdoVelTimer.GetMeanElapsedTime()*1000.;
+    info << "  , stddev=" << sqrt(newOdoVelTimer.GetStdDevElapsedTime())*1000.;
+    info << "  , min=" << newOdoVelTimer.GetMinElapsedTime()*1000.;
+    info << "  , max=" << newOdoVelTimer.GetMaxElapsedTime()*1000. << std::endl;
+    info << "============================================" << std::endl;
+    info << "newScan Performance Report (ms)" << std::endl;
+    info << "  [*] Number of samples used : " << newScanTimer.GetRawRefreshTime().size() << std::endl;
+    info << "  [*] Period                 : mean=" << newScanTimer.GetMeanRefreshTime()*1000.;
+    info << "  , stddev=" << sqrt(newScanTimer.GetStdDevRefreshTime())*1000.;
+    info << "  , min=" << newScanTimer.GetMinRefreshTime()*1000.;
+    info << "  , max=" << newScanTimer.GetMaxRefreshTime()*1000. << std::endl;
+    info << "  [*] Global Duration        : mean=" << newScanTimer.GetMeanElapsedTime()*1000.;
+    info << "  , stddev=" << sqrt(newScanTimer.GetStdDevElapsedTime())*1000.;
+    info << "  , min=" << newScanTimer.GetMinElapsedTime()*1000.;
+    info << "  , max=" << newScanTimer.GetMaxElapsedTime()*1000. << std::endl;
+
+    info << beaconDetector.getPerformanceReport();
+    return info.str();
 }
 
