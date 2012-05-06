@@ -12,10 +12,6 @@ class StartSequence(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
         with self:
-            smach.StateMachine.add('SetInitialPosition',
-                      SetInitialPosition(1.250,0.750,-pi),
-                      transitions={'succeeded':'SetSteeringPower','timeout':'problem'})
-                        
             smach.StateMachine.add('SetSteeringPower',
                       SetSteeringPower(),
                       transitions={'succeeded':'FindSteeringZero','timeout':'problem'})
@@ -30,16 +26,12 @@ class StartSequence(smach.StateMachine):
             
             smach.StateMachine.add('SetDrivingPower',
                       SetDrivingPower(),
+                      transitions={'succeeded':'SetInitialPosition','timeout':'problem'})
+        
+            smach.StateMachine.add('SetInitialPosition',
+                      SetInitialPosition(1.250,0.750,-pi),
                       transitions={'succeeded':'WaitForMatch','timeout':'problem'})
-            
-            smach.StateMachine.add('ShowReady',
-                      ShowReady(),
-                      transitions={'succeeded':'TakeStartPosition','timeout':'problem'})
-
-            smach.StateMachine.add('TakeStartPosition',
-                      TakeStartPosition(),
-                      transitions={'succeeded':'WaitForMatch','timeout':'problem'})
-            
+                        
             smach.StateMachine.add('WaitForMatch', 
                       WaitForMatch(),
                       transitions={'start':'gogogo', 'timeout':'problem'})

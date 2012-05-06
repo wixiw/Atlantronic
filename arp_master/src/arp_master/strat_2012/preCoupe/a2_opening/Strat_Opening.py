@@ -16,13 +16,9 @@ class Opening(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('GotoOutStartPos',
                       GotoOutStartPos(),
-                      transitions={'succeeded':'TurnToGoldBar', 'timeout':'problem'})
+                      transitions={'succeeded':'GoToGoldBar', 'timeout':'problem'})
             
             self.setInitialState('GotoOutStartPos')
-            
-            PreemptiveStateMachine.add('TurnToGoldBar',
-                      TurnToGoldBar(),
-                      transitions={'succeeded':'GoToGoldBar', 'timeout':'problem'})
             
             PreemptiveStateMachine.add('GoToGoldBar',
                       GoToGoldBar(),
@@ -40,18 +36,13 @@ class Opening(PreemptiveStateMachine):
 ## oui oui on peut faire plus court et supprimer la rotation pure, mais c'est pour tester des cas et commencer par le plus simple !
 class GotoOutStartPos(CyclicActionState):
     def createAction(self):
-        pose = AmbiPoseRed(0.750,0.700, -pi, Data.color)
+        pose = AmbiPoseRed(0.750,0.700, -pi/2, Data.color)
         self.omnidirect(pose.x, pose.y, pose.theta)
 
 
-class TurnToGoldBar(CyclicActionState):
-    def createAction(self):
-        self.cap(AmbiCapRed(-pi/2, Data.color).angle)
-        
-        
 class GoToGoldBar(CyclicActionState):
     def createAction(self):
-        pose = AmbiPoseRed(0.900,0, 0, Data.color)
+        pose = AmbiPoseRed(0.900,0, 0.0, Data.color)
         self.omnidirect(pose.x, pose.y, pose.theta)
 
 class PushGoldBar(CyclicActionState):

@@ -58,3 +58,4 @@ class WaitForMatch(CyclicState):
     def executeOut(self):
         #je note le temps de debut de match
         Data.start_time=rospy.get_rostime()
+        os.system("beep -f 300 -l150")
