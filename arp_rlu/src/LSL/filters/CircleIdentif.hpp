@@ -72,12 +72,6 @@ class CircleIdentif
             double radius;
 
             /**
-             * Offset statistique entre le centre de gravité du scan et le centre du cercle.\n
-             * Valeur par défault : 85 pourcents du rayon (donc pour un rayon de 4cm : 0.034m)
-             */
-            double rangeDelta;
-
-            /**
              * Polynomial coeff, from high order to low
              */
             std::vector<double> coeffs;

@@ -46,7 +46,15 @@ BeaconDetector::Params::Params()
     yMax =  1.5;
 
     cip.radius = 0.04;
-    cip.rangeDelta = 0.034;
+    cip.coeffs = std::vector<double>();
+    cip.coeffs.push_back(-0.01743846);
+    cip.coeffs.push_back( 0.19259734);
+    cip.coeffs.push_back(-0.83735629);
+    cip.coeffs.push_back( 1.81203033);
+    cip.coeffs.push_back(-2.04349845);
+    cip.coeffs.push_back( 1.17177993);
+    cip.coeffs.push_back( 0.67248282);
+    cip.coeffs.push_back( 0.07096937);
 
     tcp.radiusTolerance = 0.03;
     tcp.distanceTolerance = 0.3;

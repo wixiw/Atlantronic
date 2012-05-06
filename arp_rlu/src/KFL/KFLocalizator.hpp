@@ -286,7 +286,10 @@ class KFLocalizator
         boost::circular_buffer< std::pair< arp_math::EstimatedPose2D, arp_math::EstimatedTwist2D > > circularBuffer;
 
         arp_core::StatTimer newOdoVelTimer;
-        arp_core::StatTimer newScanTimer;
+        arp_core::StatTimer newScanGlobalTimer;
+        arp_core::StatTimer newScanBITPTimer;
+        arp_core::StatTimer newScanPreUpdateTimer;
+        arp_core::StatTimer newScanUpdateTimer;
 
     protected:
         /**

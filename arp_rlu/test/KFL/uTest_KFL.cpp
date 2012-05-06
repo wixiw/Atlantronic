@@ -21,19 +21,19 @@ BOOST_AUTO_TEST_SUITE( unittest_dummy )
 BOOST_AUTO_TEST_CASE( testdummy )
 {
     //  arp_rlu::kfl::Logger::InitNull("uT_KFL", DEBUG);
-    arp_rlu::kfl::Logger::InitConsole("uT_KFL", DEBUG);
+    arp_rlu::kfl::Logger::InitConsole("uT_KFL", INFO);
 //      arp_rlu::kfl::Logger::InitFile("uT_KFL", DEBUG);
 
-    arp_rlu::lsl::Logger::InitConsole("uT_LSL", NOTICE);
+    arp_rlu::lsl::Logger::InitConsole("uT_LSL", WARN);
 
 }
 BOOST_AUTO_TEST_SUITE_END()
 
-#include "uTest_BeaconDetector.hpp"
+//#include "uTest_BeaconDetector.hpp"
 
-#include "BFL/uTest_BFLWrapper.hpp"
+//#include "BFL/uTest_BFLWrapper.hpp"
 
-#include "uTest_KFLocalizator_Trivial.hpp"
-#include "uTest_KFLocalizator_Static.hpp"
+//#include "uTest_KFLocalizator_Trivial.hpp"
+//#include "uTest_KFLocalizator_Static.hpp"
 #include "uTest_KFLocalizator_Dynamic.hpp"
 

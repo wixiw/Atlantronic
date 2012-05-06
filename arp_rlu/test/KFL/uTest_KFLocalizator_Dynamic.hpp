@@ -92,7 +92,9 @@ namespace unittest_KFLocalizator_Dynamic
         procParams.psp.rangeThres = 0.08;
         procParams.minNbPoints = 4;
         procParams.cip.radius = 0.04;
-        procParams.cip.rangeDelta = 0.034;
+        procParams.cip.coeffs = std::vector<double>();
+        procParams.cip.coeffs.push_back( 1.0);
+        procParams.cip.coeffs.push_back( 0.034);
         procParams.tcp.radiusTolerance = 0.03;
         procParams.tcp.distanceTolerance = 0.6;
         procParams.tcp.maxLengthTolerance = 0.05;
@@ -144,23 +146,23 @@ namespace unittest_KFLocalizator_Dynamic
         initialPose_H_hky_table.cov(cov);
         initialPose_H_hky_table.date(0.0);
 
-        kfl::Log( INFO ) << "estimée initiale (H_hky_table) demandée :";
-        kfl::Log( INFO ) << "  sur x (en m): " << initialPose_H_hky_table.x();
-        kfl::Log( INFO ) << "  sur y (en m): " << initialPose_H_hky_table.y();
-        kfl::Log( INFO ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( initialPose_H_hky_table.h() ));
-        kfl::Log( INFO ) << "  covariance : " << initialPose_H_hky_table.cov().row(0);
-        kfl::Log( INFO ) << "               " << initialPose_H_hky_table.cov().row(1);
-        kfl::Log( INFO ) << "               " << initialPose_H_hky_table.cov().row(2);
+        kfl::Log( DEBUG ) << "estimée initiale (H_hky_table) demandée :";
+        kfl::Log( DEBUG ) << "  sur x (en m): " << initialPose_H_hky_table.x();
+        kfl::Log( DEBUG ) << "  sur y (en m): " << initialPose_H_hky_table.y();
+        kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( initialPose_H_hky_table.h() ));
+        kfl::Log( DEBUG ) << "  covariance : " << initialPose_H_hky_table.cov().row(0);
+        kfl::Log( DEBUG ) << "               " << initialPose_H_hky_table.cov().row(1);
+        kfl::Log( DEBUG ) << "               " << initialPose_H_hky_table.cov().row(2);
 
         EstimatedPose2D initialPose_H_robot_table = initialPose_H_hky_table * H_hky_robot.inverse();
 
-        kfl::Log( INFO ) << "estimée initiale (H_robot_table) demandée :";
-        kfl::Log( INFO ) << "  sur x (en m): " << initialPose_H_robot_table.x();
-        kfl::Log( INFO ) << "  sur y (en m): " << initialPose_H_robot_table.y();
-        kfl::Log( INFO ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( initialPose_H_robot_table.h() ));
-        kfl::Log( INFO ) << "  covariance : " << initialPose_H_robot_table.cov().row(0);
-        kfl::Log( INFO ) << "               " << initialPose_H_robot_table.cov().row(1);
-        kfl::Log( INFO ) << "               " << initialPose_H_robot_table.cov().row(2);
+        kfl::Log( DEBUG ) << "estimée initiale (H_robot_table) demandée :";
+        kfl::Log( DEBUG ) << "  sur x (en m): " << initialPose_H_robot_table.x();
+        kfl::Log( DEBUG ) << "  sur y (en m): " << initialPose_H_robot_table.y();
+        kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( initialPose_H_robot_table.h() ));
+        kfl::Log( DEBUG ) << "  covariance : " << initialPose_H_robot_table.cov().row(0);
+        kfl::Log( DEBUG ) << "               " << initialPose_H_robot_table.cov().row(1);
+        kfl::Log( DEBUG ) << "               " << initialPose_H_robot_table.cov().row(2);
 
         BOOST_CHECK(obj.initialize(initialPose_H_robot_table));
 
@@ -174,19 +176,19 @@ namespace unittest_KFLocalizator_Dynamic
         kfl::Log( DEBUG ) << "  sur x (en m): " << trueInitialXPosition;
         kfl::Log( DEBUG ) << "  sur y (en m): " << trueInitialYPosition;
         kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( trueInitialHPosition ));
-        kfl::Log( INFO ) << "------------------------------";
-        kfl::Log( INFO ) << "estimée initiale (H_hky_table) au départ [time=0.0]:";
-        kfl::Log( INFO ) << "  sur x (en m): " << initEstim_H_hky_table.x();
-        kfl::Log( INFO ) << "  sur y (en m): " << initEstim_H_hky_table.y();
-        kfl::Log( INFO ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( initEstim_H_hky_table.h() ));
-        kfl::Log( INFO ) << "  covariance : " << initEstim_H_hky_table.cov().row(0);
-        kfl::Log( INFO ) << "               " << initEstim_H_hky_table.cov().row(1);
-        kfl::Log( INFO ) << "               " << initEstim_H_hky_table.cov().row(2);
-        kfl::Log( INFO ) << "------------------------------";
-        kfl::Log( INFO ) << "erreur initiale (sur H_hky_table) [time=0.0]:";
-        kfl::Log( INFO ) << "  sur x (en mm): " << (initEstim_H_hky_table.x() - trueInitialXPosition) * 1000. << " +/- " << 2000. * sqrt(initEstim_H_hky_table.cov()(0,0));
-        kfl::Log( INFO ) << "  sur y (en mm): " << (initEstim_H_hky_table.y() - trueInitialYPosition) * 1000. << " +/- " << 2000. * sqrt(initEstim_H_hky_table.cov()(1,1));
-        kfl::Log( INFO ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( initEstim_H_hky_table.h() - trueInitialHPosition ) ) << 2.0 * rad2deg(sqrt(initEstim_H_hky_table.cov()(2,2)));
+        kfl::Log( DEBUG ) << "------------------------------";
+        kfl::Log( DEBUG ) << "estimée initiale (H_hky_table) au départ [time=0.0]:";
+        kfl::Log( DEBUG ) << "  sur x (en m): " << initEstim_H_hky_table.x();
+        kfl::Log( DEBUG ) << "  sur y (en m): " << initEstim_H_hky_table.y();
+        kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( initEstim_H_hky_table.h() ));
+        kfl::Log( DEBUG ) << "  covariance : " << initEstim_H_hky_table.cov().row(0);
+        kfl::Log( DEBUG ) << "               " << initEstim_H_hky_table.cov().row(1);
+        kfl::Log( DEBUG ) << "               " << initEstim_H_hky_table.cov().row(2);
+        kfl::Log( DEBUG ) << "------------------------------";
+        kfl::Log( DEBUG ) << "erreur initiale (sur H_hky_table) [time=0.0]:";
+        kfl::Log( DEBUG ) << "  sur x (en mm): " << (initEstim_H_hky_table.x() - trueInitialXPosition) * 1000. << " +/- " << 2000. * sqrt(initEstim_H_hky_table.cov()(0,0));
+        kfl::Log( DEBUG ) << "  sur y (en mm): " << (initEstim_H_hky_table.y() - trueInitialYPosition) * 1000. << " +/- " << 2000. * sqrt(initEstim_H_hky_table.cov()(1,1));
+        kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( initEstim_H_hky_table.h() - trueInitialHPosition ) ) << 2.0 * rad2deg(sqrt(initEstim_H_hky_table.cov()(2,2)));
 
 
         //*******************************************
@@ -222,9 +224,9 @@ namespace unittest_KFLocalizator_Dynamic
 
             if( doOdo || doLrf )
             {
-                kfl::Log( DEBUG ) << "============================================================================================";
-                kfl::Log( DEBUG ) << "============================================================================================";
-                kfl::Log( DEBUG ) << "Time=" << time;
+                kfl::Log( INFO ) << "============================================================================================";
+                kfl::Log( INFO ) << "============================================================================================";
+                kfl::Log( INFO ) << "Time=" << time;
 
                 vjson::JsonDocument docInit;
                 std::stringstream truePosFileName;
@@ -243,8 +245,8 @@ namespace unittest_KFLocalizator_Dynamic
 
             if( doOdo )
             {
-                kfl::Log( DEBUG ) << "============================================================";
-                kfl::Log( DEBUG ) << "Time=" << time << " => ODO";
+                kfl::Log( INFO ) << "============================================================";
+                kfl::Log( INFO ) << "Time=" << time << " => ODO";
 
 
                 vjson::JsonDocument docOdoVel;
@@ -276,26 +278,23 @@ namespace unittest_KFLocalizator_Dynamic
                 EstimatedTwist2D T_odo_table_p_odo_r_odo = T_hky_table_p_hky_r_hky.transport( H_hky_robot.inverse() * H_odo_robot );
 
                 kfl::Log( DEBUG ) << "T_hky_table_p_table_r_hky : " << T_hky_table_p_table_r_hky.toString();
-                kfl::Log( INFO ) << "   covariance : " << T_hky_table_p_table_r_hky.cov().row(0);
-                kfl::Log( INFO ) << "                " << T_hky_table_p_table_r_hky.cov().row(1);
-                kfl::Log( INFO ) << "                " << T_hky_table_p_table_r_hky.cov().row(2);
+                kfl::Log( DEBUG ) << "   covariance : " << T_hky_table_p_table_r_hky.cov().row(0);
+                kfl::Log( DEBUG ) << "                " << T_hky_table_p_table_r_hky.cov().row(1);
+                kfl::Log( DEBUG ) << "                " << T_hky_table_p_table_r_hky.cov().row(2);
                 kfl::Log( DEBUG ) << "T_hky_table_p_hky_r_hky : " << T_hky_table_p_hky_r_hky.toString();
-                kfl::Log( INFO ) << "   covariance : " << T_hky_table_p_hky_r_hky.cov().row(0);
-                kfl::Log( INFO ) << "                " << T_hky_table_p_hky_r_hky.cov().row(1);
-                kfl::Log( INFO ) << "                " << T_hky_table_p_hky_r_hky.cov().row(2);
+                kfl::Log( DEBUG ) << "   covariance : " << T_hky_table_p_hky_r_hky.cov().row(0);
+                kfl::Log( DEBUG ) << "                " << T_hky_table_p_hky_r_hky.cov().row(1);
+                kfl::Log( DEBUG ) << "                " << T_hky_table_p_hky_r_hky.cov().row(2);
                 kfl::Log( DEBUG ) << "------------------------------";
                 kfl::Log( DEBUG ) << "T_odo_table_p_odo_r_odo :";
                 kfl::Log( DEBUG ) << "  vx=" << T_odo_table_p_odo_r_odo.vx() << " m/s";
                 kfl::Log( DEBUG ) << "  vy=" << T_odo_table_p_odo_r_odo.vy() << " m/s";
                 kfl::Log( DEBUG ) << "  vh=" << rad2deg(T_odo_table_p_odo_r_odo.vh()) << " deg/s";
-                kfl::Log( INFO ) << "   covariance : " << T_odo_table_p_odo_r_odo.cov().row(0);
-                kfl::Log( INFO ) << "                " << T_odo_table_p_odo_r_odo.cov().row(1);
-                kfl::Log( INFO ) << "                " << T_odo_table_p_odo_r_odo.cov().row(2);
+                kfl::Log( DEBUG ) << "   covariance : " << T_odo_table_p_odo_r_odo.cov().row(0);
+                kfl::Log( DEBUG ) << "                " << T_odo_table_p_odo_r_odo.cov().row(1);
+                kfl::Log( DEBUG ) << "                " << T_odo_table_p_odo_r_odo.cov().row(2);
 
-                double startOdoTime = arp_math::getTime();
                 BOOST_CHECK(obj.newOdoVelocity(T_odo_table_p_odo_r_odo));
-                double endOdoTime = arp_math::getTime();
-                kfl::Log( INFO ) << "Odo Computation Time :" << endOdoTime - startOdoTime;
 
 
                 arp_math::EstimatedPose2D odoEstim_H_robot_table;
@@ -344,11 +343,11 @@ namespace unittest_KFLocalizator_Dynamic
                 BOOST_CHECK( abs(odoEstim_H_hky_table.y() - trueY) < 3.0 * sqrt(odoEstim_H_hky_table.cov()(1,1)) );
                 BOOST_CHECK( abs(betweenMinusPiAndPlusPi( odoEstim_H_hky_table.h() - trueH )) < 3.0 * sqrt(odoEstim_H_hky_table.cov()(2,2)) );
 
-                kfl::Log( INFO ) << "------------------------------";
-                kfl::Log( INFO ) << "estimée apres les odos (H_hky_table) [time=" << time << "]:";
-                kfl::Log( INFO ) << "  sur x (en m): " << odoEstim_H_hky_table.x();
-                kfl::Log( INFO ) << "  sur y (en m): " << odoEstim_H_hky_table.y();
-                kfl::Log( INFO ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( odoEstim_H_hky_table.h() ) );
+//                kfl::Log( DEBUG ) << "------------------------------";
+//                kfl::Log( DEBUG ) << "estimée apres les odos (H_hky_table) [time=" << time << "]:";
+//                kfl::Log( DEBUG ) << "  sur x (en m): " << odoEstim_H_hky_table.x();
+//                kfl::Log( DEBUG ) << "  sur y (en m): " << odoEstim_H_hky_table.y();
+//                kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( odoEstim_H_hky_table.h() ) );
                 kfl::Log( INFO ) << "------------------------------";
                 kfl::Log( INFO ) << "erreur apres les odos  (sur H_hky_table) [time=" << time << "]:";
                 kfl::Log( INFO ) << "  sur x (en mm): " << (odoEstim_H_hky_table.x() - trueX) * 1000. << " +/- " << 3000. * sqrt(odoEstim_H_hky_table.cov()(0,0));
@@ -362,9 +361,9 @@ namespace unittest_KFLocalizator_Dynamic
 
             if( doLrf )
             {
-                kfl::Log( DEBUG ) << "============================================================";
-                kfl::Log( DEBUG ) << "Time=" << time << " => LRF";
-                kfl::Log( DEBUG ) << "------------------------------";
+                kfl::Log( INFO ) << "============================================================";
+                kfl::Log( INFO ) << "Time=" << time << " => LRF";
+                kfl::Log( INFO ) << "------------------------------";
 
                 arp_rlu::lsl::JsonScanParser scanParser;
                 std::stringstream scanFileName;
@@ -373,10 +372,7 @@ namespace unittest_KFLocalizator_Dynamic
                 lsl::LaserScan scan;
                 BOOST_CHECK( scanParser.getScan(scan) );
 
-                double startScanTime = arp_math::getTime();
                 obj.newScan(scan);
-                double endScanTime = arp_math::getTime();
-                kfl::Log( INFO ) << "Scan Computation Time :" << endScanTime - startScanTime;
 
                 kfl::Log( DEBUG ) << "------------------------------";
                 arp_math::EstimatedPose2D postScanEstim_H_robot_table;
@@ -441,8 +437,13 @@ namespace unittest_KFLocalizator_Dynamic
             }
         }
 
-        double endTime = arp_math::getTime();
-        kfl::Log( INFO ) << "Computation Time :" << endTime - startTime;
+        kfl::Log( NOTICE ) << "\n";
+        kfl::Log( NOTICE ) << "**************** Experience " << xpIndex << " *******************************";
+        kfl::Log( NOTICE ) << obj.getPerformanceReport();
+        kfl::Log( NOTICE ) << "************************************************************";
+        kfl::Log( NOTICE ) << "\n";
+
+
     }
 
 }

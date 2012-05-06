@@ -147,7 +147,10 @@ KFLocalizator::KFLocalizator()
 , bayesian(NULL)
 , circularBuffer(boost::circular_buffer< std::pair< arp_math::EstimatedPose2D, arp_math::EstimatedTwist2D > >(params.bufferSize))
 , newOdoVelTimer()
-, newScanTimer()
+, newScanGlobalTimer()
+, newScanBITPTimer()
+, newScanPreUpdateTimer()
+, newScanUpdateTimer()
 {
     bayesian = new BFLWrapper();
     setParams(params);
@@ -282,7 +285,7 @@ bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D T_odo_table_p_odo_
 
 bool KFLocalizator::newScan(lsl::LaserScan scan)
 {
-    newScanTimer.Start();
+    newScanGlobalTimer.Start();
 
     Log( DEBUG ) << "KFLocalizator::newScan - *************************************************************";
     Log( DEBUG ) << "KFLocalizator::newScan - enter";
@@ -314,7 +317,7 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
 
     //***************************************
     // back to the past
-    double startBITPTime = arp_math::getTime();
+    newScanBITPTimer.Start();
 
     Eigen::VectorXd ttFromBuffer(circularBuffer.size());
     Eigen::VectorXd xxFromBuffer(circularBuffer.size());
@@ -338,11 +341,10 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
         odoCovFromBuffer(i) = circularBuffer[i].second.cov();
     }
 
-    double startInterpTime = arp_math::getTime();
 
     Eigen::VectorXd tt = scan.getTimeData();
-    //    Eigen::VectorXi indices = Interpolator::find(tt, ttc);
-    Eigen::VectorXi indices = Eigen::VectorXi(0);
+    Eigen::VectorXi indices = Interpolator::find(tt, ttFromBuffer);
+    //    Eigen::VectorXi indices = Eigen::VectorXi(0);
     Eigen::VectorXd xx = Interpolator::transInterp(tt, ttFromBuffer, xxFromBuffer, indices);
     Eigen::VectorXd yy = Interpolator::transInterp(tt, ttFromBuffer, yyFromBuffer, indices);
     Eigen::VectorXd hh = Interpolator::rotInterp(tt, ttFromBuffer, hhFromBuffer, indices);
@@ -354,25 +356,20 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
 
     popBufferUntilADate(tt(0));
 
-    kfl::Log( INFO ) << "KFLocalizator::newScan - Interpolation Computation Time :" << arp_math::getTime() - startInterpTime;
-
     if(circularBuffer.empty())
     {
         Log( CRIT ) << "KFLocalizator::newScan - Internal Circular Buffer is empty after \"back to the past\" operation => return false";
         return false;
     }
+    newScanBITPTimer.Stop();
 
-    kfl::Log( INFO ) << "KFLocalizator::newScan - Back in the Past Computation Time :" << arp_math::getTime() - startBITPTime;
     //***************************************
 
-
-    double startBPTime = arp_math::getTime();
     beaconDetector.process(scan, tt, xx, yy, hh);
-    kfl::Log( INFO ) << "BeaconDetector Computation Time :" << arp_math::getTime() - startBPTime;
 
     Log( DEBUG ) << "KFLocalizator::newScan - " << beaconDetector.getFoundBeacons().size() << " beacons(s) detected in scan";
 
-
+    newScanPreUpdateTimer.Start();
     // Reinit in the past
     KFLStateVar initStateVar;
     initStateVar(0) = xx[0];
@@ -388,7 +385,6 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
     bayesian->init(initStateVar, initStateCov, filterParams);
 
 
-
     KFLStateVar BITPEstimVar = bayesian->getEstimate();
     KFLStateCov BITPEstimCov = bayesian->getCovariance();
     //    Log( DEBUG ) << "KFLocalizator::newScan - estimée in the past [time=" << tt[0] << "]";
@@ -401,15 +397,26 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
 
     //    Log( DEBUG ) << "KFLocalizator::newScan - i=" << 0 << "  - time=" << tt(0) << "  - yy=" << yy(0) << " (m)  - vy=" << vy(0) << " (m/s)  - preOdoY=" << preUpEstim(1);
 
+    newScanPreUpdateTimer.Stop();
+
+
     // Update
-    double startUpdateTime = arp_math::getTime();
+    newScanUpdateTimer.Start();
     unsigned int nbBeaconSeen = 0;
+    unsigned int lastPredictionIndex = 0;
     for(unsigned int i = 1 ; i < scan.getSize() ; i++)
     {
         lsl::Circle target;
         Eigen::Vector2d meas;
         if( beaconDetector.getBeacon( tt(i), target, meas) )
         {
+            KFLInputVar input;
+            input(0) = arp_math::mean(vx.segment(lastPredictionIndex, i-lastPredictionIndex));
+            input(1) = arp_math::mean(vy.segment(lastPredictionIndex, i-lastPredictionIndex));
+            input(2) = arp_math::mean(vh.segment(lastPredictionIndex, i-lastPredictionIndex));
+            double dt = tt(i) - tt(lastPredictionIndex);
+            bayesian->predict( input, odoCovs(i), dt );
+
             KFLStateVar preEstimStateVar = bayesian->getEstimate();
             KFLStateCov preEstimStateCov = bayesian->getCovariance();
             //            Log( DEBUG ) << "KFLocalizator::newScan - pre intermediaire estim [time=" << tt[i] << "]";
@@ -431,32 +438,46 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
 
             KFLStateVar postEstimStateVar = bayesian->getEstimate();
             KFLStateCov postEstimStateCov = bayesian->getCovariance();
-            //            Log( DEBUG ) << "KFLocalizator::newScan - post intermediaire estim [time=" << tt[i] << "]";
-            //            Log( DEBUG ) << "  sur x (en m): " << postEstimStateVar(0);
-            //            Log( DEBUG ) << "  sur y (en m): " << postEstimStateVar(1);
-            //            Log( DEBUG ) << "  en cap (deg) : " << rad2deg( postEstimStateVar(2) );
-            //            Log( DEBUG ) << "covariance : " << postEstimStateCov.row(0);
-            //            Log( DEBUG ) << "             " << postEstimStateCov.row(1);
-            //            Log( DEBUG ) << "             " << postEstimStateCov.row(2);
+            Log( DEBUG ) << "KFLocalizator::newScan - post intermediaire estim [time=" << tt[i] << "]";
+            Log( DEBUG ) << "  sur x (en m): " << postEstimStateVar(0);
+            Log( DEBUG ) << "  sur y (en m): " << postEstimStateVar(1);
+            Log( DEBUG ) << "  en cap (deg) : " << rad2deg( postEstimStateVar(2) );
+            Log( DEBUG ) << "covariance : " << postEstimStateCov.row(0);
+            Log( DEBUG ) << "             " << postEstimStateCov.row(1);
+            Log( DEBUG ) << "             " << postEstimStateCov.row(2);
+
+
+            //            KFLInputVar input;
+            //            input(0) = arp_math::mean(vx.segment(lastPredictionIndex, i-lastPredictionIndex));
+            //            input(1) = arp_math::mean(vy.segment(lastPredictionIndex, i-lastPredictionIndex));
+            //            input(2) = arp_math::mean(vh.segment(lastPredictionIndex, i-lastPredictionIndex));
+            //            double dt = tt(i) - tt(lastPredictionIndex);
+            //            bayesian->predict( input, odoCovs(i), dt );
+
+            lastPredictionIndex = i;
         }
 
-        KFLInputVar input;
-        input(0) = vx(i);
-        input(1) = vy(i);
-        input(2) = vh(i);
-
-        double dt = tt(i) - tt(i-1);
-
-        //        KFLStateVar preOdoEstim = bayesian->getEstimate();
-
-        bayesian->predict( input, odoCovs(i), dt );
+        //        KFLInputVar input;
+        //        input(0) = vx(i);
+        //        input(1) = vy(i);
+        //        input(2) = vh(i);
+        //        double dt = tt(i) - tt(i-1);
+        //        bayesian->predict( input, odoCovs(i), dt );
 
         //        KFLStateVar postOdoEstim = bayesian->getEstimate();
         //        Log( DEBUG ) << "KFLocalizator::newScan - i=" << i << "  - time=" << tt(i) << "  - yy=" << yy(i) << " (m)  - vy=" << vy(i) << " (m/s)  - preOdoY=" << preOdoEstim(1) << "  - postOdoY=" << postOdoEstim(1);
     }
-    Log( DEBUG ) << "KFLocalizator::newScan - " << nbBeaconSeen << " kalman update(s) done";
-    double endUpdateTime = arp_math::getTime();
-    kfl::Log( INFO ) << "Update Computation Time :" << endUpdateTime - startUpdateTime;
+
+    KFLInputVar input;
+    input(0) = arp_math::mean(vx.segment(lastPredictionIndex, tt.size()-1-lastPredictionIndex));
+    input(1) = arp_math::mean(vy.segment(lastPredictionIndex, tt.size()-1-lastPredictionIndex));
+    input(2) = arp_math::mean(vh.segment(lastPredictionIndex, tt.size()-1-lastPredictionIndex));
+    double dt = tt(tt.size()-1) - tt(lastPredictionIndex);
+    bayesian->predict( input, odoCovs(tt.size()-1), dt );
+
+
+    Log( INFO ) << "KFLocalizator::newScan - " << nbBeaconSeen << " kalman update(s) done";
+    newScanUpdateTimer.Stop();
 
     EstimatedTwist2D T;
     T.vx( vx(tt.size()-1) );
@@ -466,7 +487,7 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
     T.date(tt(tt.size()-1));
     KFLocalizator::updateBuffer(tt(tt.size()-1), T);
 
-    newScanTimer.Stop();
+    newScanGlobalTimer.Stop();
     return false;
 }
 
@@ -537,6 +558,7 @@ std::string KFLocalizator::getPerformanceReport()
 {
     std::stringstream info;
     info << "============================================" << std::endl;
+    info << "============================================" << std::endl;
     info << "newOdoVelocity Performance Report (ms)" << std::endl;
     info << "  [*] Number of samples used : " << newOdoVelTimer.GetRawRefreshTime().size() << std::endl;
     info << "  [*] Period                 : mean=" << newOdoVelTimer.GetMeanRefreshTime()*1000.;
@@ -548,18 +570,61 @@ std::string KFLocalizator::getPerformanceReport()
     info << "  , min=" << newOdoVelTimer.GetMinElapsedTime()*1000.;
     info << "  , max=" << newOdoVelTimer.GetMaxElapsedTime()*1000. << std::endl;
     info << "============================================" << std::endl;
-    info << "newScan Performance Report (ms)" << std::endl;
-    info << "  [*] Number of samples used : " << newScanTimer.GetRawRefreshTime().size() << std::endl;
-    info << "  [*] Period                 : mean=" << newScanTimer.GetMeanRefreshTime()*1000.;
-    info << "  , stddev=" << sqrt(newScanTimer.GetStdDevRefreshTime())*1000.;
-    info << "  , min=" << newScanTimer.GetMinRefreshTime()*1000.;
-    info << "  , max=" << newScanTimer.GetMaxRefreshTime()*1000. << std::endl;
-    info << "  [*] Global Duration        : mean=" << newScanTimer.GetMeanElapsedTime()*1000.;
-    info << "  , stddev=" << sqrt(newScanTimer.GetStdDevElapsedTime())*1000.;
-    info << "  , min=" << newScanTimer.GetMinElapsedTime()*1000.;
-    info << "  , max=" << newScanTimer.GetMaxElapsedTime()*1000. << std::endl;
+    info << "============================================" << std::endl;
+    info << "" << std::endl;
+    info << "============================================" << std::endl;
+    info << "============================================" << std::endl;
+    info << "NewScan Performance Report (ms)" << std::endl;
+    info << "============================================" << std::endl;
+    info << "Back in the past Performance Report (ms)" << std::endl;
+    info << "  [*] Number of samples used : " << newScanBITPTimer.GetRawRefreshTime().size() << std::endl;
+    info << "  [*] Period                 : mean=" << newScanBITPTimer.GetMeanRefreshTime()*1000.;
+    info << "  , stddev=" << sqrt(newScanBITPTimer.GetStdDevRefreshTime())*1000.;
+    info << "  , min=" << newScanBITPTimer.GetMinRefreshTime()*1000.;
+    info << "  , max=" << newScanBITPTimer.GetMaxRefreshTime()*1000. << std::endl;
+    info << "  [*] Global Duration        : mean=" << newScanBITPTimer.GetMeanElapsedTime()*1000.;
+    info << "  , stddev=" << sqrt(newScanBITPTimer.GetStdDevElapsedTime())*1000.;
+    info << "  , min=" << newScanBITPTimer.GetMinElapsedTime()*1000.;
+    info << "  , max=" << newScanBITPTimer.GetMaxElapsedTime()*1000. << std::endl;
 
     info << beaconDetector.getPerformanceReport();
+
+    info << "============================================" << std::endl;
+    info << "PreUpdate - Performance Report (ms)" << std::endl;
+    info << "  [*] Number of samples used : " << newScanPreUpdateTimer.GetRawRefreshTime().size() << std::endl;
+    info << "  [*] Period                 : mean=" << newScanPreUpdateTimer.GetMeanRefreshTime()*1000.;
+    info << "  , stddev=" << sqrt(newScanPreUpdateTimer.GetStdDevRefreshTime())*1000.;
+    info << "  , min=" << newScanPreUpdateTimer.GetMinRefreshTime()*1000.;
+    info << "  , max=" << newScanPreUpdateTimer.GetMaxRefreshTime()*1000. << std::endl;
+    info << "  [*] Global Duration        : mean=" << newScanPreUpdateTimer.GetMeanElapsedTime()*1000.;
+    info << "  , stddev=" << sqrt(newScanPreUpdateTimer.GetStdDevElapsedTime())*1000.;
+    info << "  , min=" << newScanPreUpdateTimer.GetMinElapsedTime()*1000.;
+    info << "  , max=" << newScanPreUpdateTimer.GetMaxElapsedTime()*1000. << std::endl;
+    info << "============================================" << std::endl;
+    info << "Update - Performance Report (ms)" << std::endl;
+    info << "  [*] Number of samples used : " << newScanUpdateTimer.GetRawRefreshTime().size() << std::endl;
+    info << "  [*] Period                 : mean=" << newScanUpdateTimer.GetMeanRefreshTime()*1000.;
+    info << "  , stddev=" << sqrt(newScanUpdateTimer.GetStdDevRefreshTime())*1000.;
+    info << "  , min=" << newScanUpdateTimer.GetMinRefreshTime()*1000.;
+    info << "  , max=" << newScanUpdateTimer.GetMaxRefreshTime()*1000. << std::endl;
+    info << "  [*] Global Duration        : mean=" << newScanUpdateTimer.GetMeanElapsedTime()*1000.;
+    info << "  , stddev=" << sqrt(newScanUpdateTimer.GetStdDevElapsedTime())*1000.;
+    info << "  , min=" << newScanUpdateTimer.GetMinElapsedTime()*1000.;
+    info << "  , max=" << newScanUpdateTimer.GetMaxElapsedTime()*1000. << std::endl;
+    info << "============================================" << std::endl;
+    info << "newScan Global Performance Report (ms)" << std::endl;
+    info << "  [*] Number of samples used : " << newScanGlobalTimer.GetRawRefreshTime().size() << std::endl;
+    info << "  [*] Period                 : mean=" << newScanGlobalTimer.GetMeanRefreshTime()*1000.;
+    info << "  , stddev=" << sqrt(newScanGlobalTimer.GetStdDevRefreshTime())*1000.;
+    info << "  , min=" << newScanGlobalTimer.GetMinRefreshTime()*1000.;
+    info << "  , max=" << newScanGlobalTimer.GetMaxRefreshTime()*1000. << std::endl;
+    info << "  [*] Global Duration        : mean=" << newScanGlobalTimer.GetMeanElapsedTime()*1000.;
+    info << "  , stddev=" << sqrt(newScanGlobalTimer.GetStdDevElapsedTime())*1000.;
+    info << "  , min=" << newScanGlobalTimer.GetMinElapsedTime()*1000.;
+    info << "  , max=" << newScanGlobalTimer.GetMaxElapsedTime()*1000. << std::endl;
+    info << "============================================" << std::endl;
+    info << "============================================" << std::endl;
+    info << "" << std::endl;
     return info.str();
 }
 
