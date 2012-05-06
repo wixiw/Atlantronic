@@ -24,7 +24,7 @@ TwistTeleop::TwistTeleop(const std::string& name):
         propLinearAcc(0.5),
         propAngularAcc(5),
         propExpertLinearGain(1),
-        propExpertAngularGain(6),
+        propExpertAngularGain(4),
         propExpertLinearAcc(3),
         propExpertAngularAcc(14),
         propFilter(true),
@@ -110,18 +110,12 @@ void TwistTeleop::updateHook()
     attrSpeedCmd = firstDerivateLimitation( linVel*max(fabs(vx),fabs(vy)), attrOldSpeedCmd, attrDt , -linAcc, linAcc);
     attrOldSpeedCmd = attrSpeedCmd;
 
-    if( fabs(attrSpeedCmd) <= 0.010 )
-    {
-        attrSpeedDirection = 0;
-    }
-    else
+    //si les vitesses sont trop petites atan n'a plus de sens
+    if( fabs(sqrt(vx*vx+vy*vy)) >= 0.010 )
     {
         //attention c'est bien atan2(y,x) et j'ai bien mis le x dans le y et inversement, c'est lié au repère du joystick
         attrSpeedDirection= atan2(-vx, -vy);
     }
-
-    //LOG(Info) << "Sending : " << attrSpeedDirection << ", "  << attrAngularCmd << ", " << attrSpeedCmd << endlog();
-
 
     attrTwistCmdCdg = MathFactory::createTwist2DFromPolarRepr(attrSpeedCmd,attrSpeedDirection, attrAngularCmd);
     //mais le robot se pilote au centre des tourelles :(
