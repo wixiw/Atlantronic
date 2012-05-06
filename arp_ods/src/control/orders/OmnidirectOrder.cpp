@@ -122,6 +122,9 @@ Pose2D OmnidirectOrder::getPositionError(arp_math::Pose2D currentPosition)
 
 Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double dt)
 {
+    if (m_currentMode==MODE_DONE or m_currentMode==MODE_ERROR)
+        return Twist2D(0,0,0);
+
     //Rotation2 orient_robot(currentPosition.h());
     Rotation2 orient_cpoint(currentPosition.h()+m_cpoint.h());
 
