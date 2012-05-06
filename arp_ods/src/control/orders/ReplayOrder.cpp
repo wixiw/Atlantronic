@@ -57,6 +57,9 @@ void ReplayOrder::switchRun(arp_math::Pose2D currentPosition)
 
 Twist2D ReplayOrder::computeSpeed(arp_math::Pose2D currentPosition, double dt)
 {
+    if (m_currentMode==MODE_DONE or m_currentMode==MODE_ERROR)
+        return Twist2D(0,0,0);
+
     Twist2D twist_applied;
     double dt_applied;
 
