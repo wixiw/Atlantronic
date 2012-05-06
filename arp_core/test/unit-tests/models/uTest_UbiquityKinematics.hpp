@@ -15,7 +15,7 @@ using namespace arp_model;
 using namespace arp_math;
 
 
-BOOST_AUTO_TEST_CASE( UbiquityKinematics_consistency )
+BOOST_AUTO_TEST_CASE( UbiquityKinematics_forward_motor2twist2motor )
 {
     UbiquityParams params;
     TurretState turrets;
@@ -93,5 +93,36 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_nullspeed )
     BOOST_CHECK_CLOSE( motors.steering.right.position , params.getRightTurretZero() , 1E-6);
     BOOST_CHECK_CLOSE( motors.steering.rear.position , params.getRearTurretZero() , 1E-6);
 
+
+}
+
+BOOST_AUTO_TEST_CASE( UbiquityKinematics_rotation_twist2motor2twist )
+{
+    UbiquityParams params;
+        TurretState turrets_commanded;
+        TurretState turrets_back;
+        MotorState curmotors;
+        MotorState motors;
+        SlippageReport slippage;
+        Twist2D twist_commanded;
+        Twist2D twist_back;
+        bool success;
+
+        // j'initialise les zeros tourelles au hasard
+        params.setLeftTurretZero(5.8471);
+        params.setRightTurretZero(7.17852);
+        params.setRearTurretZero(-4.43757);
+
+        twist_commanded=Twist2D(0,0,1.0);
+
+        success = UbiquityKinematics::twist2Motors( twist_commanded,curmotors,turrets_commanded,motors,params);
+        BOOST_CHECK_EQUAL( success , true);
+
+        success = UbiquityKinematics::motors2Twist( curmotors,turrets_back,twist_back,slippage,params);
+        BOOST_CHECK_EQUAL( success , true);
+
+        BOOST_CHECK_CLOSE(twist_back.vx(),0,1E-6);
+        BOOST_CHECK_CLOSE(twist_back.vy(),0,1E-6);
+        BOOST_CHECK_CLOSE(twist_back.vh(),1.0,1E-6);
 
 }
