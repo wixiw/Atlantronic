@@ -12,7 +12,7 @@
 
 #include "uTest_MathFactory.hpp"
 #include "uTest_Pose2D.hpp"
-//#include "uTest_EstimatedPose2D.hpp"
+#include "uTest_EstimatedPose2D.hpp"
 #include "uTest_Twist2D.hpp"
 #include "uTest_EstimatedTwist2D.hpp"
 #include "uTest_Math.hpp"

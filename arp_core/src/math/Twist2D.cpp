@@ -148,10 +148,19 @@ Vector3 Twist2D::getTVector() const
     return T;
 }
 
-Twist2D Twist2D::transport(Pose2D p) const
+Twist2D Twist2D::transport(const Pose2D & p) const
 {
     Vector3 res =  p.inverse().getBigAdjoint()*getTVector();
     return MathFactory::createTwist2DFromCartesianRepr(res);
+}
+
+Twist2D Twist2D::changeProjection(const Pose2D & p) const
+{
+    Eigen::Matrix<double, 3, 3> M = Eigen::Matrix<double, 3, 3>::Identity();
+    M.topLeftCorner<2,2>() = p.inverse().getRotationMatrix();
+    M(2,2) = 1.;
+
+    return MathFactory::createTwist2DFromCartesianRepr( M * this->getTVector() );
 }
 
 double Twist2D::distanceTo(Twist2D other, double coefTrans, double coefRot) const

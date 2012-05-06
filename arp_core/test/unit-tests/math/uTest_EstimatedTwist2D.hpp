@@ -104,3 +104,75 @@ BOOST_AUTO_TEST_CASE( EstimatedTwist2_Transport_Rotation_2 )
     BOOST_CHECK_EQUAL( covRes(2,2), cov(2,2) );
 }
 
+
+BOOST_AUTO_TEST_CASE( EstimatedTwist2_changeProjection )
+{
+    srand( time(NULL) );
+    double vx = rand() / (double)RAND_MAX * 20 - 10.;
+    double vy = rand() / (double)RAND_MAX * 20 - 10.;
+    double vh = rand() / (double)RAND_MAX * 20 - 10.;
+    long double date = rand() / (double)RAND_MAX * 200.;
+//    Covariance3 cov = Vector3(0.1, 0.3, 0.2).asDiagonal();
+//    cov(1,0) = 0.05;
+//    cov(0,1) = 0.05;
+    Covariance3 rmat = Covariance3::Random();
+    Covariance3 cov = ( rmat + rmat.transpose() ) * 0.5;
+    EstimatedTwist2D T_robot_table_p_robot_r_robot = MathFactory::createEstimatedTwist2DFromCartesianRepr(vx, vy, vh, date, cov);
+    EstimatedTwist2D T_robot_table_p_table_r_robot;
+    Pose2D H_robot_table;
+
+    T_robot_table_p_table_r_robot = T_robot_table_p_robot_r_robot.changeProjection( H_robot_table.inverse() );
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.vx() ,  T_robot_table_p_robot_r_robot.vx(), 1E-6);
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.vy() ,  T_robot_table_p_robot_r_robot.vy(), 1E-6);
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.vh() ,  T_robot_table_p_robot_r_robot.vh(), 1E-6);
+    BOOST_CHECK( T_robot_table_p_table_r_robot.date() == T_robot_table_p_robot_r_robot.date() );
+    BOOST_CHECK( T_robot_table_p_table_r_robot.cov() == T_robot_table_p_robot_r_robot.cov() );
+
+    H_robot_table.x(1.);
+    H_robot_table.y(3.);
+    H_robot_table.h(0.);
+    T_robot_table_p_table_r_robot = T_robot_table_p_robot_r_robot.changeProjection( H_robot_table.inverse() );
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.vx() ,  T_robot_table_p_robot_r_robot.vx(), 1E-6);
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.vy() ,  T_robot_table_p_robot_r_robot.vy(), 1E-6);
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.vh() ,  T_robot_table_p_robot_r_robot.vh(), 1E-6);
+    BOOST_CHECK( T_robot_table_p_table_r_robot.date() == T_robot_table_p_robot_r_robot.date() );
+    BOOST_CHECK( T_robot_table_p_table_r_robot.cov() == T_robot_table_p_robot_r_robot.cov() );
+
+    H_robot_table.x(rand() / (double)RAND_MAX * 20 - 10.);
+    H_robot_table.y(rand() / (double)RAND_MAX * 20 - 10.);
+    H_robot_table.y(rand() / (double)RAND_MAX * 20 - 10.);
+    T_robot_table_p_table_r_robot = T_robot_table_p_robot_r_robot.changeProjection( H_robot_table.inverse() );
+    EstimatedTwist2D T = T_robot_table_p_table_r_robot.changeProjection( H_robot_table );
+    BOOST_CHECK_CLOSE( T.vx() ,  T_robot_table_p_robot_r_robot.vx(), 1E-6);
+    BOOST_CHECK_CLOSE( T.vy() ,  T_robot_table_p_robot_r_robot.vy(), 1E-6);
+    BOOST_CHECK_CLOSE( T.vh() ,  T_robot_table_p_robot_r_robot.vh(), 1E-6);
+    BOOST_CHECK( T.date() == T_robot_table_p_robot_r_robot.date() );
+    BOOST_CHECK( T.cov() == T_robot_table_p_robot_r_robot.cov() );
+
+    H_robot_table.x(1.);
+    H_robot_table.y(3.);
+    H_robot_table.h(M_PI/2.);
+    T_robot_table_p_table_r_robot = T_robot_table_p_robot_r_robot.changeProjection( H_robot_table.inverse() );
+
+//    std::cout << "EstimatedTwist2_changeProjection - T_robot_table_p_robot_r_robot : " << T_robot_table_p_robot_r_robot.toString() << std::endl;
+//    std::cout << "EstimatedTwist2_changeProjection -       cov:\n" << T_robot_table_p_robot_r_robot.cov() << std::endl;
+//    std::cout << "EstimatedTwist2_changeProjection - H_robot_table : " << H_robot_table.toString() << std::endl;
+//    std::cout << "EstimatedTwist2_changeProjection - H_robot_table.inverse() : " << H_robot_table.inverse().toString() << std::endl;
+//    std::cout << "EstimatedTwist2_changeProjection - T_robot_table_p_table_r_robot : " << T_robot_table_p_table_r_robot.toString() << std::endl;
+//    std::cout << "EstimatedTwist2_changeProjection -       cov:\n" << T_robot_table_p_table_r_robot.cov() << std::endl;
+
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.vx() ,  -vy, 1E-6);
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.vy() ,   vx, 1E-6);
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.vh() ,   vh, 1E-6);
+    BOOST_CHECK( T_robot_table_p_table_r_robot.date() == T_robot_table_p_robot_r_robot.date() );
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.cov()(0,0) ,  T_robot_table_p_robot_r_robot.cov()(1,1), 1E-6);
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.cov()(1,1) ,  T_robot_table_p_robot_r_robot.cov()(0,0), 1E-6);
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.cov()(2,2) ,  T_robot_table_p_robot_r_robot.cov()(2,2), 1E-6);
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.cov()(0,1) , -T_robot_table_p_robot_r_robot.cov()(1,0), 1E-6);
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.cov()(1,0) , -T_robot_table_p_robot_r_robot.cov()(0,1), 1E-6);
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.cov()(2,0) , -T_robot_table_p_robot_r_robot.cov()(2,1), 1E-6);
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.cov()(2,1) ,  T_robot_table_p_robot_r_robot.cov()(2,0), 1E-6);
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.cov()(0,2) , -T_robot_table_p_robot_r_robot.cov()(1,2), 1E-6);
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.cov()(1,2) ,  T_robot_table_p_robot_r_robot.cov()(0,2), 1E-6);
+}
+

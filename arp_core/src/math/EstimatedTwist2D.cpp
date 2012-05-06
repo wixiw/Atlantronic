@@ -45,11 +45,22 @@ void EstimatedTwist2D::date(const long double & _date)
     estimationDate = _date;
 }
 
-EstimatedTwist2D EstimatedTwist2D::transport(Pose2D p) const
+EstimatedTwist2D EstimatedTwist2D::transport(const Pose2D & p) const
 {
     Vector3 v = p.inverse().getBigAdjoint()*getTVector();
     EstimatedTwist2D out( MathFactory::createTwist2DFromCartesianRepr( v ) );
     out.date( date() );
     out.cov( p.inverse().getBigAdjoint() * cov() * (p.inverse().getBigAdjoint()).transpose() );
     return out;
+}
+
+EstimatedTwist2D EstimatedTwist2D::changeProjection(const Pose2D & p) const
+{
+    Eigen::Matrix<double, 3, 3> M = Eigen::Matrix<double, 3, 3>::Identity();
+    M.topLeftCorner<2,2>() = p.inverse().getRotationMatrix();
+    M(2,2) = 1.;
+
+    return MathFactory::createEstimatedTwist2DFromCartesianRepr( M * this->getTVector(),
+                                                                 this->date(),
+                                                                 M * this->cov() * M.transpose() );
 }

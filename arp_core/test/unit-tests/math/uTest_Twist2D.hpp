@@ -148,3 +148,40 @@ BOOST_AUTO_TEST_CASE( Twist2_TransportRotation )
     BOOST_CHECK_CLOSE( res.vy() ,  0, 1E-6);
     BOOST_CHECK_CLOSE( res.vh() ,  2.6, 1E-6);
 }
+
+BOOST_AUTO_TEST_CASE( Twist2_changeProjection )
+{
+    Twist2D T_robot_table_p_robot_r_robot(1.,-2.,2.6);
+    Twist2D T_robot_table_p_table_r_robot;
+    Pose2D H_robot_table;
+
+    T_robot_table_p_table_r_robot = T_robot_table_p_robot_r_robot.changeProjection( H_robot_table.inverse() );
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.vx() ,  T_robot_table_p_robot_r_robot.vx(), 1E-6);
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.vy() ,  T_robot_table_p_robot_r_robot.vy(), 1E-6);
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.vh() ,  T_robot_table_p_robot_r_robot.vh(), 1E-6);
+
+    H_robot_table.x(1.);
+    H_robot_table.y(3.);
+    H_robot_table.h(0.);
+    T_robot_table_p_table_r_robot = T_robot_table_p_robot_r_robot.changeProjection( H_robot_table.inverse() );
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.vx() ,  T_robot_table_p_robot_r_robot.vx(), 1E-6);
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.vy() ,  T_robot_table_p_robot_r_robot.vy(), 1E-6);
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.vh() ,  T_robot_table_p_robot_r_robot.vh(), 1E-6);
+
+    H_robot_table.x(rand() / (double)RAND_MAX * 20 - 10.);
+    H_robot_table.y(rand() / (double)RAND_MAX * 20 - 10.);
+    H_robot_table.y(rand() / (double)RAND_MAX * 20 - 10.);
+    T_robot_table_p_table_r_robot = T_robot_table_p_robot_r_robot.changeProjection( H_robot_table.inverse() );
+    Twist2D T = T_robot_table_p_table_r_robot.changeProjection( H_robot_table );
+    BOOST_CHECK_CLOSE( T.vx() ,  T_robot_table_p_robot_r_robot.vx(), 1E-6);
+    BOOST_CHECK_CLOSE( T.vy() ,  T_robot_table_p_robot_r_robot.vy(), 1E-6);
+    BOOST_CHECK_CLOSE( T.vh() ,  T_robot_table_p_robot_r_robot.vh(), 1E-6);
+
+    H_robot_table.x(1.);
+    H_robot_table.y(3.);
+    H_robot_table.h(M_PI/2.);
+    T_robot_table_p_table_r_robot = T_robot_table_p_robot_r_robot.changeProjection( H_robot_table.inverse() );
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.vx() ,  2., 1E-6);
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.vy() ,  1., 1E-6);
+    BOOST_CHECK_CLOSE( T_robot_table_p_table_r_robot.vh() ,  2.6, 1E-6);
+}

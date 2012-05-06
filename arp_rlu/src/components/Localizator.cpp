@@ -27,6 +27,7 @@ Localizator::Localizator(const std::string& name)
     //A ne pas mettre sur le robot pour des problemes de place (ou nettoyer les logs pour qu'ils ne grossissent pas trop vite)
     //arp_rlu::lsl::Logger::InitFile("LSL", DEBUG);
     //arp_rlu::kfl::Logger::InitFile("KFL", DEBUG);
+
     createOrocosInterface();
 
     m_monotonicTimeToRealTime = ros::Time::now().toSec() - getTime();
@@ -210,6 +211,7 @@ void Localizator::createOrocosInterface()
     addPort("inScan",inScan)
     .doc("LaserScan from LRF");
     addPort("inOdo",inOdo)
+
     .doc("Estimation from odometry of T_robot_table_p_robot_r_robot : Twist of robot reference frame relative to table frame, reduced and expressed in robot reference frame.\n It is an EstimatedTwist, so it contains Twist, estimation date (in sec) and covariance matrix.");
     addPort("outPose",outPose)
     .doc("Last estimation of H_robot_table.\n Cette estimée est datée et dispose d'une matrice de covariance.");

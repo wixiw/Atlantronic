@@ -100,6 +100,7 @@ bool UbiquityKinematics::turrets2Motors(const TurretState & iTSbrut,
     //Log(DEBUG) << "currentTurretPos : " << currentTurretPos.toString();
     //Log(DEBUG) << "deltaCmd : " << deltaCmd.toString();
     //Log(DEBUG) <<  "oMS : " << oMS.toString();
+
     return true;
 }
 
