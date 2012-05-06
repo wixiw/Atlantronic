@@ -96,14 +96,19 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_nullspeed )
 
 }
 
-void checkTwist2Motor2Twist(double vx, double vy, double vh, UbiquityParams params)
+/**
+ * Sert a tester qu'un twist commande est bien mesure.
+ * @param vx,vy,vh : twist de commande
+ * @param curmotors : état actuel des moteurs (notamment pour les couplages de vitesse traction/direction)
+ * @param params : paramètre de configuration (notamment les 0 tourelles)
+ */
+void checkTwist2Motor2Twist(double vx, double vy, double vh, MotorState curmotors, UbiquityParams params)
 {
     cout << "checkTwist2Motor2Twist " << vx << " " << vy << " " << vh
             << " turrets Zeros : " << params.getLeftTurretZero() << " " << params.getRightTurretZero() << " " << params.getRearTurretZero() << endl;
 
     TurretState turrets_commanded;
     TurretState turrets_back;
-    MotorState curmotors;
     MotorState motors;
     SlippageReport slippage;
     Twist2D twist_commanded;
@@ -155,25 +160,58 @@ double randZeroTurretPos()
     return (double)(rand()%30000 - 15000)/1500;
 }
 
-BOOST_AUTO_TEST_CASE( UbiquityKinematics_rotation_twist2motor2twist )
+/**
+ * On teste plusieurs twists de commande et plusieurs position des 0 tourelles
+ * MAIS l'état courant des moteurs est toujours 0,0,0
+ */
+BOOST_AUTO_TEST_CASE( UbiquityKinematics_twist2motor2twist )
 {
     unsigned int seed = time(NULL);
     srand(seed);
     cout << "Seed for rand number is : " << seed << endl;
 
     UbiquityParams params;
+    MotorState curmotors;
+
     params.setLeftTurretZero(0.0);
     params.setRightTurretZero(0.0);
     params.setRearTurretZero(0.0);
-    checkTwist2Motor2Twist(1.0, 0, 0, params);
-    checkTwist2Motor2Twist(0, 1.0, 0, params);
-    checkTwist2Motor2Twist(0, 0, 1.0, params);
+    checkTwist2Motor2Twist(1.0, 0, 0, curmotors, params);
+    checkTwist2Motor2Twist(0, 1.0, 0, curmotors, params);
+    checkTwist2Motor2Twist(0, 0, 1.0, curmotors, params);
 
     for( int i=0 ; i<50; i++)
     {
         params.setLeftTurretZero(randZeroTurretPos());
         params.setRightTurretZero(randZeroTurretPos());
         params.setRearTurretZero(randZeroTurretPos());
-        checkTwist2Motor2Twist(randSpeed(), randSpeed(), randSpeed(), params);
+        curmotors.steering.left.position = randZeroTurretPos();
+        curmotors.steering.right.position = randZeroTurretPos();
+        curmotors.steering.rear.position = randZeroTurretPos();
+        checkTwist2Motor2Twist(randSpeed(), randSpeed(), randSpeed(), curmotors, params);
     }
+}
+
+/**
+ * On teste des états moteurs differents de 0
+ */
+BOOST_AUTO_TEST_CASE( UbiquityKinematics_rotation_twist2motor2twist )
+{
+    cout << "" << endl;
+    cout << "-------------------------------------" << endl;
+    cout << "" << endl;
+
+    UbiquityParams params;
+    MotorState curmotors;
+
+    params.setLeftTurretZero(1.0);
+    params.setRightTurretZero(2.0);
+    params.setRearTurretZero(3.0);
+    curmotors.steering.left.position = params.getLeftTurretZero();
+    curmotors.steering.right.position = params.getRightTurretZero();
+    curmotors.steering.rear.position = params.getRearTurretZero();
+
+    checkTwist2Motor2Twist(1.0, 0, 0, curmotors, params);
+    checkTwist2Motor2Twist(0, 1.0, 0, curmotors, params);
+    checkTwist2Motor2Twist(0, 0, 1.0, curmotors, params);
 }

@@ -83,7 +83,6 @@ namespace arp_math
      */
     double firstDerivateLimitation(const double input, const double lastOutput, const double period, const double dmin, const double dmax);
 
-
     /**
      * absolute value for floats
      */

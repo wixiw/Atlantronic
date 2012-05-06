@@ -43,20 +43,20 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
                                    transitions={'endInitialisation':'StartSequence', 'failed':'end'})
             smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(0,0,0),
-                                   transitions={'gogogo':'Move5','problem':'end'})  
+                                   transitions={'gogogo':'Move1','problem':'end'})  
                        
             smach.StateMachine.add('Move1', Move1(),
                                    transitions={'succeeded':'Move2', 'timeout':'Debloque'})
             smach.StateMachine.add('Move2', Move2(),
-                                   transitions={'succeeded':'Move1', 'timeout':'Debloque'})
+                                   transitions={'succeeded':'Move3', 'timeout':'Debloque'})
             smach.StateMachine.add('Move3', Move3(),
                                    transitions={'succeeded':'Move4', 'timeout':'Debloque'})
             smach.StateMachine.add('Move4', Move4(),
-                                   transitions={'succeeded':'Move3', 'timeout':'Debloque'})
+                                   transitions={'succeeded':'Move5', 'timeout':'Debloque'})
             smach.StateMachine.add('Move5', Move5(),
                                    transitions={'succeeded':'Move6', 'timeout':'Debloque'})
             smach.StateMachine.add('Move6', Move6(),
-                                   transitions={'succeeded':'Move5', 'timeout':'Debloque'})   
+                                   transitions={'succeeded':'Move1', 'timeout':'Debloque'})   
             smach.StateMachine.add('Debloque', Debloque(),
                                    transitions={'succeeded':'Wait', 'timeout':'Debloque'})     
             smach.StateMachine.add('Wait', WaiterState(2.0),
@@ -99,11 +99,17 @@ class Move4(CyclicActionState):
         
 class Move5(CyclicActionState):
     def createAction(self):
-        self.openloop( x_speed=0.000,y_speed=-0.000,theta_speed=1.000,
-                      openloop_duration=2.000)    
+ #       self.openloop( x_speed=0.000,y_speed=-0.000,theta_speed=1.000,
+  #                    openloop_duration=2.000)    
+                self.openloop_cpoint( -0.0,0,0,
+                                     x_speed=0.000,y_speed=-0.000,theta_speed=1.000,
+                      openloop_duration=2.000)   
 class Move6(CyclicActionState):
     def createAction(self):
-        self.openloop( x_speed=0.000,y_speed=-0.000,theta_speed=-1.000,
+  #      self.openloop( x_speed=0.000,y_speed=-0.000,theta_speed=-1.000,
+   #                   openloop_duration=2.000)    
+                self.openloop_cpoint( -0.0,0,0,
+                                       x_speed=0.000,y_speed=-0.000,theta_speed=-1.000,
                       openloop_duration=2.000)    
         
 class Debloque(CyclicActionState):

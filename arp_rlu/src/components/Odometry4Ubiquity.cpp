@@ -64,7 +64,7 @@ void Odometry4Ubiquity::updateHook()
     }
 
     //Si le twist calculé est trop petit on envoit 0
-    if( fabs(computedTwist.speedNorm()) < propMinVelocity )
+    if( fabs(computedTwist.distanceTo(Twist2D(0,0,0),1.0,0.200)) < propMinVelocity )
     {
         measuredTwist = EstimatedTwist2D();
     }
@@ -72,8 +72,6 @@ void Odometry4Ubiquity::updateHook()
     {
         measuredTwist = computedTwist;
     }
-
-
 
     // En attendant de propager les erreurs des moteurs, on définit arbitrairement (cf maquette python) des covariances :
     // sigmaXOdo = np.max(  [params.simu_cfg["minSigmaTransOdoVelocity"], params.simu_cfg["percentSigmaTransOdoVelocity"] * np.fabs(vxOdo)])

@@ -84,9 +84,8 @@ void KinematicBase::run()
 
     //gestion du cas pas de vitesse pour ne pas bouger les tourelles
     //TODO a supprimer avec le filtre ?
-    if (attrAcceptableTwist.speedNorm() <= propMinSpeed)
+    if (attrAcceptableTwist.distanceTo(Twist2D(0,0,0),1.0,0.200) <= propMinSpeed)
     {
-
         attrMotorStateCommand.steering = attrMotorsCurrentState.steering;
     }
     Log(INFO) << "<< KinematicBase::run()";

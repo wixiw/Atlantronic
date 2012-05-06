@@ -144,7 +144,6 @@ namespace arp_core
         std::string attrStateMachinePath;
         /** Used by configuration programs to set a success flag */
         bool attrScriptRes;
-
         /** cycle time*/
         timespec attrUpdateTime;
         /** cycle duration*/
