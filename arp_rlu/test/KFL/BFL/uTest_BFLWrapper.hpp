@@ -54,15 +54,16 @@ BOOST_AUTO_TEST_CASE( Predict_trans )
     //**********************************************
     // Initialization
 
-    double sigmaInitialPosition = 0.05;
+    double sigmaInitialXPosition = 0.2;
+    double sigmaInitialYPosition = 0.3;
     double sigmaInitialHeading = 0.1;
 
     KFLStateVar initStateVar;
     initStateVar << 1., 2., PI/2.;
 
     KFLStateCov initStateCov = KFLStateCov::Zero();
-    initStateCov(0,0) = sigmaInitialPosition*sigmaInitialPosition;
-    initStateCov(1,1) = sigmaInitialPosition*sigmaInitialPosition;
+    initStateCov(0,0) = sigmaInitialXPosition*sigmaInitialXPosition;
+    initStateCov(1,1) = sigmaInitialYPosition*sigmaInitialYPosition;
     initStateCov(2,2) = sigmaInitialHeading*sigmaInitialHeading;
 
     //    Log( DEBUG ) << "initStateVar=" << initStateVar.transpose();
@@ -78,19 +79,30 @@ BOOST_AUTO_TEST_CASE( Predict_trans )
     //**********************************************
     // Prediction
 
-    KFLSysInput input;
-    input(0) = 2.0;
-    input(1) = -1.0;
+    KFLInputVar input;
+    input(0) = 0.5;
+    input(1) = -0.1;
     input(2) = 0.;
 
-    double dt = 0.01;
+    double dt = 0.5;
 
-    BFLWrapper::PredictParams predictParams;
-    predictParams.odoVelXSigma = 0.001;
-    predictParams.odoVelYSigma = 0.001;
-    predictParams.odoVelHSigma = 0.01;
+    double odoVelXSigma = 0.15;
+    double odoVelYSigma = 0.1;
+    double odoVelHSigma = 0.05;
 
-    bayesian.predict( input, dt, predictParams );
+    KFLInputCov cov = KFLInputCov::Identity();
+    cov(0,0) = odoVelXSigma * odoVelXSigma;
+    cov(1,1) = odoVelYSigma * odoVelYSigma;
+    cov(2,2) = odoVelHSigma * odoVelHSigma;
+
+//    Log( DEBUG ) << "********************* Predict_trans *********************************";
+//    Log( DEBUG ) << "Predict_trans : state before prediction :\n" << initStateVar.transpose();
+//    Log( DEBUG ) << "Predict_trans : cov before prediction :\n" << initStateCov;
+//    Log( DEBUG ) << "Predict_trans : input :\n" << input.transpose();
+//    Log( DEBUG ) << "Predict_trans : input covariance :\n" << cov;
+//    Log( DEBUG ) << "Predict_trans : dt : " << dt;
+
+    bayesian.predict( input, cov, dt );
 
 
     //**********************************************
@@ -99,7 +111,8 @@ BOOST_AUTO_TEST_CASE( Predict_trans )
     KFLStateVar estim = bayesian.getEstimate();
     KFLStateCov covariance = bayesian.getCovariance();
 
-    //    Log( DEBUG ) << "covariance=\n" << covariance;
+//    Log( DEBUG ) << "Predict_trans : state after prediction :\n" << estim.transpose();
+//    Log( DEBUG ) << "Predict_trans : cov after prediction :\n" << covariance;
 
     KFLStateVar groundEstim;
     groundEstim(0) = initStateVar(0) + dt * input(0);
@@ -107,9 +120,9 @@ BOOST_AUTO_TEST_CASE( Predict_trans )
     groundEstim(2) = betweenMinusPiAndPlusPi(initStateVar(2) + dt * input(2));
 
     KFLStateCov groundCov = KFLStateCov::Zero();
-    groundCov(0,0) = (sqrt(initStateCov(0,0)) + dt * predictParams.odoVelXSigma)*(sqrt(initStateCov(0,0)) + dt * predictParams.odoVelXSigma);
-    groundCov(1,1) = (sqrt(initStateCov(1,1)) + dt * predictParams.odoVelYSigma)*(sqrt(initStateCov(1,1)) + dt * predictParams.odoVelYSigma);
-    groundCov(2,2) = (sqrt(initStateCov(2,2)) + dt * predictParams.odoVelHSigma)*(sqrt(initStateCov(2,2)) + dt * predictParams.odoVelHSigma);
+    groundCov(0,0) = (sqrt(initStateCov(0,0)) + dt * odoVelXSigma)*(sqrt(initStateCov(0,0)) + dt * odoVelXSigma);
+    groundCov(1,1) = (sqrt(initStateCov(1,1)) + dt * odoVelYSigma)*(sqrt(initStateCov(1,1)) + dt * odoVelYSigma);
+    groundCov(2,2) = (sqrt(initStateCov(2,2)) + dt * odoVelHSigma)*(sqrt(initStateCov(2,2)) + dt * odoVelHSigma);
 
     //    Log( DEBUG ) << "groundCov=\n" << groundCov;
 
@@ -130,15 +143,16 @@ BOOST_AUTO_TEST_CASE( Predict_rot )
     //**********************************************
     // Initialization
 
-    double sigmaInitialPosition = 0.05;
+    double sigmaInitialXPosition = 0.2;
+    double sigmaInitialYPosition = 0.3;
     double sigmaInitialHeading = 0.1;
 
     KFLStateVar initStateVar;
     initStateVar << 1., 2., PI/2.;
 
     KFLStateCov initStateCov = KFLStateCov::Zero();
-    initStateCov(0,0) = sigmaInitialPosition*sigmaInitialPosition;
-    initStateCov(1,1) = sigmaInitialPosition*sigmaInitialPosition;
+    initStateCov(0,0) = sigmaInitialXPosition*sigmaInitialXPosition;
+    initStateCov(1,1) = sigmaInitialYPosition*sigmaInitialYPosition;
     initStateCov(2,2) = sigmaInitialHeading*sigmaInitialHeading;
 
     //    Log( DEBUG ) << "initStateVar=" << initStateVar.transpose();
@@ -154,19 +168,30 @@ BOOST_AUTO_TEST_CASE( Predict_rot )
     //**********************************************
     // Prediction
 
-    KFLSysInput input;
+    KFLInputVar input;
     input(0) = 0.;
     input(1) = 0.;
     input(2) = 1.;
 
     double dt = 0.01;
 
-    BFLWrapper::PredictParams predictParams;
-    predictParams.odoVelXSigma = 0.001;
-    predictParams.odoVelYSigma = 0.001;
-    predictParams.odoVelHSigma = 0.01;
+    double odoVelXSigma = 0.15;
+    double odoVelYSigma = 0.1;
+    double odoVelHSigma = 0.05;
 
-    bayesian.predict( input, dt, predictParams );
+    KFLInputCov cov = KFLInputCov::Identity();
+    cov(0,0) = odoVelXSigma * odoVelXSigma;
+    cov(1,1) = odoVelYSigma * odoVelYSigma;
+    cov(2,2) = odoVelHSigma * odoVelHSigma;
+
+//    Log( DEBUG ) << "********************* Predict_rot **********************************";
+//    Log( DEBUG ) << "Predict_rot : state before prediction :\n" << initStateVar.transpose();
+//    Log( DEBUG ) << "Predict_rot : cov before prediction :\n" << initStateCov;
+//    Log( DEBUG ) << "Predict_rot : input :\n" << input.transpose();
+//    Log( DEBUG ) << "Predict_rot : input covariance :\n" << cov;
+//    Log( DEBUG ) << "Predict_rot : dt : " << dt;
+
+    bayesian.predict( input, cov, dt );
 
 
     //**********************************************
@@ -175,7 +200,8 @@ BOOST_AUTO_TEST_CASE( Predict_rot )
     KFLStateVar estim = bayesian.getEstimate();
     KFLStateCov covariance = bayesian.getCovariance();
 
-    //    Log( DEBUG ) << "covariance=\n" << covariance;
+//    Log( DEBUG ) << "Predict_rot : state after prediction :\n" << estim.transpose();
+//    Log( DEBUG ) << "Predict_rot : cov after prediction :\n" << covariance;
 
     KFLStateVar groundEstim;
     groundEstim(0) = initStateVar(0) + dt * input(0);
@@ -183,18 +209,18 @@ BOOST_AUTO_TEST_CASE( Predict_rot )
     groundEstim(2) = betweenMinusPiAndPlusPi(initStateVar(2) + dt * input(2));
 
     KFLStateCov groundCov = KFLStateCov::Zero();
-    groundCov(0,0) = (sqrt(initStateCov(0,0)) + dt * predictParams.odoVelXSigma)*(sqrt(initStateCov(0,0)) + dt * predictParams.odoVelXSigma);
-    groundCov(1,1) = (sqrt(initStateCov(1,1)) + dt * predictParams.odoVelYSigma)*(sqrt(initStateCov(1,1)) + dt * predictParams.odoVelYSigma);
-    groundCov(2,2) = (sqrt(initStateCov(2,2)) + dt * predictParams.odoVelHSigma)*(sqrt(initStateCov(2,2)) + dt * predictParams.odoVelHSigma);
+    groundCov(0,0) = (sqrt(initStateCov(0,0)) + dt * odoVelXSigma)*(sqrt(initStateCov(0,0)) + dt * odoVelXSigma);
+    groundCov(1,1) = (sqrt(initStateCov(1,1)) + dt * odoVelYSigma)*(sqrt(initStateCov(1,1)) + dt * odoVelYSigma);
+    groundCov(2,2) = (sqrt(initStateCov(2,2)) + dt * odoVelHSigma)*(sqrt(initStateCov(2,2)) + dt * odoVelHSigma);
 
     //    Log( DEBUG ) << "groundCov=\n" << groundCov;
 
     for(unsigned int i = 0 ; i < 3 ; i++)
     {
-        BOOST_CHECK_CLOSE( estim(i), groundEstim(i), 1.f );
+        BOOST_CHECK_SMALL( estim(i) - groundEstim(i), 1.e-8 );
         for(unsigned int j = 0 ; j < 3 ; j++)
         {
-            BOOST_CHECK_CLOSE( covariance(i,j), groundCov(i,j), 1.f );
+            BOOST_CHECK_SMALL( covariance(i,j) - groundCov(i,j), 1.e-8 );
         }
     }
 }
@@ -232,23 +258,27 @@ BOOST_AUTO_TEST_CASE( Multi_Predict_trans )
 
     unsigned int N = 10;
 
-    KFLSysInput input;
+    KFLInputVar input;
     input(0) = 2.0;
     input(1) = -1.0;
     input(2) = 0.;
 
     double dt = 0.01;
 
-    BFLWrapper::PredictParams predictParams;
-    predictParams.odoVelXSigma = 0.001;
-    predictParams.odoVelYSigma = 0.001;
-    predictParams.odoVelHSigma   = 0.01;
+    double odoVelXSigma = 0.001;
+    double odoVelYSigma = 0.001;
+    double odoVelHSigma = 0.01;
+
+    KFLInputCov cov = KFLInputCov::Identity();
+    cov(0,0) = odoVelXSigma * odoVelXSigma;
+    cov(1,1) = odoVelYSigma * odoVelYSigma;
+    cov(2,2) = odoVelHSigma * odoVelHSigma;
+
 
     for(unsigned int i = 0 ; i < N ; i++)
     {
-        bayesian.predict( input, dt, predictParams );
+        bayesian.predict( input, cov, dt );
     }
-
 
     //**********************************************
     // Results comparison
@@ -264,9 +294,9 @@ BOOST_AUTO_TEST_CASE( Multi_Predict_trans )
     groundEstim(2) = betweenMinusPiAndPlusPi(initStateVar(2) + N * dt * input(2));
 
     KFLStateCov groundCov = KFLStateCov::Zero();
-    groundCov(0,0) = (sqrt(initStateCov(0,0)) + N * dt * predictParams.odoVelXSigma)*(sqrt(initStateCov(0,0)) + N * dt * predictParams.odoVelXSigma);
-    groundCov(1,1) = (sqrt(initStateCov(1,1)) + N * dt * predictParams.odoVelYSigma)*(sqrt(initStateCov(1,1)) + N * dt * predictParams.odoVelYSigma);
-    groundCov(2,2) = (sqrt(initStateCov(2,2)) + N * dt * predictParams.odoVelHSigma)*(sqrt(initStateCov(2,2)) + N * dt * predictParams.odoVelHSigma);
+    groundCov(0,0) = (sqrt(initStateCov(0,0)) + N * dt * odoVelXSigma)*(sqrt(initStateCov(0,0)) + N * dt * odoVelXSigma);
+    groundCov(1,1) = (sqrt(initStateCov(1,1)) + N * dt * odoVelYSigma)*(sqrt(initStateCov(1,1)) + N * dt * odoVelYSigma);
+    groundCov(2,2) = (sqrt(initStateCov(2,2)) + N * dt * odoVelHSigma)*(sqrt(initStateCov(2,2)) + N * dt * odoVelHSigma);
 
     //    Log( DEBUG ) << "groundCov=\n" << groundCov;
 
@@ -313,21 +343,26 @@ BOOST_AUTO_TEST_CASE( Multi_Predict_rot )
 
     unsigned int N = 10;
 
-    KFLSysInput input;
+    KFLInputVar input;
     input(0) = 0.;
     input(1) = 0.;
     input(2) = 1.;
 
     double dt = 0.01;
 
-    BFLWrapper::PredictParams predictParams;
-    predictParams.odoVelXSigma = 0.001;
-    predictParams.odoVelYSigma = 0.001;
-    predictParams.odoVelHSigma = 0.01;
+    double odoVelXSigma = 0.001;
+    double odoVelYSigma = 0.001;
+    double odoVelHSigma = 0.01;
+
+    KFLInputCov cov = KFLInputCov::Identity();
+    cov(0,0) = odoVelXSigma * odoVelXSigma;
+    cov(1,1) = odoVelYSigma * odoVelYSigma;
+    cov(2,2) = odoVelHSigma * odoVelHSigma;
+
 
     for(unsigned int i = 0 ; i < N ; i++)
     {
-        bayesian.predict( input, dt, predictParams );
+        bayesian.predict( input, cov, dt );
     }
 
     //**********************************************
@@ -344,9 +379,9 @@ BOOST_AUTO_TEST_CASE( Multi_Predict_rot )
     groundEstim(2) = betweenMinusPiAndPlusPi(initStateVar(2) + N * dt * input(2));
 
     KFLStateCov groundCov = KFLStateCov::Zero();
-    groundCov(0,0) = (sqrt(initStateCov(0,0)) + N * dt * predictParams.odoVelXSigma)*(sqrt(initStateCov(0,0)) + N * dt * predictParams.odoVelXSigma);
-    groundCov(1,1) = (sqrt(initStateCov(1,1)) + N * dt * predictParams.odoVelYSigma)*(sqrt(initStateCov(1,1)) + N * dt * predictParams.odoVelYSigma);
-    groundCov(2,2) = (sqrt(initStateCov(2,2)) + N * dt * predictParams.odoVelHSigma)*(sqrt(initStateCov(2,2)) + N * dt * predictParams.odoVelHSigma);
+    groundCov(0,0) = (sqrt(initStateCov(0,0)) + N * dt * odoVelXSigma)*(sqrt(initStateCov(0,0)) + N * dt * odoVelXSigma);
+    groundCov(1,1) = (sqrt(initStateCov(1,1)) + N * dt * odoVelYSigma)*(sqrt(initStateCov(1,1)) + N * dt * odoVelYSigma);
+    groundCov(2,2) = (sqrt(initStateCov(2,2)) + N * dt * odoVelHSigma)*(sqrt(initStateCov(2,2)) + N * dt * odoVelHSigma);
 
     //    Log( DEBUG ) << "groundCov=\n" << groundCov;
 

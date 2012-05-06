@@ -21,23 +21,6 @@ using namespace std;
 using namespace kfl;
 using namespace arp_core::log;
 
-BFLWrapper::PredictParams::PredictParams()
-: BayesianWrapper::PredictParams()
-, odoVelXSigma(0.001)
-, odoVelYSigma(0.001)
-, odoVelHSigma(0.01)
-{
-}
-
-std::string BFLWrapper::PredictParams::getInfo() const
-{
-    std::stringstream ss;
-    ss << "BFLWrapper PredictParams :" << std::endl;
-    ss << " [*] odoVelXSigma : " << odoVelXSigma << std::endl;
-    ss << " [*] odoVelYSigma : " << odoVelYSigma << std::endl;
-    ss << " [*] odoVelHSigma : " << odoVelHSigma << std::endl;
-    return ss.str();
-}
 
 BFLWrapper::UpdateParams::UpdateParams()
 : BayesianWrapper::UpdateParams()
@@ -187,7 +170,7 @@ void BFLWrapper::init(const KFLStateVar & statevariable, const KFLStateCov & sta
     return;
 }
 
-void BFLWrapper::predict( const KFLSysInput & input , double dt, BayesianWrapper::PredictParams & p )
+void BFLWrapper::predict( const KFLInputVar & input , const KFLInputCov & inputCov, double dt)
 {
     if(sysPdf==NULL || sysModel==NULL || measPdf==NULL || measModel==NULL || innovationCheck==NULL || filter==NULL)
     {
@@ -195,55 +178,37 @@ void BFLWrapper::predict( const KFLSysInput & input , double dt, BayesianWrapper
         return;
     }
 
-    BFLWrapper::PredictParams predictParams;
-    try {
-        predictParams = dynamic_cast< BFLWrapper::PredictParams & >(p);
-    }
-    catch(...)
-    {
-        Log( ERROR ) << "BFLWrapper::predict - BayesianWrapper::PredictParams argument is not a BFLWrapper::PredictParams => return";
-        return;
-    }
+    Eigen::Matrix<double, 3, 3> B = Eigen::Matrix<double, 3, 3>::Identity() * dt;
+    MatrixWrapper::Matrix B_bfl(3,3);
+    B_bfl(1,1) = B(0,0);
+    B_bfl(1,2) = B(0,1);
+    B_bfl(1,3) = B(0,2);
+    B_bfl(2,1) = B(1,0);
+    B_bfl(2,2) = B(1,1);
+    B_bfl(2,3) = B(1,2);
+    B_bfl(3,1) = B(2,0);
+    B_bfl(3,2) = B(2,1);
+    B_bfl(3,3) = B(2,2);
+    sysModel->BSet(B_bfl);
 
-    MatrixWrapper::Matrix B(3,3);
-    B(1,1) = dt;
-    B(1,2) = 0.;
-    B(1,3) = 0.;
-    B(2,1) = 0.;
-    B(2,2) = dt;
-    B(2,3) = 0.;
-    B(3,1) = 0.;
-    B(3,2) = 0.;
-    B(3,3) = dt;
-    sysModel->BSet(B);
-
-    KFLStateCov P_km1 = getCovariance();
-    Eigen::EigenSolver< KFLStateCov > eigensolver(P_km1); // complex version in order to have unsorted values
-    if (eigensolver.info() != Eigen::Success)
-    {
-        Log( ERROR ) << "BFLWrapper::predict - Eigen value solver failed (Matrix not symetric and positive ?) => return";
-        return;
-    }
-    KFLStateVar w  = eigensolver.eigenvalues().real();  // squeeze imaginary part (it should be nul if matrix is actually symetric)
-    KFLStateCov v  = eigensolver.eigenvectors().real();
-
-//    Log( DEBUG ) << "BFLWrapper::predict - eigenvalues=" << w.transpose();
-//    Log( DEBUG ) << "BFLWrapper::predict - eigenvectors=\n" << v;
-//    Log( DEBUG ) << "BFLWrapper::predict - predictParams.odoVelXSigma=" << predictParams.odoVelXSigma;
-//    Log( DEBUG ) << "BFLWrapper::predict - predictParams.odoVelYSigma=" << predictParams.odoVelYSigma;
-//    Log( DEBUG ) << "BFLWrapper::predict - predictParams.odoVelHSigma=" << predictParams.odoVelHSigma;
-
-
-    KFLStateVar Q_;
-    Q_(0) = sqrt(w(0)) + dt * predictParams.odoVelXSigma;
-    Q_(1) = sqrt(w(1)) + dt * predictParams.odoVelYSigma;
-    Q_(2) = sqrt(w(2)) + dt * predictParams.odoVelHSigma;
-    KFLStateVar Q2;
-    Q2(0) = Q_(0)*Q_(0) - w(0);
-    Q2(1) = Q_(1)*Q_(1) - w(1);
-    Q2(2) = Q_(2)*Q_(2) - w(2);
-    KFLStateCov Q = v * Q2.asDiagonal() * v.transpose();
-
+        KFLStateCov P_km1 = getCovariance();
+        Eigen::EigenSolver< KFLStateCov > eigensolver(P_km1); // complex version in order to have unsorted values
+        if (eigensolver.info() != Eigen::Success)
+        {
+            Log( ERROR ) << "BFLWrapper::predict - Eigen value solver failed (Matrix not symetric and positive ?) => return";
+            return;
+        }
+        KFLStateVar w  = eigensolver.eigenvalues().real();  // squeeze imaginary part (it should be nul if matrix is actually symetric)
+        KFLStateCov v  = eigensolver.eigenvectors().real();
+        KFLStateVar Q_;
+        Q_(0) = sqrt(w(0)) + dt * sqrt(inputCov(0,0));
+        Q_(1) = sqrt(w(1)) + dt * sqrt(inputCov(1,1));
+        Q_(2) = sqrt(w(2)) + dt * sqrt(inputCov(2,2));
+        KFLStateVar Q2;
+        Q2(0) = Q_(0)*Q_(0) - w(0);
+        Q2(1) = Q_(1)*Q_(1) - w(1);
+        Q2(2) = Q_(2)*Q_(2) - w(2);
+        KFLStateCov Q = v * Q2.asDiagonal() * v.transpose();
 
     MatrixWrapper::SymmetricMatrix sysNoiseCov(3);
     sysNoiseCov(1,1) = Q(0,0);

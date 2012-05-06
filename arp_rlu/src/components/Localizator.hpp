@@ -41,7 +41,17 @@ class Localizator: public RluTaskContext
         RTT::InputPort<sensor_msgs::LaserScan> inScan;
         RTT::InputPort<arp_math::EstimatedTwist2D > inOdo;
 
+        /**
+         * Contient la dernière estimée de position.\n
+         * Il s'agit de H_robot_table
+         */
         RTT::OutputPort<arp_math::EstimatedPose2D> outPose;
+
+        /**
+         * Contient la dernière estimée de vitesse.\n
+         * Il s'agit de T_robot_table_p_robot_r_robot c'est à dire le Twist du robot
+         * par rapport à la table, projeté ET réduit dans le repère du robot.
+         */
         RTT::OutputPort<arp_math::EstimatedTwist2D> outTwist;
 
         //*****************************************************

@@ -32,10 +32,14 @@ Localizator::Localizator(const std::string& name)
 
     m_monotonicTimeToRealTime = ros::Time::now().toSec() - getTime();
 
-    LOG( Debug ) << "New params defined !" << endlog();
+    propParams.defaultInitCovariance = Vector3(0.01, 0.01, 0.01).asDiagonal();
 
     propParams.bufferSize = 100;
     propParams.maxTime4OdoPrediction = 0.5;
+
+    propParams.H_hky_robot = Pose2D();
+    propParams.H_odo_robot = Pose2D();
+
     propParams.referencedBeacons = std::vector< lsl::Circle >();
     propParams.referencedBeacons.push_back( lsl::Circle( 1.550, 0., 0.04 ) );
     propParams.referencedBeacons.push_back( lsl::Circle(-1.550, 1.05, 0.04 ) );
@@ -106,44 +110,17 @@ bool Localizator::configureHook()
 
 void Localizator::updateHook()
 {
-    EstimatedTwist2D T_r_t;
-    EstimatedTwist2D T_r_t_t; //je ne sais pas le vrai nom mais je rajoute un t pour dire qu'il y a un bricolage pour etre dans le repere de la table
-    if( RTT::NewData == inOdo.read(T_r_t) )
+    EstimatedTwist2D T_odo_table_p_odo_r_odo;
+    if( RTT::NewData == inOdo.read(T_odo_table_p_odo_r_odo) )
     {
-        //LOG( Info ) << "Localizator::newOdo - t=" << std::setprecision(9) << T_r_t.date() << " (sec)" << endlog();
-
-        //changement de repère de T_r_t
-        Eigen::Vector3d T;
-        T << T_r_t.vx(), T_r_t.vy(), T_r_t.vh();
-        Eigen::Matrix<double,3,3> R = Eigen::Matrix<double,3,3>::Identity();
-        R.topLeftCorner(2,2) = kfloc.getLastEstimatedPose2D().orientation().toRotationMatrix();
-        Eigen::Vector3d V = R * T;
-        Eigen::Matrix3d covariance = R * T_r_t.cov() * R.inverse();
-        for(unsigned int i = 0 ; i < 3 ; i++)
-        {
-            for(unsigned j = i ; j < 3 ; j++)
-            {
-                double m = (covariance(i,j) + covariance(j,i))/2.;
-                covariance(i,j) = m;
-                covariance(j,i) = m;
-            }
-        }
-        T_r_t_t.vx( V(0) );
-        T_r_t_t.vy( V(1) );
-        T_r_t_t.vh( V(2) );
-        T_r_t_t.cov( covariance );
-        T_r_t_t.date(T_r_t.date());
-
         //update du Kalman
-        kfloc.newOdoVelocity(T_r_t_t);
+        kfloc.newOdoVelocity(T_odo_table_p_odo_r_odo);
     }
 
     sensor_msgs::LaserScan rosScan;
     if( RTT::NewData == inScan.read(rosScan) )
     {
         double dateBeg = rosScan.header.stamp.toSec() - m_monotonicTimeToRealTime;
-        double dateEnd = dateBeg + (rosScan.ranges.size()-1) * rosScan.time_increment;
-        //LOG( Info ) << "Localizator::newScan - tbeg=" << std::setprecision (9) << dateBeg << " (sec)   - tend=" << dateEnd << "  - duration=" << (dateEnd - dateBeg) << " (sec)" << endlog();
 
         lsl::LaserScan lslScan;
         Eigen::MatrixXd polarData(3, rosScan.ranges.size());
@@ -166,30 +143,18 @@ void Localizator::updateHook()
     }
 
 
-    EstimatedPose2D estimPose = kfloc.getLastEstimatedPose2D();
-    EstimatedTwist2D estimTwist = kfloc.getLastEstimatedTwist2D();
+    EstimatedPose2D estim_H_robot_table = kfloc.getLastEstimatedPose2D();
+    EstimatedTwist2D estim_T_robot_table_p_robot_r_robot = kfloc.getLastEstimatedTwist2D();
 
-    Eigen::Vector3d T;
-    T << estimTwist.vx(), estimTwist.vy(), estimTwist.vh();
-    Eigen::Matrix<double,3,3> R = Eigen::Matrix<double,3,3>::Identity();
-    R.topLeftCorner(2,2) = estimPose.orientation().toRotationMatrix();
-    Eigen::Vector3d V = R.inverse() * T;
-    Eigen::Matrix3d covariance = R.inverse() * estimTwist.cov() * R;
-    estimTwist.vx( V(0) );
-    estimTwist.vy( V(1) );
-    estimTwist.vh( V(2) );
-    estimTwist.cov( covariance );
+    outPose.write(estim_H_robot_table);
+    outTwist.write(estim_T_robot_table_p_robot_r_robot);
 
-    outTwist.write(estimTwist);
-    outPose.write(estimPose);
 }
 
 bool Localizator::ooInitialize(double x, double y, double theta)
 {
-    double initDate = arp_math::getTime();
-
-    Covariance3 cov = Vector3(0.01, 0.01, 0.001).asDiagonal();
-    EstimatedPose2D pose = MathFactory::createEstimatedPose2D(x,y,theta, initDate, cov);
+    long double initDate = arp_math::getTime();
+    EstimatedPose2D pose = MathFactory::createEstimatedPose2D(x,y,theta, initDate, propParams.defaultInitCovariance);
 
     LOG(Info) << "initialize to " << pose.toString() << " with date : "  << initDate <<  " (sec)" << endlog();
 
@@ -208,15 +173,19 @@ void Localizator::createOrocosInterface()
 {
     addProperty("propParams",propParams);
 
+
     addPort("inScan",inScan)
     .doc("LaserScan from LRF");
-    addPort("inOdo",inOdo)
 
-    .doc("Estimation from odometry of T_robot_table_p_robot_r_robot : Twist of robot reference frame relative to table frame, reduced and expressed in robot reference frame.\n It is an EstimatedTwist, so it contains Twist, estimation date (in sec) and covariance matrix.");
+    addPort("inOdo",inOdo)
+    .doc("Estimation of T_odo_table_p_odo_r_odo : Twist of odo reference frame relative to table frame, reduced and expressed in odo reference frame.\n It is an EstimatedTwist2D, so it contains Twist, estimation date (in sec) and covariance matrix.");
+
     addPort("outPose",outPose)
-    .doc("Last estimation of H_robot_table.\n Cette estimée est datée et dispose d'une matrice de covariance.");
+    .doc("Last estimation of H_robot_table.\n It is an EstimatedPose2D, so it contains Pose2D, estimation date (in sec) and covariance matrix.");
+
     addPort("outTwist",outTwist)
-    .doc("Last estimation of T_robot_table_p_robot_r_robot.\n Cette estimée est datée et dispose d'une matrice de covariance.");
+    .doc("Last estimation of T_robot_table_p_robot_r_robot Twist of robot reference frame relative to table frame, reduced and expressed in robot reference frame.\n It is an EstimatedTwist2D, so it contains Twist, estimation date (in sec) and covariance matrix.");
+
 
     addOperation("ooInitialize",&Localizator::ooInitialize, this, OwnThread)
     .doc("Initialisation de la Localisation")

@@ -238,7 +238,11 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
         return false;
     }
 
-    Log( DEBUG ) << "BeaconDetector::process - " << detectedCircles.size() << " circles detected";
+    Log( DEBUG ) << "BeaconDetector::process - " << detectedCircles.size() << " circles detected : ";
+    for(int i = 0 ; i < detectedCircles.size() ; i++)
+    {
+        Log( DEBUG ) << "BeaconDetector::process -      [" << i << "] x:" << detectedCircles[i].x() << " - y:" << detectedCircles[i].y() << " - r:" << detectedCircles[i].r();
+    }
 
     //*****************************
     // Find Triangle

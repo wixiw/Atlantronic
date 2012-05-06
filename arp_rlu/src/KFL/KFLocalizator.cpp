@@ -26,10 +26,14 @@ using namespace arp_core::log;
 KFLocalizator::Params::Params()
 : bufferSize(100)
 , maxTime4OdoPrediction(0.5)
+, H_odo_robot()
+, H_hky_robot()
+, defaultInitCovariance(Covariance3::Identity())
 , referencedBeacons()
 , iekfParams(KFLocalizator::IEKFParams())
 , procParams(BeaconDetector::Params())
 {
+    defaultInitCovariance.diagonal() << 0.01, 0.01, 0.01;
 }
 
 std::string KFLocalizator::Params::getInfo() const
@@ -160,9 +164,7 @@ void KFLocalizator::setParams(KFLocalizator::Params p)
         Log( ERROR ) << "KFLocalizator::setParams - Parameters are ignored because they are inconsistent :\n" << p.getInfo();
         return;
     }
-    params.bufferSize = p.bufferSize;
-    params.maxTime4OdoPrediction = p.maxTime4OdoPrediction;
-    params.referencedBeacons = p.referencedBeacons;
+    params = p;
     beaconDetector.setReferencedBeacons(params.referencedBeacons);
     setParams(p.iekfParams);
     setParams(p.procParams);
@@ -179,20 +181,26 @@ void KFLocalizator::setParams(BeaconDetector::Params p)
     beaconDetector.setParams(params.procParams);
 }
 
-bool KFLocalizator::initialize(const arp_math::EstimatedPose2D & pose)
+bool KFLocalizator::initialize(const arp_math::EstimatedPose2D & H_robot_table)
 {
     circularBuffer.rset_capacity(params.bufferSize);
     circularBuffer.clear();
 
-    double initDate = pose.date();
+    EstimatedPose2D H_hky_table = H_robot_table * params.H_hky_robot;
+
+    kfl::Log( DEBUG ) << "KFLocalizator::initialize - H_robot_table : " << H_robot_table.toString();
+    kfl::Log( DEBUG ) << "KFLocalizator::initialize - params.H_hky_robot : " << params.H_hky_robot.toString();
+    kfl::Log( DEBUG ) << "KFLocalizator::initialize - H_hky_table : " << H_hky_table.toString();
+
+    double initDate = H_hky_table.date();
 
     KFLStateVar initStateVar;
-    initStateVar(0) = pose.x();
-    initStateVar(1) = pose.y();
-    initStateVar(2) = pose.h();
+    initStateVar(0) = H_hky_table.x();
+    initStateVar(1) = H_hky_table.y();
+    initStateVar(2) = H_hky_table.h();
 
     KFLStateCov initStateCov;
-    initStateCov = pose.cov();
+    initStateCov = H_hky_table.cov();
 
     BFLWrapper::FilterParams filterParams;
     filterParams.iekfMaxIt = params.iekfParams.iekfMaxIt;
@@ -201,11 +209,11 @@ bool KFLocalizator::initialize(const arp_math::EstimatedPose2D & pose)
 
     updateBuffer(initDate);
 
-    kfl::Log( DEBUG ) << "KFLocalizator::initialize - (x=" << pose.x() << ", y=" << pose.y() << " h=" << rad2deg(betweenMinusPi2AndPlusPi2(pose.h())) << " deg)";
+    kfl::Log( DEBUG ) << "KFLocalizator::initialize - (x=" << H_hky_table.x() << ", y=" << H_hky_table.y() << " h=" << rad2deg(betweenMinusPiAndPlusPi(H_hky_table.h())) << " deg)";
     return true;
 }
 
-bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D odoVel)
+bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D T_odo_table_p_odo_r_odo)
 {
     double startTime = getTime();
 
@@ -217,36 +225,56 @@ bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D odoVel)
 
     arp_math::EstimatedPose2D lastEstim = circularBuffer.back().first;
 
-    if( lastEstim.date() >= odoVel.date() )
+    if( lastEstim.date() >= T_odo_table_p_odo_r_odo.date() )
     {
-        Log( ERROR ) << "KFLocalizator::newOdoVelocity - Last estimation date (" << std::setprecision (9) << lastEstim.date() << ") is posterior or same than odo velocity date (" << odoVel.date() << ") => return false";
+        Log( ERROR ) << "KFLocalizator::newOdoVelocity - Last estimation date (" << std::setprecision (9) << lastEstim.date() << ") is posterior or same than odo velocity date (" << T_odo_table_p_odo_r_odo.date() << ") => return false";
         return false;
     }
 
-    if( lastEstim.date() + params.maxTime4OdoPrediction < odoVel.date() )
+    if( lastEstim.date() + params.maxTime4OdoPrediction < T_odo_table_p_odo_r_odo.date() )
     {
-        Log( WARN ) << "KFLocalizator::newOdoVelocity - Time between EstimatedTwist2D date (" << odoVel.date() << ") and last estimation date (" << lastEstim.date() << ") is strangely big and superior than" << params.maxTime4OdoPrediction << "). "
+        Log( WARN ) << "KFLocalizator::newOdoVelocity - Time between EstimatedTwist2D date (" << T_odo_table_p_odo_r_odo.date() << ") and last estimation date (" << lastEstim.date() << ") is strangely big and superior than" << params.maxTime4OdoPrediction << "). "
                 << "maybe because of an initalization date error or a scheduling fault => return false";
         return false;
     }
 
-    double dt = odoVel.date() - lastEstim.date();
+    double dt = T_odo_table_p_odo_r_odo.date() - lastEstim.date();
 
-    KFLSysInput input;
-    input(0) = odoVel.vx();
-    input(1) = odoVel.vy();
-    input(2) = odoVel.vh();
+    Log( DEBUG ) << "KFLocalizator::newOdoVelocity - T_odo_table_p_odo_r_odo :"
+                 << "  vx=" << T_odo_table_p_odo_r_odo.vx() << " (m/s)"
+                 << "  vy=" << T_odo_table_p_odo_r_odo.vy() << " (m/s)"
+                 << "  vh=" << rad2deg(T_odo_table_p_odo_r_odo.vh()) << " (deg/s)";
+    Log( DEBUG ) << "  covariance : " << T_odo_table_p_odo_r_odo.cov().row(0);
+    Log( DEBUG ) << "               " << T_odo_table_p_odo_r_odo.cov().row(1);
+    Log( DEBUG ) << "               " << T_odo_table_p_odo_r_odo.cov().row(2);
 
-    BFLWrapper::PredictParams predictParams;
-    predictParams.odoVelXSigma = sqrt(odoVel.cov()(0,0));
-    predictParams.odoVelYSigma = sqrt(odoVel.cov()(1,1));
-    predictParams.odoVelHSigma = sqrt(odoVel.cov()(2,2));
-    bayesian->predict( input, dt, predictParams );
+    arp_math::Pose2D H_hky_odo = params.H_odo_robot.inverse() * params.H_hky_robot;
+    arp_math::EstimatedTwist2D T_hky_table_p_hky_r_hky = T_odo_table_p_odo_r_odo.transport( H_hky_odo );
 
-    updateBuffer(odoVel.date(), odoVel);
+    Log( DEBUG ) << "KFLocalizator::newOdoVelocity - T_hky_table_p_hky_r_hky :"
+                 << "  vx=" << T_hky_table_p_hky_r_hky.vx() << " (m/s)"
+                 << "  vy=" << T_hky_table_p_hky_r_hky.vy() << " (m/s)"
+                 << "  vh=" << rad2deg(T_hky_table_p_hky_r_hky.vh()) << " (deg/s)";
+    Log( DEBUG ) << "  covariance : " << T_hky_table_p_hky_r_hky.cov().row(0);
+    Log( DEBUG ) << "               " << T_hky_table_p_hky_r_hky.cov().row(1);
+    Log( DEBUG ) << "               " << T_hky_table_p_hky_r_hky.cov().row(2);
+
+    Pose2D H_hky_table = circularBuffer.back().first;
+    EstimatedTwist2D T_hky_table_p_table_r_hky = T_hky_table_p_hky_r_hky.changeProjection( H_hky_table.inverse() );
+
+    Log( DEBUG ) << "KFLocalizator::newOdoVelocity - T_hky_table_p_table_r_hky :"
+                 << "  vx=" << T_hky_table_p_table_r_hky.vx() << " (m/s)"
+                 << "  vy=" << T_hky_table_p_table_r_hky.vy() << " (m/s)"
+                 << "  vh=" << rad2deg(T_hky_table_p_table_r_hky.vh()) << " (deg/s)";
+    Log( DEBUG ) << "  covariance : " << T_hky_table_p_table_r_hky.cov().row(0);
+    Log( DEBUG ) << "               " << T_hky_table_p_table_r_hky.cov().row(1);
+    Log( DEBUG ) << "               " << T_hky_table_p_table_r_hky.cov().row(2);
+
+    bayesian->predict( T_hky_table_p_table_r_hky.getTVector(), T_hky_table_p_table_r_hky.cov(), dt );
+
+    updateBuffer(T_hky_table_p_table_r_hky.date(), T_hky_table_p_table_r_hky);
 
     double stopTime = getTime();
-    Log( DEBUG ) << "KFLocalizator::newOdoVelocity - New odo : dt=" << dt << " (sec)  vx=" << odoVel.vx() << " (m/s)  vy=" << odoVel.vy() << " (m/s)  vh=" << rad2deg(odoVel.vh()) << " (deg/s)  - compute time=" << (stopTime - startTime)*1000. << " (ms)";
     return true;
 }
 
@@ -410,21 +438,16 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
             //            Log( DEBUG ) << "             " << postEstimStateCov.row(2);
         }
 
-        KFLSysInput input;
+        KFLInputVar input;
         input(0) = vx(i);
         input(1) = vy(i);
         input(2) = vh(i);
 
         double dt = tt(i) - tt(i-1);
 
-        BFLWrapper::PredictParams predictParams;
-        predictParams.odoVelXSigma = sqrt(odoCovs(i)(0,0));
-        predictParams.odoVelYSigma = sqrt(odoCovs(i)(1,1));
-        predictParams.odoVelHSigma = sqrt(odoCovs(i)(2,2));
-
         //        KFLStateVar preOdoEstim = bayesian->getEstimate();
 
-        bayesian->predict( input, dt, predictParams );
+        bayesian->predict( input, odoCovs(i), dt );
 
         //        KFLStateVar postOdoEstim = bayesian->getEstimate();
         //        Log( DEBUG ) << "KFLocalizator::newScan - i=" << i << "  - time=" << tt(i) << "  - yy=" << yy(i) << " (m)  - vy=" << vy(i) << " (m/s)  - preOdoY=" << preOdoEstim(1) << "  - postOdoY=" << postOdoEstim(1);
@@ -445,31 +468,40 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
     return false;
 }
 
-arp_math::EstimatedPose2D KFLocalizator::getLastEstimatedPose2D()
+EstimatedPose2D KFLocalizator::getLastEstimatedPose2D()
 {
     if(circularBuffer.empty())
     {
         Log( ERROR ) << "KFLocalizator::getLastEstimatedPose2D - Internal Circular Buffer is empty (maybe you forgot to initialize) => return arp_math::EstimatedPose2D()";
         return arp_math::EstimatedPose2D();
     }
-    return circularBuffer.back().first;
+
+    EstimatedPose2D H_hky_table = circularBuffer.back().first;
+    EstimatedPose2D H_robot_table = H_hky_table * params.H_hky_robot.inverse();
+
+    return H_robot_table;
 }
 
-arp_math::EstimatedTwist2D KFLocalizator::getLastEstimatedTwist2D()
+EstimatedTwist2D KFLocalizator::getLastEstimatedTwist2D()
 {
     if(circularBuffer.empty())
     {
         Log( ERROR ) << "KFLocalizator::getLastEstimatedPose2D - Internal Circular Buffer is empty (maybe you forgot to initialize) => return arp_math::EstimatedTwist2D()";
         return arp_math::EstimatedTwist2D();
     }
-    return circularBuffer.back().second;
+
+    EstimatedTwist2D T_hky_table_p_table_r_hky = circularBuffer.back().second;
+    EstimatedTwist2D T_hky_table_p_hky_r_hky = T_hky_table_p_table_r_hky.changeProjection( circularBuffer.back().first );
+    EstimatedTwist2D T_robot_table_p_robot_r_robot = T_hky_table_p_hky_r_hky.transport( params.H_hky_robot.inverse() );
+    return T_robot_table_p_robot_r_robot;
+    // return circularBuffer.back().second.changeProjection( circularBuffer.back().first ).transport( params.H_hky_robot.inverse() );
 }
 
-void KFLocalizator::updateBuffer(const double date, const EstimatedTwist2D & tw)
+void KFLocalizator::updateBuffer(const long double & date, const EstimatedTwist2D & tw)
 {
     KFLStateVar estimStateVar = bayesian->getEstimate();
     KFLStateCov estimStateCov = bayesian->getCovariance();
-
+//
     arp_math::EstimatedPose2D estimPose;
     estimPose.date( date );
     estimPose.x( estimStateVar(0) );
@@ -477,7 +509,10 @@ void KFLocalizator::updateBuffer(const double date, const EstimatedTwist2D & tw)
     estimPose.h( estimStateVar(2) );
     estimPose.cov( estimStateCov );
 
-    circularBuffer.push_back( std::make_pair(estimPose, tw) );
+    arp_math::EstimatedTwist2D estimTwist(tw);
+    estimTwist.date( date );
+
+    circularBuffer.push_back( std::make_pair(estimPose, estimTwist) );
 }
 
 void KFLocalizator::popBufferUntilADate(const double date)

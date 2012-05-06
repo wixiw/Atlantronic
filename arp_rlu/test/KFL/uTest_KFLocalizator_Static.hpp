@@ -63,6 +63,9 @@ namespace unittest_KFLocalizator_Static
         float iekf_yThres           = docParams.getFloatData( docParams.getChild( docParams.root(), "iekf_yThreshold") );
         float iekf_hThres           = docParams.getFloatData( docParams.getChild( docParams.root(), "iekf_hThreshold") );
 
+        arp_math::Pose2D H_hky_robot;
+        arp_math::Pose2D H_odo_robot;
+
         kfl::KFLocalizator::IEKFParams  iekfParams;
         iekfParams.defaultOdoVelTransSigma = sigmaTransOdoVelocity;
         iekfParams.defaultOdoVelRotSigma   = sigmaRotOdoVelocity;
@@ -98,6 +101,8 @@ namespace unittest_KFLocalizator_Static
         kfParams.referencedBeacons.push_back( lsl::Circle(-1.5,-1., 0.04 ) );
         kfParams.iekfParams = iekfParams;
         kfParams.procParams = procParams;
+        kfParams.H_hky_robot = H_hky_robot;
+        kfParams.H_odo_robot = H_odo_robot;
 
         obj.setParams(kfParams);
 
@@ -118,31 +123,34 @@ namespace unittest_KFLocalizator_Static
         float initialYPosition = docInit.getFloatData( docInit.getChild( docInit.root(), "initialYPosition") );
         float initialHPosition = docInit.getFloatData( docInit.getChild( docInit.root(), "initialHPosition") );
 
-        EstimatedPose2D initialPose;
-        initialPose.x(initialXPosition);
-        initialPose.y(initialYPosition);
-        initialPose.h(initialHPosition);
-        Eigen::Matrix3d cov = Eigen::Matrix3d::Identity();
-        cov.diagonal() = Eigen::Vector3d(sigmaInitialPosition*sigmaInitialPosition,
+        EstimatedPose2D init_H_hky_table;
+        init_H_hky_table.x(initialXPosition);
+        init_H_hky_table.y(initialYPosition);
+        init_H_hky_table.h(initialHPosition);
+        Eigen::Matrix3d cov = Eigen::Vector3d(sigmaInitialPosition*sigmaInitialPosition,
                 sigmaInitialPosition*sigmaInitialPosition,
-                sigmaInitialHeading*sigmaInitialHeading );
-        initialPose.cov(cov);
-        initialPose.date(time);
+                sigmaInitialHeading*sigmaInitialHeading ).asDiagonal();
+        init_H_hky_table.cov(cov);
+        init_H_hky_table.date(0.0);
 
-        BOOST_CHECK(obj.initialize(initialPose));
+        EstimatedPose2D init_H_robot_table = init_H_hky_table * H_hky_robot.inverse();
+        BOOST_CHECK(obj.initialize(init_H_robot_table));
 
         kfl::Log( DEBUG ) << "============================================================================================";
         kfl::Log( DEBUG ) << "============================================================================================";
         kfl::Log( DEBUG ) << "=== TEST " << xpName;
 
-        arp_math::EstimatedPose2D initEstim;
-        initEstim = obj.getLastEstimatedPose2D();
+        arp_math::EstimatedPose2D initEstim_H_robot_table;
+        initEstim_H_robot_table = obj.getLastEstimatedPose2D();
+        arp_math::EstimatedPose2D initEstim_H_hky_table = initEstim_H_robot_table * H_hky_robot;
 
-        kfl::Log( DEBUG ) << "position réelle [time=" << time << "]:";
-        kfl::Log( DEBUG ) << "  sur x (en m): " << initEstim.x();
-        kfl::Log( DEBUG ) << "  sur y (en m): " << initEstim.y();
-        kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( initEstim.h() ));
-
+        kfl::Log( DEBUG ) << "Position de départ [time=0.0]:   ie initEstim_H_hky_table";
+        kfl::Log( DEBUG ) << "  sur x (en m): " << (initEstim_H_hky_table.x());
+        kfl::Log( DEBUG ) << "  sur y (en m): " << (initEstim_H_hky_table.y());
+        kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( initEstim_H_hky_table.h() ) );
+        kfl::Log( DEBUG ) << "covariance : " << initEstim_H_hky_table.cov().row(0);
+        kfl::Log( DEBUG ) << "             " << initEstim_H_hky_table.cov().row(1);
+        kfl::Log( DEBUG ) << "             " << initEstim_H_hky_table.cov().row(2);
 
 
         //*******************************************
@@ -160,17 +168,18 @@ namespace unittest_KFLocalizator_Static
             kfl::Log( DEBUG ) << "============================================================================================";
             kfl::Log( DEBUG ) << " TOUR " << k << "   [time=" << time << " -> " << time + scanPeriodInSec <<"]";
 
-            arp_math::EstimatedPose2D preOdoEstim;
-            preOdoEstim = obj.getLastEstimatedPose2D();
+            arp_math::EstimatedPose2D preOdoEstim_H_robot_table;
+            preOdoEstim_H_robot_table = obj.getLastEstimatedPose2D();
+            arp_math::EstimatedPose2D preOdoEstim_H_hky_table = preOdoEstim_H_robot_table * H_hky_robot;
 
             kfl::Log( DEBUG ) << "=======================";
             kfl::Log( DEBUG ) << "erreur statique avant les odos [time=" << time << "]:";
-            kfl::Log( DEBUG ) << "  sur x (en mm): " << (preOdoEstim.x() - trueX) * 1000.;
-            kfl::Log( DEBUG ) << "  sur y (en mm): " << (preOdoEstim.y() - trueY) * 1000.;
-            kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( preOdoEstim.h() - trueH ) );
-            kfl::Log( DEBUG ) << "covariance : " << preOdoEstim.cov().row(0);
-            kfl::Log( DEBUG ) << "             " << preOdoEstim.cov().row(1);
-            kfl::Log( DEBUG ) << "             " << preOdoEstim.cov().row(2);
+            kfl::Log( DEBUG ) << "  sur x (en mm): " << (preOdoEstim_H_hky_table.x() - trueX) * 1000.;
+            kfl::Log( DEBUG ) << "  sur y (en mm): " << (preOdoEstim_H_hky_table.y() - trueY) * 1000.;
+            kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( preOdoEstim_H_hky_table.h() - trueH ) );
+            kfl::Log( DEBUG ) << "covariance : " << preOdoEstim_H_hky_table.cov().row(0);
+            kfl::Log( DEBUG ) << "             " << preOdoEstim_H_hky_table.cov().row(1);
+            kfl::Log( DEBUG ) << "             " << preOdoEstim_H_hky_table.cov().row(2);
 
             for(unsigned int predictionInd = 0 ; predictionInd < scanPeriodInSec/odoPeriodInSec ; predictionInd++)
             {
@@ -182,21 +191,40 @@ namespace unittest_KFLocalizator_Static
                 BOOST_CHECK( docOdoVel.parse(odoVelFileName.str().c_str()) );
                 BOOST_CHECK_CLOSE( time , docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "t") ), 1.f);
 
-                arp_math::EstimatedTwist2D odoVel;
-                odoVel.date( time );
-                odoVel.vx( docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "vx") ) );
-                odoVel.vy( docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "vy") ) );
-                odoVel.vh( docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "vh") ) );
-                Eigen::Matrix3d odoCov = Eigen::Matrix3d::Identity();
-                odoCov.diagonal() = Eigen::Vector3d(sigmaTransOdoVelocity, sigmaTransOdoVelocity, sigmaRotOdoVelocity );
-                odoVel.cov( odoCov );
+                double vx = docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "vx") );
+                double vy = docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "vy") );
+                double vh = docOdoVel.getFloatData( docOdoVel.getChild( docOdoVel.root(), "vh") );
+
+                arp_math::Vector3 inputMean;
+                inputMean << vx, vy, vh;
+                kfl::Log( DEBUG ) << "inputMean=" << inputMean.transpose();
+
+                arp_math::Covariance3 inputCov = arp_math::Covariance3::Identity();
+                inputCov(0,0) = sigmaTransOdoVelocity*sigmaTransOdoVelocity;
+                inputCov(1,1) = sigmaTransOdoVelocity*sigmaTransOdoVelocity;
+                inputCov(2,2) = sigmaRotOdoVelocity*sigmaRotOdoVelocity;
+                kfl::Log( DEBUG ) << "inputCov=\n" << inputCov;
+
+                EstimatedTwist2D T_hky_table_p_table_r_hky = MathFactory::createEstimatedTwist2DFromCartesianRepr(inputMean, time, inputCov);
+                EstimatedTwist2D T_hky_table_p_hky_r_hky = T_hky_table_p_table_r_hky.changeProjection( obj.getLastEstimatedPose2D() * H_hky_robot );
+                EstimatedTwist2D T_odo_table_p_odo_r_odo = T_hky_table_p_hky_r_hky.transport( H_hky_robot.inverse() * H_odo_robot );
+
+                kfl::Log( DEBUG ) << "obj.getLastEstimatedPose2D() : " << obj.getLastEstimatedPose2D().toString();
+                kfl::Log( DEBUG ) << "T_hky_table_p_table_r_hky : " << T_hky_table_p_table_r_hky.toString();
+                kfl::Log( DEBUG ) << "T_hky_table_p_hky_r_hky : " << T_hky_table_p_hky_r_hky.toString();
+                kfl::Log( DEBUG ) << "------------------------------";
+                kfl::Log( DEBUG ) << "T_odo_table_p_odo_r_odo :";
+                kfl::Log( DEBUG ) << "  vx=" << T_odo_table_p_odo_r_odo.vx() << " m/s";
+                kfl::Log( DEBUG ) << "  vy=" << T_odo_table_p_odo_r_odo.vy() << " m/s";
+                kfl::Log( DEBUG ) << "  vh=" << rad2deg(T_odo_table_p_odo_r_odo.vh()) << " deg/s";
 
                 kfl::Log( DEBUG ) << "[time=" << time << "]: newOdoVelocity #" << predictionsinceLastUpdate ;
-                obj.newOdoVelocity(odoVel);
+                BOOST_CHECK(obj.newOdoVelocity(T_odo_table_p_odo_r_odo));
                 predictionsinceLastUpdate++;
 
-                arp_math::EstimatedPose2D odoEstim;
-                odoEstim = obj.getLastEstimatedPose2D();
+                arp_math::EstimatedPose2D odoEstim_H_robot_table;
+                odoEstim_H_robot_table = obj.getLastEstimatedPose2D();
+                arp_math::EstimatedPose2D odoEstim_H_hky_table = odoEstim_H_robot_table * H_hky_robot;
 
                 vjson::JsonDocument docOdoEstim;
                 std::stringstream odoEstimFileName;
@@ -208,13 +236,10 @@ namespace unittest_KFLocalizator_Static
                 double groundTrueX = docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "x"));
                 double groundTrueY = docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "y"));
                 double groundTrueH = docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.root(), "h"));
-                BOOST_CHECK_CLOSE( odoEstim.date() , groundTrueT, 1.f);
-                BOOST_CHECK_SMALL( odoEstim.x()    - groundTrueX, transPrecision);
-                BOOST_CHECK_SMALL( odoEstim.y()    - groundTrueY, transPrecision);
-                BOOST_CHECK_SMALL( odoEstim.h()    - groundTrueH, rotPrecision);
-//                BOOST_CHECK_SMALL( odoEstim.x()    - trueX, transPrecision);
-//                BOOST_CHECK_SMALL( odoEstim.y()    - trueY, transPrecision);
-//                BOOST_CHECK_SMALL( odoEstim.h()    - trueH, rotPrecision);
+                BOOST_CHECK_CLOSE( odoEstim_H_hky_table.date() , groundTrueT, 1.f);
+                BOOST_CHECK_SMALL( odoEstim_H_hky_table.x()    - groundTrueX, transPrecision);
+                BOOST_CHECK_SMALL( odoEstim_H_hky_table.y()    - groundTrueY, transPrecision);
+                BOOST_CHECK_SMALL( odoEstim_H_hky_table.h()    - groundTrueH, rotPrecision);
                 for(unsigned int i = 0 ; i < 3 ; i++)
                 {
                     std::stringstream rowName;
@@ -225,30 +250,32 @@ namespace unittest_KFLocalizator_Static
                         double cov_i_j = docOdoEstim.getFloatData( docOdoEstim.getChild( docOdoEstim.getChild( docOdoEstim.getChild( docOdoEstim.root(), "covariance"), rowName.str()), j ));
                         if( i == j )
                         {
-                            BOOST_CHECK_SMALL( odoEstim.cov()(i,j) - cov_i_j, covPrecisionDiag);
+                            BOOST_CHECK_SMALL( odoEstim_H_hky_table.cov()(i,j) - cov_i_j, covPrecisionDiag);
                         }
                         else
                         {
-                            BOOST_CHECK_SMALL( odoEstim.cov()(i,j) - cov_i_j, covPrecisionNonDiag);
+                            BOOST_CHECK_SMALL( odoEstim_H_hky_table.cov()(i,j) - cov_i_j, covPrecisionNonDiag);
                         }
                     }
                 }
 
-                BOOST_CHECK( abs(odoEstim.x() - trueX) < 3.0 * sqrt(odoEstim.cov()(0,0)) );
-                BOOST_CHECK( abs(odoEstim.y() - trueY) < 3.0 * sqrt(odoEstim.cov()(1,1)) );
-                BOOST_CHECK( abs(betweenMinusPiAndPlusPi( odoEstim.h() - trueH )) < 3.0 * sqrt(odoEstim.cov()(2,2)) );
+                BOOST_CHECK( abs(odoEstim_H_hky_table.x() - trueX) < 3.0 * sqrt(odoEstim_H_hky_table.cov()(0,0)) );
+                BOOST_CHECK( abs(odoEstim_H_hky_table.y() - trueY) < 3.0 * sqrt(odoEstim_H_hky_table.cov()(1,1)) );
+                BOOST_CHECK( abs(betweenMinusPiAndPlusPi( odoEstim_H_hky_table.h() - trueH )) < 3.0 * sqrt(odoEstim_H_hky_table.cov()(2,2)) );
             }
-            arp_math::EstimatedPose2D postOdoEstim;
-            postOdoEstim = obj.getLastEstimatedPose2D();
+            arp_math::EstimatedPose2D postOdoEstim_H_robot_table;
+            postOdoEstim_H_robot_table = obj.getLastEstimatedPose2D();
+            arp_math::EstimatedPose2D postOdoEstim_H_hky_table = postOdoEstim_H_robot_table * H_hky_robot;
+
 
             kfl::Log( DEBUG ) << "=======================";
             kfl::Log( DEBUG ) << "erreur statique apres les odos [time=" << time << "]:";
-            kfl::Log( DEBUG ) << "  sur x (en mm): " << (postOdoEstim.x() - trueX) * 1000. << " +/- " << 3000. * sqrt(postOdoEstim.cov()(0,0));
-            kfl::Log( DEBUG ) << "  sur y (en mm): " << (postOdoEstim.y() - trueY) * 1000. << " +/- " << 3000. * sqrt(postOdoEstim.cov()(1,1));
-            kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( postOdoEstim.h() - trueH ) ) << 3.0 * rad2deg(sqrt(postOdoEstim.cov()(2,2)));
-//            kfl::Log( DEBUG ) << "covariance : " << postOdoEstim.cov().row(0);
-//            kfl::Log( DEBUG ) << "             " << postOdoEstim.cov().row(1);
-//            kfl::Log( DEBUG ) << "             " << postOdoEstim.cov().row(2);
+            kfl::Log( DEBUG ) << "  sur x (en mm): " << (postOdoEstim_H_hky_table.x() - trueX) * 1000. << " +/- " << 3000. * sqrt(postOdoEstim_H_hky_table.cov()(0,0));
+            kfl::Log( DEBUG ) << "  sur y (en mm): " << (postOdoEstim_H_hky_table.y() - trueY) * 1000. << " +/- " << 3000. * sqrt(postOdoEstim_H_hky_table.cov()(1,1));
+            kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( postOdoEstim_H_hky_table.h() - trueH ) ) << 3.0 * rad2deg(sqrt(postOdoEstim_H_hky_table.cov()(2,2)));
+            kfl::Log( DEBUG ) << "covariance : " << postOdoEstim_H_hky_table.cov().row(0);
+            kfl::Log( DEBUG ) << "             " << postOdoEstim_H_hky_table.cov().row(1);
+            kfl::Log( DEBUG ) << "             " << postOdoEstim_H_hky_table.cov().row(2);
 
 
             arp_rlu::lsl::JsonScanParser scanParser;
@@ -262,8 +289,9 @@ namespace unittest_KFLocalizator_Static
             obj.newScan(scan);
             predictionsinceLastUpdate = 0;
 
-            arp_math::EstimatedPose2D postScanEstim;
-            postScanEstim = obj.getLastEstimatedPose2D();
+            arp_math::EstimatedPose2D postScanEstim_H_robot_table;
+            postScanEstim_H_robot_table = obj.getLastEstimatedPose2D();
+            arp_math::EstimatedPose2D postScanEstim_H_hky_table = postScanEstim_H_robot_table * H_hky_robot;
 
             vjson::JsonDocument docScanEstim;
             std::stringstream scanEstimFileName;
@@ -275,13 +303,13 @@ namespace unittest_KFLocalizator_Static
             double groundTrueX = docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "x"));
             double groundTrueY = docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "y"));
             double groundTrueH = docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "h"));
-            BOOST_CHECK_CLOSE( postScanEstim.date() , groundTrueT, 1.f);
-//            BOOST_CHECK_SMALL( postScanEstim.x() - groundTrueX, transPrecision);
-//            BOOST_CHECK_SMALL( postScanEstim.y() - groundTrueY, transPrecision);
-//            BOOST_CHECK_SMALL( postScanEstim.h() - groundTrueH, rotPrecision);
-            BOOST_CHECK_SMALL( postScanEstim.x() - trueX, transPrecision);
-            BOOST_CHECK_SMALL( postScanEstim.y() - trueY, transPrecision);
-            BOOST_CHECK_SMALL( postScanEstim.h() - trueH, rotPrecision);
+            BOOST_CHECK_CLOSE( postScanEstim_H_hky_table.date() , groundTrueT, 1.f);
+            //            BOOST_CHECK_SMALL( postScanEstim.x() - groundTrueX, transPrecision);
+            //            BOOST_CHECK_SMALL( postScanEstim.y() - groundTrueY, transPrecision);
+            //            BOOST_CHECK_SMALL( postScanEstim.h() - groundTrueH, rotPrecision);
+            BOOST_CHECK_SMALL( postScanEstim_H_hky_table.x() - trueX, transPrecision);
+            BOOST_CHECK_SMALL( postScanEstim_H_hky_table.y() - trueY, transPrecision);
+            BOOST_CHECK_SMALL( postScanEstim_H_hky_table.h() - trueH, rotPrecision);
             for(unsigned int i = 0 ; i < 3 ; i++)
             {
                 std::stringstream rowName;
@@ -292,35 +320,36 @@ namespace unittest_KFLocalizator_Static
                     double cov_i_j = docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.getChild( docScanEstim.getChild( docScanEstim.root(), "covariance"), rowName.str()), j ));
                     if( i == j )
                     {
-                        BOOST_CHECK_SMALL( postScanEstim.cov()(i,j) - cov_i_j, covPrecisionDiag);
+                        BOOST_CHECK_SMALL( postScanEstim_H_hky_table.cov()(i,j) - cov_i_j, covPrecisionDiag);
                     }
                     else
                     {
-                        BOOST_CHECK_SMALL( postScanEstim.cov()(i,j) - cov_i_j, covPrecisionNonDiag);
+                        BOOST_CHECK_SMALL( postScanEstim_H_hky_table.cov()(i,j) - cov_i_j, covPrecisionNonDiag);
                     }
                 }
             }
 
-            BOOST_CHECK( abs(postScanEstim.x() - trueX) < 3.0 * sqrt(postScanEstim.cov()(0,0)) );
-            BOOST_CHECK( abs(postScanEstim.y() - trueY) < 3.0 * sqrt(postScanEstim.cov()(1,1)) );
-            BOOST_CHECK( abs(betweenMinusPiAndPlusPi( postScanEstim.h() - trueH )) < 3.0 * sqrt(postScanEstim.cov()(2,2)) );
+            BOOST_CHECK( abs(postScanEstim_H_hky_table.x() - trueX) < 3.0 * sqrt(postScanEstim_H_hky_table.cov()(0,0)) );
+            BOOST_CHECK( abs(postScanEstim_H_hky_table.y() - trueY) < 3.0 * sqrt(postScanEstim_H_hky_table.cov()(1,1)) );
+            BOOST_CHECK( abs(betweenMinusPiAndPlusPi( postScanEstim_H_hky_table.h() - trueH )) < 3.0 * sqrt(postScanEstim_H_hky_table.cov()(2,2)) );
 
             kfl::Log( DEBUG ) << "=======================";
             kfl::Log( DEBUG ) << "erreur statique apres le scan [time=" << time << "]:";
-            kfl::Log( DEBUG ) << "  sur x (en mm): " << (postScanEstim.x() - trueX) * 1000. << " +/- " << 3000. * sqrt(postScanEstim.cov()(0,0));
-            kfl::Log( DEBUG ) << "  sur y (en mm): " << (postScanEstim.y() - trueY) * 1000. << " +/- " << 3000. * sqrt(postScanEstim.cov()(1,1));
-            kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( postScanEstim.h() - trueH ) ) << " +/- " << 3.0 * rad2deg(sqrt(postScanEstim.cov()(2,2)));
-//            kfl::Log( DEBUG ) << "covariance : " << postScanEstim.cov().row(0);
-//            kfl::Log( DEBUG ) << "             " << postScanEstim.cov().row(1);
-//            kfl::Log( DEBUG ) << "             " << postScanEstim.cov().row(2);
+            kfl::Log( DEBUG ) << "  sur x (en mm): " << (postScanEstim_H_hky_table.x() - trueX) * 1000. << " +/- " << 3000. * sqrt(postScanEstim_H_hky_table.cov()(0,0));
+            kfl::Log( DEBUG ) << "  sur y (en mm): " << (postScanEstim_H_hky_table.y() - trueY) * 1000. << " +/- " << 3000. * sqrt(postScanEstim_H_hky_table.cov()(1,1));
+            kfl::Log( DEBUG ) << "  en cap (deg) : " << rad2deg( betweenMinusPiAndPlusPi( postScanEstim_H_hky_table.h() - trueH ) ) << " +/- " << 3.0 * rad2deg(sqrt(postScanEstim_H_hky_table.cov()(2,2)));
+            kfl::Log( DEBUG ) << "covariance : " << postScanEstim_H_hky_table.cov().row(0);
+            kfl::Log( DEBUG ) << "             " << postScanEstim_H_hky_table.cov().row(1);
+            kfl::Log( DEBUG ) << "             " << postScanEstim_H_hky_table.cov().row(2);
         }
 
-        arp_math::EstimatedPose2D lastEstim;
-        lastEstim = obj.getLastEstimatedPose2D();
+        arp_math::EstimatedPose2D lastEstim_H_robot_table;
+        lastEstim_H_robot_table = obj.getLastEstimatedPose2D();
+        arp_math::EstimatedPose2D lastEstim_H_hky_table = lastEstim_H_robot_table * H_hky_robot;
 
-        BOOST_CHECK_SMALL( lastEstim.x() - trueX , transFinalPrecision );
-        BOOST_CHECK_SMALL( lastEstim.y() - trueY , transFinalPrecision );
-        BOOST_CHECK_SMALL( betweenMinusPiAndPlusPi(lastEstim.h() - trueH) , rotFinalPrecision );
+        BOOST_CHECK_SMALL( lastEstim_H_hky_table.x() - trueX , transFinalPrecision );
+        BOOST_CHECK_SMALL( lastEstim_H_hky_table.y() - trueY , transFinalPrecision );
+        BOOST_CHECK_SMALL( betweenMinusPiAndPlusPi(lastEstim_H_hky_table.h() - trueH) , rotFinalPrecision );
     }
 }
 
@@ -354,11 +383,6 @@ BOOST_AUTO_TEST_CASE( test_6 )
     unittest_KFLocalizator_Static::doTest(6);
 }
 
-//BOOST_AUTO_TEST_CASE( test_7 )
-//{
-//    unittest_KFLocalizator_Static::doTest(7);
-//}
-//
 BOOST_AUTO_TEST_CASE( test_8 )
 {
     unittest_KFLocalizator_Static::doTest(8);

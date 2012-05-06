@@ -166,6 +166,21 @@ class KFLocalizator
                 double maxTime4OdoPrediction;
 
                 /**
+                 * Position du repère odo dans le ropère de référence du robot
+                 */
+                arp_math::Pose2D H_odo_robot;
+
+                /**
+                 * Position du repère hky dans le ropère de référence du robot
+                 */
+                arp_math::Pose2D H_hky_robot;
+
+                /**
+                 * Covariance de l'initialisation par défault
+                 */
+                arp_math::Covariance3 defaultInitCovariance;
+
+                /**
                  * Position des balises (circulaires) sur la table
                  */
                 std::vector< lsl::Circle > referencedBeacons;
@@ -211,13 +226,14 @@ class KFLocalizator
          * Initialisation de la Localisation.
          * \param pose la pose et sa covariance
          */
-        bool initialize(const arp_math::EstimatedPose2D & pose);
+        bool initialize(const arp_math::EstimatedPose2D & H_robot_table);
 
         /**
          * Cette méthode sert à donner au localisateur une nouvelle mesure odo.
-         * \param[in] odoVel la mesure odo sous forme d'une estimation de Twist2D. Cette estimation est datée.
+         * \param[in] T_odo_table_p_odo_r_odo la mesure odo sous forme d'une estimation de Twist2D. Cette estimation est datée.\n
+         * Il s'agit du Twist du repère odo par rapport au repère table, projeté et réduit dans le repère odo.
          */
-        bool newOdoVelocity(arp_math::EstimatedTwist2D odoVel);
+        bool newOdoVelocity(arp_math::EstimatedTwist2D T_odo_table_p_odo_r_odo);
 
         /**
          * Cette méthode sert à donner au localisateur une nouvelle mesure laser.
@@ -226,14 +242,17 @@ class KFLocalizator
         bool newScan(lsl::LaserScan scan);
 
         /**
-         * Permet d'accéder à la dernière estimée de position.
-         * \return EstimatedPose2D
+         * Permet d'accéder à la dernière estimée de position.\n
+         * Il s'agit de H_robot_table
+         * \return EstimatedPose2D correspondant à H_robot_table
          */
         arp_math::EstimatedPose2D getLastEstimatedPose2D();
 
         /**
-         * Permet d'accéder à la dernière estimée de vitesse.
-         * \return EstimatedTwist2D
+         * Permet d'accéder à la dernière estimée de vitesse.\n
+         * Il s'agit de T_robot_table_p_robot_r_robot c'est à dire le Twist du robot
+         * par rapport à la table, projeté ET réduit dans le repère du robot.
+         * \return EstimatedTwist2D correspondant à T_robot_table_p_robot_r_robot
          */
         arp_math::EstimatedTwist2D getLastEstimatedTwist2D();
 
@@ -270,7 +289,7 @@ class KFLocalizator
          * \param[in] date de l'estimation car la boite à outil BFL ne connait pas l'heure
          * \param[in] la vitesse si elle est connue
          */
-        void updateBuffer(const double date, const arp_math::EstimatedTwist2D & t = arp_math::EstimatedTwist2D());
+        void updateBuffer(const long double & date, const arp_math::EstimatedTwist2D & t = arp_math::EstimatedTwist2D());
 
         /**
          * Vide le buffer circulaire de toutes les estimées postérieures à une certaine date

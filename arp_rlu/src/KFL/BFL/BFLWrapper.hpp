@@ -35,44 +35,6 @@ namespace kfl
 class BFLWrapper : public BayesianWrapper
 {
     public:
-    /** \ingroup kfl
-     *
-     * \class PredictParams
-     *
-     * \brief BFLWrapper::PredictParams est une classe abstraite rassemble les paramètres liés à la prédiction.
-     *
-     */
-    class PredictParams : public BayesianWrapper::PredictParams
-    {
-        public:
-        /** Constructeur par défault.
-         *  Il initialise des paramètres classiques non-stupides.
-         */
-        PredictParams();
-
-        /**
-         * Permet de formatter les paramètres en un message lisible.
-         */
-        virtual std::string getInfo() const;
-
-        /**
-         * Covariance de l'estimée vitesse de translation odo selon X en m/s.\n
-         * Il s'agit de l'écart type.
-         */
-        double odoVelXSigma;
-
-        /**
-         * La précision estimée de la vitesse de translation odo selon Y en m/s.\n
-         * Il s'agit de l'écart type.
-         */
-        double odoVelYSigma;
-
-        /**
-         * La précision estimée de la vitesse de rotation odo en rad/s.\n
-         * Il s'agit de l'écart type.
-         */
-        double odoVelHSigma;
-    };
 
     /** \ingroup kfl
      *
@@ -157,11 +119,10 @@ class BFLWrapper : public BayesianWrapper
     /**
      * Réalise la prédiction : simulation du système
      * \param i variable d'entrée correspondant à une commande
+     * \param cov matrice de covariance de la commande
      * \param dt le pas de temps à simuler
-     * \param p paramètres de l'update (contient les écarts types de l'entrée)
-     * \warning p doit être de type BFLWrapper::PredictParams
      */
-    void predict( const KFLSysInput & t, double dt, BayesianWrapper::PredictParams & p);
+    void predict( const KFLInputVar & i, const KFLInputCov & cov, double dt);
 
     /**
      * Réalise la confrontation aux mesures

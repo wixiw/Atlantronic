@@ -29,21 +29,6 @@ namespace kfl
 class BayesianWrapper
 {
     public:
-        /** \ingroup kfl
-         *
-         * \class PredictParams
-         *
-         * \brief BayesianWrapper::PredictParams est une classe abstraite rassemble les paramètres liés à la prédiction.
-         *
-         */
-        class PredictParams
-        {
-
-            /**
-             * Permet de formatter les paramètres en un message lisible.
-             */
-            virtual std::string getInfo() const = 0;
-        };
 
         /** \ingroup kfl
          *
@@ -55,10 +40,10 @@ class BayesianWrapper
         class UpdateParams
         {
 
-                /**
-                 * Permet de formatter les paramètres en un message lisible.
-                 */
-                virtual std::string getInfo() const = 0;
+            /**
+             * Permet de formatter les paramètres en un message lisible.
+             */
+            virtual std::string getInfo() const = 0;
         };
 
         /** \ingroup kfl
@@ -87,11 +72,11 @@ class BayesianWrapper
 
         /**
          * Réalise la prédiction : simulation du système
-         * \param dt age de la dernière estimée
-         * \param i variable d'entrée correspondant à une vitesse
+         * \param i variable d'entrée correspondant à une commande
+         * \param cov matrice de covariance de la commande
          * \param dt le pas de temps à simuler
          */
-        virtual void predict(const KFLSysInput & i, double dt, BayesianWrapper::PredictParams & p) = 0;
+        virtual void predict( const KFLInputVar & i, const KFLInputCov & cov, double dt) = 0;
 
         /**
          * Réalise la confrontation aux mesures
