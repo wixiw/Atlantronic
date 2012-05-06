@@ -11,5 +11,4 @@ float64 x_speed
 float64 y_speed
 float64 theta_speed
 float64 openloop_duration
-bool reverse
 bool passe
