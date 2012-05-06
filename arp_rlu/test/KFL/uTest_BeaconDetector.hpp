@@ -58,6 +58,30 @@ namespace unittest_BeaconDetector
         BOOST_CHECK_EQUAL(n , N);
 
         kfl::BeaconDetector obj;
+
+        kfl::BeaconDetector::Params     procParams;
+        procParams.mfp.width = 3;
+        procParams.pcp.minRange = 0.01;
+        procParams.pcp.maxRange = 10.0;
+        procParams.pcp.minTheta = -PI;
+        procParams.pcp.maxTheta = PI;
+        procParams.psp.rangeThres = 0.08;
+        procParams.minNbPoints = 4;
+        procParams.cip.radius = 0.04;
+        procParams.cip.coeffs = std::vector<double>();
+        procParams.cip.coeffs.push_back( 1.0);
+        procParams.cip.coeffs.push_back( 0.034);
+        procParams.tcp.radiusTolerance = 0.03;
+        procParams.tcp.distanceTolerance = 0.6;
+        procParams.tcp.maxLengthTolerance = 0.05;
+        procParams.tcp.medLengthTolerance = 0.05;
+        procParams.tcp.minLengthTolerance = 0.05;
+        procParams.dcp.radiusTolerance = 0.03;
+        procParams.dcp.distanceTolerance = 0.3;
+        procParams.dcp.lengthTolerance = 0.05;
+
+        obj.setParams(procParams);
+
         std::vector<lsl::Circle> referencedBeacons;
         referencedBeacons.push_back(lsl::Circle(-1.5, 1.0, 0.04));
         referencedBeacons.push_back(lsl::Circle(-1.5,-1.0, 0.04));
@@ -170,7 +194,11 @@ namespace unittest_BeaconDetector
             BOOST_CHECK( abs(meas(1) - trueTheta) < 0.01);
         }
 
-        Log( NOTICE ) << "unittest_BeaconDetector_" << xpName << " perfs :\n" << obj.getPerformanceReport();
+        kfl::Log( NOTICE ) << "\n";
+        kfl::Log( NOTICE ) << "**************** Experience " << xpName << " *******************************";
+        kfl::Log( NOTICE ) << obj.getPerformanceReport();
+        kfl::Log( NOTICE ) << "************************************************************";
+        kfl::Log( NOTICE ) << "\n";
     }
 }
 

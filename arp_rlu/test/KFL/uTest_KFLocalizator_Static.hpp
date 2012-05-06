@@ -83,7 +83,9 @@ namespace unittest_KFLocalizator_Static
         procParams.psp.rangeThres = 0.08;
         procParams.minNbPoints = 4;
         procParams.cip.radius = 0.04;
-        procParams.cip.rangeDelta = 0.034;
+        procParams.cip.coeffs = std::vector<double>();
+        procParams.cip.coeffs.push_back( 1.0);
+        procParams.cip.coeffs.push_back( 0.034);
         procParams.tcp.radiusTolerance = 0.03;
         procParams.tcp.distanceTolerance = 0.6;
         procParams.tcp.maxLengthTolerance = 0.05;

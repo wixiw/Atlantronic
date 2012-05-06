@@ -29,11 +29,11 @@ BOOST_AUTO_TEST_CASE( testdummy )
 }
 BOOST_AUTO_TEST_SUITE_END()
 
-//#include "uTest_BeaconDetector.hpp"
+#include "uTest_BeaconDetector.hpp"
 
-//#include "BFL/uTest_BFLWrapper.hpp"
+#include "BFL/uTest_BFLWrapper.hpp"
 
-//#include "uTest_KFLocalizator_Trivial.hpp"
-//#include "uTest_KFLocalizator_Static.hpp"
+#include "uTest_KFLocalizator_Trivial.hpp"
+#include "uTest_KFLocalizator_Static.hpp"
 #include "uTest_KFLocalizator_Dynamic.hpp"
 
