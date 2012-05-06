@@ -25,7 +25,7 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         attrHomingState(NOT_IN_HOMNG_MODE),
         attrHardNotify(false),
         propInvertDriveDirection(false),
-        propReductorValue(14),
+        propReductorValue(3969.0 / 289.0),
         propEncoderResolution(3000),
         propMaximalTorque(0.5),
         propInputsTimeout(1.0),

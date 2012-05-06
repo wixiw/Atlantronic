@@ -23,6 +23,8 @@ class KinematicBase: public OdsTaskContext
         void updateHook();
 
     protected:
+        /** Pour le debug uniquement, permet de commander des 0 purs aux moteurs de directions pour "détourer" */
+        bool attrGoToZero;
         arp_math::Twist2D attrTwistCmd;
         arp_math::Twist2D attrCurrentTwist;
         arp_math::Twist2D attrAcceptableTwist;

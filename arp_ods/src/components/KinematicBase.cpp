@@ -21,6 +21,7 @@ ORO_LIST_COMPONENT_TYPE( arp_ods::KinematicBase)
 
 KinematicBase::KinematicBase(const std::string& name) :
         OdsTaskContext(name),
+        attrGoToZero(false),
         propMinSpeed(0.001),
         propRobotBlockedTimeout(2.0),
         propMaxSpeedDiff(0.040)
@@ -142,17 +143,26 @@ void KinematicBase::setOutputs()
     outLeftDrivingVelocityCmd.write(attrMotorStateCommand.driving.left.velocity);
     outRightDrivingVelocityCmd.write(attrMotorStateCommand.driving.right.velocity);
     outRearDrivingVelocityCmd.write(attrMotorStateCommand.driving.rear.velocity);
-    outLeftSteeringPositionCmd.write(attrMotorStateCommand.steering.left.position);
-    outRightSteeringPositionCmd.write(attrMotorStateCommand.steering.right.position);
-    outRearSteeringPositionCmd.write(attrMotorStateCommand.steering.rear.position);
+    if( attrGoToZero )
+    {
+        outLeftSteeringPositionCmd.write(0);
+        outRightSteeringPositionCmd.write(0);
+        outRearSteeringPositionCmd.write(0);
+    }
+    else
+    {
+        outLeftSteeringPositionCmd.write(attrMotorStateCommand.steering.left.position);
+        outRightSteeringPositionCmd.write(attrMotorStateCommand.steering.right.position);
+        outRearSteeringPositionCmd.write(attrMotorStateCommand.steering.rear.position);
+    }
     outFiltrationFeedback.write(attrQuality);
     outFilteredTwist.write(attrAcceptableTwist);
     outRobotBlocked.write(attrRobotBlockedTimeout);
-
 }
 
 void KinematicBase::createOrocosInterface()
 {
+    addAttribute("attrGoToZero", attrGoToZero);
     addAttribute("attrTwistCmd", attrTwistCmd);
     addAttribute("attrCurrentTwist", attrCurrentTwist);
     addAttribute("attrAcceptableTwist", attrAcceptableTwist);
