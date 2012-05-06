@@ -75,11 +75,17 @@ void OmnidirectOrder::switchRun(arp_math::Pose2D currentPosition)
         }
     }
 
+//    Log(DEBUG) << ">> switchRun de Omnidirect";
+
     //position error in table referential
     Pose2D deltaPos_refTable=getPositionError(currentPosition);
     double distance_error = deltaPos_refTable.vectNorm();
     double angle_error = deltaPos_refTable.h();
 
+//    Log(DEBUG) << "distance_error "<<distance_error;
+//    Log(DEBUG) << "angle_error    "<<angle_error;
+//    Log(DEBUG) << "m_conf.DISTANCE_ACCURACY "<<m_conf.DISTANCE_ACCURACY;
+//    Log(DEBUG) << "m_conf.ANGLE_ACCURACY    "<<m_conf.ANGLE_ACCURACY;
     // test for DONE
     if (distance_error < m_conf.DISTANCE_ACCURACY && fabs(angle_error) < m_conf.ANGLE_ACCURACY)
     {
@@ -93,17 +99,12 @@ void OmnidirectOrder::switchRun(arp_math::Pose2D currentPosition)
     }
     testTimeout();
 
+//    Log(DEBUG) << "<< switchRun de Omnidirect";
+
 }
 
 Pose2D OmnidirectOrder::getPositionError(arp_math::Pose2D currentPosition)
 {
-//    Rotation2 orient_robot(currentPosition.h());
-//
-//    //position of the control point on the table
-//    Pose2D current_cpoint_position;
-//    current_cpoint_position.translation( currentPosition.translation() + orient_robot.toRotationMatrix()*m_cpoint.translation());
-//    current_cpoint_position.orientation( betweenMinusPiAndPlusPi(currentPosition.h()+m_cpoint.h()) );
-
     // La version sans les mains des 4 lignes du dessus :
     Pose2D current_cpoint_position = currentPosition * m_cpoint;
 
@@ -115,15 +116,21 @@ Pose2D OmnidirectOrder::getPositionError(arp_math::Pose2D currentPosition)
 
     //position error
     return MathFactory::createPose2D(m_endPose.translation() - current_cpoint_position.translation() ,
-                                     Rotation2(m_endPose.angle() - current_cpoint_position.angle()) );
+                                     Rotation2(betweenMinusPiAndPlusPi(   m_endPose.angle() - current_cpoint_position.angle())) );
 
 }
 
 
 Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double dt)
 {
+//    Log(DEBUG) << ">> computespeed de Omnidirect";
+
     if (m_currentMode==MODE_DONE or m_currentMode==MODE_ERROR)
+    {
+//        Log(DEBUG) << "twist: 0" ;
+//        Log(DEBUG) << "<< computespeed de Omnidirect";
         return Twist2D(0,0,0);
+    }
 
     //Rotation2 orient_robot(currentPosition.h());
     Rotation2 orient_cpoint(currentPosition.h()+m_cpoint.h());
@@ -136,6 +143,9 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
     deltaPos_refCpoint.translation( orient_cpoint.inverse().toRotationMatrix() * deltaPos_refTable.translation());
     deltaPos_refCpoint.orientation( betweenMinusPiAndPlusPi(deltaPos_refTable.h()) );
 
+    Log(DEBUG) << "position error of cpoint in robot referential (deltaPos_refCpoint) :" << deltaPos_refCpoint.toString();
+
+
     // brutal correction twist. with constant acceleration   v = sqrt ( 2 . acc) . sqrt( d )
     Twist2D v_correction_cpoint;
     double speedcorrection=sqrt2(2.0*m_conf.LIN_DEC)*sqrt2(deltaPos_refCpoint.vectNorm());
@@ -143,9 +153,13 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
     v_correction_cpoint.vy(speedcorrection*std::sin(deltaPos_refCpoint.vectAngle()));
     v_correction_cpoint.vh(sqrt2(2.0*m_conf.ANG_DEC)*sqrt2(deltaPos_refCpoint.h()));
 
+    Log(DEBUG) << "correction twist on cpoint (v_correction_cpoint) :" << v_correction_cpoint.toString();
+
     //transfer of the twist to robot referential
     Twist2D v_correction_ref;
     v_correction_ref=v_correction_cpoint.transport(m_cpoint.inverse());
+
+    Log(DEBUG) << "correction twist on ref (v_correction_ref) :" << v_correction_ref.toString();
 
     //saturation of twist: limit max linear speed/acc;  and max rotation speed/acc
     Twist2D v_correction_saturated;
@@ -156,8 +170,12 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
     double sat=std::max(satvlin,std::max( satvrot,1.0));
     v_correction_saturated = v_correction_ref * (1.0/sat);
 
+
+
     m_v_correction_old=v_correction_saturated;
 
+//    Log(DEBUG) << "v_correction_saturated" << v_correction_saturated.toString();
+//    Log(DEBUG) << "<< computespeed de Omnidirect";
 
     return v_correction_saturated;
 
