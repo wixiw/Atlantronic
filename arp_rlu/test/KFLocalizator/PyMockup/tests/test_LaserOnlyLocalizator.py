@@ -18,6 +18,12 @@ from BaseClasses import Segment
 import LaserOnlyLocalizator
 
 
+graine = random.randint(0,1000)
+random.seed(graine)
+
+print "graine : ", graine
+
+
 #===============================================================================
 # Position generation
 #===============================================================================

@@ -7,6 +7,8 @@ rosbuild_add_library(kfl Logger.cpp
                          
                          BeaconDetector.cpp
                          
+                         LaserOnlyLocalizator.cpp
+                         
                          BFL/BFLWrapper.cpp
                          BFL/BFLSysConditionalPdf.cpp
                          BFL/BFLMeasConditionalPdf.cpp)
