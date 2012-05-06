@@ -75,7 +75,7 @@ void OpenloopOrder::switchRun(arp_math::Pose2D currentPosition)
 Twist2D OpenloopOrder::computeSpeed(arp_math::Pose2D currentPosition, double dt)
 {
 
-    if (m_currentMode==MODE_DONE or m_currentMode==MODE_INIT)
+    if (m_currentMode==MODE_DONE or m_currentMode==MODE_INIT or m_currentMode==MODE_ERROR)
         return Twist2D(0,0,0);
 
     Log(DEBUG) << ">> computespeed--------------------------";
