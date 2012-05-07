@@ -40,7 +40,6 @@ std::string KFLocalizator::Params::getInfo() const
 {
     std::stringstream ss;
     ss << "****************************" << std::endl;
-    ss << "****************************" << std::endl;
     ss << "KFLocalizator Params :" << std::endl;
     ss << "****************************" << std::endl;
     ss << "KFLocalizator Params :" << std::endl;
@@ -59,7 +58,6 @@ std::string KFLocalizator::Params::getInfo() const
     ss << iekfParams.getInfo();
     ss << "****************************" << std::endl;
     ss << procParams.getInfo();
-    ss << "****************************" << std::endl;
     ss << "****************************" << std::endl;
     return ss.str();
 }

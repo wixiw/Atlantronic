@@ -55,6 +55,14 @@ class Localizator: public RluTaskContext
          */
         RTT::OutputPort<arp_math::EstimatedTwist2D> outTwist;
 
+        /**
+         * Indique si le filtre n'a pas divergé.\n
+         * Les termes diaguonaux de la matrice de convergence de l'estimée de position sont
+         * comparés aux seuils maxReliableTransStddev and maxReliableRotStddev.\n
+         * Si le filtre a divergé, la valeur renvoyée vaut false et true sinon.
+         */
+        RTT::OutputPort<bool> outReliability;
+
         //*****************************************************
         // Operations
         std::string coGetPerformanceReport();
@@ -73,18 +81,21 @@ class Localizator: public RluTaskContext
         //*****************************************************
         // Callbacks
 
-//        /** callback appelee lors de la reception de donnees sur inScan,
-//         * Attention l'updateHook sera automatique appelee... jusqu'au prochaine versions d'orocos*/
-//        void scanCb(RTT::base::PortInterface* portInterface);
-//
-//        /** callback appelee lors de la reception de donnees sur inOdo,
-//         * Attention l'updateHook sera automatique appelee... jusqu'au prochaine versions d'orocos*/
-//        void odoCb(RTT::base::PortInterface* portInterface);
+        //        /** callback appelee lors de la reception de donnees sur inScan,
+        //         * Attention l'updateHook sera automatique appelee... jusqu'au prochaine versions d'orocos*/
+        //        void scanCb(RTT::base::PortInterface* portInterface);
+        //
+        //        /** callback appelee lors de la reception de donnees sur inOdo,
+        //         * Attention l'updateHook sera automatique appelee... jusqu'au prochaine versions d'orocos*/
+        //        void odoCb(RTT::base::PortInterface* portInterface);
 
         //*****************************************************
         // Internal objects
         kfl::KFLocalizator kfloc;
         long double m_monotonicTimeToRealTime;
+
+        double maxReliableTransStddev;
+        double maxReliableRotStddev;
 
 };
 

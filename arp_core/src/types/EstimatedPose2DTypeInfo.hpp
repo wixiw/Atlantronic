@@ -59,7 +59,12 @@ struct EstimatedPose2DTypeInfo: public RTT::types::StructTypeInfo<EstimatedPose2
         data->reset();
         data->evaluate();
         EstimatedPose2D pose = data->get();
-        return os << "(" << pose.x() << "," << pose.y() << "," << pose.angle() << ") date = " << pose.date();
+        os << " x: " << pose.x() << " m +- " << 1.5 * sqrt(pose.cov()(0,0)) * 1000. << " mm ,";
+        os << " y: " << pose.y() << " m +- " << 1.5 * sqrt(pose.cov()(1,1)) * 1000. << " mm ,";
+        os << " h: " << rad2deg(betweenMinusPiAndPlusPi(pose.angle())) << " deg +- " << 1.5 * rad2deg(sqrt(pose.cov()(1,1))) << " deg ,";
+        os << " date = " << pose.date() << " sec";
+
+        return os;
     }
 
     virtual std::istream& read(std::istream& os, base::DataSourceBase::shared_ptr out ) const

@@ -23,6 +23,8 @@ ORO_LIST_COMPONENT_TYPE( arp_rlu::Localizator )
 Localizator::Localizator(const std::string& name)
 : RluTaskContext(name)
 , kfloc()
+, maxReliableTransStddev(0.1 * 0.1)
+, maxReliableRotStddev( deg2rad(5.0) * deg2rad(5.0))
 {
     //A ne pas mettre sur le robot pour des problemes de place (ou nettoyer les logs pour qu'ils ne grossissent pas trop vite)
     //arp_rlu::lsl::Logger::InitFile("LSL", DEBUG);
@@ -146,8 +148,15 @@ void Localizator::updateHook()
     EstimatedPose2D estim_H_robot_table = kfloc.getLastEstimatedPose2D();
     EstimatedTwist2D estim_T_robot_table_p_robot_r_robot = kfloc.getLastEstimatedTwist2D();
 
+    Covariance3 cov = estim_H_robot_table.cov();
+    bool reliability = true;
+    reliability = reliability && (cov(0,0) < maxReliableTransStddev);
+    reliability = reliability && (cov(1,1) < maxReliableTransStddev);
+    reliability = reliability && (cov(2,2) < maxReliableRotStddev);
+
     outPose.write(estim_H_robot_table);
     outTwist.write(estim_T_robot_table_p_robot_r_robot);
+    outReliability.write(reliability);
 
 }
 
@@ -172,7 +181,14 @@ void Localizator::setParams(LocalizatorParams params)
 
 std::string Localizator::printParams()
 {
-    return propParams.getInfo();
+    std::stringstream ss;
+    ss << "****************************" << std::endl;
+    ss << propParams.getInfo();
+    ss << " [*] maxReliableTransStddev : " << maxReliableTransStddev << " (m2)" << std::endl;
+    ss << " [*] maxReliableRotStddev : " << rad2deg(maxReliableRotStddev) << " (deg2)" << std::endl;
+    ss << "****************************" << std::endl;
+    ss << "****************************" << std::endl;
+    return ss.str();
 }
 
 void Localizator::createOrocosInterface()
@@ -192,6 +208,8 @@ void Localizator::createOrocosInterface()
     addPort("outTwist",outTwist)
     .doc("Last estimation of T_robot_table_p_robot_r_robot Twist of robot reference frame relative to table frame, reduced and expressed in robot reference frame.\n It is an EstimatedTwist2D, so it contains Twist, estimation date (in sec) and covariance matrix.");
 
+    addPort("outReliability",outReliability)
+    .doc("False if Localizator has diverged");
 
     addOperation("ooInitialize",&Localizator::ooInitialize, this, OwnThread)
     .doc("Initialisation de la Localisation")
