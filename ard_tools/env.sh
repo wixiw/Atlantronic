@@ -1,7 +1,7 @@
 #configuration de ROS
 export EDITOR=gedit
 export ROS_HOME=/opt/ros
-export ROS_PARALLEL_JOBS=-j4
+export ROS_PARALLEL_JOBS=-j10
 
 #configuration des couleurs de log
 . /opt/ard/ard_tools/vm/color.sh
@@ -52,7 +52,7 @@ export CCACHE_DIR=/home/ard/ccache/compilation.cache
 ccache -M 2G 2&>/dev/null
 export CCACHE_HARDLINK=1
 export PATH=/home/ard/ccache:$PATH
-export DISTCC_HOSTS="localhost"
+export DISTCC_HOSTS="192.168.1.59 localhost"
 export CCACHE_PREFIX=distcc
 
 #configuration des priorites de thread RT
