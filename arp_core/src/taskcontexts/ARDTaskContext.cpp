@@ -15,11 +15,11 @@ using namespace std;
 using namespace arp_math;
 
 ARDTaskContext::ARDTaskContext(const std::string& name, const std::string projectRootPath) :
-        TaskContext(name, PreOperational), propEnableLog(true), propAutoLoadScript(""), propAutoLoadStateMachines(""), attrProjectRootPath(
-                projectRootPath), attrPropertyPath("script/orocos/conf"), attrScriptPath("script/orocos/ops"), attrStateMachinePath(
-                "script/orocos/osd"), attrDt(0.0),
-        /* TODO WLA logger(dynamic_cast<OCL::logging::Category*>(&log4cpp::Category::getInstance("ard")))*/
-        logger(name)
+                TaskContext(name, PreOperational), propEnableLog(true), propAutoLoadScript(""), propAutoLoadStateMachines(""), attrProjectRootPath(
+                        projectRootPath), attrPropertyPath("script/orocos/conf"), attrScriptPath("script/orocos/ops"), attrStateMachinePath(
+                                "script/orocos/osd"), attrDt(0.0),
+                                /* TODO WLA logger(dynamic_cast<OCL::logging::Category*>(&log4cpp::Category::getInstance("ard")))*/
+                                logger(name)
 {
     addProperty("propAutoLoadScript", propAutoLoadScript).doc(
             "If non empty, the component will automatically load this script during configure() (le dossier ops est automatiquement ajouté, l'extension est mise par le soft)");
@@ -38,11 +38,12 @@ ARDTaskContext::ARDTaskContext(const std::string& name, const std::string projec
 
     addOperation("coLog", &ARDTaskContext::coLog, this, ClientThread).doc(
             "This Client Operation allows to log from script. It's non real time. Level are NONE=-1,ERROR=0,WARNING=1,INFO=2,DEBUG=3").arg(
-            "level", "The log level").arg("string", "The string to log");
+                    "level", "The log level").arg("string", "The string to log");
     addOperation("coReset", &ARDTaskContext::coReset, this, ClientThread).doc(
             "This Client Operation allows reset the component");
     addOperation("ooWriteProperties", &ARDTaskContext::ooWriteProperties, this, OwnThread).doc(
             "Write current Component properties to disk");
+    addOperation("coGetPerformanceReport", &ARDTaskContext::coGetPerformanceReport, this, ClientThread).doc("Get Performance report about timing, already formated in readable string");
 
     attrUpdateTime.tv_sec = 0.0;
     attrUpdateTime.tv_nsec = 0.0;
@@ -79,15 +80,21 @@ bool ARDTaskContext::startHook()
 {
     bool res = TaskContext::startHook();
 
+    timer.ResetStat();
+
     return res;
 }
 
 void ARDTaskContext::updateHook()
 {
-   TaskContext::updateHook();
+    timer.Start();
+    TaskContext::updateHook();
 
     timespec time;
     clock_gettime(CLOCK_MONOTONIC, &time);
+
+    timer.Stop();
+
     if (attrUpdateTime.tv_nsec == 0.0 && attrUpdateTime.tv_sec == 0.0)
     {
         //first time here
@@ -114,13 +121,13 @@ void ARDTaskContext::cleanupHook()
     std::vector<std::string> fsmList = scripting->getStateMachineList();
     std::vector<std::string>::iterator itFsm;
 
-//   if( marshalling != NULL )
-//   {
-//       fileName = attrRootProjectPath + "/" + attrPropertyPath  + "/" + getName() + ".xml";
-//       marshalling->writeProperties(fileName);
-//   }
+    //   if( marshalling != NULL )
+    //   {
+    //       fileName = attrRootProjectPath + "/" + attrPropertyPath  + "/" + getName() + ".xml";
+    //       marshalling->writeProperties(fileName);
+    //   }
 
-//dechargement de tous les programs
+    //dechargement de tous les programs
     for (itProg = progList.begin(); itProg != progList.end(); itProg++)
     {
         scripting->unloadProgram((*itProg));
@@ -326,5 +333,24 @@ bool ARDTaskContext::ooWriteProperties()
     }
 
     return res;
+}
+
+
+std::string ARDTaskContext::coGetPerformanceReport()
+{
+    std::stringstream info;
+    info << "============================================" << std::endl;
+    info << this->getName() << " Performance Report (ms)" << std::endl;
+    info << "--------------------------------------------" << std::endl;
+    info << "  [*] Number of samples used : " << timer.GetRawRefreshTime().size() << std::endl;
+    info << "  [*] Period                 : mean=" << timer.GetMeanRefreshTime()*1000.;
+    info << "  , stddev=" << sqrt(timer.GetStdDevRefreshTime())*1000.;
+    info << "  , min=" << timer.GetMinRefreshTime()*1000.;
+    info << "  , max=" << timer.GetMaxRefreshTime()*1000. << std::endl;
+    info << "  [*] Global Duration        : mean=" << timer.GetMeanElapsedTime()*1000.;
+    info << "  , stddev=" << sqrt(timer.GetStdDevElapsedTime())*1000.;
+    info << "  , min=" << timer.GetMinElapsedTime()*1000.;
+    info << "  , max=" << timer.GetMaxElapsedTime()*1000. << std::endl;
+    return info.str();
 }
 
