@@ -370,6 +370,7 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
     //***************************************
 
     beaconDetector.process(scan, tt, xx, yy, hh);
+    detectedObstacles = beaconDetector.getDetectedObstacles();
 
     Log( DEBUG ) << "KFLocalizator::newScan - " << beaconDetector.getFoundBeacons().size() << " beacons(s) detected in scan";
 
@@ -555,6 +556,11 @@ void KFLocalizator::popBufferUntilADate(const double date)
             return;
         }
     }
+}
+
+std::vector< arp_math::Vector2 > KFLocalizator::getDetectedObstacles()
+{
+    return detectedObstacles;
 }
 
 

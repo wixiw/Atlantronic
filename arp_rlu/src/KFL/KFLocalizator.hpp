@@ -259,6 +259,11 @@ class KFLocalizator
         arp_math::EstimatedTwist2D getLastEstimatedTwist2D();
 
         /**
+         * Permet de récupérer les derniers obstacles détectés sur la table.
+         */
+        std::vector< arp_math::Vector2 > getDetectedObstacles();
+
+        /**
          * Permet d'obtenir un rapport sur les timings
          */
         std::string getPerformanceReport();
@@ -279,6 +284,11 @@ class KFLocalizator
          * Ce pointeur permet d'accéder au framework de filtrage.
          */
         BayesianWrapper * bayesian;
+
+        /**
+         * Les derniers obstacles détectés sur le terrain.
+         */
+        std::vector< arp_math::Vector2 > detectedObstacles;
 
         /**
          * Buffer circulaire stockant les estimations de Pose et de Twist

@@ -45,6 +45,11 @@ BeaconDetector::Params::Params()
     yMin = -1.5;
     yMax =  1.5;
 
+    xMinObstacle = -1.2;
+    xMaxObstacle =  1.2;
+    yMinObstacle = -1.0;
+    yMaxObstacle =  1.0;
+
     cip.radius = 0.04;
     cip.coeffs = std::vector<double>();
     cip.coeffs.push_back(-0.01743846);
@@ -73,10 +78,14 @@ std::string BeaconDetector::Params::getInfo() const
     ss << "BeaconDetector Params :" << std::endl;
     ss << "----------------------------" << std::endl;
     ss << " [*] minNbPoints : " << minNbPoints << std::endl;
-    ss << " [*] xMin        : " << xMin << " (m)" << std::endl;
-    ss << " [*] xMax        : " << xMax << " (m)" << std::endl;
-    ss << " [*] yMin        : " << yMin << " (m)" << std::endl;
-    ss << " [*] yMax        : " << yMax << " (m)" << std::endl;
+    ss << " [*] xMin  : " << xMin << " (m)" << std::endl;
+    ss << " [*] xMax  : " << xMax << " (m)" << std::endl;
+    ss << " [*] yMin  : " << yMin << " (m)" << std::endl;
+    ss << " [*] yMax  : " << yMax << " (m)" << std::endl;
+    ss << " [*] xMinObstacle  : " << xMinObstacle << " (m)" << std::endl;
+    ss << " [*] xMaxObstacle  : " << xMaxObstacle << " (m)" << std::endl;
+    ss << " [*] yMinObstacle  : " << yMinObstacle << " (m)" << std::endl;
+    ss << " [*] yMaxObstacle  : " << yMaxObstacle << " (m)" << std::endl;
     ss << "----------------------------" << std::endl;
     ss << mfp.getInfo();
     ss << "----------------------------" << std::endl;
@@ -132,6 +141,9 @@ bool BeaconDetector::Params::checkConsistency() const
 BeaconDetector::BeaconDetector()
 : params(Params())
 , detectedCircles(std::vector< lsl::DetectedCircle >())
+, detectedObstacles(std::vector< arp_math::Vector2 >())
+, beaconCandidates(std::vector< lsl::DetectedCircle >())
+, foundBeacons( std::vector< std::pair<lsl::DetectedCircle, lsl::Circle> >() )
 , referencedBeacons(std::vector< lsl::Circle >())
 , deltaTime(0.)
 {
@@ -162,7 +174,7 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
     mfTimer.Start();
     LaserScan scan_0 = MedianFilter::apply(ls, params.mfp);
     mfTimer.Stop();
-//    export_json( scan_0, "./BeaconDetector__process__scan_0.json" );
+    //    export_json( scan_0, "./BeaconDetector__process__scan_0.json" );
 
     //*****************************
     // Polar croping
@@ -175,8 +187,8 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
     cartTimer.Start();
     scan_1.computeCartesianData(tt, xx, yy, hh);
     cartTimer.Stop();
-//    pcTimer.Stop();
-//    export_json( scan_1, "./BeaconDetector__process__scan_1.json" );
+    //    pcTimer.Stop();
+    //    export_json( scan_1, "./BeaconDetector__process__scan_1.json" );
 
 
     //*****************************
@@ -185,12 +197,12 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
     std::vector<DetectedObject> rawDObj = PolarSegment::apply( scan_1, params.psp);
     psTimer.Stop();
 
-//    for(unsigned int i = 0 ; i < rawDObj.size() ; i++)
-//    {
-//        std::stringstream ss;
-//        ss << "./BeaconDetector__process__raw_detectedobject_" << i << ".json";
-//        export_json( rawDObj[i].getScan(), ss.str() );
-//    }
+    //    for(unsigned int i = 0 ; i < rawDObj.size() ; i++)
+    //    {
+    //        std::stringstream ss;
+    //        ss << "./BeaconDetector__process__raw_detectedobject_" << i << ".json";
+    //        export_json( rawDObj[i].getScan(), ss.str() );
+    //    }
 
     //*****************************
     // Filtering on candidates : do not consider :
@@ -225,19 +237,34 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
     }
     fiTimer.Stop();
 
-//    for(unsigned int i = 0 ; i < dObj.size() ; i++)
-//    {
-//        std::stringstream ss;
-//        ss << "./BeaconDetector__process__filtered_detectedobject_" << i << ".json";
-//        export_json( dObj[i].getScan(), ss.str() );
-//    }
-
-
     //*****************************
     // Interpretation as Circle
     ciTimer.Start();
     detectedCircles = CircleIdentif::apply(detectedObjects, params.cip);
     ciTimer.Stop();
+
+
+    //*****************************
+    // Détection des obstacles
+    obsTimer.Start();
+    detectedObstacles.clear();
+    beaconCandidates.clear();
+    for(unsigned int i = 0 ; i < detectedCircles.size() ; i++)
+    {
+        if( (detectedCircles[i].getCartesianMean()[0] < params.xMinObstacle) || (detectedCircles[i].getCartesianMean()[0] > params.xMaxObstacle) )
+        {
+            beaconCandidates.push_back( detectedCircles[i] );
+            continue;
+        }
+        if( (detectedCircles[i].getCartesianMean()[1] < params.yMinObstacle) || (detectedCircles[i].getCartesianMean()[1] > params.yMaxObstacle) )
+        {
+            beaconCandidates.push_back( detectedCircles[i] );
+            continue;
+        }
+        detectedObstacles.push_back( arp_math::Vector2( detectedCircles[i].x(), detectedCircles[i].y() ) );
+    }
+    obsTimer.Stop();
+
 
     if(referencedBeacons.size() < 3)
     {
@@ -246,10 +273,16 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
         return false;
     }
 
-    Log( DEBUG ) << "BeaconDetector::process - " << detectedCircles.size() << " circles detected : ";
-    for(int i = 0 ; i < detectedCircles.size() ; i++)
+    Log( DEBUG ) << "BeaconDetector::process - " << beaconCandidates.size() << " beaconCandidates detected : ";
+    for(int i = 0 ; i < beaconCandidates.size() ; i++)
     {
-        Log( DEBUG ) << "BeaconDetector::process -      [" << i << "] x:" << detectedCircles[i].x() << " - y:" << detectedCircles[i].y() << " - r:" << detectedCircles[i].r();
+        Log( DEBUG ) << "BeaconDetector::process -      [" << i << "] x:" << beaconCandidates[i].x() << " - y:" << beaconCandidates[i].y() << " - r:" << beaconCandidates[i].r();
+    }
+
+    Log( DEBUG ) << "BeaconDetector::process - " << beaconCandidates.size() << " obstacles detected : ";
+    for(int i = 0 ; i < detectedObstacles.size() ; i++)
+    {
+        Log( DEBUG ) << "BeaconDetector::process -      [" << i << "] x:" << detectedObstacles[i].x() << " - y:" << detectedObstacles[i].y();
     }
 
     //*****************************
@@ -258,7 +291,7 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
     std::vector< std::vector<Circle> > vrc;
     vrc.push_back(referencedBeacons);
     std::vector< std::pair< std::vector<DetectedCircle>, std::vector<Circle> > > triangle;
-    triangle = TrioCircleIdentif::apply( detectedCircles, vrc, params.tcp );
+    triangle = TrioCircleIdentif::apply( beaconCandidates, vrc, params.tcp );
     if(!triangle.empty())
     {
         Eigen::Vector3d angles;
@@ -289,7 +322,7 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
     refSegments.push_back( std::make_pair( referencedBeacons[0], referencedBeacons[2] ) );
     refSegments.push_back( std::make_pair( referencedBeacons[0], referencedBeacons[1] ) );
     std::vector< std::pair< std::pair<DetectedCircle, DetectedCircle>, std::pair<Circle,Circle> > > segments;
-    segments = DuoCircleIdentif::apply( detectedCircles, refSegments, params.dcp );
+    segments = DuoCircleIdentif::apply( beaconCandidates, refSegments, params.dcp );
     if(!segments.empty())
     {
         Eigen::Vector2d angles;
@@ -355,6 +388,12 @@ std::vector< std::pair<lsl::DetectedCircle, lsl::Circle> > BeaconDetector::getFo
     return foundBeacons;
 }
 
+
+std::vector< arp_math::Vector2 > BeaconDetector::getDetectedObstacles()
+{
+    return detectedObstacles;
+}
+
 void BeaconDetector::setParams(kfl::BeaconDetector::Params p)
 {
     params = p;
@@ -406,6 +445,10 @@ std::string BeaconDetector::getPerformanceReport()
     info << "  , stddev=" << sqrt(ciTimer.GetStdDevElapsedTime())*1000.;
     info << "  , min=" << ciTimer.GetMinElapsedTime()*1000.;
     info << "  , max=" << ciTimer.GetMaxElapsedTime()*1000.<< std::endl;
+    info << "  [#] Obstacle Extraction duration   : mean=" << obsTimer.GetMeanElapsedTime()*1000.;
+    info << "  , stddev=" << sqrt(obsTimer.GetStdDevElapsedTime())*1000.;
+    info << "  , min=" << obsTimer.GetMinElapsedTime()*1000.;
+    info << "  , max=" << obsTimer.GetMaxElapsedTime()*1000.<< std::endl;
     info << "  [#] Triangle Detect duration : mean=" << tcTimer.GetMeanElapsedTime()*1000.;
     info << "  , stddev=" << sqrt(tcTimer.GetStdDevElapsedTime())*1000.;
     info << "  , min=" << tcTimer.GetMinElapsedTime()*1000.;

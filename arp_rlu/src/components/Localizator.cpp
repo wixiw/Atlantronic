@@ -157,7 +157,7 @@ void Localizator::updateHook()
     outPose.write(estim_H_robot_table);
     outTwist.write(estim_T_robot_table_p_robot_r_robot);
     outReliability.write(reliability);
-
+    outObstacles.write(kfloc.getDetectedObstacles());
 }
 
 bool Localizator::ooInitialize(double x, double y, double theta)
@@ -211,6 +211,9 @@ void Localizator::createOrocosInterface()
     addPort("outReliability",outReliability)
     .doc("False if Localizator has diverged");
 
+    addPort("outObstacles",outObstacles)
+    .doc("Last detected obstacles");
+
     addOperation("ooInitialize",&Localizator::ooInitialize, this, OwnThread)
     .doc("Initialisation de la Localisation")
     .arg("x","m")
@@ -241,9 +244,9 @@ std::string Localizator::coGetPerformanceReport()
 void Localizator::ooSwitchToRedConfig()
 {
     propParams.referencedBeacons = std::vector< lsl::Circle >();
-    propParams.referencedBeacons.push_back( lsl::Circle(-1.550, 0.  , 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle( 1.550,-1.05, 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle( 1.550, 1.05, 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle(-1.560, 0.   , 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( 1.565,-1.040, 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( 1.565, 1.040, 0.04 ) );
     kfloc.setParams(propParams);
 
     LOG(Info) << "Switched to Red Beacon configuration" << endlog();
@@ -252,9 +255,9 @@ void Localizator::ooSwitchToRedConfig()
 void Localizator::ooSwitchToPurpleConfig()
 {
     propParams.referencedBeacons = std::vector< lsl::Circle >();
-    propParams.referencedBeacons.push_back( lsl::Circle( 1.550, 0., 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle(-1.550, 1.05, 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle(-1.550,-1.05, 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( 1.560, 0., 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle(-1.555, 1.040, 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle(-1.555,-1.040, 0.04 ) );
     kfloc.setParams(propParams);
 
     LOG(Info) << "Switched to Purple Beacon configuration" << endlog();

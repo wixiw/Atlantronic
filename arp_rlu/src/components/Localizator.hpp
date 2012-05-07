@@ -63,6 +63,12 @@ class Localizator: public RluTaskContext
          */
         RTT::OutputPort<bool> outReliability;
 
+        /**
+         * Contient la position d'obstacles détectés sur la table.\n
+         * Ces obstacles ne sont pas filtrés temporellement.
+         */
+        RTT::OutputPort< std::vector< arp_math::Vector2 > > outObstacles;
+
         //*****************************************************
         // Operations
         virtual std::string coGetPerformanceReport();

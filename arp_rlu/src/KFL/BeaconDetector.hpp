@@ -70,10 +70,14 @@ class BeaconDetector
              *  \li tcp => voir constructeur par défault de lsl::CircleIdentif::Params
              *  \li dcp => voir constructeur par défault de lsl::CircleIdentif::Params
              *  \li minNbPoints = 3
-             *  \li xMin = -1.8
-             *  \li xMax =  1.8
-             *  \li yMin = -1.3
-             *  \li yMax =  1.3
+             *  \li xMin = -2.0
+             *  \li xMax =  2.0
+             *  \li yMin = -1.5
+             *  \li yMax =  1.5
+             *  \li xMinObstacle = -1.2
+             *  \li xMaxObstacle =  1.2
+             *  \li yMinObstacle = -1.0
+             *  \li yMaxObstacle =  1.0
              */
             Params();
 
@@ -125,24 +129,44 @@ class BeaconDetector
             unsigned int minNbPoints;
 
             /**
-             * Minimum cartésien selon X
+             * Minimum cartésien selon X pour la recherche de balise
              */
             double xMin;
 
             /**
-             * Maximum cartésien selon X
+             * Maximum cartésien selon X pour la recherche de balise
              */
             double xMax;
 
             /**
-             * Minimum cartésien selon Y
+             * Minimum cartésien selon Y pour la recherche de balise
              */
             double yMin;
 
             /**
-             * Maximum cartésien selon Y
+             * Maximum cartésien selon Y pour la recherche de balise
              */
             double yMax;
+
+            /**
+             * Minimum cartésien selon X pour la détection d'obstacle
+             */
+            double xMinObstacle;
+
+            /**
+             * Maximum cartésien selon X pour la détection d'obstacle
+             */
+            double xMaxObstacle;
+
+            /**
+             * Minimum cartésien selon Y pour la détection d'obstacle
+             */
+            double yMinObstacle;
+
+            /**
+             * Maximum cartésien selon Y pour la détection d'obstacle
+             */
+            double yMaxObstacle;
 
         };
 
@@ -205,6 +229,11 @@ class BeaconDetector
         std::vector< std::pair<lsl::DetectedCircle, lsl::Circle> > getFoundBeacons();
 
         /**
+         * Permet de récupérer les obstacles détectés sur la table.
+         */
+        std::vector< arp_math::Vector2 > getDetectedObstacles();
+
+        /**
          * Permet de modifier les paramètres de traitement de scan.
          * \param[in] paramètres sous la forme d'un kfl::BeaconDetector::Params
          */
@@ -234,10 +263,21 @@ class BeaconDetector
         std::vector< lsl::DetectedObject > detectedObjects;
 
         /**
-         * Les balises candidates.\n
-         * Elles n'ont pas (encore) été appariées aux balises référencées.
+         * Les cercles détectés dans la zone cartésienne définies par xMin, xMax, yMin et yMax.
          */
         std::vector< lsl::DetectedCircle > detectedCircles;
+
+        /**
+         * Les obstacles détectés sur le terrain.\n
+         * Les bornes cartésiennes de la zone de détection sont définies par xMinObstacle, xMaxObstacle, yMinOBstacle et yMaxObstacle
+         */
+        std::vector< arp_math::Vector2 > detectedObstacles;
+
+        /**
+         * Les obstacles détectés sur le terrain.\n
+         * Les bornes cartésiennes de la zone de détection sont définies par xMinObstacle, xMaxObstacle, yMinOBstacle et yMaxObstacle
+         */
+        std::vector< lsl::DetectedCircle > beaconCandidates;
 
         /**
          * Balises retrouvées
@@ -261,6 +301,7 @@ class BeaconDetector
         arp_core::StatTimer psTimer;
         arp_core::StatTimer fiTimer;
         arp_core::StatTimer ciTimer;
+        arp_core::StatTimer obsTimer;
         arp_core::StatTimer tcTimer;
         arp_core::StatTimer dcTimer;
         arp_core::StatTimer globalTimer;
