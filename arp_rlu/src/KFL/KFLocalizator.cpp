@@ -476,7 +476,7 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
     bayesian->predict( input, odoCovs(tt.size()-1), dt );
 
 
-    Log( INFO ) << "KFLocalizator::newScan - " << nbBeaconSeen << " kalman update(s) done";
+    Log( DEBUG ) << "KFLocalizator::newScan - " << nbBeaconSeen << " kalman update(s) done";
     newScanUpdateTimer.Stop();
 
     EstimatedTwist2D T;
