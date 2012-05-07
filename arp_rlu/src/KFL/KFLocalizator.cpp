@@ -39,6 +39,10 @@ KFLocalizator::Params::Params()
 std::string KFLocalizator::Params::getInfo() const
 {
     std::stringstream ss;
+    ss << "****************************" << std::endl;
+    ss << "****************************" << std::endl;
+    ss << "KFLocalizator Params :" << std::endl;
+    ss << "****************************" << std::endl;
     ss << "KFLocalizator Params :" << std::endl;
     ss << " [*] bufferSize: " << bufferSize << std::endl;
     ss << " [*] maxTime4OdoPrediction: " << maxTime4OdoPrediction << " (sec)" << std::endl;
@@ -55,6 +59,8 @@ std::string KFLocalizator::Params::getInfo() const
     ss << iekfParams.getInfo();
     ss << "****************************" << std::endl;
     ss << procParams.getInfo();
+    ss << "****************************" << std::endl;
+    ss << "****************************" << std::endl;
     return ss.str();
 }
 
@@ -97,10 +103,10 @@ std::string KFLocalizator::IEKFParams::getInfo() const
 {
     std::stringstream ss;
     ss << "KFLocalizator IEKFParams :" << std::endl;
-    ss << " [*] defaultOdoVelTransSigma : " << defaultOdoVelTransSigma << std::endl;
-    ss << " [*] defaultOdoVelRotSigma   : " << defaultOdoVelRotSigma << std::endl;
-    ss << " [*] defaultLaserRangeSigma  : " << defaultLaserRangeSigma << std::endl;
-    ss << " [*] defaultLaserThetaSigma  : " << defaultLaserThetaSigma << std::endl;
+    ss << " [*] defaultOdoVelTransSigma : " << defaultOdoVelTransSigma << " (m/s)" << std::endl;
+    ss << " [*] defaultOdoVelRotSigma   : " << defaultOdoVelRotSigma << " (rad/s)" << std::endl;
+    ss << " [*] defaultLaserRangeSigma  : " << defaultLaserRangeSigma << " (m)" << std::endl;
+    ss << " [*] defaultLaserThetaSigma  : " << rad2deg(defaultLaserThetaSigma) << " (deg)" << std::endl;
     ss << " [*] iekfMaxIt               : " << iekfMaxIt << std::endl;
     ss << " [*] iekfInnovationMin       : " << iekfInnovationMin << std::endl;
     return ss.str();

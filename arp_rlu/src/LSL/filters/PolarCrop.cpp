@@ -33,8 +33,8 @@ std::string PolarCrop::Params::getInfo() const
 {
     std::stringstream ss;
     ss << "PolarCrop params :" << std::endl;
-    ss << " [*] minRange : " << minRange << std::endl;
-    ss << " [*] maxRange : " << maxRange << std::endl;
+    ss << " [*] minRange : " << minRange << " (m)" << std::endl;
+    ss << " [*] maxRange : " << maxRange << " (m)" << std::endl;
     ss << " [*] minTheta : " << rad2deg(minTheta) << " (deg)"<< std::endl;
     ss << " [*] maxTheta : " << rad2deg(maxTheta) << " (deg)"<< std::endl;
     return ss.str();

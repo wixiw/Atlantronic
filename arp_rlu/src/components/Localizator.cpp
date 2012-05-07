@@ -41,9 +41,9 @@ Localizator::Localizator(const std::string& name)
     propParams.H_odo_robot = Pose2D();
 
     propParams.referencedBeacons = std::vector< lsl::Circle >();
-    propParams.referencedBeacons.push_back( lsl::Circle( 1.550, 0., 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle(-1.550, 1.05, 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle(-1.550,-1.05, 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle(-1.550, 0.  , 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( 1.550,-1.05, 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( 1.550, 1.05, 0.04 ) );
 
     propParams.iekfParams.defaultOdoVelTransSigma = 0.01;
     propParams.iekfParams.defaultOdoVelRotSigma   = 0.01;
@@ -169,6 +169,12 @@ void Localizator::setParams(LocalizatorParams params)
     LOG(Info) << "New params defined !" << endlog();
 }
 
+
+std::string Localizator::printParams()
+{
+    return propParams.getInfo();
+}
+
 void Localizator::createOrocosInterface()
 {
     addProperty("propParams",propParams);
@@ -197,12 +203,45 @@ void Localizator::createOrocosInterface()
     .doc("")
     .arg("params","");
 
-    addOperation("coGetPerformanceReport",&Localizator::getPerformanceReport, this, ClientThread)
+    addOperation("ooPrintParams",&Localizator::printParams, this, OwnThread)
+    .doc("");
+
+    addOperation("coGetPerformanceReport",&Localizator::coGetPerformanceReport, this, ClientThread)
     .doc("Permet d'obtenir un rapport sur les timings");
+
+    addOperation("ooSwitchToRedConfig",&Localizator::ooSwitchToRedConfig, this, OwnThread)
+    .doc("Définit les balises pour le départ Red");
+
+    addOperation("ooSwitchToPurpleConfig",&Localizator::ooSwitchToPurpleConfig, this, OwnThread)
+    .doc("Définit les balises pour le départ Purple");
+
 }
 
-
-std::string Localizator::getPerformanceReport()
+std::string Localizator::coGetPerformanceReport()
 {
     return kfloc.getPerformanceReport();
 }
+
+
+void Localizator::ooSwitchToRedConfig()
+{
+    propParams.referencedBeacons = std::vector< lsl::Circle >();
+    propParams.referencedBeacons.push_back( lsl::Circle(-1.550, 0.  , 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( 1.550,-1.05, 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( 1.550, 1.05, 0.04 ) );
+    kfloc.setParams(propParams);
+
+    LOG(Info) << "Switched to Red Beacon configuration" << endlog();
+}
+
+void Localizator::ooSwitchToPurpleConfig()
+{
+    propParams.referencedBeacons = std::vector< lsl::Circle >();
+    propParams.referencedBeacons.push_back( lsl::Circle( 1.550, 0., 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle(-1.550, 1.05, 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle(-1.550,-1.05, 0.04 ) );
+    kfloc.setParams(propParams);
+
+    LOG(Info) << "Switched to Purple Beacon configuration" << endlog();
+}
+

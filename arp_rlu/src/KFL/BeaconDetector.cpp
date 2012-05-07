@@ -70,26 +70,26 @@ BeaconDetector::Params::Params()
 std::string BeaconDetector::Params::getInfo() const
 {
     std::stringstream ss;
-    ss << "****************************" << std::endl;
-    ss << mfp.getInfo();
-    ss << "****************************" << std::endl;
-    ss << pcp.getInfo();
-    ss << "****************************" << std::endl;
-    ss << psp.getInfo();
-    ss << "****************************" << std::endl;
-    ss << "[*] minNbPoints : " << minNbPoints;
-    ss << "****************************" << std::endl;
-    ss << cip.getInfo();
-    ss << "****************************" << std::endl;
-    ss << tcp.getInfo();
-    ss << "****************************" << std::endl;
-    ss << dcp.getInfo();
-    ss << "****************************" << std::endl;
+    ss << "BeaconDetector Params :" << std::endl;
+    ss << "----------------------------" << std::endl;
     ss << " [*] minNbPoints : " << minNbPoints << std::endl;
     ss << " [*] xMin        : " << xMin << " (m)" << std::endl;
     ss << " [*] xMax        : " << xMax << " (m)" << std::endl;
     ss << " [*] yMin        : " << yMin << " (m)" << std::endl;
     ss << " [*] yMax        : " << yMax << " (m)" << std::endl;
+    ss << "----------------------------" << std::endl;
+    ss << mfp.getInfo();
+    ss << "----------------------------" << std::endl;
+    ss << pcp.getInfo();
+    ss << "----------------------------" << std::endl;
+    ss << psp.getInfo();
+    ss << "----------------------------" << std::endl;
+    ss << cip.getInfo();
+    ss << "----------------------------" << std::endl;
+    ss << tcp.getInfo();
+    ss << "----------------------------" << std::endl;
+    ss << dcp.getInfo();
+    ss << "----------------------------" << std::endl;
     ss << std::endl;
     return ss.str();
 }
@@ -414,6 +414,5 @@ std::string BeaconDetector::getPerformanceReport()
     info << "  , stddev=" << sqrt(dcTimer.GetStdDevElapsedTime())*1000.;
     info << "  , min=" << dcTimer.GetMinElapsedTime()*1000.;
     info << "  , max=" << dcTimer.GetMaxElapsedTime()*1000.<< std::endl;
-    info << "============================================" << std::endl;
     return info.str();
 }

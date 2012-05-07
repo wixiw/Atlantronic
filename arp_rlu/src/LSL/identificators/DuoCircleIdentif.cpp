@@ -31,9 +31,9 @@ std::string DuoCircleIdentif::Params::getInfo() const
 {
     std::stringstream ss;
     ss << "DuoCircleIdentif params :" << std::endl;
-    ss << " [*] radiusTolerance: " << radiusTolerance << std::endl;
-    ss << " [*] distanceTolerance: " << distanceTolerance << std::endl;
-    ss << " [*] lengthTolerance: " << lengthTolerance << std::endl;
+    ss << " [*] radiusTolerance: " << radiusTolerance << " (m)" << std::endl;
+    ss << " [*] distanceTolerance: " << distanceTolerance << " (m)" << std::endl;
+    ss << " [*] lengthTolerance: " << lengthTolerance << " (m)" << std::endl;
     return ss.str();
 }
 

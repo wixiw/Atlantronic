@@ -28,6 +28,7 @@ class Localizator: public RluTaskContext
         Localizator(const std::string& name);
         bool ooInitialize(double x, double y, double theta);
         void setParams(LocalizatorParams params);
+        std::string printParams();
         bool configureHook();
         void updateHook();
 
@@ -56,7 +57,10 @@ class Localizator: public RluTaskContext
 
         //*****************************************************
         // Operations
-        std::string getPerformanceReport();
+        std::string coGetPerformanceReport();
+
+        void ooSwitchToRedConfig();
+        void ooSwitchToPurpleConfig();
 
 
         //*****************************************************

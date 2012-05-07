@@ -33,11 +33,11 @@ std::string TrioCircleIdentif::Params::getInfo() const
 {
     std::stringstream ss;
     ss << "TrioCircleIdentif params :" << std::endl;
-    ss << " [*] radiusTolerance: " << radiusTolerance << std::endl;
-    ss << " [*] distanceTolerance: " << distanceTolerance << std::endl;
-    ss << " [*] maxLengthTolerance: " << maxLengthTolerance << std::endl;
-    ss << " [*] medLengthTolerance: " << medLengthTolerance << std::endl;
-    ss << " [*] minLengthTolerance: " << minLengthTolerance << std::endl;
+    ss << " [*] radiusTolerance: " << radiusTolerance << " (m)" << std::endl;
+    ss << " [*] distanceTolerance: " << distanceTolerance << " (m)" << std::endl;
+    ss << " [*] maxLengthTolerance: " << maxLengthTolerance << " (m)" << std::endl;
+    ss << " [*] medLengthTolerance: " << medLengthTolerance << " (m)" << std::endl;
+    ss << " [*] minLengthTolerance: " << minLengthTolerance << " (m)" << std::endl;
     return ss.str();
 }
 
