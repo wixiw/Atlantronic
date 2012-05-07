@@ -72,6 +72,12 @@ class UbiquityKinematics
                                     SlippageReport& oSR,
                                     const UbiquityParams & iParams);
 
+
+        static bool turrets2Twist2(const TurretState & iTS,
+                                    arp_math::Twist2D& oTw,
+                                    SlippageReport& oSR,
+                                    const UbiquityParams & iParams);
+
         /**
          * Modèle cinématique indirect de la base
          * Convertit un Twist (Twist du repère de référence du chassis par rapport au sol projeté et réduit dans le repère de référence du chassis)
@@ -93,6 +99,13 @@ class UbiquityKinematics
          * @param oTS : [out] the intermediate computation of Turret State. Should be only used for debug or user feedback
          */
         static bool motors2Twist(const MotorState & iMS,
+                TurretState& oTS,
+                arp_math::Twist2D& oTw,
+                SlippageReport& oSR,
+                const UbiquityParams & iParams);
+
+
+        static bool motors2Twist2(const MotorState & iMS,
                 TurretState& oTS,
                 arp_math::Twist2D& oTw,
                 SlippageReport& oSR,

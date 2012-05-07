@@ -26,6 +26,7 @@ class ScriptTeleop: public OdsTaskContext
         double propAngSpeed;
         int attrMode;
         arp_math::Twist2D attrTwistCmd;
+        double attrSleep;
         RTT::OutputPort<arp_math::Twist2D> outTwistCmd;
         double m_direction;
 };

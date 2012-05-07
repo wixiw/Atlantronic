@@ -22,14 +22,15 @@ ScriptTeleop::ScriptTeleop(const std::string& name):
         propAngSpeed(0.020),
         attrMode(0),
         attrTwistCmd(0,0,0),
+        attrSleep(0.0),
         m_direction(0.0)
 {
     addProperty("propLinSpeed",propLinSpeed);
     addProperty("propAngSpeed",propAngSpeed);
     addAttribute("attrMode",attrMode);
     addAttribute("attrTwistCmd",attrTwistCmd);
-    addPort("outTwistCmd",outTwistCmd)
-            .doc("");
+    addAttribute("attrSleep",attrSleep);
+    addPort("outTwistCmd",outTwistCmd);
 }
 
 void ScriptTeleop::updateHook()
@@ -50,5 +51,12 @@ void ScriptTeleop::updateHook()
     }
 
     outTwistCmd.write(twist);
+
+    if( attrSleep != 0.0 )
+    {
+        usleep(attrSleep*1E6);
+        attrSleep = 0;
+    }
+
 }
 

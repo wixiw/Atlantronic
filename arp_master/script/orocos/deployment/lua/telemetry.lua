@@ -21,19 +21,9 @@ function Telemetry:reportRobotState()
 	Reporting=Deployer:getPeer("Reporting")
 	Reporting:reportPort("Localizator","outPose")
 	Reporting:reportPort("Localizator","outTwist")
-end
-
--- Trace l'état des tourelles en sortie du composant Syncronizator
--- [0] : steering.left.pose			[3] : steering.right.pose		[6] : steering.rear.pose
--- [1] : steering.left.velocity		[4] : steering.right.velocity	[7] : steering.rear.velocity
--- [2] : steering.left.torque		[5] : steering.right.torque		[8] : steering.rear.torque
--- [9]  : driving.left.pose			[12] : driving.right.pose		[15] : driving.rear.pose
--- [10] : driving.left.velocity		[13] : driving.right.velocity	[16] : driving.rear.velocity
--- [11] : driving.left.torque		[14] : driving.right.torque		[17] : driving.rear.torque
-function Telemetry:reportMotorState()
-	print("reporting configuration")
-	Reporting=Deployer:getPeer("Reporting")
-	Reporting:reportPort("Syncronizator","outMotorMeasures")
+	Reporting:reportPort("Odometry","outTwist")
+	Reporting:reportPort("Odometry","outKernelQuality")
+	Reporting:reportPort("Odometry","outTurretState")
 end
 
 -- Trace la commande envoyee au robot
@@ -49,6 +39,20 @@ function Telemetry:reportRobotCmd()
 	Reporting:reportPort("KinematicBase","outRightDrivingVelocityCmd")
 	Reporting:reportPort("KinematicBase","outRearDrivingVelocityCmd")
 end
+
+-- Trace l'état des tourelles en sortie du composant Syncronizator
+-- [0] : steering.left.pose			[3] : steering.right.pose		[6] : steering.rear.pose
+-- [1] : steering.left.velocity		[4] : steering.right.velocity	[7] : steering.rear.velocity
+-- [2] : steering.left.torque		[5] : steering.right.torque		[8] : steering.rear.torque
+-- [9]  : driving.left.pose			[12] : driving.right.pose		[15] : driving.rear.pose
+-- [10] : driving.left.velocity		[13] : driving.right.velocity	[16] : driving.rear.velocity
+-- [11] : driving.left.torque		[14] : driving.right.torque		[17] : driving.rear.torque
+function Telemetry:reportMotorState()
+	print("reporting configuration")
+	Reporting=Deployer:getPeer("Reporting")
+	Reporting:reportPort("Syncronizator","outMotorMeasures")
+end
+
 
 -- Trace les timings
 -- TODO	
@@ -85,7 +89,7 @@ end
 function Telemetry:report()
 	print("====================")
 	print("début déploiment telemetry")
-	Telemetry:reportJoystick()
+	--Telemetry:reportJoystick()
 	Telemetry:reportRobotCmd()
 	Telemetry:reportRobotState()
 	--Telemetry:reportMotorState()

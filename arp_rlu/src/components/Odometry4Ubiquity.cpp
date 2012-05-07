@@ -19,8 +19,8 @@ ORO_LIST_COMPONENT_TYPE( arp_rlu::Odometry4Ubiquity )
 Odometry4Ubiquity::Odometry4Ubiquity(const std::string& name):
     RluTaskContext(name),
     propMinKernelQuality(100.0),
-    propMinVelocityOnTwist(0.001),
-    propMinVelocityOnTurretDriving(0.001)
+    propMinVelocityOnTurretDriving(0.01),
+    propMinVelocityOnTwist(0.001)
 {
     createOrocosInterface();
 }
@@ -52,21 +52,27 @@ void Odometry4Ubiquity::updateHook()
         return;
     }
 
-    if( fabs(attrTurretState.driving.left.velocity) > propMinVelocityOnTurretDriving ||
-        fabs(attrTurretState.driving.left.velocity) > propMinVelocityOnTurretDriving ||
-        fabs(attrTurretState.driving.left.velocity) > propMinVelocityOnTurretDriving)
+    //calcul de l'odometrie (oh oui en une ligne c'est beau)
+    if( UbiquityKinematics::motors2Twist(attrMotorState, attrTurretState, computedTwist, report, attrParams) == false )
     {
-        //calcul de l'odometrie (oh oui en une ligne c'est beau)
-        if( UbiquityKinematics::motors2Twist(attrMotorState, attrTurretState, computedTwist, report, attrParams) == false )
-        {
-            LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
-            report.kernelQuality = 0.;
-        }
+        LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
+        report.kernelQuality = 0.;
+        computedTwist = Twist2D();
     }
     else
     {
-        report.kernelQuality = 1000.;
-        computedTwist = arp_math::Twist2D();
+        if( fabs(attrTurretState.driving.left.velocity) > propMinVelocityOnTurretDriving ||
+            fabs(attrTurretState.driving.right.velocity) > propMinVelocityOnTurretDriving ||
+            fabs(attrTurretState.driving.rear.velocity) > propMinVelocityOnTurretDriving)
+        {
+            //on conserve le calcul
+        }
+        else
+        {
+            //on fait comme si on ne bougeait pas
+            report.kernelQuality = 1000.;
+            computedTwist = arp_math::Twist2D();
+        }
     }
 
     outSlippageDetected.write(report.kernelQuality < propMinKernelQuality);

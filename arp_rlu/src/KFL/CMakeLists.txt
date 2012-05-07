@@ -1,17 +1,13 @@
 ###################################################################################################################
 #    EDIT BELOW THIS LINE AND UNTIL NEXT LINE FOR A NEW PROJECT
 
-
-rosbuild_add_library(kfl Logger.cpp
-                         KFLocalizator.cpp
-                         
-                         BeaconDetector.cpp
-                         
-                         LaserOnlyLocalizator.cpp
-                         
-                         BFL/BFLWrapper.cpp
-                         BFL/BFLSysConditionalPdf.cpp
-                         BFL/BFLMeasConditionalPdf.cpp)
+    file(
+    	GLOB_RECURSE
+    	source_files
+    	*.c* 
+    )  
+    
+rosbuild_add_library(kfl ${source_files})
             
 
 ###################################################################################################################

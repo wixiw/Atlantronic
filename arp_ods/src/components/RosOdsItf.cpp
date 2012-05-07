@@ -30,9 +30,9 @@ RosOdsItf::RosOdsItf(std::string const name):
     //TODO a remplacer par la lecture des proprietes en XML ... ce qui necessite d'ecrire le typekit
     //WLA : j'ai tenté de le générer automatiquement ça n'a pas l'air d'avoir fonctionner,
     //c'est étonnant c'est pourtant une structure simple
-    propOrderConfig.RADIUS_APPROACH_ZONE = 0.010; //20cm
+    propOrderConfig.RADIUS_APPROACH_ZONE = 0.010;
     propOrderConfig.ANGLE_ACCURACY = 0.018;//1°
-    propOrderConfig.DISTANCE_ACCURACY = 0.010;//20mm
+    propOrderConfig.DISTANCE_ACCURACY = 0.010;
 
     propOrderConfig.LIN_VEL_MAX = 1.0;
     propOrderConfig.ANG_VEL_MAX = 15.0;

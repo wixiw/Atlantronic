@@ -29,6 +29,7 @@ bool UbiquityKinematics::motors2Turrets(const MotorState & iMS,
         return false;
     }
 
+    //Steering position
     oTS.steering.left.position = (iMS.steering.left.position - iParams.getLeftTurretZero())
             *iParams.getTurretRatio() ;
     oTS.steering.right.position = (iMS.steering.right.position - iParams.getRightTurretZero())
@@ -36,13 +37,16 @@ bool UbiquityKinematics::motors2Turrets(const MotorState & iMS,
     oTS.steering.rear.position = (iMS.steering.rear.position - iParams.getRearTurretZero())
             *iParams.getTurretRatio();
 
+    //Steering velocity
+    oTS.steering.left.velocity = iMS.steering.left.velocity*iParams.getTurretRatio();
+    oTS.steering.right.velocity = iMS.steering.right.velocity*iParams.getTurretRatio();
+    oTS.steering.rear.velocity = iMS.steering.rear.velocity*iParams.getTurretRatio();
+
+    //Driving velocity
     oTS.driving.left.velocity = iParams.getLeftWheelDiameter()/2
             *(iMS.driving.left.velocity*iParams.getTractionRatio() - iMS.steering.left.velocity*iParams.getTurretRatio());
-
     oTS.driving.right.velocity = iParams.getRightWheelDiameter()/2
             *(iMS.driving.right.velocity*iParams.getTractionRatio() - iMS.steering.right.velocity*iParams.getTurretRatio());
-
-
     oTS.driving.rear.velocity = iParams.getRearWheelDiameter()/2
             *(iMS.driving.rear.velocity*iParams.getTractionRatio() - iMS.steering.rear.velocity*iParams.getTurretRatio());
 

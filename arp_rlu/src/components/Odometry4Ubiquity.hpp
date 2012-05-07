@@ -33,7 +33,7 @@ class Odometry4Ubiquity: public RluTaskContext
         /** Buffer local pour le temps */
         timespec attrTime;
 
-        /** The KernelQuality when getting the report fromthe model must be larger than this property, else we spawn an error*/
+        /** The KernelQuality when getting the report from the model must be larger than this property, else we spawn an error*/
         double propMinKernelQuality;
         /** Vitesse driving minimale à avoir sur les 3 tourelles pour effectuer le calcul */
         double propMinVelocityOnTurretDriving;
