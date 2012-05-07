@@ -224,9 +224,6 @@ void Localizator::createOrocosInterface()
     addOperation("ooPrintParams",&Localizator::printParams, this, OwnThread)
     .doc("");
 
-    addOperation("coGetPerformanceReport",&Localizator::coGetPerformanceReport, this, ClientThread)
-    .doc("Permet d'obtenir un rapport sur les timings");
-
     addOperation("ooSwitchToRedConfig",&Localizator::ooSwitchToRedConfig, this, OwnThread)
     .doc("Définit les balises pour le départ Red");
 

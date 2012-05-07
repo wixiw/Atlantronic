@@ -204,7 +204,7 @@ class ARDTaskContext : public RTT::TaskContext
     /**
      * Permet d'obtenir un rapport sur les timings
      */
-    std::string coGetPerformanceReport();
+    virtual std::string coGetPerformanceReport();
 
 
 };
