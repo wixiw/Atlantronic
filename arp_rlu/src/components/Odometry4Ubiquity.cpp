@@ -19,7 +19,8 @@ ORO_LIST_COMPONENT_TYPE( arp_rlu::Odometry4Ubiquity )
 Odometry4Ubiquity::Odometry4Ubiquity(const std::string& name):
     RluTaskContext(name),
     propMinKernelQuality(100.0),
-    propMinVelocity(0.001)
+    propMinVelocityOnTwist(0.001),
+    propMinVelocityOnTurretDriving(0.001)
 {
     createOrocosInterface();
 }
@@ -51,10 +52,21 @@ void Odometry4Ubiquity::updateHook()
         return;
     }
 
-    //calcul de l'odometrie (oh oui en une ligne c'est beau)
-    if( UbiquityKinematics::motors2Twist(attrMotorState, attrTurretState, computedTwist, report, attrParams) == false )
+    if( fabs(attrTurretState.driving.left.velocity) > propMinVelocityOnTurretDriving ||
+        fabs(attrTurretState.driving.left.velocity) > propMinVelocityOnTurretDriving ||
+        fabs(attrTurretState.driving.left.velocity) > propMinVelocityOnTurretDriving)
     {
-        LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
+        //calcul de l'odometrie (oh oui en une ligne c'est beau)
+        if( UbiquityKinematics::motors2Twist(attrMotorState, attrTurretState, computedTwist, report, attrParams) == false )
+        {
+            LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
+            report.kernelQuality = 0.;
+        }
+    }
+    else
+    {
+        report.kernelQuality = 1000.;
+        computedTwist = arp_math::Twist2D();
     }
 
     outSlippageDetected.write(report.kernelQuality < propMinKernelQuality);
@@ -64,7 +76,7 @@ void Odometry4Ubiquity::updateHook()
     }
 
     //Si le twist calculé est trop petit on envoit 0
-    if( fabs(computedTwist.distanceTo(Twist2D(0,0,0),1.0,0.200)) < propMinVelocity )
+    if( fabs(computedTwist.distanceTo(Twist2D(0,0,0),1.0,0.200)) < propMinVelocityOnTwist )
     {
         measuredTwist = EstimatedTwist2D();
     }
@@ -95,8 +107,6 @@ void Odometry4Ubiquity::updateHook()
 
     measuredTwist.date( timespec2Double(attrTime) );
 
-    //TODO : seuiller à l'arret pour eviter de derriver quand on bouge pas
-
     outTwist.write(measuredTwist);
     outKernelQuality.write(report.kernelQuality);
 }
@@ -109,8 +119,10 @@ void Odometry4Ubiquity::createOrocosInterface()
     addAttribute("attrParams", attrParams);
     addAttribute("attrTime", attrTime);
 
-    addProperty("propMinVelocity",propMinVelocity)
-        .doc("La vitesse minimale considérée pour les moteurs de traction (en dessous de quoi le robot est estimé comme étant à l'arrêt complet)");
+    addProperty("propMinVelocityOnTurretDriving",propMinVelocityOnTurretDriving)
+        .doc("Vitesse driving minimale à avoir sur les 3 tourelles pour effectuer le calcul. Sinon on renvoie un Twist nul");
+    addProperty("propMinVelocityOnTwist",propMinVelocityOnTwist)
+        .doc("Norme minimale du Twist résultant des calculs d'ocométrie, en mm/s. Sinon on renvoit un Twist nul");
     addProperty("propMinKernelQuality",propMinKernelQuality)
         .doc("");
 

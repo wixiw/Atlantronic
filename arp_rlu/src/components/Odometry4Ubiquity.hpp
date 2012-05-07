@@ -35,8 +35,10 @@ class Odometry4Ubiquity: public RluTaskContext
 
         /** The KernelQuality when getting the report fromthe model must be larger than this property, else we spawn an error*/
         double propMinKernelQuality;
+        /** Vitesse driving minimale à avoir sur les 3 tourelles pour effectuer le calcul */
+        double propMinVelocityOnTurretDriving;
         /** Norme minimale du Twist résultant des calculs d'ocométrie, en mm/s */
-        double propMinVelocity;
+        double propMinVelocityOnTwist;
 
         RTT::InputPort<timespec> inTime;
         RTT::InputPort<arp_model::UbiquityParams> inParams;
