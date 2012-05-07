@@ -37,7 +37,9 @@ LaserOnlyLocalizator::Params::Params()
     minNbPoints = 3;
 
     cip.radius = 0.04;
-    cip.rangeDelta = 0.034;
+    cip.coeffs = std::vector<double>();
+    cip.coeffs.push_back( 1.0);
+    cip.coeffs.push_back( 0.034);
 
     tcp.radiusTolerance = 0.03;
     tcp.distanceTolerance = 0.3;
