@@ -13,7 +13,7 @@ add_subdirectory(control)
 add_subdirectory(components)
 add_subdirectory(manual)
 add_subdirectory(taskcontexts)
-
+add_subdirectory(types)
 
 #### old protokrot pour les tests RMO
 
