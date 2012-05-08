@@ -20,7 +20,11 @@ Odometry4Ubiquity::Odometry4Ubiquity(const std::string& name):
     RluTaskContext(name),
     propMinKernelQuality(100.0),
     propMinVelocityOnTurretDriving(0.01),
-    propMinVelocityOnTwist(0.001)
+    propMinVelocityOnTwist(0.001),
+    propPercentSigmaTransOdoVelocity(0.1),
+    propPercentSigmaRotOdoVelocity(0.1),
+    propMinSigmaTransOdoVelocity(0.001),
+    propMinSigmaRotOdoVelocity(0.01)
 {
     createOrocosInterface();
 }
@@ -96,14 +100,10 @@ void Odometry4Ubiquity::updateHook()
     // sigmaYOdo = np.max( [params.simu_cfg["minSigmaTransOdoVelocity"], params.simu_cfg["percentSigmaTransOdoVelocity"] * np.fabs(vyOdo)])
     // sigmaHOdo = np.max( [params.simu_cfg["minSigmaRotOdoVelocity"],   params.simu_cfg["percentSigmaRotOdoVelocity"]   * np.fabs(vhOdo)])
 
-    const double percentSigmaTransOdoVelocity = 0.03; // 3 %
-    const double percentSigmaRotOdoVelocity = 0.03;   // 3 %
-    const double minSigmaTransOdoVelocity = 0.001;    // 1 mm/s
-    const double minSigmaRotOdoVelocity = 0.01;       // 0.5 deg/s
 
-    double sigmaXOdo = max( minSigmaTransOdoVelocity, fabs(percentSigmaTransOdoVelocity * computedTwist.vx()) ); // en m/s
-    double sigmaYOdo = max( minSigmaTransOdoVelocity, fabs(percentSigmaTransOdoVelocity * computedTwist.vy()) ); // en m/s
-    double sigmaHOdo = max( minSigmaRotOdoVelocity, fabs(percentSigmaRotOdoVelocity * computedTwist.vh()) ); // en rad/s
+    double sigmaXOdo = max( propMinSigmaTransOdoVelocity, fabs(propPercentSigmaTransOdoVelocity * computedTwist.vx()) ); // en m/s
+    double sigmaYOdo = max( propMinSigmaTransOdoVelocity, fabs(propPercentSigmaTransOdoVelocity * computedTwist.vy()) ); // en m/s
+    double sigmaHOdo = max( propMinSigmaRotOdoVelocity, fabs(propPercentSigmaRotOdoVelocity * computedTwist.vh()) ); // en rad/s
 
     Eigen::Matrix3d covariance = Eigen::Matrix3d::Identity();
     covariance(0,0) = sigmaXOdo * sigmaXOdo;
@@ -131,6 +131,10 @@ void Odometry4Ubiquity::createOrocosInterface()
         .doc("Norme minimale du Twist résultant des calculs d'ocométrie, en mm/s. Sinon on renvoit un Twist nul");
     addProperty("propMinKernelQuality",propMinKernelQuality)
         .doc("");
+    addProperty( "propPercentSigmaTransOdoVelocity", propPercentSigmaTransOdoVelocity);
+    addProperty( "propPercentSigmaRotOdoVelocity", propPercentSigmaRotOdoVelocity);
+    addProperty( "propMinSigmaTransOdoVelocity", propMinSigmaTransOdoVelocity);
+    addProperty( "propMinSigmaRotOdoVelocity", propMinSigmaRotOdoVelocity);
 
     addPort("inTime",inTime)
             .doc("time in second.\n This port is used as trigger.\n This time is used as date of sensors data.");

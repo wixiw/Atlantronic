@@ -39,7 +39,7 @@ Localizator::Localizator(const std::string& name)
     propParams.bufferSize = 100;
     propParams.maxTime4OdoPrediction = 0.5;
 
-    propParams.H_hky_robot = Pose2D();
+    propParams.H_hky_robot = Pose2D(-0.058, 0., M_PI);
     propParams.H_odo_robot = Pose2D();
 
     propParams.referencedBeacons = std::vector< lsl::Circle >();
@@ -75,13 +75,13 @@ Localizator::Localizator(const std::string& name)
     propParams.procParams.cip.coeffs.push_back( 0.07096937);
 
     propParams.procParams.tcp.radiusTolerance = 0.03;
-    propParams.procParams.tcp.distanceTolerance = 0.6;
+    propParams.procParams.tcp.distanceTolerance = 0.8;
     propParams.procParams.tcp.maxLengthTolerance = 0.05;
     propParams.procParams.tcp.medLengthTolerance = 0.05;
     propParams.procParams.tcp.minLengthTolerance = 0.05;
 
     propParams.procParams.dcp.radiusTolerance = 0.03;
-    propParams.procParams.dcp.distanceTolerance = 0.3;
+    propParams.procParams.dcp.distanceTolerance = 0.6;
     propParams.procParams.dcp.lengthTolerance = 0.05;
 
     propParams.procParams.minNbPoints = 3;
@@ -237,7 +237,10 @@ void Localizator::createOrocosInterface()
 
 std::string Localizator::coGetPerformanceReport()
 {
-    return kfloc.getPerformanceReport();
+    std::stringstream os;
+    os << timer.GetReport();
+    os << kfloc.getPerformanceReport();
+    return os.str();
 }
 
 

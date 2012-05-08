@@ -40,6 +40,11 @@ class Odometry4Ubiquity: public RluTaskContext
         /** Norme minimale du Twist résultant des calculs d'ocométrie, en mm/s */
         double propMinVelocityOnTwist;
 
+        double propPercentSigmaTransOdoVelocity;
+        double propPercentSigmaRotOdoVelocity;
+        double propMinSigmaTransOdoVelocity;
+        double propMinSigmaRotOdoVelocity;
+
         RTT::InputPort<timespec> inTime;
         RTT::InputPort<arp_model::UbiquityParams> inParams;
         /** Measures from HML */
