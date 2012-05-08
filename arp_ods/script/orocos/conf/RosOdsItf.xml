@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "cpf.dtd">
+<properties>
+  <struct name="propOrderConfig" type="OrderConfig">
+     <simple name="RADIUS_APPROACH_ZONE" type="double"><description>Part</description><value>0.010</value></simple>
+     <simple name="DISTANCE_ACCURACY" type="double"><description>Part</description><value>0.010</value></simple>
+     <simple name="ANGLE_ACCURACY" type="double"><description>Part</description><value>0.018</value></simple>
+     <simple name="PASS_TIMEOUT" type="double"><description>Part</description><value>1</value></simple>
+     <simple name="ORDER_TIMEOUT" type="double"><description>Part</description><value>10</value></simple>
+     <simple name="VEL_FINAL" type="double"><description>Part</description><value>0.150</value></simple>
+     <simple name="LIN_VEL_MAX" type="double"><description>Part</description><value>0.3</value></simple>
+     <simple name="ANG_VEL_MAX" type="double"><description>Part</description><value>5</value></simple>
+     <simple name="LIN_DEC" type="double"><description>Part</description><value>2</value></simple>
+     <simple name="ANG_DEC" type="double"><description>Part</description><value>4</value></simple>
+  </struct>
+  <simple name="propAutoLoadScript" type="string"><description>If non empty, the component will automatically load this script during configure() (le dossier ops est automatiquement ajouté, l'extension est mise par le soft)</description><value></value></simple>
+  <simple name="propAutoLoadStateMachines" type="string"><description>If non empty, the component will automatically load this state machine during configure() (le dossier fsm-osd est automatiquement ajouté, l'extension est mise par le soft)</description><value></value></simple>
+  <simple name="propEnableLog" type="boolean"><description>If set to true the composant is allowed to write in the log file, if set to false it will not log anything. Use it when a component is spamming log and this annoys you</description><value>1</value></simple>
+</properties>
