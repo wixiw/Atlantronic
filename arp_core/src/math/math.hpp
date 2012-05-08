@@ -50,6 +50,7 @@ namespace arp_math
 
     double deg2rad(const double deg);
     double rad2deg(const double rad);
+    double sign(double number);
 
     /**
      * Return "value" saturated to min or max
@@ -103,6 +104,17 @@ namespace arp_math
 
     /** return time **/
     long double getTime(void);
+
+    /** computes the point of intersection of 2 lines
+     * @param[in] p1 :first point of first line
+     * @param[in] p2 :second point of first line
+     * @param[in] p3 :first point of second line
+     * @param[in] p4 :second point of second line
+     * @param[out] return :intersection point if it exist
+     * @param[out] parralel: there is no intersection point, lines are parralel
+     */
+    void linesIntersection(const Vector2 & p1,const Vector2 & p2,const Vector2 & p3,const Vector2 & p4, const double & epsilon, Vector2 & result, bool & parralel,bool & colinear);
+
 }
 
 #endif /* _ARPMATH_MATH_HPP_ */

@@ -23,9 +23,11 @@ namespace arp_math
  * \brief Torseur cinématique du robot, exprimé à l'aide du CIR
  *
  * Cette classe représente le torseur cinématique du robot par rapport à une référence externe.
- * Il s'agit de 3 trois double. Le premier est lié a la distance du CIR
- * Le deuxieme est lié à la direction du CIR par rapport au repere
- * Le 3eme exprime la vitesse du robot
+ * Il s'agit de 3 trois double.
+ *
+ *  ro = atan (distance of the ICR). can be negative following side of the CIR with respect to the speed
+ *  alpha = angle of speed at referential point. 0 if no speed at referential point
+ *  q  = norm of speed at referential point + omega
  */
 
 class ICRSpeed
@@ -34,12 +36,24 @@ class ICRSpeed
 
         /** Constructeur principal.
          * Il permet une initialisation par défaut (à zéro) de la vitesse, avec un CIR à l'infini pour aller tout droit */
-        ICRSpeed(double ro = PI/2.0, double alpha = PI/2.0,double q=0);
+        ICRSpeed(double ro = PI/2.0, double alpha = 0.0,double q=0);
 
         /** Constructeur secondaire.
          * Il permet d'initialiser les vitesses avec un twist. */
         ICRSpeed(Twist2D twist);
 
+        /** creation of ICRSpeed with a known ICR
+         * if you have the ICR (don't work with translations)
+         * ICR: point of the ICR
+         * speedPoint: point where you give the speed
+         * speed: speed vector at this point. the computation will consider that the speed is consistent (perpendicular to radius)
+         */
+        static ICRSpeed createFromICR(Vector2 ICR,Vector2 speedPoint, Vector2 speed);
+        /** creation of ICRSpeed in case of a translation
+         * alpha: angle of direction of translation
+         * speed: speed of translation
+         */
+        static ICRSpeed createFromTranslation(double alpha,double speed);
 
         /** \returns atan(distance IRC) */
         double ro() const;

@@ -7,10 +7,14 @@
 
 #include <math/math.hpp>
 
+
+using namespace Eigen;
+using namespace std;
+
 namespace arp_math
 {
 
-Rotation2 betweenMinusPiAndPlusPi(const Rotation2 &     rot)
+Rotation2 betweenMinusPiAndPlusPi(const Rotation2 & rot)
 {
     double angle = betweenMinusPiAndPlusPi(rot.angle());
     return Rotation2(angle);
@@ -18,7 +22,7 @@ Rotation2 betweenMinusPiAndPlusPi(const Rotation2 &     rot)
 
 double betweenMinusPiAndPlusPi(const double angle)
 {
-    double a = betweenZeroAndTwoPi( angle );
+    double a = betweenZeroAndTwoPi(angle);
     if (a > PI)
     {
         a = a - 2 * PI;
@@ -32,7 +36,7 @@ double betweenMinusPiAndPlusPi(const double angle)
 
 double betweenMinusPi2AndPlusPi2(const double angle)
 {
-    double a = betweenZeroAndPi( angle );
+    double a = betweenZeroAndPi(angle);
     if (a > M_PI_2)
     {
         a = a - PI;
@@ -46,12 +50,12 @@ double betweenMinusPi2AndPlusPi2(const double angle)
 
 double betweenZeroAndTwoPi(const double angle)
 {
-    return fmod( fmod(angle, 2 * PI) + 4. * PI, 2 * PI);
+    return fmod(fmod(angle, 2 * PI) + 4. * PI, 2 * PI);
 }
 
 double betweenZeroAndPi(const double angle)
 {
-    return fmod( fmod(angle, PI) + 2. * PI, PI);
+    return fmod(fmod(angle, PI) + 2. * PI, PI);
 }
 
 double deg2rad(const double deg)
@@ -82,7 +86,8 @@ double sqrt2(const double value)
     return 0;
 }
 
-double smoothStep(const double x, const double startValue, const double startLimit, const double endValue, const double endLimit)
+double smoothStep(const double x, const double startValue, const double startLimit, const double endValue,
+        const double endLimit)
 {
     //il s'agit d'une fonction toute simple qui permet de trouver la valeur intermediaire entre deux valeurs corresponsdant à des modes de calculs différents
 
@@ -105,21 +110,22 @@ double smoothStep(const double x, const double startValue, const double startLim
 
 }
 
-double firstDerivateLimitation(const double input, const double lastOutput, const double period, const double dmin, const double dmax)
+double firstDerivateLimitation(const double input, const double lastOutput, const double period, const double dmin,
+        const double dmax)
 {
-    double output=0;
-    double derivate=0;
+    double output = 0;
+    double derivate = 0;
 
-    if( period > 0 && dmin < dmax)
+    if (period > 0 && dmin < dmax)
     {
         //calcul de la derivée
-        derivate = (input - lastOutput)/period;
+        derivate = (input - lastOutput) / period;
 
         //filtrage
-        if( derivate > fabs(dmax) )
-            output = lastOutput + fabs(dmax)*period;
-        else if( derivate < -fabs(dmin) )
-            output = lastOutput -fabs(dmin)*period;
+        if (derivate > fabs(dmax))
+            output = lastOutput + fabs(dmax) * period;
+        else if (derivate < -fabs(dmin))
+            output = lastOutput - fabs(dmin) * period;
         else
             output = input;
     }
@@ -157,7 +163,7 @@ long double delta_t(struct timespec begin, struct timespec now)
 {
     timespec delay;
     delta_t(&delay, begin, now);
-    return  timespec2Double(delay);
+    return timespec2Double(delay);
 }
 
 //on utilise un long double pour le calcul de temps pour des raisons de précision numérique
@@ -166,6 +172,65 @@ long double getTime(void)
     timespec now;
     clock_gettime(CLOCK_MONOTONIC, &now);
     return timespec2Double(now);
+}
+
+void linesIntersection(const Vector2 & p1, const Vector2 & p2, const Vector2 & p3, const Vector2 & p4, const double & epsilon, Vector2 & result,
+        bool & parralel,bool & colinear)
+{
+    Vector3 q1(p1(0),p1(1),0);
+    Vector3 q2(p2(0),p2(1),0);
+    Vector3 q3(p3(0),p3(1),0);
+    Vector3 q4(p4(0),p4(1),0);
+
+    Vector3 q1q2=q2-q1;
+    Vector3 q3q4=q4-q3;
+    Vector3 q3q2=q3-q2;
+
+    //check colinear
+    if (fabs(q1q2.cross(q3q4)(2))<=epsilon and fabs(q1q2.cross(q3q2)(2))<=epsilon)
+        {
+        parralel = true;
+        colinear=true;
+        return;
+        }
+
+    // check parralel
+    if (fabs(q1q2.cross(q3q4)(2))<=epsilon)
+    {
+        parralel = true;
+        colinear=false;
+        return;
+    }
+
+    //code taken from http://flassari.is/2008/11/line-line-intersection-in-cplusplus/
+
+    // Store the values for fast access and easy
+    // equations-to-code conversion
+    double x1 = p1(0), x2 = p2(0), x3 = p3(0), x4 = p4(0);
+    double y1 = p1(1), y2 = p2(1), y3 = p3(1), y4 = p4(1);
+
+    double d = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+
+// Get the x and y
+    double pre = (x1 * y2 - y1 * x2), post = (x3 * y4 - y3 * x4);
+    double x = (pre * (x3 - x4) - (x1 - x2) * post) / d;
+    double y = (pre * (y3 - y4) - (y1 - y2) * post) / d;
+
+// Return the point of intersection
+    result(0) = x;
+    result(1) = y;
+    parralel = false;
+    colinear=false;
+    return;
+}
+
+double sign(double number)
+{
+if (number>=0.0)
+        return 1.0;
+    else
+        return -1.0;
+
 }
 
 }

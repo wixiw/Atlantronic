@@ -15,7 +15,7 @@ BOOST_AUTO_TEST_CASE( ICRSpeed_Default_Constructor )
 	// Test default constructor
 	ICRSpeed a;
 	BOOST_CHECK( a.ro() == PI/2.0 );
-	BOOST_CHECK( a.alpha() == PI/2.0 );
+	BOOST_CHECK( a.alpha() == 0.0 );
 	BOOST_CHECK( a.q() == 0.0 );
 }
 
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE( ICRSpeed_Consistency )
     Twist2D twist_b(0,0,0);
     ICRSpeed ICR_b(twist_b);
     BOOST_CHECK_CLOSE( ICR_b.ro() , PI/2.0 ,1e-6);
-    BOOST_CHECK_CLOSE( ICR_b.alpha() , PI/2.0 ,1e-6 );
+    BOOST_CHECK_CLOSE( ICR_b.alpha() , 0.0 ,1e-6 );
     BOOST_CHECK_CLOSE( ICR_b.q() , 0.0 ,1e-6);
 
     // going from twist to ICRSpeed back to twist should be ok
@@ -88,4 +88,64 @@ BOOST_AUTO_TEST_CASE( ICRSpeed_Consistency )
     BOOST_CHECK_CLOSE( twist_from.vx() , twist_back.vx() ,1e-6);
     BOOST_CHECK_CLOSE( twist_from.vy() , twist_back.vy() ,1e-6);
     BOOST_CHECK_CLOSE( twist_from.vh() , twist_back.vh() ,1e-6);
+
+    twist_from=Twist2D(9.879,3.54651,-4.510);
+    ICR_to=ICRSpeed(twist_from);
+    twist_back=ICR_to.twist();
+    BOOST_CHECK_CLOSE( twist_from.vx() , twist_back.vx() ,1e-6);
+    BOOST_CHECK_CLOSE( twist_from.vy() , twist_back.vy() ,1e-6);
+    BOOST_CHECK_CLOSE( twist_from.vh() , twist_back.vh() ,1e-6);
+
+    twist_from=Twist2D(0.0654,-8.012,-0.5645);
+    ICR_to=ICRSpeed(twist_from);
+    twist_back=ICR_to.twist();
+    BOOST_CHECK_CLOSE( twist_from.vx() , twist_back.vx() ,1e-6);
+    BOOST_CHECK_CLOSE( twist_from.vy() , twist_back.vy() ,1e-6);
+    BOOST_CHECK_CLOSE( twist_from.vh() , twist_back.vh() ,1e-6);
+}
+
+BOOST_AUTO_TEST_CASE( ICRSpeed_construction )
+{
+  ICRSpeed ICR_created_from_ICR;
+  Twist2D twist_created;
+
+  Vector2 ICR(0,0);
+  Vector2 speedPoint(1,0);
+  Vector2 speed(0,1);
+
+  ICR_created_from_ICR=ICRSpeed::createFromICR(ICR,speedPoint,speed);
+  twist_created=ICR_created_from_ICR.twist();
+  BOOST_CHECK_SMALL( twist_created.vx() ,1e-6);
+  BOOST_CHECK_SMALL( twist_created.vy() ,1e-6);
+  BOOST_CHECK_CLOSE( twist_created.vh() , 1.0 ,1e-6);
+
+  Vector2 ICR2(10,10);
+  Vector2 speedPoint2(0,0);
+  Vector2 speed2(-1,1);
+  double omega=-1.0*sqrt(2)/(sqrt(2)*10.0);
+
+  Twist2D twist_initial(-1,1,omega);
+
+  ICR_created_from_ICR=ICRSpeed::createFromICR(ICR2,speedPoint2,speed2);
+  ICRSpeed ICR_created_from_twist(twist_initial);
+  twist_created=ICR_created_from_ICR.twist();
+
+  BOOST_CHECK_CLOSE( ICR_created_from_ICR.ro(),ICR_created_from_twist.ro() ,1e-6);
+  BOOST_CHECK_CLOSE( ICR_created_from_ICR.alpha(),ICR_created_from_twist.alpha() ,1e-6);
+  BOOST_CHECK_CLOSE( ICR_created_from_ICR.q(),ICR_created_from_twist.q() ,1e-6);
+
+
+  BOOST_CHECK_CLOSE( ICR_created_from_ICR.ro(),atan(-sqrt(2)*10.0) ,1e-6);
+  BOOST_CHECK_CLOSE( ICR_created_from_ICR.alpha(),3*PI/4 ,1e-6);
+  BOOST_CHECK_CLOSE( ICR_created_from_ICR.q(),omega+1*sqrt(2) ,1e-6);
+
+  BOOST_CHECK_CLOSE( twist_created.vx(),-1.0 ,1e-6);
+  BOOST_CHECK_CLOSE( twist_created.vy(),1.0 ,1e-6);
+  BOOST_CHECK_CLOSE( twist_created.vh(),omega,1e-6);
+
+  //oublie pas de tester la translation
+
+
+
+
 }

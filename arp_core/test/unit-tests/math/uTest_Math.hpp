@@ -103,4 +103,72 @@ BOOST_AUTO_TEST_CASE( Math_firstderivate )
 
 }
 
+BOOST_AUTO_TEST_CASE( Math_linesIntersection )
+{
+    Vector2 p1(-1,0);
+    Vector2 p2(1,0);
+    Vector2 p3(0,-1);
+    Vector2 p4(0,1);
+
+    Vector2 result1;
+    bool parralel1;
+    bool colinear1;
+
+    linesIntersection(p1,p2,p3,p4,1e-6,result1,parralel1,colinear1);
+
+    BOOST_CHECK_SMALL(result1(0),1e-6);
+    BOOST_CHECK_SMALL(result1(1),1e-6);
+    BOOST_CHECK_EQUAL( parralel1, false);
+    BOOST_CHECK_EQUAL( colinear1, false);
+
+    p1=Vector2(0,2);
+    p2=Vector2(2,0);
+    p3=Vector2(0,0);
+    p4=Vector2(2,2);
+
+    Vector2 result2;
+    bool parralel2;
+    bool colinear2;
+
+    linesIntersection(p1,p2,p3,p4,1e-6,result2,parralel2,colinear2);
+
+    BOOST_CHECK_CLOSE( result2(0), 1.0, 1e-6 );
+    BOOST_CHECK_CLOSE( result2(1), 1.0, 1e-6 );
+    BOOST_CHECK_EQUAL( parralel2, false);
+    BOOST_CHECK_EQUAL( colinear2, false);
+
+    //colinear
+    p1=Vector2(-1,1);
+    p2=Vector2(-2,1);
+    p3=Vector2(5,1);
+    p4=Vector2(6,1);
+
+    Vector2 result3;
+    bool parralel3;
+    bool colinear3;
+
+    linesIntersection(p1,p2,p3,p4,1e-6,result3,parralel3,colinear3);
+
+    BOOST_CHECK_EQUAL( parralel3, true);
+    BOOST_CHECK_EQUAL( colinear3, true);
+
+
+    //parralel
+    p1=Vector2(-1,1);
+    p2=Vector2(-1,-10);
+    p3=Vector2(5,1);
+    p4=Vector2(5,-20);
+
+    Vector2 result4;
+    bool parralel4;
+    bool colinear4;
+
+    linesIntersection(p1,p2,p3,p4,1e-6,result4,parralel4,colinear4);
+
+    BOOST_CHECK_EQUAL( parralel4, true);
+    BOOST_CHECK_EQUAL( colinear4, false);
+}
+
+
+
 #endif /* UTEST_MATH_HPP_ */
