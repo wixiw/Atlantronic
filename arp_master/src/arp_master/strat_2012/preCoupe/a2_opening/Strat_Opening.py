@@ -47,7 +47,7 @@ class GoToGoldBar(CyclicActionState):
 
 class PushGoldBar(CyclicActionState):
     def createAction(self):
-        pose = AmbiPoseRed(1.200,0, 0, Data.color)
+        pose = AmbiPoseRed(1.100,0, 0, Data.color)
         self.omnidirect(pose.x, pose.y, pose.theta)
     
     def executeOut(self):

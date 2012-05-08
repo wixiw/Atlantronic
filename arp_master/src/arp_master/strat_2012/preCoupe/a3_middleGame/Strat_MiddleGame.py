@@ -31,7 +31,7 @@ class MiddleGame(PreemptiveStateMachine):
 
 class GotoFirstBottle(CyclicActionState):
     def createAction(self):
-        pose = AmbiPoseRed(0.200,-0.800, -pi/2, Data.color)
+        pose = AmbiPoseRed(0.200,-0.750, -pi/2, Data.color)
         self.omnidirect(pose.x, pose.y, pose.theta)
 
 class GotoSecondBottle(CyclicActionState):
