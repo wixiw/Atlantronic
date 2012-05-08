@@ -27,22 +27,20 @@ RosOdsItf::RosOdsItf(std::string const name):
 
     m_order = orders::defaultOrder;
 
-    //TODO a remplacer par la lecture des proprietes en XML ... ce qui necessite d'ecrire le typekit
-    //WLA : j'ai tenté de le générer automatiquement ça n'a pas l'air d'avoir fonctionner,
-    //c'est étonnant c'est pourtant une structure simple
-    propOrderConfig.RADIUS_APPROACH_ZONE = 0.010;
-    propOrderConfig.ANGLE_ACCURACY = 0.018;//1°
-    propOrderConfig.DISTANCE_ACCURACY = 0.010;
+    //C'est une conf par defaut safe ! Utiliser le fichier de conf dans script/orocos/conf pour modifier
+    propOrderConfig.RADIUS_APPROACH_ZONE = 0.020;
+    propOrderConfig.ANGLE_ACCURACY = deg2rad(10);
+    propOrderConfig.DISTANCE_ACCURACY = 0.050;
 
-    propOrderConfig.LIN_VEL_MAX = 1.0;
-    propOrderConfig.ANG_VEL_MAX = 15.0;
-    propOrderConfig.VEL_FINAL = 0.150;
+    propOrderConfig.LIN_VEL_MAX = 0.3;
+    propOrderConfig.ANG_VEL_MAX = 1.0;
+    propOrderConfig.VEL_FINAL = 0.100;
 
     propOrderConfig.ORDER_TIMEOUT = 10.0;
     propOrderConfig.PASS_TIMEOUT = 1.0;
 
-    propOrderConfig.LIN_DEC=4.0;
-    propOrderConfig.ANG_DEC=8.0;
+    propOrderConfig.LIN_DEC=1.0;
+    propOrderConfig.ANG_DEC=3.0;
 
 }
 
@@ -195,6 +193,32 @@ bool RosOdsItf::setVMaxCallback(SetVMax::Request& req, SetVMax::Response& res)
     return m_ooSetVMax(req.vMax);;
 }
 
+void RosOdsItf::ooSetNewSpeedConf(double linSpeed, double angSpeed)
+{
+    if( linSpeed > 0 && linSpeed < 10 )
+        propOrderConfig.LIN_VEL_MAX = linSpeed;
+    else
+        LOG(Error) << "You required a new linSpeed for propOrderConfig.LIN_VEL_MAX which is out range (check units ? sign ?)" << endlog();
+
+    if( angSpeed > 0 && angSpeed < 30 )
+        propOrderConfig.ANG_VEL_MAX = angSpeed;
+    else
+        LOG(Error) << "You required a new angSpeed for propOrderConfig.ANG_VEL_MAX which is out range (check units ? sign ?)" << endlog();
+}
+
+void RosOdsItf::ooSetNewAccConf(double linAcc, double angAcc)
+{
+    if( linAcc > 0 && linAcc < 15 )
+        propOrderConfig.LIN_DEC = linAcc;
+    else
+        LOG(Error) << "You required a new linAcc for propOrderConfig.LIN_DEC which is out range (check units ? sign ?)" << endlog();
+
+    if( angAcc > 0 && angAcc < 50 )
+        propOrderConfig.ANG_DEC = angAcc;
+    else
+        LOG(Error) << "You required a new angAcc for propOrderConfig.ANG_DEC which is out range (check units ? sign ?)" << endlog();
+}
+
 void RosOdsItf::createOrocosInterface()
 {
     addProperty("propOrderConfig",propOrderConfig);
@@ -203,6 +227,11 @@ void RosOdsItf::createOrocosInterface()
     addPort("inCurrentOrderIsFinished",inCurrentOrderIsFinished);
     addPort("inCurrentOrderIsInError",inCurrentOrderIsInError);
     addPort("inRobotBlocked",inRobotBlocked);
+
+    addOperation("ooSetNewSpeedConf", &RosOdsItf::ooSetNewSpeedConf,
+            this, OwnThread) .doc("Use this the define new maximal speeds in propOrderConfig.");
+    addOperation("ooSetNewAccConf", &RosOdsItf::ooSetNewAccConf,
+            this, OwnThread) .doc("Use this the define new maximal accelerations in propOrderConfig.");
 }
 
 void RosOdsItf::createRosInterface()
@@ -210,3 +239,5 @@ void RosOdsItf::createRosInterface()
     ros::NodeHandle nh;
     m_srvSetVMax = nh.advertiseService("/MotionControl/setVMax", &RosOdsItf::setVMaxCallback, this);
 }
+
+

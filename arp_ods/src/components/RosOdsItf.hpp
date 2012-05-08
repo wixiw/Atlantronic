@@ -34,6 +34,19 @@ class RosOdsItf: public OdsTaskContext
 
         RTT::InputPort<bool> inRobotBlocked;
 
+        /**
+         * Use this the define new maximal speeds in propOrderConfig
+         * @param linSpeed : maximal linear speed in m/s
+         * @param angSpeed : maximal angular speed in rad/s
+         */
+        void ooSetNewSpeedConf(double linSpeed, double angSpeed);
+
+        /**
+         * Use this the define new maximal accelerations in propOrderConfig
+         * @param linSpeed : maximal linear speed in m/s
+         * @param angSpeed : maximal angular speed in rad/s
+         */
+        void ooSetNewAccConf(double linAcc, double angAcc);
 
         /**
          * Actionlib server.
