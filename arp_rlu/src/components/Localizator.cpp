@@ -23,8 +23,8 @@ ORO_LIST_COMPONENT_TYPE( arp_rlu::Localizator )
 Localizator::Localizator(const std::string& name)
 : RluTaskContext(name)
 , kfloc()
-, maxReliableTransStddev(0.1 * 0.1)
-, maxReliableRotStddev( deg2rad(5.0) * deg2rad(5.0))
+, propMaxReliableTransStddev(0.1 * 0.1)
+, propMaxReliableRotStddev( deg2rad(5.0) * deg2rad(5.0))
 {
     //A ne pas mettre sur le robot pour des problemes de place (ou nettoyer les logs pour qu'ils ne grossissent pas trop vite)
     //arp_rlu::lsl::Logger::InitFile("LSL", DEBUG);
@@ -150,9 +150,9 @@ void Localizator::updateHook()
 
     Covariance3 cov = estim_H_robot_table.cov();
     bool reliability = true;
-    reliability = reliability && (cov(0,0) < maxReliableTransStddev);
-    reliability = reliability && (cov(1,1) < maxReliableTransStddev);
-    reliability = reliability && (cov(2,2) < maxReliableRotStddev);
+    reliability = reliability && (cov(0,0) < propMaxReliableTransStddev);
+    reliability = reliability && (cov(1,1) < propMaxReliableTransStddev);
+    reliability = reliability && (cov(2,2) < propMaxReliableRotStddev);
 
     outPose.write(estim_H_robot_table);
     outTwist.write(estim_T_robot_table_p_robot_r_robot);
@@ -184,8 +184,8 @@ std::string Localizator::printParams()
     std::stringstream ss;
     ss << "****************************" << std::endl;
     ss << propParams.getInfo();
-    ss << " [*] maxReliableTransStddev : " << maxReliableTransStddev << " (m2)" << std::endl;
-    ss << " [*] maxReliableRotStddev : " << rad2deg(maxReliableRotStddev) << " (deg2)" << std::endl;
+    ss << " [*] propMaxReliableTransStddev : " << propMaxReliableTransStddev << " (m2)" << std::endl;
+    ss << " [*] propMaxReliableRotStddev : " << rad2deg(propMaxReliableRotStddev) << " (deg2)" << std::endl;
     ss << "****************************" << std::endl;
     ss << "****************************" << std::endl;
     return ss.str();
@@ -232,6 +232,13 @@ void Localizator::createOrocosInterface()
 
     addOperation("ooSwitchToPurpleConfig",&Localizator::ooSwitchToPurpleConfig, this, OwnThread)
     .doc("Définit les balises pour le départ Purple");
+
+
+    addProperty("propMaxReliableTransStddev",propMaxReliableTransStddev)
+    .doc("Threshold on translation for reliability boolean elaboration (warning : unity is square meters)");
+
+    addProperty("propMaxReliableRotStddev",propMaxReliableRotStddev)
+    .doc("Threshold on rotation for reliability boolean elaboration (warning : unity is square radians)");
 
 }
 

@@ -100,8 +100,8 @@ class Localizator: public RluTaskContext
         kfl::KFLocalizator kfloc;
         long double m_monotonicTimeToRealTime;
 
-        double maxReliableTransStddev;
-        double maxReliableRotStddev;
+        double propMaxReliableTransStddev;
+        double propMaxReliableRotStddev;
 
 };
 
