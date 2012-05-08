@@ -2,10 +2,11 @@
 import roslib; roslib.load_manifest('arp_rlu')
 import rospy
 
-import sys
+import sys, os
 sys.path.append( "../../../../src/KFLocalizator/PyMockup" )
 
 import random
+import json
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -21,7 +22,7 @@ import LaserOnlyLocalizator
 graine = random.randint(0,1000)
 random.seed(graine)
 
-print "graine : ", graine
+xpIndex = 1
 
 
 #===============================================================================
@@ -46,30 +47,35 @@ hh = np.ones_like(tt) * h
 lrfsim = LRFSimulator.LRFSimulator()
 lrfsim.sigma = 0.01
 
+
+#===============================================================================
+# Scan generation
+#===============================================================================
+
+# beacons
 radius = 0.04
 obj1 = Circle()
-obj1.xCenter = 1.5
+obj1.xCenter = 1.560
 obj1.yCenter = 0.
 obj1.radius = radius
 lrfsim.objects.append(obj1)
 obj2 = Circle()
-obj2.xCenter = -1.5
-obj2.yCenter = 1.
+obj2.xCenter = -1.555
+obj2.yCenter = 1.040
 obj2.radius = radius
 lrfsim.objects.append(obj2)
 obj3 = Circle()
-obj3.xCenter = -1.5
-obj3.yCenter = -1.
+obj3.xCenter = -1.555
+obj3.yCenter = -1.040
 obj3.radius = radius
 lrfsim.objects.append(obj3)
 
-#===============================================================================
-# add random objects
-#===============================================================================
+
+# add random objects on table
 nbObjects = 2
 for i in range(nbObjects):
   obj = Circle()
-  obj.radius  = 0.05
+  obj.radius  = 0.03
   penetration = True
   while penetration:
     penetration = False
@@ -81,9 +87,37 @@ for i in range(nbObjects):
       penetration = penetration or (np.linalg.norm( np.array( [ [obj.xCenter - x_], [obj.yCenter - y_] ] )) < obj.radius)
   lrfsim.objects.append(obj)
   
-rospy.loginfo("Nb of objects :%d", len(lrfsim.objects))
-for o in lrfsim.objects:
-  rospy.loginfo("x:%f - y:%f - r:%f", o.xCenter, o.yCenter, o.radius)
+
+# add random objects out of the table
+nbObjects = 5
+for i in range(nbObjects):
+  obj = Circle()
+  obj.radius  = 0.1
+  penetration = True
+  while penetration:
+    penetration = False
+    obj.xCenter = random.uniform( -2.8, 2.8)
+    obj.yCenter = random.uniform( -2.0, 2.0)
+    if obj.xCenter < 1.7 and  obj.xCenter > -1.7:
+        penetration = True
+    if obj.yCenter < 1.2 and  obj.yCenter > -1.2:
+        penetration = True
+    for i in range(len(tt)):
+      x_ = xx[i]
+      y_ = yy[i]
+      penetration = penetration or (np.linalg.norm( np.array( [ [obj.xCenter - x_], [obj.yCenter - y_] ] )) < obj.radius)
+  lrfsim.objects.append(obj)
+  
+# Add segment
+sgmt1 = Segment(x= 3.0, y=0., h=0., l=4.4)
+lrfsim.objects.append(sgmt1)
+sgmt2 = Segment(x=-3.0, y=0., h=np.pi, l=4.4)
+lrfsim.objects.append(sgmt2)
+sgmt3 = Segment(x= 0., y= 2.2, h= np.pi/2., l=6.0)
+lrfsim.objects.append(sgmt3)
+sgmt4 = Segment(x= 0., y=-2.2, h=-np.pi/2., l=6.0)
+lrfsim.objects.append(sgmt4)
+  
   
   
 #===============================================================================
@@ -96,8 +130,8 @@ N = len(scan.theta)
 #===============================================================================
 # Find position
 #===============================================================================
-laserloc = LaserOnlyLocalizator.LaserOnlyLocalizator()
-laserloc.process(scan)
+# laserloc = LaserOnlyLocalizator.LaserOnlyLocalizator()
+# laserloc.process(scan)
 
 
 #===============================================================================
@@ -140,8 +174,21 @@ axe.plot( [xx[-1], xx[-1] + np.cos(hh[-1] + max(scan.theta))],
 # found objects
 #for o in scanproc.objects:
 #  axe.plot( [o.xCenter], [o.yCenter], 'or')
-
          
-axe.axis([-1.6, 1.6, -1.1, 1.1])
+axe.axis([-3.1, 3.1, -2.3, 2.3])
 plt.show()
+
+if not os.path.exists("laseronlyloc_"+ str(xpIndex)):
+  os.mkdir("laseronlyloc_"+ str(xpIndex))
+scan.export("./laseronlyloc_"+ str(xpIndex) + "/scan.json")
+
+position = {}
+position["x"] = x
+position["y"] = y
+position["h"] = h
+if not os.path.exists("laseronlyloc_"+ str(xpIndex)):
+  os.mkdir("laseronlyloc_"+ str(xpIndex))
+output = open("./laseronlyloc_"+ str(xpIndex) + "/position.json", mode='w')
+output.write(json.dumps(position,indent=2,sort_keys=True))
+output.close()
 
