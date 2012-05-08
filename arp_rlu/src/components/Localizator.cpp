@@ -162,12 +162,27 @@ void Localizator::updateHook()
 
 bool Localizator::ooInitialize(double x, double y, double theta)
 {
+    outReliability.write(false);
+
     long double initDate = arp_math::getTime();
     EstimatedPose2D pose = MathFactory::createEstimatedPose2D(x,y,theta, initDate, propParams.defaultInitCovariance);
 
-    LOG(Info) << "initialize to " << pose.toString() << " with date : "  << initDate <<  " (sec)" << endlog();
 
-    return kfloc.initialize(pose);
+    if( kfloc.initialize(pose) )
+    {
+        EstimatedPose2D estim_H_robot_table = kfloc.getLastEstimatedPose2D();
+        EstimatedTwist2D estim_T_robot_table_p_robot_r_robot = kfloc.getLastEstimatedTwist2D();
+
+        outPose.write(estim_H_robot_table);
+        outTwist.write(estim_T_robot_table_p_robot_r_robot);
+        outReliability.write(true);
+
+        LOG(Info) << "initialize to " << pose.toString() << " with date : "  << initDate <<  " (sec)" << endlog();
+
+        return true;
+    }
+    LOG(Info) << "Fail to initialize" << endlog();
+    return false;
 }
 
 
