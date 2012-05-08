@@ -19,36 +19,35 @@ UbiquityKinematics::UbiquityKinematics()
 {
 }
 
-bool UbiquityKinematics::motors2Turrets(const MotorState & iMS,
-                                        TurretState& oTS,
-                                        const UbiquityParams & iParams)
+bool UbiquityKinematics::motors2Turrets(const MotorState & iMS, TurretState& oTS, const UbiquityParams & iParams)
 {
-    if( !iParams.check() )
+    if (!iParams.check())
     {
         Log(ERROR) << "UbiquityKinematics::motors2Turrets failed when checking params";
         return false;
     }
 
     //Steering position
-    oTS.steering.left.position = (iMS.steering.left.position - iParams.getLeftTurretZero())
-            *iParams.getTurretRatio() ;
+    oTS.steering.left.position = (iMS.steering.left.position - iParams.getLeftTurretZero()) * iParams.getTurretRatio();
     oTS.steering.right.position = (iMS.steering.right.position - iParams.getRightTurretZero())
-            *iParams.getTurretRatio();
-    oTS.steering.rear.position = (iMS.steering.rear.position - iParams.getRearTurretZero())
-            *iParams.getTurretRatio();
+            * iParams.getTurretRatio();
+    oTS.steering.rear.position = (iMS.steering.rear.position - iParams.getRearTurretZero()) * iParams.getTurretRatio();
 
     //Steering velocity
-    oTS.steering.left.velocity = iMS.steering.left.velocity*iParams.getTurretRatio();
-    oTS.steering.right.velocity = iMS.steering.right.velocity*iParams.getTurretRatio();
-    oTS.steering.rear.velocity = iMS.steering.rear.velocity*iParams.getTurretRatio();
+    oTS.steering.left.velocity = iMS.steering.left.velocity * iParams.getTurretRatio();
+    oTS.steering.right.velocity = iMS.steering.right.velocity * iParams.getTurretRatio();
+    oTS.steering.rear.velocity = iMS.steering.rear.velocity * iParams.getTurretRatio();
 
     //Driving velocity
-    oTS.driving.left.velocity = iParams.getLeftWheelDiameter()/2
-            *(iMS.driving.left.velocity*iParams.getTractionRatio() - iMS.steering.left.velocity*iParams.getTurretRatio());
-    oTS.driving.right.velocity = iParams.getRightWheelDiameter()/2
-            *(iMS.driving.right.velocity*iParams.getTractionRatio() - iMS.steering.right.velocity*iParams.getTurretRatio());
-    oTS.driving.rear.velocity = iParams.getRearWheelDiameter()/2
-            *(iMS.driving.rear.velocity*iParams.getTractionRatio() - iMS.steering.rear.velocity*iParams.getTurretRatio());
+    oTS.driving.left.velocity = iParams.getLeftWheelDiameter() / 2
+            * (iMS.driving.left.velocity * iParams.getTractionRatio()
+                    - iMS.steering.left.velocity * iParams.getTurretRatio());
+    oTS.driving.right.velocity = iParams.getRightWheelDiameter() / 2
+            * (iMS.driving.right.velocity * iParams.getTractionRatio()
+                    - iMS.steering.right.velocity * iParams.getTurretRatio());
+    oTS.driving.rear.velocity = iParams.getRearWheelDiameter() / 2
+            * (iMS.driving.rear.velocity * iParams.getTractionRatio()
+                    - iMS.steering.rear.velocity * iParams.getTurretRatio());
 
     //normalisations
     oTS.steering.left.position = betweenMinusPiAndPlusPi(oTS.steering.left.position);
@@ -58,12 +57,10 @@ bool UbiquityKinematics::motors2Turrets(const MotorState & iMS,
     return true;
 }
 
-bool UbiquityKinematics::turrets2Motors(const TurretState & iTSbrut,
-                                        const MotorState & iMS,
-                                        MotorState& oMS,
-                                        const UbiquityParams & iParams)
+bool UbiquityKinematics::turrets2Motors(const TurretState & iTSbrut, const MotorState & iMS, MotorState& oMS,
+        const UbiquityParams & iParams)
 {
-    if( !iParams.check() )
+    if (!iParams.check())
     {
         Log(ERROR) << "UbiquityKinematics::turrets2Motors failed when checking params";
         return false;
@@ -78,8 +75,8 @@ bool UbiquityKinematics::turrets2Motors(const TurretState & iTSbrut,
 
     //calcul de la position courante des tourelles à partir de l'état des moteurs
     // currentTurretPos est dans [-Pi;Pi]
-    TurretState currentTurretPos ;
-    motors2Turrets(iMS,currentTurretPos,iParams);
+    TurretState currentTurretPos;
+    motors2Turrets(iMS, currentTurretPos, iParams);
 
     //calcul des delta de position commandé
     TurretState deltaCmd = iTS - currentTurretPos;
@@ -88,17 +85,20 @@ bool UbiquityKinematics::turrets2Motors(const TurretState & iTSbrut,
     iTS.driving = deltaCmd.driving;
 
     //ajout a la position brute du moteur le delta de commande, et paf ca fait la consigne a envoyer au prochain step
-    oMS.steering.left.position = iMS.steering.left.position + deltaCmd.steering.left.position/iParams.getTurretRatio();
-    oMS.steering.right.position = iMS.steering.right.position + deltaCmd.steering.right.position/iParams.getTurretRatio();
-    oMS.steering.rear.position = iMS.steering.rear.position + deltaCmd.steering.rear.position/iParams.getTurretRatio();
+    oMS.steering.left.position = iMS.steering.left.position
+            + deltaCmd.steering.left.position / iParams.getTurretRatio();
+    oMS.steering.right.position = iMS.steering.right.position
+            + deltaCmd.steering.right.position / iParams.getTurretRatio();
+    oMS.steering.rear.position = iMS.steering.rear.position
+            + deltaCmd.steering.rear.position / iParams.getTurretRatio();
 
     //mise a jour des vitesses de traction
-    oMS.driving.left.velocity = (2*iTS.driving.left.velocity/iParams.getLeftWheelDiameter() + iMS.steering.left.velocity*iParams.getTurretRatio())
-            /iParams.getTractionRatio();
-    oMS.driving.right.velocity = (2*iTS.driving.right.velocity/iParams.getRightWheelDiameter() + iMS.steering.right.velocity*iParams.getTurretRatio())
-            /iParams.getTractionRatio();
-    oMS.driving.rear.velocity = (2*iTS.driving.rear.velocity/iParams.getRearWheelDiameter() + iMS.steering.rear.velocity*iParams.getTurretRatio())
-            /iParams.getTractionRatio();
+    oMS.driving.left.velocity = (2 * iTS.driving.left.velocity / iParams.getLeftWheelDiameter()
+            + iMS.steering.left.velocity * iParams.getTurretRatio()) / iParams.getTractionRatio();
+    oMS.driving.right.velocity = (2 * iTS.driving.right.velocity / iParams.getRightWheelDiameter()
+            + iMS.steering.right.velocity * iParams.getTurretRatio()) / iParams.getTractionRatio();
+    oMS.driving.rear.velocity = (2 * iTS.driving.rear.velocity / iParams.getRearWheelDiameter()
+            + iMS.steering.rear.velocity * iParams.getTurretRatio()) / iParams.getTractionRatio();
 
     //Log(DEBUG) << "iTS : " << iTS.toString();
     //Log(DEBUG) << "currentTurretPos : " << currentTurretPos.toString();
@@ -107,9 +107,10 @@ bool UbiquityKinematics::turrets2Motors(const TurretState & iTSbrut,
     return true;
 }
 
-bool UbiquityKinematics::turrets2Twist(const TurretState & iTS, Twist2D& oTw, SlippageReport& oSR, const UbiquityParams & iParams)
+bool UbiquityKinematics::turrets2Twist(const TurretState & iTS, Twist2D& oTw, SlippageReport& oSR,
+        const UbiquityParams & iParams)
 {
-    if( !iParams.check() )
+    if (!iParams.check())
     {
         Log(ERROR) << "UbiquityKinematics::turrets2Twist failed when checking params";
         return false;
@@ -117,34 +118,34 @@ bool UbiquityKinematics::turrets2Twist(const TurretState & iTS, Twist2D& oTw, Sl
 
     Eigen::Matrix<double, 6, 4> A;
     {
-        A(0,0) =  iParams.getLeftTurretPosition().y();
-        A(1,0) = -iParams.getLeftTurretPosition().x();
-        A(0,1) = -1.;
-        A(1,1) =  0.;
-        A(0,2) =  0.;
-        A(1,2) = -1.;
-        A(0,3) = cos(iTS.steering.left.position) * iTS.driving.left.velocity;
-        A(1,3) = sin(iTS.steering.left.position) * iTS.driving.left.velocity;
+        A(0, 0) = iParams.getLeftTurretPosition().y();
+        A(1, 0) = -iParams.getLeftTurretPosition().x();
+        A(0, 1) = -1.;
+        A(1, 1) = 0.;
+        A(0, 2) = 0.;
+        A(1, 2) = -1.;
+        A(0, 3) = cos(iTS.steering.left.position) * iTS.driving.left.velocity;
+        A(1, 3) = sin(iTS.steering.left.position) * iTS.driving.left.velocity;
     }
     {
-        A(2,0) =  iParams.getRightTurretPosition().y();
-        A(3,0) = -iParams.getRightTurretPosition().x();
-        A(2,1) = -1.;
-        A(3,1) =  0.;
-        A(2,2) =  0.;
-        A(3,2) = -1.;
-        A(2,3) = cos(iTS.steering.right.position) * iTS.driving.right.velocity;
-        A(3,3) = sin(iTS.steering.right.position) * iTS.driving.right.velocity;
+        A(2, 0) = iParams.getRightTurretPosition().y();
+        A(3, 0) = -iParams.getRightTurretPosition().x();
+        A(2, 1) = -1.;
+        A(3, 1) = 0.;
+        A(2, 2) = 0.;
+        A(3, 2) = -1.;
+        A(2, 3) = cos(iTS.steering.right.position) * iTS.driving.right.velocity;
+        A(3, 3) = sin(iTS.steering.right.position) * iTS.driving.right.velocity;
     }
     {
-        A(4,0) =  iParams.getRearTurretPosition().y();
-        A(5,0) = -iParams.getRearTurretPosition().x();
-        A(4,1) = -1.;
-        A(5,1) =  0.;
-        A(4,2) =  0.;
-        A(5,2) = -1.;
-        A(4,3) = cos(iTS.steering.rear.position) * iTS.driving.rear.velocity;
-        A(5,3) = sin(iTS.steering.rear.position) * iTS.driving.rear.velocity;
+        A(4, 0) = iParams.getRearTurretPosition().y();
+        A(5, 0) = -iParams.getRearTurretPosition().x();
+        A(4, 1) = -1.;
+        A(5, 1) = 0.;
+        A(4, 2) = 0.;
+        A(5, 2) = -1.;
+        A(4, 3) = cos(iTS.steering.rear.position) * iTS.driving.rear.velocity;
+        A(5, 3) = sin(iTS.steering.rear.position) * iTS.driving.rear.velocity;
     }
 
     Eigen::VectorXd s = A.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).singularValues();
@@ -155,16 +156,16 @@ bool UbiquityKinematics::turrets2Twist(const TurretState & iTS, Twist2D& oTw, Sl
     Eigen::VectorXd X = V.col(3);
     X = X / X(3);
 
-    oTw.vh( X(0) );
-    oTw.vx( X(1) );
-    oTw.vy( X(2) );
+    oTw.vh(X(0));
+    oTw.vx(X(1));
+    oTw.vy(X(2));
 
     return true;
 }
 
 bool UbiquityKinematics::twist2Turrets(const Twist2D & iTw, TurretState& oTS, const UbiquityParams & iParams)
 {
-    if( !iParams.check() )
+    if (!iParams.check())
     {
         Log(ERROR) << "UbiquityKinematics::twist2Turrets failed when checking params";
         return false;
@@ -194,11 +195,8 @@ bool UbiquityKinematics::twist2Turrets(const Twist2D & iTw, TurretState& oTS, co
     return true;
 }
 
-bool UbiquityKinematics::motors2Twist(const MotorState & iMS,
-                                    TurretState& oTS,
-                                    arp_math::Twist2D& oTw,
-                                    SlippageReport& oSR,
-                                    const UbiquityParams & iParams)
+bool UbiquityKinematics::motors2Twist(const MotorState & iMS, TurretState& oTS, arp_math::Twist2D& oTw,
+        SlippageReport& oSR, const UbiquityParams & iParams)
 {
     bool res = true;
     res &= motors2Turrets(iMS, oTS, iParams);
@@ -206,18 +204,14 @@ bool UbiquityKinematics::motors2Twist(const MotorState & iMS,
     return res;
 }
 
-bool UbiquityKinematics::twist2Motors(const arp_math::Twist2D & iTw,
-                                       const MotorState & iMS,
-                                       TurretState& oTS,
-                                       MotorState& oMS,
-                                       const UbiquityParams & iParams)
+bool UbiquityKinematics::twist2Motors(const arp_math::Twist2D & iTw, const MotorState & iMS, TurretState& oTS,
+        MotorState& oMS, const UbiquityParams & iParams)
 {
     bool res = true;
     res &= twist2Turrets(iTw, oTS, iParams);
     res &= turrets2Motors(oTS, iMS, oMS, iParams);
     return res;
 }
-
 
 void UbiquityKinematics::normalizeDirection(UbiquityKinematicState& state)
 {
@@ -231,9 +225,9 @@ void UbiquityKinematics::normalizeDirection(double& angle, double& speed)
     //modulo 2PI pour commencer
     angle = betweenMinusPiAndPlusPi(angle);
 
-    if( angle <= -M_PI_2 || angle > M_PI_2 )
+    if (angle <= -M_PI_2 || angle > M_PI_2)
     {
-        if( angle < 0 )
+        if (angle < 0)
             angle += M_PI;
         else
             angle -= M_PI;
