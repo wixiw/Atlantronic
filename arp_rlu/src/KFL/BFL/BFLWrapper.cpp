@@ -165,7 +165,7 @@ void BFLWrapper::init(const KFLStateVar & statevariable, const KFLStateCov & sta
 
     innovationCheck = new BFL::InnovationCheck( params.iekfInnovationMin );
     filter = new BFL::IteratedExtendedKalmanFilter(&prior, params.iekfMaxIt, innovationCheck);
-//    filter = new BFL::IteratedExtendedKalmanFilter(&prior);
+    //    filter = new BFL::IteratedExtendedKalmanFilter(&prior);
 
     return;
 }
@@ -191,24 +191,24 @@ void BFLWrapper::predict( const KFLInputVar & input , const KFLInputCov & inputC
     B_bfl(3,3) = B(2,2);
     sysModel->BSet(B_bfl);
 
-        KFLStateCov P_km1 = getCovariance();
-        Eigen::EigenSolver< KFLStateCov > eigensolver(P_km1); // complex version in order to have unsorted values
-        if (eigensolver.info() != Eigen::Success)
-        {
-            Log( ERROR ) << "BFLWrapper::predict - Eigen value solver failed (Matrix not symetric and positive ?) => return";
-            return;
-        }
-        KFLStateVar w  = eigensolver.eigenvalues().real();  // squeeze imaginary part (it should be nul if matrix is actually symetric)
-        KFLStateCov v  = eigensolver.eigenvectors().real();
-        KFLStateVar Q_;
-        Q_(0) = sqrt(w(0)) + dt * sqrt(inputCov(0,0));
-        Q_(1) = sqrt(w(1)) + dt * sqrt(inputCov(1,1));
-        Q_(2) = sqrt(w(2)) + dt * sqrt(inputCov(2,2));
-        KFLStateVar Q2;
-        Q2(0) = Q_(0)*Q_(0) - w(0);
-        Q2(1) = Q_(1)*Q_(1) - w(1);
-        Q2(2) = Q_(2)*Q_(2) - w(2);
-        KFLStateCov Q = v * Q2.asDiagonal() * v.transpose();
+    KFLStateCov P_km1 = getCovariance();
+    Eigen::EigenSolver< KFLStateCov > eigensolver(P_km1); // complex version in order to have unsorted values
+    if (eigensolver.info() != Eigen::Success)
+    {
+        Log( ERROR ) << "BFLWrapper::predict - Eigen value solver failed (Matrix not symetric and positive ?) => return";
+        return;
+    }
+    KFLStateVar w  = eigensolver.eigenvalues().real();  // squeeze imaginary part (it should be nul if matrix is actually symetric)
+    KFLStateCov v  = eigensolver.eigenvectors().real();
+    KFLStateVar Q_;
+    Q_(0) = sqrt(w(0)) + dt * sqrt(inputCov(0,0));
+    Q_(1) = sqrt(w(1)) + dt * sqrt(inputCov(1,1));
+    Q_(2) = sqrt(w(2)) + dt * sqrt(inputCov(2,2));
+    KFLStateVar Q2;
+    Q2(0) = Q_(0)*Q_(0) - w(0);
+    Q2(1) = Q_(1)*Q_(1) - w(1);
+    Q2(2) = Q_(2)*Q_(2) - w(2);
+    KFLStateCov Q = v * Q2.asDiagonal() * v.transpose();
 
     MatrixWrapper::SymmetricMatrix sysNoiseCov(3);
     sysNoiseCov(1,1) = Q(0,0);
@@ -228,13 +228,13 @@ void BFLWrapper::predict( const KFLInputVar & input , const KFLInputCov & inputC
     u(3) = input(2);
     filter->Update(sysModel, u);
 
-//    Log( DEBUG ) << "BFLWrapper::predict - dt=" << dt;
-//    Log( DEBUG ) << "BFLWrapper::predict - U=\n" << u;
-//    Log( DEBUG ) << "BFLWrapper::predict - P=\n" << P_km1;
-//    Log( DEBUG ) << "BFLWrapper::predict - w=\n" << w;
-//    Log( DEBUG ) << "BFLWrapper::predict - v=\n" << v;
-//    Log( DEBUG ) << "BFLWrapper::predict - Q_=\n" << Q_;
-//    Log( DEBUG ) << "BFLWrapper::predict - Q=\n" << Q;
+    //    Log( DEBUG ) << "BFLWrapper::predict - dt=" << dt;
+    //    Log( DEBUG ) << "BFLWrapper::predict - U=\n" << u;
+    //    Log( DEBUG ) << "BFLWrapper::predict - P=\n" << P_km1;
+    //    Log( DEBUG ) << "BFLWrapper::predict - w=\n" << w;
+    //    Log( DEBUG ) << "BFLWrapper::predict - v=\n" << v;
+    //    Log( DEBUG ) << "BFLWrapper::predict - Q_=\n" << Q_;
+    //    Log( DEBUG ) << "BFLWrapper::predict - Q=\n" << Q;
 
     return;
 }
@@ -263,7 +263,7 @@ void BFLWrapper::update( const KFLMeasVar & mvar, const KFLMeasTarget & mtar, Ba
     measNoiseCov(2,1) = 0.0;
     measNoiseCov(2,2) = updateParams.laserThetaSigma*updateParams.laserThetaSigma;
     measPdf->AdditiveNoiseSigmaSet(measNoiseCov);
-//    Log( DEBUG ) << "measNoiseCov:\n" << measPdf->AdditiveNoiseSigmaGet();
+    //    Log( DEBUG ) << "measNoiseCov:\n" << measPdf->AdditiveNoiseSigmaGet();
 
     MatrixWrapper::ColumnVector z(2);
     z(1) = mvar(0);
@@ -272,8 +272,8 @@ void BFLWrapper::update( const KFLMeasVar & mvar, const KFLMeasTarget & mtar, Ba
     s(1) = mtar(0);
     s(2) = mtar(1);
     s(3) = mvar(1); // dirty but usefull to manage -PI/PI discontinuity in filter update
-//    Log( DEBUG ) << "BFLWrapper::update - z:\n" << z;
-//    Log( DEBUG ) << "BFLWrapper::update - s:\n" << s;
+    //    Log( DEBUG ) << "BFLWrapper::update - z:\n" << z;
+    //    Log( DEBUG ) << "BFLWrapper::update - s:\n" << s;
     filter->Update(measModel, z, s);
 
     return;
