@@ -11,7 +11,6 @@ using namespace arp_math;
 using namespace arp_ods;
 using namespace orders;
 using namespace std;
-using namespace arp_core::log;
 
 OpenloopOrder::OpenloopOrder() :
     MotionOrder()

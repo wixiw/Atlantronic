@@ -3,3 +3,4 @@
 ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/opt/ard
 
 export CAN_FLAVOR="xenomai"
+export ORO_LOGFILE="/tmp/log/orocos.log"

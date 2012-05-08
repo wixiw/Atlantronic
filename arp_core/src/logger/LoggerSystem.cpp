@@ -5,7 +5,7 @@
  *      Author: Boris
  */
 
-#include "logger/Logger.hpp"
+#include "LoggerSystem.hpp"
 
 #define stringify( name ) # name
 

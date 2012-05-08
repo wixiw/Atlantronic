@@ -5,8 +5,8 @@
  *      Author: Boris
  */
 
-#ifndef _ARP_CORE_LOGGER_HPP_
-#define _ARP_CORE_LOGGER_HPP_
+#ifndef _ARP_CORE_LOGGER_SYSTEM_HPP_
+#define _ARP_CORE_LOGGER_SYSTEM_HPP_
 
 
 /**
