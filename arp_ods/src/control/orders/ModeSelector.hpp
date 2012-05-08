@@ -8,6 +8,7 @@
 #ifndef MODESELECTOR_HPP_
 #define MODESELECTOR_HPP_
 
+#include "OrderConfig.hpp"
 #include <math/core>
 
 namespace arp_ods{ namespace orders
@@ -17,49 +18,6 @@ enum mode
 {
     MODE_INIT = 1, MODE_RUN = 2, MODE_APPROACH = 3, MODE_DONE = 4, MODE_ERROR = 5, MODE_PASS = 6
 };
-
-    struct config
-    {
-        /** This default parameter defines the APPROACH mode area in m*/
-        double RADIUS_APPROACH_ZONE;
-
-        /** This default parameter defines the condition in distance to end motion in m*/
-        double DISTANCE_ACCURACY;
-
-        /** This default parameter defines the condition in angle to end motion in rad*/
-        double ANGLE_ACCURACY;
-
-        /** Pass default timeout */
-        double PASS_TIMEOUT;
-
-        /** Order timeout*/
-        double ORDER_TIMEOUT;
-
-        /**
-         * final velocity
-         */
-         double VEL_FINAL;
-
-         /*
-          * maximum linear speed
-          */
-         double LIN_VEL_MAX;
-         /*
-          * maximum angular speed
-          */
-         double ANG_VEL_MAX;
-
-         /*
-          * linear deceleration (for point approach) in m/s2
-          */
-         double LIN_DEC;
-         /*
-          * angular deceleration (for point approach) in rad/s2
-          */
-         double ANG_DEC;
-
-    };
-
 
 /**
  * This is a mode selector to handle several modes in a move : INIT/RUN/APPROACH/PASS/DONE
