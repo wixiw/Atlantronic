@@ -35,7 +35,7 @@ rosbuild_gensrv()
 rosbuild_include(arp_core ARP_common_functions)
 configure_ard_project()
 
-orocos_typegen_headers(src/orders/orders.h)
+#orocos_typegen_headers(src/orders/orders.h)
 
 ###
 # end of ARD specific
