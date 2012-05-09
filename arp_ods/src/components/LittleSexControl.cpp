@@ -25,7 +25,7 @@ LittleSexControl::LittleSexControl(const std::string& name):
 
 {
     createOrocosInterface();
-    //arp_ods::orders::Logger::InitFile("arp_ods", DEBUG);
+    arp_ods::orders::Logger::InitFile("arp_ods", DEBUG);
     //arp_ods::orders::Logger::InitConsole("arp_ods", DEBUG);
 }
 
@@ -55,6 +55,12 @@ void LittleSexControl::updateHook()
     attrComputedTwistCmd = attrOrder->computeSpeed(attrPosition,attrDt);
 
     //publish computed value
+    setOutputs();
+}
+
+void LittleSexControl::stopHook()
+{
+    attrComputedTwistCmd=Twist2D(0,0,0);
     setOutputs();
 }
 

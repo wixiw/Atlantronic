@@ -77,21 +77,9 @@ Twist2D OpenloopOrder::computeSpeed(arp_math::Pose2D currentPosition, double dt)
     if (m_currentMode==MODE_DONE or m_currentMode==MODE_INIT or m_currentMode==MODE_ERROR)
         return Twist2D(0,0,0);
 
-    Log(DEBUG) << ">> computespeed--------------------------";
-
-    Log(DEBUG) << "mode: "<<m_currentMode;
-    Log(DEBUG) << "---";
-
     //transfer of the twist to robot referential
     Twist2D v_correction_ref_init;
     v_correction_ref_init=m_openloop_twist.transport(m_cpoint.inverse());
-
-    Log(DEBUG) << "time: "<<getTime();
-    Log(DEBUG) << "dt: "<<dt;
-    Log(DEBUG) << "---";
-    Log(DEBUG) << "v_correction_ref_init: " << v_correction_ref_init.toString();
-    Log(DEBUG) << "v_correction_ref_init.speedNorm(): "<<v_correction_ref_init.speedNorm();
-    Log(DEBUG) << "---";
 
     // time to target
     double t_left = (m_initTime+m_openloop_duration)-getTime();
@@ -101,30 +89,16 @@ Twist2D OpenloopOrder::computeSpeed(arp_math::Pose2D currentPosition, double dt)
     double deceleration_time_rot=fabs(v_correction_ref_init.vh())/m_conf.ANG_DEC;
     double deceleration_time=max(deceleration_time_lin,deceleration_time_rot);
 
-    Log(DEBUG) << "deceleration_time_lin: " << deceleration_time_lin;
-    Log(DEBUG) << "deceleration_time_rot: " << deceleration_time_rot;
-    Log(DEBUG) << "deceleration_time: " << deceleration_time;
-    Log(DEBUG) << "m_initTime: " << m_initTime;
-    Log(DEBUG) << "m_openloop_duration: " << m_openloop_duration;
-    Log(DEBUG) << "t_left: " << t_left;
-    Log(DEBUG) << "---";
-
     //is the twist the nominal one or is it reduced because approaching end time ?
     Twist2D v_correction_ref;
     if (t_left<deceleration_time)
     {
-        Log(DEBUG) << "decelerated twist";
     v_correction_ref=v_correction_ref_init*(t_left/deceleration_time);
     }
     else //deceleration has not begun
     {
-        Log(DEBUG) << "nominal twist";
         v_correction_ref=v_correction_ref_init;
     }
-
-    Log(DEBUG) << "v_correction_ref: " << v_correction_ref.toString();
-    Log(DEBUG) << "v_correction_ref.speedNorm(): "<<v_correction_ref.speedNorm();
-    Log(DEBUG) << "---";
 
     //saturation of twist: limit max linear speed/acc;  and max rotation speed/acc
     Twist2D v_correction_saturated;
@@ -155,21 +129,11 @@ Twist2D OpenloopOrder::computeSpeed(arp_math::Pose2D currentPosition, double dt)
 
     double sat=max(satvlin,max( satvrot,1.0));
 
-    Log(DEBUG) << "vmaxlin_sataccdec : " << vmaxlin_sataccdec;
-    Log(DEBUG) << "vmaxlin : " << vmaxlin;
-    Log(DEBUG) << "vmaxrot : " << vmaxrot;
-    Log(DEBUG) << "satvlin : " << satvlin;
-    Log(DEBUG) << "satvrot : " << satvrot;
-    Log(DEBUG) << "sat : " << sat;
-
     //application of the saturation
     v_correction_saturated = v_correction_ref * (1/sat);
 
     m_v_correction_old=v_correction_saturated;
 
-    Log(DEBUG) << "v_correction_saturated: " << v_correction_saturated.toString();
-    Log(DEBUG) << "v_correction_saturated.speedNorm(): "<<v_correction_saturated.speedNorm();
-    Log(DEBUG) << "<< computespeed---------------------------";
     return v_correction_saturated;
 
 

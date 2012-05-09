@@ -21,6 +21,7 @@ class LittleSexControl: public OdsTaskContext
     public:
         LittleSexControl(const std::string& name);
         void updateHook();
+        void stopHook();
 
         /**
          * Use this operation to setup a new order

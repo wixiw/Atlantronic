@@ -77,7 +77,7 @@ void KinematicBase::run()
     }
 
     Log(DEBUG) << "cur Twist=               " << attrCurrentTwist.toString();
-    Log(DEBUG) << "attrMotorsCurrentState=  " <<attrMotorsCurrentState.toString();
+    //Log(DEBUG) << "attrMotorsCurrentState=  " <<attrMotorsCurrentState.toString();
     Log(DEBUG) << "acceptable Twist=        " << attrAcceptableTwist.toString();
 
 
