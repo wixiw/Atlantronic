@@ -45,29 +45,13 @@ double stddev(const Eigen::VectorXd & v)
 
 double median(const Eigen::VectorXd & v)
 {
-    Eigen::VectorXd m = v;
+    Eigen::VectorXd m = arp_math::bubbleSort(v);
     unsigned int n = m.size();
     if( n == 0 )
         return 0.;
 
     if( n == 1 )
         return m(0);
-
-    bool no_change;
-    do
-    {
-        no_change = true;
-        for(unsigned int j = 0; j < n-1 ; j++)
-        {
-            if(m(j) > m(j+1))
-            {
-                double tmp = m(j+1);
-                m(j+1) = m(j);
-                m(j) = tmp;
-                no_change = false;
-            }
-        }
-    }while(!no_change);
 
     return m((unsigned int)((n-1) / 2));
 }

@@ -13,6 +13,8 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
+#include <vector>
+
 //a supprimer quand tout le mode aura switché a betweenMinusPiAndPlusPi
 #define normalizeAngle betweenMinusPiAndPlusPi
 
@@ -53,6 +55,18 @@ namespace arp_math
     double sign(double number);
 
     /**
+     * Tri à bulle
+     * \return le vecteur d'entrée trié par ordre croissant
+     */
+    Eigen::VectorXd bubbleSort(const Eigen::VectorXd &);
+
+    /**
+     * Tri à bulle qui renvoie aussi le vecteur des indices
+     * \return le vecteur d'entrée trié par ordre croissant
+     */
+    std::pair< Eigen::VectorXd, Eigen::VectorXi > bubbleSortIndices(const Eigen::VectorXd &);
+
+    /**
      * Return "value" saturated to min or max
      */
     double saturate(const double value, const double min, const double max);
@@ -88,6 +102,16 @@ namespace arp_math
      * absolute value for floats
      */
     double d_abs(const double x);
+
+    /**
+     * Permet d'énumérer les combinaisons (au sens de la combinatoire)de n éléments parmi le vecteur v
+     */
+    std::vector<Eigen::VectorXi> combinaisons( const Eigen::VectorXi & v, const unsigned int n );
+
+    /**
+     * Permet d'énumérer les combinaisons (au sens de la combinatoire)de n éléments parmi le vecteur v
+     */
+    std::vector<Eigen::VectorXi> combinaisons( const unsigned int p, const unsigned int n );
 
     /**
      * transforme un time spec en double

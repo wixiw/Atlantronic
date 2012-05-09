@@ -68,6 +68,73 @@ double rad2deg(const double rad)
     return rad * (180 / PI);
 }
 
+Eigen::VectorXd bubbleSort(const Eigen::VectorXd & v)
+{
+    Eigen::VectorXd m = v;
+    unsigned int n = m.size();
+    if( n == 0 )
+        return m;
+
+    if( n == 1 )
+        return m;
+
+    bool no_change;
+    do
+    {
+        no_change = true;
+        for(unsigned int j = 0; j < n-1 ; j++)
+        {
+            if(m(j) > m(j+1))
+            {
+                double tmp = m(j+1);
+                m(j+1) = m(j);
+                m(j) = tmp;
+                no_change = false;
+            }
+        }
+    }while(!no_change);
+    return m;
+}
+
+
+std::pair< Eigen::VectorXd, Eigen::VectorXi>  bubbleSortIndices(const Eigen::VectorXd & v)
+                        {
+    Eigen::VectorXd m = v;
+    unsigned int n = m.size();
+    if( n == 0 )
+        return std::make_pair(m, Eigen::VectorXi(0) );
+
+    if( n == 1 )
+        return std::make_pair(m, Eigen::VectorXi::Zero(1));
+
+    Eigen::VectorXi indices(n);
+    for(unsigned int i = 0 ; i < n ; i++)
+    {
+        indices(i) = i;
+    }
+
+    bool no_change;
+    do
+    {
+        no_change = true;
+        for(unsigned int j = 0; j < n-1 ; j++)
+        {
+            if(m(j) > m(j+1))
+            {
+                double tmp = m(j+1);
+                m(j+1) = m(j);
+                m(j) = tmp;
+                int tmp_i = indices(j+1);
+                indices(j+1) = indices(j);
+                indices(j) = tmp_i;
+                no_change = false;
+            }
+        }
+    }while(!no_change);
+
+    return std::make_pair(m, indices);
+                        }
+
 double saturate(const double value, const double min, const double max)
 {
     if (value < min)
@@ -135,6 +202,52 @@ double firstDerivateLimitation(const double input, const double lastOutput, cons
     }
 
     return output;
+}
+
+std::vector<Eigen::VectorXi> combinaisons( const Eigen::VectorXi & v, const unsigned int n )
+{
+    std::vector<Eigen::VectorXi> out;
+    if(n < 1)
+        return out;
+    if(n == 1)
+    {
+        for(unsigned int i = 0 ; i < v.size() ; i++)
+        {
+            out.push_back( Eigen::VectorXi::Ones(1) * v(i) );
+        }
+        return out;
+    }
+    unsigned int m = v.size();
+    if( m < n )
+        return out;
+    if( m == n )
+    {
+        out.push_back( v );
+        return out;
+    }
+
+    for(unsigned int i = 0 ; i < m-n+1 ; i++)
+    {
+        std::vector<Eigen::VectorXi> combs = combinaisons( v.tail(m-i-1) , n-1);
+        for( unsigned int k = 0 ; k < combs.size() ; k++)
+        {
+            Eigen::VectorXi d(combs[k].size() + 1);
+            d.tail(combs[k].size()) = combs[k];
+            d(0) = v(i);
+            out.push_back( d );
+        }
+    }
+    return out;
+}
+
+std::vector<Eigen::VectorXi> combinaisons( const unsigned int p, const unsigned int n )
+{
+    Eigen::VectorXi indices(p);
+        for(unsigned int i = 0 ; i < p ; i++)
+        {
+            indices(i) = i;
+        }
+    return combinaisons(indices, n);
 }
 
 void delta_t(struct timespec *interval, struct timespec begin, struct timespec now)

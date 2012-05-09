@@ -103,6 +103,138 @@ BOOST_AUTO_TEST_CASE( Math_firstderivate )
 
 }
 
+BOOST_AUTO_TEST_CASE( Math_bubbleSort )
+{
+    {
+        Eigen::VectorXd v = arp_math::bubbleSort(Eigen::VectorXd::Random(0));
+        BOOST_CHECK( v.size() == 0 );
+    }
+    {
+        Eigen::VectorXd v0 = Eigen::VectorXd::Random(1);
+        Eigen::VectorXd v = arp_math::bubbleSort(v0);
+        BOOST_CHECK_EQUAL( v(0), v0(0) );
+
+    }
+    {
+        Eigen::VectorXd v0 = Eigen::VectorXd::Random(2);
+        Eigen::VectorXd v = arp_math::bubbleSort(v0);
+        BOOST_CHECK( v(0) < v(1) );
+    }
+    {
+        Eigen::VectorXd v = arp_math::bubbleSort(Eigen::VectorXd::Random(10));
+        for(unsigned int i = 0 ; i < v.size()-1 ; i++)
+        {
+            BOOST_CHECK( v(i+1) >= v(i) );
+        }
+    }
+    {
+        Eigen::VectorXd v = arp_math::bubbleSort(Eigen::VectorXd::Random(17));
+        for(unsigned int i = 0 ; i < v.size()-1 ; i++)
+        {
+            BOOST_CHECK( v(i+1) >= v(i) );
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE( Math_bubbleSortIndices )
+{
+    {
+        std::pair< Eigen::VectorXd, Eigen::VectorXi> p = arp_math::bubbleSortIndices(Eigen::VectorXd::Random(0));
+        BOOST_CHECK( p.first.size() == 0 );
+        BOOST_CHECK( p.second.size() == 0 );
+    }
+    {
+        Eigen::VectorXd v0 = Eigen::VectorXd::Random(1);
+        std::pair< Eigen::VectorXd, Eigen::VectorXi> p = arp_math::bubbleSortIndices(v0);
+        BOOST_CHECK( p.first.size() == 1 );
+        BOOST_CHECK( p.second.size() == 1 );
+        BOOST_CHECK_EQUAL( p.first(0), v0(0) );
+        BOOST_CHECK_EQUAL( p.second(0), 0 );
+
+    }
+    {
+        Eigen::VectorXd v0 = Eigen::VectorXd::Random(2);
+        std::pair< Eigen::VectorXd, Eigen::VectorXi> p = arp_math::bubbleSortIndices(v0);
+        BOOST_CHECK( p.first.size() == 2 );
+        BOOST_CHECK( p.second.size() == 2 );
+        BOOST_CHECK( p.first(0) < p.first(1) );
+        BOOST_CHECK_EQUAL( p.first(0), v0(p.second(0)) );
+        BOOST_CHECK_EQUAL( p.first(1), v0(p.second(1)) );
+    }
+    {
+        Eigen::VectorXd v0 = Eigen::VectorXd::Random(10);
+        std::pair< Eigen::VectorXd, Eigen::VectorXi> p = arp_math::bubbleSortIndices(v0);
+        BOOST_CHECK( p.first.size() == v0.size() );
+        BOOST_CHECK( p.second.size() == v0.size() );
+        for(unsigned int i = 0 ; i < p.first.size()-1 ; i++)
+        {
+            BOOST_CHECK( p.first(i+1) >= p.first(i) );
+            BOOST_CHECK_EQUAL( p.first(i), v0(p.second(i)) );
+        }
+    }
+    {
+        Eigen::VectorXd v0 = Eigen::VectorXd::Random(17);
+        std::pair< Eigen::VectorXd, Eigen::VectorXi> p = arp_math::bubbleSortIndices(v0);
+        BOOST_CHECK( p.first.size() == v0.size() );
+        BOOST_CHECK( p.second.size() == v0.size() );
+        for(unsigned int i = 0 ; i < p.first.size()-1 ; i++)
+        {
+            BOOST_CHECK( p.first(i+1) >= p.first(i) );
+            BOOST_CHECK_EQUAL( p.first(i), v0(p.second(i)) );
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE( Math_combinaisons )
+{
+    std::vector< Eigen::VectorXi > res;
+    res = combinaisons( Eigen::VectorXi(0), 0 );
+    BOOST_CHECK( res.size() == 0 );
+
+    {
+        Eigen::VectorXi v(3);
+        v << 0, 1, 2;
+        res = combinaisons( v, 0 );
+        BOOST_CHECK( res.size() == 0 );
+    }
+
+    {
+        Eigen::VectorXi v(3);
+        v << 0, 1, 2;
+        res = combinaisons( v, 3 );
+        BOOST_CHECK( res.size() == 1 );
+    }
+
+    {
+        Eigen::VectorXi v(4);
+        v << 0, 1, 2, 3, 4;
+        res = combinaisons( v, 3 );
+        BOOST_CHECK( res.size() == 4 );
+        BOOST_CHECK_EQUAL( res[0](0), 0 );
+        BOOST_CHECK_EQUAL( res[0](1), 1 );
+        BOOST_CHECK_EQUAL( res[0](2), 2 );
+
+        BOOST_CHECK_EQUAL( res[1](0), 0 );
+        BOOST_CHECK_EQUAL( res[1](1), 1 );
+        BOOST_CHECK_EQUAL( res[1](2), 3 );
+
+        BOOST_CHECK_EQUAL( res[2](0), 0 );
+        BOOST_CHECK_EQUAL( res[2](1), 2 );
+        BOOST_CHECK_EQUAL( res[2](2), 3 );
+
+        BOOST_CHECK_EQUAL( res[3](0), 1 );
+        BOOST_CHECK_EQUAL( res[3](1), 2 );
+        BOOST_CHECK_EQUAL( res[3](2), 3 );
+    }
+
+    {
+        Eigen::VectorXi v(5);
+        v << 0, 1, 2, 3, 4;
+        res = combinaisons( v, 3 );
+        BOOST_CHECK( res.size() == 10 );
+    }
+}
+
 BOOST_AUTO_TEST_CASE( Math_linesIntersection )
 {
     Vector2 p1(-1,0);
@@ -167,10 +299,7 @@ BOOST_AUTO_TEST_CASE( Math_linesIntersection )
 
     BOOST_CHECK_EQUAL( parralel4, true);
     BOOST_CHECK_EQUAL( colinear4, false);
-
-
 }
-
 
 
 #endif /* UTEST_MATH_HPP_ */
