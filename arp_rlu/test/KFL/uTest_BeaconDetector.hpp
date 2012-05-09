@@ -120,7 +120,7 @@ namespace unittest_BeaconDetector
         }
 
         Log( DEBUG ) << "unittest_BeaconDetector_" << xpName  << " - " << "Compare with python :";
-        for(unsigned int i = 0 ; i < nbObjects ; i++)
+        for(unsigned int i = 0 ; i < vdc.size() ; i++)
         {
             std::stringstream ss;
             ss << "obj_" << i;
