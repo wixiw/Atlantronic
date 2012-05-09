@@ -84,7 +84,8 @@ then
 			--exclude "*.log"\
 			--exclude "src"\
 			--exclude "reports.dat"\
-			--exclude "doc"
+			--exclude "doc"\
+			--exclude "ressource/unittest"
 		else
 			rsync  -avzh `rosstack find $stack` root@$2:/opt/ros \
 			--delete \
@@ -95,7 +96,8 @@ then
 			--exclude ".tb_history"\
 			--exclude "*.log"\
 			--exclude "reports.dat"\
-			--exclude "doc"
+			--exclude "doc" \
+			--exclude "ressource/unittest"
 			
 			#avec les sources sinon on trouve plus les trucs python
 		fi
@@ -110,7 +112,8 @@ then
 	--exclude ".tb_history"\
 	--exclude "*.log"\
 	--exclude "reports.dat"\
-	--exclude "doc"
+	--exclude "doc"\
+	--exclude "ressource/unittest"
 
 	#syncronisation des fichiers supplementaires	
 	scp /opt/ros/setup.bash root@$2:/opt/ros
@@ -127,7 +130,8 @@ else
 		--exclude ".hg"\
 		--exclude ".tb_history"\
 		--exclude "*.log" \
-		--exclude "doc"
+		--exclude "doc"\
+		--exclude "ressource/unittest"
 	else
 		echo -e $ROUGE "Please provide an ard package name or the ard stack name." -e $NORMAL
 	fi
