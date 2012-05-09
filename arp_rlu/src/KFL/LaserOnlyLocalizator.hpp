@@ -164,6 +164,8 @@ class LaserOnlyLocalizator
          * \return Vrai si le calcul de l'estimation s'est bien passé et Faux sinon.\n
          * Faux peut signifier :
          * \li que le LaserScan est vide
+         * \li qu'il y a moins de 3 balises référencées
+         * \li qu'il n'a pas réussi le calcul (pas une bonne visibilité)
          */
         bool process(lsl::LaserScan ls);
 

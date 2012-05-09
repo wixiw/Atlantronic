@@ -14,7 +14,7 @@ function MotorSimulDeployer:load()
 	Deployer:setActivity("Can1",0.030,60,1)
 	
 	Deployer:loadComponent("MockSched","FBSched")
-	Deployer:setActivity("MockSched",0.0,60,1)
+	Deployer:setActivity("MockSched",0.0,60,rtt.globals.ORO_SCHED_RT)
 	MockSched = Deployer:getPeer("MockSched")
 	MockSched:cleanup()
 	

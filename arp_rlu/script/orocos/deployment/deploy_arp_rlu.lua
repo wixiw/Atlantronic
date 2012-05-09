@@ -11,15 +11,18 @@ Deployer:import("rtt_sensor_msgs");
 dofile("/opt/ard/arp_rlu/script/orocos/deployment/rlu_monitor_deployer.lua");
 dofile("/opt/ard/arp_rlu/script/orocos/deployment/odometry_deployer.lua");
 dofile("/opt/ard/arp_rlu/script/orocos/deployment/localizator_deployer.lua");
+dofile("/opt/ard/arp_rlu/script/orocos/deployment/laseronlylocalizator_deployer.lua");
 dofile("/opt/ard/arp_rlu/script/orocos/deployment/ros_rlu_itf_deployer.lua");
 
 OdometryDeployer:load();
 LocalizatorDeployer:load();
+LaserOnlyLocalizatorDeployer:load();
 RosRluItfDeployer:load();
 RluMonitorDeployer:load();
 
 OdometryDeployer:connect();
 LocalizatorDeployer:connect();
+LaserOnlyLocalizatorDeployer:connect();
 RosRluItfDeployer:connect();
 RluMonitorDeployer:connect();
 
