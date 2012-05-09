@@ -1,0 +1,1984 @@
+Index: arp_hml/script/orocos/deployment/ubiquity_simul/ubiquity_simul_deployer.lua
+===================================================================
+--- arp_hml/script/orocos/deployment/ubiquity_simul/ubiquity_simul_deployer.lua	(revision 1275)
++++ arp_hml/script/orocos/deployment/ubiquity_simul/ubiquity_simul_deployer.lua	(working copy)
+@@ -4,36 +4,39 @@
+ UbiquitySimulDeployer = ComposantDeployer:new()
+ 
+ function UbiquitySimulDeployer:load()
+-	Deployer:loadComponent("UbiquitySimul","arp_hml::UbiquitySimul")
+-	Deployer:setActivity("UbiquitySimul",0.010,40,1)
++	assert( Deployer:loadComponent("UbiquitySimul","arp_hml::UbiquitySimul"))
++	assert( Deployer:setActivity("UbiquitySimul",0.010,40,1))
++	return true
+ end
+ 
+ function UbiquitySimulDeployer:registerToSql(name)
+-	OrocosSqlMonitor = Deployer:getPeer("OrocosSqlBridge")
+-	Deployer:addPeer("OrocosSqlBridge",name)
++	OrocosSqlMonitor = assert( Deployer:getPeer("OrocosSqlBridge"))
++	assert( Deployer:addPeer("OrocosSqlBridge",name)) 
++	return true
+ end
+ 
+ function UbiquitySimulDeployer:connect()
+ 	--je m'ajoute aux autres
+-	Deployer:addPeer("Reporting", "UbiquitySimul")
+-	Deployer:addPeer("RosHmlItf", "UbiquitySimul")
++	assert( Deployer:addPeer("Reporting", "UbiquitySimul"))
++	assert( Deployer:addPeer("RosHmlItf", "UbiquitySimul"))
+ 	
+-	--UbiquitySimulDeployer:registerToSql("LeftDriving")
+-	--UbiquitySimulDeployer:registerToSql("RightDriving")
+-	--UbiquitySimulDeployer:registerToSql("RearDriving")
+-	--UbiquitySimulDeployer:registerToSql("LeftSteering")
+-	--UbiquitySimulDeployer:registerToSql("RightSteering")
+-	--UbiquitySimulDeployer:registerToSql("RearSteering")
++	--assert( UbiquitySimulDeployer:registerToSql("LeftDriving"))
++	--assert( UbiquitySimulDeployer:registerToSql("RightDriving"))
++	--assert( UbiquitySimulDeployer:registerToSql("RearDriving"))
++	--assert( UbiquitySimulDeployer:registerToSql("LeftSteering"))
++	--assert( UbiquitySimulDeployer:registerToSql("RightSteering"))
++	--assert( UbiquitySimulDeployer:registerToSql("RearSteering"))
+ 
+-	Deployer:connect("LeftDriving.outFilteredSpeedCommand","UbiquitySimul.inLeftDrivingSpeedCmd",cp)
+-	Deployer:connect("RightDriving.outFilteredSpeedCommand","UbiquitySimul.inRightDrivingSpeedCmd",cp)
+-	Deployer:connect("RearDriving.outFilteredSpeedCommand","UbiquitySimul.inRearDrivingSpeedCmd",cp)
+-	Deployer:connect("LeftDriving.outFilteredPositionCommand","UbiquitySimul.inLeftSteeringPositionCmd",cp)
+-	Deployer:connect("RightDriving.outFilteredPositionCommand","UbiquitySimul.inRightSteeringPositionCmd",cp)
+-	Deployer:connect("RearDriving.outFilteredPositionCommand","UbiquitySimul.inRearSteeringPositionCmd",cp)
++	assert( Deployer:connect("LeftDriving.outFilteredSpeedCommand","UbiquitySimul.inLeftDrivingSpeedCmd",cp) )
++	assert( Deployer:connect("RightDriving.outFilteredSpeedCommand","UbiquitySimul.inRightDrivingSpeedCmd",cp) )
++	assert( Deployer:connect("RearDriving.outFilteredSpeedCommand","UbiquitySimul.inRearDrivingSpeedCmd",cp) )
++	assert( Deployer:connect("LeftDriving.outFilteredPositionCommand","UbiquitySimul.inLeftSteeringPositionCmd",cp) )
++	assert( Deployer:connect("RightDriving.outFilteredPositionCommand","UbiquitySimul.inRightSteeringPositionCmd",cp) )
++	assert( Deployer:connect("RearDriving.outFilteredPositionCommand","UbiquitySimul.inRearSteeringPositionCmd",cp) )
+ 
+-	UbiquitySimulDeployer:check("UbiquitySimul")
++	assert( UbiquitySimulDeployer:check("UbiquitySimul") )
+ 
++	return true
+ end
+ 
+ 
+Index: arp_hml/script/orocos/deployment/ubiquity_simul/hml_monitor_simul_deployer.lua
+===================================================================
+--- arp_hml/script/orocos/deployment/ubiquity_simul/hml_monitor_simul_deployer.lua	(revision 1275)
++++ arp_hml/script/orocos/deployment/ubiquity_simul/hml_monitor_simul_deployer.lua	(working copy)
+@@ -7,47 +7,51 @@
+ function HmlMonitorSimulDeployer:connect()
+ 
+ --connection des ports
+-	HmlMonitorSimulDeployer:connectOneMotor("LeftDriving")
+-	HmlMonitorSimulDeployer:connectOneMotor("RightDriving")
+-	HmlMonitorSimulDeployer:connectOneMotor("RearDriving")
+-	HmlMonitorSimulDeployer:connectOneMotor("LeftSteering")
+-	HmlMonitorSimulDeployer:connectOneMotor("RightSteering")
+-	HmlMonitorSimulDeployer:connectOneMotor("RearSteering")
++	assert( HmlMonitorSimulDeployer:connectOneMotor("LeftDriving"))
++	assert( HmlMonitorSimulDeployer:connectOneMotor("RightDriving"))
++	assert( HmlMonitorSimulDeployer:connectOneMotor("RearDriving"))
++	assert( HmlMonitorSimulDeployer:connectOneMotor("LeftSteering"))
++	assert( HmlMonitorSimulDeployer:connectOneMotor("RightSteering"))
++	assert( HmlMonitorSimulDeployer:connectOneMotor("RearSteering"))
+ -- connection des ports de blocage pour la simul	
+-	Deployer:connect("LeftDriving.inBlockMotor", "RosHmlItf.outBlockRobot",cp)
+-	Deployer:connect("RightDriving.inBlockMotor", "RosHmlItf.outBlockRobot",cp)
+-	Deployer:connect("RearDriving.inBlockMotor", "RosHmlItf.outBlockRobot",cp)
++	assert( Deployer:connect("LeftDriving.inBlockMotor", "RosHmlItf.outBlockRobot",cp))
++	assert( Deployer:connect("RightDriving.inBlockMotor", "RosHmlItf.outBlockRobot",cp))
++	assert( Deployer:connect("RearDriving.inBlockMotor", "RosHmlItf.outBlockRobot",cp))
+ 	
+-	Deployer:connect("HmlMonitor.inLeftSteeringHomingDone", "LeftSteering.outHomingDone",cp)
+-	Deployer:connect("HmlMonitor.inRightSteeringHomingDone", "RightSteering.outHomingDone",cp)
+-	Deployer:connect("HmlMonitor.inRearSteeringHomingDone", "RearSteering.outHomingDone",cp)
++	assert( Deployer:connect("HmlMonitor.inLeftSteeringHomingDone", "LeftSteering.outHomingDone",cp))
++	assert( Deployer:connect("HmlMonitor.inRightSteeringHomingDone", "RightSteering.outHomingDone",cp))
++	assert( Deployer:connect("HmlMonitor.inRearSteeringHomingDone", "RearSteering.outHomingDone",cp))
+ 	
+- --[[
+-	Deployer:connect("HmlMonitor.inWoodheadInConnected", "WoodheadIn.outConnected",cp)
+-	Deployer:connect("HmlMonitor.inWoodheadOutConnected", "WoodheadOut.outConnected",cp)
+-	]]
++	assert( Deployer:connect("HmlMonitor.inWoodheadInConnected", "WoodheadIn.outConnected",cp))
++	assert( Deployer:connect("HmlMonitor.inWoodheadOutConnected", "WoodheadOut.outConnected",cp))
+ 
+ --ajout au monitor
+-	HmlMonitorSimulDeployer:addToMonitor("Joystick")
+-	HmlMonitorSimulDeployer:addToMonitor("Can1")
+-	HmlMonitorDeployer:addToMonitor("LeftDriving")
+-	HmlMonitorDeployer:addToMonitor("RightDriving")
+-	HmlMonitorDeployer:addToMonitor("RearDriving")
+-	HmlMonitorDeployer:addToMonitor("LeftSteering")
+-	HmlMonitorDeployer:addToMonitor("RightSteering")
+-	HmlMonitorDeployer:addToMonitor("RearSteering")
+-	HmlMonitorSimulDeployer:addToMonitor("RosHmlItf")
+-	HmlMonitorSimulDeployer:addToMonitor("UbiquitySimul")
+-	HmlMonitorSimulDeployer:addToMonitor("Syncronizator")
+-	HmlMonitorSimulDeployer:addToMonitor("MockSched")
++	assert( HmlMonitorSimulDeployer:addToMonitor("Joystick"))
++	assert( HmlMonitorSimulDeployer:addToMonitor("Can1"))
++	assert( HmlMonitorDeployer:addToMonitor("LeftDriving"))
++	assert( HmlMonitorDeployer:addToMonitor("RightDriving"))
++	assert( HmlMonitorDeployer:addToMonitor("RearDriving"))
++	assert( HmlMonitorDeployer:addToMonitor("LeftSteering"))
++	assert( HmlMonitorDeployer:addToMonitor("RightSteering"))
++	assert( HmlMonitorDeployer:addToMonitor("RearSteering"))
++	assert( HmlMonitorDeployer:addToMonitor("WoodheadIn"))
++	assert( HmlMonitorDeployer:addToMonitor("WoodheadOut"))
++	assert( HmlMonitorSimulDeployer:addToMonitor("RosHmlItf"))
++	assert( HmlMonitorSimulDeployer:addToMonitor("UbiquitySimul"))
++	assert( HmlMonitorSimulDeployer:addToMonitor("Syncronizator"))
++	assert( HmlMonitorSimulDeployer:addToMonitor("MockSched"))
+ 
+-	--HmlMonitorDeployer:registerToSql();
+-	HmlMonitorSimulDeployer:check("HmlMonitor")
++	--assert( HmlMonitorDeployer:registerToSql())
++	assert( HmlMonitorSimulDeployer:check("HmlMonitor"))
++	
++	return true
+ end
+ 
+ 
+ function HmlMonitorSimulDeployer:start()
+-	HmlMonitor = Deployer:getPeer(me)
+-	HmlMonitor:configure()
+-	HmlMonitor:start()
++	HmlMonitor = assert( Deployer:getPeer(me))
++	assert( HmlMonitor:configure())
++	assert( HmlMonitor:start())
++	
++	return true
+ end
+\ No newline at end of file
+Index: arp_hml/script/orocos/deployment/ubiquity_simul/io_simul_deployer.lua
+===================================================================
+--- arp_hml/script/orocos/deployment/ubiquity_simul/io_simul_deployer.lua	(revision 0)
++++ arp_hml/script/orocos/deployment/ubiquity_simul/io_simul_deployer.lua	(revision 0)
+@@ -0,0 +1,27 @@
++dofile("/opt/ard/arp_core/script/orocos/deployment/component_deployer_object.lua")
++
++
++IoSimulDeployer = ComposantDeployer:new()
++
++function IoSimulDeployer:load()
++	assert( Deployer:loadComponent("WoodheadIn","arp_hml::WoodheadSimul"))
++	assert( Deployer:setMasterSlaveActivity("Can1", "WoodheadIn"))
++
++	assert( Deployer:loadComponent("WoodheadOut","arp_hml::WoodheadSimul"))
++	assert( Deployer:setMasterSlaveActivity("Can1", "WoodheadOut"))
++	
++	return true
++end
++
++function IoSimulDeployer:connect()
++	assert( Deployer:addPeer("WoodheadIn", "Can1"))
++	assert( Deployer:addPeer("Reporting", "WoodheadIn"))
++
++	assert( Deployer:addPeer("WoodheadOut", "Can1"))
++	assert( Deployer:addPeer("Reporting", "WoodheadOut"))
++	
++	return true
++end
++
++
++
+Index: arp_hml/script/orocos/deployment/ubiquity_simul/motor_simul_deployer.lua
+===================================================================
+--- arp_hml/script/orocos/deployment/ubiquity_simul/motor_simul_deployer.lua	(revision 1275)
++++ arp_hml/script/orocos/deployment/ubiquity_simul/motor_simul_deployer.lua	(working copy)
+@@ -4,47 +4,51 @@
+ MotorSimulDeployer = MotorDeployer:new()
+ 
+ function MotorSimulDeployer:loadMotor(name)
+-	Deployer:loadComponent(name,"arp_hml::MotorSimul")
+-	Deployer:addPeer("MockSched", name)
+-	Deployer:setMasterSlaveActivity("MockSched", name)
++	assert( Deployer:loadComponent(name,"arp_hml::MotorSimul"))
++	assert( Deployer:addPeer("MockSched", name))
++	assert( Deployer:setMasterSlaveActivity("MockSched", name))
++	return true
+ end
+ 
+ function MotorSimulDeployer:load()
+-	Deployer:loadComponent("Can1","arp_core::PeriodicClock")
+-	Deployer:setActivity("Can1",0.030,60,1)
++	assert( Deployer:loadComponent("Can1","arp_core::PeriodicClock"));
++	assert( Deployer:setActivity("Can1",0.030,60,1));
++	
++	assert( Deployer:loadComponent("MockSched","FBSched"));
++	assert( Deployer:setActivity("MockSched",0.0,60,1));
++	MockSched = assert( Deployer:getPeer("MockSched"));
++	assert( MockSched:cleanup());
+ 	
+-	Deployer:loadComponent("MockSched","FBSched")
+-	Deployer:setActivity("MockSched",0.0,60,1)
+-	MockSched = Deployer:getPeer("MockSched")
+-	MockSched:cleanup()
++	assert( MotorSimulDeployer:loadMotor("LeftDriving"));
++	assert( MotorSimulDeployer:loadMotor("RightDriving"));
++	assert( MotorSimulDeployer:loadMotor("RearDriving"));
++	assert( MotorSimulDeployer:loadMotor("LeftSteering"));
++	assert( MotorSimulDeployer:loadMotor("RightSteering"));
++	assert( MotorSimulDeployer:loadMotor("RearSteering"));
+ 	
+-	MotorSimulDeployer:loadMotor("LeftDriving");
+-	MotorSimulDeployer:loadMotor("RightDriving");
+-	MotorSimulDeployer:loadMotor("RearDriving");
+-	MotorSimulDeployer:loadMotor("LeftSteering");
+-	MotorSimulDeployer:loadMotor("RightSteering");
+-	MotorSimulDeployer:loadMotor("RearSteering");
++	return true
+ end
+ 
+ function MotorSimulDeployer:connectMotor(name)
+-	Deployer:addPeer("Reporting", name)
+-	--MotorDeployer:registerToSql("LeftDriving")
+-	Deployer:connect(name..".inClock", "Can1.outClock",cp)
+-	MotorDeployer:check(name)
++	assert( Deployer:addPeer("Reporting", name))
++	--assert( MotorDeployer:registerToSql("LeftDriving"))
++	assert( Deployer:connect(name..".inClock", "Can1.outClock",cp))
++	assert( MotorSimulDeployer:check(name))
++	return true
+ end
+ 
+ function MotorSimulDeployer:connect()
+-	Deployer:addPeer("MockSched", "MotionScheduler")
+-	MotorSimulDeployer:connectMotor("LeftDriving")
+-	MotorSimulDeployer:connectMotor("RightDriving")
+-	MotorSimulDeployer:connectMotor("RearDriving")
+-	MotorSimulDeployer:connectMotor("LeftSteering")
+-	MotorSimulDeployer:connectMotor("RightSteering")
+-	MotorSimulDeployer:connectMotor("RearSteering")
+-	Deployer:connect("MockSched.trigger", "Can1.outTrigger",cp)
++	assert( Deployer:addPeer("MockSched", "MotionScheduler"))
++	assert( MotorSimulDeployer:connectMotor("LeftDriving"))
++	assert( MotorSimulDeployer:connectMotor("RightDriving"))
++	assert( MotorSimulDeployer:connectMotor("RearDriving"))
++	assert( MotorSimulDeployer:connectMotor("LeftSteering"))
++	assert( MotorSimulDeployer:connectMotor("RightSteering"))
++	assert( MotorSimulDeployer:connectMotor("RearSteering"))
++	assert( Deployer:connect("MockSched.trigger", "Can1.outTrigger",cp))
+ 	
+-	MotionScheduler=Deployer:getPeer("MotionScheduler")
+-	sched_order=MotionScheduler:getProperty("sched_order")
++	MotionScheduler=assert( Deployer:getPeer("MotionScheduler"))
++	sched_order= assert( MotionScheduler:getProperty("sched_order"))
+ 	sched_order:get():resize(7)
+ 	sched_order[0]="LeftSteering"
+ 	sched_order[1]="RightSteering"
+@@ -53,6 +57,8 @@
+ 	sched_order[4]="RightDriving"
+ 	sched_order[5]="RearDriving"
+ 	sched_order[6]="MotionScheduler"
++	
++	return true
+ end
+ 
+ 
+Index: arp_hml/script/orocos/deployment/deploy_ubiquity.lua
+===================================================================
+--- arp_hml/script/orocos/deployment/deploy_ubiquity.lua	(revision 1275)
++++ arp_hml/script/orocos/deployment/deploy_ubiquity.lua	(working copy)
+@@ -20,28 +20,28 @@
+ dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/scheduler_deployer.lua");
+ 
+ print("... load components")
+-CanDeployer:load()
+-SchedulerDeployer:load()
+-IoDeployer:load()
+-MotorDeployer:load()
+-Syncronizator:load()
+-JoystickDeployer:load()
+-RosHmlItfDeployer:load()
+-HmlMonitorDeployer:load()
++assert( CanDeployer:load(), 		"Failed to load Can")
++assert( SchedulerDeployer:load(), 	"Failed to load Scheduler")
++assert( IoDeployer:load(), 			"Failed to load IoDeployer")
++assert( MotorDeployer:load(), 		"Failed to load Motors")
++assert( Syncronizator:load(), 		"Failed to load Syncronizator")
++assert( JoystickDeployer:load(), 	"Failed to load Joystick")
++assert( RosHmlItfDeployer:load(), 	"Failed to load RosHmlItf")
++assert( HmlMonitorDeployer:load(), 	"Failed to load HmlMonitor")
+ 
+ 
+ print("... connect components")
+-CanDeployer:connect()
+-SchedulerDeployer:connect()
+-IoDeployer:connect()
+-MotorDeployer:connect()
+-Syncronizator:connect()
+-JoystickDeployer:connect()
+-RosHmlItfDeployer:connect()
+-HmlMonitorDeployer:connect()
++assert( CanDeployer:connect(), 			"Failed to connect Can")
++assert( SchedulerDeployer:connect() , 	"Failed to connect Scheduler")
++assert( IoDeployer:connect() , 		"Failed to connect IoDeployer")
++assert( MotorDeployer:connect() , 		"Failed to connect Motors")
++assert( Syncronizator:connect() , 		"Failed to connect Syncronizator")
++assert( JoystickDeployer:connect() , 	"Failed to connect Joystick")
++assert( RosHmlItfDeployer:connect() , 	"Failed to connect RosHmlItf")
++assert( HmlMonitorDeployer:connect() , "Failed to connect HmlMonitor")
+ 
+ print("... start components")
+-HmlMonitorDeployer:start()
++assert( HmlMonitorDeployer:start(), "Failed to start HmlMonitor")
+ 
+ print("fin déploiment arp_hml")
+ print("====================")
+Index: arp_hml/script/orocos/deployment/deploy_ubiquity_simul.lua
+===================================================================
+--- arp_hml/script/orocos/deployment/deploy_ubiquity_simul.lua	(revision 1275)
++++ arp_hml/script/orocos/deployment/deploy_ubiquity_simul.lua	(working copy)
+@@ -15,30 +15,34 @@
+ dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity_simul/hml_monitor_simul_deployer.lua");
+ dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/syncronizator_deployer.lua");
+ dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity_simul/motor_simul_deployer.lua");
++dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity_simul/io_simul_deployer.lua");
+ dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/scheduler_deployer.lua");
+ dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity_simul/ubiquity_simul_deployer.lua");
+ 
+ -- chargement de l'interface HML
+ print("... load components")
+-MotorSimulDeployer:load()
+-SchedulerDeployer:load()
+-Syncronizator:load()
+-JoystickDeployer:load()
+-RosHmlItfDeployer:load()
+-UbiquitySimulDeployer:load()
+-HmlMonitorSimulDeployer:load()
++assert( MotorSimulDeployer:load() , 		"Failed to load MotorSimul")
++assert( IoSimulDeployer:load() , 			"Failed to load IoSimulDeployer")
++assert( SchedulerDeployer:load() , 			"Failed to load Scheduler")
++assert( Syncronizator:load() , 				"Failed to load Syncronizator")
++assert( JoystickDeployer:load() , 			"Failed to load Joystick")
++assert( RosHmlItfDeployer:load() , 			"Failed to load RosHmlItf")
++assert( UbiquitySimulDeployer:load() , 		"Failed to load UbiquitySimul")
++assert( HmlMonitorSimulDeployer:load() , 	"Failed to load HmlMonitorSimul")
+ 
+ print("... connect components")
+-MotorSimulDeployer:connect()
+-SchedulerDeployer:connect()
+-Syncronizator:connect()
+-JoystickDeployer:connect()
+-RosHmlItfDeployer:connect()
+-UbiquitySimulDeployer:connect()
+-HmlMonitorSimulDeployer:connect()
++assert( MotorSimulDeployer:connect() , 		"Failed to connect MotorSimul" )
++assert( IoSimulDeployer:connect() , 		"Failed to connect IoSimulDeployer")
++assert( SchedulerDeployer:connect() , 		"Failed to connect Scheduler" )
++assert( Syncronizator:connect() , 			"Failed to connect Syncronizator" )
++assert( JoystickDeployer:connect() , 		"Failed to connect Joystick" )
++assert( RosHmlItfDeployer:connect() , 		"Failed to connect RosHmlItf" )
++assert( UbiquitySimulDeployer:connect() , 	"Failed to connect UbiquitySimul" )
++assert( HmlMonitorSimulDeployer:connect() , "Failed to connect HmlMonitorSimul" )
++
+ 
+ print("... start components")
+-HmlMonitorSimulDeployer:start()
++assert( HmlMonitorSimulDeployer:start() , "Failed to start HmlMonitor");
+ 
+ print("fin déploiment arp_hml")
+ print("====================")
+Index: arp_hml/script/orocos/deployment/deploy_ubiquity_simul.ops
+===================================================================
+--- arp_hml/script/orocos/deployment/deploy_ubiquity_simul.ops	(revision 1275)
++++ arp_hml/script/orocos/deployment/deploy_ubiquity_simul.ops	(working copy)
+@@ -1,4 +1,28 @@
+-loadService ("Deployer","Lua")
+-Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua")
+-Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity_simul.lua")
++loadService ("Deployer","Lua");
++require("print");               // loads the 'print' service globally. 
++       
++void deploy()
++{
++    //ARP_CORE
++    if ( Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua") == false ) then
++    {
++       print.ln("!!! --------------------------- !!! ");
++       print.ln("!!! Failed to deploy arp_core. !!! ");
++       print.ln("!!! --------------------------- !!! ");
++       return;
++    }
++    
++    //ARP_HML simul
++    if ( Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity_simul.lua") == false ) then
++    {
++        print.ln("!!! --------------------------- !!! ");
++        print.ln("!!! Failed to deploy arp_hml simul. !!! ");
++        print.ln("!!! --------------------------- !!! ");
++        return;
++    }
++}
+ 
++deploy();
++print.ln("The too many yield error is a workaround, don't panic");
++while(true)
++    yield
+Index: arp_hml/script/orocos/deployment/deploy_hml_mockup.lua
+===================================================================
+--- arp_hml/script/orocos/deployment/deploy_hml_mockup.lua	(revision 1275)
++++ arp_hml/script/orocos/deployment/deploy_hml_mockup.lua	(working copy)
+@@ -11,7 +11,7 @@
+ dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/hml_cmd_mockup_deployer.lua");
+ 
+ print("deploying hml Mockups")
+-HmlCmdMockupDeployer:load()
+-HmlCmdMockupDeployer:connect()
+-HmlCmdMockupDeployer:start()
++assert( HmlCmdMockupDeployer:load(),  		"Failed to load HmlCmdMockup")
++assert( HmlCmdMockupDeployer:connect(),  	"Failed to connect HmlCmdMockup")
++assert( HmlCmdMockupDeployer:start(), 		"Failed to start HmlCmdMockup")
+ 
+Index: arp_hml/script/orocos/deployment/deploy_hml_standalone.ops
+===================================================================
+--- arp_hml/script/orocos/deployment/deploy_hml_standalone.ops	(revision 1275)
++++ arp_hml/script/orocos/deployment/deploy_hml_standalone.ops	(working copy)
+@@ -1,8 +1,43 @@
+-loadService ("Deployer","Lua")
+-Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua")
+-//Lua.exec_file("/opt/ard/arp_ihm/script/orocos/deployment/deploy_arp_ihm.lua")
+-//TODO c'est un workaround, je prefererai que ce soit dans arp_core
+-//dot.comp_args="style=filled,width=5,height=3.5" 
+-Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity.lua")
+-Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_hml_mockup.lua")
+-//dot.generate()
++loadService ("Deployer","Lua");
++require("print");               // loads the 'print' service globally. 
++      
++void deploy()
++{
++    //ARP_CORE
++    if ( Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua") == false ) then
++    {
++       print.ln("!!! --------------------------- !!! ");
++       print.ln("!!! Failed to deploy arp_core. !!! ");
++       print.ln("!!! --------------------------- !!! ");
++       return;
++    }
++    
++    //ARP_HML
++    if ( Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity.lua") == false ) then
++    {
++        print.ln("!!! --------------------------- !!! ");
++        print.ln("!!! Failed to deploy arp_hml. !!! ");
++        print.ln("!!! --------------------------- !!! ");
++        return;
++    }
++    
++    //ARP_HML Mockups
++    if ( Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_hml_mockup.lua") == false ) then
++    {
++        print.ln("!!! --------------------------- !!! ");
++        print.ln("!!! Failed to deploy arp_hml mockups. !!! ");
++        print.ln("!!! --------------------------- !!! ");
++        return;
++    }
++    
++    //Lua.exec_file("/opt/ard/arp_ihm/script/orocos/deployment/deploy_arp_ihm.lua")
++    //TODO c'est un workaround, je prefererai que ce soit dans arp_core
++    //dot.comp_args="style=filled,width=5,height=3.5" 
++    //dot.generate()
++}
++
++
++deploy();
++print.ln("The too many yield error is a workaround, don't panic");
++while(true)
++    yield
+\ No newline at end of file
+Index: arp_hml/script/orocos/deployment/deploy_ubiquity.ops
+===================================================================
+--- arp_hml/script/orocos/deployment/deploy_ubiquity.ops	(revision 1275)
++++ arp_hml/script/orocos/deployment/deploy_ubiquity.ops	(working copy)
+@@ -1,7 +1,25 @@
+-loadService ("Deployer","Lua")
+-Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua")
+-//Lua.exec_file("/opt/ard/arp_ihm/script/orocos/deployment/deploy_arp_ihm.lua")
+-//TODO c'est un workaround, je prefererai que ce soit dans arp_core
+-//dot.comp_args="style=filled,width=5,height=3.5" 
+-Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity.lua")
+-//dot.generate()
++loadService ("Deployer","Lua");
++require("print");               // loads the 'print' service globally. 
++        
++void deploy()
++{
++    //ARP_CORE
++    if ( Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua") == false ) then
++    {
++       print.ln("!!! --------------------------- !!! ");
++       print.ln("!!! Failed to deploy arp_core. !!! ");
++       print.ln("!!! --------------------------- !!! ");
++       return;
++    }
++    
++    //ARP_HML
++    if ( Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity.lua") == false ) then
++    {
++        print.ln("!!! --------------------------- !!! ");
++        print.ln("!!! Failed to deploy arp_hml. !!! ");
++        print.ln("!!! --------------------------- !!! ");
++        return;
++    }
++}
++
++deploy()
+Index: arp_hml/script/orocos/deployment/ubiquity/hml_monitor_deployer.lua
+===================================================================
+--- arp_hml/script/orocos/deployment/ubiquity/hml_monitor_deployer.lua	(revision 1275)
++++ arp_hml/script/orocos/deployment/ubiquity/hml_monitor_deployer.lua	(working copy)
+@@ -5,126 +5,132 @@
+ local me = "HmlMonitor"
+ 
+ function HmlMonitorDeployer:load()
+-	Deployer:loadComponent(me, "arp_hml::HmlMonitor")
+-	Deployer:setActivity(me, 0.100, 10, rtt.globals.ORO_SCHED_RT)
++	assert( Deployer:loadComponent(me, "arp_hml::HmlMonitor"))
++	assert( Deployer:setActivity(me, 0.100, 10, rtt.globals.ORO_SCHED_RT))
+ 	--turn it into a Corba server
+-	Deployer:server(me, true)
++	assert( Deployer:server(me, true))
++	return true
+ end
+ 
+ 
+ function HmlMonitorDeployer:connectOneMotor(name)
+-	Deployer:connect("HmlMonitor.in"..name.."Enable", name..".outDriveEnable",cp)
+-	Deployer:connect("HmlMonitor.in"..name.."Connected", name..".outConnected",cp)
++	assert( Deployer:connect("HmlMonitor.in"..name.."Enable", name..".outDriveEnable",cp))
++	assert( Deployer:connect("HmlMonitor.in"..name.."Connected", name..".outConnected",cp))
++	return true
+ end
+ 
+ 
+ function HmlMonitorDeployer:addToMonitor(name)
+-	HmlMonitor = Deployer:getPeer(me)
+-	Deployer:addPeer(me, name)
+-	HmlMonitor:ooAddMonitoredPeer (name)
++	--print("... adding " ..name.. " to HmlMonitor")
++	HmlMonitor = assert( Deployer:getPeer(me))
++	assert( Deployer:addPeer(me, name))
++	assert( HmlMonitor:ooAddMonitoredPeer (name))
+ 	Deployer:removePeer (name)
++	return true
+ end
+ 
+ function HmlMonitorDeployer:addToBusMonitor(name)
+-	HmlMonitor = Deployer:getPeer(me)
+-	Deployer:addPeer(me, name)
+-	HmlMonitor:ooAddHmlBusMonitoredPeer(name)
++	--print("... adding " ..name.. " BUS to HmlMonitor")
++	HmlMonitor = assert( Deployer:getPeer(me))
++	assert( Deployer:addPeer(me, name))
++	assert( HmlMonitor:ooAddHmlBusMonitoredPeer(name))
+ 	Deployer:removePeer (name)
++	return true
+ end
+ 
+ 
+ function HmlMonitorDeployer:registerToSql()
+-	OrocosSqlMonitor = Deployer:getPeer("OrocosSqlBridge")
+-	Deployer:addPeer("OrocosSqlBridge",me)
+-	OrocosSqlMonitor:ooRegisterBoolPort(me,"outDrivingEnable")
+-	OrocosSqlMonitor:ooRegisterBoolPort(me,"outEnable")
+-	OrocosSqlMonitor:ooRegisterBoolPort(me,"outSteeringEnable")
++	OrocosSqlMonitor = assert( Deployer:getPeer("OrocosSqlBridge"))
++	assert(Deployer:addPeer("OrocosSqlBridge",me))
++	assert(OrocosSqlMonitor:ooRegisterBoolPort(me,"outDrivingEnable"))
++	assert(OrocosSqlMonitor:ooRegisterBoolPort(me,"outEnable"))
++	assert(OrocosSqlMonitor:ooRegisterBoolPort(me,"outSteeringEnable"))
++	return true
+ end
+ 
+ 
+ function HmlMonitorDeployer:connect()
+ 
+ --connection des ports
+-	HmlMonitorDeployer:connectOneMotor("LeftDriving")
+-	HmlMonitorDeployer:connectOneMotor("RightDriving")
+-	HmlMonitorDeployer:connectOneMotor("RearDriving")
+-	HmlMonitorDeployer:connectOneMotor("LeftSteering")
+-	HmlMonitorDeployer:connectOneMotor("RightSteering")
+-	HmlMonitorDeployer:connectOneMotor("RearSteering")
++	assert(HmlMonitorDeployer:connectOneMotor("LeftDriving"))
++	assert(HmlMonitorDeployer:connectOneMotor("RightDriving"))
++	assert(HmlMonitorDeployer:connectOneMotor("RearDriving"))
++	assert(HmlMonitorDeployer:connectOneMotor("LeftSteering"))
++	assert(HmlMonitorDeployer:connectOneMotor("RightSteering"))
++	assert(HmlMonitorDeployer:connectOneMotor("RearSteering"))
+ 
+-	Deployer:connect("HmlMonitor.inWoodheadInConnected", "WoodheadIn.outConnected",cp)
+-	Deployer:connect("HmlMonitor.inWoodheadOutConnected", "WoodheadOut.outConnected",cp)
++	assert(Deployer:connect("HmlMonitor.inWoodheadInConnected", "WoodheadIn.outConnected",cp))
++	assert(Deployer:connect("HmlMonitor.inWoodheadOutConnected", "WoodheadOut.outConnected",cp))
+ 	
+-	Deployer:connect("HmlMonitor.inLeftSteeringHomingDone", "LeftSteering.outHomingDone",cp)
+-	Deployer:connect("HmlMonitor.inRightSteeringHomingDone", "RightSteering.outHomingDone",cp)
+-	Deployer:connect("HmlMonitor.inRearSteeringHomingDone", "RearSteering.outHomingDone",cp)
++	assert(Deployer:connect("HmlMonitor.inLeftSteeringHomingDone", "LeftSteering.outHomingDone",cp))
++	assert(Deployer:connect("HmlMonitor.inRightSteeringHomingDone", "RightSteering.outHomingDone",cp))
++	assert(Deployer:connect("HmlMonitor.inRearSteeringHomingDone", "RearSteering.outHomingDone",cp))
+ 
+-	Deployer:connect("HmlMonitor.inLeftDrivingBlocked", "LeftDriving.outMaxTorqueTimeout",cp)
+-	Deployer:connect("HmlMonitor.inRightDrivingBlocked", "RightDriving.outMaxTorqueTimeout",cp)
+-	Deployer:connect("HmlMonitor.inRearDrivingBlocked", "RearDriving.outMaxTorqueTimeout",cp)
+-	Deployer:connect("HmlMonitor.inLeftSteeringBlocked", "LeftSteering.outMaxTorqueTimeout",cp)
+-	Deployer:connect("HmlMonitor.inRightSteeringBlocked", "RightSteering.outMaxTorqueTimeout",cp)
+-	Deployer:connect("HmlMonitor.inRearSteeringBlocked", "RearSteering.outMaxTorqueTimeout",cp)
++	assert(Deployer:connect("HmlMonitor.inLeftDrivingBlocked", "LeftDriving.outMaxTorqueTimeout",cp))
++	assert(Deployer:connect("HmlMonitor.inRightDrivingBlocked", "RightDriving.outMaxTorqueTimeout",cp))
++	assert(Deployer:connect("HmlMonitor.inRearDrivingBlocked", "RearDriving.outMaxTorqueTimeout",cp))
++	assert(Deployer:connect("HmlMonitor.inLeftSteeringBlocked", "LeftSteering.outMaxTorqueTimeout",cp))
++	assert(Deployer:connect("HmlMonitor.inRightSteeringBlocked", "RightSteering.outMaxTorqueTimeout",cp))
++	assert(Deployer:connect("HmlMonitor.inRearSteeringBlocked", "RearSteering.outMaxTorqueTimeout",cp))
+ 
+ --ajout au monitor
+ 
+-	HmlMonitorDeployer:addToBusMonitor("Can1")
+-
+-	HmlMonitorDeployer:addToMonitor("LeftDriving")
+-	HmlMonitorDeployer:addToMonitor("RightDriving")
+-	HmlMonitorDeployer:addToMonitor("RearDriving")
+-	HmlMonitorDeployer:addToMonitor("LeftSteering")
+-	HmlMonitorDeployer:addToMonitor("RightSteering")
+-	HmlMonitorDeployer:addToMonitor("RearSteering")
++	assert(HmlMonitorDeployer:addToBusMonitor("Can1"))
+ 
+-	HmlMonitorDeployer:addToMonitor("WoodheadIn")
+-	HmlMonitorDeployer:addToMonitor("WoodheadOut")
++	assert(HmlMonitorDeployer:addToMonitor("LeftDriving"))
++	assert(HmlMonitorDeployer:addToMonitor("RightDriving"))
++	assert(HmlMonitorDeployer:addToMonitor("RearDriving"))
++	assert(HmlMonitorDeployer:addToMonitor("LeftSteering"))
++	assert(HmlMonitorDeployer:addToMonitor("RightSteering"))
++	assert(HmlMonitorDeployer:addToMonitor("RearSteering"))
+ 
+-	HmlMonitorDeployer:addToMonitor("Joystick")
++	assert(HmlMonitorDeployer:addToMonitor("WoodheadIn"))
++	assert(HmlMonitorDeployer:addToMonitor("WoodheadOut"))
++	assert(HmlMonitorDeployer:addToMonitor("Joystick"))
++	assert(HmlMonitorDeployer:addToMonitor("Syncronizator"))
+ 
+-	HmlMonitorDeployer:addToMonitor("Syncronizator")
++	assert(HmlMonitorDeployer:addToMonitor("RosHmlItf"))
+ 
+-	HmlMonitorDeployer:addToMonitor("RosHmlItf")
+-
+-	--HmlMonitorDeployer:registerToSql();
++	--assert(HmlMonitorDeployer:registerToSql())
+ 	
+-	HmlMonitorDeployer:check("HmlMonitor")
++	assert(HmlMonitorDeployer:check("HmlMonitor"))
++	return true
+ end
+ 
+ function HmlMonitorDeployer:start()
+-	HmlMonitor = Deployer:getPeer(me)
+-	HmlMonitor:configure()
+-	HmlMonitor:start()
++	HmlMonitor = assert(Deployer:getPeer(me))
++	assert(HmlMonitor:configure())
++	assert(HmlMonitor:start())
+ 
+-	LeftDriving = HmlMonitor:getPeer("LeftDriving")
+-	RightDriving = HmlMonitor:getPeer("RightDriving")
+-	RearDriving = HmlMonitor:getPeer("RearDriving")
+-	LeftSteering = HmlMonitor:getPeer("LeftSteering")
+-	RightSteering = HmlMonitor:getPeer("RightSteering")
+-	RearSteering = HmlMonitor:getPeer("RearSteering")
++	LeftDriving = assert(HmlMonitor:getPeer("LeftDriving"))
++	RightDriving = assert(HmlMonitor:getPeer("RightDriving"))
++	RearDriving = assert(HmlMonitor:getPeer("RearDriving"))
++	LeftSteering = assert(HmlMonitor:getPeer("LeftSteering"))
++	RightSteering = assert(HmlMonitor:getPeer("RightSteering"))
++	RearSteering = assert(HmlMonitor:getPeer("RearSteering"))
+ 
+ 	print("setting motor mode")
+ 
+-	LeftDriving:ooSetOperationMode("other");
+-	RightDriving:ooSetOperationMode("other");
+-	RearDriving:ooSetOperationMode("other");
+-	LeftSteering:ooSetOperationMode("other");
+-	RightSteering:ooSetOperationMode("other");
+-	RearSteering:ooSetOperationMode("other");
++	assert(LeftDriving:ooSetOperationMode("other"))
++	assert(RightDriving:ooSetOperationMode("other"))
++	assert(RearDriving:ooSetOperationMode("other"))
++	assert(LeftSteering:ooSetOperationMode("other"))
++	assert(RightSteering:ooSetOperationMode("other"))
++	assert(RearSteering:ooSetOperationMode("other"))
+ 
+ 	print("setting torques")
+-	LeftDriving:ooFaulhaberCmd(0x81,RearDriving:getProperty("propMaximalTorque"):get()*1000); 
+-	RightDriving:ooFaulhaberCmd(0x81,RearDriving:getProperty("propMaximalTorque"):get()*1000);
+-	RearDriving:ooFaulhaberCmd(0x81,RearDriving:getProperty("propMaximalTorque"):get()*1000);  
+-	LeftSteering:ooFaulhaberCmd(0x81,RearSteering:getProperty("propMaximalTorque"):get()*1000);
+-	RightSteering:ooFaulhaberCmd(0x81,RearSteering:getProperty("propMaximalTorque"):get()*1000);
+-	RearSteering:ooFaulhaberCmd(0x81,RearSteering:getProperty("propMaximalTorque"):get()*1000);
+-	LeftDriving:ooFaulhaberCmd(0x80,RearDriving:getProperty("propMaximalTorque"):get()*1000); 
+-	RightDriving:ooFaulhaberCmd(0x80,RearDriving:getProperty("propMaximalTorque"):get()*1000);
+-	RearDriving:ooFaulhaberCmd(0x80,RearDriving:getProperty("propMaximalTorque"):get()*1000);  
+-	LeftSteering:ooFaulhaberCmd(0x80,RearSteering:getProperty("propMaximalTorque"):get()*1000);
+-	RightSteering:ooFaulhaberCmd(0x80,RearSteering:getProperty("propMaximalTorque"):get()*1000);
+-	RearSteering:ooFaulhaberCmd(0x80,RearSteering:getProperty("propMaximalTorque"):get()*1000);
++	LeftDriving:ooFaulhaberCmd(0x81,RearDriving:getProperty("propMaximalTorque"):get()*1000)
++	RightDriving:ooFaulhaberCmd(0x81,RearDriving:getProperty("propMaximalTorque"):get()*1000)
++	RearDriving:ooFaulhaberCmd(0x81,RearDriving:getProperty("propMaximalTorque"):get()*1000)
++	LeftSteering:ooFaulhaberCmd(0x81,RearSteering:getProperty("propMaximalTorque"):get()*1000)
++	RightSteering:ooFaulhaberCmd(0x81,RearSteering:getProperty("propMaximalTorque"):get()*1000)
++	RearSteering:ooFaulhaberCmd(0x81,RearSteering:getProperty("propMaximalTorque"):get()*1000)
++	LeftDriving:ooFaulhaberCmd(0x80,RearDriving:getProperty("propMaximalTorque"):get()*1000)
++	RightDriving:ooFaulhaberCmd(0x80,RearDriving:getProperty("propMaximalTorque"):get()*1000)
++	RearDriving:ooFaulhaberCmd(0x80,RearDriving:getProperty("propMaximalTorque"):get()*1000)
++	LeftSteering:ooFaulhaberCmd(0x80,RearSteering:getProperty("propMaximalTorque"):get()*1000)
++	RightSteering:ooFaulhaberCmd(0x80,RearSteering:getProperty("propMaximalTorque"):get()*1000)
++	RearSteering:ooFaulhaberCmd(0x80,RearSteering:getProperty("propMaximalTorque"):get()*1000)
+ 	print("sleep")
+ 	
+ 	RearDriving:ooSleep(1);
+@@ -132,5 +138,6 @@
+ 	-- il n'est pas necessaire de repasser dans les bons modes de pilotage 
+ 	-- puisqu'il faudrait faire un enable drive qui de toutes façons repassera tout le monde comme il faut
+ 
++	return true
+ end
+ 
+Index: arp_hml/script/orocos/deployment/ubiquity/io_deployer.lua
+===================================================================
+--- arp_hml/script/orocos/deployment/ubiquity/io_deployer.lua	(revision 1275)
++++ arp_hml/script/orocos/deployment/ubiquity/io_deployer.lua	(working copy)
+@@ -4,22 +4,26 @@
+ IoDeployer = ComposantDeployer:new()
+ 
+ function IoDeployer:load()
+-	Deployer:loadComponent("WoodheadIn","arp_hml::WoodheadIn")
+-	Deployer:setMasterSlaveActivity("Can1", "WoodheadIn")
++	assert( Deployer:loadComponent("WoodheadIn","arp_hml::WoodheadIn"))
++	assert( Deployer:setMasterSlaveActivity("Can1", "WoodheadIn"))
+ 
+-	Deployer:loadComponent("WoodheadOut","arp_hml::WoodheadOut")
+-	Deployer:setMasterSlaveActivity("Can1", "WoodheadOut")
++	assert( Deployer:loadComponent("WoodheadOut","arp_hml::WoodheadOut"))
++	assert( Deployer:setMasterSlaveActivity("Can1", "WoodheadOut"))
++	
++	return true
+ end
+ 
+ function IoDeployer:connect()
+-	Deployer:addPeer("WoodheadIn", "Can1")
+-	Deployer:addPeer("Reporting", "WoodheadIn")
++	assert( Deployer:addPeer("WoodheadIn", "Can1"))
++	assert( Deployer:addPeer("Reporting", "WoodheadIn"))
+ 
+-	Deployer:addPeer("WoodheadOut", "Can1")
+-	Deployer:addPeer("Reporting", "WoodheadOut")
++	assert( Deployer:addPeer("WoodheadOut", "Can1"))
++	assert( Deployer:addPeer("Reporting", "WoodheadOut"))
+ 	
+-	IoDeployer:check("WoodheadIn")
+-	IoDeployer:check("WoodheadOut")
++	assert( IoDeployer:check("WoodheadIn"))
++	assert( IoDeployer:check("WoodheadOut"))
++	
++	return true
+ end
+ 
+ 
+Index: arp_hml/script/orocos/deployment/ubiquity/ros_hml_itf_deployer.lua
+===================================================================
+--- arp_hml/script/orocos/deployment/ubiquity/ros_hml_itf_deployer.lua	(revision 1275)
++++ arp_hml/script/orocos/deployment/ubiquity/ros_hml_itf_deployer.lua	(working copy)
+@@ -4,51 +4,55 @@
+ RosHmlItfDeployer = ComposantDeployer:new()
+ 
+ function RosHmlItfDeployer:load()
+-	Deployer:loadComponent("RosHmlItf","arp_hml::RosHmlItf")
+-	Deployer:setActivity("RosHmlItf",0.050,10,rtt.globals.ORO_SCHED_RT)
++	assert( Deployer:loadComponent("RosHmlItf","arp_hml::RosHmlItf"))
++	assert( Deployer:setActivity("RosHmlItf",0.050,10,rtt.globals.ORO_SCHED_RT))
++	return true
+ end
+ 
+ 
+ function RosHmlItfDeployer:connectOneMotor(name)
+-	Deployer:addPeer("RosHmlItf", name)
+-	Deployer:connect("RosHmlItf.in"..name.."Blocked", name..".outMaxTorqueTimeout",cp)
++	assert( Deployer:addPeer("RosHmlItf", name))
++	assert( Deployer:connect("RosHmlItf.in"..name.."Blocked", name..".outMaxTorqueTimeout",cp))
++	return true
+ end
+ 
+ function RosHmlItfDeployer:connect()
+ 	
+-	Deployer:addPeer("RosHmlItf", "HmlMonitor")
++	assert( Deployer:addPeer("RosHmlItf", "HmlMonitor"))
+ 
+ --connection des ports
+-	RosHmlItfDeployer:connectOneMotor("LeftDriving")
+-	RosHmlItfDeployer:connectOneMotor("RightDriving")
+-	RosHmlItfDeployer:connectOneMotor("RearDriving")
+-	RosHmlItfDeployer:connectOneMotor("LeftSteering")
+-	RosHmlItfDeployer:connectOneMotor("RightSteering")
+-	RosHmlItfDeployer:connectOneMotor("RearSteering")
++	assert( RosHmlItfDeployer:connectOneMotor("LeftDriving"))
++	assert( RosHmlItfDeployer:connectOneMotor("RightDriving"))
++	assert( RosHmlItfDeployer:connectOneMotor("RearDriving"))
++	assert( RosHmlItfDeployer:connectOneMotor("LeftSteering"))
++	assert( RosHmlItfDeployer:connectOneMotor("RightSteering"))
++	assert( RosHmlItfDeployer:connectOneMotor("RearSteering"))
+ 	
+ 
+-	Deployer:connect("RosHmlItf.inIoStart", "WoodheadIn.outBit1",cp)
+-	Deployer:connect("RosHmlItf.inIoStartColor", "WoodheadIn.outBit3",cp)
+-	Deployer:connect("RosHmlItf.inIoFrontLeftObstacle", "WoodheadIn.outBit4",cp)
+-	Deployer:connect("RosHmlItf.inIoFrontRightObstacle", "WoodheadIn.outBit7",cp)
+-	Deployer:connect("RosHmlItf.inIoRearObstacle", "WoodheadIn.outBit8",cp)
++	assert( Deployer:connect("RosHmlItf.inIoStart", "WoodheadIn.outBit1",cp))
++	assert( Deployer:connect("RosHmlItf.inIoStartColor", "WoodheadIn.outBit3",cp))
++	assert( Deployer:connect("RosHmlItf.inIoFrontLeftObstacle", "WoodheadIn.outBit4",cp))
++	assert( Deployer:connect("RosHmlItf.inIoFrontRightObstacle", "WoodheadIn.outBit7",cp))
++	assert( Deployer:connect("RosHmlItf.inIoRearObstacle", "WoodheadIn.outBit8",cp))
+ 	
+-	Deployer:connect("RosHmlItf.inIsHomingDone", "HmlMonitor.outHomingDone",cp)
++	assert( Deployer:connect("RosHmlItf.inIsHomingDone", "HmlMonitor.outHomingDone",cp))
+ 
+ --connexion ROS
+ 	
+-	Deployer:stream("RosHmlItf.outDrivingMotorsEnable",ros:topic("/Ubiquity/driving_power"))
+-	Deployer:stream("RosHmlItf.outSteeringMotorsEnable",ros:topic("/Ubiquity/steering_power"))
+-	Deployer:stream("RosHmlItf.outMotorsEnable",ros:topic("/Ubiquity/motor_power"))
++	assert( Deployer:stream("RosHmlItf.outDrivingMotorsEnable",ros:topic("/Ubiquity/driving_power")))
++	assert( Deployer:stream("RosHmlItf.outSteeringMotorsEnable",ros:topic("/Ubiquity/steering_power")))
++	assert( Deployer:stream("RosHmlItf.outMotorsEnable",ros:topic("/Ubiquity/motor_power")))
+ 
+-	Deployer:stream("RosHmlItf.outWheelBlocked",ros:topic("/Ubiquity/wheel_blocked"))
+-	Deployer:stream("RosHmlItf.inBlockRobot",ros:topic("Simul/block_robot"))
++	assert( Deployer:stream("RosHmlItf.outWheelBlocked",ros:topic("/Ubiquity/wheel_blocked")))
++	assert( Deployer:stream("RosHmlItf.inBlockRobot",ros:topic("Simul/block_robot")))
+ 	
+-	Deployer:stream("RosHmlItf.outEmergencyStop",ros:topic("/Ubiquity/emergency_stop"))
+-	Deployer:stream("RosHmlItf.outIsHomingDone",ros:topic("/Ubiquity/homing_done"))
+-	Deployer:stream("RosHmlItf.outIoStart",ros:topic("/Ubiquity/start"))
+-	Deployer:stream("RosHmlItf.outIoStartColor",ros:topic("/Ubiquity/color"))
+-	Deployer:stream("RosHmlItf.outFrontLeftObstacle",ros:topic("/Ubiquity/front_left_obstacle"))
+-	Deployer:stream("RosHmlItf.outFrontRightObstacle",ros:topic("/Ubiquity/front_right_obstacle"))
+-	Deployer:stream("RosHmlItf.outRearObstacle",ros:topic("/Ubiquity/rear_obstacle"))
++	assert( Deployer:stream("RosHmlItf.outEmergencyStop",ros:topic("/Ubiquity/emergency_stop")))
++	assert( Deployer:stream("RosHmlItf.outIsHomingDone",ros:topic("/Ubiquity/homing_done")))
++	assert( Deployer:stream("RosHmlItf.outIoStart",ros:topic("/Ubiquity/start")))
++	assert( Deployer:stream("RosHmlItf.outIoStartColor",ros:topic("/Ubiquity/color")))
++	assert( Deployer:stream("RosHmlItf.outFrontLeftObstacle",ros:topic("/Ubiquity/front_left_obstacle")))
++	assert( Deployer:stream("RosHmlItf.outFrontRightObstacle",ros:topic("/Ubiquity/front_right_obstacle")))
++	assert( Deployer:stream("RosHmlItf.outRearObstacle",ros:topic("/Ubiquity/rear_obstacle")))
++	
++	return true
+ end
+Index: arp_hml/script/orocos/deployment/ubiquity/syncronizator_deployer.lua
+===================================================================
+--- arp_hml/script/orocos/deployment/ubiquity/syncronizator_deployer.lua	(revision 1275)
++++ arp_hml/script/orocos/deployment/ubiquity/syncronizator_deployer.lua	(working copy)
+@@ -5,29 +5,35 @@
+ local me = "Syncronizator"
+ 
+ function Syncronizator:load()
+-	Deployer:loadComponent(me,"arp_hml::Syncronizator")
+-	Deployer:setMasterSlaveActivity("MotionScheduler", me)
++	assert( Deployer:loadComponent(me,"arp_hml::Syncronizator"))
++	assert( Deployer:setMasterSlaveActivity("MotionScheduler", me))
++	
++	return true
+ end
+ 
+ 
+ function Syncronizator:connectMotorMeasure(measure)
+-	Deployer:connect(me..".inLeftDriving"..measure, 	"LeftDriving.out"..measure, cp);
+-	Deployer:connect(me..".inRightDriving"..measure, 	"RightDriving.out"..measure, cp);
+-	Deployer:connect(me..".inRearDriving"..measure, 	"RearDriving.out"..measure, cp);
+-	Deployer:connect(me..".inLeftSteering"..measure, 	"LeftSteering.out"..measure, cp);
+-	Deployer:connect(me..".inRightSteering"..measure, 	"RightSteering.out"..measure, cp);
+-	Deployer:connect(me..".inRearSteering"..measure, 	"RearSteering.out"..measure, cp);
++	assert( Deployer:connect(me..".inLeftDriving"..measure, 	"LeftDriving.out"..measure, cp))
++	assert( Deployer:connect(me..".inRightDriving"..measure, 	"RightDriving.out"..measure, cp))
++	assert( Deployer:connect(me..".inRearDriving"..measure, 	"RearDriving.out"..measure, cp))
++	assert( Deployer:connect(me..".inLeftSteering"..measure, 	"LeftSteering.out"..measure, cp))
++	assert( Deployer:connect(me..".inRightSteering"..measure, 	"RightSteering.out"..measure, cp))
++	assert( Deployer:connect(me..".inRearSteering"..measure, 	"RearSteering.out"..measure, cp))
++	
++	return true
+ end
+ 
+ 
+ function Syncronizator:connect()
+-	Syncronizator:connectMotorMeasure("Position");
+-	Syncronizator:connectMotorMeasure("Velocity");
+-	Syncronizator:connectMotorMeasure("Torque");
+-	Deployer:addPeer("Reporting", me)
+-	Deployer:connect(me..".inCanSync", 	"Can1.outClock", cp);
++	assert( Syncronizator:connectMotorMeasure("Position"))
++	assert( Syncronizator:connectMotorMeasure("Velocity"))
++	assert( Syncronizator:connectMotorMeasure("Torque"))
++	assert( Deployer:addPeer("Reporting", me))
++	assert( Deployer:connect(me..".inCanSync", 	"Can1.outClock", cp))
+ 
+-	Syncronizator:check(me)
++	assert( Syncronizator:check(me))
++	
++	return true
+ end
+ 
+ 
+Index: arp_hml/script/orocos/deployment/ubiquity/motor_deployer.lua
+===================================================================
+--- arp_hml/script/orocos/deployment/ubiquity/motor_deployer.lua	(revision 1275)
++++ arp_hml/script/orocos/deployment/ubiquity/motor_deployer.lua	(working copy)
+@@ -5,47 +5,52 @@
+ 
+ function MotorDeployer:loadMotor(name)
+ 	--sched_type 1 = RT 
+-	Deployer:loadComponent(name,"arp_hml::Faulhaber3268Bx4")
+-	Deployer:setMasterSlaveActivity("Can1", name)
++	assert( Deployer:loadComponent(name,"arp_hml::Faulhaber3268Bx4"))
++	assert( Deployer:setMasterSlaveActivity("Can1", name))
++	return true
+ end
+ 
+ function MotorDeployer:load()
+-	MotorDeployer:loadMotor("LeftDriving");
+-	MotorDeployer:loadMotor("RightDriving");
+-	MotorDeployer:loadMotor("RearDriving");
+-	MotorDeployer:loadMotor("LeftSteering");
+-	MotorDeployer:loadMotor("RightSteering");
+-	MotorDeployer:loadMotor("RearSteering");
++	assert( MotorDeployer:loadMotor("LeftDriving"))
++	assert( MotorDeployer:loadMotor("RightDriving"))
++	assert( MotorDeployer:loadMotor("RearDriving"))
++	assert( MotorDeployer:loadMotor("LeftSteering"))
++	assert( MotorDeployer:loadMotor("RightSteering"))
++	assert( MotorDeployer:loadMotor("RearSteering"))
++	return true
+ end
+ 
+ function MotorDeployer:registerToSql(name)
+-	OrocosSqlMonitor = Deployer:getPeer("OrocosSqlBridge")
+-	Deployer:addPeer("OrocosSqlBridge",name)
+-	OrocosSqlMonitor:ooRegisterBoolPort(name,"outConnected")
+-	OrocosSqlMonitor:ooRegisterBoolPort(name,"outDriveEnable")
+-	OrocosSqlMonitor:ooRegisterStringPort(name,"outCurrentOperationMode")
+-	OrocosSqlMonitor:ooRegisterDoublePort(name,"outSpeed")
+-	OrocosSqlMonitor:ooRegisterDoublePort(name,"outPosition")
+-	OrocosSqlMonitor:ooRegisterDoublePort(name,"outTorque")
++	OrocosSqlMonitor = assert( Deployer:getPeer("OrocosSqlBridge"))
++	assert( Deployer:addPeer("OrocosSqlBridge",name))
++	assert( OrocosSqlMonitor:ooRegisterBoolPort(name,"outConnected"))
++	assert( OrocosSqlMonitor:ooRegisterBoolPort(name,"outDriveEnable"))
++	assert( OrocosSqlMonitor:ooRegisterStringPort(name,"outCurrentOperationMode"))
++	assert( OrocosSqlMonitor:ooRegisterDoublePort(name,"outSpeed"))
++	assert( OrocosSqlMonitor:ooRegisterDoublePort(name,"outPosition"))
++	assert( OrocosSqlMonitor:ooRegisterDoublePort(name,"outTorque"))
++	return true
+ end
+ 
+ function MotorDeployer:connectMotor(name)
+ 	--on s'enregistre en peer au composant de trace
+-	Deployer:addPeer("Reporting", name)
++	assert( Deployer:addPeer("Reporting", name))
+ 	--on enregistre chez nous le controlleur Can
+-	Deployer:addPeer(name, "Can1")
+-	--MotorDeployer:registerToSql(name)
+-	MotorDeployer:check(me)
++	assert( Deployer:addPeer(name, "Can1"))
++	--assert( MotorDeployer:registerToSql(name))
++	assert( MotorDeployer:check(me))
++	return true
+ end
+ 
+ 
+ function MotorDeployer:connect()
+-	MotorDeployer:connectMotor("LeftDriving")
+-	MotorDeployer:connectMotor("RightDriving")
+-	MotorDeployer:connectMotor("RearDriving")
+-	MotorDeployer:connectMotor("LeftSteering")
+-	MotorDeployer:connectMotor("RightSteering")
+-	MotorDeployer:connectMotor("RearSteering")
++	assert( MotorDeployer:connectMotor("LeftDriving"))
++	assert( MotorDeployer:connectMotor("RightDriving"))
++	assert( MotorDeployer:connectMotor("RearDriving"))
++	assert( MotorDeployer:connectMotor("LeftSteering"))
++	assert( MotorDeployer:connectMotor("RightSteering"))
++	assert( MotorDeployer:connectMotor("RearSteering"))
++	return true
+ end
+ 
+ 
+Index: arp_hml/script/orocos/deployment/ubiquity/joystick_deployer.lua
+===================================================================
+--- arp_hml/script/orocos/deployment/ubiquity/joystick_deployer.lua	(revision 1275)
++++ arp_hml/script/orocos/deployment/ubiquity/joystick_deployer.lua	(working copy)
+@@ -4,14 +4,17 @@
+ JoystickDeployer = ComposantDeployer:new()
+ 
+ function JoystickDeployer:load()
+-	Deployer:loadComponent("Joystick","arp_hml::GamepadPS1");
+-	Deployer:setActivity("Joystick",0.050,5,rtt.globals.ORO_SCHED_RT);
++	assert( Deployer:loadComponent("Joystick","arp_hml::GamepadPS1"))
++	assert( Deployer:setActivity("Joystick",0.050,5,rtt.globals.ORO_SCHED_RT))
+ 
++	return true
+ end
+ 
+ function JoystickDeployer:connect()
+-	Deployer:addPeer("Reporting", "Joystick");
++	assert( Deployer:addPeer("Reporting", "Joystick"))
+ 	
+-	JoystickDeployer:check("Joystick")
++	assert( JoystickDeployer:check("Joystick"))
++	
++	return true
+ end
+ 
+Index: arp_hml/script/orocos/deployment/ubiquity/can_deployer.lua
+===================================================================
+--- arp_hml/script/orocos/deployment/ubiquity/can_deployer.lua	(revision 1275)
++++ arp_hml/script/orocos/deployment/ubiquity/can_deployer.lua	(working copy)
+@@ -1,17 +1,18 @@
+ dofile("/opt/ard/arp_core/script/orocos/deployment/component_deployer_object.lua")
+ 
+ 
+-CanDeployer = ComposantDeployer:new()
++CanDeployer = ComposantDeployer:new();
+ 
+ function CanDeployer:load()
+-	Deployer:loadComponent("Can1","arp_hml::CanOpenController");
+-	Deployer:setActivity("Can1",0,45,rtt.globals.ORO_SCHED_RT);
+-
++	assert( Deployer:loadComponent("Can1","arp_hml::CanOpenController"));
++	assert( Deployer:setActivity("Can1",0,45,rtt.globals.ORO_SCHED_RT));
++	return true
+ end
+ 
+ function CanDeployer:connect()
+-	Deployer:addPeer("Reporting", "Can1");
+-	CanDeployer:check("Can1")
++	assert( Deployer:addPeer("Reporting", "Can1"));
++	assert( CanDeployer:check("Can1"));
++	return true
+ end
+ 
+ 
+Index: arp_hml/script/orocos/deployment/ubiquity/hml_cmd_mockup_deployer.lua
+===================================================================
+--- arp_hml/script/orocos/deployment/ubiquity/hml_cmd_mockup_deployer.lua	(revision 1275)
++++ arp_hml/script/orocos/deployment/ubiquity/hml_cmd_mockup_deployer.lua	(working copy)
+@@ -5,46 +5,50 @@
+ local me = "HmlCmdMockup";
+ 
+ function HmlCmdMockupDeployer:load()
+-	Deployer:loadComponent(me,"arp_hml::HmlCmdMockup")
+-	Deployer:setActivity(me,0.100,0,rtt.globals.ORO_SCHED_OTHER)
++	assert( Deployer:loadComponent(me,"arp_hml::HmlCmdMockup"))
++	assert( Deployer:setActivity(me,0.100,0,rtt.globals.ORO_SCHED_OTHER))
++	return true
+ end
+ 
+ 
+ function HmlCmdMockupDeployer:connectOneMotor(name)
+-	HmlMonitor = Deployer:getPeer("HmlMonitor");
+-	HmlMonitor:connect(name, "inSpeedCmd", me, "out"..name.."SpeedCmd")
+-	HmlMonitor:connect(name, "inPositionCmd", me, "out"..name.."PositionCmd")
+-	HmlMonitor:connect(name, "inTorqueCmd", me, "out"..name.."TorqueCmd")
++	assert( HmlMonitor = Deployer:getPeer("HmlMonitor"))
++	assert( HmlMonitor:connect(name, "inSpeedCmd", me, "out"..name.."SpeedCmd"))
++	assert( HmlMonitor:connect(name, "inPositionCmd", me, "out"..name.."PositionCmd"))
++	assert( HmlMonitor:connect(name, "inTorqueCmd", me, "out"..name.."TorqueCmd"))
++	return true
+ end
+ 
+ function HmlCmdMockupDeployer:connect()
+ 	
+-	Deployer:addPeer(me, "HmlMonitor")
++	assert( Deployer:addPeer(me, "HmlMonitor"))
+ 	--on s'ajoute en peer a HmlMonitor pour pouvoir faire les connections
+-	Deployer:addPeer("HmlMonitor", me)
++	assert( Deployer:addPeer("HmlMonitor", me))
+ 
+-	HmlCmdMockupDeployer:connectOneMotor("LeftDriving")
+-	HmlCmdMockupDeployer:connectOneMotor("RightDriving")
+-	HmlCmdMockupDeployer:connectOneMotor("RearDriving")
+-	HmlCmdMockupDeployer:connectOneMotor("LeftSteering")
+-	HmlCmdMockupDeployer:connectOneMotor("RightSteering")
+-	HmlCmdMockupDeployer:connectOneMotor("RearSteering")
++	assert( HmlCmdMockupDeployer:connectOneMotor("LeftDriving"))
++	assert( HmlCmdMockupDeployer:connectOneMotor("RightDriving"))
++	assert( HmlCmdMockupDeployer:connectOneMotor("RearDriving"))
++	assert( HmlCmdMockupDeployer:connectOneMotor("LeftSteering"))
++	assert( HmlCmdMockupDeployer:connectOneMotor("RightSteering"))
++	assert( HmlCmdMockupDeployer:connectOneMotor("RearSteering"))
+ 
+-	HmlMonitor = Deployer:getPeer("HmlMonitor");
+-	HmlMonitor:connect("WoodheadOut","inBit1",me,"outBit01")
+-	HmlMonitor:connect("WoodheadOut","inBit2",me,"outBit02")
+-	HmlMonitor:connect("WoodheadOut","inBit3",me,"outBit03")
+-	HmlMonitor:connect("WoodheadOut","inBit4",me,"outBit04")
+-	HmlMonitor:connect("WoodheadOut","inBit5",me,"outBit05")
+-	HmlMonitor:connect("WoodheadOut","inBit6",me,"outBit06")
+-	HmlMonitor:connect("WoodheadOut","inBit7",me,"outBit07")
+-	HmlMonitor:connect("WoodheadOut","inBit8",me,"outBit08")
++	HmlMonitor = assert( Deployer:getPeer("HmlMonitor"))
++	assert( HmlMonitor:connect("WoodheadOut","inBit1",me,"outBit01"))
++	assert( HmlMonitor:connect("WoodheadOut","inBit2",me,"outBit02"))
++	assert( HmlMonitor:connect("WoodheadOut","inBit3",me,"outBit03"))
++	assert( HmlMonitor:connect("WoodheadOut","inBit4",me,"outBit04"))
++	assert( HmlMonitor:connect("WoodheadOut","inBit5",me,"outBit05"))
++	assert( HmlMonitor:connect("WoodheadOut","inBit6",me,"outBit06"))
++	assert( HmlMonitor:connect("WoodheadOut","inBit7",me,"outBit07"))
++	assert( HmlMonitor:connect("WoodheadOut","inBit8",me,"outBit08"))
+ 	
+-	HmlCmdMockupDeployer:check("HmlCmdMockup")
++	assert( HmlCmdMockupDeployer:check("HmlCmdMockup"))
++	return true
+ end
+ 
+ function HmlCmdMockupDeployer:start()
+ 	HmlCmdMockup = Deployer:getPeer(me)
+ 	HmlCmdMockup:configure()
+ 	HmlCmdMockup:start()
++	return true
+ end
+\ No newline at end of file
+Index: arp_hml/script/orocos/deployment/ubiquity/scheduler_deployer.lua
+===================================================================
+--- arp_hml/script/orocos/deployment/ubiquity/scheduler_deployer.lua	(revision 1275)
++++ arp_hml/script/orocos/deployment/ubiquity/scheduler_deployer.lua	(working copy)
+@@ -5,14 +5,16 @@
+ local me = "MotionScheduler"
+ 
+ function SchedulerDeployer:load()
+-	Deployer:loadComponent(me,"arp_hml::MotionScheduler")
+-	Deployer:setMasterSlaveActivity("Can1", me)
++	assert( Deployer:loadComponent(me,"arp_hml::MotionScheduler"))
++	assert( Deployer:setMasterSlaveActivity("Can1", me))
++	return true
+ end
+ 
+ function SchedulerDeployer:connect()
+-	Deployer:connect("Can1.outClock", me..".inClock",cp)
+-	Scheduler = Deployer:getPeer(me)
+-	Scheduler:configure()
++	assert( Deployer:connect("Can1.outClock", me..".inClock",cp))
++	Scheduler = assert( Deployer:getPeer(me))
++	assert( Scheduler:configure())
++	return true
+ end
+ 
+ 
+Index: arp_hml/rosconfig.cmake
+===================================================================
+--- arp_hml/rosconfig.cmake	(revision 1275)
++++ arp_hml/rosconfig.cmake	(working copy)
+@@ -1,3 +1 @@
+-set( ROS_BUILD_TYPE MinSizeRel )
+-#set( ROS_COMPILE_FLAGS "-Werror")
+-
++set( ROS_BUILD_TYPE RelWithDebInfo )
+Index: arp_hml/src/orocos/io/WoodheadSimul.cpp
+===================================================================
+--- arp_hml/src/orocos/io/WoodheadSimul.cpp	(revision 0)
++++ arp_hml/src/orocos/io/WoodheadSimul.cpp	(revision 0)
+@@ -0,0 +1,78 @@
++/*
++ * WoodheadSimul.cpp
++ *
++ *  Created on: 29 apr. 2011
++ *      Author: wla
++ */
++
++#include "WoodheadSimul.hpp"
++#include <rtt/Component.hpp>
++
++using namespace arp_hml;
++
++
++ORO_LIST_COMPONENT_TYPE( arp_hml::WoodheadSimul )
++
++WoodheadSimul::WoodheadSimul(const std::string& name):
++    HmlTaskContext(name)
++{
++    addPort("outBit1",outBit1)
++        .doc("Value of the input #1");
++    addPort("outBit2",outBit2)
++        .doc("Value of the input #2");
++    addPort("outBit3",outBit3)
++        .doc("Value of the input #3");
++    addPort("outBit4",outBit4)
++        .doc("Value of the input #4");
++    addPort("outBit5",outBit5)
++        .doc("Value of the input #5");
++    addPort("outBit6",outBit6)
++        .doc("Value of the input #6");
++    addPort("outBit7",outBit7)
++        .doc("Value of the input #7");
++    addPort("outBit8",outBit8)
++        .doc("Value of the input #8");
++
++    addPort("outConnected",outConnected)
++        .doc("Always true in Simul");
++
++    addPort("inBit1",inBit1)
++        .doc("Value of the output #1");
++    addPort("inBit2",inBit2)
++        .doc("Value of the output #2");
++    addPort("inBit3",inBit3)
++        .doc("Value of the output #3");
++    addPort("inBit4",inBit4)
++        .doc("Value of the output #4");
++    addPort("inBit5",inBit5)
++        .doc("Value of the output #5");
++    addPort("inBit6",inBit6)
++        .doc("Value of the output #6");
++    addPort("inBit7",inBit7)
++        .doc("Value of the output #7");
++    addPort("inBit8",inBit8)
++        .doc("Value of the output #8");
++
++    outBit1.write(false);
++    outBit2.write(false);
++    outBit3.write(false);
++    outBit4.write(false);
++    outBit5.write(false);
++    outBit6.write(false);
++    outBit7.write(false);
++    outBit8.write(false);
++
++    outConnected.write(true);
++}
++
++void WoodheadSimul::updateHook()
++{
++    outBit1.write(false);
++    outBit2.write(false);
++    outBit3.write(false);
++    outBit4.write(false);
++    outBit5.write(false);
++    outBit6.write(false);
++    outBit7.write(false);
++    outBit8.write(false);
++}
+Index: arp_hml/src/orocos/io/WoodheadSimul.hpp
+===================================================================
+--- arp_hml/src/orocos/io/WoodheadSimul.hpp	(revision 0)
++++ arp_hml/src/orocos/io/WoodheadSimul.hpp	(revision 0)
+@@ -0,0 +1,48 @@
++/*
++ * WoodheadSimul.hpp
++ *
++ *  Created on: 09 May 2012
++ *      Author: wla
++ */
++
++
++#ifndef WOODHEAD_SIMUL_HPP_
++#define WOODHEAD_SIMUL_HPP_
++
++//include orocos
++#include "orocos/taskcontexts/HmlTaskContext.hpp"
++
++namespace arp_hml
++{
++
++    class WoodheadSimul : public HmlTaskContext
++    {
++    public:
++        WoodheadSimul(const std::string& name);
++    	void updateHook();
++
++    protected:
++    	OutputPort<bool> outBit1;
++    	OutputPort<bool> outBit2;
++    	OutputPort<bool> outBit3;
++    	OutputPort<bool> outBit4;
++    	OutputPort<bool> outBit5;
++    	OutputPort<bool> outBit6;
++    	OutputPort<bool> outBit7;
++    	OutputPort<bool> outBit8;
++
++    	OutputPort<bool> outConnected;
++
++        InputPort<bool> inBit1;
++        InputPort<bool> inBit2;
++        InputPort<bool> inBit3;
++        InputPort<bool> inBit4;
++        InputPort<bool> inBit5;
++        InputPort<bool> inBit6;
++        InputPort<bool> inBit7;
++        InputPort<bool> inBit8;
++    };
++
++}
++
++#endif
+Index: arp_master/src/arp_master/strat_2012/motionTesting/MotionTestingStratNode.py
+===================================================================
+--- arp_master/src/arp_master/strat_2012/motionTesting/MotionTestingStratNode.py	(revision 1275)
++++ arp_master/src/arp_master/strat_2012/motionTesting/MotionTestingStratNode.py	(working copy)
+@@ -42,17 +42,48 @@
+         with self:
+             smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
+                                    transitions={'endInitialisation':'StartSequence', 'failed':'end'})
+-            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(0,0,0),
+-                                   transitions={'gogogo':'Move1','problem':'end'})  
++            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(0,0,-pi),
++                                   transitions={'gogogo':'Forward','problem':'end'})  
++            
++            smach.StateMachine.add('Forward',
++                      Forward(),
++                      transitions={'succeeded':'SetInitialPosition','timeout':'Debloque'})
+             
+-            smach.StateMachine.add('Move1', Move1(),
+-                                   transitions={'succeeded':'Move2', 'timeout':'Debloque'})
+-            smach.StateMachine.add('Move2', Move2(),
+-                                   transitions={'succeeded':'Move3', 'timeout':'Debloque'})
+-            smach.StateMachine.add('Move3', Move3(),
+-                                   transitions={'succeeded':'Move4', 'timeout':'Debloque'})
+-            smach.StateMachine.add('Move4', Move4(),
+-                                   transitions={'succeeded':'Move1', 'timeout':'Debloque'})
++            smach.StateMachine.add('SetInitialPosition',
++                      SetInitialPosition(0,0,0),
++                      transitions={'succeeded':'Straight','timeout':'end'})
++            
++            smach.StateMachine.add('Straight', Straight(),
++                       transitions={'succeeded':'WaitStraight', 'timeout':'Debloque'})
++            
++            smach.StateMachine.add('WaitStraight', WaiterState(2.0),
++                       transitions={'timeout':'BackStraight'})
++            
++            smach.StateMachine.add('BackStraight', BackStraight(),
++                       transitions={'succeeded':'WaitBackStraight', 'timeout':'Debloque'})
++            
++            smach.StateMachine.add('WaitBackStraight', WaiterState(2.0),
++                       transitions={'timeout':'Straight'})
++            
++            
++            
++            smach.StateMachine.add('Escape', Escape(),
++                       transitions={'succeeded':'LeftMove1', 'timeout':'Debloque'})
++            
++            smach.StateMachine.add('LeftMove1', LeftMove1(),
++                                   transitions={'succeeded':'LeftMove2', 'timeout':'Debloque'})
++            smach.StateMachine.add('LeftMove2', LeftMove2(),
++                                   transitions={'succeeded':'LeftMoveTurnLeft', 'timeout':'Debloque'})
++            smach.StateMachine.add('LeftMoveTurnLeft', LeftMoveTurnLeft(),
++                                   transitions={'succeeded':'LeftMove4', 'timeout':'Debloque'})
++            smach.StateMachine.add('LeftMove4', LeftMove4(),
++                                   transitions={'succeeded':'LeftMove5', 'timeout':'Debloque'})
++            smach.StateMachine.add('LeftMove5', LeftMove5(),
++                                   transitions={'succeeded':'LeftMoveRight', 'timeout':'Debloque'})
++            smach.StateMachine.add('LeftMoveRight', LeftMoveRight(),
++                           transitions={'succeeded':'LeftMove1', 'timeout':'Debloque'})
++                
++                
+                 
+             smach.StateMachine.add('OpenMove1', OpenMove1(),
+                                    transitions={'succeeded':'OpenMove2', 'timeout':'Debloque'})
+@@ -71,12 +102,58 @@
+             smach.StateMachine.add('Wait', WaiterState(2.0),
+                                    transitions={'timeout':'end'})           
+ 
++#----------------------------------------------------------------
++
++class Forward(CyclicActionState):
++    def createAction(self):
++        self.openloop( x_speed=0.100,y_speed=-0.000,theta_speed=0.000,
++                    openloop_duration=0.500)
+ 
+-class Move1(CyclicActionState):
++class Straight(CyclicActionState):
++    def createAction(self):
++        self.omnidirect(1.000, -0.0, 0)
++        
++class BackStraight(CyclicActionState):
+     def createAction(self):
+-        #self.forward(1.000)
+-        #self.cap(-1.57)
+-        self.omnidirect(1.000, 0.000, 1.57)
++        self.omnidirect(0.000, -0.0, 0)
++        
++        
++#----------------------------------------------------------------        
++
++class Escape(CyclicActionState):
++    def createAction(self):
++        self.omnidirect(0.000, -0.650, -pi)
++
++class LeftMove1(CyclicActionState):
++    def createAction(self):
++        self.omnidirect(-0.850, -0.700, -pi)
++        
++class LeftMove2(CyclicActionState):
++    def createAction(self):
++        self.omnidirect(-0.850, 0.700, -pi)
++        
++class LeftMoveTurnLeft(CyclicActionState):
++    def createAction(self):
++        self.openloop_cpoint( 0,0,0,
++                    x_speed=0.000,y_speed=-0.000,theta_speed=1.000,
++                       openloop_duration=3.400)
++
++class LeftMove4(CyclicActionState):
++    def createAction(self):
++        self.omnidirect(-0.850, -0.700, 0)
++        
++class LeftMove5(CyclicActionState):
++    def createAction(self):
++        self.omnidirect(-0.850, 0.700, 0)
++        
++class LeftMoveRight(CyclicActionState):
++    def createAction(self):
++        self.openloop_cpoint( 0,0,0,
++                              x_speed=0.000,y_speed=-0.000,theta_speed=-1.000,
++                       openloop_duration=3.400)
++
++#----------------------------------------------------------------------
++
+ 
+ class Move2(CyclicActionState):
+     def createAction(self):
+Index: arp_master/src/arp_master/strat_2012/preCoupe/a1_startSequence/Strat_StartSequence.py
+===================================================================
+--- arp_master/src/arp_master/strat_2012/preCoupe/a1_startSequence/Strat_StartSequence.py	(revision 1275)
++++ arp_master/src/arp_master/strat_2012/preCoupe/a1_startSequence/Strat_StartSequence.py	(working copy)
+@@ -29,15 +29,11 @@
+                       transitions={'succeeded':'SetInitialPosition','timeout':'problem'})
+             
+             smach.StateMachine.add('SetInitialPosition',
+-                      SetInitialPosition(1.200,0.750,-pi),
+-                      transitions={'succeeded':'WaitPos','timeout':'problem'})
+-            
+-            smach.StateMachine.add('WaitPos',
+-                      WaiterState(1),
+-                      transitions={'timeout':'Backward'})
++                      SetInitialPosition(1.250,0.750,-pi),
++                      transitions={'succeeded':'Forward','timeout':'problem'})
+                         
+-            smach.StateMachine.add('Backward',
+-                      Backward(),
++            smach.StateMachine.add('Forward',
++                      Forward(),
+                       transitions={'succeeded':'WaitForMatch','timeout':'problem'})
+                         
+             smach.StateMachine.add('WaitForMatch', 
+@@ -45,7 +41,7 @@
+                       transitions={'start':'SetInitialPosition2', 'timeout':'problem'})
+             
+             smach.StateMachine.add('SetInitialPosition2',
+-                      SetInitialPosition(1.250,0.750,-pi),
++                      SetInitialPosition(1.200,0.750,-pi),
+                       transitions={'succeeded':'gogogo','timeout':'problem'})
+     
+       
+@@ -55,6 +51,7 @@
+     def createAction(self):
+        self.cap(AmbiCapRed(-pi,Data.color).angle)
+       
+-class Backward(CyclicActionState):
++class Forward(CyclicActionState):
+     def createAction(self):
+-        self.backward(0.050)
++        self.openloop( x_speed=0.100,y_speed=-0.000,theta_speed=0.000,
++                    openloop_duration=0.500)
+Index: arp_master/src/arp_master/strat_2012/preCoupe/a3_middleGame/Strat_MiddleGame.py
+===================================================================
+--- arp_master/src/arp_master/strat_2012/preCoupe/a3_middleGame/Strat_MiddleGame.py	(revision 1275)
++++ arp_master/src/arp_master/strat_2012/preCoupe/a3_middleGame/Strat_MiddleGame.py	(working copy)
+@@ -16,14 +16,29 @@
+ 
+             PreemptiveStateMachine.add('GotoFirstBottle',
+                       GotoFirstBottle(),
+-                      transitions={'succeeded':'GotoSecondBottle', 'timeout':'problem'})
++                      transitions={'succeeded':'PushFirstBottle', 'timeout':'problem'})
+             #as initial state is not the preemptive one, it is necessary to add the information here !
+             self.setInitialState('GotoFirstBottle')
+             
++            PreemptiveStateMachine.add('PushFirstBottle',
++                      PushBottle(),
++                      transitions={'succeeded':'GoBackFirstBottle', 'timeout':'problem'})
++           
++            PreemptiveStateMachine.add('GoBackFirstBottle',
++                      GoBackBottle(),
++                      transitions={'succeeded':'GotoSecondBottle', 'timeout':'problem'})
++                        
+             PreemptiveStateMachine.add('GotoSecondBottle',
+                       GotoSecondBottle(),
+-                      transitions={'succeeded':'endMiddleGame', 'timeout':'problem'})
++                      transitions={'succeeded':'PushSecondBottle', 'timeout':'problem'})
+         
++            PreemptiveStateMachine.add('PushSecondBottle',
++                      PushBottle(),
++                      transitions={'succeeded':'GoBackSecondBottle', 'timeout':'problem'})
++            
++            PreemptiveStateMachine.add('GoBackSecondBottle',
++                      GoBackBottle(),
++                      transitions={'succeeded':'endMiddleGame', 'timeout':'problem'})
+ 
+ 
+ 
+@@ -33,12 +48,23 @@
+     def createAction(self):
+         pose = AmbiPoseRed(0.200,-0.750, -pi/2, Data.color)
+         self.omnidirect(pose.x, pose.y, pose.theta)
++        
++class PushBottle(CyclicActionState):
++    def createAction(self):
++        self.openloop( x_speed=0.300,y_speed=-0.000,theta_speed=0.000,
++                       openloop_duration=1.000)
++        
++class GoBackBottle(CyclicActionState):
++    def createAction(self):
++        self.openloop( x_speed=-0.300,y_speed=-0.000,theta_speed=0.000,
++                       openloop_duration=0.500)
+ 
+ class GotoSecondBottle(CyclicActionState):
+     def createAction(self):
+-        pose = AmbiPoseRed(-0.600,-0.800, -pi/2, Data.color)
++        pose = AmbiPoseRed(-0.550,-0.800, -pi/2, Data.color)
+         self.omnidirect(pose.x, pose.y, pose.theta)
+          
++         
+ ################# REVERSER
+ class ReverseOrder(CyclicActionState):
+     def createAction(self):
+Index: arp_master/script/orocos/deployment/deploy_arp_master.ops
+===================================================================
+--- arp_master/script/orocos/deployment/deploy_arp_master.ops	(revision 1275)
++++ arp_master/script/orocos/deployment/deploy_arp_master.ops	(working copy)
+@@ -1,7 +1,66 @@
+-loadService ("Deployer","Lua")
+-Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua")
+-//Lua.exec_file("/opt/ard/arp_ihm/script/orocos/deployment/deploy_arp_ihm.lua")
+-Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity.lua")
+-Lua.exec_file("/opt/ard/arp_rlu/script/orocos/deployment/deploy_arp_rlu.lua")
+-Lua.exec_file("/opt/ard/arp_ods/script/orocos/deployment/deploy_ods.lua")
+-Lua.exec_file("/opt/ard/arp_master/script/orocos/deployment/deploy_arp_master.lua")
++loadService ("Deployer","Lua");
++require("print");               // loads the 'print' service globally. 
++
++void deploy()
++{
++    //ARP_CORE
++    if ( Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua") == false ) then
++    {
++       print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++       print.ln("\033[1;31m!!! Failed to deploy arp_core. !!!\033[0m");
++       print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++       return;
++    }
++    
++    /*
++    //ARP_IHM
++    if ( Lua.exec_file("/opt/ard/arp_ihm/script/orocos/deployment/deploy_arp_ihm.lua") == false ) then
++    {
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        print.ln("!!! Failed to deploy arp_ihm. !!!\033[0m");
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        return;
++    }
++    */
++       
++    //ARP_HML
++    if ( Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity.lua") == false ) then
++    {
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        print.ln("\033[1;31m!!! Failed to deploy arp_hml. !!!\033[0m");
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        return;
++    }
++    
++    //ARP_RLU
++    if ( Lua.exec_file("/opt/ard/arp_rlu/script/orocos/deployment/deploy_arp_rlu.lua") == false ) then
++    {
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        print.ln("\033[1;31m!!! Failed to deploy arp_rlu. !!!\033[0m");
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        return;
++    }
++    
++    //ARP_ODS
++    if ( Lua.exec_file("/opt/ard/arp_ods/script/orocos/deployment/deploy_ods.lua") == false ) then
++    {
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        print.ln("\033[1;31m!!! Failed to deploy arp_ods. !!!\033[0m");
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        return;
++    }
++     
++    //ARP_MASTER
++    if ( Lua.exec_file("/opt/ard/arp_master/script/orocos/deployment/deploy_arp_master.lua") == false ) then
++    {
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        print.ln("\033[1;31m!!! Failed to deploy arp_master. !!!\033[0m");
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        return;
++    }
++}
++
++deploy()
++print.ln("The too many yield error is a workaround, don't panic");
++while(true)
++    yield
+\ No newline at end of file
+Index: arp_master/script/orocos/deployment/deploy_arp_master_simul.ops
+===================================================================
+--- arp_master/script/orocos/deployment/deploy_arp_master_simul.ops	(revision 1275)
++++ arp_master/script/orocos/deployment/deploy_arp_master_simul.ops	(working copy)
+@@ -1,7 +1,68 @@
+-loadService ("Deployer","Lua")
+-Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua")
+-//Lua.exec_file("/opt/ard/arp_ihm/script/orocos/deployment/deploy_arp_ihm.lua")
+-Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity_simul.lua")
+-Lua.exec_file("/opt/ard/arp_rlu/script/orocos/deployment/deploy_arp_rlu.lua")
+-Lua.exec_file("/opt/ard/arp_ods/script/orocos/deployment/deploy_ods.lua")
+-Lua.exec_file("/opt/ard/arp_master/script/orocos/deployment/deploy_arp_master.lua")
++loadService ("Deployer","Lua");
++require("print") ;              // loads the 'print' service globally. 
++
++
++void deploy()
++{
++    //ARP_CORE
++    if ( Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua") == false ) then
++    {
++       print.ln("\033[1;31m!!! --------------------------- !!\033[0m ");
++       print.ln("\033[1;31m!!! Failed to deploy arp_core. !!!\033[0m");
++       print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++       return;
++    }
++    
++    /*
++    //ARP_IHM
++    if ( Lua.exec_file("/opt/ard/arp_ihm/script/orocos/deployment/deploy_arp_ihm.lua") == false ) then
++    {
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        print.ln("\033[1;31m!!! Failed to deploy arp_ihm. !!!\033[0m");
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        return;
++    }
++    */
++       
++    //ARP_HML
++    if ( Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity_simul.lua") == false ) then
++    {
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        print.ln("\033[1;31m!!! Failed to deploy arp_hml. !!!\033[0m");
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        return;
++    }
++    
++    //ARP_RLU
++    if ( Lua.exec_file("/opt/ard/arp_rlu/script/orocos/deployment/deploy_arp_rlu.lua") == false ) then
++    {
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        print.ln("\033[1;31m!!! Failed to deploy arp_rlu. !!!\033[0m");
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        return;
++    }
++    
++    //ARP_ODS
++    if ( Lua.exec_file("/opt/ard/arp_ods/script/orocos/deployment/deploy_ods.lua") == false ) then
++    {
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        print.ln("\033[1;31m!!! Failed to deploy arp_ods. !!!\033[0m");
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        return;
++    }
++     
++    //ARP_MASTER
++    if ( Lua.exec_file("/opt/ard/arp_master/script/orocos/deployment/deploy_arp_master.lua") == false ) then
++    {
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        print.ln("\033[1;31m!!! Failed to deploy arp_master. !!!\033[0m");
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        return;
++    }
++}
++
++
++deploy();
++print.ln("The too many yield error is a workaround, don't panic");
++while(true)
++    yield
+\ No newline at end of file
+Index: arp_master/script/orocos/deployment/lua/last_component.lua
+===================================================================
+--- arp_master/script/orocos/deployment/lua/last_component.lua	(revision 1275)
++++ arp_master/script/orocos/deployment/lua/last_component.lua	(working copy)
+@@ -4,17 +4,20 @@
+ LastComponentDeployer = ComposantDeployer:new()
+ 
+ function LastComponentDeployer:load()
+-	Deployer:loadComponent("LastComponent","arp_master::LastComponent");
+-	Deployer:setActivity("LastComponent",1,0,0);
++	assert( Deployer:loadComponent("LastComponent","arp_master::LastComponent"))
++	assert( Deployer:setActivity("LastComponent",1,0,0))
++	return true
+ 
+ end
+ 
+ function LastComponentDeployer:connect()
+-	Deployer:stream("LastComponent.outDeployed",ros:topic("/Master/deployed"))
++	assert( Deployer:stream("LastComponent.outDeployed",ros:topic("/Master/deployed")))
++	return true
+ end
+ 
+ function LastComponentDeployer:start()
+-	LastComponent = Deployer:getPeer("LastComponent");
+-	LastComponent:configure();
+-	LastComponent:start();
++	LastComponent = assert( Deployer:getPeer("LastComponent"))
++	assert( LastComponent:configure())
++	assert( LastComponent:start())
++	return true
+ end
+\ No newline at end of file
+Index: arp_master/script/orocos/deployment/deploy_arp_master_manual.ops
+===================================================================
+--- arp_master/script/orocos/deployment/deploy_arp_master_manual.ops	(revision 1275)
++++ arp_master/script/orocos/deployment/deploy_arp_master_manual.ops	(working copy)
+@@ -1,7 +1,66 @@
+-loadService ("Deployer","Lua")
+-Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua")
+-//Lua.exec_file("/opt/ard/arp_ihm/script/orocos/deployment/deploy_arp_ihm.lua")
+-Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity.lua")
+-Lua.exec_file("/opt/ard/arp_rlu/script/orocos/deployment/deploy_arp_rlu.lua")
+-Lua.exec_file("/opt/ard/arp_ods/script/orocos/deployment/deploy_arp_ods_manual.lua")
+-Lua.exec_file("/opt/ard/arp_master/script/orocos/deployment/deploy_arp_master.lua")
++loadService ("Deployer","Lua");
++require("print");               // loads the 'print' service globally. 
++
++void deploy()
++{
++    //ARP_CORE
++    if ( Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua") == false ) then
++    {
++       print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++       print.ln("\033[1;31m!!! Failed to deploy arp_core. !!!\033[0m");
++       print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++       return;
++    }
++    
++    /*
++    //ARP_IHM
++    if ( Lua.exec_file("/opt/ard/arp_ihm/script/orocos/deployment/deploy_arp_ihm.lua") == false ) then
++    {
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        print.ln("\033[1;31m!!! Failed to deploy arp_ihm. !!!\033[0m");
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        return;
++    }
++    */
++       
++    //ARP_HML
++    if ( Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity.lua") == false ) then
++    {
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        print.ln("\033[1;31m!!! Failed to deploy arp_hml. !!!\033[0m");
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        return;
++    }
++    
++    //ARP_RLU
++    if ( Lua.exec_file("/opt/ard/arp_rlu/script/orocos/deployment/deploy_arp_rlu.lua") == false ) then
++    {
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        print.ln("\033[1;31m!!! Failed to deploy arp_rlu. !!!\033[0m");
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        return;
++    }
++    
++    //ARP_ODS
++    if ( Lua.exec_file("/opt/ard/arp_ods/script/orocos/deployment/deploy_arp_ods_manual.lua") == false ) then
++    {
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        print.ln("\033[1;31m!!! Failed to deploy arp_ods. !!!\033[0m");
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        return;
++    }
++     
++    //ARP_MASTER
++    if ( Lua.exec_file("/opt/ard/arp_master/script/orocos/deployment/deploy_arp_master.lua") == false ) then
++    {
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        print.ln("\033[1;31m!!! Failed to deploy arp_master. !!!\033[0m");
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        return;
++    }
++}
++
++deploy();
++print.ln("The too many yield error is a workaround, don't panic");
++while(true)
++    yield
+Index: arp_master/script/orocos/deployment/deploy_arp_master.lua
+===================================================================
+--- arp_master/script/orocos/deployment/deploy_arp_master.lua	(revision 1275)
++++ arp_master/script/orocos/deployment/deploy_arp_master.lua	(working copy)
+@@ -17,13 +17,12 @@
+ --a activer pour avoir des traces dans reports.dat (soit dans le répertoire courant soit dans /opt/ros)
+ Telemetry:report()
+ 
+-LastComponentDeployer:load();
+-LastComponentDeployer:connect();
++assert( LastComponentDeployer:load())
++assert( LastComponentDeployer:connect())
+ 
+-Scheduler = Deployer:getPeer("MotionScheduler");
+-Scheduler:start();
+-
+-LastComponentDeployer:start();
++Scheduler = assert(Deployer:getPeer("MotionScheduler"))
++assert(Scheduler:start())
++assert(LastComponentDeployer:start())
+ 
+ print("fin déploiment arp_master")
+ print("====================")
+Index: arp_master/script/orocos/deployment/deploy_arp_master_manual_simul.ops
+===================================================================
+--- arp_master/script/orocos/deployment/deploy_arp_master_manual_simul.ops	(revision 1275)
++++ arp_master/script/orocos/deployment/deploy_arp_master_manual_simul.ops	(working copy)
+@@ -1,7 +1,68 @@
+-loadService ("Deployer","Lua")
+-Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua")
+-//Lua.exec_file("/opt/ard/arp_ihm/script/orocos/deployment/deploy_arp_ihm.lua")
+-Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity_simul.lua")
+-Lua.exec_file("/opt/ard/arp_rlu/script/orocos/deployment/deploy_arp_rlu.lua")
+-Lua.exec_file("/opt/ard/arp_ods/script/orocos/deployment/deploy_arp_ods_manual.lua")
+-Lua.exec_file("/opt/ard/arp_master/script/orocos/deployment/deploy_arp_master.lua")
++loadService ("Deployer","Lua");
++require("print");               // loads the 'print' service globally. 
++
++
++void deploy()
++{
++    //ARP_CORE
++    if ( Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua") == false ) then
++    {
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        print.ln("\033[1;31m!!! Failed to deploy arp_core. !!!\033[0m");
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        return;
++    }
++    
++    /*
++    //ARP_IHM
++    if ( Lua.exec_file("/opt/ard/arp_ihm/script/orocos/deployment/deploy_arp_ihm.lua") == false ) then
++    {
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        print.ln("\033[1;31m!!! Failed to deploy arp_ihm. !!!\033[0m");
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        return;
++    }
++    */
++       
++    //ARP_HML
++    if ( Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity_simul.lua") == false ) then
++    {
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        print.ln("\033[1;31m!!! Failed to deploy arp_hml. !!!\033[0m");
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        return;
++    }
++    
++    //ARP_RLU
++    if ( Lua.exec_file("/opt/ard/arp_rlu/script/orocos/deployment/deploy_arp_rlu.lua") == false ) then
++    {
++        print.ln("!!! --------------------------- !!!\033[0m");
++        print.ln("!!! Failed to deploy arp_rlu. !!!\033[0m");
++        print.ln("!!! --------------------------- !!!\033[0m");
++        return;
++    }
++    
++    //ARP_ODS
++    if ( Lua.exec_file("/opt/ard/arp_ods/script/orocos/deployment/deploy_arp_ods_manual.lua") == false ) then
++    {
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        print.ln("\033[1;31m!!! Failed to deploy arp_ods. !!!\033[0m");
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        return;
++    }
++     
++    //ARP_MASTER
++    if ( Lua.exec_file("/opt/ard/arp_master/script/orocos/deployment/deploy_arp_master.lua") == false ) then
++    {
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        print.ln("\033[1;31m!!! Failed to deploy arp_master. !!!\033[0m");
++        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
++        return;
++    }
++}
++
++
++deploy();
++print.ln("The too many yield error is a workaround, don't panic");
++while(true)
++    yield
+Index: arp_core/script/orocos/deployment/component_deployer_object.lua
+===================================================================
+--- arp_core/script/orocos/deployment/component_deployer_object.lua	(revision 1275)
++++ arp_core/script/orocos/deployment/component_deployer_object.lua	(working copy)
+@@ -47,5 +47,5 @@
+    end
+    return ret
+    ]]
+-   
++   return true
+ end
+Index: arp_core/script/orocos/deployment/deploy_arp_core.lua
+===================================================================
+--- arp_core/script/orocos/deployment/deploy_arp_core.lua	(revision 1276)
++++ arp_core/script/orocos/deployment/deploy_arp_core.lua	(working copy)
+@@ -19,11 +19,11 @@
+ 
+ -- chargement du composant serveur parametre
+ print("loading Ubiquity param server...")
+-Deployer:loadComponent("UbiquityParams","arp_core::ParamsComponent")
++assert( Deployer:loadComponent("UbiquityParams","arp_core::ParamsComponent"), "Failed to load UbiquityParams")
+ UbiquityParams = Deployer:getPeer("UbiquityParams")
+ UbiquityParams:setPeriod (0.100)
+-UbiquityParams:configure()
+-UbiquityParams:start();
++assert( UbiquityParams:configure(), "Failed to configure UbiquityParams")
++assert( UbiquityParams:start(), "Failed to start UbiquityParams")
+ 
+ --chargement du generateur de visualisation des composant
+ print("loading rtt_dot_service...")
+Index: arp_core/script/orocos/deployment/deploy_arp_core.ops
+===================================================================
+--- arp_core/script/orocos/deployment/deploy_arp_core.ops	(revision 1275)
++++ arp_core/script/orocos/deployment/deploy_arp_core.ops	(working copy)
+@@ -1,5 +1,21 @@
+ /* ARD arp_core main deployment file */
+ loadService ("Deployer","Lua")
+-Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua")
+-dot.comp_args="style=filled,width=5,height=3.5" 
+-dot.generate()
++require("print"),               // loads the 'print' service globally. 
++        
++void deploy()
++{
++    //ARP_CORE
++    if ( Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua") == false )
++    {
++       print.ln("!!! --------------------------- !!! ");
++       print.ln("!!! Failed to deploy arp_core. !!! ");
++       print.ln("!!! --------------------------- !!! ");
++       return;
++    }
++
++    //TODO c'est un workaround, je prefererai que ce soit dans arp_core
++    //dot.comp_args="style=filled,width=5,height=3.5" 
++    //dot.generate()
++}
++
++deploy();
+\ No newline at end of file
