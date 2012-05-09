@@ -78,6 +78,17 @@ function Telemetry:reportJoystick()
 	Reporting:reportPort("Joystick","outX2")
 end
 
+
+function Telemetry:reportOmnidirect()
+	print("reporting omnidirect variables")
+	Reporting=Deployer:getPeer("Reporting")
+	Reporting:reportPort("MotionControl","outDEBUGPositionError")
+	Reporting:reportPort("MotionControl","outDEBUGLinSpeedCorrection")
+	Reporting:reportPort("MotionControl","outDEBUGAngSpeedCorrection")
+	Reporting:reportPort("MotionControl","outDEBUGSaturation")
+end
+
+
 -- Enregistre les ports à plotter et lances l'enregistrement
 -- pour voir les résultats :
 -- _ si vous avez lancé avec roslaunch, il y a un fichier /opt/ros/reports.dat
@@ -90,11 +101,11 @@ function Telemetry:report()
 	print("====================")
 	print("début déploiment telemetry")
 	--Telemetry:reportJoystick()
-	Telemetry:reportRobotCmd()
-	Telemetry:reportRobotState()
+	--Telemetry:reportRobotCmd()
+	--Telemetry:reportRobotState()
 	--Telemetry:reportMotorState()
 	--Telemetry:reportTiming()
-	
+	Telemetry:reportOmnidirect()
 
 	
 	

@@ -55,6 +55,18 @@ void LittleSexControl::updateHook()
     // calcule les consignes
     attrComputedTwistCmd = attrOrder->computeSpeed(attrPosition,attrDt);
 
+    /*
+     * DEBUG: recuperation des données de l'omnidirect
+     */
+    if (attrOrder->getType()==OMNIDIRECT)
+    {
+        outDEBUGPositionError.write(attrOrder->outDEBUGPositionError);
+        outDEBUGLinSpeedCorrection.write(attrOrder->outDEBUGLinSpeedCorrection);
+        outDEBUGAngSpeedCorrection.write(attrOrder->outDEBUGAngSpeedCorrection);
+        outDEBUGSaturation.write(attrOrder->outDEBUGSaturation);
+    }
+
+
     //publish computed value
     setOutputs();
 }
@@ -154,12 +166,23 @@ void LittleSexControl::createOrocosInterface()
     addPort("inCurrentTwist",inCurrentTwist)
             .doc("");
 
+    //DEBUG
     addPort("outTwistCmd",outTwistCmd)
             .doc("");
     addPort("outOrderFinished",outOrderFinished)
             .doc("");
     addPort("outOrderInError",outOrderInError)
             .doc("");
+    addPort("outDEBUGSaturation",outDEBUGSaturation)
+                .doc("");
+
+
+    addPort("outDEBUGPositionError",outDEBUGPositionError)
+            .doc("");
+    addPort("outDEBUGLinSpeedCorrection",outDEBUGLinSpeedCorrection)
+            .doc("");
+    addPort("outDEBUGAngSpeedCorrection",outDEBUGAngSpeedCorrection)
+             .doc("");
 
     addOperation("ooSetOrder",&LittleSexControl::ooSetOrder, this, OwnThread)
                 .doc("Define a new order to do")

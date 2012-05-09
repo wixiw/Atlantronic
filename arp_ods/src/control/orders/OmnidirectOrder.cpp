@@ -143,8 +143,8 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
     deltaPos_refCpoint.translation( orient_cpoint.inverse().toRotationMatrix() * deltaPos_refTable.translation());
     deltaPos_refCpoint.orientation( betweenMinusPiAndPlusPi(deltaPos_refTable.h()) );
 
-    Log(DEBUG) << "position error of cpoint in robot referential (deltaPos_refCpoint) :" << deltaPos_refCpoint.toString();
-
+    //Log(DEBUG) << "position error of cpoint in robot referential (deltaPos_refCpoint) :" << deltaPos_refCpoint.toString();
+    outDEBUGPositionError=deltaPos_refCpoint;
 
     // brutal correction twist. with constant acceleration   v = sqrt ( 2 . acc) . sqrt( d )
     Twist2D v_correction_cpoint;
@@ -153,13 +153,16 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
     v_correction_cpoint.vy(speedcorrection*std::sin(deltaPos_refCpoint.vectAngle()));
     v_correction_cpoint.vh(sqrt2(2.0*m_conf.ANG_DEC)*sqrt2(deltaPos_refCpoint.h()));
 
-    Log(DEBUG) << "correction twist on cpoint (v_correction_cpoint) :" << v_correction_cpoint.toString();
+    outDEBUGLinSpeedCorrection=speedcorrection;
+    outDEBUGAngSpeedCorrection=v_correction_cpoint.vh();
+
+    //Log(DEBUG) << "correction twist on cpoint (v_correction_cpoint) :" << v_correction_cpoint.toString();
 
     //transfer of the twist to robot referential
     Twist2D v_correction_ref;
     v_correction_ref=v_correction_cpoint.transport(m_cpoint.inverse());
 
-    Log(DEBUG) << "correction twist on ref (v_correction_ref) :" << v_correction_ref.toString();
+    //Log(DEBUG) << "correction twist on ref (v_correction_ref) :" << v_correction_ref.toString();
 
     //saturation of twist: limit max linear speed/acc;  and max rotation speed/acc
     Twist2D v_correction_saturated;
@@ -170,7 +173,7 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
     double sat=std::max(satvlin,std::max( satvrot,1.0));
     v_correction_saturated = v_correction_ref * (1.0/sat);
 
-
+    outDEBUGSaturation=sat;
 
     m_v_correction_old=v_correction_saturated;
 

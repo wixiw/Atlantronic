@@ -63,6 +63,14 @@ class LittleSexControl: public OdsTaskContext
          */
         RTT::OutputPort<bool> outOrderInError;
 
+        /*
+         * DEBUG
+         */
+        RTT::OutputPort<arp_math::Pose2D> outDEBUGPositionError;
+        RTT::OutputPort<double> outDEBUGLinSpeedCorrection;
+        RTT::OutputPort<double> outDEBUGAngSpeedCorrection;
+        RTT::OutputPort<double> outDEBUGSaturation;
+
         /**
          * Buffer for computed speed commands
          */

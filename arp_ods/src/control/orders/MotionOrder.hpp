@@ -86,6 +86,14 @@ class MotionOrder: public ModeSelector
          */
         void setTwistBuffer(TwistBuffer twistBuffer );
 
+        /*
+         * DEBUG
+         */
+        arp_math::Pose2D outDEBUGPositionError;
+        double outDEBUGLinSpeedCorrection;
+        double outDEBUGAngSpeedCorrection;
+        double outDEBUGSaturation;
+
     protected:
         /** type of the current order */
         OrderType m_type;
