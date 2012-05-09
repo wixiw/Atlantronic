@@ -25,8 +25,8 @@ namespace arp_math
  * Cette classe représente le torseur cinématique du robot par rapport à une référence externe.
  * Il s'agit de 3 trois double.
  *
- *  ro = atan (distance of the ICR). can be negative following side of the CIR with respect to the speed
- *  alpha = angle of speed at referential point. 0 if no speed at referential point
+ *  ro = atan (distance of the ICR). always positive
+ *  alpha = angle of line to CIR. 0 if no speed at referential point
  *  q  = norm of speed at referential point + omega
  */
 

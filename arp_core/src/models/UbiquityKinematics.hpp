@@ -72,11 +72,19 @@ class UbiquityKinematics
                                     SlippageReport& oSR,
                                     const UbiquityParams & iParams);
 
+        /**
+         * Modèle cinématique direct de la base, version simpliste qui ne prend que 3 mesures pour faire le calcul des 3 coordonées du twist (avec une matrice inversible)
+         * ne sert qu'au debug
+         */
+        static void simpleTurrets2Twist(const TurretState & iTS, arp_math::Twist2D& oTw, SlippageReport& oSR, const UbiquityParams & iParams);
 
-        static bool turrets2Twist2(const TurretState & iTS,
-                                    arp_math::Twist2D& oTw,
-                                    SlippageReport& oSR,
-                                    const UbiquityParams & iParams);
+        /**
+         * Modèle cinématique direct de la base.
+         * Convertit l'état des tourelles en un ICRSpeed (mouvement du repère de référence du chassis par rapport au sol projeté et réduit dans le
+         * repère de référence du chassis).\n
+         */
+        static bool simpleTurrets2ICRspeed(const TurretState & iTS, arp_math::ICRSpeed& oICRs, const UbiquityParams & iParams);
+
 
         /**
          * Modèle cinématique indirect de la base
@@ -104,15 +112,8 @@ class UbiquityKinematics
                 SlippageReport& oSR,
                 const UbiquityParams & iParams);
 
-
-        static bool motors2Twist2(const MotorState & iMS,
-                TurretState& oTS,
-                arp_math::Twist2D& oTw,
-                SlippageReport& oSR,
-                const UbiquityParams & iParams);
-
         /**
-         * Echainement des modèles indirects de tourelle et cinématique
+         * Enchainement des modèles indirects de tourelle et cinématique
          * @param oTS : [out] the intermediate computation of Turret State. Should be only used for debug or user feedback
          */
         static bool twist2Motors(const arp_math::Twist2D & iTw,

@@ -29,3 +29,4 @@ BOOST_AUTO_TEST_SUITE_END()
 #include "uTest_UK_Twist2Turrets.hpp"
 #include "uTest_UK_Turrets2Twist.hpp"
 #include "uTest_UbiquityKinematics.hpp"
+#include "uTest_UK_Turrets2ICRSpeed.hpp"

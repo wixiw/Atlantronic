@@ -167,6 +167,8 @@ BOOST_AUTO_TEST_CASE( Math_linesIntersection )
 
     BOOST_CHECK_EQUAL( parralel4, true);
     BOOST_CHECK_EQUAL( colinear4, false);
+
+
 }
 
 

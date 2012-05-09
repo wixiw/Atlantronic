@@ -11,6 +11,7 @@
 #include <Eigen/SVD>
 
 using namespace std;
+using namespace Eigen;
 using namespace arp_math;
 using namespace arp_model;
 using namespace arp_core::log;
@@ -159,6 +160,138 @@ bool UbiquityKinematics::turrets2Twist(const TurretState & iTS, Twist2D& oTw, Sl
     oTw.vh(X(0));
     oTw.vx(X(1));
     oTw.vy(X(2));
+
+    //use this if you think that the nominal code has trouble with singularities in matrix
+    //simpleTurrets2Twist(iTS,oTw,oSR,iParams);
+
+    return true;
+}
+
+void UbiquityKinematics::simpleTurrets2Twist(const TurretState & iTS, Twist2D& oTw, SlippageReport& oSR,
+        const UbiquityParams & iParams)
+{
+//very simple odometry calculation for debug
+//uses only 3 measures
+
+    // TEST MOULINEAU
+    //matrice "(vxL,vyL,vxR)= A . (vx,vy,thetap)
+    Eigen::Matrix<double, 3, 3> Transfert;
+    {
+        // vxLeft=vx-thetap. yLeft
+        Transfert(0, 0) = 1;
+        Transfert(0, 1) = 0;
+        Transfert(0, 2) = -iParams.getLeftTurretPosition().y();
+        //vyLeft=vy+thetap . xLeft
+        Transfert(1, 0) = 0;
+        Transfert(1, 1) = 1;
+        Transfert(1, 2) = iParams.getLeftTurretPosition().x();
+
+        //idem for vxRight
+        Transfert(2, 0) = 1;
+        Transfert(2, 1) = 0;
+        Transfert(2, 2) = -iParams.getRightTurretPosition().y();
+    }
+
+    Log(DEBUG) << ">> turrets2twist";
+    Log(DEBUG) << "iTS" << iTS.toString();
+    Log(DEBUG) << "iTS.steering.left.position " << iTS.steering.left.position;
+    Log(DEBUG) << "iTS.driving.left.velocity  " << iTS.driving.left.velocity;
+
+    //matrice des mesures
+    Eigen::Matrix<double, 3, 1> Mesures;
+    {
+        Mesures(0, 0) = cos(iTS.steering.left.position) * iTS.driving.left.velocity;
+        Mesures(1, 0) = sin(iTS.steering.left.position) * iTS.driving.left.velocity;
+        Mesures(2, 0) = cos(iTS.steering.right.position) * iTS.driving.right.velocity;
+    }
+
+    Log(DEBUG) << "Transfert: " << Transfert;
+    Log(DEBUG) << "mesures:   " << Mesures;
+
+    Eigen::Matrix<double, 3, 1> Twist;
+    Twist = Transfert.inverse() * Mesures;
+
+    oTw.vx(Twist(0, 0));
+    oTw.vy(Twist(1, 0));
+    oTw.vh(Twist(2, 0));
+
+}
+
+bool UbiquityKinematics::simpleTurrets2ICRspeed(const TurretState & iTS, ICRSpeed& oICRs,
+        const UbiquityParams & iParams)
+{
+
+    //definition of lines perpendicular to turrets
+    Vector2 pLeft1(iParams.getLeftTurretPosition().x(), iParams.getLeftTurretPosition().y());
+    Vector2 deltaLeft(cos(iTS.steering.left.position + PI / 2), sin(iTS.steering.left.position + PI / 2));
+    Vector2 pLeft2 = pLeft1 + deltaLeft;
+
+    Vector2 pRight1(iParams.getRightTurretPosition().x(), iParams.getRightTurretPosition().y());
+    Vector2 deltaRight(cos(iTS.steering.right.position + PI / 2), sin(iTS.steering.right.position + PI / 2));
+    Vector2 pRight2 = pRight1 + deltaRight;
+
+    Vector2 pRear1(iParams.getRearTurretPosition().x(), iParams.getRearTurretPosition().y());
+    Vector2 deltaRear(cos(iTS.steering.rear.position + PI / 2), sin(iTS.steering.rear.position + PI / 2));
+    Vector2 pRear2 = pRear1 + deltaRear;
+
+    //speeds
+    Vector2 leftSpeed(cos(iTS.steering.left.position) * iTS.driving.left.velocity,
+            sin(iTS.steering.left.position) * iTS.driving.left.velocity);
+    Vector2 rightSpeed(cos(iTS.steering.right.position) * iTS.driving.right.velocity,
+            sin(iTS.steering.right.position) * iTS.driving.right.velocity);
+    Vector2 rearSpeed(cos(iTS.steering.rear.position) * iTS.driving.rear.velocity,
+            sin(iTS.steering.rear.position) * iTS.driving.rear.velocity);
+
+    // intersection of lines
+    Vector2 ICRLeftRight;
+    bool parLeftRight;
+    bool colLeftRight;
+    linesIntersection(pLeft1, pLeft2, pRight1, pRight2, 1e-6, ICRLeftRight, parLeftRight, colLeftRight);
+
+    Vector2 ICRLeftRear;
+    bool parLeftRear;
+    bool colLeftRear;
+    linesIntersection(pLeft1, pLeft2, pRear1, pRear2, 1e-6, ICRLeftRear, parLeftRear, colLeftRear);
+
+    Vector2 ICRRightRear;
+    bool parRightRear;
+    bool colRightRear;
+    linesIntersection(pRight1, pRight2, pRear1, pRear2, 1e-6, ICRRightRear, parRightRear, colRightRear);
+
+    //now we have the 3 intersections. there might be parralel or colinear turrets.
+
+    //SIMPLIFIED VERSION: takes  only 2 turrets to work
+    if (colLeftRight) // front turrets are coliear
+    {
+        if (parLeftRear) // the third is parralel also
+        {
+            oICRs = ICRSpeed::createFromTranslation(iTS.steering.rear.position, iTS.driving.rear.velocity);
+
+        }
+        else // the third turret is not parralel: we are turning around a point on the front turrets line
+        {
+            oICRs = ICRSpeed::createFromICR(ICRRightRear, pRear1, rearSpeed);
+
+        }
+    }
+    else if (parLeftRight) // front turrets are parralel but not colinear, the robot is in translation
+    {
+        oICRs = ICRSpeed::createFromTranslation(iTS.steering.left.position, iTS.driving.left.velocity);
+    }
+
+    else // standard case: the front turrets are crossing
+    {
+        if (fabs(iTS.driving.left.velocity) >= fabs(iTS.driving.right.velocity))
+        {
+            oICRs = ICRSpeed::createFromICR(ICRLeftRight, pLeft1, leftSpeed);
+
+        }
+        else
+        {
+            oICRs = ICRSpeed::createFromICR(ICRLeftRight, pRight1, rightSpeed);
+        }
+
+    }
 
     return true;
 }

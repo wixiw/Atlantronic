@@ -77,6 +77,10 @@ ICRSpeed ICRSpeed::createFromICR(Vector2 ICR,Vector2 speedPoint, Vector2 speed)
 
     ICRSpeed result;
 
+    if (speed.norm()!=0.0)
+    {
+
+
     //omega: we have
     // speed = v(speedPoint) = v(ICR)  +   omega  ^ ( ICR to speedpoint )
     // speed=omega  ^ ( ICR to speedpoint )
@@ -93,6 +97,14 @@ ICRSpeed ICRSpeed::createFromICR(Vector2 ICR,Vector2 speedPoint, Vector2 speed)
         result.alpha(0.0);
 
     result.q(omega(2)+speedRef.norm());
+    }
+    else
+    {
+        //there is no motion at all. i only need to define my ICR
+        result.ro(atan(ICR.norm()));
+        result.alpha(atan2(-ICR(0),ICR(1)));
+        result.q(0);
+    }
 
     return result;
 }

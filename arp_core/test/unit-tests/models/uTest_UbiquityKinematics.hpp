@@ -104,8 +104,8 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_nullspeed )
  */
 void checkTwist2Motor2Twist(double vx, double vy, double vh, MotorState curmotors, UbiquityParams params)
 {
-    cout << "checkTwist2Motor2Twist " << vx << " " << vy << " " << vh
-            << " turrets Zeros : " << params.getLeftTurretZero() << " " << params.getRightTurretZero() << " " << params.getRearTurretZero() << endl;
+//    cout << "checkTwist2Motor2Twist " << vx << " " << vy << " " << vh
+//            << " turrets Zeros : " << params.getLeftTurretZero() << " " << params.getRightTurretZero() << " " << params.getRearTurretZero() << endl;
 
     TurretState turrets_commanded;
     TurretState turrets_back;
@@ -197,9 +197,9 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_twist2motor2twist )
  */
 BOOST_AUTO_TEST_CASE( UbiquityKinematics_rotation_twist2motor2twist )
 {
-    cout << "" << endl;
-    cout << "-------------------------------------" << endl;
-    cout << "" << endl;
+//    cout << "" << endl;
+//    cout << "-------------------------------------" << endl;
+//    cout << "" << endl;
 
     UbiquityParams params;
     MotorState curmotors;
