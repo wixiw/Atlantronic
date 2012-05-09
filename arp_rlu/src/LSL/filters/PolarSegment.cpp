@@ -73,11 +73,14 @@ std::vector<DetectedObject> PolarSegment::apply(const LaserScan & raw, const Par
         {
             LaserScan ls;
             ls.setPolarData( rawPolar.block(0, index, 3, i-index) );
-            index = i;
             if(b)
             {
-                ls.computeCartesianData( rawCartesian.row(0), rawCartesian.row(3), rawCartesian.row(4), rawCartesian.row(5) );
+                ls.computeCartesianData( rawCartesian.block(0, index, 5, i-index).row(0),
+                                         rawCartesian.block(0, index, 5, i-index).row(3),
+                                         rawCartesian.block(0, index, 5, i-index).row(4),
+                                         rawCartesian.block(0, index, 5, i-index).row(5) );
             }
+            index = i;
             out.push_back(DetectedObject(ls));
         }
     }
