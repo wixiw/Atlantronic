@@ -348,4 +348,188 @@ BOOST_AUTO_TEST_CASE( Test_Case_Complex )
     BOOST_CHECK_EQUAL( res[1].second.second.r(), refDuo[1].second.r() );
 }
 
+BOOST_AUTO_TEST_CASE( Test_Case_association_1 )
+{
+    std::vector< std::pair<lsl::Circle, lsl::Circle> > refDuo;
+
+    lsl::Circle c1(-1.5, 1., 0.04);
+    lsl::Circle c2(-1.5,-1., 0.04);
+    refDuo.push_back( std::make_pair( c1, c2 ));
+
+    std::vector<lsl::DetectedCircle> detectedCircles;
+
+    lsl::DetectedCircle dc1;
+    dc1.x( -1.5 );
+    dc1.y(  1.  );
+    dc1.r(  0.04 );
+    detectedCircles.push_back( dc1 );
+
+    lsl::DetectedCircle dc2;
+    dc2.x( -1.5 );
+    dc2.y( -1.  );
+    dc2.r(  0.04 );
+    detectedCircles.push_back( dc2 );
+
+    lsl::DuoCircleIdentif::Params p;
+    p.radiusTolerance = 0.05;
+    p.distanceTolerance = 0.;
+    p.lengthTolerance = 0.1;
+
+    std::vector< std::pair< std::pair<lsl::DetectedCircle, lsl::DetectedCircle>, std::pair<lsl::Circle, lsl::Circle> > > res;
+    res = lsl::DuoCircleIdentif::apply( detectedCircles, refDuo, p);
+
+    BOOST_CHECK_EQUAL( res.size() , 1 );
+
+    BOOST_CHECK_EQUAL( res[0].first.first.x(), dc1.x() );
+    BOOST_CHECK_EQUAL( res[0].first.first.y(), dc1.y() );
+    BOOST_CHECK_EQUAL( res[0].first.first.r(), dc1.r() );
+    BOOST_CHECK_EQUAL( res[0].first.second.x(), dc2.x() );
+    BOOST_CHECK_EQUAL( res[0].first.second.y(), dc2.y() );
+    BOOST_CHECK_EQUAL( res[0].first.second.r(), dc2.r() );
+    BOOST_CHECK_EQUAL( res[0].second.first.x(), c1.x() );
+    BOOST_CHECK_EQUAL( res[0].second.first.y(), c1.y() );
+    BOOST_CHECK_EQUAL( res[0].second.first.r(), c1.r() );
+    BOOST_CHECK_EQUAL( res[0].second.second.x(), c2.x() );
+    BOOST_CHECK_EQUAL( res[0].second.second.y(), c2.y() );
+    BOOST_CHECK_EQUAL( res[0].second.second.r(), c2.r() );
+}
+
+BOOST_AUTO_TEST_CASE( Test_Case_association_2 )
+{
+    std::vector< std::pair<lsl::Circle, lsl::Circle> > refDuo;
+
+    lsl::Circle c1(-1.5, 1., 0.04);
+    lsl::Circle c2(-1.5,-1., 0.04);
+    refDuo.push_back( std::make_pair( c1, c2 ));
+
+    std::vector<lsl::DetectedCircle> detectedCircles;
+
+    lsl::DetectedCircle dc1;
+    dc1.x( -1.5 );
+    dc1.y( -1.  );
+    dc1.r(  0.04 );
+    detectedCircles.push_back( dc1 );
+
+    lsl::DetectedCircle dc2;
+    dc2.x( -1.5 );
+    dc2.y(  1.  );
+    dc2.r(  0.04 );
+    detectedCircles.push_back( dc2 );
+
+    lsl::DuoCircleIdentif::Params p;
+    p.radiusTolerance = 0.05;
+    p.distanceTolerance = 0.;
+    p.lengthTolerance = 0.1;
+
+    std::vector< std::pair< std::pair<lsl::DetectedCircle, lsl::DetectedCircle>, std::pair<lsl::Circle, lsl::Circle> > > res;
+    res = lsl::DuoCircleIdentif::apply( detectedCircles, refDuo, p);
+
+    BOOST_CHECK_EQUAL( res.size() , 1 );
+
+    BOOST_CHECK_EQUAL( res[0].first.first.x(), dc2.x() );
+    BOOST_CHECK_EQUAL( res[0].first.first.y(), dc2.y() );
+    BOOST_CHECK_EQUAL( res[0].first.first.r(), dc2.r() );
+    BOOST_CHECK_EQUAL( res[0].first.second.x(), dc1.x() );
+    BOOST_CHECK_EQUAL( res[0].first.second.y(), dc1.y() );
+    BOOST_CHECK_EQUAL( res[0].first.second.r(), dc1.r() );
+    BOOST_CHECK_EQUAL( res[0].second.first.x(), c1.x() );
+    BOOST_CHECK_EQUAL( res[0].second.first.y(), c1.y() );
+    BOOST_CHECK_EQUAL( res[0].second.first.r(), c1.r() );
+    BOOST_CHECK_EQUAL( res[0].second.second.x(), c2.x() );
+    BOOST_CHECK_EQUAL( res[0].second.second.y(), c2.y() );
+    BOOST_CHECK_EQUAL( res[0].second.second.r(), c2.r() );
+}
+
+BOOST_AUTO_TEST_CASE( Test_Case_association_3 )
+{
+    std::vector< std::pair<lsl::Circle, lsl::Circle> > refDuo;
+
+    lsl::Circle c1(-1.5,-1., 0.04);
+    lsl::Circle c2(-1.5, 1., 0.04);
+    refDuo.push_back( std::make_pair( c1, c2 ));
+
+    std::vector<lsl::DetectedCircle> detectedCircles;
+
+    lsl::DetectedCircle dc1;
+    dc1.x( -1.5 );
+    dc1.y(  1.  );
+    dc1.r(  0.04 );
+    detectedCircles.push_back( dc1 );
+
+    lsl::DetectedCircle dc2;
+    dc2.x( -1.5 );
+    dc2.y( -1.  );
+    dc2.r(  0.04 );
+    detectedCircles.push_back( dc2 );
+
+    lsl::DuoCircleIdentif::Params p;
+    p.radiusTolerance = 0.05;
+    p.distanceTolerance = 0.;
+    p.lengthTolerance = 0.1;
+
+    std::vector< std::pair< std::pair<lsl::DetectedCircle, lsl::DetectedCircle>, std::pair<lsl::Circle, lsl::Circle> > > res;
+    res = lsl::DuoCircleIdentif::apply( detectedCircles, refDuo, p);
+
+    BOOST_CHECK_EQUAL( res.size() , 1 );
+
+    BOOST_CHECK_EQUAL( res[0].first.first.x(), dc1.x() );
+    BOOST_CHECK_EQUAL( res[0].first.first.y(), dc1.y() );
+    BOOST_CHECK_EQUAL( res[0].first.first.r(), dc1.r() );
+    BOOST_CHECK_EQUAL( res[0].first.second.x(), dc2.x() );
+    BOOST_CHECK_EQUAL( res[0].first.second.y(), dc2.y() );
+    BOOST_CHECK_EQUAL( res[0].first.second.r(), dc2.r() );
+    BOOST_CHECK_EQUAL( res[0].second.first.x(), c2.x() );
+    BOOST_CHECK_EQUAL( res[0].second.first.y(), c2.y() );
+    BOOST_CHECK_EQUAL( res[0].second.first.r(), c2.r() );
+    BOOST_CHECK_EQUAL( res[0].second.second.x(), c1.x() );
+    BOOST_CHECK_EQUAL( res[0].second.second.y(), c1.y() );
+    BOOST_CHECK_EQUAL( res[0].second.second.r(), c1.r() );
+}
+
+BOOST_AUTO_TEST_CASE( Test_Case_association_4 )
+{
+    std::vector< std::pair<lsl::Circle, lsl::Circle> > refDuo;
+
+    lsl::Circle c1(-1.5,-1., 0.04);
+    lsl::Circle c2(-1.5, 1., 0.04);
+    refDuo.push_back( std::make_pair( c1, c2 ));
+
+    std::vector<lsl::DetectedCircle> detectedCircles;
+
+    lsl::DetectedCircle dc1;
+    dc1.x( -1.5 );
+    dc1.y( -1.  );
+    dc1.r(  0.04 );
+    detectedCircles.push_back( dc1 );
+
+    lsl::DetectedCircle dc2;
+    dc2.x( -1.5 );
+    dc2.y(  1.  );
+    dc2.r(  0.04 );
+    detectedCircles.push_back( dc2 );
+
+    lsl::DuoCircleIdentif::Params p;
+    p.radiusTolerance = 0.05;
+    p.distanceTolerance = 0.;
+    p.lengthTolerance = 0.1;
+
+    std::vector< std::pair< std::pair<lsl::DetectedCircle, lsl::DetectedCircle>, std::pair<lsl::Circle, lsl::Circle> > > res;
+    res = lsl::DuoCircleIdentif::apply( detectedCircles, refDuo, p);
+
+    BOOST_CHECK_EQUAL( res.size() , 1 );
+
+    BOOST_CHECK_EQUAL( res[0].first.first.x(), dc2.x() );
+    BOOST_CHECK_EQUAL( res[0].first.first.y(), dc2.y() );
+    BOOST_CHECK_EQUAL( res[0].first.first.r(), dc2.r() );
+    BOOST_CHECK_EQUAL( res[0].first.second.x(), dc1.x() );
+    BOOST_CHECK_EQUAL( res[0].first.second.y(), dc1.y() );
+    BOOST_CHECK_EQUAL( res[0].first.second.r(), dc1.r() );
+    BOOST_CHECK_EQUAL( res[0].second.first.x(), c2.x() );
+    BOOST_CHECK_EQUAL( res[0].second.first.y(), c2.y() );
+    BOOST_CHECK_EQUAL( res[0].second.first.r(), c2.r() );
+    BOOST_CHECK_EQUAL( res[0].second.second.x(), c1.x() );
+    BOOST_CHECK_EQUAL( res[0].second.second.y(), c1.y() );
+    BOOST_CHECK_EQUAL( res[0].second.second.r(), c1.r() );
+}
+
 BOOST_AUTO_TEST_SUITE_END()
