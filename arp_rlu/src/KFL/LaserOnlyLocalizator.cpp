@@ -63,6 +63,7 @@ LaserOnlyLocalizator::Params::Params()
     dcp.radiusTolerance = 0.03;
     dcp.distanceTolerance = 0.;
     dcp.lengthTolerance = 0.03;
+
 }
 
 std::string LaserOnlyLocalizator::Params::getInfo() const
@@ -321,7 +322,7 @@ bool LaserOnlyLocalizator::process(lsl::LaserScan ls)
 
 arp_math::EstimatedPose2D LaserOnlyLocalizator::getEstimatedPose()
 {
-    return lastEstimate;
+    return lastEstimate * params.H_hky_robot.inverse();
 }
 
 

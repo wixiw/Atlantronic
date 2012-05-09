@@ -72,6 +72,8 @@ LaserOnlyLocalizatorCpn::LaserOnlyLocalizatorCpn(const std::string& name)
     propParams.dcp.distanceTolerance = 0.;
     propParams.dcp.lengthTolerance = 0.03;
 
+    propParams.H_hky_robot = Pose2D(-0.058, 0., M_PI);
+
     // RED is DEFAULT CONFIG
     propParams.referencedBeacons = std::vector< lsl::Circle >();
     propParams.referencedBeacons.push_back( lsl::Circle(-1.560, 0.   , 0.04 ) );
