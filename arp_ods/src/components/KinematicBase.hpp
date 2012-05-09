@@ -23,6 +23,10 @@ class KinematicBase: public OdsTaskContext
         void updateHook();
 
     protected:
+        /** define if robot has been blocked for timeout time*/
+        bool attrRobotBlockedTimeout;
+        /** time I began to block */
+        double attrBlockTime;
         /** Pour le debug uniquement, permet de commander des 0 purs aux moteurs de directions pour "détourer" */
         bool attrGoToZero;
         arp_math::Twist2D attrTwistCmd;
@@ -36,8 +40,13 @@ class KinematicBase: public OdsTaskContext
         double attrQuality;
 
         double propMinSpeed;
+        /** timeout for the robot to be considered blocked */
+        double propRobotBlockedTimeout;
         /** Distance maximale du twist mesuré au twist commandé en m/s avant de détecter un blocage*/
         double propMaxSpeedDiff;
+
+
+
 
         /** Clock port which trigger our activity. contains the Twist command we ha to try to do on the robot*/
         RTT::InputPort<arp_math::Twist2D> inTwistCmd;
@@ -79,19 +88,6 @@ class KinematicBase: public OdsTaskContext
          * Utility function to hide at the end of the file the verbose Orocos interface declarations
          */
         void createOrocosInterface();
-
-        /*
-         * define if robot has been blocked for timeout time
-         */
-        bool attrRobotBlockedTimeout;
-        /*
-         * time I began to block
-         */
-        double attrBlockTime;
-        /*
-         * timeout for the robot to be considered blocked
-         */
-        double propRobotBlockedTimeout;
 
         /**
          * Check if wheel are blocked

@@ -13,6 +13,8 @@ Deployer:import("rtt_arp_core");
 print("loading Reporting component...")
 Deployer:loadComponent("Reporting","OCL::FileReporting")
 Reporting = Deployer:getPeer("Reporting")
+propFile=Reporting:getProperty("ReportFile")
+propFile:set("/tmp/reports.dat")
 Reporting:setPeriod (0.010)
 
 -- chargement du composant serveur parametre

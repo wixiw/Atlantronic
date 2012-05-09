@@ -207,7 +207,9 @@ class SimpleStreamCategory : public Category
         {
             if( p <= logLevel)
             {
-                os << name << "(" << priorityLevelNames[p] << ") - " << m << std::endl;
+                timespec now;
+                clock_gettime(CLOCK_MONOTONIC, &now);
+                os << now.tv_sec << "s " << name << "(" << priorityLevelNames[p] << ") - " << m << std::endl;
             }
         }
 
@@ -247,7 +249,9 @@ class ColorStreamCategory : public SimpleStreamCategory
         {
             if( p <= logLevel)
             {
-                os << priorityLevelColors[p] << name << "(" << priorityLevelNames[p] << ") - " << m << "\033[0m" << std::endl;
+                timespec now;
+                clock_gettime(CLOCK_MONOTONIC, &now);
+                os << now.tv_sec << "s " << priorityLevelColors[p] << name << "(" << priorityLevelNames[p] << ") - " << m << "\033[0m" << std::endl;
             }
         }
 };
@@ -270,7 +274,7 @@ class FileLogger : public Logger
         virtual Category * create(const std::string & name)
         {
             std::ofstream * myfile = new std::ofstream();
-            std::string fileName = "./" + name + ".log";
+            std::string fileName = "/tmp/" + name + ".log";
             myfile->open(fileName.c_str());
             return new SimpleStreamCategory(*myfile, name);
         };

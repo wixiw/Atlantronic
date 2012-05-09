@@ -21,15 +21,16 @@ ORO_LIST_COMPONENT_TYPE( arp_ods::KinematicBase)
 
 KinematicBase::KinematicBase(const std::string& name) :
         OdsTaskContext(name),
+        attrRobotBlockedTimeout(false),
+        attrBlockTime(0),
         attrGoToZero(false),
         propMinSpeed(0.001),
         propRobotBlockedTimeout(2.0),
         propMaxSpeedDiff(0.040)
 {
     createOrocosInterface();
-    //A ne pas mettre sur le robot pour des problemes de place (ou nettoyer les logs pour qu'ils ne grossissent pas trop vite)
-    //arp_model::Logger::InitFile("arp_model", DEBUG);
-    //arp_model::Logger::InitConsole("arp_model", DEBUG);
+    //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
+    arp_model::Logger::InitFile("arp_model", INFO);
 }
 
 void KinematicBase::updateHook()

@@ -26,9 +26,9 @@ Localizator::Localizator(const std::string& name)
 , propMaxReliableTransStddev(0.1 * 0.1)
 , propMaxReliableRotStddev( deg2rad(5.0) * deg2rad(5.0))
 {
-    //A ne pas mettre sur le robot pour des problemes de place (ou nettoyer les logs pour qu'ils ne grossissent pas trop vite)
-    //arp_rlu::lsl::Logger::InitFile("LSL", DEBUG);
-    //arp_rlu::kfl::Logger::InitFile("KFL", DEBUG);
+    //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
+    arp_rlu::lsl::Logger::InitFile("LSL", INFO);
+    arp_rlu::kfl::Logger::InitFile("KFL", INFO);
 
     createOrocosInterface();
 
