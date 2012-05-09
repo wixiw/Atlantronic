@@ -146,7 +146,7 @@ std::vector< std::pair< std::vector<DetectedCircle>, std::vector<Circle> > > Tri
                     int iMed = 3 - iMin - iMax;
                     if( iMed >= 3 || iMed < 0)
                     {
-                        Log( DEBUG ) << "TrioCircleIdentif::apply - Triangle rejected because triangle is equilateral" ;
+//                        Log( DEBUG ) << "TrioCircleIdentif::apply - Triangle rejected because triangle is equilateral" ;
                         continue;
                     }
 
@@ -186,13 +186,22 @@ std::vector< std::pair< std::vector<DetectedCircle>, std::vector<Circle> > > Tri
                     dc.push_back(*dcIt1);
                     dc.push_back(*dcIt2);
                     dc.push_back(*dcIt3);
-                    SoloCircleIdentif::Params soloParams;
-                    soloParams.radiusTolerance = p.radiusTolerance;
-                    soloParams.distanceTolerance = p.distanceTolerance;
-                    std::vector< std::pair<DetectedCircle, Circle> > sorted = SoloCircleIdentif::apply(dc, rc, soloParams);
+                    std::vector< std::pair<DetectedCircle, Circle> > sorted;
+                    if( p.distanceTolerance > 0)
+                    {
+                        SoloCircleIdentif::Params soloParams;
+                        soloParams.radiusTolerance = p.radiusTolerance;
+                        soloParams.distanceTolerance = p.distanceTolerance;
+                        sorted = SoloCircleIdentif::apply(dc, rc, soloParams);
+                    }
+                    else
+                    {
+                        sorted = associate(dc, rc);
+                    }
+
                     if( sorted.size() != 3 )
                     {
-                        Log( DEBUG ) << "TrioCircleIdentif::apply - Triangle rejected because it did not passed SoloCircleIdentif";
+                        Log( DEBUG ) << "TrioCircleIdentif::apply - Triangle rejected because association failed";
                         continue;
                     }
 
@@ -210,6 +219,116 @@ std::vector< std::pair< std::vector<DetectedCircle>, std::vector<Circle> > > Tri
         }
     }
 
+
+    return out;
+}
+
+std::vector< std::pair<DetectedCircle, Circle> > TrioCircleIdentif::associate(const std::vector<DetectedCircle> & vdc, const std::vector<Circle> & vrc)
+{
+    if( vdc.size() != 3 || vrc.size() != 3 )
+        return std::vector< std::pair<DetectedCircle, Circle> >();
+
+
+    Eigen::Vector3d rA( vrc[0].x(), vrc[0].y(), 0. );
+    Eigen::Vector3d rB( vrc[1].x(), vrc[1].y(), 0. );
+    Eigen::Vector3d rC( vrc[2].x(), vrc[2].y(), 0. );
+
+    Eigen::Vector3d m1( vdc[0].x(), vdc[0].y(), 0. );
+    Eigen::Vector3d m2( vdc[1].x(), vdc[1].y(), 0. );
+    Eigen::Vector3d m3( vdc[2].x(), vdc[2].y(), 0. );
+
+    Eigen::Vector3d mA;  Eigen::Vector3d mB;  Eigen::Vector3d mC;
+
+    Eigen::VectorXd M = Eigen::VectorXd::Zero(6);
+
+    // ABC
+    mA = m1;    mB = m2;    mC = m3;
+    M(0) += ( (rB-rA).cross(rC-rA)/((rB-rA).norm()) - (mB-mA).cross(mC-mA)/((mB-mA).norm()) ).norm();
+    M(0) += ( (rC-rB).cross(rA-rB)/((rC-rB).norm()) - (mC-mB).cross(mA-mB)/((mC-mB).norm()) ).norm();
+    M(0) += ( (rA-rC).cross(rB-rC)/((rA-rC).norm()) - (mA-mC).cross(mB-mC)/((mA-mC).norm()) ).norm();
+
+    // ACB
+    mA = m1;    mC = m2;    mB = m3;
+    M(1) += ( (rB-rA).cross(rC-rA)/((rB-rA).norm()) - (mB-mA).cross(mC-mA)/((mB-mA).norm()) ).norm();
+    M(1) += ( (rC-rB).cross(rA-rB)/((rC-rB).norm()) - (mC-mB).cross(mA-mB)/((mC-mB).norm()) ).norm();
+    M(1) += ( (rA-rC).cross(rB-rC)/((rA-rC).norm()) - (mA-mC).cross(mB-mC)/((mA-mC).norm()) ).norm();
+
+    // BCA
+    mB = m1;    mC = m2;    mA = m3;
+    M(2) += ( (rB-rA).cross(rC-rA)/((rB-rA).norm()) - (mB-mA).cross(mC-mA)/((mB-mA).norm()) ).norm();
+    M(2) += ( (rC-rB).cross(rA-rB)/((rC-rB).norm()) - (mC-mB).cross(mA-mB)/((mC-mB).norm()) ).norm();
+    M(2) += ( (rA-rC).cross(rB-rC)/((rA-rC).norm()) - (mA-mC).cross(mB-mC)/((mA-mC).norm()) ).norm();
+
+    // BAC
+    mB = m1;    mA = m2;    mC = m3;
+    M(3) += ( (rB-rA).cross(rC-rA)/((rB-rA).norm()) - (mB-mA).cross(mC-mA)/((mB-mA).norm()) ).norm();
+    M(3) += ( (rC-rB).cross(rA-rB)/((rC-rB).norm()) - (mC-mB).cross(mA-mB)/((mC-mB).norm()) ).norm();
+    M(3) += ( (rA-rC).cross(rB-rC)/((rA-rC).norm()) - (mA-mC).cross(mB-mC)/((mA-mC).norm()) ).norm();
+
+    // CBA
+    mC = m1;    mB = m2;    mA = m3;
+    M(4) += ( (rB-rA).cross(rC-rA)/((rB-rA).norm()) - (mB-mA).cross(mC-mA)/((mB-mA).norm()) ).norm();
+    M(4) += ( (rC-rB).cross(rA-rB)/((rC-rB).norm()) - (mC-mB).cross(mA-mB)/((mC-mB).norm()) ).norm();
+    M(4) += ( (rA-rC).cross(rB-rC)/((rA-rC).norm()) - (mA-mC).cross(mB-mC)/((mA-mC).norm()) ).norm();
+
+    // CAB
+    mC = m1;    mA = m2;    mB = m3;
+    M(5) += ( (rB-rA).cross(rC-rA)/((rB-rA).norm()) - (mB-mA).cross(mC-mA)/((mB-mA).norm()) ).norm();
+    M(5) += ( (rC-rB).cross(rA-rB)/((rC-rB).norm()) - (mC-mB).cross(mA-mB)/((mC-mB).norm()) ).norm();
+    M(5) += ( (rA-rC).cross(rB-rC)/((rA-rC).norm()) - (mA-mC).cross(mB-mC)/((mA-mC).norm()) ).norm();
+
+    std::pair<Eigen::VectorXd, Eigen::VectorXi> p = arp_math::bubbleSortIndices( M );
+
+//    Log( ERROR ) << "M : " << M.transpose();
+//    Log( ERROR ) << "p.first : " << p.first.transpose();
+//    Log( ERROR ) << "p.second : " << p.second.transpose();
+
+    if( p.first(0) == p.first(1) &&
+        p.first(1) == p.first(2) &&
+        p.first(3) == p.first(4) &&
+        p.first(4) == p.first(5) &&
+        p.first(4) > 1000. * p.first(0))
+    {
+//        Log( ERROR ) << "triangle équilateral";
+        return std::vector< std::pair<DetectedCircle, Circle> >();
+    }
+
+    std::vector< std::pair<DetectedCircle, Circle> > out;
+    switch(p.second(0))
+    {
+        case 0: //ABC
+            out.push_back(std::make_pair(vdc[0], vrc[0]));
+            out.push_back(std::make_pair(vdc[1], vrc[1]));
+            out.push_back(std::make_pair(vdc[2], vrc[2]));
+            break;
+        case 1: //ACB
+            out.push_back(std::make_pair(vdc[0], vrc[0]));
+            out.push_back(std::make_pair(vdc[2], vrc[1]));
+            out.push_back(std::make_pair(vdc[1], vrc[2]));
+            break;
+        case 2://BCA
+            out.push_back(std::make_pair(vdc[2], vrc[0]));
+            out.push_back(std::make_pair(vdc[0], vrc[1]));
+            out.push_back(std::make_pair(vdc[1], vrc[2]));
+            break;
+        case 3://BAC
+            out.push_back(std::make_pair(vdc[1], vrc[0]));
+            out.push_back(std::make_pair(vdc[0], vrc[1]));
+            out.push_back(std::make_pair(vdc[2], vrc[2]));
+            break;
+        case 4://CBA
+            out.push_back(std::make_pair(vdc[2], vrc[0]));
+            out.push_back(std::make_pair(vdc[1], vrc[1]));
+            out.push_back(std::make_pair(vdc[0], vrc[2]));
+            break;
+        case 5://CAB
+            out.push_back(std::make_pair(vdc[1], vrc[0]));
+            out.push_back(std::make_pair(vdc[2], vrc[1]));
+            out.push_back(std::make_pair(vdc[0], vrc[2]));
+            break;
+        default:
+            break;
+    }
 
     return out;
 }

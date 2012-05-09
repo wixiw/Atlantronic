@@ -110,6 +110,17 @@ class TrioCircleIdentif
         static std::vector< std::pair< std::vector<DetectedCircle>, std::vector<Circle> > > apply(const std::vector<DetectedCircle> & vdc, const std::vector< std::vector<Circle> > & vrc, const Params & p = Params());
 
 
+        /**
+         * Associe les
+         * \param[in] un vecteur de DetectedCircle de taille de 3 correspondant aux sommets du triangle détecté
+         * \param[in] un vecteur de Circle de taille de 3 correspondant aux sommets du triangle référencé
+         * \return un vecteur de taille 3 de pair associant les DetectedCircle aux Circle
+         * \li renvoie un vecteur vide si les vecteurs d'entrée ne sont pas de taille 3
+         * \li renvoie un vecteur vide si les triangles sont équilatéraux (ou plat)
+         * \pre les DetectedCircle et les Circle doivent dessiner des triangles similaires
+         *
+         */
+        static std::vector< std::pair<DetectedCircle, Circle> > associate(const std::vector<DetectedCircle> & vdc, const std::vector<Circle> & vrc);
 };
 
 /*! @} End of Doxygen Groups*/
