@@ -22,7 +22,7 @@ import LaserOnlyLocalizator
 graine = random.randint(0,1000)
 random.seed(graine)
 
-xpIndex = 1
+xpIndex = 0
 
 
 #===============================================================================
@@ -71,52 +71,52 @@ obj3.radius = radius
 lrfsim.objects.append(obj3)
 
 
-# add random objects on table
-nbObjects = 2
-for i in range(nbObjects):
-  obj = Circle()
-  obj.radius  = 0.03
-  penetration = True
-  while penetration:
-    penetration = False
-    obj.xCenter = random.uniform( -1.5, 1.5)
-    obj.yCenter = random.uniform( -1.0, 1.0)
-    for i in range(len(tt)):
-      x_ = xx[i]
-      y_ = yy[i]
-      penetration = penetration or (np.linalg.norm( np.array( [ [obj.xCenter - x_], [obj.yCenter - y_] ] )) < obj.radius)
-  lrfsim.objects.append(obj)
-  
-
-# add random objects out of the table
-nbObjects = 5
-for i in range(nbObjects):
-  obj = Circle()
-  obj.radius  = 0.1
-  penetration = True
-  while penetration:
-    penetration = False
-    obj.xCenter = random.uniform( -2.8, 2.8)
-    obj.yCenter = random.uniform( -2.0, 2.0)
-    if obj.xCenter < 1.7 and  obj.xCenter > -1.7:
-        penetration = True
-    if obj.yCenter < 1.2 and  obj.yCenter > -1.2:
-        penetration = True
-    for i in range(len(tt)):
-      x_ = xx[i]
-      y_ = yy[i]
-      penetration = penetration or (np.linalg.norm( np.array( [ [obj.xCenter - x_], [obj.yCenter - y_] ] )) < obj.radius)
-  lrfsim.objects.append(obj)
-  
-# Add segment
-sgmt1 = Segment(x= 3.0, y=0., h=0., l=4.4)
-lrfsim.objects.append(sgmt1)
-sgmt2 = Segment(x=-3.0, y=0., h=np.pi, l=4.4)
-lrfsim.objects.append(sgmt2)
-sgmt3 = Segment(x= 0., y= 2.2, h= np.pi/2., l=6.0)
-lrfsim.objects.append(sgmt3)
-sgmt4 = Segment(x= 0., y=-2.2, h=-np.pi/2., l=6.0)
-lrfsim.objects.append(sgmt4)
+## add random objects on table
+#nbObjects = 2
+#for i in range(nbObjects):
+#  obj = Circle()
+#  obj.radius  = 0.03
+#  penetration = True
+#  while penetration:
+#    penetration = False
+#    obj.xCenter = random.uniform( -1.5, 1.5)
+#    obj.yCenter = random.uniform( -1.0, 1.0)
+#    for i in range(len(tt)):
+#      x_ = xx[i]
+#      y_ = yy[i]
+#      penetration = penetration or (np.linalg.norm( np.array( [ [obj.xCenter - x_], [obj.yCenter - y_] ] )) < obj.radius)
+#  lrfsim.objects.append(obj)
+#  
+#
+## add random objects out of the table
+#nbObjects = 5
+#for i in range(nbObjects):
+#  obj = Circle()
+#  obj.radius  = 0.1
+#  penetration = True
+#  while penetration:
+#    penetration = False
+#    obj.xCenter = random.uniform( -2.8, 2.8)
+#    obj.yCenter = random.uniform( -2.0, 2.0)
+#    if obj.xCenter < 1.7 and  obj.xCenter > -1.7:
+#        penetration = True
+#    if obj.yCenter < 1.2 and  obj.yCenter > -1.2:
+#        penetration = True
+#    for i in range(len(tt)):
+#      x_ = xx[i]
+#      y_ = yy[i]
+#      penetration = penetration or (np.linalg.norm( np.array( [ [obj.xCenter - x_], [obj.yCenter - y_] ] )) < obj.radius)
+#  lrfsim.objects.append(obj)
+#  
+## Add segment
+#sgmt1 = Segment(x= 3.0, y=0., h=0., l=4.4)
+#lrfsim.objects.append(sgmt1)
+#sgmt2 = Segment(x=-3.0, y=0., h=np.pi, l=4.4)
+#lrfsim.objects.append(sgmt2)
+#sgmt3 = Segment(x= 0., y= 2.2, h= np.pi/2., l=6.0)
+#lrfsim.objects.append(sgmt3)
+#sgmt4 = Segment(x= 0., y=-2.2, h=-np.pi/2., l=6.0)
+#lrfsim.objects.append(sgmt4)
   
   
   
