@@ -23,20 +23,23 @@ using namespace RTT;
 ORO_LIST_COMPONENT_TYPE( arp_rlu::Localizator )
 
 
-const char * LocalizationStateNames[4] = {
+const char * LocalizationStateNames[5] = {
         stringify( __STOPED__ ),
         stringify( _ODO_ONLY_ ),
         stringify( __FUSION__ ),
+        stringify( _BAD__ODO_ ),
         stringify( ___LOST___ )
 };
 
 Localizator::Localizator(const std::string& name)
 : RluTaskContext(name)
 , kfloc()
-, propMaxReliableTransStddev(0.1 * 0.1)
-, propMaxReliableRotStddev( deg2rad(5.0) * deg2rad(5.0))
+, propMaxReliableTransStddev(0.1)
+, propMaxReliableRotStddev( deg2rad(5.0) )
 , propLaserRangeSigma(0.006)
 , propLaserThetaSigma(0.05)
+, propLostCptThreshold(10)
+, updateTried(false)
 , predictionOk(false)
 , updateOk(false)
 , currentState(__STOPED__)
@@ -143,7 +146,7 @@ void Localizator::updateHook()
         predictionOk = kfloc.newOdoVelocity(T_odo_table_p_odo_r_odo);
     }
 
-    bool updateTried = false;
+    updateTried = false;
     sensor_msgs::LaserScan rosScan;
     if( RTT::NewData == inScan.read(rosScan) )
     {
@@ -174,41 +177,37 @@ void Localizator::updateHook()
     EstimatedPose2D estim_H_robot_table = kfloc.getLastEstimatedPose2D();
     EstimatedTwist2D estim_T_robot_table_p_robot_r_robot = kfloc.getLastEstimatedTwist2D();
 
-    Covariance3 cov = estim_H_robot_table.cov();
-    bool reliability = true;
-    reliability = reliability && (cov(0,0) < propMaxReliableTransStddev);
-    reliability = reliability && (cov(1,1) < propMaxReliableTransStddev);
-    reliability = reliability && (cov(2,2) < propMaxReliableRotStddev);
+    updateLocalizationState();
 
-    outPose.write(estim_H_robot_table);
-    outTwist.write(estim_T_robot_table_p_robot_r_robot);
-    outReliability.write(reliability);
-    outObstacles.write(kfloc.getDetectedObstacles());
-
-    if( (predictionOk == false) && (updateOk == false) )
-    {
-        currentState = __STOPED__;
-    }
-    if( (predictionOk == true) && (updateOk == false) )
-    {
-        currentState = _ODO_ONLY_;
-    }
-    if( updateOk == true )
-    {
-        currentState = __FUSION__;
-    }
-    if( (updateTried == true) && (updateOk == true) && (kfloc.getTheoricalVisibility() > 1) )
-    {
-        currentState = ___LOST___;
-    }
 
     kfl::Log( Info ) << "***************************************************************************************************";
     kfl::Log( Info ) << "Localization - State: " << LocalizationStateNames[currentState] << " - Visu: " << kfloc.getTheoricalVisibility() << " - Estimate : " << estim_H_robot_table.toString();
+
+    if( currentState < _BAD__ODO_ )
+    {
+        std::vector< arp_math::Vector2 > obstacles = kfloc.getDetectedObstacles();
+        outObstacles.write(obstacles);
+        std::stringstream ss;
+        ss << "  Obstacles : ";
+        for(unsigned int i = 0 ; (i < obstacles.size()) && ( i < 3) ; i++)
+        {
+            ss << "(" << obstacles[i].transpose() << ") ";
+        }
+        kfl::Log( Info ) << ss.str();
+    }
+    else
+    {
+        kfl::Log( Info ) << "Localization - State: " << LocalizationStateNames[currentState] << " - Visu: " << kfloc.getTheoricalVisibility() << " - Estimate : " << estim_H_robot_table.toString();
+    }
+
+    outPose.write(estim_H_robot_table);
+    outTwist.write(estim_T_robot_table_p_robot_r_robot);
+    outLocalizationState.write(currentState);
+
 }
 
 bool Localizator::ooInitialize(double x, double y, double theta)
 {
-    outReliability.write(false);
 
     long double initDate = arp_math::getTime();
     EstimatedPose2D pose = MathFactory::createEstimatedPose2D(x,y,theta, initDate, propParams.defaultInitCovariance);
@@ -221,13 +220,18 @@ bool Localizator::ooInitialize(double x, double y, double theta)
 
         outPose.write(estim_H_robot_table);
         outTwist.write(estim_T_robot_table_p_robot_r_robot);
-        outReliability.write(true);
-
-        LOG(Info) << "initialize to " << pose.toString() << " with date : "  << initDate <<  " (sec)" << endlog();
 
         predictionOk = false;
         updateOk = false;
         currentState = __STOPED__;
+        lostCpt = 0;
+
+        LOG(Info) << "initialize to " << pose.toString() << " with date : "  << initDate <<  " (sec)" << endlog();
+        kfl::Log( Info ) << "***************************************************************************************************";
+        kfl::Log( Info ) << "Localization - State: " << LocalizationStateNames[currentState] << " - Visu: " << kfloc.getTheoricalVisibility() << " - Estimate : " << estim_H_robot_table.toString();
+
+
+        outLocalizationState.write(currentState);
 
         return true;
     }
@@ -274,11 +278,19 @@ void Localizator::createOrocosInterface()
     addPort("outTwist",outTwist)
     .doc("Last estimation of T_robot_table_p_robot_r_robot Twist of robot reference frame relative to table frame, reduced and expressed in robot reference frame.\n It is an EstimatedTwist2D, so it contains Twist, estimation date (in sec) and covariance matrix.");
 
-    addPort("outReliability",outReliability)
-    .doc("False if Localizator has diverged");
+    std::stringstream ss;
+    ss << "Localization state :" << std::endl;
+    ss << " [*] __STOPED__ if Localization is switched off or if robot does not move" << std::endl;
+    ss << " [*] _ODO_ONLY_ if Localization is using odometry only (beacons are not visible)" << std::endl;
+    ss << " [*] __FUSION__ if Localization is using both odometry and laser (the most accurate state)" << std::endl;
+    ss << " [*] _BAD__ODO_ if Localization is using odometry only since long time." << std::endl;
+    ss << " [*] ___LOST___ if Localization is lost. Only a new initialization can quit this state." << std::endl;
+    addPort("outLocalizationState",outLocalizationState)
+    .doc(ss.str());
 
     addPort("outObstacles",outObstacles)
     .doc("Last detected obstacles");
+
 
     addOperation("ooInitialize",&Localizator::ooInitialize, this, OwnThread)
     .doc("Initialisation de la Localisation")
@@ -304,10 +316,10 @@ void Localizator::createOrocosInterface()
 
 
     addProperty("propMaxReliableTransStddev",propMaxReliableTransStddev)
-    .doc("Threshold on translation for reliability boolean elaboration (warning : unity is square meters)");
+    .doc("Threshold on translation for reliability boolean elaboration (unit is meter)");
 
     addProperty("propMaxReliableRotStddev",propMaxReliableRotStddev)
-    .doc("Threshold on rotation for reliability boolean elaboration (warning : unity is square radians)");
+    .doc("Threshold on rotation for reliability boolean elaboration (unit is radian)");
 
 
     addProperty("propLaserRangeSigma",propLaserRangeSigma)
@@ -315,6 +327,9 @@ void Localizator::createOrocosInterface()
 
     addProperty("propLaserThetaSigma",propLaserThetaSigma)
     .doc("Laser theta confidence in rad");
+
+    addProperty("propLostCptThreshold",propLostCptThreshold)
+    .doc("Number of consecutive failures on scan to declare localization lost");
 
 }
 
@@ -347,6 +362,53 @@ void Localizator::ooSwitchToPurpleConfig()
     kfloc.setParams(propParams);
 
     LOG(Info) << "Switched to Purple Beacon configuration" << endlog();
+}
+
+
+void Localizator::updateLocalizationState()
+{
+    EstimatedPose2D estim_H_robot_table = kfloc.getLastEstimatedPose2D();
+    Covariance3 cov = estim_H_robot_table.cov();
+    bool reliability = true;
+    reliability = reliability && (cov(0,0) < propMaxReliableTransStddev * propMaxReliableTransStddev);
+    reliability = reliability && (cov(1,1) < propMaxReliableTransStddev * propMaxReliableTransStddev);
+    reliability = reliability && (cov(2,2) < propMaxReliableRotStddev * propMaxReliableRotStddev);
+
+    if( (predictionOk == false) && (updateOk == false) )
+        {
+            currentState = __STOPED__;
+        }
+        if( (predictionOk == true) && (updateOk == false) )
+        {
+            if(currentState < ___LOST___)
+            {
+                if( reliability )
+                {
+                    currentState = _ODO_ONLY_;
+                }
+                else
+                {
+                    currentState = _BAD__ODO_;
+                }
+            }
+        }
+        if( updateOk == true )
+        {
+            currentState = __FUSION__;
+        }
+        if( (updateTried == true) && (updateOk == false) && (kfloc.getTheoricalVisibility() > 1) )
+        {
+            lostCpt++;
+            if(lostCpt > propLostCptThreshold )
+            {
+                lostCpt = propLostCptThreshold + 1;
+                currentState = ___LOST___;
+            }
+            else
+            {
+                currentState = _ODO_ONLY_;
+            }
+        }
 }
 
 

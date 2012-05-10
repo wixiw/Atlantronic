@@ -14,6 +14,7 @@
 #include <sensor_msgs/LaserScan.h>
 
 #include "KFL/KFLocalizator.hpp"
+#include "LocalizatorState.hpp"
 
 
 namespace arp_rlu
@@ -22,13 +23,6 @@ namespace arp_rlu
 typedef kfl::KFLocalizator::Params LocalizatorParams;
 
 
-enum LocalizationState
-{
-    __STOPED__ = 0,
-    _ODO_ONLY_ = 1,
-    __FUSION__ = 2,
-    ___LOST___ = 3
-};
 
 class Localizator: public RluTaskContext
 {
@@ -65,12 +59,9 @@ class Localizator: public RluTaskContext
         RTT::OutputPort<arp_math::EstimatedTwist2D> outTwist;
 
         /**
-         * Indique si le filtre n'a pas divergé.\n
-         * Les termes diaguonaux de la matrice de convergence de l'estimée de position sont
-         * comparés aux seuils maxReliableTransStddev and maxReliableRotStddev.\n
-         * Si le filtre a divergé, la valeur renvoyée vaut false et true sinon.
+         * Indique l'état de la localization.\n
          */
-        RTT::OutputPort<bool> outReliability;
+        RTT::OutputPort<LocalizationState> outLocalizationState;
 
         /**
          * Contient la position d'obstacles détectés sur la table.\n
@@ -91,6 +82,8 @@ class Localizator: public RluTaskContext
 
         /* Cree l'interface Orocos : ajout de port, proprietes, operations */
         void createOrocosInterface();
+
+        void updateLocalizationState();
 
 
         //*****************************************************
@@ -115,10 +108,14 @@ class Localizator: public RluTaskContext
         double propLaserRangeSigma;
         double propLaserThetaSigma;
 
+        unsigned int propLostCptThreshold;
+
+        bool updateTried;
         bool predictionOk;
         bool updateOk;
 
         LocalizationState currentState;
+        unsigned int lostCpt;
 
 };
 
