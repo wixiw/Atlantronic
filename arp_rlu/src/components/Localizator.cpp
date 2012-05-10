@@ -25,6 +25,8 @@ Localizator::Localizator(const std::string& name)
 , kfloc()
 , propMaxReliableTransStddev(0.1 * 0.1)
 , propMaxReliableRotStddev( deg2rad(5.0) * deg2rad(5.0))
+, propLaserRangeSigma(0.006)
+, propLaserThetaSigma(0.05)
 {
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
     arp_rlu::lsl::Logger::InitFile("LSL", INFO);
@@ -42,10 +44,11 @@ Localizator::Localizator(const std::string& name)
     propParams.H_hky_robot = Pose2D(-0.058, 0., M_PI);
     propParams.H_odo_robot = Pose2D();
 
+    // Red is default config
     propParams.referencedBeacons = std::vector< lsl::Circle >();
-    propParams.referencedBeacons.push_back( lsl::Circle(-1.550, 0.  , 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle( 1.550,-1.05, 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle( 1.550, 1.05, 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle(-1.560, 0.   , 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( 1.565,-1.040, 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( 1.565, 1.040, 0.04 ) );
 
     propParams.iekfParams.defaultOdoVelTransSigma = 0.01;
     propParams.iekfParams.defaultOdoVelRotSigma   = 0.01;
@@ -112,6 +115,14 @@ bool Localizator::configureHook()
 
 void Localizator::updateHook()
 {
+    if( propLaserRangeSigma != propParams.iekfParams.defaultLaserRangeSigma ||
+        propLaserThetaSigma != propParams.iekfParams.defaultLaserThetaSigma )
+    {
+        propParams.iekfParams.defaultLaserRangeSigma = propLaserRangeSigma;
+        propParams.iekfParams.defaultLaserThetaSigma = propLaserThetaSigma;
+        setParams( propParams );
+    }
+
     EstimatedTwist2D T_odo_table_p_odo_r_odo;
     if( RTT::NewData == inOdo.read(T_odo_table_p_odo_r_odo) )
     {
@@ -158,6 +169,10 @@ void Localizator::updateHook()
     outTwist.write(estim_T_robot_table_p_robot_r_robot);
     outReliability.write(reliability);
     outObstacles.write(kfloc.getDetectedObstacles());
+
+    kfl::Log( Info ) << "***************************************************************************************************";
+    kfl::Log( Info ) << "Estimation : " << estim_H_robot_table.toString();
+    //Log( Info ) << "Covariance :\n" << estim_H_robot_table.cov();
 }
 
 bool Localizator::ooInitialize(double x, double y, double theta)
@@ -190,7 +205,8 @@ void Localizator::setParams(LocalizatorParams params)
 {
     propParams = params;
     kfloc.setParams(propParams);
-    LOG(Info) << "New params defined !" << endlog();
+    LOG(Info) << "New params defined :" << endlog();
+    LOG(Info) << kfloc.getParams().getInfo() << endlog();
 }
 
 
@@ -198,7 +214,7 @@ std::string Localizator::printParams()
 {
     std::stringstream ss;
     ss << "****************************" << std::endl;
-    ss << propParams.getInfo();
+    ss << kfloc.getParams().getInfo();
     ss << " [*] propMaxReliableTransStddev : " << propMaxReliableTransStddev << " (m2)" << std::endl;
     ss << " [*] propMaxReliableRotStddev : " << rad2deg(propMaxReliableRotStddev) << " (deg2)" << std::endl;
     ss << "****************************" << std::endl;
@@ -244,6 +260,9 @@ void Localizator::createOrocosInterface()
 
     addOperation("ooSwitchToRedConfig",&Localizator::ooSwitchToRedConfig, this, OwnThread)
     .doc("Définit les balises pour le départ Red");
+    propParams.referencedBeacons.push_back( lsl::Circle(-1.560, 0.   , 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( 1.565,-1.040, 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( 1.565, 1.040, 0.04 ) );
 
     addOperation("ooSwitchToPurpleConfig",&Localizator::ooSwitchToPurpleConfig, this, OwnThread)
     .doc("Définit les balises pour le départ Purple");
@@ -254,6 +273,13 @@ void Localizator::createOrocosInterface()
 
     addProperty("propMaxReliableRotStddev",propMaxReliableRotStddev)
     .doc("Threshold on rotation for reliability boolean elaboration (warning : unity is square radians)");
+
+
+    addProperty("propLaserRangeSigma",propLaserRangeSigma)
+    .doc("Laser Range confidence in meter");
+
+    addProperty("propLaserThetaSigma",propLaserThetaSigma)
+    .doc("Laser theta confidence in rad");
 
 }
 

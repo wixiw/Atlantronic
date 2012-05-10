@@ -225,6 +225,11 @@ class KFLocalizator
         void setParams(BeaconDetector::Params);
 
         /**
+         * Récupération des paramètres courants
+         */
+        KFLocalizator::Params getParams();
+
+        /**
          * Initialisation de la Localisation.
          * \param pose la pose et sa covariance
          */

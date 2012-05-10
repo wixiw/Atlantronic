@@ -104,7 +104,7 @@ std::string KFLocalizator::IEKFParams::getInfo() const
     ss << " [*] defaultOdoVelTransSigma : " << defaultOdoVelTransSigma << " (m/s)" << std::endl;
     ss << " [*] defaultOdoVelRotSigma   : " << defaultOdoVelRotSigma << " (rad/s)" << std::endl;
     ss << " [*] defaultLaserRangeSigma  : " << defaultLaserRangeSigma << " (m)" << std::endl;
-    ss << " [*] defaultLaserThetaSigma  : " << rad2deg(defaultLaserThetaSigma) << " (deg)" << std::endl;
+    ss << " [*] defaultLaserThetaSigma  : " << defaultLaserThetaSigma << " rad  (" << rad2deg(defaultLaserThetaSigma) << " deg)" << std::endl;
     ss << " [*] iekfMaxIt               : " << iekfMaxIt << std::endl;
     ss << " [*] iekfInnovationMin       : " << iekfInnovationMin << std::endl;
     return ss.str();
@@ -188,6 +188,11 @@ void KFLocalizator::setParams(BeaconDetector::Params p)
 {
     params.procParams = p;
     beaconDetector.setParams(params.procParams);
+}
+
+KFLocalizator::Params KFLocalizator::getParams()
+{
+    return params;
 }
 
 bool KFLocalizator::initialize(const arp_math::EstimatedPose2D & H_robot_table)

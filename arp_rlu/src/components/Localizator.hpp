@@ -103,6 +103,9 @@ class Localizator: public RluTaskContext
         double propMaxReliableTransStddev;
         double propMaxReliableRotStddev;
 
+        double propLaserRangeSigma;
+        double propLaserThetaSigma;
+
 };
 
 } /* namespace arp_rlu */
