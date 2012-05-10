@@ -124,7 +124,7 @@ bool KFLocalizator::IEKFParams::checkConsistency() const
     }
     if(defaultLaserRangeSigma <= 0.)
     {
-        Log( NOTICE ) << "KFLocalizator::IEKFParams::checkConsistency - inconsistent parameter : defaultLaserRangeSigma (" << defaultLaserRangeSigma << ") should be strictly positive";
+        Log( NOTICE ) << "KFLocalimin_anglezator::IEKFParams::checkConsistency - inconsistent parameter : defaultLaserRangeSigma (" << defaultLaserRangeSigma << ") should be strictly positive";
         return false;
     }
     if(defaultLaserThetaSigma <= 0.)
@@ -150,6 +150,8 @@ KFLocalizator::KFLocalizator()
 , beaconDetector()
 , bayesian(NULL)
 , circularBuffer(boost::circular_buffer< std::pair< arp_math::EstimatedPose2D, arp_math::EstimatedTwist2D > >(params.bufferSize))
+, min_angle(0.)
+, max_angle(0.)
 , newOdoVelTimer()
 , newScanGlobalTimer()
 , newScanBITPTimer()
@@ -322,6 +324,9 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
         Log( WARN ) << "KFLocalizator::newScan - Not enough history in circular buffer => return false";
         return false;
     }
+
+    min_angle = scan.getPolarData()(2,0);
+    max_angle = scan.getPolarData()(2,scan.getSize()-1);
 
 
     //***************************************
@@ -498,7 +503,7 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
     KFLocalizator::updateBuffer(tt(tt.size()-1), T);
 
     newScanGlobalTimer.Stop();
-    return false;
+    return (nbBeaconSeen > 1);
 }
 
 EstimatedPose2D KFLocalizator::getLastEstimatedPose2D()
@@ -566,6 +571,24 @@ void KFLocalizator::popBufferUntilADate(const double date)
 std::vector< arp_math::Vector2 > KFLocalizator::getDetectedObstacles()
 {
     return detectedObstacles;
+}
+
+
+unsigned int KFLocalizator::getTheoricalVisibility()
+{
+    arp_math::EstimatedPose2D pose = getLastEstimatedPose2D();
+    unsigned int visibility = 0;
+    for(unsigned int i = 0 ; i < params.referencedBeacons.size() ; i++)
+    {
+        Vector2 b_t(params.referencedBeacons[i].x(), params.referencedBeacons[i].y());
+        Vector2 b_h = params.H_hky_robot.inverse() * pose.inverse() * b_t;
+        double angle = atan2(b_h(1), b_h(0));
+        if( (angle > min_angle + deg2rad(5.)) && (angle < max_angle - deg2rad(5.)) )
+        {
+            visibility++;
+        }
+    }
+    return visibility;
 }
 
 

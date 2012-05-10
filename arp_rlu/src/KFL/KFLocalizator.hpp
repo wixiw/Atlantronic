@@ -273,6 +273,11 @@ class KFLocalizator
          */
         std::string getPerformanceReport();
 
+        /**
+         * Renvoie le nombre de balises que l'on est sensé voir
+         */
+        unsigned int getTheoricalVisibility();
+
 
     protected:
         /**
@@ -299,6 +304,16 @@ class KFLocalizator
          * Buffer circulaire stockant les estimations de Pose et de Twist
          */
         boost::circular_buffer< std::pair< arp_math::EstimatedPose2D, arp_math::EstimatedTwist2D > > circularBuffer;
+
+        /**
+         * angle mini du dernier scan
+         */
+        double min_angle;
+
+        /**
+         * angle maxi du dernier scan
+         */
+        double max_angle;
 
         arp_core::StatTimer newOdoVelTimer;
         arp_core::StatTimer newScanGlobalTimer;

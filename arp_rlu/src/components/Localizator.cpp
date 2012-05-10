@@ -13,12 +13,22 @@
 #include "KFL/Logger.hpp"
 #include <ros/ros.h>
 
+#define stringify( name ) # name
+
 using namespace arp_core::log;
 using namespace arp_rlu;
 using namespace arp_math;
 using namespace RTT;
 
 ORO_LIST_COMPONENT_TYPE( arp_rlu::Localizator )
+
+
+const char * LocalizationStateNames[4] = {
+        stringify( __STOPED__ ),
+        stringify( _ODO_ONLY_ ),
+        stringify( __FUSION__ ),
+        stringify( ___LOST___ )
+};
 
 Localizator::Localizator(const std::string& name)
 : RluTaskContext(name)
@@ -27,6 +37,9 @@ Localizator::Localizator(const std::string& name)
 , propMaxReliableRotStddev( deg2rad(5.0) * deg2rad(5.0))
 , propLaserRangeSigma(0.006)
 , propLaserThetaSigma(0.05)
+, predictionOk(false)
+, updateOk(false)
+, currentState(__STOPED__)
 {
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
     arp_rlu::lsl::Logger::InitFile("LSL", INFO);
@@ -116,7 +129,7 @@ bool Localizator::configureHook()
 void Localizator::updateHook()
 {
     if( propLaserRangeSigma != propParams.iekfParams.defaultLaserRangeSigma ||
-        propLaserThetaSigma != propParams.iekfParams.defaultLaserThetaSigma )
+            propLaserThetaSigma != propParams.iekfParams.defaultLaserThetaSigma )
     {
         propParams.iekfParams.defaultLaserRangeSigma = propLaserRangeSigma;
         propParams.iekfParams.defaultLaserThetaSigma = propLaserThetaSigma;
@@ -127,12 +140,14 @@ void Localizator::updateHook()
     if( RTT::NewData == inOdo.read(T_odo_table_p_odo_r_odo) )
     {
         //update du Kalman
-        kfloc.newOdoVelocity(T_odo_table_p_odo_r_odo);
+        predictionOk = kfloc.newOdoVelocity(T_odo_table_p_odo_r_odo);
     }
 
+    bool updateTried = false;
     sensor_msgs::LaserScan rosScan;
     if( RTT::NewData == inScan.read(rosScan) )
     {
+        updateTried = true;
         double dateBeg = rosScan.header.stamp.toSec() - m_monotonicTimeToRealTime;
 
         lsl::LaserScan lslScan;
@@ -152,7 +167,7 @@ void Localizator::updateHook()
         }
         lslScan.setPolarData(polarData);
 
-        kfloc.newScan(lslScan);
+        updateOk = kfloc.newScan(lslScan);
     }
 
 
@@ -170,9 +185,25 @@ void Localizator::updateHook()
     outReliability.write(reliability);
     outObstacles.write(kfloc.getDetectedObstacles());
 
+    if( (predictionOk == false) && (updateOk == false) )
+    {
+        currentState = __STOPED__;
+    }
+    if( (predictionOk == true) && (updateOk == false) )
+    {
+        currentState = _ODO_ONLY_;
+    }
+    if( updateOk == true )
+    {
+        currentState = __FUSION__;
+    }
+    if( (updateTried == true) && (updateOk == true) && (kfloc.getTheoricalVisibility() > 1) )
+    {
+        currentState = ___LOST___;
+    }
+
     kfl::Log( Info ) << "***************************************************************************************************";
-    kfl::Log( Info ) << "Estimation : " << estim_H_robot_table.toString();
-    //Log( Info ) << "Covariance :\n" << estim_H_robot_table.cov();
+    kfl::Log( Info ) << "Localization - State: " << LocalizationStateNames[currentState] << " - Visu: " << kfloc.getTheoricalVisibility() << " - Estimate : " << estim_H_robot_table.toString();
 }
 
 bool Localizator::ooInitialize(double x, double y, double theta)
@@ -193,6 +224,10 @@ bool Localizator::ooInitialize(double x, double y, double theta)
         outReliability.write(true);
 
         LOG(Info) << "initialize to " << pose.toString() << " with date : "  << initDate <<  " (sec)" << endlog();
+
+        predictionOk = false;
+        updateOk = false;
+        currentState = __STOPED__;
 
         return true;
     }
@@ -313,4 +348,5 @@ void Localizator::ooSwitchToPurpleConfig()
 
     LOG(Info) << "Switched to Purple Beacon configuration" << endlog();
 }
+
 

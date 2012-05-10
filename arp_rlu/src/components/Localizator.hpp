@@ -22,8 +22,17 @@ namespace arp_rlu
 typedef kfl::KFLocalizator::Params LocalizatorParams;
 
 
+enum LocalizationState
+{
+    __STOPED__ = 0,
+    _ODO_ONLY_ = 1,
+    __FUSION__ = 2,
+    ___LOST___ = 3
+};
+
 class Localizator: public RluTaskContext
 {
+
     public:
         Localizator(const std::string& name);
         bool ooInitialize(double x, double y, double theta);
@@ -105,6 +114,11 @@ class Localizator: public RluTaskContext
 
         double propLaserRangeSigma;
         double propLaserThetaSigma;
+
+        bool predictionOk;
+        bool updateOk;
+
+        LocalizationState currentState;
 
 };
 
