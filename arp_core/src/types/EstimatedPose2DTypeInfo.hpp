@@ -61,7 +61,7 @@ struct EstimatedPose2DTypeInfo: public RTT::types::StructTypeInfo<EstimatedPose2
         EstimatedPose2D pose = data->get();
         os << " x: " << pose.x() << " m +- " << 1.5 * sqrt(pose.cov()(0,0)) * 1000. << " mm ,";
         os << " y: " << pose.y() << " m +- " << 1.5 * sqrt(pose.cov()(1,1)) * 1000. << " mm ,";
-        os << " h: " << rad2deg(betweenMinusPiAndPlusPi(pose.angle())) << " deg +- " << 1.5 * rad2deg(sqrt(pose.cov()(1,1))) << " deg ,";
+        os << " h: " << rad2deg(betweenMinusPiAndPlusPi(pose.angle())) << " deg +- " << 1.5 * rad2deg(sqrt(pose.cov()(2,2))) << " deg ,";
         os << " date = " << pose.date() << " sec";
 
         return os;
