@@ -93,6 +93,10 @@ class MotionOrder: public ModeSelector
         double outDEBUGLinSpeedCorrection;
         double outDEBUGAngSpeedCorrection;
         double outDEBUGSaturation;
+        double outDEBUGNormalizedError;
+        double outDEBUGErrorApproachInit;
+        double outDEBUGErrorApproachCur;
+
 
     protected:
         /** type of the current order */

@@ -62,13 +62,13 @@ class OmnidirectOrder: public MotionOrder
          */
         arp_math::Twist2D m_v_correction_old;
         /*
-         * twist at moment we entered the approach zone
+         * twist and error at moment we entered the approach zone
          */
         arp_math::Twist2D m_twist_approach;
-        /*
-         * angle of speed for precedent turn
-         */
-        double m_angle_speedcorrection_old;
+        arp_math::Pose2D m_error_approach;
+
+        double m_normalizedError;
+        double m_normalizedError_old;
 
 
 
@@ -77,9 +77,12 @@ class OmnidirectOrder: public MotionOrder
         void switchApproach(arp_math::Pose2D currentPosition);
 
         static const double TIMELAG=0.060;
+        static const double DEC_APPROACH=0.5;
+
 private:
     Pose2D getPositionError_RobotRef(arp_math::Pose2D currentPosition);
     Twist2D computeApproachTwist(arp_math::Pose2D currentPosition);
+    double getTotalError(Pose2D pose);
 
 };
 

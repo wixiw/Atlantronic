@@ -64,7 +64,10 @@ void LittleSexControl::updateHook()
         outDEBUGLinSpeedCorrection.write(attrOrder->outDEBUGLinSpeedCorrection);
         outDEBUGAngSpeedCorrection.write(attrOrder->outDEBUGAngSpeedCorrection);
         outDEBUGSaturation.write(attrOrder->outDEBUGSaturation);
+        outDEBUGNormalizedError.write(attrOrder->outDEBUGNormalizedError);
         outDEBUGMode.write(attrOrder->getMode());
+        outDEBUGErrorApproachInit.write(attrOrder->outDEBUGErrorApproachInit);
+        outDEBUGErrorApproachCur.write(attrOrder->outDEBUGErrorApproachCur);
     }
 
 
@@ -188,6 +191,12 @@ void LittleSexControl::createOrocosInterface()
              .doc("");
     addPort("outDEBUGMode",outDEBUGMode)
              .doc("");
+    addPort("outDEBUGNormalizedError",outDEBUGNormalizedError)
+                 .doc("");
+    addPort("outDEBUGErrorApproachInit",outDEBUGErrorApproachInit)
+                 .doc("");
+    addPort("outDEBUGErrorApproachCur",outDEBUGErrorApproachCur)
+                 .doc("");
 
     addOperation("ooSetOrder",&LittleSexControl::ooSetOrder, this, OwnThread)
                 .doc("Define a new order to do")

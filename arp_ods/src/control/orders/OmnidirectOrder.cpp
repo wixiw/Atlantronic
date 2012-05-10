@@ -18,7 +18,6 @@ OmnidirectOrder::OmnidirectOrder() :
 {
     m_type = OMNIDIRECT;
     m_v_correction_old = Twist2D(0, 0, 0);
-    m_angle_speedcorrection_old = 0.0;
 
 }
 
@@ -61,19 +60,10 @@ shared_ptr<MotionOrder> OmnidirectOrder::createOrder(const OrderGoalConstPtr &go
 void OmnidirectOrder::switchRun(arp_math::Pose2D currentPosition)
 {
 
-//    Log(DEBUG) << ">> switchRun de Omnidirect";
-
 //position error in table referential
     Pose2D deltaPos_refTable = getPositionError(currentPosition);
     double distance_error = deltaPos_refTable.vectNorm();
-    double angle_error = deltaPos_refTable.h();
 
-    Pose2D current_cpoint_position = currentPosition * m_cpoint;
-
-//    Log(DEBUG) << "distance_error "<<distance_error;
-//    Log(DEBUG) << "angle_error    "<<angle_error;
-//    Log(DEBUG) << "m_conf.DISTANCE_ACCURACY "<<m_conf.DISTANCE_ACCURACY;
-//    Log(DEBUG) << "m_conf.ANGLE_ACCURACY    "<<m_conf.ANGLE_ACCURACY;
     // test for DONE
     if (distance_error <= m_conf.RADIUS_APPROACH_ZONE)
     {
@@ -82,12 +72,18 @@ void OmnidirectOrder::switchRun(arp_math::Pose2D currentPosition)
         m_approachTime = getTime();
         // si j'entre directement en approche, il faut que je calcule un twist initial
         m_twist_approach = computeRunTwist(currentPosition);
+        m_error_approach=getPositionError_RobotRef(currentPosition);
+        //to initialize the error
+        computeApproachTwist(currentPosition);
+        m_normalizedError_old=m_normalizedError+1.0;//+1 to be sure that the first comparison will be ok
+
+        Log(DEBUG) << "m_twist_approach" << m_twist_approach.toString();
+        Log(DEBUG) << "m_error_approach" << m_error_approach.toString();
         return;
     }
 
     testTimeout();
 
-//    Log(DEBUG) << "<< switchRun de Omnidirect";
 
 }
 
@@ -106,11 +102,10 @@ void OmnidirectOrder::switchApproach(arp_math::Pose2D currentPosition)
      m_runTime = getTime();
      }*/
 
-    if (getTime() - m_approachTime > 0.3) //TODO ceci ne marche pas sur une BF cap. il faut verifier que l'erreur "est assez petite" ou "ne reaugmente pas"
+    if (m_normalizedError_old<=m_normalizedError)
     {
-
         Log(INFO) << getTypeString() << " switched MODE_APPROACH --> MODE_DONE "
-                << "because in approach zone enough time";
+                << "because error began to increase";
         Log(INFO) << "robot position  " << currentPosition.toString();
         Log(INFO) << "cpoint position " << current_cpoint_position.toString();
         Log(INFO) << "aim position    " << m_endPose.toString();
@@ -120,6 +115,7 @@ void OmnidirectOrder::switchApproach(arp_math::Pose2D currentPosition)
         m_currentMode = MODE_DONE;
         return;
     }
+    m_normalizedError_old=m_normalizedError;
 
     testTimeout();
 
@@ -163,32 +159,12 @@ Twist2D OmnidirectOrder::computeRunTwist(arp_math::Pose2D currentPosition)
     Twist2D v_correction_cpoint;
     double speedcorrection = sqrt2(2.0 * m_conf.LIN_DEC)
             * sqrt2(max(deltaPos_refCpoint.vectNorm() - m_v_correction_old.speedNorm() * TIMELAG, 0.0));
-    double angle_speedcorrection;
-    if (m_currentMode == MODE_APPROACH) // suis je proche
-    {
-
-        // il faudrait l'initialiser a la creation de l'ordre
-        // l'angle de correction de vitesse reste celui au moment ou je me suis approché
-        angle_speedcorrection = m_angle_speedcorrection_old;
-        // la vitesse de correction est pondérée par l'angle de l'erreur et l'angle d'approche (du coup ca peut devenir négatif ! ennoorme)
-        Vector2 vectcorrection(cos(angle_speedcorrection), sin(angle_speedcorrection));
-        Vector2 vecterreur(cos(deltaPos_refCpoint.vectAngle()), sin(deltaPos_refCpoint.vectAngle()));
-        // un petit produit scalaire me permet de trouver ce coefficient
-        double ponderation = vectcorrection.dot(vecterreur);
-        speedcorrection = ponderation * speedcorrection;
-    }
-    else
-    {
-        // cas nominal: la correction de vitesse c'est l'angle de l'erreur
-        angle_speedcorrection = deltaPos_refCpoint.vectAngle();
-        //j'enregistre au cas ou je m'approcherais
-        m_angle_speedcorrection_old = angle_speedcorrection;
-    }
     double angcorrection = sqrt2(2.0 * m_conf.ANG_DEC)
             * sqrt2(deltaPos_refCpoint.h() - m_v_correction_old.vh() * TIMELAG * 0.5);
-    v_correction_cpoint.vx(speedcorrection * std::cos(angle_speedcorrection));
-    v_correction_cpoint.vy(speedcorrection * std::sin(angle_speedcorrection));
+    v_correction_cpoint.vx(speedcorrection * std::cos(deltaPos_refCpoint.vectAngle()));
+    v_correction_cpoint.vy(speedcorrection * std::sin(deltaPos_refCpoint.vectAngle()));
     v_correction_cpoint.vh(angcorrection);
+
     outDEBUGLinSpeedCorrection = speedcorrection;
     outDEBUGAngSpeedCorrection = angcorrection;
     //transfer of the twist to robot referential
@@ -199,6 +175,17 @@ Twist2D OmnidirectOrder::computeRunTwist(arp_math::Pose2D currentPosition)
 
 Twist2D OmnidirectOrder::computeApproachTwist(arp_math::Pose2D currentPosition)
 {
+
+    Pose2D deltaPos_refCpoint = getPositionError_RobotRef(currentPosition);
+    // this is the current % of the initial error when I entered the approach zone
+    m_normalizedError=getTotalError(deltaPos_refCpoint)/getTotalError(m_error_approach);
+
+    outDEBUGNormalizedError=m_normalizedError;
+    outDEBUGErrorApproachInit=getTotalError(m_error_approach);
+    outDEBUGErrorApproachCur=getTotalError(deltaPos_refCpoint);
+
+    return m_twist_approach*sqrt2(m_normalizedError);
+
 
 }
 
@@ -212,14 +199,14 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
 
     Twist2D v_correction_ref;
 
-    /*if (m_currentMode == MODE_RUN)
-    {*/
+    if (m_currentMode == MODE_RUN)
+    {
     v_correction_ref = computeRunTwist(currentPosition);
-    /*}
+    }
     if (m_currentMode == MODE_APPROACH)
     {
     v_correction_ref = computeApproachTwist(currentPosition);
-    }*/
+    }
 
     //saturation of twist: limit max linear speed/acc;  and max rotation speed/acc
     Twist2D v_correction_saturated = saturateTwist(v_correction_ref, dt);
@@ -246,4 +233,9 @@ Twist2D OmnidirectOrder::saturateTwist(Twist2D twist_input, double dt)
     outDEBUGSaturation = saturated_angspeed;
 
     return twist_output;
+}
+
+double OmnidirectOrder::getTotalError(Pose2D pose)
+{
+return sqrt(pose.x()*pose.x()+pose.y()*pose.y()+0.2*0.2*pose.h()*pose.h());
 }

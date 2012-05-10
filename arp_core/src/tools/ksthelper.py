@@ -1,5 +1,5 @@
 # coding=utf-8
-f = open("/opt/ros/reports.dat", "r")
+f = open("/tmp/reports.dat", "r")
 firstLine = f.readline()
 dd = firstLine.split()
 for i, d in enumerate(dd):

@@ -71,6 +71,10 @@ class LittleSexControl: public OdsTaskContext
         RTT::OutputPort<double> outDEBUGAngSpeedCorrection;
         RTT::OutputPort<double> outDEBUGSaturation;
         RTT::OutputPort<int> outDEBUGMode;
+        RTT::OutputPort<double> outDEBUGNormalizedError;
+
+        RTT::OutputPort<double>  outDEBUGErrorApproachInit;
+        RTT::OutputPort<double>  outDEBUGErrorApproachCur;
 
         /**
          * Buffer for computed speed commands

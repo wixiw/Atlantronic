@@ -43,7 +43,7 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
                                    transitions={'endInitialisation':'StartSequence', 'failed':'end'})
             smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(0, 0, 0),
-                                   transitions={'gogogo':'Prepare', 'problem':'end'})  
+                                   transitions={'gogogo':'SetInitialPosition', 'problem':'end'})  
             
             smach.StateMachine.add('Prepare', Prepare(),
                                    transitions={'succeeded':'SetInitialPosition', 'timeout':'Debloque'})
@@ -53,7 +53,7 @@ class MainStateMachine(smach.StateMachine):
                       transitions={'succeeded':'Forward', 'timeout':'Debloque'})
                         
             smach.StateMachine.add('Forward', Forward(),
-                                   transitions={'succeeded':'WaitForward', 'timeout':'Debloque'})
+                                   transitions={'succeeded':'Move1', 'timeout':'Debloque'})
             smach.StateMachine.add('WaitForward', WaiterState(2.0),
                                    transitions={'timeout':'Backward'})     
             smach.StateMachine.add('Backward', Backward(),
@@ -99,7 +99,7 @@ class Forward(CyclicActionState):
         #self.forward(1.000)
         #self.cap(-1.57)
         self.omnidirect_cpoint(0.0,0.0,0.0,
-                               01.000, 0.000, pi/2)
+                               0.000, 0.550, 0)
         
 class Backward(CyclicActionState):
     def createAction(self):
@@ -109,25 +109,19 @@ class Backward(CyclicActionState):
 #--------------------------------------------------------------------------------------------------
 class Move1(CyclicActionState):
     def createAction(self):
-        #self.forward(1.000)
-        #self.cap(-1.57)
-        self.omnidirect(1.000, 0.000, 1.57)
-
+        self.omnidirect(0.800, 0.550, -pi/2)
+Debloque
 class Move2(CyclicActionState):
     def createAction(self):
-        #self.backward(1.000)
-        #self.cap(0)
-        self.omnidirect(0.000, 0.000, 0)
+        self.omnidirect(0.800, -0.550, pi/2)
         
 class Move3(CyclicActionState):
     def createAction(self):
-        self.left(1.000) 
-        #self.cap(3.14)
+        self.omnidirect(-0.800, -0.550, -pi)
   
 class Move4(CyclicActionState):
     def createAction(self):
-        self.right(1.000)
-        #self.cap(0)
+        self.omnidirect(-0.800, 0.550, 0)
               
 class OpenMove1(CyclicActionState):
     def createAction(self):
@@ -145,7 +139,8 @@ class OpenMove3(CyclicActionState):
         self.openloop(x_speed=0.000, y_speed=1.000, theta_speed=0.000,
                       openloop_duration=1.800)     
 
-class OpenMove4(CyclicActionState):
+class OpenMove4(CyclicActionState):Move1':'succeeded'-->'Move2'
+
     def createAction(self):
         self.openloop(x_speed=0.000, y_speed= -1.000, theta_speed=0.000,
                       openloop_duration=1.800)    
