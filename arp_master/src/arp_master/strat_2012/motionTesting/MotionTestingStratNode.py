@@ -110,7 +110,7 @@ class Backward(CyclicActionState):
 class Move1(CyclicActionState):
     def createAction(self):
         self.omnidirect(0.800, 0.550, -pi/2)
-Debloque
+
 class Move2(CyclicActionState):
     def createAction(self):
         self.omnidirect(0.800, -0.550, pi/2)
@@ -139,8 +139,7 @@ class OpenMove3(CyclicActionState):
         self.openloop(x_speed=0.000, y_speed=1.000, theta_speed=0.000,
                       openloop_duration=1.800)     
 
-class OpenMove4(CyclicActionState):Move1':'succeeded'-->'Move2'
-
+class OpenMove4(CyclicActionState):
     def createAction(self):
         self.openloop(x_speed=0.000, y_speed= -1.000, theta_speed=0.000,
                       openloop_duration=1.800)    
