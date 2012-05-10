@@ -40,6 +40,11 @@ class EstimatedPose2D : public Pose2D
      */
     EstimatedPose2D operator*(const Pose2D& other) const;
 
+    /**
+     * Crée une chaine de caractère représentant la pose sous forme (x +- sigma, y +- sigma, theta +- sigma)
+     */
+    std::string toString() const;
+
     private:
     long double estimationDate;
     Covariance3 covariance;

@@ -346,5 +346,20 @@ if (number>=0.0)
 
 }
 
+std::string toStrMaxDecimals(double value, int decimals)
+{
+    std::ostringstream ss;
+    ss << std::fixed;
+    ss.precision(decimals);
+    ss << value;
+    std::string s = ss.str();
+    if(decimals > 0 && s[s.find_last_not_of('0')] == '.') {
+        s.erase(s.size() - decimals + 1);
+    }
+    return s;
+}
+
+
+
 }
 

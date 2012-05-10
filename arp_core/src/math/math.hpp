@@ -139,6 +139,7 @@ namespace arp_math
      */
     void linesIntersection(const Vector2 & p1,const Vector2 & p2,const Vector2 & p3,const Vector2 & p4, const double & epsilon, Vector2 & result, bool & parralel,bool & colinear);
 
+    std::string toStrMaxDecimals(double value, int decimals);
 }
 
 #endif /* _ARPMATH_MATH_HPP_ */

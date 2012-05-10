@@ -120,7 +120,7 @@ Pose2D Pose2D::inverse() const
 std::string Pose2D::toString() const
 {
     std::ostringstream  s;
-    s << "( " << x() << " m , " << y() << " m , " << rad2deg(betweenMinusPiAndPlusPi( h() )) << " deg )";
+    s << "( x: " << toStrMaxDecimals(x(), 3) << " m , y: " << toStrMaxDecimals(y(), 3) << " m , h: " << toStrMaxDecimals(rad2deg(betweenMinusPiAndPlusPi( h() )), 3) << " deg )";
     return s.str();
 }
 

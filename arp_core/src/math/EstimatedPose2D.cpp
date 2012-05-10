@@ -50,6 +50,18 @@ void EstimatedPose2D::date(const long double & _date)
 }
 
 
+std::string EstimatedPose2D::toString() const
+{
+    std::ostringstream  os;
+    os << "( ";
+    os << " x: " << toStrMaxDecimals(x(), 3) << " m +- " << toStrMaxDecimals(1.5 * sqrt(cov()(0,0)) * 1000., 1) << " mm ,";
+    os << " y: " << toStrMaxDecimals(y(), 3) << " m +- " << toStrMaxDecimals(1.5 * sqrt(cov()(1,1)) * 1000., 1) << " mm ,";
+    os << " h: " << toStrMaxDecimals(rad2deg(betweenMinusPiAndPlusPi( h() )), 3) << " deg +- " << toStrMaxDecimals(1.5 * rad2deg(sqrt(cov()(2,2))), 3) << " deg";
+    os << " )";
+    return os.str();
+}
+
+
 
 EstimatedPose2D EstimatedPose2D::operator*(const Pose2D& H) const
 {
