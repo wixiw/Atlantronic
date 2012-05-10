@@ -27,7 +27,7 @@ LittleSexControl::LittleSexControl(const std::string& name):
     createOrocosInterface();
 
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
-    arp_ods::orders::Logger::InitFile("arp_ods", INFO);
+    arp_ods::orders::Logger::InitFile("arp_ods", DEBUG);
 }
 
 void LittleSexControl::getInputs()
@@ -64,6 +64,7 @@ void LittleSexControl::updateHook()
         outDEBUGLinSpeedCorrection.write(attrOrder->outDEBUGLinSpeedCorrection);
         outDEBUGAngSpeedCorrection.write(attrOrder->outDEBUGAngSpeedCorrection);
         outDEBUGSaturation.write(attrOrder->outDEBUGSaturation);
+        outDEBUGMode.write(attrOrder->getMode());
     }
 
 
@@ -108,7 +109,10 @@ bool LittleSexControl::isOrderFinished()
         return true;
 
     if (attrOrder->getMode() == MODE_DONE)
+    {
+        outDEBUGMode.write(attrOrder->getMode());
         return true;
+    }
 
     return false;
 }
@@ -173,15 +177,16 @@ void LittleSexControl::createOrocosInterface()
             .doc("");
     addPort("outOrderInError",outOrderInError)
             .doc("");
+
     addPort("outDEBUGSaturation",outDEBUGSaturation)
                 .doc("");
-
-
     addPort("outDEBUGPositionError",outDEBUGPositionError)
             .doc("");
     addPort("outDEBUGLinSpeedCorrection",outDEBUGLinSpeedCorrection)
             .doc("");
     addPort("outDEBUGAngSpeedCorrection",outDEBUGAngSpeedCorrection)
+             .doc("");
+    addPort("outDEBUGMode",outDEBUGMode)
              .doc("");
 
     addOperation("ooSetOrder",&LittleSexControl::ooSetOrder, this, OwnThread)

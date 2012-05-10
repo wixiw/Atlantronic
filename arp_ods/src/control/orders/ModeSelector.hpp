@@ -126,11 +126,16 @@ class ModeSelector
         config m_conf;
 
         /** Date at which we entered the PASS mode */
-        double m_passTime;
+        long double m_passTime;
 
         /** Date at which we entered the INIT mode **/
-        double m_initTime;
+        long double m_initTime;
 
+        /** Date at which we entered the approach mode **/
+        long double m_approachTime;
+
+        /** Date at which we entered the run mode **/
+        long double m_runTime;
 
         /**
          * This function is called by switchMode when m_currentMode==MODE_INIT

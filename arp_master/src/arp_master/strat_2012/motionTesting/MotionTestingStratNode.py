@@ -15,11 +15,11 @@ class MotionTestingStratNode():
         rospy.init_node('MotionTestingStratNode')
         # recuperation des parametres)
         #creation of the cadencer for all states
-        Data.stateMachineRate =rospy.Rate(10)
+        Data.stateMachineRate = rospy.Rate(10)
         #linking of the input in Inputs to the topics
         Inputs.link()
         #creation of statemachine
-        sm=MainStateMachine()
+        sm = MainStateMachine()
     
         #welcome message
         rospy.loginfo("******************************************************")
@@ -38,13 +38,29 @@ class MotionTestingStratNode():
 ############################## STATE MACHINE
 class MainStateMachine(smach.StateMachine):
     def __init__(self):
-        smach.StateMachine.__init__(self,outcomes=['end'])
+        smach.StateMachine.__init__(self, outcomes=['end'])
         with self:
             smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
                                    transitions={'endInitialisation':'StartSequence', 'failed':'end'})
-            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(0,0,0),
-                                   transitions={'gogogo':'Move1','problem':'end'})  
+            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(0, 0, 0),
+                                   transitions={'gogogo':'Prepare', 'problem':'end'})  
             
+            smach.StateMachine.add('Prepare', Prepare(),
+                                   transitions={'succeeded':'SetInitialPosition', 'timeout':'Debloque'})
+            
+            smach.StateMachine.add('SetInitialPosition',
+                      SetInitialPosition(0,0,0),
+                      transitions={'succeeded':'Forward', 'timeout':'Debloque'})
+                        
+            smach.StateMachine.add('Forward', Forward(),
+                                   transitions={'succeeded':'WaitForward', 'timeout':'Debloque'})
+            smach.StateMachine.add('WaitForward', WaiterState(2.0),
+                                   transitions={'timeout':'Backward'})     
+            smach.StateMachine.add('Backward', Backward(),
+                                   transitions={'succeeded':'WaitBack', 'timeout':'Debloque'})
+            smach.StateMachine.add('WaitBack', WaiterState(2.0),
+                                   transitions={'timeout':'Forward'})                 
+                                    
             smach.StateMachine.add('Move1', Move1(),
                                    transitions={'succeeded':'Move2', 'timeout':'Debloque'})
             smach.StateMachine.add('Move2', Move2(),
@@ -71,7 +87,26 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('Wait', WaiterState(2.0),
                                    transitions={'timeout':'end'})           
 
+#--------------------------------------------------------------------------------------------------
 
+class Prepare(CyclicActionState):
+    def createAction(self):
+        self.openloop(x_speed=0.100, y_speed=0.000, theta_speed=0.000,
+                              openloop_duration=0.500)
+                              
+class Forward(CyclicActionState):
+    def createAction(self):
+        #self.forward(1.000)
+        #self.cap(-1.57)
+        self.omnidirect_cpoint(0.0,0.0,0.0,
+                               01.000, 0.000, pi/2)
+        
+class Backward(CyclicActionState):
+    def createAction(self):
+        self.omnidirect_cpoint(0.0,0.0,0.0,
+                               0.000, 0.000, 0)
+
+#--------------------------------------------------------------------------------------------------
 class Move1(CyclicActionState):
     def createAction(self):
         #self.forward(1.000)
@@ -96,39 +131,39 @@ class Move4(CyclicActionState):
               
 class OpenMove1(CyclicActionState):
     def createAction(self):
-        self.openloop( x_speed=0.500,y_speed=0.000,theta_speed=0.000,
+        self.openloop(x_speed=0.500, y_speed=0.000, theta_speed=0.000,
                               openloop_duration=2.000)
         
 class OpenMove2(CyclicActionState):
     def createAction(self):
-        self.openloop( x_speed=-0.500,y_speed=0.000,theta_speed=0.000,
+        self.openloop(x_speed= -0.500, y_speed=0.000, theta_speed=0.000,
                       openloop_duration=2.000)   
         
 
 class OpenMove3(CyclicActionState):
     def createAction(self):
-        self.openloop( x_speed=0.000,y_speed=1.000,theta_speed=0.000,
+        self.openloop(x_speed=0.000, y_speed=1.000, theta_speed=0.000,
                       openloop_duration=1.800)     
 
 class OpenMove4(CyclicActionState):
     def createAction(self):
-        self.openloop( x_speed=0.000,y_speed=-1.000,theta_speed=0.000,
+        self.openloop(x_speed=0.000, y_speed= -1.000, theta_speed=0.000,
                       openloop_duration=1.800)    
         
 class OpenMove5(CyclicActionState):
     def createAction(self):
  #       self.openloop( x_speed=0.000,y_speed=-0.000,theta_speed=1.000,
   #                    openloop_duration=2.000)    
-                self.openloop_cpoint( -0.0,0,0,
-                                     x_speed=0.000,y_speed=-0.000,theta_speed=1.000,
+                self.openloop_cpoint(-0.0, 0, 0,
+                                     x_speed=0.000, y_speed= -0.000, theta_speed=1.000,
                       openloop_duration=2.000) 
                   
 class OpenMove6(CyclicActionState):
     def createAction(self):
   #      self.openloop( x_speed=0.000,y_speed=-0.000,theta_speed=-1.000,
    #                   openloop_duration=2.000)    
-                self.openloop_cpoint( -0.0,0,0,
-                                       x_speed=0.000,y_speed=-0.000,theta_speed=-1.000,
+                self.openloop_cpoint(-0.0, 0, 0,
+                                       x_speed=0.000, y_speed= -0.000, theta_speed= -1.000,
                       openloop_duration=2.000)    
         
 class Debloque(CyclicActionState):

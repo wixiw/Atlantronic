@@ -55,7 +55,7 @@ void KinematicBase::getInputs()
 
 void KinematicBase::run()
 {
-    Log(INFO) << ">> KinematicBase::run()   -----------------------------";
+    Log(DEBUG) << ">> KinematicBase::run()   -----------------------------";
 
     //check robot blocked
     checkRobotBlocked();
@@ -90,7 +90,7 @@ void KinematicBase::run()
     {
         attrMotorStateCommand.steering = attrMotorsCurrentState.steering;
     }
-    Log(INFO) << "<< KinematicBase::run()";
+    Log(DEBUG) << "<< KinematicBase::run()";
 }
 
 void KinematicBase::checkRobotBlocked()
@@ -127,11 +127,11 @@ bool KinematicBase::consistencyMeasuredvsCommanded()
     double speederror = attrCurrentTwist.distanceTo(attrAcceptableTwist, 1.0,0.2);
 
     //////////////////////
-    Log(INFO) << ">> KinematicBase::consistencyMeasuredvsCommanded()";
-    Log(INFO) << "command  : "<<attrAcceptableTwist.toString();
-    Log(INFO) << "measure  : "<<attrCurrentTwist.toString();
-    Log(INFO) << "error    : "<<speederror;
-    Log(INFO) << "<< KinematicBase::consistencyMeasuredvsCommanded()";
+//    Log(DEBUG) << ">> KinematicBase::consistencyMeasuredvsCommanded()";
+//    Log(DEBUG) << "command  : "<<attrAcceptableTwist.toString();
+//    Log(DEBUG) << "measure  : "<<attrCurrentTwist.toString();
+//    Log(DEBUG) << "error    : "<<speederror;
+//    Log(DEBUG) << "<< KinematicBase::consistencyMeasuredvsCommanded()";
     ////////////////////
 
 

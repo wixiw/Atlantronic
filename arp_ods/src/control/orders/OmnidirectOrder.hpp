@@ -45,16 +45,41 @@ class OmnidirectOrder: public MotionOrder
          */
         arp_math::Pose2D getPositionError(arp_math::Pose2D currentPosition);
 
+
+
     protected:
+        /*
+         * saturate the twist for acceleration and max speed
+         */
+        Twist2D saturateTwist(Twist2D v_correction_ref, double dt);
+        /*
+         * compute the usual "mode run" twist
+         */
+        Twist2D computeRunTwist(arp_math::Pose2D currentPosition);
 
         /*
          * twist of precedent turn
          */
         arp_math::Twist2D m_v_correction_old;
+        /*
+         * twist at moment we entered the approach zone
+         */
+        arp_math::Twist2D m_twist_approach;
+        /*
+         * angle of speed for precedent turn
+         */
+        double m_angle_speedcorrection_old;
 
-        //surcharger pour supprimer le mode approche en mode normal. En mode PASS la distance approche est utilisée
+
+
+        //surcharges
         void switchRun(arp_math::Pose2D currentPosition);
+        void switchApproach(arp_math::Pose2D currentPosition);
 
+        static const double TIMELAG=0.060;
+private:
+    Pose2D getPositionError_RobotRef(arp_math::Pose2D currentPosition);
+    Twist2D computeApproachTwist(arp_math::Pose2D currentPosition);
 
 };
 

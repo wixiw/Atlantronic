@@ -54,6 +54,7 @@ ModeSelector::ModeSelector()
     m_passTime = 0;
     // -1 is used to recognize non initialized time
     m_initTime = -1;
+    m_approachTime = -1;
 
     //conf
     m_conf.ANGLE_ACCURACY = -1.0;
@@ -87,6 +88,7 @@ void ModeSelector::switchInit(arp_math::Pose2D currentPosition)
     m_initTime = getTime();
     testTimeout();
     m_currentMode = MODE_RUN;
+    m_runTime = getTime();
 }
 
 void ModeSelector::switchRun(arp_math::Pose2D currentPosition)
@@ -104,6 +106,7 @@ void ModeSelector::switchRun(arp_math::Pose2D currentPosition)
         {
             Log(INFO) << "switched MODE_RUN --> MODE_APPROACH";
             m_currentMode = MODE_APPROACH;
+            m_approachTime= getTime();
             return;
         }
     }
