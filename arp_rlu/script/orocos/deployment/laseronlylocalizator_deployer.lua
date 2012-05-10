@@ -6,7 +6,7 @@ local me = "LaserOnlyLocalizator"
 
 function LaserOnlyLocalizatorDeployer:load()
 	Deployer:loadComponent(me, "arp_rlu::LaserOnlyLocalizatorCpn")
-	Deployer:setActivity("MockSched",0.0,0,rtt.globals.ORO_SCHED_OTHER)
+	Deployer:setActivity(me,0.0,0,rtt.globals.ORO_SCHED_OTHER)
 end
 
 

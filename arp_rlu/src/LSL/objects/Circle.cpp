@@ -76,3 +76,10 @@ void Circle::setPosition(Vector2 _pos)
     cartesianPosition = _pos;
 }
 
+std::string Circle::toString()
+{
+    std::stringstream ss;
+    ss << "[ x: " << x() << " (m) , y: " << y() << " (m) , r: " << r() << " (m) ]";
+    return ss.str();
+}
+

@@ -26,8 +26,8 @@ LaserOnlyLocalizatorCpn::LaserOnlyLocalizatorCpn(const std::string& name)
 , lastSuccess(false)
 {
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
-    arp_rlu::lsl::Logger::InitFile("LSL", INFO);
-    arp_rlu::kfl::Logger::InitFile("KFL", INFO);
+    arp_rlu::lsl::Logger::InitFile("LSL", DEBUG);
+    arp_rlu::kfl::Logger::InitFile("KFL", DEBUG);
 
     createOrocosInterface();
 
@@ -37,7 +37,7 @@ LaserOnlyLocalizatorCpn::LaserOnlyLocalizatorCpn(const std::string& name)
     propParams.mfp.width = 0;
 
     propParams.pcp.minRange = 0.01;
-    propParams.pcp.maxRange = 10.0;
+    propParams.pcp.maxRange = 3.2;
     propParams.pcp.minTheta = -PI;
     propParams.pcp.maxTheta = PI;
 
@@ -64,9 +64,9 @@ LaserOnlyLocalizatorCpn::LaserOnlyLocalizatorCpn(const std::string& name)
 
     propParams.tcp.radiusTolerance = 0.03;
     propParams.tcp.distanceTolerance = 0.;
-    propParams.tcp.maxLengthTolerance = 0.1;
-    propParams.tcp.medLengthTolerance = 0.1;
-    propParams.tcp.minLengthTolerance = 0.1;
+    propParams.tcp.maxLengthTolerance = 0.03;
+    propParams.tcp.medLengthTolerance = 0.03;
+    propParams.tcp.minLengthTolerance = 0.03;
 
     propParams.dcp.radiusTolerance = 0.03;
     propParams.dcp.distanceTolerance = 0.;

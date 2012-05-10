@@ -29,13 +29,19 @@ class HokuyoViewer():
         axe = fig.add_subplot(111, aspect='equal')
         for i in range(len(scan.ranges)):
             if scan.ranges[i] > scan.range_min and scan.ranges[i] < scan.range_max:
-                xImpact = np.cos(scan.angle_min + i*scan.angle_increment) * scan.ranges[-1-i]
-                yImpact = np.sin(scan.angle_min + i*scan.angle_increment)  * scan.ranges[-1-i]
+                xImpact = np.cos(scan.angle_min + i*scan.angle_increment) * scan.ranges[i]
+                yImpact = np.sin(scan.angle_min + i*scan.angle_increment)  * scan.ranges[i]
                 axe.plot( [xImpact] , [yImpact], 'xb' )
                 axe.plot( [0] , [0], 'ob' )
                 #axe.plot( [0, xImpact] , [0, yImpact], '--b' )
-        axe.axis([0, 3.5, -3.5, 3.5])
+        
+        # borders
+        axe.plot( [0., np.cos(scan.angle_min)], 
+                  [0., np.sin(scan.angle_min)], '-m')
+        axe.plot( [0., np.cos(scan.angle_min + (len(scan.ranges)-1)*scan.angle_increment)], 
+                  [0., np.sin(scan.angle_min + (len(scan.ranges)-1)*scan.angle_increment)], '-m')
         plt.show()
+        axe.axis([-3.5, 3.5, -3.5, 3.5])
 
 if __name__ == '__main__':
     try:

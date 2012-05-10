@@ -177,6 +177,7 @@ bool LaserOnlyLocalizator::process(lsl::LaserScan ls)
     mfTimer.Start();
     LaserScan scan_0 = MedianFilter::apply(ls, params.mfp);
     mfTimer.Stop();
+    export_json( scan_0, "./LaserOnlyLocalizator__process__scan_0.json" );
 
 
     //*****************************
@@ -190,6 +191,7 @@ bool LaserOnlyLocalizator::process(lsl::LaserScan ls)
     cartTimer.Start();
     scan_1.computeCartesianData();
     cartTimer.Stop();
+    export_json( scan_1, "./LaserOnlyLocalizator__process__scan_1.json" );
 
 
     //*****************************
@@ -257,6 +259,9 @@ bool LaserOnlyLocalizator::process(lsl::LaserScan ls)
         vpdc.push_back( std::make_pair( triangle[0].first[0], triangle[0].second[0] ));
         vpdc.push_back( std::make_pair( triangle[0].first[1], triangle[0].second[1] ));
         vpdc.push_back( std::make_pair( triangle[0].first[2], triangle[0].second[2] ));
+        Log( INFO ) << "LaserOnlyLocalizator::process -   [*] " << triangle[0].second[0].toString() << " <=> " << triangle[0].first[0].toString();
+        Log( INFO ) << "LaserOnlyLocalizator::process -   [*] " << triangle[0].second[1].toString() << " <=> " << triangle[0].first[1].toString();
+        Log( INFO ) << "LaserOnlyLocalizator::process -   [*] " << triangle[0].second[2].toString() << " <=> " << triangle[0].first[2].toString();
         bool out = estimateFromConstellation( vpdc, lastEstimate );
         tcTimer.Stop();
         globalTimer.Stop();
@@ -279,19 +284,23 @@ bool LaserOnlyLocalizator::process(lsl::LaserScan ls)
     segments = DuoCircleIdentif::apply( detectedCircles, refSegments, params.dcp );
     for(unsigned int i = 0 ; i < segments.size() ; i++)
     {
-        lsl::Circle A,B;
-        A = segments[i].second.first;
-        B = segments[i].second.second;
+        lsl::Circle rcA,rcB;
+        rcA = segments[i].second.first;
+        rcB = segments[i].second.second;
+
+        lsl::DetectedCircle dcA,dcB;
+        dcA = segments[i].first.first;
+        dcB = segments[i].first.second;
 
         std::vector< std::pair< lsl::DetectedCircle, lsl::Circle > > vpdcAB;
-        vpdcAB.push_back( std::make_pair( segments[i].first.first,  segments[i].second.first  ));
-        vpdcAB.push_back( std::make_pair( segments[i].first.second, segments[i].second.second ));
+        vpdcAB.push_back( std::make_pair( dcA, rcA ));
+        vpdcAB.push_back( std::make_pair( dcB, rcB ));
         arp_math::EstimatedPose2D estimAB;
         bool okAB = estimateFromConstellation( vpdcAB, estimAB );
 
         std::vector< std::pair< lsl::DetectedCircle, lsl::Circle > > vpdcBA;
-        vpdcBA.push_back( std::make_pair( segments[i].first.second, segments[i].second.first  ));
-        vpdcBA.push_back( std::make_pair( segments[i].first.first,  segments[i].second.second ));
+        vpdcBA.push_back( std::make_pair( dcB, rcA  ));
+        vpdcBA.push_back( std::make_pair( dcA, rcB ));
         arp_math::EstimatedPose2D estimBA;
         bool okBA = estimateFromConstellation( vpdcBA, estimBA );
 
@@ -299,6 +308,8 @@ bool LaserOnlyLocalizator::process(lsl::LaserScan ls)
         {
             lastEstimate = estimAB;
             Log( INFO  ) << "LaserOnlyLocalizator::process - Segment detection succeed";
+            Log( INFO ) << "LaserOnlyLocalizator::process -   [*] " << rcA.toString() << " <=> " << dcA.toString();
+            Log( INFO ) << "LaserOnlyLocalizator::process -   [*] " << rcB.toString() << " <=> " << dcB.toString();
             dcTimer.Stop();
             globalTimer.Stop();
             return true;
@@ -307,6 +318,8 @@ bool LaserOnlyLocalizator::process(lsl::LaserScan ls)
         {
             lastEstimate = estimBA;
             Log( INFO ) << "LaserOnlyLocalizator::process - Segment detection succeed";
+            Log( INFO ) << "LaserOnlyLocalizator::process -   [*] " << rcA.toString() << " <=> " << dcB.toString();
+            Log( INFO ) << "LaserOnlyLocalizator::process -   [*] " << rcB.toString() << " <=> " << dcA.toString();
             dcTimer.Stop();
             globalTimer.Stop();
             return true;

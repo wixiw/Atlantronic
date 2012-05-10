@@ -168,9 +168,25 @@ std::vector< std::pair< std::pair<DetectedCircle, DetectedCircle>, std::pair<Cir
             references.first = sorted[0].second;
             references.second = sorted[1].second;
         }
-        if(bestDeltaLength > -1. )
+        if(bestDeltaLength > -1.)
         {
-            out.push_back( std::make_pair( std::make_pair(candidates.first, candidates.second), std::make_pair(references.first, references.second) ));
+            if( (secondBestDeltaLength < -1.) || (secondBestDeltaLength > 5. * bestDeltaLength))
+            {
+                Log( DEBUG ) << "DuoCircleIdentif::apply - Segment " << references.first.toString() << " -- " << references.second.toString() << " succeed :";
+                Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] " << candidates.first.toString();
+                Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] " << candidates.second.toString();
+                Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] bestDeltaLength : " << bestDeltaLength;
+                Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] secondBestDeltaLength : " << secondBestDeltaLength;
+                out.push_back( std::make_pair( std::make_pair(candidates.first, candidates.second), std::make_pair(references.first, references.second) ));
+            }
+            else
+            {
+                Log( DEBUG ) << "DuoCircleIdentif::apply - Segment " << references.first.toString() << " -- " << references.second.toString() << " failed :";
+                Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] " << candidates.first.toString();
+                Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] " << candidates.second.toString();
+                Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] bestDeltaLength : " << bestDeltaLength;
+                Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] secondBestDeltaLength : " << secondBestDeltaLength;
+            }
         }
     }
 

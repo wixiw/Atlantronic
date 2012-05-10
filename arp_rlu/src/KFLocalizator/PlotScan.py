@@ -31,7 +31,7 @@ for i in range(len(scan.range)):
     xImpact = np.cos(scan.theta[-1-i]) * scan.range[-1-i]
     yImpact = np.sin(scan.theta[-1-i]) * scan.range[-1-i]
     axe.plot( [xImpact] , [yImpact], 'xb' )
-    axe.plot( [0., xImpact] , [0., yImpact], '--b' )
+    #axe.plot( [0., xImpact] , [0., yImpact], '--b' )
 axe.plot( [0] , [0], 'ob' )
 # borders
 axe.plot( [0., np.cos(min(scan.theta))], 

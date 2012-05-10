@@ -97,6 +97,11 @@ class Circle
          */
         void setPosition(arp_math::Vector2 _pos);
 
+        /**
+         * Permet d'afficher (x, y, r)
+         */
+        std::string toString();
+
 
     protected:
         arp_math::Vector2 cartesianPosition;
