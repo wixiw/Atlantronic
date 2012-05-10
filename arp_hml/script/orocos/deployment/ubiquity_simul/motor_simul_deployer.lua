@@ -11,7 +11,7 @@ end
 
 function MotorSimulDeployer:load()
 	Deployer:loadComponent("Can1","arp_core::PeriodicClock")
-	Deployer:setActivity("Can1",0.030,60,1)
+	Deployer:setActivity("Can1",0.020,60,1)
 	
 	Deployer:loadComponent("MockSched","FBSched")
 	Deployer:setActivity("MockSched",0.0,60,rtt.globals.ORO_SCHED_RT)
