@@ -87,17 +87,6 @@ class Localizator: public RluTaskContext
 
 
         //*****************************************************
-        // Callbacks
-
-        //        /** callback appelee lors de la reception de donnees sur inScan,
-        //         * Attention l'updateHook sera automatique appelee... jusqu'au prochaine versions d'orocos*/
-        //        void scanCb(RTT::base::PortInterface* portInterface);
-        //
-        //        /** callback appelee lors de la reception de donnees sur inOdo,
-        //         * Attention l'updateHook sera automatique appelee... jusqu'au prochaine versions d'orocos*/
-        //        void odoCb(RTT::base::PortInterface* portInterface);
-
-        //*****************************************************
         // Internal objects
         kfl::KFLocalizator kfloc;
         long double m_monotonicTimeToRealTime;

@@ -20,7 +20,7 @@ WoodheadSimul::WoodheadSimul(const std::string& name):
         .doc("Value of the input #1");
     addPort("outBit2",outBit2)
         .doc("Value of the input #2");
-    addPort("outBit3",outBit3)D-LINK DWA-127
+    addPort("outBit3",outBit3)
         .doc("Value of the input #3");
     addPort("outBit4",outBit4)
         .doc("Value of the input #4");

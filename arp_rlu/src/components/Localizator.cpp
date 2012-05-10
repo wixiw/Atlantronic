@@ -183,22 +183,15 @@ void Localizator::updateHook()
     kfl::Log( Info ) << "***************************************************************************************************";
     kfl::Log( Info ) << "Localization - State: " << LocalizationStateNames[currentState] << " - Visu: " << kfloc.getTheoricalVisibility() << " - Estimate : " << estim_H_robot_table.toString();
 
-    if( currentState < _BAD__ODO_ )
+    std::vector< arp_math::Vector2 > obstacles = kfloc.getDetectedObstacles();
+    outObstacles.write(obstacles);
+    std::stringstream ss;
+    ss << "  Obstacles : ";
+    for(unsigned int i = 0 ; (i < obstacles.size()) && ( i < 3) ; i++)
     {
-        std::vector< arp_math::Vector2 > obstacles = kfloc.getDetectedObstacles();
-        outObstacles.write(obstacles);
-        std::stringstream ss;
-        ss << "  Obstacles : ";
-        for(unsigned int i = 0 ; (i < obstacles.size()) && ( i < 3) ; i++)
-        {
-            ss << "(" << obstacles[i].transpose() << ") ";
-        }
-        kfl::Log( Info ) << ss.str();
+        ss << "(" << obstacles[i].transpose() << ") ";
     }
-    else
-    {
-        kfl::Log( Info ) << "Localization - State: " << LocalizationStateNames[currentState] << " - Visu: " << kfloc.getTheoricalVisibility() << " - Estimate : " << estim_H_robot_table.toString();
-    }
+    kfl::Log( Info ) << ss.str();
 
     outPose.write(estim_H_robot_table);
     outTwist.write(estim_T_robot_table_p_robot_r_robot);
