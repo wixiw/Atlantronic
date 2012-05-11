@@ -429,7 +429,7 @@ void Localizator::updateLocalizationState()
                     if( updateNeverTried == true )
                     {
                         // Laser should not be connected
-                        if( reliability )
+                        if( reliabilityOdo )
                         {
                             currentState = _ODO_ONLY_;
                             return;
