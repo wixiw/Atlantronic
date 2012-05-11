@@ -162,7 +162,7 @@ class CyclicActionState(CyclicState):
         
     def cap(self,theta):
         self.createMotionControlAction_cpoint(-0.0583,0,0,
-                                              Inputs.getx(),Inputs.gety(),theta,
+                                              Inputs.getx()-0.0583*cos(theta),Inputs.gety()-0.0583*sin(theta),theta,
                                               'OMNIDIRECT',False,
                                               0,0,0,0)
         
