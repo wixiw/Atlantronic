@@ -12,12 +12,12 @@ end
 
 function MotorSimulDeployer:load()
 	assert( Deployer:loadComponent("Can1","arp_core::PeriodicClock"));
-	assert( Deployer:setActivity("Can1",0.030,60,1));
+	assert( Deployer:setActivity("Can1",0.020,60,rtt.globals.ORO_SCHED_RT));
 	
 	assert( Deployer:loadComponent("MockSched","FBSched"));
-	assert( Deployer:setActivity("MockSched",0.0,60,1));
+	assert( Deployer:setActivity("MockSched",0.0,60,rtt.globals.ORO_SCHED_RT));
 	MockSched = assert( Deployer:getPeer("MockSched"));
-	assert( MockSched:cleanup());
+	assert( MockSched:cleanup());1
 	
 	assert( MotorSimulDeployer:loadMotor("LeftDriving"));
 	assert( MotorSimulDeployer:loadMotor("RightDriving"));

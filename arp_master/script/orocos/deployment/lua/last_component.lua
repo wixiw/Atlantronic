@@ -5,7 +5,7 @@ LastComponentDeployer = ComposantDeployer:new()
 
 function LastComponentDeployer:load()
 	assert( Deployer:loadComponent("LastComponent","arp_master::LastComponent"))
-	assert( Deployer:setActivity("LastComponent",1,0,0))
+	assert( Deployer:setActivity("LastComponent",1,0,rtt.globals.ORO_SCHED_OTHER))
 	return true
 
 end
