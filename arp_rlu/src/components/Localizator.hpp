@@ -25,8 +25,9 @@ enum LocalizationState
     __STOPED__ = 0,
     _ODO_ONLY_ = 1,
     __FUSION__ = 2,
-    _BAD__ODO_ = 3,
-    ___LOST___ = 4
+    _OCCULTED_ = 3,
+    _BAD__ODO_ = 4,
+    ___LOST___ = 5
 };
 
 class Localizator: public RluTaskContext
@@ -98,8 +99,10 @@ class Localizator: public RluTaskContext
         kfl::KFLocalizator kfloc;
         long double m_monotonicTimeToRealTime;
 
-        double propMaxReliableTransStddev;
-        double propMaxReliableRotStddev;
+        double propMaxReliableBadOdoTransStddev;
+        double propMaxReliableBadOdoRotStddev;
+        double propMaxReliableLostTransStddev;
+        double propMaxReliableLostRotStddev;
 
         double propLaserRangeSigma;
         double propLaserThetaSigma;
@@ -107,14 +110,13 @@ class Localizator: public RluTaskContext
         double propLaserRangeSigmaSmooth;
         double propLaserThetaSigmaSmooth;
 
-        unsigned int propLostCptThreshold;
 
+        bool updateNeverTried;
         bool updateTried;
         bool predictionOk;
         bool updateOk;
 
         LocalizationState currentState;
-        unsigned int lostCpt;
 
 };
 

@@ -23,10 +23,11 @@ using namespace RTT;
 ORO_LIST_COMPONENT_TYPE( arp_rlu::Localizator )
 
 
-const char * LocalizationStateNames[5] = {
+const char * LocalizationStateNames[6] = {
         stringify( __STOPED__ ),
         stringify( _ODO_ONLY_ ),
         stringify( __FUSION__ ),
+        stringify( _OCCULTED_ ),
         stringify( _BAD__ODO_ ),
         stringify( ___LOST___ )
 };
@@ -34,17 +35,19 @@ const char * LocalizationStateNames[5] = {
 Localizator::Localizator(const std::string& name)
 : RluTaskContext(name)
 , kfloc()
-, propMaxReliableTransStddev(0.1)
-, propMaxReliableRotStddev( deg2rad(5.0) )
-, propLaserRangeSigma(0.030)
+, propMaxReliableBadOdoTransStddev(0.10)
+, propMaxReliableBadOdoRotStddev( deg2rad(12.) )
+, propMaxReliableLostTransStddev(0.20)
+, propMaxReliableLostRotStddev( deg2rad(22.) )
+, propLaserRangeSigma(0.10)
 , propLaserThetaSigma(0.05)
-, propLaserRangeSigmaSmooth(0.1)
-, propLaserThetaSigmaSmooth(0.1)
-, propLostCptThreshold(10)
+, propLaserRangeSigmaSmooth(0.2)
+, propLaserThetaSigmaSmooth(0.2)
+, updateNeverTried(true)
 , updateTried(false)
 , predictionOk(false)
 , updateOk(false)
-, currentState(__STOPED__)
+, currentState(___LOST___)
 {
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
     arp_rlu::lsl::Logger::InitFile("LSL", INFO);
@@ -54,7 +57,7 @@ Localizator::Localizator(const std::string& name)
 
     m_monotonicTimeToRealTime = ros::Time::now().toSec() - getTime();
 
-    propParams.defaultInitCovariance = Vector3(0.01, 0.01, 0.01).asDiagonal();
+    propParams.defaultInitCovariance = Vector3(0.020 * 0.020, 0.020 * 0.020, deg2rad(1.) * deg2rad(1.)).asDiagonal();
 
     propParams.bufferSize = 100;
     propParams.maxTime4OdoPrediction = 0.5;
@@ -70,7 +73,7 @@ Localizator::Localizator(const std::string& name)
 
     propParams.iekfParams.defaultOdoVelTransSigma = 0.01;
     propParams.iekfParams.defaultOdoVelRotSigma   = 0.01;
-    propParams.iekfParams.defaultLaserRangeSigma  = 0.030;
+    propParams.iekfParams.defaultLaserRangeSigma  = 0.10;
     propParams.iekfParams.defaultLaserThetaSigma  = 0.05;
     propParams.iekfParams.iekfMaxIt               = 10;
     propParams.iekfParams.iekfInnovationMin       = 0.0122474;
@@ -144,7 +147,7 @@ void Localizator::updateHook()
         LOG(Info) << "Switched to smooth mode (LaserRangeSigma: " << kfloc.getParams().iekfParams.defaultLaserRangeSigma << " - LaserThetaSigma: " << kfloc.getParams().iekfParams.defaultLaserThetaSigma << ")" << endlog();
     }
     if( !smoothMode && (propParams.iekfParams.defaultLaserRangeSigma != propLaserRangeSigma ||
-        propParams.iekfParams.defaultLaserThetaSigma != propLaserThetaSigma ) )
+            propParams.iekfParams.defaultLaserThetaSigma != propLaserThetaSigma ) )
     {
         propParams.iekfParams.defaultLaserRangeSigma = propLaserRangeSigma;
         propParams.iekfParams.defaultLaserThetaSigma = propLaserThetaSigma;
@@ -165,6 +168,7 @@ void Localizator::updateHook()
     sensor_msgs::LaserScan rosScan;
     if( RTT::NewData == inScan.read(rosScan) )
     {
+        updateNeverTried = false;
         updateTried = true;
         double dateBeg = rosScan.header.stamp.toSec() - m_monotonicTimeToRealTime;
 
@@ -186,13 +190,14 @@ void Localizator::updateHook()
         lslScan.setPolarData(polarData);
 
         updateOk = kfloc.newScan(lslScan);
+
     }
+
+    updateLocalizationState();
 
 
     EstimatedPose2D estim_H_robot_table = kfloc.getLastEstimatedPose2D();
     EstimatedTwist2D estim_T_robot_table_p_robot_r_robot = kfloc.getLastEstimatedTwist2D();
-
-    updateLocalizationState();
 
 
     kfl::Log( Info ) << "***************************************************************************************************";
@@ -229,10 +234,10 @@ bool Localizator::ooInitialize(double x, double y, double theta)
         outPose.write(estim_H_robot_table);
         outTwist.write(estim_T_robot_table_p_robot_r_robot);
 
+        updateNeverTried = true;
         predictionOk = false;
         updateOk = false;
         currentState = __STOPED__;
-        lostCpt = 0;
 
         LOG(Info) << "initialize to " << pose.toString() << " with date : "  << initDate <<  " (sec)" << endlog();
         kfl::Log( Info ) << "***************************************************************************************************";
@@ -262,8 +267,10 @@ std::string Localizator::printParams()
     std::stringstream ss;
     ss << "****************************" << std::endl;
     ss << kfloc.getParams().getInfo();
-    ss << " [*] propMaxReliableTransStddev : " << propMaxReliableTransStddev << " (m2)" << std::endl;
-    ss << " [*] propMaxReliableRotStddev : " << rad2deg(propMaxReliableRotStddev) << " (deg2)" << std::endl;
+    ss << " [*] propMaxReliableBadOdoTransStddev : " << propMaxReliableBadOdoTransStddev << " (m)" << std::endl;
+    ss << " [*] propMaxReliableBadOdoRotStddev : " << rad2deg(propMaxReliableBadOdoRotStddev) << " (deg)" << std::endl;
+    ss << " [*] propMaxReliableLostTransStddev : " << propMaxReliableLostTransStddev << " (m)" << std::endl;
+    ss << " [*] propMaxReliableLostRotStddev : " << rad2deg(propMaxReliableLostRotStddev) << " (deg)" << std::endl;
     ss << "****************************" << std::endl;
     ss << "****************************" << std::endl;
     return ss.str();
@@ -294,6 +301,7 @@ void Localizator::createOrocosInterface()
     ss << " [*] __STOPED__ if Localization is switched off or if robot does not move" << std::endl;
     ss << " [*] _ODO_ONLY_ if Localization is using odometry only (beacons are not visible)" << std::endl;
     ss << " [*] __FUSION__ if Localization is using both odometry and laser (the most accurate state)" << std::endl;
+    ss << " [*] _OCCULTED_ if Localization should see beacons but they are occulted and localization accuracy is still good." << std::endl;
     ss << " [*] _BAD__ODO_ if Localization is using odometry only since long time." << std::endl;
     ss << " [*] ___LOST___ if Localization is lost. Only a new initialization can quit this state." << std::endl;
     addPort("outLocalizationState",outLocalizationState)
@@ -326,21 +334,30 @@ void Localizator::createOrocosInterface()
     .doc("Définit les balises pour le départ Purple");
 
 
-    addProperty("propMaxReliableTransStddev",propMaxReliableTransStddev)
-    .doc("Threshold on translation for reliability boolean elaboration (unit is meter)");
+    addProperty("propMaxReliableBadOdoTransStddev",propMaxReliableBadOdoTransStddev)
+    .doc("Threshold on translation for bad odometry detection (unit is meter)");
 
-    addProperty("propMaxReliableRotStddev",propMaxReliableRotStddev)
-    .doc("Threshold on rotation for reliability boolean elaboration (unit is radian)");
+    addProperty("propMaxReliableBadOdoRotStddev",propMaxReliableBadOdoRotStddev)
+    .doc("Threshold on rotation variance for bad odometry detection (unit is radian)");
+
+    addProperty("propMaxReliableLostTransStddev",propMaxReliableLostTransStddev)
+    .doc("Threshold on translation variance for lost detection (unit is meter)");
+
+    addProperty("propMaxReliableLostRotStddev",propMaxReliableLostRotStddev)
+    .doc("Threshold on rotation variance for lost detection (unit is radian)");
 
 
     addProperty("propLaserRangeSigma",propLaserRangeSigma)
-    .doc("Laser Range confidence in meter");
+    .doc("Laser Range confidence in meter for normal mode");
 
     addProperty("propLaserThetaSigma",propLaserThetaSigma)
-    .doc("Laser theta confidence in rad");
+    .doc("Laser theta confidence in rad for normal mode");
 
-    addProperty("propLostCptThreshold",propLostCptThreshold)
-    .doc("Number of consecutive failures on scan to declare localization lost");
+    addProperty("propLaserRangeSigmaSmooth",propLaserRangeSigmaSmooth)
+    .doc("Laser Range confidence in meter for smooth mode");
+
+    addProperty("propLaserThetaSigmaSmooth",propLaserThetaSigmaSmooth)
+    .doc("Laser theta confidence in rad for smooth mode");
 
 }
 
@@ -380,43 +397,86 @@ void Localizator::updateLocalizationState()
 {
     EstimatedPose2D estim_H_robot_table = kfloc.getLastEstimatedPose2D();
     Covariance3 cov = estim_H_robot_table.cov();
-    bool reliability = true;
-    reliability = reliability && (cov(0,0) < propMaxReliableTransStddev * propMaxReliableTransStddev);
-    reliability = reliability && (cov(1,1) < propMaxReliableTransStddev * propMaxReliableTransStddev);
-    reliability = reliability && (cov(2,2) < propMaxReliableRotStddev * propMaxReliableRotStddev);
+    bool reliabilityOdo = true;
+    reliabilityOdo = reliabilityOdo && (cov(0,0) < propMaxReliableBadOdoTransStddev * propMaxReliableBadOdoTransStddev);
+    reliabilityOdo = reliabilityOdo && (cov(1,1) < propMaxReliableBadOdoTransStddev * propMaxReliableBadOdoTransStddev);
+    reliabilityOdo = reliabilityOdo && (cov(2,2) < propMaxReliableBadOdoRotStddev * propMaxReliableBadOdoRotStddev);
+
+    bool reliabilityLost = true;
+    reliabilityLost = reliabilityLost && (cov(0,0) < propMaxReliableLostTransStddev * propMaxReliableLostTransStddev);
+    reliabilityLost = reliabilityLost && (cov(1,1) < propMaxReliableLostTransStddev * propMaxReliableLostTransStddev);
+    reliabilityLost = reliabilityLost && (cov(2,2) < propMaxReliableLostRotStddev * propMaxReliableLostRotStddev);
 
     if(currentState < ___LOST___)
     {
-        if( (predictionOk == false) && (updateOk == false) )
+        if(predictionOk == false)
         {
             currentState = __STOPED__;
+            return;
         }
-        if( (predictionOk == true) && (updateOk == false) )
+        else
         {
-            if( reliability )
+            if( updateOk == true )
             {
-                currentState = _ODO_ONLY_;
+                currentState = __FUSION__;
+                return;
             }
-            else
+            else // update == false
             {
-                currentState = _BAD__ODO_;
-            }
-        }
-        if( updateOk == true )
-        {
-            currentState = __FUSION__;
-        }
-        if( (updateTried == true) && (updateOk == false) && (kfloc.getTheoricalVisibility() > 1) )
-        {
-            lostCpt++;
-            if(lostCpt > propLostCptThreshold )
-            {
-                lostCpt = propLostCptThreshold + 1;
-                currentState = ___LOST___;
-            }
-            else
-            {
-                currentState = _ODO_ONLY_;
+                // I din't tried
+                if( updateTried == false )
+                {
+                    if( updateNeverTried == true )
+                    {
+                        // Laser should not be connected
+                        if( reliability )
+                        {
+                            currentState = _ODO_ONLY_;
+                            return;
+                        }
+                        else
+                        {
+                            currentState = _BAD__ODO_;
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        // it is odo cycle, without scan info. Keep last state
+                        return;
+                    }
+                }
+                else //updateTried == true
+
+                {
+                    // I should have seen something
+                    if( kfloc.getTheoricalVisibility() > 1 )
+                    {
+                        if( !reliabilityLost )
+                        {
+                            currentState = ___LOST___;
+                            return;
+                        }
+                        else
+                        {
+                            currentState = _OCCULTED_;
+                            return;
+                        }
+                    }
+                    else // No visibility
+                    {
+                        if( reliabilityOdo )
+                        {
+                            currentState = _ODO_ONLY_;
+                            return;
+                        }
+                        else
+                        {
+                            currentState = _BAD__ODO_;
+                            return;
+                        }
+                    }
+                }
             }
         }
     }
