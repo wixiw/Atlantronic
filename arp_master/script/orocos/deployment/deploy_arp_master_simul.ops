@@ -41,7 +41,7 @@ if ( res  ) then
 //ARP_ODS
 if ( res  ) then
 {
-    if( Lua.exec_file("/opt/ard/arp_ods/script/orocos/deployment/deploy_arp_ods.lua") == false ) then
+    if( Lua.exec_file("/opt/ard/arp_ods/script/orocos/deployment/deploy_ods.lua") == false ) then
     {
         print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
         print.ln("\033[1;31m!!! Failed to deploy arp_ods. !!!\033[0m");
