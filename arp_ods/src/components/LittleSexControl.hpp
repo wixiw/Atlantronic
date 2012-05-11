@@ -52,6 +52,11 @@ class LittleSexControl: public OdsTaskContext
         RTT::OutputPort<arp_math::Twist2D> outTwistCmd;
 
         /**
+         * Motioncontrol in approach mode
+         */
+        RTT::OutputPort<bool> outApproach;
+
+        /**
          * This tells to the Order manager that we have finished the job.
          * We are waiting for a new order
          */

@@ -45,10 +45,10 @@ BeaconDetector::Params::Params()
     yMin = -1.5;
     yMax =  1.5;
 
-    xMinObstacle = -1.2;
-    xMaxObstacle =  1.2;
-    yMinObstacle = -1.0;
-    yMaxObstacle =  1.0;
+    xMinObstacle = -1.4;
+    xMaxObstacle =  1.4;
+    yMinObstacle = -0.9;
+    yMaxObstacle =  0.9;
 
     cip.radius = 0.04;
     cip.coeffs = std::vector<double>();

@@ -36,8 +36,10 @@ Localizator::Localizator(const std::string& name)
 , kfloc()
 , propMaxReliableTransStddev(0.1)
 , propMaxReliableRotStddev( deg2rad(5.0) )
-, propLaserRangeSigma(0.006)
+, propLaserRangeSigma(0.030)
 , propLaserThetaSigma(0.05)
+, propLaserRangeSigmaSmooth(0.1)
+, propLaserThetaSigmaSmooth(0.1)
 , propLostCptThreshold(10)
 , updateTried(false)
 , predictionOk(false)
@@ -68,7 +70,7 @@ Localizator::Localizator(const std::string& name)
 
     propParams.iekfParams.defaultOdoVelTransSigma = 0.01;
     propParams.iekfParams.defaultOdoVelRotSigma   = 0.01;
-    propParams.iekfParams.defaultLaserRangeSigma  = 0.006;
+    propParams.iekfParams.defaultLaserRangeSigma  = 0.030;
     propParams.iekfParams.defaultLaserThetaSigma  = 0.05;
     propParams.iekfParams.iekfMaxIt               = 10;
     propParams.iekfParams.iekfInnovationMin       = 0.0122474;
@@ -131,13 +133,26 @@ bool Localizator::configureHook()
 
 void Localizator::updateHook()
 {
-    if( propLaserRangeSigma != propParams.iekfParams.defaultLaserRangeSigma ||
-            propLaserThetaSigma != propParams.iekfParams.defaultLaserThetaSigma )
+    bool smoothMode = false;
+    inSmoothMode.read(smoothMode);
+    if(smoothMode && (propParams.iekfParams.defaultLaserRangeSigma !=  propLaserRangeSigmaSmooth||
+            propParams.iekfParams.defaultLaserThetaSigma != propLaserThetaSigmaSmooth ) )
+    {
+        propParams.iekfParams.defaultLaserRangeSigma = propLaserRangeSigmaSmooth;
+        propParams.iekfParams.defaultLaserThetaSigma = propLaserThetaSigmaSmooth;
+        kfloc.setParams( propParams.iekfParams );
+        LOG(Info) << "Switched to smooth mode (LaserRangeSigma: " << kfloc.getParams().iekfParams.defaultLaserRangeSigma << " - LaserThetaSigma: " << kfloc.getParams().iekfParams.defaultLaserThetaSigma << ")" << endlog();
+    }
+    if( !smoothMode && (propParams.iekfParams.defaultLaserRangeSigma != propLaserRangeSigma ||
+        propParams.iekfParams.defaultLaserThetaSigma != propLaserThetaSigma ) )
     {
         propParams.iekfParams.defaultLaserRangeSigma = propLaserRangeSigma;
         propParams.iekfParams.defaultLaserThetaSigma = propLaserThetaSigma;
-        setParams( propParams );
+        kfloc.setParams( propParams.iekfParams );
+        LOG(Info) << "Switched to normal mode (LaserRangeSigma: " << kfloc.getParams().iekfParams.defaultLaserRangeSigma << " - LaserThetaSigma: " << kfloc.getParams().iekfParams.defaultLaserThetaSigma << ")" << endlog();
     }
+
+
 
     EstimatedTwist2D T_odo_table_p_odo_r_odo;
     if( RTT::NewData == inOdo.read(T_odo_table_p_odo_r_odo) )
@@ -265,6 +280,9 @@ void Localizator::createOrocosInterface()
     addPort("inOdo",inOdo)
     .doc("Estimation of T_odo_table_p_odo_r_odo : Twist of odo reference frame relative to table frame, reduced and expressed in odo reference frame.\n It is an EstimatedTwist2D, so it contains Twist, estimation date (in sec) and covariance matrix.");
 
+    addPort("inSmoothMode",inSmoothMode)
+    .doc("When true, change settings to avoid jumps in estimate");
+
     addPort("outPose",outPose)
     .doc("Last estimation of H_robot_table.\n It is an EstimatedPose2D, so it contains Pose2D, estimation date (in sec) and covariance matrix.");
 
@@ -367,22 +385,21 @@ void Localizator::updateLocalizationState()
     reliability = reliability && (cov(1,1) < propMaxReliableTransStddev * propMaxReliableTransStddev);
     reliability = reliability && (cov(2,2) < propMaxReliableRotStddev * propMaxReliableRotStddev);
 
-    if( (predictionOk == false) && (updateOk == false) )
+    if(currentState < ___LOST___)
+    {
+        if( (predictionOk == false) && (updateOk == false) )
         {
             currentState = __STOPED__;
         }
         if( (predictionOk == true) && (updateOk == false) )
         {
-            if(currentState < ___LOST___)
+            if( reliability )
             {
-                if( reliability )
-                {
-                    currentState = _ODO_ONLY_;
-                }
-                else
-                {
-                    currentState = _BAD__ODO_;
-                }
+                currentState = _ODO_ONLY_;
+            }
+            else
+            {
+                currentState = _BAD__ODO_;
             }
         }
         if( updateOk == true )
@@ -402,6 +419,7 @@ void Localizator::updateLocalizationState()
                 currentState = _ODO_ONLY_;
             }
         }
+    }
 }
 
 

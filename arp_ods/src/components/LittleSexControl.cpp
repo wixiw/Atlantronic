@@ -68,6 +68,7 @@ void LittleSexControl::updateHook()
         outDEBUGMode.write(attrOrder->getMode());
         outDEBUGErrorApproachInit.write(attrOrder->outDEBUGErrorApproachInit);
         outDEBUGErrorApproachCur.write(attrOrder->outDEBUGErrorApproachCur);
+        outApproach.write( attrOrder->getMode() == MODE_APPROACH);
     }
 
 
@@ -197,6 +198,9 @@ void LittleSexControl::createOrocosInterface()
                  .doc("");
     addPort("outDEBUGErrorApproachCur",outDEBUGErrorApproachCur)
                  .doc("");
+
+    addPort("outApproach",outApproach)
+    .doc("MotionControl in approach mode");
 
     addOperation("ooSetOrder",&LittleSexControl::ooSetOrder, this, OwnThread)
                 .doc("Define a new order to do")

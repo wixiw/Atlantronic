@@ -21,10 +21,10 @@ Odometry4Ubiquity::Odometry4Ubiquity(const std::string& name):
     propMinKernelQuality(100.0),
     propMinVelocityOnTurretDriving(0.01),
     propMinVelocityOnTwist(0.001),
-    propPercentSigmaTransOdoVelocity(0.1),
-    propPercentSigmaRotOdoVelocity(0.1),
-    propMinSigmaTransOdoVelocity(0.001),
-    propMinSigmaRotOdoVelocity(0.01)
+    propPercentSigmaTransOdoVelocity(0.05),
+    propPercentSigmaRotOdoVelocity(0.05),
+    propMinSigmaTransOdoVelocity(0.0001),
+    propMinSigmaRotOdoVelocity(0.001)
 {
     createOrocosInterface();
 }

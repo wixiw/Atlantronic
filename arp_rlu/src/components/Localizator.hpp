@@ -14,15 +14,20 @@
 #include <sensor_msgs/LaserScan.h>
 
 #include "KFL/KFLocalizator.hpp"
-#include "LocalizatorState.hpp"
-
 
 namespace arp_rlu
 {
 
 typedef kfl::KFLocalizator::Params LocalizatorParams;
 
-
+enum LocalizationState
+{
+    __STOPED__ = 0,
+    _ODO_ONLY_ = 1,
+    __FUSION__ = 2,
+    _BAD__ODO_ = 3,
+    ___LOST___ = 4
+};
 
 class Localizator: public RluTaskContext
 {
@@ -44,6 +49,8 @@ class Localizator: public RluTaskContext
         // Ports
         RTT::InputPort<sensor_msgs::LaserScan> inScan;
         RTT::InputPort<arp_math::EstimatedTwist2D > inOdo;
+        RTT::InputPort< bool > inSmoothMode;
+
 
         /**
          * Contient la dernière estimée de position.\n
@@ -96,6 +103,9 @@ class Localizator: public RluTaskContext
 
         double propLaserRangeSigma;
         double propLaserThetaSigma;
+
+        double propLaserRangeSigmaSmooth;
+        double propLaserThetaSigmaSmooth;
 
         unsigned int propLostCptThreshold;
 
