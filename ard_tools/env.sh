@@ -1,5 +1,20 @@
 #configuration de ROS
-export EDITOR=gedit
+HOSTNAME=`cat /etc/hostname`
+if [ $HOSTNAME == "alpha" ]; then
+	IS_HOST="false"
+else 
+	if [ $HOSTNAME == "beta" ]; then
+		IS_HOST="false"
+	else
+		IS_HOST="true"
+	fi
+fi
+
+if [ $IS_HOST == "false" ]; then
+	export EDITOR=nanogedit
+else
+	export EDITOR=gedit
+fi
 export ROS_HOME=/opt/ros
 export ROS_PARALLEL_JOBS=-j10
 
