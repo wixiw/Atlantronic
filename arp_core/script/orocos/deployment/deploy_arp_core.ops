@@ -16,3 +16,9 @@ if ( res  ) then
 
 dot.comp_args="style=filled,width=5,height=3.5" 
 dot.generate()
+
+
+if( res == false ) then
+{
+    Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_failed.lua")
+}

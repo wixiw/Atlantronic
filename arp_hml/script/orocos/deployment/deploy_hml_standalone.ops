@@ -37,3 +37,9 @@ if ( res  ) then
         res = false;
     }
 }
+
+
+if( res == false )  then
+{
+    Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_failed.lua")
+}

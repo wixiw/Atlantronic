@@ -113,8 +113,8 @@ function Telemetry:report()
 
 	
 	
-	Reporting=Deployer:getPeer("Reporting")
-	Reporting:start()
-	
+	Reporting= assert(Deployer:getPeer("Reporting")) 
+	assert( Reporting:start() )
 	print("====================")
+	return true
 end
