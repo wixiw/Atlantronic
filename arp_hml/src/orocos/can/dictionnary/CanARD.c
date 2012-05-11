@@ -1060,7 +1060,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 /* index 0x1806 :   Transmit PDO 7 Parameter. */
                     UNS8 CanARD_highestSubIndex_obj1806 = 5; /* number of subindex - 1*/
                     UNS32 CanARD_obj1806_COB_ID_used_by_PDO = 0x323;	/* 803 */
-                    UNS8 CanARD_obj1806_Transmission_Type = 0xFF;	/* 255 */
+                    UNS8 CanARD_obj1806_Transmission_Type = 0x1;	/* 1 */
                     UNS16 CanARD_obj1806_Inhibit_Time = 0x0;	/* 0 */
                     UNS8 CanARD_obj1806_Compatibility_Entry = 0x0;	/* 0 */
                     UNS16 CanARD_obj1806_Event_Timer = 0x0;	/* 0 */
