@@ -1,17 +1,18 @@
 dofile("/opt/ard/arp_core/script/orocos/deployment/component_deployer_object.lua")
 
 
-CanDeployer = ComposantDeployer:new()
+CanDeployer = ComposantDeployer:new();
 
 function CanDeployer:load()
-	Deployer:loadComponent("Can1","arp_hml::CanOpenController");
-	Deployer:setActivity("Can1",0,45,rtt.globals.ORO_SCHED_RT);
-
+	assert( Deployer:loadComponent("Can1","arp_hml::CanOpenController"));
+	assert( Deployer:setActivity("Can1",0,45,rtt.globals.ORO_SCHED_RT));
+	return true
 end
 
 function CanDeployer:connect()
-	Deployer:addPeer("Reporting", "Can1");
-	CanDeployer:check("Can1")
+	assert( Deployer:addPeer("Reporting", "Can1"));
+	assert( CanDeployer:check("Can1"));
+	return true
 end
 
 

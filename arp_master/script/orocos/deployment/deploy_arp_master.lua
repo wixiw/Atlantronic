@@ -17,13 +17,12 @@ dofile("/opt/ard/arp_master/script/orocos/deployment/lua/last_component.lua");
 --a activer pour avoir des traces dans reports.dat (soit dans le répertoire courant soit dans /opt/ros)
 Telemetry:report()
 
-LastComponentDeployer:load();
-LastComponentDeployer:connect();
+assert( LastComponentDeployer:load())
+assert( LastComponentDeployer:connect())
 
-Scheduler = Deployer:getPeer("MotionScheduler");
-Scheduler:start();
-
-LastComponentDeployer:start();
+Scheduler = assert(Deployer:getPeer("MotionScheduler"))
+assert(Scheduler:start())
+assert(LastComponentDeployer:start())
 
 print("fin déploiment arp_master")
 print("====================")

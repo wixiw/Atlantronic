@@ -47,5 +47,5 @@ function ComposantDeployer:check(tc)
    end
    return ret
    ]]
-   
+   return true
 end

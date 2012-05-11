@@ -5,47 +5,52 @@ MotorDeployer = ComposantDeployer:new()
 
 function MotorDeployer:loadMotor(name)
 	--sched_type 1 = RT 
-	Deployer:loadComponent(name,"arp_hml::Faulhaber3268Bx4")
-	Deployer:setMasterSlaveActivity("Can1", name)
+	assert( Deployer:loadComponent(name,"arp_hml::Faulhaber3268Bx4"))
+	assert( Deployer:setMasterSlaveActivity("Can1", name))
+	return true
 end
 
 function MotorDeployer:load()
-	MotorDeployer:loadMotor("LeftDriving");
-	MotorDeployer:loadMotor("RightDriving");
-	MotorDeployer:loadMotor("RearDriving");
-	MotorDeployer:loadMotor("LeftSteering");
-	MotorDeployer:loadMotor("RightSteering");
-	MotorDeployer:loadMotor("RearSteering");
+	assert( MotorDeployer:loadMotor("LeftDriving"))
+	assert( MotorDeployer:loadMotor("RightDriving"))
+	assert( MotorDeployer:loadMotor("RearDriving"))
+	assert( MotorDeployer:loadMotor("LeftSteering"))
+	assert( MotorDeployer:loadMotor("RightSteering"))
+	assert( MotorDeployer:loadMotor("RearSteering"))
+	return true
 end
 
 function MotorDeployer:registerToSql(name)
-	OrocosSqlMonitor = Deployer:getPeer("OrocosSqlBridge")
-	Deployer:addPeer("OrocosSqlBridge",name)
-	OrocosSqlMonitor:ooRegisterBoolPort(name,"outConnected")
-	OrocosSqlMonitor:ooRegisterBoolPort(name,"outDriveEnable")
-	OrocosSqlMonitor:ooRegisterStringPort(name,"outCurrentOperationMode")
-	OrocosSqlMonitor:ooRegisterDoublePort(name,"outSpeed")
-	OrocosSqlMonitor:ooRegisterDoublePort(name,"outPosition")
-	OrocosSqlMonitor:ooRegisterDoublePort(name,"outTorque")
+	OrocosSqlMonitor = assert( Deployer:getPeer("OrocosSqlBridge"))
+	assert( Deployer:addPeer("OrocosSqlBridge",name))
+	assert( OrocosSqlMonitor:ooRegisterBoolPort(name,"outConnected"))
+	assert( OrocosSqlMonitor:ooRegisterBoolPort(name,"outDriveEnable"))
+	assert( OrocosSqlMonitor:ooRegisterStringPort(name,"outCurrentOperationMode"))
+	assert( OrocosSqlMonitor:ooRegisterDoublePort(name,"outSpeed"))
+	assert( OrocosSqlMonitor:ooRegisterDoublePort(name,"outPosition"))
+	assert( OrocosSqlMonitor:ooRegisterDoublePort(name,"outTorque"))
+	return true
 end
 
 function MotorDeployer:connectMotor(name)
 	--on s'enregistre en peer au composant de trace
-	Deployer:addPeer("Reporting", name)
+	assert( Deployer:addPeer("Reporting", name))
 	--on enregistre chez nous le controlleur Can
-	Deployer:addPeer(name, "Can1")
-	--MotorDeployer:registerToSql(name)
-	MotorDeployer:check(me)
+	assert( Deployer:addPeer(name, "Can1"))
+	--assert( MotorDeployer:registerToSql(name))
+	assert( MotorDeployer:check(me))
+	return true
 end
 
 
 function MotorDeployer:connect()
-	MotorDeployer:connectMotor("LeftDriving")
-	MotorDeployer:connectMotor("RightDriving")
-	MotorDeployer:connectMotor("RearDriving")
-	MotorDeployer:connectMotor("LeftSteering")
-	MotorDeployer:connectMotor("RightSteering")
-	MotorDeployer:connectMotor("RearSteering")
+	assert( MotorDeployer:connectMotor("LeftDriving"))
+	assert( MotorDeployer:connectMotor("RightDriving"))
+	assert( MotorDeployer:connectMotor("RearDriving"))
+	assert( MotorDeployer:connectMotor("LeftSteering"))
+	assert( MotorDeployer:connectMotor("RightSteering"))
+	assert( MotorDeployer:connectMotor("RearSteering"))
+	return true
 end
 
 

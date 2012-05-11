@@ -4,14 +4,17 @@ dofile("/opt/ard/arp_core/script/orocos/deployment/component_deployer_object.lua
 JoystickDeployer = ComposantDeployer:new()
 
 function JoystickDeployer:load()
-	Deployer:loadComponent("Joystick","arp_hml::GamepadPS1");
-	Deployer:setActivity("Joystick",0.050,5,rtt.globals.ORO_SCHED_RT);
+	assert( Deployer:loadComponent("Joystick","arp_hml::GamepadPS1"))
+	assert( Deployer:setActivity("Joystick",0.050,5,rtt.globals.ORO_SCHED_RT))
 
+	return true
 end
 
 function JoystickDeployer:connect()
-	Deployer:addPeer("Reporting", "Joystick");
+	assert( Deployer:addPeer("Reporting", "Joystick"))
 	
-	JoystickDeployer:check("Joystick")
+	assert( JoystickDeployer:check("Joystick"))
+	
+	return true
 end
 

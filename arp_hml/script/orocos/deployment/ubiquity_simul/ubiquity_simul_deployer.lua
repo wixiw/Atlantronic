@@ -4,36 +4,39 @@ dofile("/opt/ard/arp_core/script/orocos/deployment/component_deployer_object.lua
 UbiquitySimulDeployer = ComposantDeployer:new()
 
 function UbiquitySimulDeployer:load()
-	Deployer:loadComponent("UbiquitySimul","arp_hml::UbiquitySimul")
-	Deployer:setActivity("UbiquitySimul",0.010,40,1)
+	assert( Deployer:loadComponent("UbiquitySimul","arp_hml::UbiquitySimul"))
+	assert( Deployer:setActivity("UbiquitySimul",0.010,40,1))
+	return true
 end
 
 function UbiquitySimulDeployer:registerToSql(name)
-	OrocosSqlMonitor = Deployer:getPeer("OrocosSqlBridge")
-	Deployer:addPeer("OrocosSqlBridge",name)
+	OrocosSqlMonitor = assert( Deployer:getPeer("OrocosSqlBridge"))
+	assert( Deployer:addPeer("OrocosSqlBridge",name)) 
+	return true
 end
 
 function UbiquitySimulDeployer:connect()
 	--je m'ajoute aux autres
-	Deployer:addPeer("Reporting", "UbiquitySimul")
-	Deployer:addPeer("RosHmlItf", "UbiquitySimul")
+	assert( Deployer:addPeer("Reporting", "UbiquitySimul"))
+	assert( Deployer:addPeer("RosHmlItf", "UbiquitySimul"))
 	
-	--UbiquitySimulDeployer:registerToSql("LeftDriving")
-	--UbiquitySimulDeployer:registerToSql("RightDriving")
-	--UbiquitySimulDeployer:registerToSql("RearDriving")
-	--UbiquitySimulDeployer:registerToSql("LeftSteering")
-	--UbiquitySimulDeployer:registerToSql("RightSteering")
-	--UbiquitySimulDeployer:registerToSql("RearSteering")
+	--assert( UbiquitySimulDeployer:registerToSql("LeftDriving"))
+	--assert( UbiquitySimulDeployer:registerToSql("RightDriving"))
+	--assert( UbiquitySimulDeployer:registerToSql("RearDriving"))
+	--assert( UbiquitySimulDeployer:registerToSql("LeftSteering"))
+	--assert( UbiquitySimulDeployer:registerToSql("RightSteering"))
+	--assert( UbiquitySimulDeployer:registerToSql("RearSteering"))
 
-	Deployer:connect("LeftDriving.outFilteredSpeedCommand","UbiquitySimul.inLeftDrivingSpeedCmd",cp)
-	Deployer:connect("RightDriving.outFilteredSpeedCommand","UbiquitySimul.inRightDrivingSpeedCmd",cp)
-	Deployer:connect("RearDriving.outFilteredSpeedCommand","UbiquitySimul.inRearDrivingSpeedCmd",cp)
-	Deployer:connect("LeftDriving.outFilteredPositionCommand","UbiquitySimul.inLeftSteeringPositionCmd",cp)
-	Deployer:connect("RightDriving.outFilteredPositionCommand","UbiquitySimul.inRightSteeringPositionCmd",cp)
-	Deployer:connect("RearDriving.outFilteredPositionCommand","UbiquitySimul.inRearSteeringPositionCmd",cp)
+	assert( Deployer:connect("LeftDriving.outFilteredSpeedCommand","UbiquitySimul.inLeftDrivingSpeedCmd",cp) )
+	assert( Deployer:connect("RightDriving.outFilteredSpeedCommand","UbiquitySimul.inRightDrivingSpeedCmd",cp) )
+	assert( Deployer:connect("RearDriving.outFilteredSpeedCommand","UbiquitySimul.inRearDrivingSpeedCmd",cp) )
+	assert( Deployer:connect("LeftDriving.outFilteredPositionCommand","UbiquitySimul.inLeftSteeringPositionCmd",cp) )
+	assert( Deployer:connect("RightDriving.outFilteredPositionCommand","UbiquitySimul.inRightSteeringPositionCmd",cp) )
+	assert( Deployer:connect("RearDriving.outFilteredPositionCommand","UbiquitySimul.inRearSteeringPositionCmd",cp) )
 
-	UbiquitySimulDeployer:check("UbiquitySimul")
+	assert( UbiquitySimulDeployer:check("UbiquitySimul") )
 
+	return true
 end
 
 

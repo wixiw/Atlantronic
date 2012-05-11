@@ -4,22 +4,26 @@ dofile("/opt/ard/arp_core/script/orocos/deployment/component_deployer_object.lua
 IoDeployer = ComposantDeployer:new()
 
 function IoDeployer:load()
-	Deployer:loadComponent("WoodheadIn","arp_hml::WoodheadIn")
-	Deployer:setMasterSlaveActivity("Can1", "WoodheadIn")
+	assert( Deployer:loadComponent("WoodheadIn","arp_hml::WoodheadIn"))
+	assert( Deployer:setMasterSlaveActivity("Can1", "WoodheadIn"))
 
-	Deployer:loadComponent("WoodheadOut","arp_hml::WoodheadOut")
-	Deployer:setMasterSlaveActivity("Can1", "WoodheadOut")
+	assert( Deployer:loadComponent("WoodheadOut","arp_hml::WoodheadOut"))
+	assert( Deployer:setMasterSlaveActivity("Can1", "WoodheadOut"))
+	
+	return true
 end
 
 function IoDeployer:connect()
-	Deployer:addPeer("WoodheadIn", "Can1")
-	Deployer:addPeer("Reporting", "WoodheadIn")
+	assert( Deployer:addPeer("WoodheadIn", "Can1"))
+	assert( Deployer:addPeer("Reporting", "WoodheadIn"))
 
-	Deployer:addPeer("WoodheadOut", "Can1")
-	Deployer:addPeer("Reporting", "WoodheadOut")
+	assert( Deployer:addPeer("WoodheadOut", "Can1"))
+	assert( Deployer:addPeer("Reporting", "WoodheadOut"))
 	
-	IoDeployer:check("WoodheadIn")
-	IoDeployer:check("WoodheadOut")
+	assert( IoDeployer:check("WoodheadIn"))
+	assert( IoDeployer:check("WoodheadOut"))
+	
+	return true
 end
 
 

@@ -5,14 +5,16 @@ SchedulerDeployer = ComposantDeployer:new()
 local me = "MotionScheduler"
 
 function SchedulerDeployer:load()
-	Deployer:loadComponent(me,"arp_hml::MotionScheduler")
-	Deployer:setMasterSlaveActivity("Can1", me)
+	assert( Deployer:loadComponent(me,"arp_core::MotionScheduler"))
+	assert( Deployer:setMasterSlaveActivity("Can1", me))
+	return true
 end
 
 function SchedulerDeployer:connect()
-	Deployer:connect("Can1.outClock", me..".inClock",cp)
-	Scheduler = Deployer:getPeer(me)
-	Scheduler:configure()
+	assert( Deployer:connect("Can1.outClock", me..".inClock",cp))
+	Scheduler = assert( Deployer:getPeer(me))
+	assert( Scheduler:configure())
+	return true
 end
 
 

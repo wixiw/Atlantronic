@@ -11,7 +11,7 @@ Deployer:import("arp_hml");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/hml_cmd_mockup_deployer.lua");
 
 print("deploying hml Mockups")
-HmlCmdMockupDeployer:load()
-HmlCmdMockupDeployer:connect()
-HmlCmdMockupDeployer:start()
+assert( HmlCmdMockupDeployer:load(),  		"Failed to load HmlCmdMockup")
+assert( HmlCmdMockupDeployer:connect(),  	"Failed to connect HmlCmdMockup")
+assert( HmlCmdMockupDeployer:start(), 		"Failed to start HmlCmdMockup")
 

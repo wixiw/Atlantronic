@@ -5,29 +5,35 @@ Syncronizator = ComposantDeployer:new()
 local me = "Syncronizator"
 
 function Syncronizator:load()
-	Deployer:loadComponent(me,"arp_hml::Syncronizator")
-	Deployer:setMasterSlaveActivity("MotionScheduler", me)
+	assert( Deployer:loadComponent(me,"arp_hml::Syncronizator"))
+	assert( Deployer:setMasterSlaveActivity("MotionScheduler", me))
+	
+	return true
 end
 
 
 function Syncronizator:connectMotorMeasure(measure)
-	Deployer:connect(me..".inLeftDriving"..measure, 	"LeftDriving.out"..measure, cp);
-	Deployer:connect(me..".inRightDriving"..measure, 	"RightDriving.out"..measure, cp);
-	Deployer:connect(me..".inRearDriving"..measure, 	"RearDriving.out"..measure, cp);
-	Deployer:connect(me..".inLeftSteering"..measure, 	"LeftSteering.out"..measure, cp);
-	Deployer:connect(me..".inRightSteering"..measure, 	"RightSteering.out"..measure, cp);
-	Deployer:connect(me..".inRearSteering"..measure, 	"RearSteering.out"..measure, cp);
+	assert( Deployer:connect(me..".inLeftDriving"..measure, 	"LeftDriving.out"..measure, cp))
+	assert( Deployer:connect(me..".inRightDriving"..measure, 	"RightDriving.out"..measure, cp))
+	assert( Deployer:connect(me..".inRearDriving"..measure, 	"RearDriving.out"..measure, cp))
+	assert( Deployer:connect(me..".inLeftSteering"..measure, 	"LeftSteering.out"..measure, cp))
+	assert( Deployer:connect(me..".inRightSteering"..measure, 	"RightSteering.out"..measure, cp))
+	assert( Deployer:connect(me..".inRearSteering"..measure, 	"RearSteering.out"..measure, cp))
+	
+	return true
 end
 
 
 function Syncronizator:connect()
-	Syncronizator:connectMotorMeasure("Position");
-	Syncronizator:connectMotorMeasure("Velocity");
-	Syncronizator:connectMotorMeasure("Torque");
-	Deployer:addPeer("Reporting", me)
-	Deployer:connect(me..".inCanSync", 	"Can1.outClock", cp);
+	assert( Syncronizator:connectMotorMeasure("Position"))
+	assert( Syncronizator:connectMotorMeasure("Velocity"))
+	assert( Syncronizator:connectMotorMeasure("Torque"))
+	assert( Deployer:addPeer("Reporting", me))
+	assert( Deployer:connect(me..".inCanSync", 	"Can1.outClock", cp))
 
-	Syncronizator:check(me)
+	assert( Syncronizator:check(me))
+	
+	return true
 end
 
 

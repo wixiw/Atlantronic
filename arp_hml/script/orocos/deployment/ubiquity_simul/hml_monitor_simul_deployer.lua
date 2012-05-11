@@ -7,47 +7,51 @@ local me = "HmlMonitor"
 function HmlMonitorSimulDeployer:connect()
 
 --connection des ports
-	HmlMonitorSimulDeployer:connectOneMotor("LeftDriving")
-	HmlMonitorSimulDeployer:connectOneMotor("RightDriving")
-	HmlMonitorSimulDeployer:connectOneMotor("RearDriving")
-	HmlMonitorSimulDeployer:connectOneMotor("LeftSteering")
-	HmlMonitorSimulDeployer:connectOneMotor("RightSteering")
-	HmlMonitorSimulDeployer:connectOneMotor("RearSteering")
+	assert( HmlMonitorSimulDeployer:connectOneMotor("LeftDriving"))
+	assert( HmlMonitorSimulDeployer:connectOneMotor("RightDriving"))
+	assert( HmlMonitorSimulDeployer:connectOneMotor("RearDriving"))
+	assert( HmlMonitorSimulDeployer:connectOneMotor("LeftSteering"))
+	assert( HmlMonitorSimulDeployer:connectOneMotor("RightSteering"))
+	assert( HmlMonitorSimulDeployer:connectOneMotor("RearSteering"))
 -- connection des ports de blocage pour la simul	
-	Deployer:connect("LeftDriving.inBlockMotor", "RosHmlItf.outBlockRobot",cp)
-	Deployer:connect("RightDriving.inBlockMotor", "RosHmlItf.outBlockRobot",cp)
-	Deployer:connect("RearDriving.inBlockMotor", "RosHmlItf.outBlockRobot",cp)
+	assert( Deployer:connect("LeftDriving.inBlockMotor", "RosHmlItf.outBlockRobot",cp))
+	assert( Deployer:connect("RightDriving.inBlockMotor", "RosHmlItf.outBlockRobot",cp))
+	assert( Deployer:connect("RearDriving.inBlockMotor", "RosHmlItf.outBlockRobot",cp))
 	
-	Deployer:connect("HmlMonitor.inLeftSteeringHomingDone", "LeftSteering.outHomingDone",cp)
-	Deployer:connect("HmlMonitor.inRightSteeringHomingDone", "RightSteering.outHomingDone",cp)
-	Deployer:connect("HmlMonitor.inRearSteeringHomingDone", "RearSteering.outHomingDone",cp)
+	assert( Deployer:connect("HmlMonitor.inLeftSteeringHomingDone", "LeftSteering.outHomingDone",cp))
+	assert( Deployer:connect("HmlMonitor.inRightSteeringHomingDone", "RightSteering.outHomingDone",cp))
+	assert( Deployer:connect("HmlMonitor.inRearSteeringHomingDone", "RearSteering.outHomingDone",cp))
 	
- --[[
-	Deployer:connect("HmlMonitor.inWoodheadInConnected", "WoodheadIn.outConnected",cp)
-	Deployer:connect("HmlMonitor.inWoodheadOutConnected", "WoodheadOut.outConnected",cp)
-	]]
+	assert( Deployer:connect("HmlMonitor.inWoodheadInConnected", "WoodheadIn.outConnected",cp))
+	assert( Deployer:connect("HmlMonitor.inWoodheadOutConnected", "WoodheadOut.outConnected",cp))
 
 --ajout au monitor
-	HmlMonitorSimulDeployer:addToMonitor("Joystick")
-	HmlMonitorSimulDeployer:addToMonitor("Can1")
-	HmlMonitorDeployer:addToMonitor("LeftDriving")
-	HmlMonitorDeployer:addToMonitor("RightDriving")
-	HmlMonitorDeployer:addToMonitor("RearDriving")
-	HmlMonitorDeployer:addToMonitor("LeftSteering")
-	HmlMonitorDeployer:addToMonitor("RightSteering")
-	HmlMonitorDeployer:addToMonitor("RearSteering")
-	HmlMonitorSimulDeployer:addToMonitor("RosHmlItf")
-	HmlMonitorSimulDeployer:addToMonitor("UbiquitySimul")
-	HmlMonitorSimulDeployer:addToMonitor("Syncronizator")
-	HmlMonitorSimulDeployer:addToMonitor("MockSched")
+	assert( HmlMonitorSimulDeployer:addToMonitor("Joystick"))
+	assert( HmlMonitorSimulDeployer:addToMonitor("Can1"))
+	assert( HmlMonitorDeployer:addToMonitor("LeftDriving"))
+	assert( HmlMonitorDeployer:addToMonitor("RightDriving"))
+	assert( HmlMonitorDeployer:addToMonitor("RearDriving"))
+	assert( HmlMonitorDeployer:addToMonitor("LeftSteering"))
+	assert( HmlMonitorDeployer:addToMonitor("RightSteering"))
+	assert( HmlMonitorDeployer:addToMonitor("RearSteering"))
+	assert( HmlMonitorDeployer:addToMonitor("WoodheadIn"))
+	assert( HmlMonitorDeployer:addToMonitor("WoodheadOut"))
+	assert( HmlMonitorSimulDeployer:addToMonitor("RosHmlItf"))
+	assert( HmlMonitorSimulDeployer:addToMonitor("UbiquitySimul"))
+	assert( HmlMonitorSimulDeployer:addToMonitor("Syncronizator"))
+	assert( HmlMonitorSimulDeployer:addToMonitor("MockSched"))
 
-	--HmlMonitorDeployer:registerToSql();
-	HmlMonitorSimulDeployer:check("HmlMonitor")
+	--assert( HmlMonitorDeployer:registerToSql())
+	assert( HmlMonitorSimulDeployer:check("HmlMonitor"))
+	
+	return true
 end
 
 
 function HmlMonitorSimulDeployer:start()
-	HmlMonitor = Deployer:getPeer(me)
-	HmlMonitor:configure()
-	HmlMonitor:start()
+	HmlMonitor = assert( Deployer:getPeer(me))
+	assert( HmlMonitor:configure())
+	assert( HmlMonitor:start())
+	
+	return true
 end

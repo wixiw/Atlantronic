@@ -19,11 +19,11 @@ Reporting:setPeriod (0.010)
 
 -- chargement du composant serveur parametre
 print("loading Ubiquity param server...")
-Deployer:loadComponent("UbiquityParams","arp_core::ParamsComponent")
+assert( Deployer:loadComponent("UbiquityParams","arp_core::ParamsComponent"), "Failed to load UbiquityParams")
 UbiquityParams = Deployer:getPeer("UbiquityParams")
 UbiquityParams:setPeriod (0.100)
-UbiquityParams:configure()
-UbiquityParams:start();
+assert( UbiquityParams:configure(), "Failed to configure UbiquityParams")
+assert( UbiquityParams:start(), "Failed to start UbiquityParams")
 
 --chargement du generateur de visualisation des composant
 print("loading rtt_dot_service...")

@@ -4,47 +4,51 @@ dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/motor_deployer.lua");
 MotorSimulDeployer = MotorDeployer:new()
 
 function MotorSimulDeployer:loadMotor(name)
-	Deployer:loadComponent(name,"arp_hml::MotorSimul")
-	Deployer:addPeer("MockSched", name)
-	Deployer:setMasterSlaveActivity("MockSched", name)
+	assert( Deployer:loadComponent(name,"arp_hml::MotorSimul"))
+	assert( Deployer:addPeer("MockSched", name))
+	assert( Deployer:setMasterSlaveActivity("MockSched", name))
+	return true
 end
 
 function MotorSimulDeployer:load()
-	Deployer:loadComponent("Can1","arp_core::PeriodicClock")
-	Deployer:setActivity("Can1",0.020,60,1)
+	assert( Deployer:loadComponent("Can1","arp_core::PeriodicClock"));
+	assert( Deployer:setActivity("Can1",0.030,60,1));
 	
-	Deployer:loadComponent("MockSched","FBSched")
-	Deployer:setActivity("MockSched",0.0,60,rtt.globals.ORO_SCHED_RT)
-	MockSched = Deployer:getPeer("MockSched")
-	MockSched:cleanup()
+	assert( Deployer:loadComponent("MockSched","FBSched"));
+	assert( Deployer:setActivity("MockSched",0.0,60,1));
+	MockSched = assert( Deployer:getPeer("MockSched"));
+	assert( MockSched:cleanup());
 	
-	MotorSimulDeployer:loadMotor("LeftDriving");
-	MotorSimulDeployer:loadMotor("RightDriving");
-	MotorSimulDeployer:loadMotor("RearDriving");
-	MotorSimulDeployer:loadMotor("LeftSteering");
-	MotorSimulDeployer:loadMotor("RightSteering");
-	MotorSimulDeployer:loadMotor("RearSteering");
+	assert( MotorSimulDeployer:loadMotor("LeftDriving"));
+	assert( MotorSimulDeployer:loadMotor("RightDriving"));
+	assert( MotorSimulDeployer:loadMotor("RearDriving"));
+	assert( MotorSimulDeployer:loadMotor("LeftSteering"));
+	assert( MotorSimulDeployer:loadMotor("RightSteering"));
+	assert( MotorSimulDeployer:loadMotor("RearSteering"));
+	
+	return true
 end
 
 function MotorSimulDeployer:connectMotor(name)
-	Deployer:addPeer("Reporting", name)
-	--MotorDeployer:registerToSql("LeftDriving")
-	Deployer:connect(name..".inClock", "Can1.outClock",cp)
-	MotorDeployer:check(name)
+	assert( Deployer:addPeer("Reporting", name))
+	--assert( MotorDeployer:registerToSql("LeftDriving"))
+	assert( Deployer:connect(name..".inClock", "Can1.outClock",cp))
+	assert( MotorSimulDeployer:check(name))
+	return true
 end
 
 function MotorSimulDeployer:connect()
-	Deployer:addPeer("MockSched", "MotionScheduler")
-	MotorSimulDeployer:connectMotor("LeftDriving")
-	MotorSimulDeployer:connectMotor("RightDriving")
-	MotorSimulDeployer:connectMotor("RearDriving")
-	MotorSimulDeployer:connectMotor("LeftSteering")
-	MotorSimulDeployer:connectMotor("RightSteering")
-	MotorSimulDeployer:connectMotor("RearSteering")
-	Deployer:connect("MockSched.trigger", "Can1.outTrigger",cp)
+	assert( Deployer:addPeer("MockSched", "MotionScheduler"))
+	assert( MotorSimulDeployer:connectMotor("LeftDriving"))
+	assert( MotorSimulDeployer:connectMotor("RightDriving"))
+	assert( MotorSimulDeployer:connectMotor("RearDriving"))
+	assert( MotorSimulDeployer:connectMotor("LeftSteering"))
+	assert( MotorSimulDeployer:connectMotor("RightSteering"))
+	assert( MotorSimulDeployer:connectMotor("RearSteering"))
+	assert( Deployer:connect("MockSched.trigger", "Can1.outTrigger",cp))
 	
-	MotionScheduler=Deployer:getPeer("MotionScheduler")
-	sched_order=MotionScheduler:getProperty("sched_order")
+	MotionScheduler=assert( Deployer:getPeer("MotionScheduler"))
+	sched_order= assert( MotionScheduler:getProperty("sched_order"))
 	sched_order:get():resize(7)
 	sched_order[0]="LeftSteering"
 	sched_order[1]="RightSteering"
@@ -53,6 +57,8 @@ function MotorSimulDeployer:connect()
 	sched_order[4]="RightDriving"
 	sched_order[5]="RearDriving"
 	sched_order[6]="MotionScheduler"
+	
+	return true
 end
 
 
