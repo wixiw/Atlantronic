@@ -1,6 +1,8 @@
 #include <rtt/types/StructTypeInfo.hpp>
 #include "orocos/can/ard_DS402.hpp"
 
+using namespace arp_hml;
+
   namespace boost {
     namespace serialization {
       // The helper function which you write yourself:
@@ -62,10 +64,10 @@
 
 
   // The RTT helper class which uses the above function behind the scenes:
-struct DS402StateTypeInfo: public RTT::types::StructTypeInfo<ArdDs402::enum_DS402_state,true>
+struct DS402StateTypeInfo: public RTT::types::StructTypeInfo<ArdDs402::enum_DS402_state,false>
 {
     DS402StateTypeInfo():
-        RTT::types::StructTypeInfo<ArdDs402::enum_DS402_state,true>("DS402State")
+        RTT::types::StructTypeInfo<ArdDs402::enum_DS402_state,false>("DS402State")
     {
 
     }

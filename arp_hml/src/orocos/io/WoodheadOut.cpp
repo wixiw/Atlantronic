@@ -61,10 +61,10 @@ bool WoodheadOut::configureHook()
 	return res;
 }
 
-void WoodheadOut::updateHook()
+void WoodheadOut::updateLate()
 {
     //appel du parent car il log les bootUp
-    CanOpenNode::updateHook();
+    CanOpenNode::updateLate();
 
     UNS8 inputs = 0;
     bool tmpRead;

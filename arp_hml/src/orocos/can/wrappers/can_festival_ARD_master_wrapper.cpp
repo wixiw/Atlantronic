@@ -3,9 +3,10 @@
  *  in C++, we need this wrapper
  **********************************************************************/
 
-using namespace std;
-
 #include "orocos/can/wrappers/can_festival_ARD_master_wrapper.hpp"
+
+using namespace std;
+using namespace arp_hml;
 
 //#define DEBUG_ON
 
@@ -94,18 +95,20 @@ void heartbeatErrorCallback(CO_Data* d, UNS8 heartbeatID)
 
 void postSyncCallback(CO_Data* d)
 {
-#ifdef DEBUG_ON
-    cerr << "CERR : [INFO] postSyncCallback(" << d << ")" << endl;
-#endif
     timespec now;
     clock_gettime(CLOCK_MONOTONIC, &now);
     canFestival_outSyncSent.write(now);
+#ifdef DEBUG_ON
+    cerr << "CERR : [INFO] postSyncCallback(" << d << ") " << now.tv_sec << "s " << now.tv_nsec << "ns"<< endl;
+#endif
 }
 
 void postTPDOCallback(CO_Data* d)
 {
 #ifdef DEBUG_ON
-    cerr << "CERR : [INFO] postTPDOCallback(" << d << ")" << endl;
+    timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    cerr << "CERR : [INFO] postTPDOCallback(" << d << ") " << now.tv_sec << "s " << now.tv_nsec << "ns"<< endl;
 #endif
 }
 

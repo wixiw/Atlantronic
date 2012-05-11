@@ -12,7 +12,7 @@
 
 extern std::string canFestivalWrapperName;
 extern RTT::OutputPort<e_nodeState> canFestival_outNMTState;
-extern RTT::OutputPort<nodeID_t> canFestival_outBootUpReceived;
+extern RTT::OutputPort<arp_hml::nodeID_t> canFestival_outBootUpReceived;
 extern RTT::OutputPort<timespec> canFestival_outSyncSent;
 
 bool initWrapper();

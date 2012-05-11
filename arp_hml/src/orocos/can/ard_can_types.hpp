@@ -8,11 +8,11 @@
 #ifndef ARD_CAN_TYPES_H_
 #define ARD_CAN_TYPES_H_
 
-#include <taskcontexts/ARDTaskContext.hpp>
 #include <canfestival/canfestival.h>
 #include "orocos/can/ard_DS402.hpp"
 
-
+namespace arp_hml
+{
 typedef int nodeID_t;
 
 enum enum_DS301_nmtStateRequest
@@ -51,42 +51,6 @@ struct CanDicoEntry
     int dataType;
     int size;
 };
-
-struct CanNodeIdCard
-{
-    CanNodeIdCard():
-        nodeId(0),
-        task(NULL),
-        inBootUpFrame(NULL)
-        {}
-
-    CanNodeIdCard(int nodeId, arp_core::ARDTaskContext* task, RTT::InputPort<bool>* inBootUpFrame):
-        nodeId(nodeId),
-        task(task),
-        inBootUpFrame(inBootUpFrame)
-        {}
-
-    nodeID_t nodeId;
-    arp_core::ARDTaskContext* task;
-    RTT::InputPort<bool>* inBootUpFrame;
-
-    /**
-     * Use this function to check the data validity of the current CanNodeIdCard
-     */
-    bool check()
-    {
-        bool res = true;
-
-        if( nodeId < 0 || nodeId > 128 || nodeId == 0x00 || nodeId == 0x01 || nodeId == 0xFF)
-            res = false;
-        if( task == NULL )
-            res = false;
-        if( inBootUpFrame == NULL )
-            res = false;
-
-        return res;
-    }
-};
-
+}
 
 #endif /* ARD_CAN_TYPES_H_ */

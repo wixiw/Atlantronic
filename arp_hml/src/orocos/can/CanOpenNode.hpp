@@ -18,6 +18,45 @@ using namespace arp_core;
 
 namespace arp_hml
 {
+    class CanOpenNode;
+
+    struct CanNodeIdCard
+    {
+        CanNodeIdCard():
+            nodeId(0),
+            task(NULL),
+            inBootUpFrame(NULL)
+            {}
+
+        CanNodeIdCard(int nodeId, arp_hml::CanOpenNode* task, RTT::InputPort<bool>* inBootUpFrame):
+            nodeId(nodeId),
+            task(task),
+            inBootUpFrame(inBootUpFrame)
+            {}
+
+        nodeID_t nodeId;
+        arp_hml::CanOpenNode* task;
+        RTT::InputPort<bool>* inBootUpFrame;
+
+        /**
+         * Use this function to check the data validity of the current CanNodeIdCard
+         */
+        bool check()
+        {
+            bool res = true;
+
+            if( nodeId < 0 || nodeId > 128 || nodeId == 0x00 || nodeId == 0x01 || nodeId == 0xFF)
+                res = false;
+            if( task == NULL )
+                res = false;
+            if( inBootUpFrame == NULL )
+                res = false;
+
+            return res;
+        }
+    };
+
+
 
     class CanOpenNode: public HmlTaskContext
     {
@@ -27,27 +66,33 @@ namespace arp_hml
         /**
          * Connect to the CanOpenController, reset the node and send CAN configuration SDO
          */
-        bool configureHook();
+        virtual bool configureHook();
 
         /**
          * Put the node in operationnal mode
          */
-        bool startHook();
+        virtual bool startHook();
 
         /**
          * Handles Bootup : log a warning message
          */
-        void updateHook();
+        virtual void updateHook();
+
+        /**
+         * This function is for external schedulers that would like to let read/write functions to be done early and lately in the cycle.
+         * Thoses schedulers have to take the CanOpenNode as a slave peer and update() early in the cycle and call updateLate() and the end of the cycle.
+         */
+        virtual void updateLate(){};
 
         /**
          * Put the node in stop mode
          */
-        void stopHook();
+        virtual void stopHook();
 
         /**
          * unregister the node from the CanOpenController
          */
-        void cleanupHook();
+        virtual void cleanupHook();
 
 
     protected:

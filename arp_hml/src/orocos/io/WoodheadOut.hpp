@@ -22,8 +22,16 @@ namespace arp_hml
     {
     public:
     	WoodheadOut(const std::string& name);
-    	bool configureHook();
-    	void updateHook();
+
+    	/**
+    	 * Get CanFestival pointer
+    	 */
+    	virtual bool configureHook();
+
+    	/**
+    	 * Replace the normal updateHook as this device is a writter to be executed at the end of the loop
+    	 */
+    	virtual void updateLate();
 
     protected:
     	InputPort<bool> inBit1;

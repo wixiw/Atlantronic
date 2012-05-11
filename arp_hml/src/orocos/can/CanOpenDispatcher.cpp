@@ -193,7 +193,7 @@ void CanOpenDispatcher::unRegisterAll()
 	}
 }
 
-void CanOpenDispatcher::triggerAll()
+void CanOpenDispatcher::triggerAllRead()
 {
     map< nodeID_t, nodeRegistration_t* >::iterator it;
 
@@ -221,6 +221,16 @@ void CanOpenDispatcher::triggerAll()
     }
 }
 
+
+void CanOpenDispatcher::triggerAllWrite()
+{
+    map< nodeID_t, nodeRegistration_t* >::iterator it;
+
+    for ( it = m_registeredNodes.begin(); it!=m_registeredNodes.end(); ++it)
+    {
+        (*it).second->task->updateLate();
+    }
+}
 
 void CanOpenDispatcher::ooPrintRegisteredNodes()
 {

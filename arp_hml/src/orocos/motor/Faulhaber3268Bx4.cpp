@@ -130,17 +130,20 @@ void Faulhaber3268Bx4::updateHook()
     //appel du parent car il log les bootUp
     CanOpenNode::updateHook();
 
-    //read inputs from Orocos interface
-    getInputs();
-
-    //appel du run de la classe générique moteur
-    ArdMotorItf::run();
-
     //get measures
     readCaptors();
 
     //publish to Orocos interface
     setOutputs();
+}
+
+void Faulhaber3268Bx4::updateLate()
+{
+    //read inputs from Orocos interface
+    getInputs();
+
+    //appel du run de la classe générique moteur
+    ArdMotorItf::run();
 }
 
 void Faulhaber3268Bx4::getInputs()
@@ -186,6 +189,7 @@ void Faulhaber3268Bx4::setOutputs()
 
     //publication de la vitesse
 	outVelocity.write( ArdMotorItf::getSpeedMeasure() );
+	outDEBUGSpeedCmd.write(m_speedCommand );
     //lecture du courant
     outTorque.write( ArdMotorItf::getTorqueMeasure() );
 
@@ -242,6 +246,8 @@ void Faulhaber3268Bx4::runSpeed()
         EnterMutex();
         *m_faulhaberCommand = F_CMD_V;
         *m_faulhaberCommandParameter = speed;
+        	outDEBUGSpeedCmdCan.write(speed );
+       
         LeaveMutex();
     /*
         usleep(500);
@@ -472,8 +478,6 @@ void Faulhaber3268Bx4::readCaptors()
 	    m_speedMeasure = 0;
 	}
 	m_oldPositionMeasure = m_positionMeasure;
-	m_oldPositionMeasureTime = attrSyncTime;
-
 	//détection du blocage
 	//*0.95 certainement parce que le moteur étant limité hardwarement à propMaximalTorque,
 	//on ne peut pas le dépasser.
@@ -809,6 +813,9 @@ void Faulhaber3268Bx4::createOrocosInterface()
         .doc(" Is true when the propMaximalTorque has been reached (at 95%)for more propBlockingTorqueTimeout");
     addPort("outHomingDone",outHomingDone)
         .doc("Is true when the Homing sequence is finished. It has no sense when the motor is not in HOMING mode");
+
+    addPort("outDEBUGSpeedCmd",outDEBUGSpeedCmd);
+    addPort("outDEBUGSpeedCmdCan",outDEBUGSpeedCmdCan);
 
     addOperation("ooEnableDrive", &Faulhaber3268Bx4::enableDrive,this, OwnThread )
         .doc("Activate the power on the motor. Without a speed command it acts as a brake. Returns false if the component is not running.");

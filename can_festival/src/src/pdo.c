@@ -732,6 +732,8 @@ _sendPDOevent (CO_Data * d, UNS8 isSyncEvent)
               break;
             case state5:       /*Send the pdo */
               sendPdo(d, pdoNum, &pdo);
+              /*printf("Send PDO num : %d data : %x.%x.%x.%x.%x.%x.%x.%x\n",pdoNum,pdo.data[0],pdo.data[1],pdo.data[2],pdo.data[3],
+                      pdo.data[4],pdo.data[5],pdo.data[6],pdo.data[7]);*/
               status = state11;
               break;
             case state11:      /*Go to next TPDO */

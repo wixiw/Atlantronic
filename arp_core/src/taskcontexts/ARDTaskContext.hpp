@@ -80,7 +80,7 @@ class ARDTaskContext : public RTT::TaskContext
     /** Callback de Démarrage */
     virtual bool startHook();
     /** Calcule le temps de cycle (attention au premier cycle la période est nulle */
-    void updateHook();
+    virtual void updateHook();
     /** Callback d'Arrêt */
     virtual void stopHook();
     /** Callback de Déconfiguration */

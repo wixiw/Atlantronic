@@ -1,6 +1,8 @@
 #include <rtt/types/StructTypeInfo.hpp>
 #include "orocos/can/ard_can_types.hpp"
 
+using namespace arp_hml;
+
   namespace boost {
     namespace serialization {
       // The helper function which you write yourself:
@@ -19,13 +21,13 @@
 
 
   // Displaying:
-  std::ostream& operator<<(std::ostream& os, const CanDicoEntry& cd)
+  std::ostream& operator<<(std::ostream& os, const arp_hml::CanDicoEntry& cd)
   {
       return os << "(id=" << cd.nodeId << ",index=" << cd.index << ",subindex" << cd.subindex << ",value=" << cd.value << ")";
   }
 
   // Reading :
-  std::istream& operator>>(std::istream& is, CanDicoEntry& cd) {
+  std::istream& operator>>(std::istream& is, arp_hml::CanDicoEntry& cd) {
      return is >> cd;
   }
 
@@ -35,10 +37,10 @@
   }
 
   // The RTT helper class which uses the above function behind the scenes:
-struct CanDicoEntryTypeInfo: public RTT::types::StructTypeInfo<CanDicoEntry,true>
+struct CanDicoEntryTypeInfo: public RTT::types::StructTypeInfo<CanDicoEntry,false>
 {
     CanDicoEntryTypeInfo():
-        RTT::types::StructTypeInfo<CanDicoEntry,true>("CanDicoEntry")
+        RTT::types::StructTypeInfo<CanDicoEntry,false>("CanDicoEntry")
     {
 
     }

@@ -210,7 +210,10 @@ void CanOpenController::updateHook()
     outClock.write(attrSyncTime);
 
     //scheduling de tous les peers
-    m_dispatcher.triggerAll();
+    m_dispatcher.triggerAllRead();
+
+    //actions de fin de scheduling pour les devices qui vont ecrire sur le bus
+    m_dispatcher.triggerAllWrite();
 
     //tac
     if( propTimeReporting )

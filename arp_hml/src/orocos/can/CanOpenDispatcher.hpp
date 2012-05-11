@@ -13,7 +13,7 @@
 #include <rtt/Port.hpp>
 #include <rtt/TaskContext.hpp>
 #include "orocos/can/ard_can_types.hpp"
-
+#include "CanOpenNode.hpp"
 
 namespace arp_hml
 {
@@ -78,9 +78,16 @@ namespace arp_hml
         void unRegisterAll();
 
         /**
-         * Trigger all registered nodes as slave peers
+         * Trigger all registered nodes as slave peers (call update() )
+         * This is the early cycle trigger
          */
-        void triggerAll();
+        void triggerAllRead();
+
+        /**
+         * Trigger updateLate function of all registered nodes
+         * This is the late cycle trigger
+         */
+        void triggerAllWrite();
 
         /**
          * DEBUG Purposes : this operation prints in the console the registred nodes.
@@ -95,7 +102,7 @@ namespace arp_hml
             public:
                 //nodeID_t nodeId;
                 RTT::OutputPort<bool> outBootUp;
-                arp_core::ARDTaskContext* task;
+                CanOpenNode* task;
         };
 
     protected:

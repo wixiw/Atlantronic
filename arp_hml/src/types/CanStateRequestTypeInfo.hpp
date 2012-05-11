@@ -1,7 +1,7 @@
 #include <rtt/types/StructTypeInfo.hpp>
 #include "orocos/can/ard_can_types.hpp"
-
 using namespace std;
+using namespace arp_hml;
 
   namespace boost {
     namespace serialization {
@@ -71,10 +71,10 @@ using namespace std;
   }
 
   // The RTT helper class which uses the above function behind the scenes:
-struct NMTStateRequestTypeInfo: public RTT::types::StructTypeInfo<enum_DS301_nmtStateRequest,true>
+struct NMTStateRequestTypeInfo: public RTT::types::StructTypeInfo<enum_DS301_nmtStateRequest,false>
 {
     NMTStateRequestTypeInfo():
-        RTT::types::StructTypeInfo<enum_DS301_nmtStateRequest,true>("NMTStateRequest")
+        RTT::types::StructTypeInfo<enum_DS301_nmtStateRequest,false>("NMTStateRequest")
     {
 
     }

@@ -1,6 +1,7 @@
 #include <rtt/types/StructTypeInfo.hpp>
 #include <canfestival/data.h>
 
+using namespace arp_hml;
 
   namespace boost {
     namespace serialization {
@@ -51,10 +52,10 @@
 
 
   // The RTT helper class which uses the above function behind the scenes:
-struct NMTStateTypeInfo: public RTT::types::StructTypeInfo<enum_nodeState,true>
+struct NMTStateTypeInfo: public RTT::types::StructTypeInfo<enum_nodeState,false>
 {
     NMTStateTypeInfo():
-        RTT::types::StructTypeInfo<enum_nodeState,true>("NMTState")
+        RTT::types::StructTypeInfo<enum_nodeState,false>("NMTState")
     {
 
     }

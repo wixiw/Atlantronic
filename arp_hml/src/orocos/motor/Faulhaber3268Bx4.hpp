@@ -38,10 +38,16 @@ namespace arp_hml
     public:
 
         /**
-         * Read the motor commands and send on CAN bus.
          * Read the motor measures and publish them to Orocos
+         * should be called early in the cycle
          */
         void updateHook();
+
+        /**
+         * Read the motor commands and send on CAN bus.
+         * Should be called late in the cycle
+         */
+        void updateLate();
 
         /**
          * Calls the ArdMotorItf::init() function
@@ -122,6 +128,10 @@ namespace arp_hml
         OutputPort<bool> outMaxTorqueTimeout;
         /** Is true when the Homing sequence is finished. It has no sense when the motor is not in HOMING mode */
         OutputPort<bool> outHomingDone;
+
+        OutputPort<double> outDEBUGSpeedCmd;
+        OutputPort<double> outDEBUGSpeedCmdCan;
+
         /**
          * Limits the torque on the motor via a current limitation.
          * @param ampValue : the maximal current that the motor can require in A. Should be in ]0.2;10[
