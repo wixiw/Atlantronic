@@ -1,7 +1,64 @@
 loadService ("Deployer","Lua")
-Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua")
-//Lua.exec_file("/opt/ard/arp_ihm/script/orocos/deployment/deploy_arp_ihm.lua")
-Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity_simul.lua")
-Lua.exec_file("/opt/ard/arp_rlu/script/orocos/deployment/deploy_arp_rlu.lua")
-Lua.exec_file("/opt/ard/arp_ods/script/orocos/deployment/deploy_arp_ods_manual.lua")
-Lua.exec_file("/opt/ard/arp_master/script/orocos/deployment/deploy_arp_master.lua")
+require("print");               // loads the 'print' service globally. 
+var bool res = true;
+
+//ARP_CORE
+if ( res  ) then
+{
+    if( Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua") == false ) then
+    {
+       print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+       print.ln("\033[1;31m!!! Failed to deploy arp_core. !!!\033[0m");
+       print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+       res = false;
+    }
+}
+
+//ARP_HML SIMUL
+if ( res  ) then
+{
+    if( Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity_simul.lua") == false ) then
+    {
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        print.ln("\033[1;31m!!! Failed to deploy arp_hml simul. !!!\033[0m");
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        res = false;
+    }
+} 
+
+//ARP_RLU
+if ( res  ) then
+{
+    if( Lua.exec_file("/opt/ard/arp_rlu/script/orocos/deployment/deploy_arp_rlu.lua") == false ) then
+    {
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        print.ln("\033[1;31m!!! Failed to deploy arp_rlu. !!!\033[0m");
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        res = false;
+    }
+}
+
+//ARP_ODS
+if ( res  ) then
+{
+    if( Lua.exec_file("/opt/ard/arp_ods/script/orocos/deployment/deploy_arp_ods_manual.lua") == false ) then
+    {
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        print.ln("\033[1;31m!!! Failed to deploy arp_ods manual. !!!\033[0m");
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        res = false;
+    }
+}
+ 
+//ARP_MASTER
+if ( res  ) then
+{
+    if( Lua.exec_file("/opt/ard/arp_master/script/orocos/deployment/deploy_arp_master.lua") == false ) then
+    {
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        print.ln("\033[1;31m!!! Failed to deploy arp_master. !!!\033[0m");
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        res = false;
+    }
+}
+

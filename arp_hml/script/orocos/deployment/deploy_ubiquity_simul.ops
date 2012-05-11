@@ -1,4 +1,27 @@
 loadService ("Deployer","Lua")
-Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua")
-Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity_simul.lua")
+require("print");               // loads the 'print' service globally. 
+var bool res = true;
 
+//ARP_CORE
+if ( res  ) then
+{
+    if( Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua") == false ) then
+    {
+       print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+       print.ln("\033[1;31m!!! Failed to deploy arp_core. !!!\033[0m");
+       print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+       res = false;
+    }
+}
+
+//ARP_HML SIMUL
+if ( res  ) then
+{
+    if( Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity_simul.lua") == false ) then
+    {
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        print.ln("\033[1;31m!!! Failed to deploy arp_hml simul. !!!\033[0m");
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        res = false;
+    }
+} 

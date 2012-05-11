@@ -1,8 +1,39 @@
 loadService ("Deployer","Lua")
-Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua")
-//Lua.exec_file("/opt/ard/arp_ihm/script/orocos/deployment/deploy_arp_ihm.lua")
-//TODO c'est un workaround, je prefererai que ce soit dans arp_core
-//dot.comp_args="style=filled,width=5,height=3.5" 
-Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity.lua")
-Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_hml_mockup.lua")
-//dot.generate()
+require("print");               // loads the 'print' service globally. 
+var bool res = true;
+
+//ARP_CORE
+if ( res  ) then
+{
+    if( Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua") == false ) then
+    {
+       print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+       print.ln("\033[1;31m!!! Failed to deploy arp_core. !!!\033[0m");
+       print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+       res = false;
+    }
+}
+
+//ARP_HML SIMUL
+if ( res  ) then
+{
+    if( Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity.lua") == false ) then
+    {
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        print.ln("\033[1;31m!!! Failed to deploy arp_hml. !!!\033[0m");
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        res = false;
+    }
+} 
+
+//ARP_HML Mockups
+if ( res  ) then
+{
+    if( Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_hml_mockup.lua") == false ) then
+    {
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        print.ln("\033[1;31m!!! Failed to deploy arp_hml mockups. !!!\033[0m");
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        res = false;
+    }
+}
