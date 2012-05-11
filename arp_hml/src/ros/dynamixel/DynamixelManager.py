@@ -29,11 +29,14 @@ class DynamixelManager():
         self.currentGoal = ClawOrderGoal()
         try:
             self.currentGoal.left_finger = rospy.get_param('/left_finger/init_pos', Float64)
-            self.currentGoal.left_finger = rospy.get_param('/right_finger/init_pos', Float64)
+            self.currentGoal.right_finger = rospy.get_param('/right_finger/init_pos', Float64)
             self.currentGoal.left_claw = rospy.get_param('/left_claw/init_pos', Float64)
             self.currentGoal.right_claw = rospy.get_param('/right_claw/init_pos', Float64)
         except KeyError:
             rospy.logerr("Failed to find init_pos rosparams.") 
+            
+        rospy.loginfo("DynamixelManager : init pose %f %f %f %f",
+                      self.currentGoal.left_finger,self.currentGoal.right_finger,self.currentGoal.left_claw,self.currentGoal.right_claw)
             
         self.server = actionlib.SimpleActionServer('move_claw', ClawOrderAction, self.actionServerCb, False)
         
