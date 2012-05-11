@@ -17,7 +17,7 @@
 	/>
 	
 	<node 	name="monitor" 
-			pkg="runtime_motinor" 
+			pkg="runtime_monitor" 
 			type="monitor" 
 			respawn="false" 
 			output="screen" 
