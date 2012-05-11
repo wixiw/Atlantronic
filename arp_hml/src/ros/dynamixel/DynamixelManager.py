@@ -26,6 +26,12 @@ class DynamixelManager():
         rospy.Subscriber("/left_claw/state", JointState, self.leftClawStateCb)
         rospy.Subscriber("/right_claw/state", JointState, self.rightClawStateCb)
         
+        self.currentGoal = ClawOrderGoal()
+        self.currentGoal.left_finger = rospy.get_param('/left_finger/init_pos', Float64)
+        self.currentGoal.left_finger = rospy.get_param('/right_finger/init_pos', Float64)
+        self.currentGoal.left_claw = rospy.get_param('/left_claw/init_pos', Float64)
+        self.currentGoal.right_claw = rospy.get_param('/right_claw/init_pos', Float64)
+        
         self.server = actionlib.SimpleActionServer('move_claw', ClawOrderAction, self.actionServerCb, False)
         
     
@@ -37,13 +43,6 @@ class DynamixelManager():
         self.rightFingerState = JointState(error=666)
         self.leftClawState = JointState(error=666)
         self.rightClawState = JointState(error=666)
-        
-        self.leftFingerCmd = 0
-        self.rightFingerCmd = 0
-        self.lefClawCmd = 0
-        self.rightClawCmd = 0
-        
-        self.currentGoal = ClawOrderGoal()
         
         self.MAX_ERROR = 0.01
         self.goalReached = False
