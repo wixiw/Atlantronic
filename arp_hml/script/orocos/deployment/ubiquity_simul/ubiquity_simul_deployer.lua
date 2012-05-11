@@ -19,8 +19,7 @@ function UbiquitySimulDeployer:connect()
 	--je m'ajoute aux autres
 	assert( Deployer:addPeer("Reporting", "UbiquitySimul"))
 	assert( Deployer:addPeer("RosHmlItf", "UbiquitySimul"))
-		Deployer:loadComponent("LastComponent","arp_master::LastComponent");
-	Deployer:setActivity("LastComponent",1,0,rtt.globals.ORO_SCHED_OTHER);
+	
 	--assert( UbiquitySimulDeployer:registerToSql("LeftDriving"))
 	--assert( UbiquitySimulDeployer:registerToSql("RightDriving"))
 	--assert( UbiquitySimulDeployer:registerToSql("RearDriving"))

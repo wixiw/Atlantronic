@@ -17,7 +17,7 @@ function MotorSimulDeployer:load()
 	assert( Deployer:loadComponent("MockSched","FBSched"));
 	assert( Deployer:setActivity("MockSched",0.0,60,rtt.globals.ORO_SCHED_RT));
 	MockSched = assert( Deployer:getPeer("MockSched"));
-	assert( MockSched:cleanup());1
+	assert( MockSched:cleanup());
 	
 	assert( MotorSimulDeployer:loadMotor("LeftDriving"));
 	assert( MotorSimulDeployer:loadMotor("RightDriving"));
