@@ -6,8 +6,8 @@
   <simple name="propEnableLog" type="boolean"><description>If set to true the composant is allowed to write in the log file, if set to false it will not log anything. Use it when a component is spamming log and this annoys you</description><value>1</value></simple>
   <struct name="propSavedParams" type="UbiquityParams">
      <simple name="leftTurretZero" type="double"><description>Part</description><value>5.8471</value></simple>
-     <simple name="rightTurretZero" type="double"><description>Part</description><value>7.17852</value></simple>
-     <simple name="rearTurretZero" type="double"><description>Part</description><value>-4.43757</value></simple>
+     <simple name="rightTurretZero" type="double"><description>Part</description><value>7.0</value></simple>
+     <simple name="rearTurretZero" type="double"><description>Part</description><value>-4.5</value></simple>
      <struct name="leftTurretPosition" type="Pose2D">
         <description>Part</description>
         <simple name="x" type="double"><description>Part</description><value>0</value></simple>

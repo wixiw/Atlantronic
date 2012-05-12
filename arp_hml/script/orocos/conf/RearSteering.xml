@@ -13,7 +13,7 @@
 	</simple>
 	<simple name="propMaximalTorque" type="double">
 		<description>Maximal Torque allowed in Amps</description>
-		<value>1</value>
+		<value>5</value>
 	</simple>
 	<simple name="propInvertDriveDirection" type="boolean">
 		<description>
