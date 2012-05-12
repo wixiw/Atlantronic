@@ -204,6 +204,25 @@ class AmbiOmniDirectOrder(CyclicActionState):
         self.pose = AmbiPoseRed(self.x, self.y, self.theta, Data.color)
         self.omnidirect(self.pose.x, self.pose.y, self.pose.theta)
 
+# Use this Order State to quickly add move state in your FSM with a special ControlPoint (CP)
+# give the target (x,y,h) in (m,m,rad) of robot's CP=(CPx,CPy,CPh) and match color
+# Ex : AmbiOmniDirectOrder(CPx=0,CPy=0,CPh=0, 1.200, -0.700,pi/2)   
+class AmbiOmniDirectOrder_cpoint(CyclicActionState):
+    def __init__(self,CPx,CPy,CPh,x,y,h):
+        CyclicActionState.__init__(self)
+        self.x = x
+        self.y = y
+        self.h = h
+        self.CPx = CPx
+        self.CPy = CPy
+        self.CPh = CPh
+        
+    def createAction(self):
+        self.pose = AmbiPoseRed(self.x, self.y, self.h, Data.color)
+        self.omnidirect_cpoint(self.CPx, self.CPy, self.CPh,
+                               self.pose.x, self.pose.y, self.pose.theta)
+
+
 # Use this state to replay the move before the collision that has just block the robot
 # replayDuration is the length in seconds of the replay.
 # CAUTION : there is no insurrance that a certain distance will be done from the collision... it depends on cases.

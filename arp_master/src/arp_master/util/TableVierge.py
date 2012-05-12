@@ -5,22 +5,22 @@ from rospy import loginfo
 from math import *
 from UtilARD import *
 
+#il faut voir ca comme un namespace
 class TableVierge:
-    def __init__(self):
-        rospy.loginfo("Init Table datas ...")
+    HWALL_Y=1.000
+    VWALL_X=1.500
     
-    def getParams(self):
+    @staticmethod
+    def getParams():
         try:
-            self.HWALL_Y=rospy.get_param('/Table/HWALL_Y')
-            self.VWALL_X=rospy.get_param('/Table/VWALL_X')
+            HWALL_Y=rospy.get_param('/Table/HWALL_Y')
+            VWALL_X=rospy.get_param('/Table/VWALL_X')
         except KeyError:
-            self.HWALL_Y=1.000
-            self.VWALL_X=1.500
             rospy.logerr("TableVierge: Failed to find init_pos rosparams.") 
 
-        
-    def isOnTable(self,x,y):
-        if x<self.VWALL_X-0.200 and x>-self.VWALL_X+0.200 and y<self.HWALL_Y-0.200 and y>-self.HWALL_Y+0.200 :
+    @staticmethod   
+    def isOnTable(x,y):
+        if x<VWALL_X-0.200 and x>-VWALL_X+0.200 and y<HWALL_Y-0.200 and y>-HWALL_Y+0.200 :
             return True
         else:
             return False

@@ -5,6 +5,8 @@ import roslib; roslib.load_manifest('arp_master')
 from arp_master import *
 
 from DynamixelActionState import *
+from Table2012 import *
+from Robot2012 import *
 
 class TopCloseTotem(PreemptiveStateMachine):
     def __init__(self):
@@ -20,7 +22,8 @@ class TopCloseTotem(PreemptiveStateMachine):
             self.setInitialState('OpenClaw')
             
             PreemptiveStateMachine.add('EnterTotem',
-                      EnterTotem(),
+                      AmbiOmniDirectOrder_cpoint(0.130,0,0,
+                                                 0.0, 0.125, -pi/2),
                       transitions={'succeeded':'WaitBeforeSlash', 'timeout':'Debloque'})
             
 
@@ -29,20 +32,30 @@ class TopCloseTotem(PreemptiveStateMachine):
                       WaiterState(1.0),
                       transitions={'timeout':'SlashTotem'})
             
+            # le C point est 13 cm devant le robot, il doit longer le bord du totem.
             PreemptiveStateMachine.add('SlashTotem',
-                      SlashTotem(),
-                      transitions={'succeeded':'OpenClawMore', 'timeout':'Debloque'})
+                      AmbiOmniDirectOrder_cpoint(0.130,0,0,
+                                                 0.900,0.125,-pi/2),
+                      transitions={'succeeded':'SetStratInfo_TotemFinished', 'timeout':'Debloque'})
+            
+            PreemptiveStateMachine.add('SetStratInfo_TotemFinished',
+                      SetStratInfo_TotemFinished(),
+                      transitions={'ok':'OpenClawMore'})
             
             PreemptiveStateMachine.add('OpenClawMore',
                       AmbiClawFingerOrder(-1.8,0.5,-1.8,0.5),
                       transitions={'succeeded':'ThrowUp', 'timeout':'problem'})  
-            
+             
             PreemptiveStateMachine.add('ThrowUp',
-                      ThrowUp(),
-                      transitions={'succeeded':'Back', 'timeout':'Debloque'})
+                      AmbiOmniDirectOrder(1.250,0.0,-pi/4),
+                      transitions={'succeeded':'SetStratInfo_ThrowUpFinished', 'timeout':'Debloque'})
+            
+            PreemptiveStateMachine.add('SetStratInfo_ThrowUpFinished',
+                      SetStratInfo_ThrowUpFinished(),
+                      transitions={'ok':'Back'})
             
             PreemptiveStateMachine.add('Back',
-                      Back(),
+                      AmbiOmniDirectOrder(0.950,0.2,-pi/2),
                       transitions={'succeeded':'CloseClaws', 'timeout':'Debloque'})
             
             PreemptiveStateMachine.add('CloseClaws',
@@ -53,31 +66,18 @@ class TopCloseTotem(PreemptiveStateMachine):
                       Debloque(1.0),
                       transitions={'succeeded':'problem', 'timeout':'problem'})
 
-
-############### Ordres de motion
-# le C point est 12 cm devant le robot, il doit longer le bord du totem.
-
-class EnterTotem(CyclicActionState):
-    def createAction(self):
-        pose = AmbiPoseRed(0.0, 0.125, -pi/2, Data.color)
-        self.omnidirect_cpoint(0.130,0,0,
-                               pose.x, pose.y, pose.theta)
-
-class SlashTotem(CyclicActionState):
-    def createAction(self):
-        pose = AmbiPoseRed(0.900,0.125,-pi/2, Data.color)
-        self.omnidirect_cpoint(0.130,0,0,
-                               pose.x, pose.y, pose.theta)
+   
+class SetStratInfo_TotemFinished(smach.State):
+    def __init__(self):
+        smach.State.__init__(self,['ok'])
+    def execute(self,userdata):
+        Table2012.topCloseTotemFull = False
+        return 'ok'
         
-class ThrowUp(CyclicActionState):
-    def createAction(self):
-        pose = AmbiPoseRed(1.250,0.0,-pi/4, Data.color)
-        self.omnidirect_cpoint(0,0,0,
-                               pose.x, pose.y, pose.theta)       
-        
-        
-class Back(CyclicActionState):
-    def createAction(self):
-        pose = AmbiPoseRed(0.950,0.2,-pi/2, Data.color)
-        self.omnidirect_cpoint(0,0,0,
-                               pose.x, pose.y, pose.theta)     
+class SetStratInfo_ThrowUpFinished(smach.State):
+    def __init__(self):
+        smach.State.__init__(self,['ok'])
+    def execute(self,userdata):
+        Table2012.closeFreeGoldbarInPosition = False
+        return 'ok'
+    

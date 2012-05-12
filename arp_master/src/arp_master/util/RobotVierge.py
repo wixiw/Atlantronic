@@ -2,12 +2,11 @@
 import roslib; roslib.load_manifest('arp_master')
 import rospy
 
-
+#il faut voir ca comme un namespace
 class RobotVierge:
-    def __init__(self):
-        pass
-    
-    def getParams(self):
+
+    @staticmethod
+    def getParams():
         try:
             pass #rien
         except KeyError:

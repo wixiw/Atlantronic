@@ -2,7 +2,7 @@
 import roslib; roslib.load_manifest('arp_master')
 import rospy
 
-
+#il faut voir ca comme un namespace
 class Data:
     #temps de cycle de la machine d'etat
     stateMachineRate=None

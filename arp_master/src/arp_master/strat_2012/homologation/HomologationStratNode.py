@@ -10,10 +10,6 @@ from a2_opening import Strat_Opening
 from a3_middleGame import Strat_MiddleGame
 from a4_endGame import Strat_EndGame
 
-####### Variables globales
-Table = Table2012();
-Robot = Robot2012();
-
 ###########################  TEMPORAL BEHAVIOR
 
 class StratNode_vierge():
@@ -23,8 +19,8 @@ class StratNode_vierge():
         #creation of the node
         rospy.init_node('StratNode')
         #recuperation des parametres (on a besoin d'etre un noeud pour ca
-        Table.getParams()
-        Robot.getParams()
+        Table2012.getParams()
+        Robot2012.getParams()
         #creation of the cadencer for all states
         Data.stateMachineRate =rospy.Rate(10)
         #linking of the input in Inputs to the topics
