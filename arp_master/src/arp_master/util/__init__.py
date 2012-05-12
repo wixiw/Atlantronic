@@ -9,4 +9,5 @@ from math import *
 from Data import *
 from Inputs import *
 from TableVierge import *
+from RobotVierge import *
 from UtilARD import *

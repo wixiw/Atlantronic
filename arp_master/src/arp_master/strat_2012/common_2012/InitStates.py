@@ -59,11 +59,19 @@ class StartSequence2012(smach.StateMachine):
 ####################################################################################################################
 
 class Uninitialisation(smach.StateMachine):
-    def __init__(self):
+    #a appeler avec la position initiale a rejoindre
+    def __init__(self,x,y,theta):
+        X_VALUE = 0.800
+        Y_VALUE = 0.700
+    
         smach.StateMachine.__init__(self,outcomes=['endUninitialisation'])
         with self:
             smach.StateMachine.add('WaitForStart',
                       WaitForStart(),
+                      transitions={'start':'WaitForMatch', 'timeout':'WaitForStart'})
+            
+            smach.StateMachine.add('WaitForMatch',
+                      WaitForMatch(),
                       transitions={'start':'CloseClaws', 'timeout':'WaitForStart'})
             
             smach.StateMachine.add('CloseClaws',
@@ -75,27 +83,23 @@ class Uninitialisation(smach.StateMachine):
                       transitions={'farBot':'FarBot','farTop':'FarTop','closeTop':'CloseTop','closeBot':'CloseBot', 'timeout':'endUninitialisation'})
             
             smach.StateMachine.add('FarBot',
-                      AmbiOmniDirectOrder(-0.750,-0.500,pi/4),
+                      AmbiOmniDirectOrder(-X_VALUE,-Y_VALUE,pi/4),
                      transitions={'succeeded':'CloseBot', 'timeout':'endUninitialisation'})
 
             smach.StateMachine.add('FarTop',
-                      AmbiOmniDirectOrder(-0.750,0.500,-pi/4),
+                      AmbiOmniDirectOrder(-X_VALUE,Y_VALUE,-pi/4),
                      transitions={'succeeded':'CloseTop', 'timeout':'endUninitialisation'})
             
             smach.StateMachine.add('CloseTop',
-                      AmbiOmniDirectOrder(0.750,0.500,-3*pi/4),
-                     transitions={'succeeded':'PrepareGoHome', 'timeout':'endUninitialisation'})
-            
-            smach.StateMachine.add('CloseBot',
-                      AmbiOmniDirectOrder(0.750,-0.500,3*pi/4),
-                     transitions={'succeeded':'CloseTop', 'timeout':'endUninitialisation'})
-            
-            smach.StateMachine.add('PrepareGoHome',
-                      AmbiOmniDirectOrder(0.900,0.750,0),
+                      AmbiOmniDirectOrder(X_VALUE,Y_VALUE,-3*pi/4),
                      transitions={'succeeded':'GoHome', 'timeout':'endUninitialisation'})
             
+            smach.StateMachine.add('CloseBot',
+                      AmbiOmniDirectOrder(X_VALUE,-Y_VALUE,3*pi/4),
+                     transitions={'succeeded':'CloseTop', 'timeout':'endUninitialisation'})
+            
             smach.StateMachine.add('GoHome',
-                      AmbiOmniDirectOrder(1.250,0.750,0),
+                      AmbiOmniDirectOrder(x+0.058,y,theta),
                      transitions={'succeeded':'endUninitialisation', 'timeout':'endUninitialisation'})
 
       
@@ -104,7 +108,8 @@ class SelectState(CyclicState):
         CyclicState.__init__(self, outcomes=['farBot','farTop','closeTop','closeBot'])
 
     def executeTransitions(self):
-        if Data.color is "red":
+        if Data.color == 'red':
+            rospy.loginfo("Color is red")
             if Inputs.getx() < 0 and Inputs.gety() < 0:
                 return 'farBot'
             if Inputs.getx() < 0 and Inputs.gety() >= 0:
@@ -113,7 +118,8 @@ class SelectState(CyclicState):
                 return 'closeTop'     
             #if Inputs.getx() >= 0 and Inputs.gety() < 0:
             return 'closeBot'    
-        else:
+        elif Data.color == 'purple':
+            rospy.loginfo("Color is not red")
             if Inputs.getx() < 0 and Inputs.gety() < 0:
                 return 'closeBot'
             if Inputs.getx() < 0 and Inputs.gety() >= 0:
@@ -122,6 +128,9 @@ class SelectState(CyclicState):
                 return 'farTop'     
             #if Inputs.getx() >= 0 and Inputs.gety() < 0:
             return 'farBot'    
+        else:
+            rospy.loginfo("Color is unknown : %s", Data.color)
+            return 'closeTop'     
     
     
 ####################################################################################################################    

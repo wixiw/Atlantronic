@@ -10,7 +10,7 @@ import actionlib
 from arp_master.fsmFramework.CyclicState import CyclicState
 from arp_master.util import *
 from arp_hml.msg import *
-
+from Robot2012 import *
 
 class DynamixelActionState(CyclicState):
     
@@ -83,33 +83,12 @@ class DynamixelActionState(CyclicState):
         self.client = actionlib.SimpleActionClient('move_claw', ClawOrderAction)
         goal=ClawOrderGoal(left_finger,right_finger,left_claw,right_claw)
         
-        # THIS IS BLOCKING ! <<<<<<<<<<<<<<<<<<<<<<< !!!!!!!!!!!!!!
         self.client.wait_for_server(rospy.Duration.from_sec(5.0))
         self.client.cancel_all_goals
         self.client.send_goal(goal)
         
         self.actionCreated=True       
-        
-        
-    # these are useful motions functions that allow not to give all parameters  
-    def leftFinger(self,pos):
-        self.createDynamixelAction(pos,0.0,0.0,0.0)
-        
-    def rightFinger(self,pos):
-        self.createDynamixelAction(0.0,pos,0.0,0.0)
-        
-    def leftClaw(self,pos):
-        self.createDynamixelAction(0.0,0.0,pos,0.0)
-        
-    def rightClaw(self,pos):
-        self.createDynamixelAction(0.0,0.0,0.0,pos)
-    
-    def fingers(self,left,right):
-        self.createDynamixelAction(left,right,0.0,0.0)       
-    
-    def claws(self,left,right):
-        self.createDynamixelAction(0,0,left,right)
-        
+
         
 # Use this Order to fully control the dynamixels. It reverse sides depending on the match color
 # Ex : AmbiClawFingerOrder( left_finger=0, right_finger=0, left_claw=0, right_claw=0)
@@ -122,7 +101,7 @@ class AmbiClawFingerOrder(DynamixelActionState):
         self.right_claw = right_claw
         
     def createAction(self):
-        if Data.color is "red":
+        if Data.color == "red":
             self.createDynamixelAction(self.left_finger,self.right_finger,
                                    self.left_claw, self.right_claw)
         else:
@@ -147,55 +126,74 @@ class ClawFingerOrder(DynamixelActionState):
 # for any of those states the claws will be maintained closed (so take care if they are already opened)
 class FingersOnlyState(AmbiClawFingerOrder):
     def __init__(self,state):
-        if state is 'open':
-            AmbiClawFingerOrder.__init__(self,0.5,0.5,-1.8,-1.8)
-        elif state is 'close':            
-            AmbiClawFingerOrder.__init__(self,-1.8,-1.8,-1.8,-1.8)
-        elif state is 'open_left':
-            AmbiClawFingerOrder.__init__(self,0.5,0.0,-1.8,-1.8)
-        elif state is 'open_right':
-            AmbiClawFingerOrder.__init__(self,0.0,0.5,-1.8,-1.8)
-        elif state is 'half_close':
-            AmbiClawFingerOrder.__init__(self,-1.0,-1.0,-1.8,-1.8)
+        if state == 'open':
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_OPEN, Robot2012.FINGER_OPEN, 
+                                         Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE)
+        elif state == 'close':            
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_CLOSE, 
+                                         Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE)
+        elif state == 'open_left':
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_OPEN, Robot2012.FINGER_CLOSE,
+                                         Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE)
+        elif state == 'open_right':
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_OPEN,
+                                         Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE)
+        elif state == 'half_close':
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_HALF_CLOSE, Robot2012.FINGER_HALF_CLOSE, 
+                                         Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE)
         else:
-            AmbiClawFingerOrder.__init__(self,-1.8,-1.8,-1.8,-1.8)
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_CLOSE, 
+                                         Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE)
             raise smach.InvalidUserCodeError("FingersState : Could not execute : unknown state %s",state)
         
 # Use this state to set claws pre created states such as : open, close ...   
 # for any of those states the fingers will be maintained closed (so take care if they are already opened)
 class ClawsOnlyState(AmbiClawFingerOrder):
     def __init__(self,state):
-        if state is 'open':
-            AmbiClawFingerOrder.__init__(self,-1.8,-1.8,0.5,0.5)
-        elif state is 'close':            
-            AmbiClawFingerOrder.__init__(self,-1.8,-1.8,-1.8,-1.8)
-        elif state is 'totem_left':
-            AmbiClawFingerOrder.__init__(self,-1.8,-1.8,0.0,-1.8)
-        elif state is 'totem_right':
-            AmbiClawFingerOrder.__init__(self,-1.8,-1.8,-1.8,0.0)
-        elif state is 'open_left':
-            AmbiClawFingerOrder.__init__(self,-1.8,-1.8,0.5,-1.8)
-        elif state is 'open_right':
-            AmbiClawFingerOrder.__init__(self,-1.8,-1.8,-1.8,0.5)
-        elif state is 'half_close':
-            AmbiClawFingerOrder.__init__(self,-1.8,-1.8,-1.0,-1.0)
+        if state == 'open':
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_CLOSE, 
+                                         Robot2012.CLAW_OPEN, Robot2012.CLAW_OPEN)
+        elif state == 'close':            
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_CLOSE,
+                                         Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE)
+        elif state == 'totem_left':
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_CLOSE, 
+                                         Robot2012.CLAW_TOTEM, Robot2012.CLAW_CLOSE)
+        elif state == 'totem_right':
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_CLOSE, 
+                                         Robot2012.CLAW_CLOSE, Robot2012.CLAW_TOTEM)
+        elif state == 'open_left':
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_CLOSE, 
+                                         Robot2012.CLAW_OPEN, Robot2012.CLAW_CLOSE)
+        elif state == 'open_right':
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_CLOSE, 
+                                         Robot2012.CLAW_CLOSE, Robot2012.CLAW_OPEN)
+        elif state == 'half_close':
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_CLOSE, 
+                                         Robot2012.CLAW_HALF_CLOSE, Robot2012.CLAW_HALF_CLOSE)
         else:
-            AmbiClawFingerOrder.__init__(self,-1.8,-1.8,-1.8,-1.8)
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_CLOSE, 
+                                         Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE)
             raise smach.InvalidUserCodeError("FingersState : Could not execute : unknown state %s",state)
         
 
 # Use this state to set claws and finger pre created states such as : open, close ...   
 class FingerClawState(AmbiClawFingerOrder):
     def __init__(self,state):
-        if state is 'open':
-            AmbiClawFingerOrder.__init__(self,0.5,0.5,0.5,0.5)
-        elif state is 'close':            
-            AmbiClawFingerOrder.__init__(self,-1.8,-1.8,-1.8,-1.8)
-        elif state is 'half_close':
-            AmbiClawFingerOrder.__init__(self,-1.0,-1.0,-1.0,-1.0)
-        elif state is 'half_open':
-            AmbiClawFingerOrder.__init__(self,0.0,0.0,0.0,0.0)
+        if state == 'open':
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_OPEN, Robot2012.FINGER_OPEN, 
+                                         Robot2012.CLAW_OPEN, Robot2012.CLAW_OPEN)
+        elif state == 'close':            
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_CLOSE,
+                                         Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE)
+        elif state == 'half_close':
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_HALF_CLOSE, Robot2012.FINGER_HALF_CLOSE,
+                                         Robot2012.CLAW_HALF_CLOSE, Robot2012.CLAW_HALF_CLOSE)
+        elif state == 'half_open':
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_HALF_OPEN, Robot2012.FINGER_HALF_OPEN,
+                                         Robot2012.CLAW_TOTEM, Robot2012.CLAW_TOTEM)
         else:
-            AmbiClawFingerOrder.__init__(self,-1.8,-1.8,-1.8,-1.8)
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_CLOSE, 
+                                         Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE)
             raise smach.InvalidUserCodeError("FingersState : Could not execute : unknown state %s",state)
         

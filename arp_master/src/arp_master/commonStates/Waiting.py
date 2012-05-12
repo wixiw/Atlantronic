@@ -38,7 +38,7 @@ class WaitForStart(CyclicState):
     def executeOut(self):
         Data.color=Inputs.getcolor()
         if Data.color=='red':
-            Data.adv_color='blue'
+            Data.adv_color='purple'
         else:
             Data.adv_color='red'
         rospy.loginfo("Start plugged")

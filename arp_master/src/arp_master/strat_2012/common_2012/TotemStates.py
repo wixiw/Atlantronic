@@ -22,33 +22,37 @@ class TopCloseTotem(PreemptiveStateMachine):
             self.setInitialState('OpenClaw')
             
             PreemptiveStateMachine.add('EnterTotem',
-                      AmbiOmniDirectOrder_cpoint(0.130,0,0,
-                                                 0.0, 0.125, -pi/2),
-                      transitions={'succeeded':'WaitBeforeSlash', 'timeout':'Debloque'})
-            
-
-            #pour avoir le temps de sauter sur l'AU pendant les tests
-            PreemptiveStateMachine.add('WaitBeforeSlash',
-                      WaiterState(1.0),
-                      transitions={'timeout':'SlashTotem'})
+                      AmbiOmniDirectOrder(0.250, 0.280, -pi/2),
+                      transitions={'succeeded':'BeginSlashTotem', 'timeout':'Debloque'})
             
             # le C point est 13 cm devant le robot, il doit longer le bord du totem.
-            PreemptiveStateMachine.add('SlashTotem',
-                      AmbiOmniDirectOrder_cpoint(0.130,0,0,
-                                                 0.900,0.125,-pi/2),
-                      transitions={'succeeded':'SetStratInfo_TotemFinished', 'timeout':'Debloque'})
+            PreemptiveStateMachine.add('BeginSlashTotem',
+                      AmbiOmniDirectOrder_cpoint(0.090,0,0,
+                                                 0.550,0.125,-pi/2),
+                      transitions={'succeeded':'OpenFinger', 'timeout':'Debloque'})
+            
+            PreemptiveStateMachine.add('OpenFinger',
+                      AmbiClawFingerOrder(Robot2012.FINGER_HALF_CLOSE,Robot2012.FINGER_OPEN,
+                                          Robot2012.CLAW_HALF_CLOSE, Robot2012.CLAW_TOTEM),
+                      transitions={'succeeded':'SetStratInfo_TotemFinished', 'timeout':'problem'})  
             
             PreemptiveStateMachine.add('SetStratInfo_TotemFinished',
                       SetStratInfo_TotemFinished(),
                       transitions={'ok':'OpenClawMore'})
             
             PreemptiveStateMachine.add('OpenClawMore',
-                      AmbiClawFingerOrder(-1.8,0.5,-1.8,0.5),
-                      transitions={'succeeded':'ThrowUp', 'timeout':'problem'})  
+                       AmbiClawFingerOrder(Robot2012.FINGER_HALF_CLOSE,Robot2012.FINGER_OPEN,
+                                           Robot2012.CLAW_HALF_CLOSE, Robot2012.CLAW_OPEN),
+                      transitions={'succeeded':'EndSlashTotem', 'timeout':'problem'})  
+            
+            PreemptiveStateMachine.add('EndSlashTotem',
+                      AmbiOmniDirectOrder_cpoint(0.060,0,0,
+                                                 0.800,0.125,-pi/2),
+                      transitions={'succeeded':'ThrowUp', 'timeout':'Debloque'})
              
             PreemptiveStateMachine.add('ThrowUp',
-                      AmbiOmniDirectOrder(1.250,0.0,-pi/4),
-                      transitions={'succeeded':'SetStratInfo_ThrowUpFinished', 'timeout':'Debloque'})
+                      AmbiOmniDirectOrder(1.200,0.0,-pi/5),
+                      transitions={'succeeded':'SetStratInfo_ThrowUpFinished', 'timeout':'Back'})
             
             PreemptiveStateMachine.add('SetStratInfo_ThrowUpFinished',
                       SetStratInfo_ThrowUpFinished(),

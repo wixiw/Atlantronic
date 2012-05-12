@@ -54,11 +54,11 @@ class MainStateMachine(smach.StateMachine):
                                    InitStates.Initialisation2012(),
                                    transitions={'endInitialisation':'StartSequence', 'failed':'end'})
             smach.StateMachine.add('StartSequence', 
-                                   InitStates.StartSequence2012(1.25,0.75,0),
+                                   InitStates.StartSequence2012(1.070,0.75,pi),
                                    transitions={'gogogo':'Opening','problem':'end'})
             smach.StateMachine.add('Opening', 
                                    Strat_Opening.Opening(),
-                                    transitions={'endOpening':'MiddleGame','problem':'end'})
+                                    transitions={'endOpening':'MiddleGame','problem':'Uninitialisation'})
             smach.StateMachine.add('MiddleGame', 
                                    Strat_MiddleGame.MiddleGame(),
                                     transitions={'endMiddleGame':'EndGame'})
@@ -66,7 +66,7 @@ class MainStateMachine(smach.StateMachine):
                                    Strat_EndGame.EndGame(),
                                     transitions={'endEndGame':'Uninitialisation'})
             smach.StateMachine.add('Uninitialisation', 
-                                   InitStates.Uninitialisation(),
+                                   InitStates.Uninitialisation(1.070,0.75,pi),
                                     transitions={'endUninitialisation':'end'})
 
    

@@ -195,7 +195,7 @@ Twist2D OmnidirectOrder::computeRunTwist(arp_math::Pose2D currentPosition, doubl
     v_correction_cpoint.vy(speedcorrection * std::sin(deltaPos_refCpoint.vectAngle()));
     v_correction_cpoint.vh(angcorrection);
 
-    /*
+/*
     Log(DEBUG) << "----";
     Log(DEBUG) << "deltaPos_refCpoint.h() " << deltaPos_refCpoint.h();
     Log(DEBUG) << "m_error_old.h() " << m_error_old.h();
@@ -203,7 +203,7 @@ Twist2D OmnidirectOrder::computeRunTwist(arp_math::Pose2D currentPosition, doubl
     Log(DEBUG) << "racine truc " << sqrt2(2.0 * m_conf.ANG_DEC)* sqrt2(deltaPos_refCpoint.h());
     Log(DEBUG) << "angcorrection " << angcorrection;
     Log(DEBUG) << "----";
-    */
+*/
 
     m_error_old=deltaPos_refCpoint;
 
@@ -226,7 +226,7 @@ Twist2D OmnidirectOrder::computeApproachTwist(arp_math::Pose2D currentPosition, 
     outDEBUGErrorApproachInit=getTotalError(m_error_approach);
     outDEBUGErrorApproachCur=getTotalError(deltaPos_refCpoint);
 
-  /*  Log(DEBUG) << ">>computeApproachTwist  " ;
+    Log(DEBUG) << ">>computeApproachTwist  " ;
     Log(DEBUG) << "current error  "<<deltaPos_refCpoint.toString() ;
     Log(DEBUG) << "current error norm  " <<getTotalError(deltaPos_refCpoint);
     Log(DEBUG) << "initial error  " <<m_error_approach.toString();
@@ -235,15 +235,15 @@ Twist2D OmnidirectOrder::computeApproachTwist(arp_math::Pose2D currentPosition, 
 
     Log(DEBUG) << "m_twist_approach"<< m_twist_approach.toString() ;
     Log(DEBUG) << "twist applied"<< (m_twist_approach*sqrt2(m_normalizedError)).toString() ;
-    Log(DEBUG) << "<<computeApproachTwist  ";*/
+    Log(DEBUG) << "<<computeApproachTwist  ";
 
     // je remet le twist approach dans le bon referentiel car mon robot a tourné depuis!
-    Pose2D repere_rotation(0,0,currentPosition.angle()-m_pose_approach.angle());
-    Twist2D m_twist_approach_turned=m_twist_approach.changeProjection(repere_rotation);
+    //Pose2D repere_rotation(0,0,currentPosition.angle()-m_pose_approach.angle());
+    //Twist2D m_twist_approach_turned=m_twist_approach.changeProjection(repere_rotation);
 
     //m_twist_approach_turned=m_twist_approach;
 
-    return m_twist_approach_turned*sqrt2(m_normalizedError);
+    return m_twist_approach*sqrt2(m_normalizedError);
 
 
 }

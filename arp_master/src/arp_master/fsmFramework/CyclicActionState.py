@@ -219,7 +219,8 @@ class AmbiOmniDirectOrder_cpoint(CyclicActionState):
         
     def createAction(self):
         self.pose = AmbiPoseRed(self.x, self.y, self.h, Data.color)
-        self.omnidirect_cpoint(self.CPx, self.CPy, self.CPh,
+        self.control_point = AmbiControlPointRed(self.CPx, self.CPy, self.CPh, Data.color)
+        self.omnidirect_cpoint(self.control_point.x, self.control_point.y, self.control_point.theta,
                                self.pose.x, self.pose.y, self.pose.theta)
 
 
