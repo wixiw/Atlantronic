@@ -21,7 +21,7 @@ left_finger:
     joint_name: left_finger_joint
     joint_speed: 13.0
     joint_torque_limit: 0.3
-    init_pos: -1.9
+    init_pos: -1.8
     motor:
         id: 10
         init: 512
@@ -36,7 +36,7 @@ left_claw:
     joint_name: left_claw_joint
     joint_speed: 13.0
     joint_torque_limit: 0.3
-    init_pos: -1.9
+    init_pos: -1.8
     motor:
         id: 11
         init: 512
@@ -51,7 +51,7 @@ right_finger:
     joint_name: left_finger_joint
     joint_speed: 13.0
     joint_torque_limit: 0.3
-    init_pos: -1.9
+    init_pos: -1.8
     motor:
         id: 12
         init: 512
@@ -66,7 +66,7 @@ right_claw:
     joint_name: left_claw_joint
     joint_speed: 13.0
     joint_torque_limit: 0.3
-    init_pos: -1.9
+    init_pos: -1.8
     motor:
         id: 14
         init: 512
