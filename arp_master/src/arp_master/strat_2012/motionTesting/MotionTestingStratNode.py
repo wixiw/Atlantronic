@@ -53,11 +53,9 @@ class MainStateMachine(smach.StateMachine):
                       transitions={'succeeded':'Forward', 'timeout':'Debloque'})
                         
             smach.StateMachine.add('Forward', Forward(),
-                                   transitions={'succeeded':'Move1', 'timeout':'Debloque'})
-            smach.StateMachine.add('WaitForward', WaiterState(2.0),
-                                   transitions={'timeout':'Backward'})     
-            smach.StateMachine.add('Backward', Backward(),
-                                   transitions={'succeeded':'WaitBack', 'timeout':'Debloque'})
+                                   transitions={'succeeded':'Turn', 'timeout':'Debloque'}) 
+            smach.StateMachine.add('Turn', Turn(),
+                                   transitions={'succeeded':'BMove1', 'timeout':'Debloque'})
             smach.StateMachine.add('WaitBack', WaiterState(2.0),
                                    transitions={'timeout':'Forward'})                 
                                     
@@ -70,18 +68,15 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('Move4', Move4(),
                                    transitions={'succeeded':'Move1', 'timeout':'Debloque'})
                 
-            smach.StateMachine.add('OpenMove1', OpenMove1(),
-                                   transitions={'succeeded':'OpenMove2', 'timeout':'Debloque'})
-            smach.StateMachine.add('OpenMove2', OpenMove2(),
-                                   transitions={'succeeded':'OpenMove3', 'timeout':'Debloque'})
-            smach.StateMachine.add('OpenMove3', OpenMove3(),
-                                   transitions={'succeeded':'OpenMove4', 'timeout':'Debloque'})
-            smach.StateMachine.add('OpenMove4', OpenMove4(),
-                                   transitions={'succeeded':'OpenMove5', 'timeout':'Debloque'})
-            smach.StateMachine.add('OpenMove5', OpenMove5(),
-                                   transitions={'succeeded':'OpenMove6', 'timeout':'Debloque'})
-            smach.StateMachine.add('OpenMove6', OpenMove6(),
-                                   transitions={'succeeded':'OpenMove1', 'timeout':'Debloque'})   
+            smach.StateMachine.add('BMove1', Move4(),
+                                   transitions={'succeeded':'BMove2', 'timeout':'Debloque'})
+            smach.StateMachine.add('BMove2', Move3(),
+                                   transitions={'succeeded':'BMove3', 'timeout':'Debloque'})
+            smach.StateMachine.add('BMove3', Move2(),
+                                   transitions={'succeeded':'BMove4', 'timeout':'Debloque'})
+            smach.StateMachine.add('BMove4', Move1(),
+                                   transitions={'succeeded':'BMove1', 'timeout':'Debloque'})
+      
             smach.StateMachine.add('Debloque', Debloque(),
                                    transitions={'succeeded':'Wait', 'timeout':'Debloque'})     
             smach.StateMachine.add('Wait', WaiterState(2.0),
@@ -101,10 +96,9 @@ class Forward(CyclicActionState):
         self.omnidirect_cpoint(0.0,0.0,0.0,
                                0.000, 0.550, 0)
         
-class Backward(CyclicActionState):
+class Turn(CyclicActionState):
     def createAction(self):
-        self.omnidirect_cpoint(0.0,0.0,0.0,
-                               0.000, 0.000, 0)
+        self.cap(pi/2)
 
 #--------------------------------------------------------------------------------------------------
 class Move1(CyclicActionState):
