@@ -116,8 +116,7 @@ class CyclicActionState(CyclicState):
         goal.theta_speed=theta_speed
         goal.openloop_duration=openloop_duration
         
-        # THIS IS BLOCKING ! <<<<<<<<<<<<<<<<<<<<<<< !!!!!!!!!!!!!!
-        self.client.wait_for_server()
+        self.client.wait_for_server(rospy.Duration.from_sec(5.0))
         self.client.cancel_all_goals
         self.client.send_goal(goal)
         
@@ -161,8 +160,8 @@ class CyclicActionState(CyclicState):
                                               0,0,0,0)    
         
     def cap(self,theta):
-        self.createMotionControlAction_cpoint(-0.0583,0,0,
-                                              Inputs.getx()-0.0583*cos(theta),Inputs.gety()-0.0583*sin(theta),theta,
+        self.createMotionControlAction_cpoint(0.0,0,0,
+                                              Inputs.getx(),Inputs.gety(),theta,
                                               'OMNIDIRECT',False,
                                               0,0,0,0)
         

@@ -14,11 +14,8 @@ class EndGame(PreemptiveStateMachine):
                                              transitions={'endMatch':'endEndGame'})
             
             PreemptiveStateMachine.add('FinalDrop',
-                      FinalDrop(),
-                      transitions={'succeeded':'endEndGame','timeout':'FinalDrop'})
+                       ClawFingerOrder(0.5,0.5,0.5,0.5),
+                      transitions={'succeeded':'endEndGame','timeout':'endEndGame'})
             self.setInitialState('FinalDrop')
-
-class FinalDrop(CyclicActionState):
-    def createAction(self):
-        self.cap(pi/2)
+            
             

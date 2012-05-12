@@ -15,26 +15,19 @@ class Opening(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('GotoMilieu',
                       GotoMilieu(),
-                      transitions={'succeeded':'WaitBeforeNext', 'timeout':'Debloque'})
-            
+                      transitions={'succeeded':'endOpening', 'timeout':'Debloque'})
             self.setInitialState('GotoMilieu')
             
             PreemptiveStateMachine.add('Debloque',
                       Debloque(1.0),
-                      transitions={'succeeded':'GotoMilieu', 'timeout':'GotoMilieu'})
-            
-            PreemptiveStateMachine.add('WaitBeforeNext',
-                      WaiterState(1.0),
-                      transitions={'timeout':'endOpening'})
-                        
+                      transitions={'succeeded':'problem', 'timeout':'problem'})
             
         
 ############### Ordres de motion
 
 class GotoMilieu(CyclicActionState):
     def createAction(self):
-        pose = AmbiPoseRed(-0.500, 0.500,0, Data.color)
+        pose = AmbiPoseRed(0.000, 0.700,0, Data.color)
         self.omnidirect(pose.x, pose.y, pose.theta)
 
          
-

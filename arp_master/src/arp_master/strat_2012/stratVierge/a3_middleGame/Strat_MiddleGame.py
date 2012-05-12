@@ -24,7 +24,7 @@ class MiddleGame(PreemptiveStateMachine):
                       transitions={'succeeded':'EtatA', 'timeout':'ReverseOrder'})
 
             PreemptiveStateMachine.add('ReverseOrder',
-                      ReverseOrder(),
+                      Debloque(1.0),
                       transitions={'succeeded':'endMiddleGame', 'timeout':'endMiddleGame'})
 
 
@@ -33,14 +33,10 @@ class MiddleGame(PreemptiveStateMachine):
 class EtatA(CyclicActionState):
     def createAction(self):
         pose = AmbiPoseRed(0.7, 0.7,0, Data.color)
-        self.pointcap(pose.x, pose.y, pose.theta)
+        self.omnidirect(pose.x, pose.y, pose.theta)
 
 class EtatB(CyclicActionState):
     def createAction(self):
         pose = AmbiPoseRed(-0.7,-0.7,pi, Data.color)
-        self.pointcap(pose.x, pose.y, pose.theta)
+        self.omnidirect(pose.x, pose.y, pose.theta)
          
-################# REVERSER
-class ReverseOrder(CyclicActionState):
-    def createAction(self):
-        self.replay(1.0)  

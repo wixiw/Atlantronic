@@ -2,7 +2,6 @@
 
 #libraries for ROS
 import roslib; roslib.load_manifest('arp_master')
-
 from arp_master import *
 
 class MiddleGame(PreemptiveStateMachine):
@@ -12,8 +11,11 @@ class MiddleGame(PreemptiveStateMachine):
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
                                              EndMatchPreempter(-5.0),
                                              transitions={'endMatch':'endMiddleGame'})
-
-            #self.setInitialState('EtatA')
+            # other states
+            PreemptiveStateMachine.add('TopCloseTotem',
+                      TopCloseTotem(),
+                      transitions={'endTotem':'endMiddleGame', 'problem':'endMiddleGame'})
+            #as initial state is not the preemptive one, it is necessary to add the information here !
+            self.setInitialState('TopCloseTotem')
             
-
-
+         

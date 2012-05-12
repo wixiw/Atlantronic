@@ -7,7 +7,7 @@ from arp_master import *
 
 #import the main state machines substates     
 #from a0_initialisation import Strat_Initialisation => utilisation de l'etat commun
-#from a1_startSequence import Strat_StartSequence
+from a1_startSequence import Strat_StartSequence
 from a2_opening import Strat_Opening
 from a3_middleGame import Strat_MiddleGame
 from a4_endGame import Strat_EndGame
@@ -16,13 +16,15 @@ from a4_endGame import Strat_EndGame
 #from arp_master.strat_2012 import Table2012
 #from arp_master.strat_2012 import Robot2012
 
+from arp_master.strat_2012.common_2012 import *
+
 ###### Variables globales
 #Table = Table2012();
 #Robot = Robot2012();
 
 ###########################  TEMPORAL BEHAVIOR
 
-class OpenLoopStratNode():
+class StratNode_vierge():
     
     def __init__(self):
         
@@ -49,28 +51,34 @@ class OpenLoopStratNode():
     
         # initialise the smach introspection server to view the state machine with :
         #  rosrun smach_viewer smach_viewer.py
-        sis = smach_ros.IntrospectionServer('strat_server', sm, '/SratNode_vierge')
-        sis.start()
+        #sis = smach_ros.IntrospectionServer('strat_server', sm, '/SratNode_vierge')
+        #sis.start()
         sm.execute()
         
-        sis.stop()
+        #sis.stop()
     
 ############################## MAIN STATE MACHINE CREATION
 class MainStateMachine(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['end'])
         with self:
-            smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
-                                   transitions={'endInitialisation':'StartSequence','failed':'end'})
-            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(1.050,0.750,-pi),
-                                   transitions={'gogogo':'Opening','problem':'end'}) 
-            smach.StateMachine.add('Opening', Strat_Opening.Opening(),
-                                    transitions={'endOpening':'Uninitialisation','problem':'MiddleGame'})
-            smach.StateMachine.add('MiddleGame', Strat_MiddleGame.MiddleGame(),
+            smach.StateMachine.add('Initialisation', 
+                                   InitStates.Initialisation2012(),
+                                   transitions={'endInitialisation':'StartSequence', 'failed':'end'})
+            smach.StateMachine.add('StartSequence', 
+                                   InitStates.StartSequence2012(1.25,0.75,0),
+                                   transitions={'gogogo':'Opening','problem':'end'})
+            smach.StateMachine.add('Opening', 
+                                   Strat_Opening.Opening(),
+                                    transitions={'endOpening':'MiddleGame','problem':'end'})
+            smach.StateMachine.add('MiddleGame', 
+                                   Strat_MiddleGame.MiddleGame(),
                                     transitions={'endMiddleGame':'EndGame'})
-            smach.StateMachine.add('EndGame', Strat_EndGame.EndGame(),
+            smach.StateMachine.add('EndGame', 
+                                   Strat_EndGame.EndGame(),
                                     transitions={'endEndGame':'Uninitialisation'})
-            smach.StateMachine.add('Uninitialisation', Strat_Uninitialisation.Uninitialisation(),
+            smach.StateMachine.add('Uninitialisation', 
+                                   Strat_Uninitialisation.Uninitialisation(),
                                     transitions={'endUninitialisation':'end'})
 
    
@@ -79,7 +87,7 @@ class MainStateMachine(smach.StateMachine):
 # this main function is the one called by ros
 if __name__ == '__main__':
     try:
-        OpenLoopStratNode()
+        StratNode_vierge()
     except rospy.ROSInterruptException: 
         rospy.loginfo("handling rospy.ROSInterruptException ...")
         rospy.loginfo("Exiting")
