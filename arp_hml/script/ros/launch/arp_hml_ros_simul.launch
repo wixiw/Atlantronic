@@ -5,4 +5,5 @@
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
 	<include file="$(find arp_hml)/script/ros/launch/ubiquity/geometry_ubiquity.launch"/>
 	<node name="HmlGraphics"     pkg="arp_hml"  type="HmlGraphicsNode"     args="" output="screen" launch-prefix="nice"/>
+	<node name="DynamixelManagerSimul"   pkg="arp_hml"  type="DynamixelManagerSimul.py" args="" output="screen" respawn="false" />
 </launch>
