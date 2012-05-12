@@ -117,6 +117,11 @@ class MotionOrder: public ModeSelector
          */
         TwistBuffer m_twistBuffer;
 
+        /**
+         * error at precedent turn
+         */
+        Pose2D m_error_old;
+
 
 };
 

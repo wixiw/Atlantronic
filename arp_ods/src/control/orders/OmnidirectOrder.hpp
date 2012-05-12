@@ -55,7 +55,7 @@ class OmnidirectOrder: public MotionOrder
         /*
          * compute the usual "mode run" twist
          */
-        Twist2D computeRunTwist(arp_math::Pose2D currentPosition);
+        Twist2D computeRunTwist(arp_math::Pose2D currentPosition, double dt);
 
         /*
          * twist of precedent turn
@@ -66,9 +66,11 @@ class OmnidirectOrder: public MotionOrder
          */
         arp_math::Twist2D m_twist_approach;
         arp_math::Pose2D m_error_approach;
+        arp_math::Pose2D m_pose_approach;
 
         double m_normalizedError;
         double m_normalizedError_old;
+
 
 
 
@@ -78,11 +80,12 @@ class OmnidirectOrder: public MotionOrder
 
         static const double TIMELAG=0.030;
         static const double DIST_SMOOTH=0.050;
+        static const double SUP_TIME_FOR_ROTATION=1.0;
 
 
 private:
     Pose2D getPositionError_RobotRef(arp_math::Pose2D currentPosition);
-    Twist2D computeApproachTwist(arp_math::Pose2D currentPosition);
+    Twist2D computeApproachTwist(arp_math::Pose2D currentPosition, double dt);
     double getTotalError(Pose2D pose);
     void decideSmoothNeeded(arp_math::Pose2D & currentPosition);
 

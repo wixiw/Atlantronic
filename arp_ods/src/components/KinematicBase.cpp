@@ -25,7 +25,7 @@ KinematicBase::KinematicBase(const std::string& name) :
         attrBlockTime(0),
         attrGoToZero(false),
         propMinSpeed(0.001),
-        propRobotBlockedTimeout(2.0),
+        propRobotBlockedTimeout(0.5),
         propMaxSpeedDiff(0.040)
 {
     createOrocosInterface();
