@@ -19,7 +19,7 @@ HmlGraphicsFrame::HmlGraphicsFrame():
     wxFrame(NULL,
           wxID_ANY,
           wxT("Hml Simulation"),
-          wxDefaultPosition, 
+          wxPoint(0,500),
           wxSize(length_in_pixel, width_in_pixel),
           wxDEFAULT_FRAME_STYLE),
 	m_nodeHandle(),

@@ -12,7 +12,8 @@ from CyclicState import CyclicState
 from arp_master.util import *
 from arp_ods.msg import *
 
-
+# ** You should not have to use this state **
+# Prefer the use of utilities at the bottom of the file like AmbiOmniDirectOrder, Replay
 class CyclicActionState(CyclicState):
     
     def __init__(self):
@@ -184,5 +185,46 @@ class CyclicActionState(CyclicState):
                                               0,0,0,
                                               'REPLAY',False,
                                               0,0,0,replay_duration)
+    
+    
+###############################################################################################################################
+
+
+# Use this Order State to quickly add move state in your FSM
+# give the target (x,y,theta) in (m,m,rad) of robot's CDG and match color
+# Ex : AmbiOmniDirectOrder(1.200, -0.700,pi/2)             
+class AmbiOmniDirectOrder(CyclicActionState):
+    def __init__(self,x,y,theta):
+        CyclicActionState.__init__(self)
+        self.x = x
+        self.y = y
+        self.theta = theta
+        
+    def createAction(self):
+        self.pose = AmbiPoseRed(self.x, self.y, self.theta, Data.color)
+        self.omnidirect(self.pose.x, self.pose.y, self.pose.theta)
+
+# Use this state to replay the move before the collision that has just block the robot
+# replayDuration is the length in seconds of the replay.
+# CAUTION : there is no insurrance that a certain distance will be done from the collision... it depends on cases.
+class Replay(CyclicActionState):
+    def __init__(self,replayDuration):
+        CyclicActionState.__init__(self)
+        self.replayDuration=replayDuration
+        
+    def createAction(self):
+        self.replay(self.replayDuration)  
+    
+# Use this Order State to quickly add move state in your FSM (see AmbiOmniDirectOrder for details)
+# Only use this if you are forced to specify a color dependent move (else prefer AmbiOmniDirectOrder)    
+class OmniDirectOrder(CyclicActionState):
+    def __init__(self,x,y,theta):
+        CyclicActionState.__init__(self)
+        self.x = x
+        self.y = y
+        self.theta = theta
+        
+    def createAction(self):
+        self.omnidirect(self.x,self.y,self.theta)        
     
     

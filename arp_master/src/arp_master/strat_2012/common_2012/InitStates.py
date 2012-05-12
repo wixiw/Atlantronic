@@ -15,6 +15,9 @@ class Initialisation2012(smach.StateMachine):
                                    transitions={'endInitialisation':'endInitialisation', 'failed':'failed'})
 
 
+####################################################################################################################
+
+
 class StartSequence2012(smach.StateMachine):
     def __init__(self,x,y,theta):
         smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
@@ -50,3 +53,62 @@ class StartSequence2012(smach.StateMachine):
             smach.StateMachine.add('WaitForMatch', 
                       WaitForMatch(),
                       transitions={'start':'gogogo', 'timeout':'problem'})
+
+
+
+####################################################################################################################
+
+class Uninitialisation(smach.StateMachine):
+    def __init__(self):
+        smach.StateMachine.__init__(self,outcomes=['endUninitialisation'])
+        with self:
+            smach.StateMachine.add('WaitForStart',
+                      WaitForStart(),
+                      transitions={'start':'CloseClaws', 'timeout':'WaitForStart'})
+            
+            smach.StateMachine.add('CloseClaws',
+                      ClawFingerOrder(-1.8,-1.8,-1.8,-1.8),
+                      transitions={'succeeded':'SelectState', 'timeout':'endUninitialisation'})
+                        
+            smach.StateMachine.add('SelectState',
+                      SelectState(),
+                      transitions={'farBot':'FarBot','farTop':'FarTop','closeTop':'CloseTop','closeBot':'CloseBot', 'timeout':'endUninitialisation'})
+            
+            smach.StateMachine.add('FarBot',
+                      AmbiOmniDirectOrder(-0.750,-0.500,pi/4),
+                     transitions={'succeeded':'CloseBot', 'timeout':'endUninitialisation'})
+
+            smach.StateMachine.add('FarTop',
+                      AmbiOmniDirectOrder(-0.750,0.500,-pi/4),
+                     transitions={'succeeded':'CloseTop', 'timeout':'endUninitialisation'})
+            
+            smach.StateMachine.add('CloseTop',
+                      AmbiOmniDirectOrder(0.750,0.500,-3*pi/4),
+                     transitions={'succeeded':'GoHome', 'timeout':'endUninitialisation'})
+            
+            smach.StateMachine.add('CloseBot',
+                      AmbiOmniDirectOrder(0.750,-0.500,3*pi/4),
+                     transitions={'succeeded':'CloseTop', 'timeout':'endUninitialisation'})
+            
+            smach.StateMachine.add('GoHome',
+                      AmbiOmniDirectOrder(1.250,0.750,0),
+                     transitions={'succeeded':'endUninitialisation', 'timeout':'endUninitialisation'})
+
+      
+class SelectState(CyclicState):
+    def __init__(self):
+        CyclicState.__init__(self, outcomes=['farBot','farTop','closeTop','closeBot'])
+
+    def executeTransitions(self):
+        if Inputs.getx() < 0 and Inputs.gety() < 0:
+            return 'farBot'
+        if Inputs.getx() < 0 and Inputs.gety() >= 0:
+            return 'farTop'
+        if Inputs.getx() >= 0 and Inputs.gety() >= 0:
+            return 'closeTop'     
+        #if Inputs.getx() >= 0 and Inputs.gety() < 0:
+        return 'closeBot'    
+    
+    
+    
+####################################################################################################################    
