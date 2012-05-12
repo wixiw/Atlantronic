@@ -14,20 +14,10 @@ class Opening(PreemptiveStateMachine):
                                              transitions={'endMatch':'problem'})
             
             PreemptiveStateMachine.add('GotoMilieu',
-                      GotoMilieu(),
+                      AmbiOmniDirectOrder(0.000, 0.700,0),
                       transitions={'succeeded':'endOpening', 'timeout':'Debloque'})
             self.setInitialState('GotoMilieu')
             
             PreemptiveStateMachine.add('Debloque',
-                      Debloque(1.0),
+                      Replay(1.0),
                       transitions={'succeeded':'problem', 'timeout':'problem'})
-            
-        
-############### Ordres de motion
-
-class GotoMilieu(CyclicActionState):
-    def createAction(self):
-        pose = AmbiPoseRed(0.000, 0.700,0, Data.color)
-        self.omnidirect(pose.x, pose.y, pose.theta)
-
-         

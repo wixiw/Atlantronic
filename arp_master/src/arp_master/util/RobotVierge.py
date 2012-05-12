@@ -4,5 +4,11 @@ import rospy
 
 
 class RobotVierge:
-    def init():
+    def __init__(self):
         pass
+    
+    def getParams(self):
+        try:
+            pass #rien
+        except KeyError:
+            rospy.logerr("RobotVierge: Failed to find rosparams.") 

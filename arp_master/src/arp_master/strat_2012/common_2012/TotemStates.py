@@ -14,7 +14,7 @@ class TopCloseTotem(PreemptiveStateMachine):
                                              EndMatchPreempter(-5.0),
                                              transitions={'endMatch':'endTotem'})
             PreemptiveStateMachine.add('OpenClaw',
-                      ClawFingerOrder(-1.0,-1.8,-1.8,0.0),
+                     ClawsOnlyState('totem_right'),
                       transitions={'succeeded':'EnterTotem', 'timeout':'problem'})  
             #as initial state is not the preemptive one, it is necessary to add the information here !
             self.setInitialState('OpenClaw')
@@ -34,7 +34,7 @@ class TopCloseTotem(PreemptiveStateMachine):
                       transitions={'succeeded':'OpenClawMore', 'timeout':'Debloque'})
             
             PreemptiveStateMachine.add('OpenClawMore',
-                      ClawFingerOrder(-1.8,0.5,-1.8,0.5),
+                      AmbiClawFingerOrder(-1.8,0.5,-1.8,0.5),
                       transitions={'succeeded':'ThrowUp', 'timeout':'problem'})  
             
             PreemptiveStateMachine.add('ThrowUp',
@@ -46,7 +46,7 @@ class TopCloseTotem(PreemptiveStateMachine):
                       transitions={'succeeded':'CloseClaws', 'timeout':'Debloque'})
             
             PreemptiveStateMachine.add('CloseClaws',
-                      ClawFingerOrder(-1.8,-1.8,-1.8,-1.8),
+                      FingerClawState('close'),
                       transitions={'succeeded':'endTotem', 'timeout':'problem'}) 
 
             PreemptiveStateMachine.add('Debloque',

@@ -6,21 +6,13 @@ import roslib; roslib.load_manifest('arp_master')
 from arp_master import *
 
 #import the main state machines substates     
-#from a0_initialisation import Strat_Initialisation => utilisation de l'etat commun
-from a1_startSequence import Strat_StartSequence
 from a2_opening import Strat_Opening
 from a3_middleGame import Strat_MiddleGame
 from a4_endGame import Strat_EndGame
-#from a5_uninitialisation import Strat_Uninitialisation => utilisation de l'etat commun
 
-#from arp_master.strat_2012 import Table2012
-#from arp_master.strat_2012 import Robot2012
-
-from arp_master.strat_2012.common_2012 import *
-
-###### Variables globales
-#Table = Table2012();
-#Robot = Robot2012();
+####### Variables globales
+Table = Table2012();
+Robot = Robot2012();
 
 ###########################  TEMPORAL BEHAVIOR
 
@@ -31,8 +23,8 @@ class StratNode_vierge():
         #creation of the node
         rospy.init_node('StratNode')
         #recuperation des parametres (on a besoin d'etre un noeud pour ca
-        #Table.init()
-        #Robot.init()
+        Table.getParams()
+        Robot.getParams()
         #creation of the cadencer for all states
         Data.stateMachineRate =rospy.Rate(10)
         #linking of the input in Inputs to the topics
@@ -78,7 +70,7 @@ class MainStateMachine(smach.StateMachine):
                                    Strat_EndGame.EndGame(),
                                     transitions={'endEndGame':'Uninitialisation'})
             smach.StateMachine.add('Uninitialisation', 
-                                   Strat_Uninitialisation.Uninitialisation(),
+                                   InitStates.Uninitialisation(),
                                     transitions={'endUninitialisation':'end'})
 
    
