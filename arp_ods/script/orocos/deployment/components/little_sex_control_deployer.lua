@@ -20,7 +20,7 @@ function LittleSexControlDeployer:connect()
 	Deployer:addPeer("RluMonitor", me);
 	RluMonitor:connect(me,"inPosition","Localizator","outPose");
 	RluMonitor:connect(me,"inCurrentTwist","Localizator","outTwist");
-    RluMonitor:connect(me,"outApproach","Localizator","inSmoothMode");
+    RluMonitor:connect(me,"outSmoothLocNeeded","Localizator","inSmoothMode");
 end
 
 

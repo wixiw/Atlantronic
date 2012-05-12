@@ -68,8 +68,12 @@ void LittleSexControl::updateHook()
         outDEBUGMode.write(attrOrder->getMode());
         outDEBUGErrorApproachInit.write(attrOrder->outDEBUGErrorApproachInit);
         outDEBUGErrorApproachCur.write(attrOrder->outDEBUGErrorApproachCur);
-        outApproach.write( attrOrder->getMode() == MODE_APPROACH);
     }
+
+    if (attrOrder->getType()==OMNIDIRECT)
+        outSmoothLocNeeded.write( attrOrder->m_smoothLocNeeded);
+    else
+        outSmoothLocNeeded.write( false);
 
 
     //publish computed value
@@ -199,8 +203,8 @@ void LittleSexControl::createOrocosInterface()
     addPort("outDEBUGErrorApproachCur",outDEBUGErrorApproachCur)
                  .doc("");
 
-    addPort("outApproach",outApproach)
-    .doc("MotionControl in approach mode");
+    addPort("outSmoothLocNeeded",outSmoothLocNeeded)
+    .doc("MotionControl needs a localization with no steps");
 
     addOperation("ooSetOrder",&LittleSexControl::ooSetOrder, this, OwnThread)
                 .doc("Define a new order to do")

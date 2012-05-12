@@ -76,13 +76,15 @@ class OmnidirectOrder: public MotionOrder
         void switchRun(arp_math::Pose2D currentPosition);
         void switchApproach(arp_math::Pose2D currentPosition);
 
-        static const double TIMELAG=0.060;
-        static const double DEC_APPROACH=0.5;
+        static const double TIMELAG=0.030;
+        static const double DIST_SMOOTH=0.050;
+
 
 private:
     Pose2D getPositionError_RobotRef(arp_math::Pose2D currentPosition);
     Twist2D computeApproachTwist(arp_math::Pose2D currentPosition);
     double getTotalError(Pose2D pose);
+    void decideSmoothNeeded(arp_math::Pose2D & currentPosition);
 
 };
 

@@ -54,7 +54,7 @@ class LittleSexControl: public OdsTaskContext
         /**
          * Motioncontrol in approach mode
          */
-        RTT::OutputPort<bool> outApproach;
+        RTT::OutputPort<bool> outSmoothLocNeeded;
 
         /**
          * This tells to the Order manager that we have finished the job.

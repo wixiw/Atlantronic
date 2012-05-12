@@ -184,11 +184,33 @@ Twist2D OmnidirectOrder::computeApproachTwist(arp_math::Pose2D currentPosition)
     outDEBUGErrorApproachInit=getTotalError(m_error_approach);
     outDEBUGErrorApproachCur=getTotalError(deltaPos_refCpoint);
 
+    Log(DEBUG) << ">>computeApproachTwist  " ;
+    Log(DEBUG) << "current error  "<<deltaPos_refCpoint.toString() ;
+    Log(DEBUG) << "current error norm  " <<getTotalError(deltaPos_refCpoint);
+    Log(DEBUG) << "initial error  " <<m_error_approach.toString();
+    Log(DEBUG) << "initial error norm  "<< getTotalError(m_error_approach);
+    Log(DEBUG) << "normalize error  " << m_normalizedError;
+
+    Log(DEBUG) << "m_twist_approach"<< m_twist_approach.toString() ;
+    Log(DEBUG) << "twist applied"<< (m_twist_approach*sqrt2(m_normalizedError)).toString() ;
+    Log(DEBUG) << "<<computeApproachTwist  " ;
+
     return m_twist_approach*sqrt2(m_normalizedError);
 
 
 }
 
+void OmnidirectOrder::decideSmoothNeeded(arp_math::Pose2D & currentPosition)
+{
+    //is a smooth localization needed ?
+    Pose2D deltaPos_refCpoint = getPositionError_RobotRef(currentPosition);
+    if(deltaPos_refCpoint.vectNorm() < DIST_SMOOTH)
+        m_smoothLocNeeded = true;
+
+    else
+        m_smoothLocNeeded = false;
+
+}
 Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double dt)
 {
 
@@ -196,6 +218,8 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
     {
         return Twist2D(0, 0, 0);
     }
+
+    decideSmoothNeeded(currentPosition);
 
     Twist2D v_correction_ref;
 

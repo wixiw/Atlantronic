@@ -29,6 +29,7 @@ MotionOrder::MotionOrder(const MotionOrder& order):
     m_conf=order.m_conf;
     m_openloop_twist=order.m_openloop_twist;
     m_openloop_duration=order.m_openloop_duration;
+    m_smoothLocNeeded=false;
     //m_id != m_id !!
 }
 
