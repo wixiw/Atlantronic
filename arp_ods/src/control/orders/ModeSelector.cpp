@@ -89,6 +89,8 @@ void ModeSelector::switchInit(arp_math::Pose2D currentPosition)
     testTimeout();
     m_currentMode = MODE_RUN;
     m_runTime = getTime();
+
+    Log(INFO) << "[" << m_endPose.toString()<< "] entered MODE_INIT at time " << m_initTime;
 }
 
 void ModeSelector::switchRun(arp_math::Pose2D currentPosition)

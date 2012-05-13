@@ -5,6 +5,7 @@ import roslib; roslib.load_manifest('arp_master')
 from arp_master import *
 
 from DynamixelActionState import *
+from Table2012 import *
 
 class Initialisation2012(smach.StateMachine):
     def __init__(self):
@@ -66,6 +67,10 @@ class Uninitialisation(smach.StateMachine):
     
         smach.StateMachine.__init__(self,outcomes=['endUninitialisation'])
         with self:
+            smach.StateMachine.add('PrintStratInfo',
+                      PrintStratInfo(),
+                      transitions={'ok':'WaitForStart'})
+                        
             smach.StateMachine.add('WaitForStart',
                       WaitForStart(),
                       transitions={'start':'WaitForMatch', 'timeout':'WaitForStart'})
@@ -102,6 +107,12 @@ class Uninitialisation(smach.StateMachine):
                       AmbiOmniDirectOrder(x+0.058,y,theta),
                      transitions={'succeeded':'endUninitialisation', 'timeout':'endUninitialisation'})
 
+class PrintStratInfo(smach.State):
+    def __init__(self):
+        smach.State.__init__(self,['ok'])
+    def execute(self,userdata):
+        Table2012.printStratInfo()
+        return 'ok'     
       
 class SelectState(CyclicState):
     def __init__(self):

@@ -86,6 +86,7 @@ then
 			--exclude "reports.dat"\
 			--exclude "doc"\
 			--exclude "ressource/unittest"\
+			--exclude ".gems"\
 			--exclude ".hpp"\
 			--exclude ".cpp"
 		else
@@ -100,6 +101,7 @@ then
 			--exclude "reports.dat"\
 			--exclude "doc" \
 			--exclude "ressource/unittest"\
+			--exclude ".gems"\
 			--exclude ".hpp"\
 			--exclude ".cpp"
 			
@@ -118,6 +120,7 @@ then
 	--exclude "reports.dat"\
 	--exclude "doc"\
 	--exclude "ressource/unittest"\
+	--exclude ".gems"\
 	--exclude ".hpp"\
 	--exclude ".cpp"
 
@@ -138,6 +141,7 @@ else
 		--exclude "*.log" \
 		--exclude "doc"\
 		--exclude "ressource/unittest"\
+		--exclude ".gems"\
 		--exclude ".hpp"\
 		--exclude ".cpp"
 	else

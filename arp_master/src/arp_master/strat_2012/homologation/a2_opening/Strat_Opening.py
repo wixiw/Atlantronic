@@ -20,7 +20,11 @@ class Opening(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('GotoTopCloseCoin',
                       AmbiOmniDirectOrder(0.500, 0.703,-pi/2),
-                      transitions={'succeeded':'OpenRightFinger', 'timeout':'Debloque'})
+                      transitions={'succeeded':'SetStratInfo', 'timeout':'Debloque'})
+            
+            PreemptiveStateMachine.add('SetStratInfo',
+                      SetStratInfoState('topCloseCoinInPosition', False),
+                      transitions={'ok':'OpenRightFinger'})
             
             PreemptiveStateMachine.add('OpenRightFinger',
                       FingersOnlyState('open'), 

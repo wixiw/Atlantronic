@@ -39,7 +39,7 @@ class AmbiPoseRed:
             self.x=0
             self.y=0
             self.theta=0
-            rospy.loginfo("AmbiPoseRed : default case : color not defined !!")
+            rospy.logerr("AmbiPoseRed : default case : color not defined !!")
             
 class AmbiCapRed:
     def __init__(self,angle,color):
@@ -49,7 +49,7 @@ class AmbiCapRed:
                 self.angle=normalizeAngle(pi-angle)  
         else:
             self.angle=0
-            rospy.loginfo("AmbiCapRed : default case : color not defined !!")
+            rospy.logerr("AmbiCapRed : default case : color not defined !!")
             
             
 

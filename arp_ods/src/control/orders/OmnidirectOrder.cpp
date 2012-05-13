@@ -54,6 +54,8 @@ shared_ptr<MotionOrder> OmnidirectOrder::createOrder(const OrderGoalConstPtr &go
 
     order->setConf(conf);
 
+    Log(INFO) << order->getTypeString() << "from [" << begin.toString() << "] to [" << end.toString()<< "] control_point=[" << cpoint.toString()<< "]";
+
     return static_cast<shared_ptr<MotionOrder> >(order);
 }
 

@@ -17,7 +17,3 @@ class Robot2012(RobotVierge):
 
     #...
     
-    
-    def __init__(self):
-        RobotVierge.__init__(self)
-        rospy.loginfo("Init Robot 2012 datas ...")

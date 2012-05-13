@@ -37,7 +37,7 @@ class TopCloseTotem(PreemptiveStateMachine):
                       transitions={'succeeded':'SetStratInfo_TotemFinished', 'timeout':'problem'})  
             
             PreemptiveStateMachine.add('SetStratInfo_TotemFinished',
-                      SetStratInfo_TotemFinished(),
+                      SetStratInfoState('topCloseTotemFull',False),
                       transitions={'ok':'OpenClawMore'})
             
             PreemptiveStateMachine.add('OpenClawMore',
@@ -55,7 +55,7 @@ class TopCloseTotem(PreemptiveStateMachine):
                       transitions={'succeeded':'SetStratInfo_ThrowUpFinished', 'timeout':'Back'})
             
             PreemptiveStateMachine.add('SetStratInfo_ThrowUpFinished',
-                      SetStratInfo_ThrowUpFinished(),
+                      SetStratInfoState('closeFreeGoldbarInPosition', False),
                       transitions={'ok':'Back'})
             
             PreemptiveStateMachine.add('Back',
@@ -70,18 +70,3 @@ class TopCloseTotem(PreemptiveStateMachine):
                       Debloque(1.0),
                       transitions={'succeeded':'problem', 'timeout':'problem'})
 
-   
-class SetStratInfo_TotemFinished(smach.State):
-    def __init__(self):
-        smach.State.__init__(self,['ok'])
-    def execute(self,userdata):
-        Table2012.topCloseTotemFull = False
-        return 'ok'
-        
-class SetStratInfo_ThrowUpFinished(smach.State):
-    def __init__(self):
-        smach.State.__init__(self,['ok'])
-    def execute(self,userdata):
-        Table2012.closeFreeGoldbarInPosition = False
-        return 'ok'
-    

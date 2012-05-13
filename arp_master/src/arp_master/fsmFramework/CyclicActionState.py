@@ -246,5 +246,33 @@ class OmniDirectOrder(CyclicActionState):
         
     def createAction(self):
         self.omnidirect(self.x,self.y,self.theta)        
-    
-    
+
+
+# Use this to call an open loop order 
+# OpenLoppOrder(0,0,0, duration=0) 
+# Only use this if you are forced to specify a color dependent move (else prefer AmbiOpenLoop)   
+class AmbiOpenLoopOrder(CyclicActionState):
+    def __init__(self,vx,vy,vh,duration):
+        CyclicActionState.__init__(self)
+        self.vx = vx
+        self.vy = vy
+        self.vh = vh
+        self.duration = duration
+        
+    def createAction(self):
+        self.speed = AmbiControlPointRed(self.vx, self.vy, self.vh, Data.color)
+        self.openloop(self.speed.x,self.speed.y,self.speed.theta,self.duration) 
+
+# Use this to call an open loop order 
+# OpenLoppOrder(0,0,0, duration=0) 
+# Only use this if you are forced to specify a color dependent move (else prefer AmbiOpenLoop)   
+class OpenLoopOrder(CyclicActionState):
+    def __init__(self,vx,vy,vh,duration):
+        CyclicActionState.__init__(self)
+        self.vx = vx
+        self.vy = vy
+        self.vh = vh
+        self.duration = duration
+        
+    def createAction(self):
+        self.openloop(self.vx,self.vy,self.vh,self.duration)        
