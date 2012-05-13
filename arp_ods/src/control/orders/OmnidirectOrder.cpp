@@ -75,13 +75,13 @@ void OmnidirectOrder::switchRun(arp_math::Pose2D currentPosition)
         // si j'entre directement en approche, il faut que je calcule un twist initial
 
         //TODO on peut pas faire plus dégueu, comme j'ai pas dt je le force.
-        m_twist_approach = computeRunTwist(currentPosition,0.02);
+        m_twist_approach = computeRunTwist(currentPosition, 0.02);
 
-        m_error_approach=getPositionError_RobotRef(currentPosition);
-        m_pose_approach=currentPosition;
+        m_error_approach = getPositionError_RobotRef(currentPosition);
+        m_pose_approach = currentPosition;
         //to initialize the error
-        computeApproachTwist(currentPosition,0.02);
-        m_normalizedError_old=m_normalizedError+1.0;//+1 to be sure that the first comparison will be ok
+        computeApproachTwist(currentPosition, 0.02);
+        m_normalizedError_old = m_normalizedError + 1.0; //+1 to be sure that the first comparison will be ok
 
         Log(DEBUG) << "m_twist_approach" << m_twist_approach.toString();
         Log(DEBUG) << "m_error_approach" << m_error_approach.toString();
@@ -89,7 +89,6 @@ void OmnidirectOrder::switchRun(arp_math::Pose2D currentPosition)
     }
 
     testTimeout();
-
 
 }
 
@@ -108,10 +107,22 @@ void OmnidirectOrder::switchApproach(arp_math::Pose2D currentPosition)
      m_runTime = getTime();
      }*/
 
-    if (m_normalizedError_old<=m_normalizedError)
+    Pose2D deltaPos_refCpoint = getPositionError_RobotRef(currentPosition);
+
+    //if (m_normalizedError_old <= m_normalizedError)
+
+    /*
+    Log(DEBUG) << ">>sortie de approach";
+    Log(DEBUG) << "current position    "<<currentPosition.toString();
+    Log(DEBUG) << "deltaPos_refCpoint  "<<deltaPos_refCpoint.toString();
+    Log(DEBUG) << "fabs(m_error_approach.translation().dot(deltaPos_refCpoint.translation()))  " <<fabs(m_error_approach.translation().dot(deltaPos_refCpoint.translation()));
+    Log(DEBUG) << "fabs(deltaPos_refCpoint.h())   "<<fabs(deltaPos_refCpoint.h()) ;
+    Log(DEBUG) << "<<sortie de approach";
+    */
+
+    if (fabs(m_error_approach.translation().dot(deltaPos_refCpoint.translation()))<m_conf.DISTANCE_ACCURACY && fabs(deltaPos_refCpoint.h())<m_conf.ANGLE_ACCURACY )
     {
-        Log(INFO) << getTypeString() << " switched MODE_APPROACH --> MODE_DONE "
-                << "because error began to increase";
+        Log(INFO) << getTypeString() << " switched MODE_APPROACH --> MODE_DONE " << "because error began to increase";
         Log(INFO) << "robot position  " << currentPosition.toString();
         Log(INFO) << "cpoint position " << current_cpoint_position.toString();
         Log(INFO) << "aim position    " << m_endPose.toString();
@@ -121,7 +132,7 @@ void OmnidirectOrder::switchApproach(arp_math::Pose2D currentPosition)
         m_currentMode = MODE_DONE;
         return;
     }
-    m_normalizedError_old=m_normalizedError;
+    m_normalizedError_old = m_normalizedError;
 
     testTimeout();
 
@@ -165,55 +176,66 @@ Twist2D OmnidirectOrder::computeRunTwist(arp_math::Pose2D currentPosition, doubl
     // a = 2 * d / t²
     // t² = time for rotation + additional time
     // time for rotation = sqrt( 2 * d_rot / a_rot )
-    double time_for_rotation=SUP_TIME_FOR_ROTATION+sqrt( 2 * fabs(deltaPos_refCpoint.h()) / m_conf.ANG_DEC );
-    double reduced_LIN_DEC=2*deltaPos_refCpoint.vectNorm()/(time_for_rotation*time_for_rotation);
-    double LIN_DEC=min(reduced_LIN_DEC,m_conf.LIN_DEC);
+    double time_for_rotation = SUP_TIME_FOR_ROTATION + sqrt(2 * fabs(deltaPos_refCpoint.h()) / m_conf.ANG_DEC);
+    double reduced_LIN_DEC = 2 * deltaPos_refCpoint.vectNorm() / (time_for_rotation * time_for_rotation);
+    double LIN_DEC = min(reduced_LIN_DEC, m_conf.LIN_DEC);
 
     // brutal correction twist. with constant acceleration   v = sqrt ( 2 . acc) . sqrt( d )
     Twist2D v_correction_cpoint;
     double speedcorrection = sqrt2(2.0 * LIN_DEC)
             * sqrt2(max(deltaPos_refCpoint.vectNorm() - m_v_correction_old.speedNorm() * TIMELAG, 0.0));
 
-    // pour l'avance de phase sur l'angle, je met une zone morte pour l'empecher d'osciller.
-    double distance_ang=deltaPos_refCpoint.h();
-    double distance_ang_avance=deltaPos_refCpoint.h() - m_v_correction_old.vh()* TIMELAG;
-    double distance_ang_avance_sat;
-    /*
-    if (sign(distance_ang)==sign(distance_ang_avance))
-        distance_ang_avance_sat=distance_ang_avance;
-    else
-        distance_ang_avance_sat=0;
-*/
-    distance_ang_avance_sat=distance_ang_avance ;
+    //correction en angle,  attention la racine rend le robot instable en ligne droite. (trop de correction sur les petits theta)
+    double distance_ang_avance = deltaPos_refCpoint.h() - m_v_correction_old.vh() * TIMELAG;
+    double angcorrection;
+    if (fabs(distance_ang_avance)<ANGLE_CHGT_ASSERV)
+        {
+        //angcorrection = K_THETA * distance_ang_avance;
+        //magic calcul du gain pour s'assurer la continuité en ANGLE_CHGT_ASSERV
+        double K=sqrt(2.0*m_conf.ANG_DEC)/sqrt(ANGLE_CHGT_ASSERV);
+        angcorrection=K*distance_ang_avance;
+        }
+        else
+        {
+        angcorrection=sqrt2(2.0*m_conf.ANG_DEC)*sqrt2(distance_ang_avance);
+        }
 
-    //correction en angle, la meme que pour la vitesse
-    double angcorrection = sqrt2(2.0 * m_conf.ANG_DEC)
-            * sqrt2(distance_ang_avance_sat);
     /*if (m_error_old==Pose2D(0,0,0)) // first turn ?
-        m_error_old=deltaPos_refCpoint;
-    double error_derivative=betweenMinusPiAndPlusPi(deltaPos_refCpoint.h()-m_error_old.h())/dt;
-    double angcorrection = sqrt2(2.0 * m_conf.ANG_DEC)* sqrt2(deltaPos_refCpoint.h())+error_derivative*K_D;*/
-    v_correction_cpoint.vx(speedcorrection * std::cos(deltaPos_refCpoint.vectAngle()));
-    v_correction_cpoint.vy(speedcorrection * std::sin(deltaPos_refCpoint.vectAngle()));
+     m_error_old=deltaPos_refCpoint;
+     double error_derivative=betweenMinusPiAndPlusPi(deltaPos_refCpoint.h()-m_error_old.h())/dt;
+     double angcorrection = sqrt2(2.0 * m_conf.ANG_DEC)* sqrt2(deltaPos_refCpoint.h())+error_derivative*K_D;*/
+
+    //essayé de mettre de l'avance de phase sur la correction en speedAngle, puisque le theta point a un effet sur elle. pas réussi a faire marcher
+    double speedAngle = betweenMinusPiAndPlusPi(deltaPos_refCpoint.vectAngle());
+    v_correction_cpoint.vx(speedcorrection * std::cos(speedAngle));
+    v_correction_cpoint.vy(speedcorrection * std::sin(speedAngle));
     v_correction_cpoint.vh(angcorrection);
 
-/*
-    Log(DEBUG) << "----";
-    Log(DEBUG) << "deltaPos_refCpoint.h() " << deltaPos_refCpoint.h();
-    Log(DEBUG) << "m_error_old.h() " << m_error_old.h();
-    Log(DEBUG) << "error_derivative " << error_derivative;
-    Log(DEBUG) << "racine truc " << sqrt2(2.0 * m_conf.ANG_DEC)* sqrt2(deltaPos_refCpoint.h());
-    Log(DEBUG) << "angcorrection " << angcorrection;
-    Log(DEBUG) << "----";
-*/
 
-    m_error_old=deltaPos_refCpoint;
+    m_error_old = deltaPos_refCpoint;
 
     outDEBUGLinSpeedCorrection = speedcorrection;
     outDEBUGAngSpeedCorrection = angcorrection;
     //transfer of the twist to robot referential
     Twist2D v_correction_ref;
     v_correction_ref = v_correction_cpoint.transport(m_cpoint.inverse());
+/*
+    Log(DEBUG) << "----compute twist";
+    Log(DEBUG) << "m_endPose                   " << m_endPose.toString();
+    Log(DEBUG) << "current cpoint position     " << (currentPosition * m_cpoint).toString();
+    Log(DEBUG) << " donc deltaPos_refCpoint    " << deltaPos_refCpoint.toString();
+
+    Log(DEBUG) << " speed     " << speedcorrection;
+    Log(DEBUG) << " speed angle    " << speedAngle;
+    Log(DEBUG) << " thetap    " << angcorrection;
+
+    Log(DEBUG) << " avant transport, twist=    " << v_correction_cpoint.toString();
+    Log(DEBUG) << " m_cpoint=    " << m_cpoint.toString();
+    Log(DEBUG) << " m_cpoint.inverse()=    " << m_cpoint.inverse().toString();
+    Log(DEBUG) << " apres transport, twistbite=    " << v_correction_ref.toString();
+
+    Log(DEBUG) << "----";
+*/
     return v_correction_ref;
 }
 
@@ -222,43 +244,79 @@ Twist2D OmnidirectOrder::computeApproachTwist(arp_math::Pose2D currentPosition, 
 
     Pose2D deltaPos_refCpoint = getPositionError_RobotRef(currentPosition);
     // this is the current % of the initial error when I entered the approach zone
-    m_normalizedError=getTotalError(deltaPos_refCpoint)/getTotalError(m_error_approach);
+    m_normalizedError = getTotalError(deltaPos_refCpoint) / getTotalError(m_error_approach);
 
-    outDEBUGNormalizedError=m_normalizedError;
-    outDEBUGErrorApproachInit=getTotalError(m_error_approach);
-    outDEBUGErrorApproachCur=getTotalError(deltaPos_refCpoint);
+    outDEBUGNormalizedError = m_normalizedError;
+    outDEBUGErrorApproachInit = getTotalError(m_error_approach);
+    outDEBUGErrorApproachCur = getTotalError(deltaPos_refCpoint);
 
-    Log(DEBUG) << ">>computeApproachTwist  " ;
-    Log(DEBUG) << "current error  "<<deltaPos_refCpoint.toString() ;
-    Log(DEBUG) << "current error norm  " <<getTotalError(deltaPos_refCpoint);
-    Log(DEBUG) << "initial error  " <<m_error_approach.toString();
-    Log(DEBUG) << "initial error norm  "<< getTotalError(m_error_approach);
-    Log(DEBUG) << "normalize error  " << m_normalizedError;
+    /*
+     Log(DEBUG) << ">>computeApproachTwist  ";
+     Log(DEBUG) << "current error  " << deltaPos_refCpoint.toString();
+     Log(DEBUG) << "current error norm  " << getTotalError(deltaPos_refCpoint);
+     Log(DEBUG) << "initial error  " << m_error_approach.toString();
+     Log(DEBUG) << "initial error norm  " << getTotalError(m_error_approach);
+     Log(DEBUG) << "normalize error  " << m_normalizedError;
 
-    Log(DEBUG) << "m_twist_approach"<< m_twist_approach.toString() ;
-    Log(DEBUG) << "twist applied"<< (m_twist_approach*sqrt2(m_normalizedError)).toString() ;
-    Log(DEBUG) << "<<computeApproachTwist  ";
-
+     Log(DEBUG) << "m_twist_approach" << m_twist_approach.toString();
+     Log(DEBUG) << "twist applied" << (m_twist_approach * sqrt2(m_normalizedError)).toString();
+     Log(DEBUG) << "<<computeApproachTwist  ";
+     */
     // je remet le twist approach dans le bon referentiel car mon robot a tourné depuis!
-    //Pose2D repere_rotation(0,0,currentPosition.angle()-m_pose_approach.angle());
-    //Twist2D m_twist_approach_turned=m_twist_approach.changeProjection(repere_rotation);
+    /*   Pose2D repere_rotation(0, 0, currentPosition.angle() - m_pose_approach.angle());
+     Twist2D m_twist_approach_turned = m_twist_approach.changeProjection(repere_rotation);
 
-    //m_twist_approach_turned=m_twist_approach;
+     m_twist_approach_turned = m_twist_approach;
 
-    return m_twist_approach*sqrt2(m_normalizedError);
+     return m_twist_approach_turned * sqrt2(m_normalizedError);*/
 
 
+    double speedcorrection = sqrt2(2.0 * m_conf.LIN_DEC)
+            * sqrt2(max(deltaPos_refCpoint.vectNorm() - m_v_correction_old.speedNorm() * TIMELAG, 0.0));
+
+    speedcorrection *= m_error_approach.translation().dot(deltaPos_refCpoint.translation()); // si je ne pointe pas la vitesse dans la bonne direction pas la peine de corriger
+
+    //correction en angle,  attention la racine rend le robot instable en ligne droite. (trop de correction sur les petits theta)
+    double distance_ang_avance = deltaPos_refCpoint.h(); // ENLEVE TIMELAG car il avait du mal à terminer son ordre
+    double angcorrection;
+    if (fabs(distance_ang_avance)<ANGLE_CHGT_ASSERV)
+        {
+        //angcorrection = K_THETA * distance_ang_avance;
+        //magic calcul du gain pour s'assurer la continuité en ANGLE_CHGT_ASSERV
+        double K=sqrt(2.0*m_conf.ANG_DEC)/sqrt(ANGLE_CHGT_ASSERV);
+        angcorrection=K*distance_ang_avance;
+        }
+        else
+        {
+        angcorrection=sqrt2(2.0*m_conf.ANG_DEC)*sqrt2(distance_ang_avance);
+        }
+
+    double speedAngle = betweenMinusPiAndPlusPi(m_error_approach.vectAngle()); // je garde l'angle de vitesse initiale
+    Twist2D v_correction_cpoint;
+    v_correction_cpoint.vx(speedcorrection * std::cos(speedAngle));
+    v_correction_cpoint.vy(speedcorrection * std::sin(speedAngle));
+    v_correction_cpoint.vh(angcorrection);
+
+    //transfer of the twist to robot referential
+    Twist2D v_correction_ref;
+    v_correction_ref = v_correction_cpoint.transport(m_cpoint.inverse());
+    return v_correction_ref;
 }
 
 void OmnidirectOrder::decideSmoothNeeded(arp_math::Pose2D & currentPosition)
 {
     //is a smooth localization needed ?
     Pose2D deltaPos_refCpoint = getPositionError_RobotRef(currentPosition);
-    if(deltaPos_refCpoint.vectNorm() < DIST_SMOOTH)
+    if (deltaPos_refCpoint.vectNorm() < DIST_SMOOTH)
         m_smoothLocNeeded = true;
 
     else
         m_smoothLocNeeded = false;
+
+    if (m_smoothLocNeeded)
+        outDEBUGSmoothLocNeeded = 1.0;
+    else
+        outDEBUGSmoothLocNeeded = 0.0;
 
 }
 Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double dt)
@@ -275,11 +333,11 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
 
     if (m_currentMode == MODE_RUN)
     {
-    v_correction_ref = computeRunTwist(currentPosition,dt);
+        v_correction_ref = computeRunTwist(currentPosition, dt);
     }
     if (m_currentMode == MODE_APPROACH)
     {
-    v_correction_ref = computeApproachTwist(currentPosition,dt);
+        v_correction_ref = computeApproachTwist(currentPosition, dt);
     }
 
     //saturation of twist: limit max linear speed/acc;  and max rotation speed/acc
@@ -294,8 +352,8 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
 Twist2D OmnidirectOrder::saturateTwist(Twist2D twist_input, double dt)
 {
     Twist2D twist_output;
-    double vmaxlin = std::min(m_conf.LIN_VEL_MAX, m_v_correction_old.speedNorm() + dt * m_conf.LIN_DEC);
-    double vmaxrot = std::min(m_conf.ANG_VEL_MAX, std::fabs(m_v_correction_old.vh()) + dt * m_conf.ANG_DEC);
+    double vmaxlin = std::min(m_conf.LIN_VEL_MAX, m_v_correction_old.speedNorm() + dt * m_conf.LIN_DEC*2);
+    double vmaxrot = std::min(m_conf.ANG_VEL_MAX, std::fabs(m_v_correction_old.vh()) + dt * m_conf.ANG_DEC*2);
 
     double satvlin = max(twist_input.speedNorm() / vmaxlin, 1.0);
     double satvrot = max(std::fabs(twist_input.vh()) / vmaxrot, 1.0);
@@ -305,11 +363,12 @@ Twist2D OmnidirectOrder::saturateTwist(Twist2D twist_input, double dt)
             saturated_linspeed * sin(twist_input.speedAngle()), saturated_angspeed);
 
     outDEBUGSaturation = saturated_angspeed;
+    outDEBUGSpeedAngle = twist_input.speedAngle();
 
     return twist_output;
 }
 
 double OmnidirectOrder::getTotalError(Pose2D pose)
 {
-return sqrt(pose.x()*pose.x()+pose.y()*pose.y()+0.2*0.2*pose.h()*pose.h());
+    return sqrt(pose.x() * pose.x() + pose.y() * pose.y() + 0.2 * 0.2 * pose.h() * pose.h());
 }

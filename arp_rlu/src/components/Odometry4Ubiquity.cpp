@@ -19,7 +19,7 @@ ORO_LIST_COMPONENT_TYPE( arp_rlu::Odometry4Ubiquity )
 Odometry4Ubiquity::Odometry4Ubiquity(const std::string& name):
     RluTaskContext(name),
     propMinKernelQuality(100.0),
-    propMinVelocityOnTurretDriving(0.01),
+    propMinVelocityOnTurretDriving(0.001),
     propMinVelocityOnTwist(0.001),
     propPercentSigmaTransOdoVelocity(0.05),
     propPercentSigmaRotOdoVelocity(0.05),

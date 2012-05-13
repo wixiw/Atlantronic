@@ -90,7 +90,9 @@ function Telemetry:reportOmnidirect()
 	Reporting:reportPort("MotionControl","outDEBUGNormalizedError")
 	Reporting:reportPort("MotionControl","outDEBUGErrorApproachInit")
 	Reporting:reportPort("MotionControl","outDEBUGErrorApproachCur")
-	Reporting:reportPort("MotionControl","outSmoothLocNeeded")
+	Reporting:reportPort("MotionControl","outDEBUGSmoothLocNeeded")
+	Reporting:reportPort("MotionControl","outDEBUGSmoothLocNeeded")
+	Reporting:reportPort("MotionControl","outDEBUGSpeedAngle")
 end
 
 

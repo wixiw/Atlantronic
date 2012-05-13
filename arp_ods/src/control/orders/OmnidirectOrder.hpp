@@ -81,6 +81,8 @@ class OmnidirectOrder: public MotionOrder
         static const double TIMELAG=0.030;
         static const double DIST_SMOOTH=0.050;
         static const double SUP_TIME_FOR_ROTATION=1.0;
+        //static const double K_THETA=3.0;
+        static const double ANGLE_CHGT_ASSERV=0.17;
 
 
 private:

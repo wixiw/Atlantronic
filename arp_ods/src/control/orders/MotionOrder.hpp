@@ -97,6 +97,11 @@ class MotionOrder: public ModeSelector
         double outDEBUGErrorApproachInit;
         double outDEBUGErrorApproachCur;
 
+        double  outDEBUGSmoothLocNeeded;
+        double  outDEBUGSpeedAngle;
+
+        double attrGain;
+
         /**
          * is smooth localization needed ?
          */

@@ -27,7 +27,7 @@ LittleSexControl::LittleSexControl(const std::string& name):
     createOrocosInterface();
 
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
-    arp_ods::orders::Logger::InitFile("arp_ods", DEBUG);
+    arp_ods::orders::Logger::InitFile("arp_ods", INFO);
 }
 
 void LittleSexControl::getInputs()
@@ -68,6 +68,10 @@ void LittleSexControl::updateHook()
         outDEBUGMode.write(attrOrder->getMode());
         outDEBUGErrorApproachInit.write(attrOrder->outDEBUGErrorApproachInit);
         outDEBUGErrorApproachCur.write(attrOrder->outDEBUGErrorApproachCur);
+        outDEBUGSmoothLocNeeded.write(attrOrder->outDEBUGSmoothLocNeeded);
+        outDEBUGSpeedAngle.write(attrOrder->outDEBUGSpeedAngle);
+
+        attrOrder->attrGain=attrGain;
     }
 
     if (attrOrder->getType()==OMNIDIRECT)
@@ -173,6 +177,8 @@ void LittleSexControl::createOrocosInterface()
     addAttribute("attrCurrentOrder",attrCurrentOrder);
     addAttribute("attrCurrentTwist",attrCurrentTwist);
 
+    addAttribute("attrGain",attrGain);
+
     addPort("inPosition",inPosition)
         .doc("");
     addPort("inCurrentTwist",inCurrentTwist)
@@ -202,6 +208,14 @@ void LittleSexControl::createOrocosInterface()
                  .doc("");
     addPort("outDEBUGErrorApproachCur",outDEBUGErrorApproachCur)
                  .doc("");
+    addPort("outDEBUGSmoothLocNeeded",outDEBUGSmoothLocNeeded)
+                 .doc("");
+    addPort("outDEBUGSpeedAngle",outDEBUGSpeedAngle)
+                 .doc("");
+
+
+
+
 
     addPort("outSmoothLocNeeded",outSmoothLocNeeded)
     .doc("MotionControl needs a localization with no steps");

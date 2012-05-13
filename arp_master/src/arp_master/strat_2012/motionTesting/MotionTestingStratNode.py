@@ -55,7 +55,7 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('Forward', Forward(),
                                    transitions={'succeeded':'Turn', 'timeout':'Debloque'}) 
             smach.StateMachine.add('Turn', Turn(),
-                                   transitions={'succeeded':'BMove1', 'timeout':'Debloque'})
+                                   transitions={'succeeded':'Move1', 'timeout':'Debloque'})
             smach.StateMachine.add('WaitBack', WaiterState(2.0),
                                    transitions={'timeout':'Forward'})                 
                                     
@@ -104,22 +104,24 @@ class Turn(CyclicActionState):
 class Move1(CyclicActionState):
     def createAction(self):
         #self.omnidirect(0.800, 0.550, -pi/2)
-        self.omnidirect(0.800, 0.550, 0)
+        self.omnidirect(0.200, 0.550, pi/4)
+        
 
 class Move2(CyclicActionState):
     def createAction(self):
-        #self.omnidirect(0.800, -0.550, pi/2)
-        self.omnidirect(-0.200, 0.550, 0)
+        self.omnidirect(-0.800, 0.550, -pi/2)
+        #self.cap(0)
         
 class Move3(CyclicActionState):
     def createAction(self):
-        self.omnidirect(-0.800, -0.550, -pi)
+        self.omnidirect(0.0, 0.550, -pi)
         #self.openloop(x_speed=0.400, y_speed=0.000, theta_speed=0.000,
         #              openloop_duration=2.000)  
   
 class Move4(CyclicActionState):
     def createAction(self):
-        self.omnidirect(-0.800, 0.550, 0)
+        self.omnidirect(0.8, 0.550, -pi/2)
+        #self.cap(-pi/2)
         #self.openloop(x_speed=-0.400, y_speed=0.000, theta_speed=0.000,
         #              openloop_duration=2.000) 
               

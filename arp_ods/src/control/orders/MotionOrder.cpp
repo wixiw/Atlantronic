@@ -31,6 +31,8 @@ MotionOrder::MotionOrder(const MotionOrder& order):
     m_openloop_duration=order.m_openloop_duration;
     m_smoothLocNeeded=false;
     m_error_old=Pose2D(0,0,0);
+
+    attrGain=0.03;
     //m_id != m_id !!
 }
 
