@@ -129,3 +129,28 @@ class SetStratInfoState(smach.State):
             rospy.logerr("SetStratInfoState : default case : strat info (%s)  not known !!", self.strat_info)
                            
         return 'ok'
+    
+    
+class TotemPose():
+    def __init__(self, x,y,h, table_half):
+        if table_half == "top_close":
+            self.x = x
+            self.y = y
+            self.h = normalizeAngle(h)
+        elif table_half == "bot_close":
+            self.x = x
+            self.y = -y
+            self.h = -normalizeAngle(h)
+        elif table_half == "top_far":
+            self.x = -x
+            self.y = y
+            self.h = normalizeAngle(pi-h)
+        elif table_half == "bot_far":
+            self.x = -x
+            self.y = -y
+            self.h = -normalizeAngle(pi-h) 
+        else:
+            self.x = 0
+            self.y = 0
+            self.h = 0
+            spy.logerr("TotemPose : default case, unknown table_half")

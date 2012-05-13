@@ -22,4 +22,5 @@ class EndMatchPreempter(PreemptiveCyclicState):
             return False
        
     def executeTransitions(self):
+        rospy.loginfo("**** EndMatchPreempter *** (time=%s)",(rospy.get_rostime()-Data.start_time).to_sec())
         return 'endMatch'

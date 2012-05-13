@@ -138,13 +138,17 @@ class FingersOnlyState(AmbiClawFingerOrder):
         elif state == 'open_right':
             AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_OPEN,
                                          Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE)
+        elif state == 'half_open':
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_HALF_OPEN, Robot2012.FINGER_HALF_OPEN, 
+                                         Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE)
         elif state == 'half_close':
             AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_HALF_CLOSE, Robot2012.FINGER_HALF_CLOSE, 
                                          Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE)
+            
         else:
             AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_CLOSE, 
                                          Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE)
-            raise smach.InvalidUserCodeError("FingersState : Could not execute : unknown state %s",state)
+            raise smach.InvalidUserCodeError("FingersOnlyState : Could not execute : unknown state ")
         
 # Use this state to set claws pre created states such as : open, close ...   
 # for any of those states the fingers will be maintained closed (so take care if they are already opened)
@@ -174,7 +178,7 @@ class ClawsOnlyState(AmbiClawFingerOrder):
         else:
             AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_CLOSE, 
                                          Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE)
-            raise smach.InvalidUserCodeError("FingersState : Could not execute : unknown state %s",state)
+            raise smach.InvalidUserCodeError("ClawsOnlyState : Could not execute : unknown state %s",state)
         
 
 # Use this state to set claws and finger pre created states such as : open, close ...   
@@ -195,5 +199,5 @@ class FingerClawState(AmbiClawFingerOrder):
         else:
             AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_CLOSE, 
                                          Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE)
-            raise smach.InvalidUserCodeError("FingersState : Could not execute : unknown state %s",state)
+            raise smach.InvalidUserCodeError("FingerClawState : Could not execute : unknown state %s",state)
         

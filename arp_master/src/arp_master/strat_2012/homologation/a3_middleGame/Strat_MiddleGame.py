@@ -19,33 +19,28 @@ class MiddleGame(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('MiddleObject',
                       MiddleObjects(),
-                      transitions={'end':'BottleFar', 'problem':'BottleClose'})
-            #as initial state is not the preemptive one, it is necessary to add the information here !
+                      transitions={'end':'FarBottle', 'problem':'CloseBottleAndCoin'})
             
-            PreemptiveStateMachine.add('BottleFar',
+            PreemptiveStateMachine.add('FarBottle',
                       FarBottleState(),
-                      transitions={'endBottle':'BottleClose', 'problem':'BottleClose'})
+                      transitions={'endBottle':'BackFromMiddleObjects', 'problem':'CloseBottleAndCoin'})
             
-            PreemptiveStateMachine.add('BottleClose',
-                      CloseBottleState(),
-                      transitions={'endBottle':'ThrowUp1', 'problem':'endMiddleGame'})
+            PreemptiveStateMachine.add('BackFromMiddleObjects',
+                      BackFromMiddleObjects(),
+                      transitions={'end':'CloseBottleAndCoin', 'problem':'endMiddleGame'})
+
+            PreemptiveStateMachine.add('CloseBottleAndCoin',
+                      CloseBottleAndCoin(),
+                      transitions={'end':'PrepareBotTotem', 'problem':'PrepareBotTotem'})
             
+            PreemptiveStateMachine.add('PrepareBotTotem',
+                      AmbiOmniDirectOrder(0.500, -0.500, pi/3),
+                      transitions={'succeeded':'BotCloseTotem', 'timeout':'Debloque'})
             
-            #get close bot coin and throw up
+            PreemptiveStateMachine.add('BotCloseTotem',
+                      BotCloseTotem(),
+                      transitions={'endTotem':'endMiddleGame', 'problem':'endMiddleGame'})
             
-            PreemptiveStateMachine.add('ThrowUp1',
-                      AmbiOmniDirectOrder(0.850,-0.200, pi/3),
-                      transitions={'succeeded':'SetStratInfoCoin', 'timeout':'endMiddleGame'})
-            
-            PreemptiveStateMachine.add('SetStratInfoCoin',
-                      SetStratInfoState("botCloseCoinInPosition", False),
-                      transitions={'ok':'ThrowUp2'})
-            
-            PreemptiveStateMachine.add('ThrowUp2',
-                      AmbiOmniDirectOrder(1.100,0.200,0),
-                      transitions={'succeeded':'SetStratInfoGoldBar', 'timeout':'endMiddleGame'})
-            
-            PreemptiveStateMachine.add('SetStratInfoGoldBar',
-                      SetStratInfoState("botCloseCoinInPosition", False),
-                      transitions={'ok':'endMiddleGame'})
-            
+            PreemptiveStateMachine.add('Debloque',
+                      Replay(1.0),
+                      transitions={'succeeded':'endMiddleGame', 'timeout':'endMiddleGame'})  
