@@ -11,7 +11,7 @@ else
 fi
 
 if [ $IS_HOST == "false" ]; then
-	export EDITOR=nanogedit
+	export EDITOR=nano
 else
 	export EDITOR=gedit
 fi
