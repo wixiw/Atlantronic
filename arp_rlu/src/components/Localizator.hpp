@@ -22,12 +22,28 @@ typedef kfl::KFLocalizator::Params LocalizatorParams;
 
 enum LocalizationState
 {
-    __STOPED__ = 0,
-    _ODO_ONLY_ = 1,
-    __FUSION__ = 2,
-    _OCCULTED_ = 3,
-    _BAD__ODO_ = 4,
-    ___LOST___ = 5
+    STOPPED = 0,
+    RUNNING = 1
+};
+
+enum LocalizationMode
+{
+    ODO_ONLY = 0,
+    FUSION = 1
+};
+
+enum LocalizationQuality
+{
+    LOST = 0,
+    BAD = 1,
+    GOOD = 2
+};
+
+enum LocalizationVisibility
+{
+    NONE = 0,
+    VISIBLE = 1,
+    OCCULTED = 2
 };
 
 class Localizator: public RluTaskContext
@@ -72,6 +88,21 @@ class Localizator: public RluTaskContext
         RTT::OutputPort<int> outLocalizationState;
 
         /**
+         * Indique le mode de la localization.\n
+         */
+        RTT::OutputPort<int> outLocalizationMode;
+
+        /**
+         * Indique la qualité de l'estimation.\n
+         */
+        RTT::OutputPort<int> outLocalizationQuality;
+
+        /**
+         * Indique la qualité de la visibility.\n
+         */
+        RTT::OutputPort<int> outLocalizationVisibility;
+
+        /**
          * Contient la position d'obstacles détectés sur la table.\n
          * Ces obstacles ne sont pas filtrés temporellement.
          */
@@ -91,10 +122,12 @@ class Localizator: public RluTaskContext
         /* Cree l'interface Orocos : ajout de port, proprietes, operations */
         void createOrocosInterface();
 
-        void updateLocalizationState();
+        void updateLocalizationStates();
 
         bool halt();
         bool resume();
+
+        std::string getInfo();
 
 
         //*****************************************************
@@ -114,14 +147,13 @@ class Localizator: public RluTaskContext
         double propLaserThetaSigmaSmooth;
 
 
-        bool updateNeverTried;
-        bool updateTried;
         bool predictionOk;
         bool updateOk;
 
-        bool locIsRunning;
-
         LocalizationState currentState;
+        LocalizationMode currentMode;
+        LocalizationQuality currentQuality;
+        LocalizationVisibility currentVisibility;
 
 };
 

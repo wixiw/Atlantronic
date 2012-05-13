@@ -22,15 +22,50 @@ using namespace RTT;
 
 ORO_LIST_COMPONENT_TYPE( arp_rlu::Localizator )
 
-
-const char * LocalizationStateNames[6] = {
-        stringify( __STOPED__ ),
-        stringify( _ODO_ONLY_ ),
-        stringify( __FUSION__ ),
-        stringify( _OCCULTED_ ),
-        stringify( _BAD__ODO_ ),
-        stringify( ___LOST___ )
+enum LocalizationState
+{
+    STOPPED = 0,
+    RUNNING = 1
 };
+const char * LocalizationStateNames[2] = {
+        "_STOPPED_",
+        "_RUNNING_"
+};
+
+enum LocalizationMode
+{
+    ODO_ONLY = 0,
+    FUSION = 1
+};
+const char * LocalizationModeNames[2] = {
+        "_ODO_ONLY_",
+        "__FUSION__"
+};
+
+enum LocalizationQuality
+{
+    LOST = 0,
+    BAD = 1,
+    GOOD = 2
+};
+const char * LocalizationQualityNames[3] = {
+        "_LOST_",
+        "_BAD__",
+        "_GOOD_",
+};
+
+enum LocalizationVisibility
+{
+    NONE = 0,
+    VISIBLE = 1,
+    OCCULTED = 2
+};
+const char * LocalizationVisibilityNames[3] = {
+        "___NONE___",
+        "_VISIBLE__",
+        "_OCCULTED_",
+};
+
 
 Localizator::Localizator(const std::string& name)
 : RluTaskContext(name)
@@ -43,12 +78,12 @@ Localizator::Localizator(const std::string& name)
 , propLaserThetaSigma(0.05)
 , propLaserRangeSigmaSmooth(1000)
 , propLaserThetaSigmaSmooth(1000)
-, updateNeverTried(true)
-, updateTried(false)
 , predictionOk(false)
 , updateOk(false)
-, locIsRunning(false)
-, currentState(___LOST___)
+, currentState(STOPPED)
+, currentMode(ODO_ONLY)
+, currentQuality(LOST)
+, currentVisibility(NONE)
 {
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
     arp_rlu::lsl::Logger::InitFile("LSL", INFO);
@@ -125,11 +160,9 @@ bool Localizator::configureHook()
 
 void Localizator::updateHook()
 {
-    if(!locIsRunning)
+    if(currentState == STOPPED)
     {
-        currentState = __STOPED__;
-        kfl::Log( Info ) << "***************************************************************************************************";
-        kfl::Log( Info ) << "Localization - State: " << LocalizationStateNames[currentState];
+        kfl::Log( Info ) << getInfo();
         return;
     }
 
@@ -152,8 +185,6 @@ void Localizator::updateHook()
         LOG(Info) << "Switched to normal mode (LaserRangeSigma: " << kfloc.getParams().iekfParams.defaultLaserRangeSigma << " - LaserThetaSigma: " << kfloc.getParams().iekfParams.defaultLaserThetaSigma << ")" << endlog();
     }
 
-
-
     EstimatedTwist2D T_odo_table_p_odo_r_odo;
     if( RTT::NewData == inOdo.read(T_odo_table_p_odo_r_odo) )
     {
@@ -161,12 +192,9 @@ void Localizator::updateHook()
         predictionOk = kfloc.newOdoVelocity(T_odo_table_p_odo_r_odo);
     }
 
-    updateTried = false;
     sensor_msgs::LaserScan rosScan;
     if( RTT::NewData == inScan.read(rosScan) )
     {
-        updateNeverTried = false;
-        updateTried = true;
         double dateBeg = rosScan.header.stamp.toSec() - m_monotonicTimeToRealTime;
 
         lsl::LaserScan lslScan;
@@ -190,25 +218,14 @@ void Localizator::updateHook()
 
     }
 
-    updateLocalizationState();
-
+    updateLocalizationStates();
+    kfl::Log( Info ) << getInfo();
 
     EstimatedPose2D estim_H_robot_table = kfloc.getLastEstimatedPose2D();
     EstimatedTwist2D estim_T_robot_table_p_robot_r_robot = kfloc.getLastEstimatedTwist2D();
 
-
-    kfl::Log( Info ) << "***************************************************************************************************";
-    kfl::Log( Info ) << "Localization - State: " << LocalizationStateNames[currentState] << " - Visu: " << kfloc.getTheoricalVisibility() << " - Estimate : " << estim_H_robot_table.toString();
-
     std::vector< arp_math::Vector2 > obstacles = kfloc.getDetectedObstacles();
     outObstacles.write(obstacles);
-    std::stringstream ss;
-    ss << "  Obstacles : ";
-    for(unsigned int i = 0 ; (i < obstacles.size()) && ( i < 3) ; i++)
-    {
-        ss << "(" << obstacles[i].transpose() << ") ";
-    }
-    kfl::Log( Info ) << ss.str();
 
     outPose.write(estim_H_robot_table);
     outTwist.write(estim_T_robot_table_p_robot_r_robot);
@@ -231,18 +248,21 @@ bool Localizator::ooInitialize(double x, double y, double theta)
         outPose.write(estim_H_robot_table);
         outTwist.write(estim_T_robot_table_p_robot_r_robot);
 
-        locIsRunning = true;
-        updateNeverTried = true;
         predictionOk = false;
         updateOk = false;
-        currentState = __STOPED__;
+        currentState = RUNNING;
+        currentMode = ODO_ONLY;
+        currentQuality = GOOD;
+        currentVisibility = NONE;
 
         LOG(Info) << "initialize to " << pose.toString() << " with date : "  << initDate <<  " (sec)" << endlog();
-        kfl::Log( Info ) << "***************************************************************************************************";
-        kfl::Log( Info ) << "Localization - State: ___INIT___ - Visu: " << kfloc.getTheoricalVisibility() << " - Estimate : " << estim_H_robot_table.toString();
+        kfl::Log( Info ) << getInfo();
 
 
         outLocalizationState.write(currentState);
+        outLocalizationMode.write(currentMode);
+        outLocalizationQuality.write(currentQuality);
+        outLocalizationVisibility.write(currentVisibility);
 
         return true;
     }
@@ -294,16 +314,35 @@ void Localizator::createOrocosInterface()
     addPort("outTwist",outTwist)
     .doc("Last estimation of T_robot_table_p_robot_r_robot Twist of robot reference frame relative to table frame, reduced and expressed in robot reference frame.\n It is an EstimatedTwist2D, so it contains Twist, estimation date (in sec) and covariance matrix.");
 
-    std::stringstream ss;
-    ss << "Localization state :" << std::endl;
-    ss << " [*] __STOPED__ if Localization is switched off or if robot does not move" << std::endl;
-    ss << " [*] _ODO_ONLY_ if Localization is using odometry only (beacons are not visible)" << std::endl;
-    ss << " [*] __FUSION__ if Localization is using both odometry and laser (the most accurate state)" << std::endl;
-    ss << " [*] _OCCULTED_ if Localization should see beacons but they are occulted and localization accuracy is still good." << std::endl;
-    ss << " [*] _BAD__ODO_ if Localization is using odometry only since long time." << std::endl;
-    ss << " [*] ___LOST___ if Localization is lost. Only a new initialization can quit this state." << std::endl;
+    std::stringstream ssLocState;
+    ssLocState << "Localization state :" << std::endl;
+    ssLocState << " [*] 0 : STOPPED  if Localization is halt" << std::endl;
+    ssLocState << " [*] 1 : RUNNING if Localization is currently running" << std::endl;
     addPort("outLocalizationState",outLocalizationState)
-    .doc(ss.str());
+    .doc(ssLocState.str());
+
+    std::stringstream ssLocMode;
+    ssLocMode << "Localization mode :" << std::endl;
+    ssLocMode << " [*] 0 : ODO_ONLY  if Localization is using odometry only" << std::endl;
+    ssLocMode << " [*] 1 : FUSION if Localization is using both odometry and laser" << std::endl;
+    addPort("outLocalizationMode",outLocalizationMode)
+    .doc(ssLocMode.str());
+
+    std::stringstream ssLocQuality;
+    ssLocQuality << "Localization quality :" << std::endl;
+    ssLocQuality << " [*] 0 : LOST  if Localizator is lost" << std::endl;
+    ssLocQuality << " [*] 1 : BAD if Localization has big covariance" << std::endl;
+    ssLocQuality << " [*] 2 : GOOD if Localization has small covariance" << std::endl;
+    addPort("outLocalizationQuality",outLocalizationQuality)
+    .doc(ssLocQuality.str());
+
+    std::stringstream ssLocVisu;
+    ssLocVisu << "Localization visibility :" << std::endl;
+    ssLocVisu << " [*] 0 : NONE  if information is not available or sensless" << std::endl;
+    ssLocVisu << " [*] 1 : VISIBLE if laser update is running correctly" << std::endl;
+    ssLocVisu << " [*] 2 : OCCULTED if Localization fails to find a beacon" << std::endl;
+    addPort("outLocalizationVisibility",outLocalizationVisibility)
+    .doc(ssLocVisu.str());
 
     addPort("outObstacles",outObstacles)
     .doc("Last detected obstacles");
@@ -397,7 +436,7 @@ void Localizator::ooSwitchToPurpleConfig()
 }
 
 
-void Localizator::updateLocalizationState()
+void Localizator::updateLocalizationStates()
 {
     EstimatedPose2D estim_H_robot_table = kfloc.getLastEstimatedPose2D();
     Covariance3 cov = estim_H_robot_table.cov();
@@ -411,91 +450,94 @@ void Localizator::updateLocalizationState()
     reliabilityLost = reliabilityLost && (cov(1,1) < propMaxReliableLostTransStddev * propMaxReliableLostTransStddev);
     reliabilityLost = reliabilityLost && (cov(2,2) < propMaxReliableLostRotStddev * propMaxReliableLostRotStddev);
 
-    if(currentState < ___LOST___)
+    // Mode
+    if( updateOk == true )
     {
-        if(predictionOk == false)
+        currentMode = FUSION;
+    }
+    else
+    {
+        currentMode = ODO_ONLY;
+    }
+
+    // Quality
+    if( reliabilityOdo )
+    {
+        currentQuality = GOOD;
+    }
+    else
+    {
+        if( reliabilityLost )
         {
-            currentState = __STOPED__;
-            return;
+            currentQuality = BAD;
         }
         else
         {
-            if( updateOk == true )
-            {
-                currentState = __FUSION__;
-                return;
-            }
-            else // update == false
-            {
-                // I din't tried
-                if( updateTried == false )
-                {
-                    if( updateNeverTried == true )
-                    {
-                        // Laser should not be connected
-                        if( reliabilityOdo )
-                        {
-                            currentState = _ODO_ONLY_;
-                            return;
-                        }
-                        else
-                        {
-                            currentState = _BAD__ODO_;
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        // it is odo cycle, without scan info. Keep last state
-                        return;
-                    }
-                }
-                else //updateTried == true
+            currentQuality = LOST;
+        }
+    }
 
-                {
-                    // I should have seen something
-                    if( kfloc.getTheoricalVisibility() > 1 )
-                    {
-                        if( !reliabilityLost )
-                        {
-                            currentState = ___LOST___;
-                            return;
-                        }
-                        else
-                        {
-                            currentState = _OCCULTED_;
-                            return;
-                        }
-                    }
-                    else // No visibility
-                    {
-                        if( reliabilityOdo )
-                        {
-                            currentState = _ODO_ONLY_;
-                            return;
-                        }
-                        else
-                        {
-                            currentState = _BAD__ODO_;
-                            return;
-                        }
-                    }
-                }
-            }
+    // Visibility
+    if( updateOk == true )
+    {
+        currentVisibility = VISIBLE;
+    }
+    else
+    {
+        if( kfloc.getTheoricalVisibility() > 1 )
+        {
+            currentVisibility = OCCULTED;
+        }
+        else
+        {
+            currentVisibility = NONE;
         }
     }
 }
 
 bool Localizator::halt()
 {
-    locIsRunning = false;
+    currentState = STOPPED;
     return true;
 }
 
 bool Localizator::resume()
 {
-    locIsRunning = true;
+    currentState = RUNNING;
     return true;
+}
+
+
+std::string Localizator::getInfo()
+{
+    std::stringstream ss;
+    ss << "***************************************************************************************************" << std::endl;
+    ss << "Localization";
+    ss << " - State: " << LocalizationStateNames[currentState];
+    ss << " - Mode: " << LocalizationModeNames[currentMode];
+    ss << " - Quality: " << LocalizationQualityNames[currentQuality];
+    ss << " - Visibility: " << LocalizationVisibilityNames[currentVisibility];
+
+    if( currentState == RUNNING)
+    {
+        ss << " - Theoretical Visu: " << kfloc.getTheoricalVisibility() << std::endl;
+        EstimatedPose2D estim_H_robot_table = kfloc.getLastEstimatedPose2D();
+        ss << "Estimate : " << estim_H_robot_table.toString() << std::endl;
+        std::vector< arp_math::Vector2 > obstacles = kfloc.getDetectedObstacles();
+        ss << "Obstacles (N = " << obstacles.size() << "): ";
+        for(unsigned int i = 0 ; (i < obstacles.size()) && ( i < 3) ; i++)
+        {
+            ss << "(" << obstacles[i].transpose() << ") ";
+        }
+    }
+    else
+    {
+        ss << " - Theoretical Visu: None" << std::endl;
+        ss << "Estimate : None" << std::endl;
+        ss << "Obstacles : None";
+    }
+
+    return ss.str();
 }
 
 
