@@ -47,6 +47,7 @@ Localizator::Localizator(const std::string& name)
 , updateTried(false)
 , predictionOk(false)
 , updateOk(false)
+, locIsRunning(false)
 , currentState(___LOST___)
 {
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
@@ -116,26 +117,22 @@ Localizator::Localizator(const std::string& name)
 bool Localizator::configureHook()
 {
     if( !RluTaskContext::configureHook() )
-        goto fail;
+        return false;
 
-    if(  !ooInitialize(0,0,0) )
-    {
-        LOG(Error) << "failed to initialize kfloc" << endlog();
-        goto fail;
-    }
-
-    //reussit
-    goto success;
-
-    fail:
-    return false;
-    success:
     return true;
 }
 
 
 void Localizator::updateHook()
 {
+    if(!locIsRunning)
+    {
+        currentState = __STOPED__;
+        kfl::Log( Info ) << "***************************************************************************************************";
+        kfl::Log( Info ) << "Localization - State: " << LocalizationStateNames[currentState];
+        return;
+    }
+
     bool smoothMode = false;
     inSmoothMode.read(smoothMode);
     if(smoothMode && (propParams.iekfParams.defaultLaserRangeSigma !=  propLaserRangeSigmaSmooth||
@@ -234,6 +231,7 @@ bool Localizator::ooInitialize(double x, double y, double theta)
         outPose.write(estim_H_robot_table);
         outTwist.write(estim_T_robot_table_p_robot_r_robot);
 
+        locIsRunning = true;
         updateNeverTried = true;
         predictionOk = false;
         updateOk = false;
@@ -241,7 +239,7 @@ bool Localizator::ooInitialize(double x, double y, double theta)
 
         LOG(Info) << "initialize to " << pose.toString() << " with date : "  << initDate <<  " (sec)" << endlog();
         kfl::Log( Info ) << "***************************************************************************************************";
-        kfl::Log( Info ) << "Localization - State: " << LocalizationStateNames[currentState] << " - Visu: " << kfloc.getTheoricalVisibility() << " - Estimate : " << estim_H_robot_table.toString();
+        kfl::Log( Info ) << "Localization - State: ___INIT___ - Visu: " << kfloc.getTheoricalVisibility() << " - Estimate : " << estim_H_robot_table.toString();
 
 
         outLocalizationState.write(currentState);
@@ -316,6 +314,12 @@ void Localizator::createOrocosInterface()
     .arg("x","m")
     .arg("y","m")
     .arg("theta","rad");
+
+    addOperation("ooHalt",&Localizator::halt, this, OwnThread)
+    .doc("halt localization");
+
+    addOperation("ooResume",&Localizator::resume, this, OwnThread)
+    .doc("resume localization");
 
     addOperation("ooSetParams",&Localizator::setParams, this, OwnThread)
     .doc("")
@@ -480,6 +484,18 @@ void Localizator::updateLocalizationState()
             }
         }
     }
+}
+
+bool Localizator::halt()
+{
+    locIsRunning = false;
+    return true;
+}
+
+bool Localizator::resume()
+{
+    locIsRunning = true;
+    return true;
 }
 
 

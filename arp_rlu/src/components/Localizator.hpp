@@ -69,7 +69,7 @@ class Localizator: public RluTaskContext
         /**
          * Indique l'état de la localization.\n
          */
-        RTT::OutputPort<LocalizationState> outLocalizationState;
+        RTT::OutputPort<int> outLocalizationState;
 
         /**
          * Contient la position d'obstacles détectés sur la table.\n
@@ -93,6 +93,9 @@ class Localizator: public RluTaskContext
 
         void updateLocalizationState();
 
+        bool halt();
+        bool resume();
+
 
         //*****************************************************
         // Internal objects
@@ -115,6 +118,8 @@ class Localizator: public RluTaskContext
         bool updateTried;
         bool predictionOk;
         bool updateOk;
+
+        bool locIsRunning;
 
         LocalizationState currentState;
 
