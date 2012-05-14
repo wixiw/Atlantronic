@@ -13,9 +13,14 @@ class MiddleGame(PreemptiveStateMachine):
                                              transitions={'endMatch':'endMiddleGame'})
             PreemptiveStateMachine.add('TopCloseTotem',
                       TopCloseTotem(),
-                      transitions={'endTotem':'MiddleObject', 'problem':'endMiddleGame'})
+                      transitions={'endTotem':'ThrowUpTopCloseTotem', 'problem':'endMiddleGame'})
             #as initial state is not the preemptive one, it is necessary to add the information here !
             self.setInitialState('TopCloseTotem')
+            
+            PreemptiveStateMachine.add('ThrowUpTopCloseTotem',
+                      TopCloseTotem(),
+                      transitions={'endTotem':'MiddleObject', 'problem':'endMiddleGame'})
+            
             
             PreemptiveStateMachine.add('MiddleObject',
                       MiddleObjects(),
@@ -27,19 +32,37 @@ class MiddleGame(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('BackFromMiddleObjects',
                       BackFromMiddleObjects(),
-                      transitions={'end':'CloseBottleAndCoin', 'problem':'endMiddleGame'})
-
-            PreemptiveStateMachine.add('CloseBottleAndCoin',
-                      CloseBottleAndCoin(),
-                      transitions={'end':'PrepareBotTotem', 'problem':'PrepareBotTotem'})
+                      transitions={'end':'ThrowUp', 'problem':'endMiddleGame'})
             
+            PreemptiveStateMachine.add('ThrowUp',
+                      AmbiOmniDirectOrder(1.200,0.200,pi/5),
+                      transitions={'succeeded':'SetStratInfo_ThrowUpFinished', 'timeout':'Debloque'})
+
+            PreemptiveStateMachine.add('SetStratInfo_ThrowUpFinished',
+                      SetStratInfoState('closeFreeGoldbarInPosition', False),
+                      transitions={'ok':'Back'})
+    
+            PreemptiveStateMachine.add('Back',
+                      AmbiOmniDirectOrder(0.950,-0.100,pi/2),
+                      transitions={'succeeded':'CloseFingersAndClaws', 'timeout':'Debloque'})
+            
+            PreemptiveStateMachine.add('CloseFingersAndClaws',
+                      FingerClawState('close'),
+                      transitions={'succeeded':'PrepareBotTotem', 'timeout':'CloseBottleAndCoin'}) 
+
             PreemptiveStateMachine.add('PrepareBotTotem',
                       AmbiOmniDirectOrder(0.500, -0.500, pi/3),
                       transitions={'succeeded':'BotCloseTotem', 'timeout':'Debloque'})
             
             PreemptiveStateMachine.add('BotCloseTotem',
                       BotCloseTotem(),
-                      transitions={'endTotem':'endMiddleGame', 'problem':'endMiddleGame'})
+                      transitions={'endTotem':'CloseBottleAndCoin', 'problem':'endMiddleGame'})
+            
+            PreemptiveStateMachine.add('CloseBottleAndCoin',
+                      CloseBottleAndCoin(),
+                      transitions={'end':'endMiddleGame', 'problem':'endMiddleGame'})
+            
+            
             
             PreemptiveStateMachine.add('Debloque',
                       Replay(1.0),

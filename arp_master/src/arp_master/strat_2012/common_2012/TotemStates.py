@@ -8,6 +8,7 @@ from DynamixelActionState import *
 from Table2012 import *
 from Robot2012 import *
 
+#you should not use this state, please see user states at the end of file
 class CleanCloseTotem(PreemptiveStateMachine):
     def __init__(self, table_half):
         PreemptiveStateMachine.__init__(self,outcomes=['endClean','problem'])
@@ -54,8 +55,8 @@ class CleanCloseTotem(PreemptiveStateMachine):
                       Replay(1.0),
                       transitions={'succeeded':'problem', 'timeout':'problem'})
 
-
-class CloseTotem(PreemptiveStateMachine):
+#you should not use this state, please see user states at the end of file
+class WorkCloseTotem(PreemptiveStateMachine):
     def __init__(self, table_half):
         PreemptiveStateMachine.__init__(self,outcomes=['endTotem','problem'])
         with self:      
@@ -98,39 +99,49 @@ class CloseTotem(PreemptiveStateMachine):
             PreemptiveStateMachine.add('EndSlashTotem',
                       AmbiOmniDirectOrder_cpoint(0.060,0,0,
                                                  pose.x, pose.y, pose.h),
-                      transitions={'succeeded':'ThrowUp', 'timeout':'Debloque'})
+                      transitions={'succeeded':'endTotem', 'timeout':'Debloque'})
              
-            pose = TotemPose(1.200,0.0,-pi/5,table_half)
+            PreemptiveStateMachine.add('Debloque',
+                      Debloque(1.0),
+                      transitions={'succeeded':'problem', 'timeout':'problem'})
+
+
+
+#you should not use this state, please see user states at the end of file
+class ThrowUpCloseTotem(PreemptiveStateMachine):
+    def __init__(self, table_half):
+        PreemptiveStateMachine.__init__(self,outcomes=['end','problem'])
+        with self:      
+            PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
+                                             EndMatchPreempter(-5.0),
+                                             transitions={'endMatch':'end'})
+            
+            pose = TotemPose(1.200,0.100,-pi/5,table_half)
             PreemptiveStateMachine.add('ThrowUp',
                       AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
                       transitions={'succeeded':'SetStratInfo_ThrowUpFinished', 'timeout':'Back'})
+            self.setInitialState('ThrowUp')
             
             PreemptiveStateMachine.add('SetStratInfo_ThrowUpFinished',
                       SetStratInfoState('closeFreeGoldbarInPosition', False),
                       transitions={'ok':'Back'})
             
-            pose = TotemPose(0.950,0.2,-pi/2,table_half)
+            pose = TotemPose(0.950,0.150,-pi/2,table_half)
             PreemptiveStateMachine.add('Back',
                       AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
-                      transitions={'succeeded':'CloseClaws', 'timeout':'Debloque'})
+                      transitions={'succeeded':'CloseFingersAndClaws', 'timeout':'Debloque'})
             
-            PreemptiveStateMachine.add('CloseClaws',
+            PreemptiveStateMachine.add('CloseFingersAndClaws',
                       FingerClawState('close'),
-                      transitions={'succeeded':'endTotem', 'timeout':'endTotem'}) 
+                      transitions={'succeeded':'end', 'timeout':'end'}) 
 
             PreemptiveStateMachine.add('Debloque',
                       Debloque(1.0),
                       transitions={'succeeded':'problem', 'timeout':'problem'})
 
 
-class TopCloseTotem(CloseTotem):
-    def __init__(self):
-        CloseTotem.__init__(self,"top_close")
-
-class BotCloseTotem(CloseTotem):
-    def __init__(self):
-        CloseTotem.__init__(self,"bot_close")
-
+#######################################################################################################
+#user states 
 
 class CleanTopCloseTotem(CleanCloseTotem):
     def __init__(self):
@@ -140,5 +151,20 @@ class CleanBotCloseTotem(CleanCloseTotem):
     def __init__(self):
         CleanCloseTotem.__init__(self,"bot_close")
 
+class TopCloseTotem(WorkCloseTotem):
+    def __init__(self):
+        WorkCloseTotem.__init__(self,"top_close")
 
+class BotCloseTotem(WorkCloseTotem):
+    def __init__(self):
+        WorkCloseTotem.__init__(self,"bot_close")
+        
+class ThrowUpTopCloseTotem(ThrowUpCloseTotem):
+    def __init__(self):
+        ThrowUpCloseTotem.__init__(self,"top_close")
 
+class ThrowUpBotCloseTotem(CleanCloseTotem):
+    def __init__(self):
+        ThrowUpCloseTotem.__init__(self,"bot_close")
+
+#######################################################################################################
