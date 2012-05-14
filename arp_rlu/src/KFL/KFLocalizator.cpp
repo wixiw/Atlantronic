@@ -416,6 +416,7 @@ int KFLocalizator::newScan(lsl::LaserScan scan)
 
 
     // Update
+    debugInfos.clear();
     newScanUpdateTimer.Start();
     unsigned int nbBeaconSeen = 0;
     unsigned int lastPredictionIndex = 0;
@@ -460,6 +461,12 @@ int KFLocalizator::newScan(lsl::LaserScan scan)
             Log( DEBUG ) << "covariance : " << postEstimStateCov.row(0);
             Log( DEBUG ) << "             " << postEstimStateCov.row(1);
             Log( DEBUG ) << "             " << postEstimStateCov.row(2);
+
+            DebugInfo di;
+            di.date = tt(i);
+            di.meas = meas;
+            di.target = target.getPosition();
+            debugInfos.push_back(di);
 
 
             //            KFLInputVar input;
@@ -591,6 +598,10 @@ unsigned int KFLocalizator::getTheoricalVisibility()
     return visibility;
 }
 
+std::vector<KFLocalizator::DebugInfo> KFLocalizator::getDebugInfo()
+{
+    return debugInfos;
+}
 
 std::string KFLocalizator::getPerformanceReport()
 {

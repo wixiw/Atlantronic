@@ -109,6 +109,24 @@ class Localizator: public RluTaskContext
          */
         RTT::OutputPort< std::vector< arp_math::Vector2 > > outObstacles;
 
+
+        RTT::OutputPort< double > outDEBUGdate1;
+        RTT::OutputPort< double > outDEBUGdate2;
+        RTT::OutputPort< double > outDEBUGdate3;
+        RTT::OutputPort< double > outDEBUGXtarget1;
+        RTT::OutputPort< double > outDEBUGXtarget2;
+        RTT::OutputPort< double > outDEBUGXtarget3;
+        RTT::OutputPort< double > outDEBUGYtarget1;
+        RTT::OutputPort< double > outDEBUGYtarget2;
+        RTT::OutputPort< double > outDEBUGYtarget3;
+        RTT::OutputPort< double > outDEBUGRangeMeas1;
+        RTT::OutputPort< double > outDEBUGRangeMeas2;
+        RTT::OutputPort< double > outDEBUGRangeMeas3;
+        RTT::OutputPort< double > outDEBUGThetaMeas1;
+        RTT::OutputPort< double > outDEBUGThetaMeas2;
+        RTT::OutputPort< double > outDEBUGThetaMeas3;
+
+
         //*****************************************************
         // Operations
         virtual std::string coGetPerformanceReport();
@@ -129,6 +147,8 @@ class Localizator: public RluTaskContext
         bool resume();
 
         std::string getInfo();
+
+        void writeDebugInfos();
 
 
         //*****************************************************
@@ -156,6 +176,8 @@ class Localizator: public RluTaskContext
         LocalizationMode currentMode;
         LocalizationQuality currentQuality;
         LocalizationVisibility currentVisibility;
+
+        std::vector<kfl::KFLocalizator::DebugInfo> debugInfos;
 
 };
 

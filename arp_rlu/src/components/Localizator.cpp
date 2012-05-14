@@ -171,6 +171,8 @@ void Localizator::updateHook()
     {
         //update du Kalman
         predictionOk = kfloc.newOdoVelocity(T_odo_table_p_odo_r_odo);
+
+        debugInfos.clear();
     }
 
     sensor_msgs::LaserScan rosScan;
@@ -198,13 +200,10 @@ void Localizator::updateHook()
         nbSeenBeacons = kfloc.newScan(lslScan);
         updateOk = (nbSeenBeacons > 1);
 
-        if( nbSeenBeacons == 1 )
-        {
-            LOG(Error) << "!!!!! nbSeenBeacons == 1  !!!!!" << endlog();
-            kfl::Log( ERROR ) << "!!!!! nbSeenBeacons == 1  !!!!!";
-        }
-
+        debugInfos = kfloc.getDebugInfo();
     }
+
+    writeDebugInfos();
 
     updateLocalizationStates();
     kfl::Log( INFO ) << getInfo();
@@ -337,6 +336,22 @@ void Localizator::createOrocosInterface()
 
     addPort("outObstacles",outObstacles)
     .doc("Last detected obstacles");
+
+    addPort( "outDEBUGdate1", outDEBUGdate1);
+    addPort( "outDEBUGdate2", outDEBUGdate2);
+    addPort( "outDEBUGdate3", outDEBUGdate3);
+    addPort( "outDEBUGXtarget1", outDEBUGXtarget1);
+    addPort( "outDEBUGXtarget2", outDEBUGXtarget2);
+    addPort( "outDEBUGXtarget3", outDEBUGXtarget3);
+    addPort( "outDEBUGYtarget1", outDEBUGYtarget1);
+    addPort( "outDEBUGYtarget2", outDEBUGYtarget2);
+    addPort( "outDEBUGYtarget3", outDEBUGYtarget3);
+    addPort( "outDEBUGRangeMeas1", outDEBUGRangeMeas1);
+    addPort( "outDEBUGRangeMeas2", outDEBUGRangeMeas2);
+    addPort( "outDEBUGRangeMeas3", outDEBUGRangeMeas3);
+    addPort( "outDEBUGThetaMeas1", outDEBUGThetaMeas1);
+    addPort( "outDEBUGThetaMeas2", outDEBUGThetaMeas2);
+    addPort( "outDEBUGThetaMeas3", outDEBUGThetaMeas3);
 
 
     addOperation("ooInitialize",&Localizator::ooInitialize, this, OwnThread)
@@ -541,4 +556,56 @@ std::string Localizator::getInfo()
     return ss.str();
 }
 
+void Localizator::writeDebugInfos()
+{
+    if( debugInfos.size() > 0)
+    {
+        outDEBUGdate1.write( (double) debugInfos[0].date );
+        outDEBUGXtarget1.write( debugInfos[0].target(0) );
+        outDEBUGYtarget1.write( debugInfos[0].target(1) );
+        outDEBUGRangeMeas1.write( debugInfos[0].meas(0) );
+        outDEBUGThetaMeas1.write( debugInfos[0].meas(1) );
+    }
+    else
+    {
+        outDEBUGdate1.write( 0. );
+        outDEBUGXtarget1.write( 0. );
+        outDEBUGYtarget1.write( 0. );
+        outDEBUGRangeMeas1.write( 0. );
+        outDEBUGThetaMeas1.write( 0. );
+    }
 
+    if( debugInfos.size() > 1)
+    {
+        outDEBUGdate2.write( (double) debugInfos[1].date );
+        outDEBUGXtarget2.write( debugInfos[1].target(0) );
+        outDEBUGYtarget2.write( debugInfos[1].target(1) );
+        outDEBUGRangeMeas2.write( debugInfos[1].meas(0) );
+        outDEBUGThetaMeas2.write( debugInfos[1].meas(1) );
+    }
+    else
+    {
+        outDEBUGdate2.write( 0. );
+        outDEBUGXtarget2.write( 0. );
+        outDEBUGYtarget2.write( 0. );
+        outDEBUGRangeMeas2.write( 0. );
+        outDEBUGThetaMeas2.write( 0. );
+    }
+
+    if( debugInfos.size() > 2)
+    {
+        outDEBUGdate3.write( (double) debugInfos[2].date );
+        outDEBUGXtarget3.write( debugInfos[2].target(0) );
+        outDEBUGYtarget3.write( debugInfos[2].target(1) );
+        outDEBUGRangeMeas3.write( debugInfos[2].meas(0) );
+        outDEBUGThetaMeas3.write( debugInfos[2].meas(1) );
+    }
+    else
+    {
+        outDEBUGdate3.write( 0. );
+        outDEBUGXtarget3.write( 0. );
+        outDEBUGYtarget3.write( 0. );
+        outDEBUGRangeMeas3.write( 0. );
+        outDEBUGThetaMeas3.write( 0. );
+    }
+}
