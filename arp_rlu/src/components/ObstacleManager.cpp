@@ -20,10 +20,10 @@ ORO_LIST_COMPONENT_TYPE( arp_rlu::ObstacleManager )
 ObstacleManager::ObstacleManager(const std::string& name)
 : RluTaskContext(name),
   propNumberOfOpponents(2),
-  attrInObstacles()
+  attrFrontObstacles()
 {
     createOrocosInterface();
-    std::vector<arp_math::EstimatedPose2D> opponents(2);
+    std::vector<arp_math::EstimatedPose2D> opponents(propNumberOfOpponents);
     outOpponents.write(opponents);
 }
 
@@ -42,10 +42,21 @@ void ObstacleManager::updateHook()
     std::vector<arp_math::EstimatedPose2D> opponents;
     std::vector<arp_math::EstimatedPose2D>::iterator opp;
 
-    inFrontObstacles.readNewest(attrInObstacles);
-    //TODO
-   // bla bla bla ... il faut peupler opponents à partir de arrtInObstacles
-   //en attendant y'a un adversaire fixe
+    inFrontObstacles.readNewest(attrFrontObstacles);
+    inRearObstacles.readNewest(attrRearObstacles);
+
+    std::stringstream ss;
+    ss << "***************************************************************" << std::endl;
+    ss << "Obstacles (N = " << attrFrontObstacles.size() + attrRearObstacles.size() << "): ";
+    for(unsigned int i = 0 ; (i < attrFrontObstacles.size()) && ( i < 3) ; i++)
+    {
+        ss << "(" << attrFrontObstacles[i].transpose() << ") ";
+    }
+    for(unsigned int i = 0 ; (i < attrRearObstacles.size()) && ( i < 3) ; i++)
+    {
+        ss << "(" << attrRearObstacles[i].transpose() << ") ";
+    }
+    LOG( Info ) << ss.str() << endlog();
 
     opponents.push_back(Pose2D(-0.500,0.500,0.0));
     outOpponents.write(opponents);
@@ -55,12 +66,13 @@ void ObstacleManager::createOrocosInterface()
 {
     addProperty("propNumberOfOpponents", propNumberOfOpponents);
 
-    addAttribute("attrInObstacles", attrInObstacles);
+    addAttribute("attrFrontObstacles", attrFrontObstacles);
+    addAttribute("attrRearObstacles", attrRearObstacles);
 
     addPort("inFrontObstacles",inFrontObstacles)
         .doc("List of things detected with front hokuyo");
 
-    addPort("inBackObstacles",inBackObstacles)
+    addPort("inRearObstacles",inRearObstacles)
         .doc("List of things detected during Localization on the table");
 
     addPort("outOpponents",outOpponents)

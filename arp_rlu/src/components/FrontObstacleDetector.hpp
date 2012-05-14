@@ -109,6 +109,24 @@ class FrontObstacleDetector: public RluTaskContext
     void createOrocosInterface();
 
 
+    /**
+     * Les clusters détectés.\n
+     * Ils n'ont pas (encore) été identifiés comme des cercles.
+     */
+    std::vector< lsl::DetectedObject > detectedObjects;
+
+    /**
+     * Les cercles détectés dans la zone cartésienne définies par xMin, xMax, yMin et yMax.
+     */
+    std::vector< lsl::DetectedCircle > detectedCircles;
+
+    /**
+     * Les obstacles détectés sur le terrain.\n
+     * Les bornes cartésiennes de la zone de détection sont définies par xMinObstacle, xMaxObstacle, yMinOBstacle et yMaxObstacle
+     */
+    std::vector< arp_math::Vector2 > detectedObstacles;
+
+
     long double m_monotonicTimeToRealTime;
 
     arp_core::StatTimer mfTimer;
@@ -118,6 +136,7 @@ class FrontObstacleDetector: public RluTaskContext
     arp_core::StatTimer psTimer;
     arp_core::StatTimer fiTimer;
     arp_core::StatTimer ciTimer;
+    arp_core::StatTimer obsTimer;
     arp_core::StatTimer globalTimer;
 
 };

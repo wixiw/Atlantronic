@@ -177,7 +177,7 @@ bool LaserOnlyLocalizator::process(lsl::LaserScan ls)
     mfTimer.Start();
     LaserScan scan_0 = MedianFilter::apply(ls, params.mfp);
     mfTimer.Stop();
-    export_json( scan_0, "./LaserOnlyLocalizator__process__scan_0.json" );
+//    export_json( scan_0, "./LaserOnlyLocalizator__process__scan_0.json" );
 
 
     //*****************************
@@ -191,7 +191,7 @@ bool LaserOnlyLocalizator::process(lsl::LaserScan ls)
     cartTimer.Start();
     scan_1.computeCartesianData();
     cartTimer.Stop();
-    export_json( scan_1, "./LaserOnlyLocalizator__process__scan_1.json" );
+//    export_json( scan_1, "./LaserOnlyLocalizator__process__scan_1.json" );
 
 
     //*****************************

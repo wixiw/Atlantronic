@@ -27,11 +27,12 @@ class ObstacleManager: public RluTaskContext
     /* Params */
     int propNumberOfOpponents;
 
-    std::vector<arp_math::Vector2> attrInObstacles;
+    std::vector<arp_math::Vector2> attrFrontObstacles;
+    std::vector<arp_math::Vector2> attrRearObstacles;
 
     /* Ports */
     RTT::InputPort< std::vector<arp_math::Vector2> > inFrontObstacles;
-    RTT::InputPort< std::vector<arp_math::Vector2> > inBackObstacles;
+    RTT::InputPort< std::vector<arp_math::Vector2> > inRearObstacles;
     RTT::OutputPort< std::vector<arp_math::EstimatedPose2D> > outOpponents;
 
     void createOrocosInterface();
