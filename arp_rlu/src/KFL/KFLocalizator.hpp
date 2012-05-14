@@ -198,12 +198,6 @@ class KFLocalizator
                 kfl::BeaconDetector::Params procParams;
         };
 
-        struct DebugInfo
-        {
-                arp_math::Vector2 meas;
-                arp_math::Vector2 target;
-                long double date;
-        };
 
     public:
         /** Constructeur par défault.
@@ -285,8 +279,6 @@ class KFLocalizator
          */
         unsigned int getTheoricalVisibility();
 
-        std::vector<DebugInfo> getDebugInfo();
-
 
     protected:
         /**
@@ -329,8 +321,6 @@ class KFLocalizator
         arp_core::StatTimer newScanBITPTimer;
         arp_core::StatTimer newScanPreUpdateTimer;
         arp_core::StatTimer newScanUpdateTimer;
-
-        std::vector<DebugInfo> debugInfos;
 
     protected:
         /**

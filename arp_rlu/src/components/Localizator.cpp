@@ -57,6 +57,8 @@ Localizator::Localizator(const std::string& name)
 , propLaserThetaSigma(0.05)
 , propLaserRangeSigmaSmooth(1000)
 , propLaserThetaSigmaSmooth(1000)
+, propIEKFMaxIt(10)
+, propIEKFInnovationMin(0.0122474)
 , predictionOk(false)
 , updateOk(false)
 , nbSeenBeacons(0)
@@ -91,8 +93,8 @@ Localizator::Localizator(const std::string& name)
     propParams.iekfParams.defaultOdoVelRotSigma   = 0.01;
     propParams.iekfParams.defaultLaserRangeSigma  = 0.10;
     propParams.iekfParams.defaultLaserThetaSigma  = 0.05;
-    propParams.iekfParams.iekfMaxIt               = 10;
-    propParams.iekfParams.iekfInnovationMin       = 0.0122474;
+    propParams.iekfParams.iekfMaxIt               = 100; //10
+    propParams.iekfParams.iekfInnovationMin       = 0.001; //0.0122474;
 
     propParams.procParams.mfp.width = 3;
 
@@ -115,13 +117,13 @@ Localizator::Localizator(const std::string& name)
     propParams.procParams.cip.coeffs.push_back( 0.07096937);
 
     propParams.procParams.tcp.radiusTolerance = 0.03;
-    propParams.procParams.tcp.distanceTolerance = 0.8;
+    propParams.procParams.tcp.distanceTolerance = 0.6;
     propParams.procParams.tcp.maxLengthTolerance = 0.05;
     propParams.procParams.tcp.medLengthTolerance = 0.05;
     propParams.procParams.tcp.minLengthTolerance = 0.05;
 
     propParams.procParams.dcp.radiusTolerance = 0.03;
-    propParams.procParams.dcp.distanceTolerance = 0.6;
+    propParams.procParams.dcp.distanceTolerance = 0.4;
     propParams.procParams.dcp.lengthTolerance = 0.05;
 
     propParams.procParams.minNbPoints = 3;
@@ -171,8 +173,6 @@ void Localizator::updateHook()
     {
         //update du Kalman
         predictionOk = kfloc.newOdoVelocity(T_odo_table_p_odo_r_odo);
-
-        debugInfos.clear();
     }
 
     sensor_msgs::LaserScan rosScan;
@@ -200,10 +200,9 @@ void Localizator::updateHook()
         nbSeenBeacons = kfloc.newScan(lslScan);
         updateOk = (nbSeenBeacons > 1);
 
-        debugInfos = kfloc.getDebugInfo();
+        outNbSeenBeacons.write(nbSeenBeacons);
     }
 
-    writeDebugInfos();
 
     updateLocalizationStates();
     kfl::Log( INFO ) << getInfo();
@@ -229,6 +228,9 @@ bool Localizator::ooInitialize(double x, double y, double theta)
     long double initDate = arp_math::getTime();
     EstimatedPose2D pose = MathFactory::createEstimatedPose2D(x,y,theta, initDate, propParams.defaultInitCovariance);
 
+    propParams.iekfParams.iekfInnovationMin = propIEKFInnovationMin;
+    propParams.iekfParams.iekfMaxIt = propIEKFMaxIt;
+    kfloc.setParams( propParams.iekfParams );
 
     if( kfloc.initialize(pose) )
     {
@@ -337,21 +339,7 @@ void Localizator::createOrocosInterface()
     addPort("outObstacles",outObstacles)
     .doc("Last detected obstacles");
 
-    addPort( "outDEBUGdate1", outDEBUGdate1);
-    addPort( "outDEBUGdate2", outDEBUGdate2);
-    addPort( "outDEBUGdate3", outDEBUGdate3);
-    addPort( "outDEBUGXtarget1", outDEBUGXtarget1);
-    addPort( "outDEBUGXtarget2", outDEBUGXtarget2);
-    addPort( "outDEBUGXtarget3", outDEBUGXtarget3);
-    addPort( "outDEBUGYtarget1", outDEBUGYtarget1);
-    addPort( "outDEBUGYtarget2", outDEBUGYtarget2);
-    addPort( "outDEBUGYtarget3", outDEBUGYtarget3);
-    addPort( "outDEBUGRangeMeas1", outDEBUGRangeMeas1);
-    addPort( "outDEBUGRangeMeas2", outDEBUGRangeMeas2);
-    addPort( "outDEBUGRangeMeas3", outDEBUGRangeMeas3);
-    addPort( "outDEBUGThetaMeas1", outDEBUGThetaMeas1);
-    addPort( "outDEBUGThetaMeas2", outDEBUGThetaMeas2);
-    addPort( "outDEBUGThetaMeas3", outDEBUGThetaMeas3);
+    addPort("outNbSeenBeacons", outNbSeenBeacons);
 
 
     addOperation("ooInitialize",&Localizator::ooInitialize, this, OwnThread)
@@ -407,6 +395,9 @@ void Localizator::createOrocosInterface()
 
     addProperty("propLaserThetaSigmaSmooth",propLaserThetaSigmaSmooth)
     .doc("Laser theta confidence in rad for smooth mode");
+
+    addProperty("propIEKFMaxIt", propIEKFMaxIt);
+    addProperty("propIEKFInnovationMin", propIEKFInnovationMin);
 
 }
 
@@ -556,56 +547,3 @@ std::string Localizator::getInfo()
     return ss.str();
 }
 
-void Localizator::writeDebugInfos()
-{
-    if( debugInfos.size() > 0)
-    {
-        outDEBUGdate1.write( (double) debugInfos[0].date );
-        outDEBUGXtarget1.write( debugInfos[0].target(0) );
-        outDEBUGYtarget1.write( debugInfos[0].target(1) );
-        outDEBUGRangeMeas1.write( debugInfos[0].meas(0) );
-        outDEBUGThetaMeas1.write( debugInfos[0].meas(1) );
-    }
-    else
-    {
-        outDEBUGdate1.write( 0. );
-        outDEBUGXtarget1.write( 0. );
-        outDEBUGYtarget1.write( 0. );
-        outDEBUGRangeMeas1.write( 0. );
-        outDEBUGThetaMeas1.write( 0. );
-    }
-
-    if( debugInfos.size() > 1)
-    {
-        outDEBUGdate2.write( (double) debugInfos[1].date );
-        outDEBUGXtarget2.write( debugInfos[1].target(0) );
-        outDEBUGYtarget2.write( debugInfos[1].target(1) );
-        outDEBUGRangeMeas2.write( debugInfos[1].meas(0) );
-        outDEBUGThetaMeas2.write( debugInfos[1].meas(1) );
-    }
-    else
-    {
-        outDEBUGdate2.write( 0. );
-        outDEBUGXtarget2.write( 0. );
-        outDEBUGYtarget2.write( 0. );
-        outDEBUGRangeMeas2.write( 0. );
-        outDEBUGThetaMeas2.write( 0. );
-    }
-
-    if( debugInfos.size() > 2)
-    {
-        outDEBUGdate3.write( (double) debugInfos[2].date );
-        outDEBUGXtarget3.write( debugInfos[2].target(0) );
-        outDEBUGYtarget3.write( debugInfos[2].target(1) );
-        outDEBUGRangeMeas3.write( debugInfos[2].meas(0) );
-        outDEBUGThetaMeas3.write( debugInfos[2].meas(1) );
-    }
-    else
-    {
-        outDEBUGdate3.write( 0. );
-        outDEBUGXtarget3.write( 0. );
-        outDEBUGYtarget3.write( 0. );
-        outDEBUGRangeMeas3.write( 0. );
-        outDEBUGThetaMeas3.write( 0. );
-    }
-}

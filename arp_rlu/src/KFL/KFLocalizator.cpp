@@ -10,6 +10,7 @@
 #include "KFLocalizator.hpp"
 
 #include "KFL/Logger.hpp"
+#include "LSL/Logger.hpp"
 
 #include <exceptions/NotImplementedException.hpp>
 
@@ -298,7 +299,7 @@ int KFLocalizator::newScan(lsl::LaserScan scan)
 {
     newScanGlobalTimer.Start();
 
-    Log( DEBUG ) << "KFLocalizator::newScan - *************************************************************";
+    lsl::Log( INFO ) << "KFLocalizator::newScan - *************************************************************";
     Log( DEBUG ) << "KFLocalizator::newScan - enter";
 
     if(circularBuffer.empty())
@@ -382,7 +383,7 @@ int KFLocalizator::newScan(lsl::LaserScan scan)
     beaconDetector.process(scan, tt, xx, yy, hh);
     detectedObstacles = beaconDetector.getDetectedObstacles();
 
-    Log( DEBUG ) << "KFLocalizator::newScan - " << beaconDetector.getFoundBeacons().size() << " beacons(s) detected in scan";
+    lsl::Log( INFO ) << "KFLocalizator::newScan - " << beaconDetector.getFoundBeacons().size() << " beacons(s) detected in scan";
 
     newScanPreUpdateTimer.Start();
     // Reinit in the past
@@ -416,7 +417,6 @@ int KFLocalizator::newScan(lsl::LaserScan scan)
 
 
     // Update
-    debugInfos.clear();
     newScanUpdateTimer.Start();
     unsigned int nbBeaconSeen = 0;
     unsigned int lastPredictionIndex = 0;
@@ -446,9 +446,9 @@ int KFLocalizator::newScan(lsl::LaserScan scan)
             BFLWrapper::UpdateParams updateParams;
             updateParams.laserRangeSigma = params.iekfParams.defaultLaserRangeSigma;
             updateParams.laserThetaSigma = params.iekfParams.defaultLaserThetaSigma;
-            Log( DEBUG ) << "KFLocalizator::newScan - meas=" << meas.transpose() ;
-            Log( DEBUG ) << "KFLocalizator::newScan - target=" << target.getPosition().transpose() ;
-            Log( DEBUG ) << "----" ;
+            lsl::Log( INFO ) << "KFLocalizator::newScan - meas=" << meas.transpose() ;
+            lsl::Log( INFO ) << "KFLocalizator::newScan - target=" << target.getPosition().transpose() ;
+            lsl::Log( INFO ) << "----" ;
             bayesian->update(meas, target.getPosition(), updateParams);
             nbBeaconSeen++;
 
@@ -461,12 +461,6 @@ int KFLocalizator::newScan(lsl::LaserScan scan)
             Log( DEBUG ) << "covariance : " << postEstimStateCov.row(0);
             Log( DEBUG ) << "             " << postEstimStateCov.row(1);
             Log( DEBUG ) << "             " << postEstimStateCov.row(2);
-
-            DebugInfo di;
-            di.date = tt(i);
-            di.meas = meas;
-            di.target = target.getPosition();
-            debugInfos.push_back(di);
 
 
             //            KFLInputVar input;
@@ -596,11 +590,6 @@ unsigned int KFLocalizator::getTheoricalVisibility()
         }
     }
     return visibility;
-}
-
-std::vector<KFLocalizator::DebugInfo> KFLocalizator::getDebugInfo()
-{
-    return debugInfos;
 }
 
 std::string KFLocalizator::getPerformanceReport()

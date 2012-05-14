@@ -8,6 +8,7 @@
 #include "BeaconDetector.hpp"
 
 #include "KFL/Logger.hpp"
+#include "LSL/Logger.hpp"
 
 #include "LSL/tools/JsonScanParser.hpp"
 #include <exceptions/NotImplementedException.hpp>
@@ -156,6 +157,8 @@ BeaconDetector::~BeaconDetector()
 bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::VectorXd xx, Eigen::VectorXd yy, Eigen::VectorXd hh)
 {
     globalTimer.Start();
+
+    lsl::Log( INFO ) << "BeaconDetector::process begin";
 
     // Clear last result
     foundBeacons.clear();
@@ -306,7 +309,7 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
         foundBeacons.push_back( std::make_pair( triangle[0].first[iFirst],  triangle[0].second[iFirst] ) );
         foundBeacons.push_back( std::make_pair( triangle[0].first[iSecond], triangle[0].second[iSecond] ) );
         foundBeacons.push_back( std::make_pair( triangle[0].first[iThird],  triangle[0].second[iThird] ) );
-        Log( DEBUG ) << "BeaconDetector::process - Triangle detected";
+        lsl::Log( INFO ) << "BeaconDetector::process - Triangle detected";
         tcTimer.Stop();
         globalTimer.Stop();
         return true;
@@ -338,12 +341,12 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
             foundBeacons.push_back( std::make_pair(segments[0].first.second, segments[0].second.second ) );
             foundBeacons.push_back( std::make_pair(segments[0].first.first, segments[0].second.first ) );
         }
-        Log( DEBUG ) << "BeaconDetector::process - Segment [ (" << foundBeacons[0].second.x() << "," << foundBeacons[0].second.y() << ") ; (" << foundBeacons[1].second.x() << "," << foundBeacons[1].second.y() << ") ] detected";
+        lsl::Log( INFO ) << "BeaconDetector::process - Segment [ (" << foundBeacons[0].second.x() << "," << foundBeacons[0].second.y() << ") ; (" << foundBeacons[1].second.x() << "," << foundBeacons[1].second.y() << ") ] detected";
         dcTimer.Stop();
         globalTimer.Stop();
         return true;
     }
-    Log( DEBUG ) << "BeaconDetector::process - Neither triangle nor segment has been detected :-(";
+    lsl::Log( INFO ) << "BeaconDetector::process - Neither triangle nor segment has been detected :-(";
 
     dcTimer.Stop();
     globalTimer.Stop();

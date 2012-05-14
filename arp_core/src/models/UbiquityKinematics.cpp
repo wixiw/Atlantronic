@@ -333,7 +333,8 @@ bool UbiquityKinematics::motors2Twist(const MotorState & iMS, TurretState& oTS, 
 {
     bool res = true;
     res &= motors2Turrets(iMS, oTS, iParams);
-    res &= turrets2Twist(oTS, oTw, oSR, iParams);
+//    res &= turrets2Twist(oTS, oTw, oSR, iParams);
+    simpleTurrets2Twist(oTS, oTw, oSR, iParams);
     return res;
 }
 

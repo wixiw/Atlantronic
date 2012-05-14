@@ -40,6 +40,8 @@
 #include <iostream>
 #include <fstream>
 
+#include <math/math.hpp>
+
 //#ifdef ERROR
 //#undef ERROR
 //#endif
@@ -209,7 +211,7 @@ class SimpleStreamCategory : public Category
             {
                 timespec now;
                 clock_gettime(CLOCK_MONOTONIC, &now);
-                os << now.tv_sec << "s " << name << "(" << priorityLevelNames[p] << ") - " << m << std::endl;
+                os << arp_math::toStrMaxDecimals(arp_math::timespec2Double(now),3) << "s " << name << "(" << priorityLevelNames[p] << ") - " << m << std::endl;
             }
         }
 
