@@ -31,6 +31,7 @@ function RluMonitorDeployer:connect()
 --ajout au monitor
 	RluMonitorDeployer:addToMonitor("Odometry")
 	RluMonitorDeployer:addToMonitor("Localizator")
+	RluMonitorDeployer:addToMonitor("LocFilter")
 	RluMonitorDeployer:addToMonitor("LaserOnlyLocalizator")
 	RluMonitorDeployer:addToMonitor("RosRluItf")
 	--RluMonitorDeployer:registerToSql();
