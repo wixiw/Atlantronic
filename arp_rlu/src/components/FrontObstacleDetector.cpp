@@ -209,7 +209,7 @@ void FrontObstacleDetector::updateHook()
     }
     obsTimer.Stop();
 
-    outFrontObstacles.write(detectedObstacles);
+    outObstacles.write(detectedObstacles);
 
 }
 
@@ -274,6 +274,6 @@ void FrontObstacleDetector::createOrocosInterface()
     addPort("inPose",inPose)
     .doc("H_robot_table");
 
-    addPort("outFrontObstacles",outFrontObstacles)
+    addPort("outObstacles",outObstacles)
     .doc("List of things detected with front hokuyo");
 }

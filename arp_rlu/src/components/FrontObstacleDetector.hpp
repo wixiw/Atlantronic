@@ -98,7 +98,7 @@ class FrontObstacleDetector: public RluTaskContext
     // Ports
     RTT::InputPort<sensor_msgs::LaserScan> inScan;
     RTT::InputPort<arp_math::EstimatedPose2D> inPose;
-    RTT::OutputPort< std::vector<arp_math::Vector2> > outFrontObstacles;
+    RTT::OutputPort< std::vector<arp_math::Vector2> > outObstacles;
 
 
     //*****************************************************
