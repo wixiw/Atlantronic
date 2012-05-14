@@ -134,6 +134,18 @@ class Opponents:
     def __init__(self,opponents_list):
         self.list = opponents_list
         
+        self.distances = []
+        self.angles = []
+        for obs in self.list.Opponents:
+            self.distances.append(Point(obs.x, obs.y).dist(Point(Inputs.getx(), Inputs.gety())))
+            self.angles.append(Point(obs.x, obs.y).angle(Point(Inputs.getx(), Inputs.gety())))
+            
+        
+    def getClosestDistance(self):
+        if distances.len(distances) <= 0:
+            return 666;
+        return min(self.distances) 
+        
     def printOpponents(self):
         for obs in self.list.Opponents:
             distance = Point(obs.x, obs.y).dist(Point(Inputs.getx(), Inputs.gety()))

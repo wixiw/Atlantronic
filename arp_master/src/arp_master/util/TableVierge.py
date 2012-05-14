@@ -68,6 +68,12 @@ class Point(object):
         dy = self.y - p.y
         return sqrt(dx*dx + dy*dy)
  
+    def angle(self, p):
+        """return the Euclidian distance between self and p"""
+        dx = self.x - p.x
+        dy = self.y - p.y
+        return atan2(dy,dx)
+ 
     def reset(self):
         self.x = 0
         self.y = 0
