@@ -22,48 +22,27 @@ using namespace RTT;
 
 ORO_LIST_COMPONENT_TYPE( arp_rlu::Localizator )
 
-enum LocalizationState
-{
-    STOPPED = 0,
-    RUNNING = 1
-};
 const char * LocalizationStateNames[2] = {
         "_STOPPED_",
         "_RUNNING_"
 };
 
-enum LocalizationMode
-{
-    ODO_ONLY = 0,
-    FUSION = 1
-};
 const char * LocalizationModeNames[2] = {
         "_ODO_ONLY_",
         "__FUSION__"
 };
 
-enum LocalizationQuality
-{
-    LOST = 0,
-    BAD = 1,
-    GOOD = 2
-};
 const char * LocalizationQualityNames[3] = {
         "_LOST_",
         "_BAD__",
         "_GOOD_",
 };
 
-enum LocalizationVisibility
-{
-    NONE = 0,
-    VISIBLE = 1,
-    OCCULTED = 2
-};
-const char * LocalizationVisibilityNames[3] = {
+const char * LocalizationVisibilityNames[4] = {
         "___NONE___",
-        "_VISIBLE__",
         "_OCCULTED_",
+        "_SEGMENT__",
+        "_TRIANGLE_",
 };
 
 
@@ -80,6 +59,7 @@ Localizator::Localizator(const std::string& name)
 , propLaserThetaSigmaSmooth(1000)
 , predictionOk(false)
 , updateOk(false)
+, nbSeenBeacons(0)
 , currentState(STOPPED)
 , currentMode(ODO_ONLY)
 , currentQuality(LOST)
@@ -185,6 +165,7 @@ void Localizator::updateHook()
         LOG(Info) << "Switched to normal mode (LaserRangeSigma: " << kfloc.getParams().iekfParams.defaultLaserRangeSigma << " - LaserThetaSigma: " << kfloc.getParams().iekfParams.defaultLaserThetaSigma << ")" << endlog();
     }
 
+    predictionOk = false;
     EstimatedTwist2D T_odo_table_p_odo_r_odo;
     if( RTT::NewData == inOdo.read(T_odo_table_p_odo_r_odo) )
     {
@@ -214,7 +195,8 @@ void Localizator::updateHook()
         }
         lslScan.setPolarData(polarData);
 
-        updateOk = kfloc.newScan(lslScan);
+        nbSeenBeacons = kfloc.newScan(lslScan);
+        updateOk = (nbSeenBeacons > 1);
 
     }
 
@@ -230,6 +212,9 @@ void Localizator::updateHook()
     outPose.write(estim_H_robot_table);
     outTwist.write(estim_T_robot_table_p_robot_r_robot);
     outLocalizationState.write(currentState);
+    outLocalizationMode.write(currentMode);
+    outLocalizationQuality.write(currentQuality);
+    outLocalizationVisibility.write(currentVisibility);
 
 }
 
@@ -461,26 +446,36 @@ void Localizator::updateLocalizationStates()
     }
 
     // Quality
-    if( reliabilityOdo )
+    if( currentQuality != LOST )
     {
-        currentQuality = GOOD;
-    }
-    else
-    {
-        if( reliabilityLost )
+        if( reliabilityOdo )
         {
-            currentQuality = BAD;
+            currentQuality = GOOD;
         }
         else
         {
-            currentQuality = LOST;
+            if( reliabilityLost )
+            {
+                currentQuality = BAD;
+            }
+            else
+            {
+                currentQuality = LOST;
+            }
         }
     }
 
     // Visibility
     if( updateOk == true )
     {
-        currentVisibility = VISIBLE;
+        if( nbSeenBeacons == 2 )
+        {
+            currentVisibility = SEGMENT;
+        }
+        else
+        {
+            currentVisibility = TRIANGLE;
+        }
     }
     else
     {

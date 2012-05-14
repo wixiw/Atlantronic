@@ -294,7 +294,7 @@ bool KFLocalizator::newOdoVelocity(arp_math::EstimatedTwist2D T_odo_table_p_odo_
     return true;
 }
 
-bool KFLocalizator::newScan(lsl::LaserScan scan)
+int KFLocalizator::newScan(lsl::LaserScan scan)
 {
     newScanGlobalTimer.Start();
 
@@ -503,7 +503,7 @@ bool KFLocalizator::newScan(lsl::LaserScan scan)
     KFLocalizator::updateBuffer(tt(tt.size()-1), T);
 
     newScanGlobalTimer.Stop();
-    return (nbBeaconSeen > 1);
+    return nbBeaconSeen;
 }
 
 EstimatedPose2D KFLocalizator::getLastEstimatedPose2D()
@@ -544,7 +544,7 @@ void KFLocalizator::updateBuffer(const long double & date, const EstimatedTwist2
     estimPose.date( date );
     estimPose.x( estimStateVar(0) );
     estimPose.y( estimStateVar(1) );
-    estimPose.h( estimStateVar(2) );
+    estimPose.h( betweenMinusPiAndPlusPi(estimStateVar(2)) );
     estimPose.cov( estimStateCov );
 
     arp_math::EstimatedTwist2D estimTwist(tw);

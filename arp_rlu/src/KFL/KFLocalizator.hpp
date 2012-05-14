@@ -246,7 +246,7 @@ class KFLocalizator
          * Cette méthode sert à donner au localisateur une nouvelle mesure laser.
          * \param[in] scan la mesure laser sous forme d'un LaserScan. Le scan est daté.
          */
-        bool newScan(lsl::LaserScan scan);
+        int newScan(lsl::LaserScan scan);
 
         /**
          * Permet d'accéder à la dernière estimée de position.\n

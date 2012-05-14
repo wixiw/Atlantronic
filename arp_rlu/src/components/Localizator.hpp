@@ -42,8 +42,9 @@ enum LocalizationQuality
 enum LocalizationVisibility
 {
     NONE = 0,
-    VISIBLE = 1,
-    OCCULTED = 2
+    OCCULTED = 1,
+    SEGMENT = 2,
+    TRIANGLE = 3,
 };
 
 class Localizator: public RluTaskContext
@@ -149,6 +150,7 @@ class Localizator: public RluTaskContext
 
         bool predictionOk;
         bool updateOk;
+        int nbSeenBeacons;
 
         LocalizationState currentState;
         LocalizationMode currentMode;
