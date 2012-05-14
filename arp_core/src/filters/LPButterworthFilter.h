@@ -1,10 +1,16 @@
-#pragma once
+/*
+ * LPButterworthFilter.hpp
+ *
+ *  Created on: 14 Mai 2012
+ *      Author: Boris
+ */
 
-#include "Eigen/Lgsm"
+#ifndef _ARP_MATH_LPBUTTERWORTHFILTER_HPP_
+#define _ARP_MATH_LPBUTTERWORTHFILTER_HPP_
 
-namespace xde
-{
-namespace math
+#include <math/math.hpp>
+
+namespace arp_math
 {
 class LPButterworthFilter
 {
@@ -176,4 +182,5 @@ void LPButterworthFilter::computePositionAndVelocity (const Eigen::Displacementd
 }
 
 }
-}
+
+#endif

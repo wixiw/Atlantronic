@@ -11,3 +11,4 @@
 #include <boost/bind.hpp>
 
 #include "uTest_TwistDerivativeSat.hpp"
+#include "uTest_RnLPButterworthFilter.hpp"

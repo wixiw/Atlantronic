@@ -1,12 +1,17 @@
-#pragma once
+/*
+ * RNLPButterworthFilter.hpp
+ *
+ *  Created on: 14 Mai 2012
+ *      Author: Boris
+ */
 
-#include "Eigen/Lgsm"
-#include "Eigen/Core"
+#ifndef _ARP_MATH_RNLPBUTTERWORTHFILTER_HPP_
+#define _ARP_MATH_RNLPBUTTERWORTHFILTER_HPP_
 
-namespace xde
+#include <math/math.hpp>
+
+namespace arp_math
 {
-  namespace math
-  {
     template<typename Scalar, int N>
     class RnLPButterworthFilter
     {
@@ -200,4 +205,5 @@ void RnLPButterworthFilter<Scalar,N>::updateCacheValues ()
 
 
 }
-}
+
+#endif
