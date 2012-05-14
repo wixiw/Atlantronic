@@ -36,7 +36,7 @@ bool MotionScheduler::configureHook()
 {
     bool res = FBSched::configureHook();
 
-    boost::shared_ptr<RTT::Marshalling> marshalling = this->getProvider<RTT::Marshalling>("marshalling");
+    boost::shared_ptr<RTT::Marshalling> marshalling = getProvider<RTT::Marshalling>("marshalling");
 
     if( marshalling != NULL)
     {

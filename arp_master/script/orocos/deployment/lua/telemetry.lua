@@ -19,12 +19,16 @@ Telemetry =
 function Telemetry:reportRobotState()
 	print("reporting pose ")
 	Reporting=Deployer:getPeer("Reporting")
-	Reporting:reportPort("Localizator","outPose")
-	Reporting:reportPort("Localizator","outTwist")
-	Reporting:reportPort("Localizator","outLocalizationState")
 	Reporting:reportPort("Odometry","outTwist")
 	Reporting:reportPort("Odometry","outKernelQuality")
 	Reporting:reportPort("Odometry","outTurretState")
+	Reporting:reportPort("Localizator","outPose")
+	Reporting:reportPort("Localizator","outTwist")
+	Reporting:reportPort("Localizator","outLocalizationState")
+	Reporting:reportPort("Localizator","outLocalizationMode")
+	Reporting:reportPort("Localizator","outLocalizationQuality")
+	Reporting:reportPort("Localizator","outLocalizationVisibility")
+	Reporting:reportPort("LocFilter","outPose")
 end
 
 -- Trace la commande envoyee au robot
@@ -109,11 +113,11 @@ function Telemetry:report()
 	print("====================")
 	print("début déploiment telemetry")
 	--Telemetry:reportJoystick()
-	Telemetry:reportRobotCmd()
+	--Telemetry:reportRobotCmd()
 	Telemetry:reportRobotState()
-	--Telemetry:reportMotorState()
+	Telemetry:reportMotorState()
 	--Telemetry:reportTiming()
-	Telemetry:reportOmnidirect()
+	--Telemetry:reportOmnidirect()
 
 	
 	
