@@ -8,21 +8,22 @@
 			args="/Localizator/pose" 
 			output="screen" 
 	/>
+	<!--
 	<node 	name="rviz" 
 			pkg="rviz" 
 			type="rviz" 
 			respawn="false" 
 			output="screen" 
 			args="-d $(find arp_hml)/script/ros/hml.vcg"
-	/>
-	
+	/>-->
+	<!--
 	<node 	name="monitor" 
 			pkg="runtime_monitor" 
 			type="monitor" 
 			respawn="false" 
 			output="screen" 
 	/>
-	
+	-->
 	<!--<node 	name="Taskbrowser" 
 		pkg="ocl" 
 		type="ctaskbrowser-gnulinux" 
