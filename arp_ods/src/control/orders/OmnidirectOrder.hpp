@@ -67,10 +67,19 @@ class OmnidirectOrder: public MotionOrder
         arp_math::Twist2D m_twist_approach;
         arp_math::Pose2D m_error_approach;
         arp_math::Pose2D m_pose_approach;
+        /*
+         * twist when we entered the reconfigurator
+         */
+        arp_math::Twist2D m_twist_init;
+        bool m_twist_init_registered;
 
         double m_normalizedError;
         double m_normalizedError_old;
 
+        /*
+         * the maximum speed for this order
+         */
+        double m_max_speed;
 
 
 
@@ -81,8 +90,9 @@ class OmnidirectOrder: public MotionOrder
         static const double TIMELAG=0.030;
         static const double DIST_SMOOTH=0.050;
         static const double SUP_TIME_FOR_ROTATION=1.0;
-        //static const double K_THETA=3.0;
         static const double ANGLE_CHGT_ASSERV=0.17;
+        static const double RECONF_TIME=0.0;
+        static const double MIN_LIN_DEC=0.2;
 
 
 private:
@@ -90,6 +100,7 @@ private:
     Twist2D computeApproachTwist(arp_math::Pose2D currentPosition, double dt);
     double getTotalError(Pose2D pose);
     void decideSmoothNeeded(arp_math::Pose2D & currentPosition);
+    Twist2D handleReconfiguration(Twist2D twist_input);
 
 };
 

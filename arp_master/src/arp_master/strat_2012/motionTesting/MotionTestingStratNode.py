@@ -60,14 +60,22 @@ class MainStateMachine(smach.StateMachine):
                                    transitions={'timeout':'Forward'})                 
                                     
             smach.StateMachine.add('Move1', Move1(),
-                                   transitions={'succeeded':'Move2', 'timeout':'Debloque'})
+                                   transitions={'succeeded':'Wait1', 'timeout':'Debloque'})
+            smach.StateMachine.add('Wait1', WaiterState(2.0),
+                                   transitions={'timeout':'Move2'})   
             smach.StateMachine.add('Move2', Move2(),
-                                   transitions={'succeeded':'Move3', 'timeout':'Debloque'})
+                                   transitions={'succeeded':'Wait2', 'timeout':'Debloque'})
+            smach.StateMachine.add('Wait2', WaiterState(2.0),
+                                   transitions={'timeout':'Move3'})   
             smach.StateMachine.add('Move3', Move3(),
-                                   transitions={'succeeded':'Move4', 'timeout':'Debloque'})
+                                   transitions={'succeeded':'Wait3', 'timeout':'Debloque'})
+            smach.StateMachine.add('Wait3', WaiterState(2.0),
+                                   transitions={'timeout':'Move4'})   
             smach.StateMachine.add('Move4', Move4(),
-                                   transitions={'succeeded':'Move1', 'timeout':'Debloque'})
-                
+                                   transitions={'succeeded':'Wait4', 'timeout':'Debloque'})
+            smach.StateMachine.add('Wait4', WaiterState(2.0),
+                                   transitions={'timeout':'Move1'})    
+                           
             smach.StateMachine.add('BMove1', Move4(),
                                    transitions={'succeeded':'BMove2', 'timeout':'Debloque'})
             smach.StateMachine.add('BMove2', Move3(),
@@ -104,23 +112,23 @@ class Turn(CyclicActionState):
 class Move1(CyclicActionState):
     def createAction(self):
         #self.omnidirect(0.800, 0.550, -pi/2)
-        self.omnidirect(0.200, 0.550, pi/4)
+        self.omnidirect(0.800, 0.550, 0)
         
 
 class Move2(CyclicActionState):
     def createAction(self):
-        self.omnidirect(-0.800, 0.550, -pi/2)
+        self.omnidirect(-0.800, 0.550, 0,0.3)
         #self.cap(0)
         
 class Move3(CyclicActionState):
     def createAction(self):
-        self.omnidirect(0.0, 0.550, -pi)
+        self.omnidirect(0.0, 0.550, -pi/2)
         #self.openloop(x_speed=0.400, y_speed=0.000, theta_speed=0.000,
         #              openloop_duration=2.000)  
   
 class Move4(CyclicActionState):
     def createAction(self):
-        self.omnidirect(0.8, 0.550, -pi/2)
+        self.omnidirect(0.4, 0.550, 0)
         #self.cap(-pi/2)
         #self.openloop(x_speed=-0.400, y_speed=0.000, theta_speed=0.000,
         #              openloop_duration=2.000) 
@@ -132,8 +140,8 @@ class OpenMove1(CyclicActionState):
         
 class OpenMove2(CyclicActionState):
     def createAction(self):
-        self.openloop(x_speed= -0.500, y_speed=0.000, theta_speed=0.000,
-                      openloop_duration=2.000)   
+        self.openloop(x_speed= -0.200, y_speed=0.000, theta_speed=0.000,
+                      openloop_duration=10.000)   
         
 
 class OpenMove3(CyclicActionState):

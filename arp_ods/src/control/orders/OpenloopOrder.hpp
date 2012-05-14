@@ -57,6 +57,7 @@ class OpenloopOrder: public MotionOrder
         void switchRun(arp_math::Pose2D currentPosition);
 
 
+        static const double MAX_OPENLOOP_TIME=5.0;
 };
 
 }}

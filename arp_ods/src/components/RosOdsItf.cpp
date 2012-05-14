@@ -171,6 +171,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         result.y_end = pose.y();
         result.theta_end = pose.h();
         m_order = orders::defaultOrder;
+        m_ooSetOrder(m_order);
         m_actionServer.setAborted(result);
         return;
     success:
@@ -184,13 +185,14 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         return;
     preempted:
         m_order = orders::defaultOrder;
+        m_ooSetOrder(m_order);
         m_actionServer.setPreempted();
         return;
 }
 
 bool RosOdsItf::setVMaxCallback(SetVMax::Request& req, SetVMax::Response& res)
 {
-    return m_ooSetVMax(req.vMax);;
+    return m_ooSetVMax(req.vMax);
 }
 
 void RosOdsItf::ooSetNewSpeedConf(double linSpeed, double angSpeed)

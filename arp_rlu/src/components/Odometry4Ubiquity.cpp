@@ -86,7 +86,7 @@ void Odometry4Ubiquity::updateHook()
     }
 
     //Si le twist calculé est trop petit ou que la config n'est pas compatible on envoit 0
-    if( (fabs(computedTwist.distanceTo(Twist2D(0,0,0),1.0,0.200)) < propMinVelocityOnTwist) || report.kernelQuality < propMinKernelQuality)
+    if( (fabs(computedTwist.distanceTo(Twist2D(0,0,0),1.0,0.200)) < propMinVelocityOnTwist) )//|| report.kernelQuality < propMinKernelQuality)
     {
         measuredTwist = EstimatedTwist2D();
     }

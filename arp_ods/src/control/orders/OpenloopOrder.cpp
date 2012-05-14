@@ -39,7 +39,10 @@ shared_ptr<MotionOrder> OpenloopOrder::createOrder( const OrderGoalConstPtr &goa
     order->setCpoint(cpoint);
 
     order->m_openloop_twist=Twist2D(goal->x_speed,goal->y_speed,goal->theta_speed);
-    order->m_openloop_duration=goal->openloop_duration;
+    if (goal->openloop_duration<MAX_OPENLOOP_TIME)
+        order->m_openloop_duration=goal->openloop_duration;
+    else
+        order->m_openloop_duration=MAX_OPENLOOP_TIME;
 
     order->setConf(conf);
 

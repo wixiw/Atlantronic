@@ -97,11 +97,11 @@ class CyclicActionState(CyclicState):
             return False     
              
     # generic motioncontrol action creator.
-    def createMotionControlAction(self,x,y,theta,move_type,passe):
-        self.createMotionControlAction_cpoint(0,0,0,x,y,theta,move_type,passe,0,0,0,0)
+    def createMotionControlAction(self,x,y,theta,move_type,passe,max_speed):
+        self.createMotionControlAction_cpoint(0,0,0,x,y,theta,move_type,passe,0,0,0,0,max_speed)
  
      # motioncontrol action creator with a control point
-    def createMotionControlAction_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x,y,theta,move_type,passe,x_speed,y_speed,theta_speed,openloop_duration):
+    def createMotionControlAction_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x,y,theta,move_type,passe,x_speed,y_speed,theta_speed,openloop_duration,max_speed):
         self.client = actionlib.SimpleActionClient('MotionControl', OrderAction)
         goal=OrderGoal()
         goal.x_des=x
@@ -116,6 +116,7 @@ class CyclicActionState(CyclicState):
         goal.y_speed=y_speed
         goal.theta_speed=theta_speed
         goal.openloop_duration=openloop_duration
+        goal.max_speed=max_speed
         
         self.client.wait_for_server(rospy.Duration.from_sec(5.0))
         self.client.cancel_all_goals
@@ -125,52 +126,52 @@ class CyclicActionState(CyclicState):
         
         
     # these are useful motions functions that allow not to give all parameters  
-    def forward(self,dist):
+    def forward(self,dist,v_max=-1.0):
         self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()),
                                        Inputs.gety()+dist*sin(Inputs.gettheta()),
                                        Inputs.gettheta(),
-                                       'OMNIDIRECT',False)
+                                       'OMNIDIRECT',False,v_max)
         
-    def backward(self,dist):
+    def backward(self,dist,v_max=-1.0):
         self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()+pi),
                                        Inputs.gety()+dist*sin(Inputs.gettheta()+pi),
                                        Inputs.gettheta(),
-                                       'OMNIDIRECT',False)
-    def left(self,dist):
+                                       'OMNIDIRECT',False,v_max)
+    def left(self,dist,v_max=-1.0):
         self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()+pi/2),
                                        Inputs.gety()+dist*sin(Inputs.gettheta()+pi/2),
                                        Inputs.gettheta(),
-                                       'OMNIDIRECT',False)
+                                       'OMNIDIRECT',False,v_max)
         
-    def right(self,dist):
+    def right(self,dist,v_max=-1.0):
         self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()-pi/2),
                                        Inputs.gety()+dist*sin(Inputs.gettheta()-pi/2),
                                        Inputs.gettheta(),
-                                       'OMNIDIRECT',False)
+                                       'OMNIDIRECT',False,v_max)
 
-    def omnidirect(self,x,y,theta):
+    def omnidirect(self,x,y,theta,v_max=-1.0):
         self.createMotionControlAction_cpoint(-0.0583,0,0,
                                               x,y,theta,
                                               'OMNIDIRECT',False,
-                                              0,0,0,0)
+                                              0,0,0,0,v_max)
     
-    def omnidirect_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x,y,theta):
+    def omnidirect_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x,y,theta,v_max=-1.0):
         self.createMotionControlAction_cpoint(x_cpoint,y_cpoint,theta_cpoint,
                                               x,y,theta,
                                               'OMNIDIRECT',False,
-                                              0,0,0,0)    
+                                              0,0,0,0,v_max)    
         
-    def cap(self,theta):
+    def cap(self,theta,v_max=-1.0):
         self.createMotionControlAction_cpoint(0.0,0,0,
                                               Inputs.getx(),Inputs.gety(),theta,
                                               'OMNIDIRECT',False,
-                                              0,0,0,0)
+                                              0,0,0,0,v_max)
         
     def openloop(self,x_speed,y_speed,theta_speed,openloop_duration):
         self.createMotionControlAction_cpoint(-0.0583,0,0,
                                               0,0,0,
                                               'OPENLOOP',False,
-                                              x_speed,y_speed,theta_speed,openloop_duration)
+                                              x_speed,y_speed,theta_speed,openloop_duration,-1.0)
         
     def openloop_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,
                         x_speed,y_speed,theta_speed,
@@ -178,13 +179,13 @@ class CyclicActionState(CyclicState):
         self.createMotionControlAction_cpoint(x_cpoint,y_cpoint,theta_cpoint,
                                               0,0,0,
                                               'OPENLOOP',False,
-                                              x_speed,y_speed,theta_speed,openloop_duration)
+                                              x_speed,y_speed,theta_speed,openloop_duration,-1.0)
         
     def replay(self,replay_duration):
         self.createMotionControlAction_cpoint(0,0,0,
                                               0,0,0,
                                               'REPLAY',False,
-                                              0,0,0,replay_duration)
+                                              0,0,0,replay_duration,-1.0)
     
     
 ###############################################################################################################################

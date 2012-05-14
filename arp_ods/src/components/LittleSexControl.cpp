@@ -21,7 +21,8 @@ LittleSexControl::LittleSexControl(const std::string& name):
         attrOrder(orders::defaultOrder),
         attrVMax(1.0),
         attrCurrentOrder("default"),
-        m_twistBuffer()
+        m_twistBuffer(),
+        attrGain(0.2)
 
 {
     createOrocosInterface();
