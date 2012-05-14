@@ -127,6 +127,7 @@ bool LaserOnlyLocalizatorCpn::configureHook()
 
 void LaserOnlyLocalizatorCpn::updateHook()
 {
+    RluTaskContext::updateHook();
     return;
 }
 

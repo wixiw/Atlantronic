@@ -8,21 +8,27 @@ print("début déploiment arp_rlu")
 Deployer:import("arp_rlu");
 Deployer:import("rtt_sensor_msgs");
 
-dofile("/opt/ard/arp_rlu/script/orocos/deployment/rlu_monitor_deployer.lua");
-dofile("/opt/ard/arp_rlu/script/orocos/deployment/odometry_deployer.lua");
-dofile("/opt/ard/arp_rlu/script/orocos/deployment/localizator_deployer.lua");
-dofile("/opt/ard/arp_rlu/script/orocos/deployment/laseronlylocalizator_deployer.lua");
-dofile("/opt/ard/arp_rlu/script/orocos/deployment/ros_rlu_itf_deployer.lua");
+dofile("/opt/ard/arp_rlu/script/orocos/deployment/components/rlu_monitor_deployer.lua");
+dofile("/opt/ard/arp_rlu/script/orocos/deployment/components/odometry_deployer.lua");
+dofile("/opt/ard/arp_rlu/script/orocos/deployment/components/localizator_deployer.lua");
+dofile("/opt/ard/arp_rlu/script/orocos/deployment/components/localizator_filter_deployer.lua");
+dofile("/opt/ard/arp_rlu/script/orocos/deployment/components/laseronlylocalizator_deployer.lua");
+dofile("/opt/ard/arp_rlu/script/orocos/deployment/components/obstacle_manager_deployer.lua");
+dofile("/opt/ard/arp_rlu/script/orocos/deployment/components/ros_rlu_itf_deployer.lua");
 
 OdometryDeployer:load();
 LocalizatorDeployer:load();
+LocalizatorFilterDeployer:load();
 LaserOnlyLocalizatorDeployer:load();
+ObstacleManager:load();
 RosRluItfDeployer:load();
 RluMonitorDeployer:load();
 
 OdometryDeployer:connect();
 LocalizatorDeployer:connect();
+LocalizatorFilterDeployer:connect();
 LaserOnlyLocalizatorDeployer:connect();
+ObstacleManager:connect();
 RosRluItfDeployer:connect();
 RluMonitorDeployer:connect();
 

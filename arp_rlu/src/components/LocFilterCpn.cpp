@@ -31,26 +31,6 @@ LocFilterCpn::LocFilterCpn(const std::string& name)
     createOrocosInterface();
 }
 
-void LocFilterCpn::createOrocosInterface()
-{
-
-    addPort("inPose",inPose)
-    .doc("Pose with noise");
-
-    addPort("outPose",outPose)
-    .doc("Pose without noise");
-
-    addOperation("ooReset",&LocFilterCpn::ooReset, this, OwnThread)
-    .doc("");
-
-    addOperation("ooPrintParams",&LocFilterCpn::printParams, this, OwnThread)
-    .doc("");
-
-    addProperty( "propCutOffFrequency", propCutOffFrequency);
-    addProperty( "propSamplingFrequency", propSamplingFrequency);
-
-}
-
 bool LocFilterCpn::configureHook()
 {
     if( !RluTaskContext::configureHook() )
@@ -126,3 +106,22 @@ bool LocFilterCpn::ooReset()
     return true;
 }
 
+void LocFilterCpn::createOrocosInterface()
+{
+
+    addPort("inPose",inPose)
+    .doc("Pose with noise");
+
+    addPort("outPose",outPose)
+    .doc("Pose without noise");
+
+    addOperation("ooReset",&LocFilterCpn::ooReset, this, OwnThread)
+    .doc("");
+
+    addOperation("ooPrintParams",&LocFilterCpn::printParams, this, OwnThread)
+    .doc("");
+
+    addProperty( "propCutOffFrequency", propCutOffFrequency);
+    addProperty( "propSamplingFrequency", propSamplingFrequency);
+
+}

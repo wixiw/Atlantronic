@@ -31,7 +31,7 @@ Odometry4Ubiquity::Odometry4Ubiquity(const std::string& name):
 
 void Odometry4Ubiquity::updateHook()
 {
-    ARDTaskContext::updateHook();
+    RluTaskContext::updateHook();
     Twist2D computedTwist;
     EstimatedTwist2D measuredTwist;
     SlippageReport report;
