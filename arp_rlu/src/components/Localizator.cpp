@@ -198,6 +198,12 @@ void Localizator::updateHook()
         nbSeenBeacons = kfloc.newScan(lslScan);
         updateOk = (nbSeenBeacons > 1);
 
+        if( nbSeenBeacons == 1 )
+        {
+            LOG(Error) << "!!!!! nbSeenBeacons == 1  !!!!!" << endlog();
+            kfl::Log( ERROR ) << "!!!!! nbSeenBeacons == 1  !!!!!";
+        }
+
     }
 
     updateLocalizationStates();
@@ -241,7 +247,7 @@ bool Localizator::ooInitialize(double x, double y, double theta)
         currentVisibility = NONE;
 
         LOG(Info) << "initialize to " << pose.toString() << " with date : "  << initDate <<  " (sec)" << endlog();
-        kfl::Log( Info ) << getInfo();
+        kfl::Log( INFO ) << getInfo();
 
 
         outLocalizationState.write(currentState);
