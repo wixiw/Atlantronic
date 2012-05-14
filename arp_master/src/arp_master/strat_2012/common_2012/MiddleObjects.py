@@ -46,7 +46,7 @@ class MiddleObjects(PreemptiveStateMachine):
                       transitions={'ok':'end'})
             
             PreemptiveStateMachine.add('Debloque',
-                      Debloque(1.0),
+                      Replay(1.0),
                       transitions={'succeeded':'problem', 'timeout':'problem'})
             
      
@@ -74,5 +74,5 @@ class BackFromMiddleObjects(PreemptiveStateMachine):
             
          
             PreemptiveStateMachine.add('Debloque',
-                      Debloque(1.0),
+                      Replay(1.0),
                       transitions={'succeeded':'problem', 'timeout':'problem'})       

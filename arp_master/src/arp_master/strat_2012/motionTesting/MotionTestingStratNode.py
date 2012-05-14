@@ -85,7 +85,7 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('BMove4', Move1(),
                                    transitions={'succeeded':'BMove1', 'timeout':'Debloque'})
       
-            smach.StateMachine.add('Debloque', Debloque(),
+            smach.StateMachine.add('Debloque', Replay(1.0),
                                    transitions={'succeeded':'Wait', 'timeout':'Debloque'})     
             smach.StateMachine.add('Wait', WaiterState(2.0),
                                    transitions={'timeout':'end'})           
@@ -169,10 +169,6 @@ class OpenMove6(CyclicActionState):
                 self.openloop_cpoint(-0.0, 0, 0,
                                        x_speed=0.000, y_speed= -0.000, theta_speed= -1.000,
                       openloop_duration=2.000)    
-        
-class Debloque(CyclicActionState):
-    def createAction(self):
-        self.replay(1.0)  
         
 ########################## EXECUTABLE 
 #shall be always at the end ! so that every function is defined before

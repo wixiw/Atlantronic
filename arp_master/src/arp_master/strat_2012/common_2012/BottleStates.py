@@ -36,7 +36,7 @@ class BottleState(PreemptiveStateMachine):
                       transitions={'succeeded':'endBottle', 'timeout':'Debloque'})
             
             PreemptiveStateMachine.add('Debloque',
-                      Debloque(1.0),
+                      Replay(1.0),
                       transitions={'succeeded':'problem', 'timeout':'problem'})
             
             
