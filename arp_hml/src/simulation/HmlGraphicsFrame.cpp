@@ -90,7 +90,8 @@ void HmlGraphicsFrame::onPaint(wxPaintEvent& evt)
     }
     else
     {
-    	dc.SetBrush(*wxBLUE_BRUSH) ;
+    	//dc.SetBrush(*wxBLUE_BRUSH) ;
+        dc.SetBrush(  wxBrush( wxColor(75,0,75) ) );
     }
     dc.DrawRectangle(125,20,180,30);
 
@@ -174,7 +175,7 @@ void HmlGraphicsFrame::onColor(wxCommandEvent& event)
 {
 	//inversion de la couleur
 	if( m_color.color == "red" )
-		m_color.color = "blue";
+		m_color.color = "purple";
 	else
 		m_color.color = "red";
 }
