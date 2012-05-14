@@ -33,6 +33,7 @@ function RluMonitorDeployer:connect()
 	RluMonitorDeployer:addToMonitor("Localizator")
 	RluMonitorDeployer:addToMonitor("LaserOnlyLocalizator")
 	RluMonitorDeployer:addToMonitor("LocalizatorFilter")
+	RluMonitorDeployer:addToMonitor("FrontObstacleDetector")
 	RluMonitorDeployer:addToMonitor("ObstacleManager")
 	RluMonitorDeployer:addToMonitor("RosRluItf")
 	--RluMonitorDeployer:registerToSql();

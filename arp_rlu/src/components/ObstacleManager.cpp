@@ -42,7 +42,7 @@ void ObstacleManager::updateHook()
     std::vector<arp_math::EstimatedPose2D> opponents;
     std::vector<arp_math::EstimatedPose2D>::iterator opp;
 
-    inObstacles.readNewest(attrInObstacles);
+    inFrontObstacles.readNewest(attrInObstacles);
     //TODO
    // bla bla bla ... il faut peupler opponents à partir de arrtInObstacles
    //en attendant y'a un adversaire fixe
@@ -57,7 +57,10 @@ void ObstacleManager::createOrocosInterface()
 
     addAttribute("attrInObstacles", attrInObstacles);
 
-    addPort("inObstacles",inObstacles)
+    addPort("inFrontObstacles",inFrontObstacles)
+        .doc("List of things detected with front hokuyo");
+
+    addPort("inBackObstacles",inBackObstacles)
         .doc("List of things detected during Localization on the table");
 
     addPort("outOpponents",outOpponents)
