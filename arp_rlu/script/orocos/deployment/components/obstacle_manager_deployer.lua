@@ -6,7 +6,7 @@ local me = "ObstacleManager"
 
 function ObstacleManager:load()
 	assert( Deployer:loadComponent(me, "arp_rlu::ObstacleManager"))
-	assert( Deployer:setMasterSlaveActivity("MotionScheduler", me))
+	Deployer:setActivity(me, 0.100, 0, rtt.globals.ORO_SCHED_OTHER)
 	return true
 end
 
@@ -20,7 +20,7 @@ end
 
 function ObstacleManager:connect()
 	assert( Deployer:addPeer("Reporting", me))
-	assert( Deployer:connect(me..".inObstacles", "Localizator.outObstacles",cp))
+	assert( Deployer:connect(me..".inBackObstacles", "Localizator.outObstacles",cp))
 	assert( ObstacleManager:check(me))
 	return true
 end

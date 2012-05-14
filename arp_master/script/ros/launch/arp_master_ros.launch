@@ -1,0 +1,7 @@
+<launch>
+	<node name="SpeedReducer" pkg="arp_master" type="SpeedReducer.py" args=""
+		output="screen">
+		<param name="cropping_distance" type="double" value="1.5" />
+		<param name="reduced_min_speed" type="double" value="0.3" />
+	</node>
+</launch>
