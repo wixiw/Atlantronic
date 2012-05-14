@@ -53,7 +53,7 @@ FrontObstacleDetector::FrontObstacleDetector(const std::string& name)
     psp.rangeThres = 0.08;
 
     minNbPoints = 3;
-    cartStddevMax = 0.03;
+    cartStddevMax = 0.10;
 
     cip.radius = 0.04;
     cip.coeffs = std::vector<double>();
@@ -94,12 +94,14 @@ void FrontObstacleDetector::updateHook()
     EstimatedPose2D H_robot_table;
     if( RTT::NoData == inPose.read(H_robot_table) )
     {
+        LOG( Info ) << "FrontObstacleDetector - No data on inPose port" << endlog();
         return;
     }
     EstimatedPose2D H_hky_table = H_robot_table * H_hky_robot;
     sensor_msgs::LaserScan rosScan;
     if( RTT::NoData == inScan.read(rosScan) )
     {
+        LOG( Info ) << "FrontObstacleDetector - No data on inScan port" << endlog();
         return;
     }
     double dateBeg = rosScan.header.stamp.toSec() - m_monotonicTimeToRealTime;
@@ -127,7 +129,6 @@ void FrontObstacleDetector::updateHook()
     LaserScan scan_0 = MedianFilter::apply(lslScan, mfp);
     mfTimer.Stop();
     //    export_json( scan_0, "./FrontObstacleDetector__process__scan_0.json" );
-
 
     //*****************************
     // Polar croping
@@ -210,7 +211,6 @@ void FrontObstacleDetector::updateHook()
     obsTimer.Stop();
 
     outObstacles.write(detectedObstacles);
-
 }
 
 
@@ -268,7 +268,7 @@ std::string FrontObstacleDetector::coGetPerformanceReport()
 
 void FrontObstacleDetector::createOrocosInterface()
 {
-    addPort("inScan",inScan)
+    addEventPort("inScan",inScan)
                                             .doc("LaserScan from LRF");
 
     addPort("inPose",inPose)
@@ -276,4 +276,22 @@ void FrontObstacleDetector::createOrocosInterface()
 
     addPort("outObstacles",outObstacles)
     .doc("List of things detected with front hokuyo");
+
+    addProperty("MedianFilterWidth", mfp.width);
+
+    addProperty("PolarCropMinRange", pcp.minRange);
+    addProperty("PolarCropMaxRange", pcp.maxRange);
+    addProperty("PolarCropMinTheta", pcp.minTheta);
+    addProperty("PolarCropMaxTheta", pcp.maxTheta);
+
+    addProperty("PolarSegmentRangeThreshold", psp.rangeThres);
+
+    addProperty("MinNbPoints", minNbPoints);
+
+    addProperty("cartStddevMax", cartStddevMax);
+
+    addProperty("xMinAccessible", xMinAccessible);
+    addProperty("xMaxAccessible", xMaxAccessible);
+    addProperty("yMinAccessible", yMinAccessible);
+    addProperty("yMaxAccessible", yMaxAccessible);
 }

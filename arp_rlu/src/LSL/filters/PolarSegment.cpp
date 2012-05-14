@@ -65,11 +65,20 @@ std::vector<DetectedObject> PolarSegment::apply(const LaserScan & raw, const Par
     bool b = raw.areCartesianDataAvailable();
     MatrixXd rawCartesian = raw.getCartesianData();
     unsigned int index = 0;
-    double deltaTheta = (rawPolar.block(2,1,1,raw.getSize()-1) - rawPolar.block(2,0,1,raw.getSize()-1)).minCoeff();
+
+    double deltaTheta;
+    if( rawPolar(2,raw.getSize()-1) > rawPolar(2,0) ) // scan direct
+    {
+        deltaTheta = (rawPolar.block(2,1,1,raw.getSize()-1) - rawPolar.block(2,0,1,raw.getSize()-1)).minCoeff();
+    }
+    else
+    {
+        deltaTheta = -(rawPolar.block(2,1,1,raw.getSize()-1) - rawPolar.block(2,0,1,raw.getSize()-1)).maxCoeff();
+    }
     unsigned int N = raw.getSize();
     for(unsigned int i = 1 ; i < N ; i++)
     {
-        if( abs(rawPolar(1,i) - rawPolar(1,i-1)) > p.rangeThres || rawPolar(2,i) - rawPolar(2,i-1) > 1.5*deltaTheta )
+        if( abs(rawPolar(1,i) - rawPolar(1,i-1)) > p.rangeThres || abs(rawPolar(2,i) - rawPolar(2,i-1)) > 1.5*deltaTheta )
         {
             LaserScan ls;
             ls.setPolarData( rawPolar.block(0, index, 3, i-index) );
@@ -91,5 +100,6 @@ std::vector<DetectedObject> PolarSegment::apply(const LaserScan & raw, const Par
         ls.computeCartesianData( rawCartesian.row(0), rawCartesian.row(3), rawCartesian.row(4), rawCartesian.row(5) );
     }
     out.push_back(DetectedObject(ls));
+    lsl::Log( INFO ) << "PolarSegment::apply - " << out.size() << "DetectedObject(s)";
     return out;
 }

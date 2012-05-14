@@ -47,7 +47,7 @@ void ObstacleManager::updateHook()
 
     std::stringstream ss;
     ss << "***************************************************************" << std::endl;
-    ss << "Obstacles (N = " << attrFrontObstacles.size() + attrRearObstacles.size() << "): ";
+    ss << "Obstacles (N = " << attrFrontObstacles.size() <<  "+" << attrRearObstacles.size() << "): ";
     for(unsigned int i = 0 ; (i < attrFrontObstacles.size()) && ( i < 3) ; i++)
     {
         ss << "(" << attrFrontObstacles[i].transpose() << ") ";
