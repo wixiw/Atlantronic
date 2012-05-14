@@ -5,6 +5,8 @@ import roslib; roslib.load_manifest('arp_master')
 
 from arp_master import *
 import rospy
+from Table2012 import *
+from Robot2012 import *
 
 class PrintStratInfo(smach.State):
     def __init__(self):

@@ -19,8 +19,13 @@ class BottleState(PreemptiveStateMachine):
             #onveut taper avec le milieu de la tourelle droite d'ou le -0.058m pour tenir compte d'omni order qui pilote le CdG
             PreemptiveStateMachine.add('Prepare',
                       AmbiOmniDirectOrder(x-0.058,y,theta),
-                      transitions={'succeeded':'Push', 'timeout':'Debloque'})
+                      transitions={'succeeded':'CloseFingers', 'timeout':'Debloque'})
             self.setInitialState('Prepare')
+            
+            PreemptiveStateMachine.add('CloseFingers',
+                      FingersOnlyState('close'), 
+                      transitions={'succeeded':'Push', 'timeout':'Push'})
+            self.setInitialState('OpenFingers')
             
             PreemptiveStateMachine.add('Push',
                       AmbiOpenLoopOrder(0,-0.200,0,
@@ -29,7 +34,12 @@ class BottleState(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('SetStratInfo',
                       SetStratInfoState(bottle_strat_info, True),
-                      transitions={'ok':'Back'})
+                      transitions={'ok':'OpenFingers'})
+            
+            PreemptiveStateMachine.add('OpenFingers',
+                      FingersOnlyState('open_left'), 
+                      transitions={'succeeded':'Back', 'timeout':'Back'})
+            self.setInitialState('OpenFingers')
             
             PreemptiveStateMachine.add('Back',
                       AmbiOmniDirectOrder(x-0.058,y,theta),

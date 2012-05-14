@@ -8,42 +8,39 @@ from DynamixelActionState import *
 from Table2012 import *
 from Robot2012 import *
 
-class MiddleObjects(PreemptiveStateMachine):
+class SweepSweep(PreemptiveStateMachine):
     def __init__(self):
         PreemptiveStateMachine.__init__(self,outcomes=['end','problem'])
         with self:      
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
-                                             EndMatchPreempter(-5.0),
+                                             EndMatchPreempter(0.0),
                                              transitions={'endMatch':'end'})
             
-            PreemptiveStateMachine.add('HalfCloseFingers',
-                      FingersOnlyState('half_close'), 
-                      transitions={'succeeded':'Prepare', 'timeout':'Prepare'})
-            self.setInitialState('HalfCloseFingers')
-            
             PreemptiveStateMachine.add('Prepare',
-                      AmbiOmniDirectOrder(0.825,-0.400,pi),
-                      transitions={'succeeded':'OpenFinger', 'timeout':'Debloque'})
+                      AmbiOmniDirectOrder(0.750,-0.700,pi/2),
+                      transitions={'succeeded':'OpenFingers', 'timeout':'Debloque'})
+            self.setInitialState('Prepare')
+                
+            PreemptiveStateMachine.add('OpenFingers',
+                      FingersOnlyState('open'), 
+                      transitions={'succeeded':'Sweep1', 'timeout':'Sweep1'})
+        
             
-            PreemptiveStateMachine.add('OpenFinger',
-                      FingersOnlyState('open_right'), 
-                      transitions={'succeeded':'EngageCoins', 'timeout':'EngageCoins'})
+            PreemptiveStateMachine.add('Sweep1',
+                      AmbiOmniDirectOrder(0.750,0.200,pi/3),
+                      transitions={'succeeded':'Rotate1', 'timeout':'Debloque'})
             
-            PreemptiveStateMachine.add('EngageCoins',
-                      AmbiOmniDirectOrder(0.200,-0.800,3*pi/4),
-                      transitions={'succeeded':'PushCoins', 'timeout':'Debloque'})
+            PreemptiveStateMachine.add('Rotate1',
+                      AmbiOmniDirectOrder(0.750,0.200,0),
+                      transitions={'succeeded':'Push1', 'timeout':'Debloque'})
             
-            PreemptiveStateMachine.add('PushCoins',
-                      AmbiOmniDirectOrder(-0.100,-0.800,3*pi/4),
-                      transitions={'succeeded':'PassThrought', 'timeout':'Debloque'})
+            PreemptiveStateMachine.add('Push1',
+                      AmbiOmniDirectOrder(1.000,0.200,0),
+                      transitions={'succeeded':'Back1', 'timeout':'Back1'})
             
-            PreemptiveStateMachine.add('PassThrought',
-                      AmbiOmniDirectOrder(-0.300,-0.500,pi/4),
-                      transitions={'succeeded':'SetStratInfo', 'timeout':'Debloque'})
-            
-            PreemptiveStateMachine.add('SetStratInfo',
-                      SetStratInfoState("middleCoinsInPosition", False),
-                      transitions={'ok':'end'})
+            PreemptiveStateMachine.add('Back1',
+                      AmbiOmniDirectOrder(0.750,0.200,0),
+                      transitions={'succeeded':'end', 'timeout':'end'})
             
             PreemptiveStateMachine.add('Debloque',
                       Replay(1.0),
@@ -69,7 +66,7 @@ class BackFromMiddleObjects(PreemptiveStateMachine):
                       transitions={'succeeded':'Moissbat', 'timeout':'Debloque'})
             
             PreemptiveStateMachine.add('Moissbat',
-                      AmbiOmniDirectOrder(0.600,-0.420,0),
+                      AmbiOmniDirectOrder(0.600,-0.400,0),
                       transitions={'succeeded':'end', 'timeout':'Debloque'})
             
          

@@ -13,13 +13,19 @@ class Opening(PreemptiveStateMachine):
                                              EndMatchPreempter(-5.0),
                                              transitions={'endMatch':'problem'})
             
+            
+#            PreemptiveStateMachine.add('SweepSweep',
+#                      SweepSweep(), 
+#                      transitions={'succeeded':'problem', 'timeout':'problem'})
+#            self.setInitialState('SweepSweep')
+
             PreemptiveStateMachine.add('OpenLeftFinger',
                       FingersOnlyState('open_left'), 
                       transitions={'succeeded':'GotoTopCloseCoin', 'timeout':'GotoTopCloseCoin'})
             self.setInitialState('OpenLeftFinger')
             
             PreemptiveStateMachine.add('GotoTopCloseCoin',
-                      AmbiOmniDirectOrder(0.500, 0.703,-pi/2),
+                      AmbiOmniDirectOrder(0.100, 0.600,-pi/2),
                       transitions={'succeeded':'SetStratInfo', 'timeout':'Debloque'})
             
             PreemptiveStateMachine.add('SetStratInfo',
