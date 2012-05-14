@@ -96,7 +96,7 @@ Localizator::Localizator(const std::string& name)
 
     propParams.procParams.mfp.width = 3;
 
-    propParams.procParams.pcp.minRange = 0.10;
+    propParams.procParams.pcp.minRange = 0.15;
     propParams.procParams.pcp.maxRange = 3.5;
     propParams.procParams.pcp.minTheta = -arp_math::PI;
     propParams.procParams.pcp.maxTheta =  arp_math::PI;
