@@ -15,6 +15,7 @@
 #include <arp_core/Pose.h>
 //rossrv
 #include <arp_core/SetPosition.h>
+#include <arp_rlu/AutoInit.h>
 
 namespace arp_rlu
 {
@@ -32,12 +33,19 @@ class RosRluItf: public arp_rlu::RluTaskContext
         RTT::OutputPort<arp_core::Pose> outPose;
 
         RTT::OperationCaller<bool(double,double,double)> m_ooInitialize;
+        RTT::OperationCaller<bool(void)> m_ooDo;
+        RTT::OperationCaller<arp_math::EstimatedPose2D(void)> m_ooGetEstimatedPose;
+        RTT::OperationCaller<double(void)> m_ooGetRelativeHeadingForConfirmation;
+        RTT::OperationCaller<void(void)> m_ooSwitchToRedConfig;
+        RTT::OperationCaller<void(void)> m_ooSwitchToPurpleConfig;
 
         bool srvInitialize(arp_core::SetPosition::Request& req, arp_core::SetPosition::Response& res);
+        bool srvAutoInit(AutoInit::Request& req, AutoInit::Response& res);
         void createRosInterface();
 
-        /** node handle to store the service advertiser srvInitialize**/
+        /** node handles to store services **/
         ros::ServiceServer m_srvInitialize;
+        ros::ServiceServer m_srvAutoInit;
 
 };
 

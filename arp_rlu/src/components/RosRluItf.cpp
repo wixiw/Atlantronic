@@ -31,7 +31,15 @@ bool RosRluItf::configureHook()
 {
     bool res = RluTaskContext::configureHook();
 
-    res &= getOperation("Localizator",      "ooInitialize",  m_ooInitialize);
+    res &= getOperation("Localizator",              "ooInitialize",                         m_ooInitialize);
+    res &= getOperation("LaserOnlyLocalizator",     "ooDo",                                 m_ooDo);
+    res &= getOperation("LaserOnlyLocalizator",     "ooGetEstimatedPose",                   m_ooGetEstimatedPose);
+    res &= getOperation("LaserOnlyLocalizator",     "ooGetRelativeHeadingForConfirmation",  m_ooGetRelativeHeadingForConfirmation);
+    res &= getOperation("LaserOnlyLocalizator",     "ooSwitchToRedConfig",                  m_ooSwitchToRedConfig);
+    res &= getOperation("LaserOnlyLocalizator",     "ooSwitchToPurpleConfig",               m_ooSwitchToPurpleConfig);
+
+
+
 
     return res;
 }
@@ -60,8 +68,43 @@ bool RosRluItf::srvInitialize(SetPosition::Request& req, SetPosition::Response& 
     return res.success;
 }
 
+bool RosRluItf::srvAutoInit(AutoInit::Request& req, AutoInit::Response& res)
+{
+    res.success = m_ooDo();
+
+    if( res.success)
+    {
+        arp_math::EstimatedPose2D pose;
+        pose = m_ooGetEstimatedPose();
+        LOG(Info) << "RosRluItf : srvAutoInit, ooDo succeed with " << pose.toString() << endlog();
+
+        res.success &= m_ooInitialize(pose.x(),pose.y(),pose.h());
+        if( !res.success)
+        {
+            LOG(Error) << "RosRluItf : m_ooInitialize failed to set " << pose.toString() << endlog();
+        }
+    }
+    else
+    {
+        double heading = m_ooGetRelativeHeadingForConfirmation();
+        LOG(Info) << "RosRluItf : srvAutoInit, ooDo failed and suggest heading of " << heading << endlog();
+        res.h_retry = heading;
+    }
+
+    return res.success;
+}
+
+//bool RosRluItf::srvSetColor(GetAutoInitPose::Request& req, AutoInit::Response& res)
+//{
+//    res.success =
+//    return res.success;
+//}
+
+
+
 void RosRluItf::createRosInterface()
 {
     ros::NodeHandle nh;
     m_srvInitialize = nh.advertiseService("/Localizator/setPosition", &RosRluItf::srvInitialize, this);
+    m_srvAutoInit = nh.advertiseService("/Localizator/setAutoInit", &RosRluItf::srvAutoInit, this);
 }

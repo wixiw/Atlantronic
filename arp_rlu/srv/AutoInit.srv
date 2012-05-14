@@ -1,0 +1,6 @@
+---
+bool success
+
+#when success = false, you have to retry the AutoInit after doing a cap move of h_retry (relative)
+#when success = true it has no sense. It is *not* the return position
+float64 h_retry
