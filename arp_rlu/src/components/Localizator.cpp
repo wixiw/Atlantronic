@@ -207,7 +207,7 @@ void Localizator::updateHook()
     }
 
     updateLocalizationStates();
-    kfl::Log( Info ) << getInfo();
+    kfl::Log( INFO ) << getInfo();
 
     EstimatedPose2D estim_H_robot_table = kfloc.getLastEstimatedPose2D();
     EstimatedTwist2D estim_T_robot_table_p_robot_r_robot = kfloc.getLastEstimatedTwist2D();
