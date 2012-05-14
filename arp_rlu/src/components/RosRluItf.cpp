@@ -22,8 +22,9 @@ RosRluItf::RosRluItf(std::string const name):
 {
     addPort("inPose",inPose);
     addPort("inTwist",inTwist);
+    addPort("inOpponents",inOpponents);
     addPort("outPose",outPose);
-
+    addPort("outOpponents",outOpponents);
     createRosInterface();
 }
 
@@ -49,8 +50,11 @@ void RosRluItf::updateHook()
     RluTaskContext::updateHook();
     EstimatedPose2D pIn;
     EstimatedTwist2D tIn;
+    std::vector<arp_math::EstimatedPose2D> opponentsIn;
+
     inPose.readNewest(pIn);
     inTwist.readNewest(tIn);
+    inOpponents.readNewest(opponentsIn);
 
     Pose pOut;
     pOut.x = pIn.x();
@@ -60,6 +64,21 @@ void RosRluItf::updateHook()
     pOut.vy = tIn.vy();
     pOut.vtheta = tIn.vh();
     outPose.write(pOut);
+
+    arp_core::OpponentsList opponentsOut;
+    std::vector<arp_math::EstimatedPose2D>::iterator opp;
+    arp_core::Pose pose;
+    for( opp = opponentsIn.begin(); opp != opponentsIn.end() ;  opp++ )
+    {
+        EstimatedPose2D pose2d = (*opp);
+        pose.x = pose2d.x();
+        pose.y = pose2d.y();
+        pose.theta = pose2d.h();
+        opponentsOut.Opponents.push_back(pose);
+    }
+    opponentsOut.nbOpponents = opponentsIn.size();
+    opponentsOut.date = timespec2Double(attrUpdateTime);
+    outOpponents.write(opponentsOut);
 }
 
 bool RosRluItf::srvInitialize(SetPosition::Request& req, SetPosition::Response& res)

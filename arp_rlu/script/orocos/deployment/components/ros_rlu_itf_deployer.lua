@@ -16,7 +16,10 @@ function RosRluItfDeployer:connect()
 	Deployer:stream(me..".outPose",ros:topic("/Localizator/pose"))
 	Deployer:connect(me..".inPose","Localizator.outPose",cp)
 	Deployer:connect(me..".inTwist","Localizator.outTwist",cp)
+	Deployer:connect(me..".inOpponents","ObstacleManager.outOpponents",cp)
 	RosRluItfDeployer:check(me)
+	
+	assert( Deployer:stream("RosRluItf.outOpponents",ros:topic("/Localizator/opponents_detected")))
 end
 
 

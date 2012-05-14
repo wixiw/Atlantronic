@@ -40,22 +40,22 @@ void ObstacleManager::updateHook()
 {
     RluTaskContext::updateHook();
     std::vector<arp_math::EstimatedPose2D> opponents;
+    std::vector<arp_math::EstimatedPose2D>::iterator opp;
 
-    if( inObstacles.readNewest(attrInObstacles) != NoData )
-    {
-        //TODO
-       // bla bla bla ... il faut peupler opponents à partir de arrtInObstacles
-       //en attendant y'a un adversaire fixe
+    inObstacles.readNewest(attrInObstacles);
+    //TODO
+   // bla bla bla ... il faut peupler opponents à partir de arrtInObstacles
+   //en attendant y'a un adversaire fixe
 
-       opponents.push_back(Pose2D(-0.500,0.500,0.0));
-    }
-
+    opponents.push_back(Pose2D(-0.500,0.500,0.0));
     outOpponents.write(opponents);
 }
 
 void ObstacleManager::createOrocosInterface()
 {
     addProperty("propNumberOfOpponents", propNumberOfOpponents);
+
+    addAttribute("attrInObstacles", attrInObstacles);
 
     addPort("inObstacles",inObstacles)
         .doc("List of things detected during Localization on the table");

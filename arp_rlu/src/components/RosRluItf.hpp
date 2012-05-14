@@ -13,6 +13,7 @@
 #include <math/core>
 //rosmsg
 #include <arp_core/Pose.h>
+#include <arp_core/OpponentsList.h>
 //rossrv
 #include <arp_core/SetPosition.h>
 #include <arp_rlu/AutoInit.h>
@@ -30,7 +31,9 @@ class RosRluItf: public arp_rlu::RluTaskContext
     protected:
         RTT::InputPort<arp_math::EstimatedPose2D> inPose;
         RTT::InputPort<arp_math::EstimatedTwist2D> inTwist;
+        RTT::InputPort< std::vector<arp_math::EstimatedPose2D> > inOpponents;
         RTT::OutputPort<arp_core::Pose> outPose;
+        RTT::OutputPort< arp_core::OpponentsList > outOpponents;
 
         RTT::OperationCaller<bool(double,double,double)> m_ooInitialize;
         RTT::OperationCaller<bool(void)> m_ooDo;

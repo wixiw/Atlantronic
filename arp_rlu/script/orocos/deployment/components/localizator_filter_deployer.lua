@@ -5,21 +5,24 @@ LocalizatorFilterDeployer = ComposantDeployer:new()
 local me = "LocalizatorFilter"
 
 function LocalizatorFilterDeployer:load()
-	Deployer:loadComponent(me, "arp_rlu::LocFilterCpn")
-	Deployer:setMasterSlaveActivity("MotionScheduler", me)
+	assert( Deployer:loadComponent(me, "arp_rlu::LocFilterCpn"))
+	assert( Deployer:setMasterSlaveActivity("MotionScheduler", me))
+	return true
 end
 
 
 function LocalizatorFilterDeployer:registerToSql()
-	OrocosSqlMonitor = Deployer:getPeer("OrocosSqlBridge")
-	Deployer:addPeer("OrocosSqlBridge",me)
+	OrocosSqlMonitor = assert(Deployer:getPeer("OrocosSqlBridge"))
+	assert(Deployer:addPeer("OrocosSqlBridge",me))
+	return true
 end
 
 
 function LocalizatorFilterDeployer:connect()
-	Deployer:connect(me..".inPose","Localizator.outPose",cp)
-	Deployer:addPeer("Reporting", me)
-	LocalizatorFilterDeployer:check(me)
+	assert(Deployer:connect(me..".inPose","Localizator.outPose",cp))
+	assert(Deployer:addPeer("Reporting", me))
+	assert(LocalizatorFilterDeployer:check(me))
+	return true
 end
 
 

@@ -5,22 +5,24 @@ ObstacleManager = ComposantDeployer:new()
 local me = "ObstacleManager"
 
 function ObstacleManager:load()
-	Deployer:loadComponent(me, "arp_rlu::ObstacleManager")
-	Deployer:setMasterSlaveActivity("MotionScheduler", me)
+	assert( Deployer:loadComponent(me, "arp_rlu::ObstacleManager"))
+	assert( Deployer:setMasterSlaveActivity("MotionScheduler", me))
+	return true
 end
 
 
 function ObstacleManager:registerToSql()
-	OrocosSqlMonitor = Deployer:getPeer("OrocosSqlBridge")
-	Deployer:addPeer("OrocosSqlBridge",me)
+	OrocosSqlMonitor = assert(Deployer:getPeer("OrocosSqlBridge"))
+	assert( Deployer:addPeer("OrocosSqlBridge",me))
+	return true
 end
 
 
 function ObstacleManager:connect()
-	Deployer:addPeer("Reporting", me)
-	Deployer:connect(me..".inObstacles", "Localizator.outObstacles",cp);
-	
-	ObstacleManager:check(me)
+	assert( Deployer:addPeer("Reporting", me))
+	assert( Deployer:connect(me..".inObstacles", "Localizator.outObstacles",cp))
+	assert( ObstacleManager:check(me))
+	return true
 end
 
 
