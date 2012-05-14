@@ -174,12 +174,6 @@ class CyclicState(smach.StateMachine):
             return False
     
     
-    
-    
-    
-    
-    
-    
     def setVMax(self,v):
         self.setVMax_srv(v,False)
         

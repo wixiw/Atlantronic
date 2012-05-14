@@ -109,7 +109,7 @@ class LittleSexControl: public OdsTaskContext
         /**
          * Local variable to stock the max velocity that we were asked to follow
          */
-        double attrVMax;
+        double attrVmax_asked;
 
         /**
          * Current order type

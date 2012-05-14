@@ -126,3 +126,11 @@ void MotionOrder::setTwistBuffer(TwistBuffer twistBuffer )
     m_twistBuffer = twistBuffer;
 }
 
+void MotionOrder::setVmax(double vmax)
+{
+if (vmax>0.0)
+    m_vmax_asked=vmax;
+else
+    m_vmax_asked=m_conf.LIN_DEC;
+
+}

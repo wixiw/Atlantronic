@@ -79,7 +79,7 @@ class OmnidirectOrder: public MotionOrder
         /*
          * the maximum speed for this order
          */
-        double m_max_speed;
+        double m_vmax_order;
 
 
 
@@ -88,7 +88,7 @@ class OmnidirectOrder: public MotionOrder
         void switchApproach(arp_math::Pose2D currentPosition);
 
         static const double TIMELAG=0.030;
-        static const double DIST_SMOOTH=0.050;
+        static const double DIST_SMOOTH=0.200;
         static const double SUP_TIME_FOR_ROTATION=1.0;
         static const double ANGLE_CHGT_ASSERV=0.17;
         static const double RECONF_TIME=0.0;

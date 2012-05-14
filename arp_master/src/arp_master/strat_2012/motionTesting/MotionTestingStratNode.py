@@ -66,11 +66,15 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('Move2', Move2(),
                                    transitions={'succeeded':'Wait2', 'timeout':'Debloque'})
             smach.StateMachine.add('Wait2', WaiterState(2.0),
-                                   transitions={'timeout':'Move3'})   
+                                   transitions={'timeout':'Setv2'}) 
+            smach.StateMachine.add('Setv2', SetVMaxState(-1.0),
+                                   transitions={'succeeded':'Move3','timeout':'end'})   
             smach.StateMachine.add('Move3', Move3(),
                                    transitions={'succeeded':'Wait3', 'timeout':'Debloque'})
             smach.StateMachine.add('Wait3', WaiterState(2.0),
-                                   transitions={'timeout':'Move4'})   
+                                   transitions={'timeout':'Setv1'})
+            smach.StateMachine.add('Setv1', SetVMaxState(0.2),
+                                   transitions={'succeeded':'Move4','timeout':'end'})   
             smach.StateMachine.add('Move4', Move4(),
                                    transitions={'succeeded':'Wait4', 'timeout':'Debloque'})
             smach.StateMachine.add('Wait4', WaiterState(2.0),

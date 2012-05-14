@@ -54,9 +54,9 @@ shared_ptr<MotionOrder> OmnidirectOrder::createOrder(const OrderGoalConstPtr &go
 
     order->setPass(goal->passe);
     if (goal->max_speed > 0.0 and goal->max_speed < conf.LIN_DEC)
-        order->m_max_speed = goal->max_speed;
+        order->m_vmax_order = goal->max_speed;
     else
-        order->m_max_speed = conf.LIN_DEC;
+        order->m_vmax_order = conf.LIN_DEC;
 
     order->setConf(conf);
 
@@ -278,7 +278,7 @@ Twist2D OmnidirectOrder::computeApproachTwist(arp_math::Pose2D currentPosition, 
 
      return m_twist_approach_turned * sqrt2(m_normalizedError);*/
 
-    double speedcorrection = sqrt2(2.0 * m_conf.LIN_DEC)
+    double speedcorrection = sqrt2(2.0 * MIN_LIN_DEC)
             * sqrt2(max(deltaPos_refCpoint.vectNorm() - m_v_correction_old.speedNorm() * TIMELAG, 0.0));
 
     speedcorrection *= m_error_approach.translation().dot(deltaPos_refCpoint.translation()); // si je ne pointe pas la vitesse dans la bonne direction pas la peine de corriger
@@ -361,8 +361,8 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
 Twist2D OmnidirectOrder::saturateTwist(Twist2D twist_input, double dt)
 {
     Twist2D twist_output;
-    double vmaxlin = min(min(m_conf.LIN_VEL_MAX, m_v_correction_old.speedNorm() + dt * m_conf.LIN_DEC * 2.0),
-            m_max_speed);
+    double vmaxlin = min(min(min(m_conf.LIN_VEL_MAX, m_v_correction_old.speedNorm() + dt * m_conf.LIN_DEC * 2.0),
+            m_vmax_order),m_vmax_asked);
     double vmaxrot = min(m_conf.ANG_VEL_MAX, fabs(m_v_correction_old.vh()) + dt * m_conf.ANG_DEC * 2.0);
 
     double satvlin = max(twist_input.speedNorm() / vmaxlin, 1.0);

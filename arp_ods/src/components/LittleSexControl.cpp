@@ -19,7 +19,7 @@ ORO_LIST_COMPONENT_TYPE( arp_ods::LittleSexControl )
 LittleSexControl::LittleSexControl(const std::string& name):
         OdsTaskContext(name),
         attrOrder(orders::defaultOrder),
-        attrVMax(1.0),
+        attrVmax_asked(1.0),
         attrCurrentOrder("default"),
         m_twistBuffer(),
         attrGain(0.2)
@@ -54,6 +54,7 @@ void LittleSexControl::updateHook()
     attrOrder->switchMode(attrPosition);
 
     // calcule les consignes
+    attrOrder->setVmax(attrVmax_asked);
     attrComputedTwistCmd = attrOrder->computeSpeed(attrPosition,attrDt);
 
     /*
@@ -158,14 +159,15 @@ bool LittleSexControl::ooSetOrder(shared_ptr<MotionOrder> order)
 
 bool LittleSexControl::ooSetVMax(double vmax)
 {
-    if( vmax >= 0.0 )
+    if( vmax > 0.0 )
     {
-        attrVMax = vmax;
+        attrVmax_asked = vmax;
         return true;
     }
     else
     {
-        return false;
+        attrVmax_asked = 1.0;
+        return true;
     }
 }
 
@@ -174,7 +176,7 @@ void LittleSexControl::createOrocosInterface()
     addAttribute("attrComputedTwistCmd",attrComputedTwistCmd);
     addAttribute("attrPosition",attrPosition);
     addAttribute("attrOrder",attrOrder);
-    addAttribute("attrVMax",attrVMax);
+    addAttribute("attrVmax_asked",attrVmax_asked);
     addAttribute("attrCurrentOrder",attrCurrentOrder);
     addAttribute("attrCurrentTwist",attrCurrentTwist);
 

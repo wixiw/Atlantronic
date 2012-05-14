@@ -106,7 +106,11 @@ class MotionOrder: public ModeSelector
          * is smooth localization needed ?
          */
         bool m_smoothLocNeeded;
-
+        /*
+         * max speed (input)
+         */
+        double m_vmax_asked;
+        void setVmax(double vmax);
 
     protected:
         /** type of the current order */
