@@ -4,7 +4,7 @@ import rospy
 import tf
 
 # import the definition of the messages
-from arp_core.msg import Obstacle
+from arp_core.msg import OpponentsList
 from arp_core.msg import StartColor
 from arp_core.msg import Start
 from arp_core.msg import Pose
@@ -43,11 +43,11 @@ class Inputs:
     #function that creates the inputs list
     @staticmethod
     def link():
-        Inputs.obstacleInput= Inputs.createInput("ObstacleDetector/front_obstacle", Obstacle)
+        Inputs.obstacleInput = False
         Inputs.colorInput=Inputs.createInput("Ubiquity/color", StartColor)
         Inputs.startInput=Inputs.createInput("Ubiquity/start", Start)
         Inputs.poseInput=Inputs.createInput("Localizator/pose", Pose)
-        Inputs.rearObstacleInput=Inputs.createInput("ObstacleDetector/rear_obstacle", Obstacle)
+        Inputs.opponentsInput= Inputs.createInput("Localizator/opponents_detected", OpponentsList)
         Inputs.listener = tf.TransformListener()
         Inputs.linearVelocityInput=Inputs.createInput("/Command/velocity",Velocity)
         Inputs.deployed=Inputs.createInput("Master/deployed", Bool)
@@ -85,29 +85,33 @@ class Inputs:
     #get obstacle will return that there is an obstacle only if the obstacle is on the table
     @staticmethod
     def getObstacle():
-        
-        if Inputs.obstacleInput.data.detected:
-            now = rospy.Time.now()
-            
-            try:
-                Inputs.listener.waitForTransform("/world", "/front_obstacle", rospy.Time(0), rospy.Duration(0.5))
-                (trans,rot) = Inputs.listener.lookupTransform("/world", "/front_obstacle", rospy.Time(0))
-            except (tf.Exception, tf.LookupException, tf.ConnectivityException) as ex:
-                rospy.loginfo("obstacle mais exception lors de calcul tf machintruc:"+str(ex))
-                return 0
-            
-            if (Table.isOnTable(trans[0],trans[1])):
-                rospy.loginfo("obstacle detecte sur la table")
-                return 1
-            else:
-                rospy.loginfo("obstacle mais pas sur table")
-                return 0
-        else:
-            return 0
+        return 0
+#        if Inputs.obstacleInput.data.detected:
+#            now = rospy.Time.now()
+#            
+#            try:
+#                Inputs.listener.waitForTransform("/world", "/front_obstacle", rospy.Time(0), rospy.Duration(0.5))
+#                (trans,rot) = Inputs.listener.lookupTransform("/world", "/front_obstacle", rospy.Time(0))
+#            except (tf.Exception, tf.LookupException, tf.ConnectivityException) as ex:
+#                rospy.loginfo("obstacle mais exception lors de calcul tf machintruc:"+str(ex))
+#                return 0
+#            
+#            if (Table.isOnTable(trans[0],trans[1])):
+#                rospy.loginfo("obstacle detecte sur la table")
+#                return 1
+#            else:
+#                rospy.loginfo("obstacle mais pas sur table")
+#                return 0
+#        else:
+#            return 0
+
+    @staticmethod
+    def getOpponents():
+        return Opponents(Inputs.opponentsInput.data)
 
     @staticmethod
     def getRearObstacle():
-        return Inputs.rearObstacleInput.data.detected
+        return False
     
     @staticmethod
     def getx():
@@ -124,3 +128,15 @@ class Inputs:
     @staticmethod
     def getLinearVelocity():
         return Inputs.linearVelocityInput.data.linear
+
+
+class Opponents:
+    def __init__(self,opponents_list):
+        self.list = opponents_list
+        
+    def printOpponents(self):
+        for obs in self.list.Opponents:
+            distance = Point(obs.x, obs.y).dist(Point(Inputs.getx(), Inputs.gety()))
+            rospy.loginfo("Opponent %s %s %s, distance from us %s", obs.x, obs.y, obs.theta, distance)
+            
+        

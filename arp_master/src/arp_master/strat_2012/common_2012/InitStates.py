@@ -6,6 +6,7 @@ from arp_master import *
 
 from DynamixelActionState import *
 from Table2012 import *
+from DebugStates import *
 
 class Initialisation2012(smach.StateMachine):
     def __init__(self):
@@ -49,12 +50,16 @@ class StartSequence2012(smach.StateMachine):
             
             smach.StateMachine.add('CloseClaws',
                       FingerClawState('close'),
-                      transitions={'succeeded':'WaitForMatch', 'timeout':'problem'})                    
+                      transitions={'succeeded':'PrintObstacles', 'timeout':'problem'})                    
+            
+            smach.StateMachine.add('PrintObstacles',
+                      PrintOpponents(),
+                      transitions={'ok':'WaitForMatch'})
+            
             
             smach.StateMachine.add('WaitForMatch', 
                       WaitForMatch(),
                       transitions={'start':'gogogo', 'timeout':'problem'})
-
 
 
 ####################################################################################################################
@@ -107,13 +112,6 @@ class Uninitialisation(smach.StateMachine):
                       AmbiOmniDirectOrder(x+0.058,y,theta),
                      transitions={'succeeded':'endUninitialisation', 'timeout':'endUninitialisation'})
 
-class PrintStratInfo(smach.State):
-    def __init__(self):
-        smach.State.__init__(self,['ok'])
-    def execute(self,userdata):
-        Table2012.printStratInfo()
-        return 'ok'     
-      
 class SelectState(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['farBot','farTop','closeTop','closeBot'])
