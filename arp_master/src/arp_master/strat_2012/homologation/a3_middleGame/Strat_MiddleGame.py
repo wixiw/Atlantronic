@@ -18,8 +18,8 @@ class MiddleGame(PreemptiveStateMachine):
             self.setInitialState('TopCloseTotem')
             
             PreemptiveStateMachine.add('ThrowUpTopCloseTotem',
-                      TopCloseTotem(),
-                      transitions={'endTotem':'MiddleObject', 'problem':'endMiddleGame'})
+                      ThrowUpTopCloseTotem(),
+                      transitions={'end':'MiddleObject', 'problem':'endMiddleGame'})
             
             
             PreemptiveStateMachine.add('MiddleObject',
@@ -56,7 +56,18 @@ class MiddleGame(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('BotCloseTotem',
                       BotCloseTotem(),
-                      transitions={'endTotem':'CloseBottleAndCoin', 'problem':'endMiddleGame'})
+                      transitions={'endTotem':'PushABit', 'problem':'endMiddleGame'})
+            
+            PreemptiveStateMachine.add('PushABit',
+                      AmbiOpenLoopOrder(0.300, 0.000, 0,
+                                        1),
+                      transitions={'succeeded':'PushBack', 'timeout':'Back'})
+            
+            PreemptiveStateMachine.add('PushBack',
+                      AmbiOpenLoopOrder(-0.300, 0.0, 0,
+                                          1),
+                      transitions={'succeeded':'CloseBottleAndCoin', 'timeout':'Debloque'})
+            
             
             PreemptiveStateMachine.add('CloseBottleAndCoin',
                       CloseBottleAndCoin(),
