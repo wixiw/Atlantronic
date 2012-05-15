@@ -16,8 +16,9 @@
 #include <arp_core/OpponentsList.h>
 //rossrv
 #include <arp_core/SetPosition.h>
+#include <arp_core/SetColor.h>
 #include <arp_rlu/AutoInit.h>
-#include <arp_rlu/SetColor.h>
+
 
 namespace arp_rlu
 {
@@ -45,7 +46,7 @@ class RosRluItf: public arp_rlu::RluTaskContext
 
         bool srvInitialize(arp_core::SetPosition::Request& req, arp_core::SetPosition::Response& res);
         bool srvAutoInit(AutoInit::Request& req, AutoInit::Response& res);
-        bool srvSetColor(SetColor::Request& req, SetColor::Response& res);
+        bool srvSetColor(arp_core::SetColor::Request& req, arp_core::SetColor::Response& res);
         void createRosInterface();
 
         /** node handles to store services **/

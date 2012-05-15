@@ -63,7 +63,7 @@ class MiddleGame(PreemptiveStateMachine):
                       transitions={'end':'Turn', 'problem':'CloseBottleAndCoin'})        
         
             PreemptiveStateMachine.add('Turn',
-                      TurnOrder(AmbiCapRed(0, Data.color).angle),
+                      AmbiTurnOrder(0.0),
                       transitions={'succeeded':'CloseBottleAndCoin', 'timeout':'CloseBottleAndCoin'})
         
             PreemptiveStateMachine.add('CloseBottleAndCoin',

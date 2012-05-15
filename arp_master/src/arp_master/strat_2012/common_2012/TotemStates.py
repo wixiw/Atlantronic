@@ -45,6 +45,10 @@ class CleanCloseTotem(PreemptiveStateMachine):
             pose = TotemPose(1.10,0.150,pi/12,table_half)
             PreemptiveStateMachine.add('PushALot',
                       AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
+                      transitions={'succeeded':'CloseFingersABit', 'timeout':'Back'})
+            
+            PreemptiveStateMachine.add('CloseFingersABit',
+                      FingersOnlyState('half_open'), 
                       transitions={'succeeded':'Back', 'timeout':'Back'})
             
             pose = TotemPose(0.700,0.400,-pi/2,table_half)
@@ -57,16 +61,17 @@ class CleanCloseTotem(PreemptiveStateMachine):
                       transitions={'succeeded':'endClean', 'timeout':'endClean'})
             
             #si on a rate le nettoyage le doigt droit s'est peut etre pris dans le totem
-            #on recommence une fois en partant de plus loin
+            #on recommence une fois en partant de plus loin   
             PreemptiveStateMachine.add('Retry',
                       Replay(1.0),
                       transitions={'succeeded':'RetryFirstTotemCoin', 'timeout':'ExitState'})
             PreemptiveStateMachine.add('RetryFirstTotemCoin',
-                      AmbiOmniDirectOrder(poseFirst.x, poseFirst.y + 0.030, poseFirst.h),
+                      AmbiOmniDirectOrder(poseFirst.x, poseFirst.y + 0.030, poseFirst.h, 0.3),
                       transitions={'succeeded':'RetryTotemClean', 'timeout':'ExitState'})
             PreemptiveStateMachine.add('RetryTotemClean',
                       AmbiOmniDirectOrder(poseClean.x, poseClean.y + 0.030, poseClean.h),
                       transitions={'succeeded':'PushALot', 'timeout':'ExitState'})
+            
                         
             #replay + rangement du doigt
             PreemptiveStateMachine.add('Debloque',

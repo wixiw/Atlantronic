@@ -21,13 +21,16 @@ class Initialisation(smach.StateMachine):
         smach.StateMachine.__init__(self,outcomes=['endInitialisation','failed'])
         with self:
             smach.StateMachine.add('Init', Init(),
-                                   transitions={'initstateok':'WaitForOrocos','timeout':'failed'})
+                                   transitions={'initstateok':'WaitForOrocos','timeout':'Init'})
             smach.StateMachine.add('WaitForOrocos', 
                                    WaitForOrocos(),
-                                   transitions={'deployed':'WaitForStart','timeout':'failed'})
+                                   transitions={'deployed':'WaitForStart','timeout':'WaitForOrocos'})
             smach.StateMachine.add('WaitForStart', 
                                    WaitForStart(),
-                                   transitions={'start':'endInitialisation','timeout':'failed'})
+                                   transitions={'start':'SetColor','timeout':'WaitForStart'})
+            smach.StateMachine.add('SetColor', 
+                                   SetColor(),
+                                   transitions={'done':'endInitialisation','timeout':'SetColor'})
     
     
 #the first state: only to wait for the start to be unpluged 
@@ -52,5 +55,27 @@ class WaitForOrocos(CyclicState):
     def executeOut(self):
         rospy.loginfo("Orocos deployed.")
 
+
+#configure software that depends on the color
+class SetColor(CyclicState):
+    def __init__(self):
+        CyclicState.__init__(self, outcomes=['done'])
+    
+    def executeIn(self):
+        Data.color=Inputs.getcolor()
+        if Data.color=='red':
+            Data.adv_color='purple'
+        else:
+            Data.adv_color='red'
+        rospy.loginfo("Start plugged")
+       
+    
+    def executeTransitions(self):
+       rospy.loginfo("Execute.")
+       if  self.configureColor(Data.color) is True:
+            return 'done'
+    
+    def executeOut(self):
+        rospy.loginfo("Color configured.")
             
     

@@ -94,14 +94,14 @@ void FrontObstacleDetector::updateHook()
     EstimatedPose2D H_robot_table;
     if( RTT::NoData == inPose.read(H_robot_table) )
     {
-        LOG( Info ) << "FrontObstacleDetector - No data on inPose port" << endlog();
+        //LOG( Info ) << "FrontObstacleDetector - No data on inPose port" << endlog();
         return;
     }
     EstimatedPose2D H_hky_table = H_robot_table * H_hky_robot;
     sensor_msgs::LaserScan rosScan;
     if( RTT::NoData == inScan.read(rosScan) )
     {
-        LOG( Info ) << "FrontObstacleDetector - No data on inScan port" << endlog();
+        //LOG( Info ) << "FrontObstacleDetector - No data on inScan port" << endlog();
         return;
     }
     double dateBeg = rosScan.header.stamp.toSec() - m_monotonicTimeToRealTime;
