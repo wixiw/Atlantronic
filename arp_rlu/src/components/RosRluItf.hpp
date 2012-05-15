@@ -14,11 +14,12 @@
 //rosmsg
 #include <arp_core/Pose.h>
 #include <arp_core/OpponentsList.h>
+#include <arp_core/LocalizatorState.h>
+
 //rossrv
 #include <arp_core/SetPosition.h>
 #include <arp_core/SetColor.h>
 #include <arp_rlu/AutoInit.h>
-
 
 namespace arp_rlu
 {
@@ -32,9 +33,14 @@ class RosRluItf: public arp_rlu::RluTaskContext
 
     protected:
         RTT::InputPort<arp_math::EstimatedPose2D> inPose;
+        RTT::InputPort<int> inLocalizationState;
+        RTT::InputPort<int> inLocalizationMode;
+        RTT::InputPort<int> inLocalizationQuality;
+        RTT::InputPort<int> inLocalizationVisibility;
         RTT::InputPort<arp_math::EstimatedTwist2D> inTwist;
         RTT::InputPort< std::vector<arp_math::EstimatedPose2D> > inOpponents;
         RTT::OutputPort<arp_core::Pose> outPose;
+        RTT::OutputPort< arp_core::LocalizatorState > outLocalizatorState;
         RTT::OutputPort< arp_core::OpponentsList > outOpponents;
 
         RTT::OperationCaller<bool(double,double,double)> m_ooInitialize;

@@ -1,4 +1,5 @@
 
+#include <arp_core/LocalizatorState.h>
 #include <arp_core/Velocity.h>
 #include <arp_core/OmniCommand.h>
 #include <arp_core/Obstacle.h>
@@ -22,7 +23,9 @@ namespace ros_integration {
     {
       bool registerTransport(std::string name, types::TypeInfo* ti)
       {
-                   if(name == "/arp_core/Velocity")
+                   if(name == "/arp_core/LocalizatorState")
+              return ti->addProtocol(ORO_ROS_PROTOCOL_ID,new RosMsgTransporter<arp_core::LocalizatorState>());
+         if(name == "/arp_core/Velocity")
               return ti->addProtocol(ORO_ROS_PROTOCOL_ID,new RosMsgTransporter<arp_core::Velocity>());
          if(name == "/arp_core/OmniCommand")
               return ti->addProtocol(ORO_ROS_PROTOCOL_ID,new RosMsgTransporter<arp_core::OmniCommand>());

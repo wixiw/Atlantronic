@@ -177,7 +177,7 @@ void KFLocalizator::setParams(KFLocalizator::Params p)
         return;
     }
     params = p;
-    beaconDetector.setReferencedBeacons(params.referencedBeacons);
+    beaconDetector.setReferencedBeacons(p.referencedBeacons);
     setParams(p.iekfParams);
     setParams(p.procParams);
 }

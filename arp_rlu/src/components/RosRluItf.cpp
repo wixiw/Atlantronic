@@ -21,10 +21,15 @@ RosRluItf::RosRluItf(std::string const name):
 RluTaskContext(name)
 {
     addPort("inPose",inPose);
+    addPort("inLocalizationState", inLocalizationState);
+    addPort("inLocalizationMode", inLocalizationMode);
+    addPort("inLocalizationQuality", inLocalizationQuality);
+    addPort("inLocalizationVisibility", inLocalizationVisibility);
     addPort("inTwist",inTwist);
     addPort("inOpponents",inOpponents);
     addPort("outPose",outPose);
     addPort("outOpponents",outOpponents);
+    addPort("outLocalizatorState",outLocalizatorState);
     createRosInterface();
 }
 
@@ -36,8 +41,8 @@ bool RosRluItf::configureHook()
     res &= getOperation("LaserOnlyLocalizator",     "ooDo",                                 m_ooDo);
     res &= getOperation("LaserOnlyLocalizator",     "ooGetEstimatedPose",                   m_ooGetEstimatedPose);
     res &= getOperation("LaserOnlyLocalizator",     "ooGetRelativeHeadingForConfirmation",  m_ooGetRelativeHeadingForConfirmation);
-    res &= getOperation("LaserOnlyLocalizator",     "ooSwitchToRedConfig",                  m_ooSwitchToRedConfig);
-    res &= getOperation("LaserOnlyLocalizator",     "ooSwitchToPurpleConfig",               m_ooSwitchToPurpleConfig);
+    res &= getOperation("Localizator",     "ooSwitchToRedConfig",                  m_ooSwitchToRedConfig);
+    res &= getOperation("Localizator",     "ooSwitchToPurpleConfig",               m_ooSwitchToPurpleConfig);
 
 
 
@@ -64,6 +69,27 @@ void RosRluItf::updateHook()
     pOut.vy = tIn.vy();
     pOut.vtheta = tIn.vh();
     outPose.write(pOut);
+
+    LocalizatorState stateOut;
+    int locState = -1; //0; //STOPPED
+    inLocalizationState.readNewest(locState);
+    stateOut.state = locState;
+    int locMode = -1; //0; //ODO_ONLY
+    inLocalizationState.readNewest(locMode);
+    stateOut.mode = locMode;
+    int locQuality = -1; //0; //LOST
+    inLocalizationState.readNewest(locQuality);
+    stateOut.quality = locQuality;
+    int locVisu = -1; //0; //NONE
+    inLocalizationState.readNewest(locVisu);
+    stateOut.visibility = locVisu;
+    outLocalizatorState.write(stateOut);
+
+    //LOG( Info ) << "*********************************************" << locState << endlog();
+    //LOG( Info ) << "locState : " << locState << endlog();
+    //LOG( Info ) << "locMode : " << locMode << endlog();
+    //LOG( Info ) << "locQuality : " << locQuality << endlog();
+    //LOG( Info ) << "locVisu : " << locVisu << endlog();
 
     arp_core::OpponentsList opponentsOut;
     std::vector<arp_math::EstimatedPose2D>::iterator opp;

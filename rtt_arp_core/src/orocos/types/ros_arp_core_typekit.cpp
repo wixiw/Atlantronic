@@ -1,3 +1,4 @@
+#include <arp_core/LocalizatorState.h>
 #include <arp_core/Velocity.h>
 #include <arp_core/OmniCommand.h>
 #include <arp_core/Obstacle.h>
@@ -16,7 +17,8 @@ namespace ros_integration {
   using namespace RTT;
 
     /** Declare all factory functions */
-            void rtt_ros_addType_Velocity();
+            void rtt_ros_addType_LocalizatorState();
+        void rtt_ros_addType_Velocity();
         void rtt_ros_addType_OmniCommand();
         void rtt_ros_addType_Obstacle();
         void rtt_ros_addType_OpponentsList();
@@ -41,7 +43,8 @@ namespace ros_integration {
 
       virtual bool loadTypes() {
           // call all factory functions
-                  rtt_ros_addType_Velocity(); // factory function for adding TypeInfo.
+                  rtt_ros_addType_LocalizatorState(); // factory function for adding TypeInfo.
+        rtt_ros_addType_Velocity(); // factory function for adding TypeInfo.
         rtt_ros_addType_OmniCommand(); // factory function for adding TypeInfo.
         rtt_ros_addType_Obstacle(); // factory function for adding TypeInfo.
         rtt_ros_addType_OpponentsList(); // factory function for adding TypeInfo.
