@@ -8,12 +8,14 @@ import smach_msgs
 import actionlib
 
 
-from CyclicState import CyclicState
+from CyclicActionState import *
 from arp_master.util import *
 from arp_ods.msg import *
 from math import *
 
-class CyclicActionState(CyclicState):
+# ** You should not have to use this state **
+# Prefer the use of class from MotionStateCollection
+class MotionState(CyclicState):
     
     def __init__(self):
         CyclicState.__init__(self,outcomes=['succeeded','timeout'])

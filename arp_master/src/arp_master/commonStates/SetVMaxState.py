@@ -7,7 +7,7 @@ from arp_master import *
 import math
 
 # 
-# These states are usefull to set the pspeed of the robot
+# These states are usefull to set the speed of the robot
 #
 ##################################################
 
