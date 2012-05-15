@@ -1,17 +1,20 @@
 <?php 
 	switch ($_GET["action"]) {
-		case "dev":
+		case "homologation":
+			echo exec('sudo /etc/init.d/ard_ihm_launcher.sh start arp_master homologation_galaxy.launch');
 			break;
-		case "selftest":
-			echo exec('sudo /etc/init.d/ard_ihm_launcher.sh start arp_hml ubiquity.launch');
-			break;
-		case "manual":
-			echo exec('sudo /etc/init.d/ard_ihm_launcher.sh start arp_master manual.launch');
+		case "qualif":
+			echo exec('sudo /etc/init.d/ard_ihm_launcher.sh start arp_master homologation_galaxy.launch');
 			break;
 		case "matchA":
+			echo exec('sudo /etc/init.d/ard_ihm_launcher.sh start arp_master homologation_galaxy.launch');
 			break;
 		case "matchB":
+			echo exec('sudo /etc/init.d/ard_ihm_launcher.sh start arp_master homologation_galaxy.launch');
 			break;
+		case "manual":
+				echo exec('sudo /etc/init.d/ard_ihm_launcher.sh start arp_master manual_galaxy.launch');
+				break;
 		case "kill":
 			echo exec('sudo /etc/init.d/ard_ihm_launcher.sh stop');
 			break;
@@ -32,7 +35,7 @@
 
 <link rel="stylesheet" href="run.css" />
 <?php if ( file_exists("/var/run/ard_ihm_launcher.pid") ) { ?>
-		<meta http-equiv="refresh" content="1;URL='run.php'" />
+		<meta http-equiv="refresh" content="12;URL='run.php'" />
 		<meta HTTP-EQUIV="pragma" CONTENT="no-cache" />
 <?php }	else { ?>
 		<meta http-equiv="refresh" content="0;URL='../index.php'" />
@@ -47,14 +50,6 @@
 	<header>
 		<p>Running <?php echo $_GET["action"] ?> !</p>
 	</header>
-
-	<section>
-		<p>ARP is running</p>
-		<?php echo "<p>CPU temp :".exec('sensors | grep Core | cut -c14-21')."</p>"; ?>
-
-	</section>
-
-
 
 	<footer>
 		<div class=button>
