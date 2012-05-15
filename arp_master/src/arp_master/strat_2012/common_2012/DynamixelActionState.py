@@ -16,7 +16,7 @@ class DynamixelActionState(CyclicState):
     
     def __init__(self):
         CyclicState.__init__(self,outcomes=['succeeded','timeout'])
-        self.timeout = 5
+        self.timeout = 1
    
     
     # the main execute function

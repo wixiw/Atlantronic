@@ -49,7 +49,8 @@ class CleanCloseTotem(PreemptiveStateMachine):
                       transitions={'succeeded':'CloseFingersABit', 'timeout':'Back'})
             
             PreemptiveStateMachine.add('CloseFingersABit',
-                      FingersOnlyState('half_open'), 
+                      TotemClawState(0.25,Robot2012.FINGER_OPEN,
+                                          Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE, table_half), 
                       transitions={'succeeded':'Back', 'timeout':'Back'})
             
             pose = TotemPose(0.700,0.400,-pi/2,table_half)
