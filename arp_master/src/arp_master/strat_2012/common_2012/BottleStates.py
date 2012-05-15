@@ -87,7 +87,7 @@ class CloseBottleAndCoin(PreemptiveStateMachine):
                       transitions={'ok':'ThrowUp2'})
             
             PreemptiveStateMachine.add('ThrowUp2',
-                      AmbiOmniDirectOrder(1.100,0.200,0),
+                      AmbiOmniDirectOrder(1.050,0.050,0),
                       transitions={'succeeded':'SetStratInfoGoldBar', 'timeout':'Debloque'})
             
             PreemptiveStateMachine.add('SetStratInfoGoldBar',

@@ -306,4 +306,13 @@ class RightwardOrder(CyclicActionState):
         CyclicActionState.__init__(self)
         self.dist = dist
     def createAction(self):
-        self.rightward(self,self.dist)            
+        self.rightward(self,self.dist)   
+        
+        
+        
+class TurnOrder(CyclicActionState):
+    def __init__(self,h):
+        CyclicActionState.__init__(self)
+        self.h=h
+    def createAction(self):
+        self.cap(self.h)          

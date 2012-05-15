@@ -51,12 +51,20 @@ class MiddleGame(PreemptiveStateMachine):
                       transitions={'succeeded':'PrepareBotTotem', 'timeout':'CloseBottleAndCoin'}) 
 
             PreemptiveStateMachine.add('PrepareBotTotem',
-                      AmbiOmniDirectOrder(0.500, -0.500, pi/3),
+                      AmbiOmniDirectOrder(0.550, -0.350, pi/2),
                       transitions={'succeeded':'BotCloseTotem', 'timeout':'Debloque'})
             
             PreemptiveStateMachine.add('BotCloseTotem',
-                      BotCloseTotem(),
-                      transitions={'endTotem':'CloseBottleAndCoin', 'problem':'CloseBottleAndCoin'})
+                      AntiWorkBotCloseTotem(),
+                      transitions={'endTotem':'ThrowUpBotCloseTotem', 'problem':'CloseBottleAndCoin'})
+            
+            PreemptiveStateMachine.add('ThrowUpBotCloseTotem',
+                      ThrowUpBotCloseTotem(),
+                      transitions={'end':'Turn', 'problem':'CloseBottleAndCoin'})        
+        
+            PreemptiveStateMachine.add('Turn',
+                      TurnOrder(AmbiCapRed(0, Data.color).angle),
+                      transitions={'succeeded':'CloseBottleAndCoin', 'timeout':'CloseBottleAndCoin'})
         
             PreemptiveStateMachine.add('CloseBottleAndCoin',
                       CloseBottleAndCoin(),

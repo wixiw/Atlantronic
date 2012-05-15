@@ -166,6 +166,12 @@ class ClawsOnlyState(AmbiClawFingerOrder):
         elif state == 'totem_right':
             AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_CLOSE, 
                                          Robot2012.CLAW_CLOSE, Robot2012.CLAW_TOTEM)
+        elif state == 'anti_totem_left':
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_CLOSE, 
+                                         Robot2012.CLAW_OPEN, Robot2012.CLAW_TOTEM)
+        elif state == 'anti_totem_right':
+            AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_CLOSE, 
+                                         Robot2012.CLAW_TOTEM, Robot2012.CLAW_OPEN)        
         elif state == 'open_left':
             AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_CLOSE, 
                                          Robot2012.CLAW_OPEN, Robot2012.CLAW_CLOSE)
@@ -201,3 +207,18 @@ class FingerClawState(AmbiClawFingerOrder):
                                          Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE)
             raise smach.InvalidUserCodeError("FingerClawState : Could not execute : unknown state %s",state)
         
+
+#Use this state when using symetrie for totems
+class TotemClawState(AmbiClawFingerOrder):
+    def __init__(self,left_finger, right_finger, left_claw, right_claw, table_half):
+             if table_half == 'top_close' or table_half == 'far_bot':
+                 AmbiClawFingerOrder.__init__(self, left_finger,right_finger,
+                                                    left_claw, right_claw)
+             elif table_half == "top_close" or table_half == "bot_close":            
+                 AmbiClawFingerOrder.__init__(self, right_finger,left_finger,
+                                                    right_claw, left_claw)
+             else:
+                 AmbiClawFingerOrder.__init__(self, Robot2012.FINGER_CLOSE, Robot2012.FINGER_CLOSE, 
+                                         Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE)
+                 raise smach.InvalidUserCodeError("TotemClawState : Could not execute : unknown state %s",state)
+                
