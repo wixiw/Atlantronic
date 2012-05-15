@@ -196,15 +196,16 @@ class CyclicActionState(CyclicState):
 # give the target (x,y,theta) in (m,m,rad) of robot's CDG and match color
 # Ex : AmbiOmniDirectOrder(1.200, -0.700,pi/2)             
 class AmbiOmniDirectOrder(CyclicActionState):
-    def __init__(self,x,y,theta):
+    def __init__(self,x,y,theta, vmax=-1.0):
         CyclicActionState.__init__(self)
         self.x = x
         self.y = y
         self.theta = theta
+        self.vmax = vmax
         
     def createAction(self):
         self.pose = AmbiPoseRed(self.x, self.y, self.theta, Data.color)
-        self.omnidirect(self.pose.x, self.pose.y, self.pose.theta)
+        self.omnidirect(self.pose.x, self.pose.y, self.pose.theta, self.vmax)
 
 # Use this Order State to quickly add move state in your FSM with a special ControlPoint (CP)
 # give the target (x,y,h) in (m,m,rad) of robot's CP=(CPx,CPy,CPh) and match color
@@ -308,8 +309,15 @@ class RightwardOrder(CyclicActionState):
     def createAction(self):
         self.rightward(self,self.dist)   
         
-        
-        
+#Use this to turn on your current position.        
+class AmbiTurnOrder(CyclicActionState):
+    def __init__(self,h):
+        CyclicActionState.__init__(self)
+        self.h=h
+    def createAction(self):
+        self.cap( AmbiCapRed(self.h,Data.color).angle )      
+   
+#You should only use this if you have color dependent stuuf to do           
 class TurnOrder(CyclicActionState):
     def __init__(self,h):
         CyclicActionState.__init__(self)

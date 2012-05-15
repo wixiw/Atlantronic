@@ -13,6 +13,7 @@ from arp_master.util.Data import Data
 
 #import module for ros services
 from arp_core.srv import SetPosition
+from arp_core.srv import SetColor
 from arp_hml.srv import SetMotorPower
 from arp_hml.srv import SetMotorMode
 from arp_ods.srv import SetVMax
@@ -81,9 +82,13 @@ class CyclicState(smach.StateMachine):
         self.initSetDrivingMotorOperationMode()
         self.initSetSteeringMotorOperationMode()
         self.initSetVMaxClient()
+        self.initConfigureColorClient()
 
     def initSetVMaxClient(self):
         self.setVMax_srv=rospy.ServiceProxy("MotionControl/setVMax",SetVMax)
+        
+    def initConfigureColorClient(self):
+        self.configureColor_srv=rospy.ServiceProxy("/Localizator/setColor",SetColor)
         
     def initSetPositionClient(self):
         self.setPosition_loc=rospy.ServiceProxy("Localizator/setPosition",SetPosition)
@@ -180,6 +185,11 @@ class CyclicState(smach.StateMachine):
     def setVMaxDefault(self):
         self.setVMax_srv(0,True)
         
-
-        
+    def configureColor(self, color):
+        try:
+            self.configureColor_srv(color)
+            return True
+        except rospy.ServiceException, e:
+            rospy.logerr("configureColor could not switch color")
+            return False
         
