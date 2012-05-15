@@ -58,7 +58,7 @@ footer
 
 .button
 {
-	color: #ffffff;
+  color: #e8ecf6;
 	background-color: #3c404c;
 	border-radius: 10px;
 	font-size: 40px;
@@ -83,6 +83,15 @@ footer
 }
 
 logOrocos
+{ 
+  color: #000000;
+  font-size:15px;
+  display : block; 
+  background-color : #ffffff;
+  opacity : 0.2;
+}
+
+logOrocosError
 { 
   color: #000000;
   font-size:15px;

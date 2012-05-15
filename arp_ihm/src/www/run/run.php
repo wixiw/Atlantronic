@@ -83,14 +83,36 @@ function read_file($file, $lines) {
 
 <body>
 	<header>
-	<logOrocos>
+	<logOrocosError>
 		<?php
 		if( file_exists("/tmp/ARP_FAILED") )
 		{
 			echo "<strong>"."/tmp/orocos.log :"."</strong><br/>";
 		
 			$lines = read_file("/tmp/orocos.log", 25);
-			foreach ($lines as $line) {
+			foreach ($lines as $line)
+			{
+				if( strpos($line, "ERROR") )
+				{
+					echo "<strong>$line </strong> <br/>";
+				}
+				else
+				{
+				echo "$line <br/>";
+				}
+			}
+		}
+		?>
+	</logOrocosError>
+	<logOrocos>
+		<?php
+		if( file_exists("/tmp/ARP_LOADING") )
+		{
+			echo "<strong>"."/tmp/orocos.log :"."</strong><br/>";
+		
+			$lines = read_file("/tmp/orocos.log", 25);
+			foreach ($lines as $line)
+			{
 				echo "$line <br/>";
 			}
 		}
