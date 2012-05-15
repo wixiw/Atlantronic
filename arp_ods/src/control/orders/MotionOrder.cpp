@@ -44,6 +44,8 @@ MotionOrder::MotionOrder() :
 
 Twist2D MotionOrder::computeSpeed(Pose2D currentPosition, double dt)
 {
+    m_smoothLocNeeded = false;
+
     Twist2D v;
     v.vx(0);
     v.vy(0);
