@@ -26,6 +26,7 @@ ObstacleManager:load();
 RosRluItfDeployer:load();
 RluMonitorDeployer:load();
 
+
 OdometryDeployer:connect();
 LocalizatorDeployer:connect();
 LocalizatorFilterDeployer:connect();
@@ -34,7 +35,6 @@ FrontObstacleDetector:connect();
 ObstacleManager:connect();
 RosRluItfDeployer:connect();
 RluMonitorDeployer:connect();
-
 RluMonitorDeployer:start();
 
 print("fin déploiment arp_rlu")

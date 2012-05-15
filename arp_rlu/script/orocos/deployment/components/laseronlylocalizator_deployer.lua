@@ -5,21 +5,24 @@ LaserOnlyLocalizatorDeployer = ComposantDeployer:new()
 local me = "LaserOnlyLocalizator"
 
 function LaserOnlyLocalizatorDeployer:load()
-	Deployer:loadComponent(me, "arp_rlu::LaserOnlyLocalizatorCpn")
-	Deployer:setActivity(me,0.0,0,rtt.globals.ORO_SCHED_OTHER)
+	assert( Deployer:loadComponent(me, "arp_rlu::LaserOnlyLocalizatorCpn") )
+	assert( Deployer:setActivity(me,0.0,0,rtt.globals.ORO_SCHED_OTHER) )
+	return true
 end
 
 
 function LaserOnlyLocalizatorDeployer:registerToSql()
-	OrocosSqlMonitor = Deployer:getPeer("OrocosSqlBridge")
-	Deployer:addPeer("OrocosSqlBridge",me)
+	OrocosSqlMonitor = assert(Deployer:getPeer("OrocosSqlBridge") )
+	assert( Deployer:addPeer("OrocosSqlBridge",me) )
+	return true
 end
 
 
 function LaserOnlyLocalizatorDeployer:connect()
-	Deployer:stream(me..".inScan",ros:topic("/top_scan"))
-	Deployer:addPeer("Reporting", me)
-	LaserOnlyLocalizatorDeployer:check(me)
+	assert( Deployer:stream(me..".inScan",ros:topic("/top_scan")) )
+	assert( Deployer:addPeer("Reporting", me) )
+	assert( LaserOnlyLocalizatorDeployer:check(me) )
+	return true
 end
 
 

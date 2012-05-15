@@ -6,7 +6,7 @@ local me = "ObstacleManager"
 
 function ObstacleManager:load()
 	assert( Deployer:loadComponent(me, "arp_rlu::ObstacleManager"))
-	Deployer:setActivity(me, 0.100, 0, rtt.globals.ORO_SCHED_OTHER)
+	assert( Deployer:setActivity(me, 0.100, 0, rtt.globals.ORO_SCHED_OTHER) )
 	return true
 end
 

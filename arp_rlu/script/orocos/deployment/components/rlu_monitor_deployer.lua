@@ -5,46 +5,49 @@ RluMonitorDeployer = ComposantDeployer:new()
 local me = "RluMonitor"
 
 function RluMonitorDeployer:load()
-	Deployer:loadComponent(me, "arp_core::Monitor")
-	Deployer:setActivity(me, 0.100, 10, 1)
+	assert( Deployer:loadComponent(me, "arp_core::Monitor") )
+	assert( Deployer:setActivity(me, 0.100, 10, 1) )
 	--turn it into a Corba server (caution it prevent the normal deployer from deploying)
-	Deployer:server(me, true)
+	assert( Deployer:server(me, true) )
+	return true
 end
 
 
 function RluMonitorDeployer:addToMonitor(name)
-	OdsMonitor = Deployer:getPeer(me)
-	Deployer:addPeer(me, name)
-	OdsMonitor:ooAddMonitoredPeer (name)
+	OdsMonitor = assert( Deployer:getPeer(me) )
+	assert( Deployer:addPeer(me, name) )
+	assert( OdsMonitor:ooAddMonitoredPeer (name) )
 	Deployer:removePeer (name)
+	return true
 end
 
 
 function RluMonitorDeployer:registerToSql()
-	OrocosSqlMonitor = Deployer:getPeer("OrocosSqlBridge")
-	Deployer:addPeer("OrocosSqlBridge",me)
+	OrocosSqlMonitor = assert( Deployer:getPeer("OrocosSqlBridge") )
+	assert( Deployer:addPeer("OrocosSqlBridge",me) )
+	return true
 end
 
 
 function RluMonitorDeployer:connect()
-
 --ajout au monitor
-	RluMonitorDeployer:addToMonitor("Odometry")
-	RluMonitorDeployer:addToMonitor("Localizator")
-	RluMonitorDeployer:addToMonitor("LaserOnlyLocalizator")
-	RluMonitorDeployer:addToMonitor("LocalizatorFilter")
-	RluMonitorDeployer:addToMonitor("FrontObstacleDetector")
-	RluMonitorDeployer:addToMonitor("ObstacleManager")
-	RluMonitorDeployer:addToMonitor("RosRluItf")
-	--RluMonitorDeployer:registerToSql();
-	
-	RluMonitorDeployer:check(me)
+	assert( RluMonitorDeployer:addToMonitor("Odometry"), "Failed to add Odometry in Monitor" )
+	assert( RluMonitorDeployer:addToMonitor("Localizator") )
+	assert( RluMonitorDeployer:addToMonitor("LaserOnlyLocalizator") )
+	assert( RluMonitorDeployer:addToMonitor("LocalizatorFilter") )
+	assert( RluMonitorDeployer:addToMonitor("FrontObstacleDetector") )
+	assert( RluMonitorDeployer:addToMonitor("ObstacleManager") )
+	assert( RluMonitorDeployer:addToMonitor("RosRluItf") )
+	--assert( RluMonitorDeployer:registerToSql() );
+	assert( RluMonitorDeployer:check(me) )
+	return true
 end
 
 function RluMonitorDeployer:start()
-	OdsMonitor = Deployer:getPeer(me)
+	OdsMonitor = assert( Deployer:getPeer(me) )
 	
-	OdsMonitor:configure()
-	OdsMonitor:start()
+	assert( OdsMonitor:configure() )
+	assert( OdsMonitor:start() )
+	return true
 end
 

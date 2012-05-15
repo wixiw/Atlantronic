@@ -5,26 +5,29 @@ OdometryDeployer = ComposantDeployer:new()
 local me = "Odometry"
 
 function OdometryDeployer:load()
-	Deployer:loadComponent(me, "arp_rlu::Odometry4Ubiquity")
-	Deployer:setMasterSlaveActivity("MotionScheduler", me)
+	assert( Deployer:loadComponent(me, "arp_rlu::Odometry4Ubiquity") )
+	assert( Deployer:setMasterSlaveActivity("MotionScheduler", me) )
+	return true
 end
 
 
 function OdometryDeployer:registerToSql()
-	OrocosSqlMonitor = Deployer:getPeer("OrocosSqlBridge")
-	Deployer:addPeer("OrocosSqlBridge",me)
+	OrocosSqlMonitor = assert( Deployer:getPeer("OrocosSqlBridge") )
+	assert( Deployer:addPeer("OrocosSqlBridge",me) )
+	return true
 end
 
 
 function OdometryDeployer:connect()
 	--on s'ajoute en peer a HmlMonitor pour pouvoir faire les connections
-	Deployer:addPeer("HmlMonitor", me)
-	Deployer:addPeer("Reporting", me)
-	HmlMonitor:connect(me, "inTime", 		"Syncronizator","outClock");
-	HmlMonitor:connect(me, "inMotorState", 		"Syncronizator","outMotorMeasures");
-	Deployer:connect(me..".inParams", "UbiquityParams.outParams",cp);
+	assert( Deployer:addPeer("HmlMonitor", me) )
+	assert( Deployer:addPeer("Reporting", me) )
+	assert( HmlMonitor:connect(me, "inTime", 		"Syncronizator","outClock") );
+	assert( HmlMonitor:connect(me, "inMotorState", 		"Syncronizator","outMotorMeasures") );
+	assert( Deployer:connect(me..".inParams", "UbiquityParams.outParams",cp) );
 	
-	OdometryDeployer:check(me)
+	assert( OdometryDeployer:check(me) )
+	return true
 end
 
 
