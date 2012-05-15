@@ -71,7 +71,7 @@ FrontObstacleDetector::FrontObstacleDetector(const std::string& name)
     yMinAccessible = -0.9;
     yMaxAccessible =  0.9;
 
-    H_hky_robot = arp_math::Pose2D(0.01, 0., 0.);
+    H_hky_robot = arp_math::Pose2D(0.034, 0., 0.);
 
 
 }
