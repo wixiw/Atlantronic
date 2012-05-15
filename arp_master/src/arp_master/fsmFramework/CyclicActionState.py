@@ -11,6 +11,7 @@ import actionlib
 from CyclicState import CyclicState
 from arp_master.util import *
 from arp_ods.msg import *
+from math import *
 
 # ** You should not have to use this state **
 # Prefer the use of utilities at the bottom of the file like AmbiOmniDirectOrder, Replay
@@ -137,13 +138,13 @@ class CyclicActionState(CyclicState):
                                        Inputs.gety()+dist*sin(Inputs.gettheta()+pi),
                                        Inputs.gettheta(),
                                        'OMNIDIRECT',False,v_max)
-    def left(self,dist,v_max=-1.0):
+    def leftward(self,dist,v_max=-1.0):
         self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()+pi/2),
                                        Inputs.gety()+dist*sin(Inputs.gettheta()+pi/2),
                                        Inputs.gettheta(),
                                        'OMNIDIRECT',False,v_max)
         
-    def right(self,dist,v_max=-1.0):
+    def rightward(self,dist,v_max=-1.0):
         self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()-pi/2),
                                        Inputs.gety()+dist*sin(Inputs.gettheta()-pi/2),
                                        Inputs.gettheta(),
@@ -277,3 +278,32 @@ class OpenLoopOrder(CyclicActionState):
         
     def createAction(self):
         self.openloop(self.vx,self.vy,self.vh,self.duration)        
+        
+        
+class ForwardOrder(CyclicActionState):
+    def __init__(self,dist):
+        CyclicActionState.__init__(self)
+        self.dist = dist
+    def createAction(self):
+        self.forward(self,self.dist)           
+        
+class BackwardOrder(CyclicActionState):
+    def __init__(self,dist):
+        CyclicActionState.__init__(self)
+        self.dist = dist
+    def createAction(self):
+        self.backward(self,self.dist)            
+        
+class LeftwardOrder(CyclicActionState):
+    def __init__(self,dist):
+        CyclicActionState.__init__(self)
+        self.dist = dist
+    def createAction(self):
+        self.leftward(self,self.dist)                  
+        
+class RightwardOrder(CyclicActionState):
+    def __init__(self,dist):
+        CyclicActionState.__init__(self)
+        self.dist = dist
+    def createAction(self):
+        self.rightward(self,self.dist)            

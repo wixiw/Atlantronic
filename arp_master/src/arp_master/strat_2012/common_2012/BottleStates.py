@@ -25,7 +25,6 @@ class BottleState(PreemptiveStateMachine):
             PreemptiveStateMachine.add('CloseFingers',
                       FingersOnlyState('close'), 
                       transitions={'succeeded':'Push', 'timeout':'Push'})
-            self.setInitialState('OpenFingers')
             
             PreemptiveStateMachine.add('Push',
                       AmbiOpenLoopOrder(0,-0.200,0,
@@ -37,16 +36,20 @@ class BottleState(PreemptiveStateMachine):
                       transitions={'ok':'OpenFingers'})
             
             PreemptiveStateMachine.add('OpenFingers',
-                      FingersOnlyState('open_left'), 
+                      FingersOnlyState('open_right'), 
                       transitions={'succeeded':'Back', 'timeout':'Back'})
-            self.setInitialState('OpenFingers')
             
             PreemptiveStateMachine.add('Back',
                       AmbiOmniDirectOrder(x-0.058,y,theta),
                       transitions={'succeeded':'endBottle', 'timeout':'Debloque'})
             
+            #cas d'erreur
             PreemptiveStateMachine.add('Debloque',
                       Replay(1.0),
+                      transitions={'succeeded':'problem', 'timeout':'ExitState'})
+            
+            PreemptiveStateMachine.add('ExitState',
+                      FingerClawState('close'), 
                       transitions={'succeeded':'problem', 'timeout':'problem'})
             
             

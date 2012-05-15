@@ -26,7 +26,7 @@ class Opening(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('GotoTopCloseCoin',
                       AmbiOmniDirectOrder(0.100, 0.600,-pi/2),
-                      transitions={'succeeded':'SetStratInfo', 'timeout':'Debloque'})
+                      transitions={'succeeded':'SetStratInfo', 'timeout':'SetStratInfo'})
             
             PreemptiveStateMachine.add('SetStratInfo',
                       SetStratInfoState('topCloseCoinInPosition', False),

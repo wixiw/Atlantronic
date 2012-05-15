@@ -59,7 +59,11 @@ class StartSequence2012(smach.StateMachine):
             
             smach.StateMachine.add('WaitForMatch', 
                       WaitForMatch(),
-                      transitions={'start':'gogogo', 'timeout':'problem'})
+                      transitions={'start':'SetInitialPosition2', 'timeout':'WaitForMatch'})
+            
+            smach.StateMachine.add('SetInitialPosition2',
+                      SetInitialPosition(x,y,theta),
+                      transitions={'succeeded':'gogogo', 'timeout':'gogogo'})
 
 
 ####################################################################################################################

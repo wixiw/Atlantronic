@@ -45,8 +45,13 @@ class MiddleObjects(PreemptiveStateMachine):
                       SetStratInfoState("middleCoinsInPosition", False),
                       transitions={'ok':'end'})
             
+            #cas d'erreur
             PreemptiveStateMachine.add('Debloque',
                       Replay(1.0),
+                      transitions={'succeeded':'problem', 'timeout':'ExitState'})
+            
+            PreemptiveStateMachine.add('ExitState',
+                      FingerClawState('close'), 
                       transitions={'succeeded':'problem', 'timeout':'problem'})
             
      
@@ -73,6 +78,11 @@ class BackFromMiddleObjects(PreemptiveStateMachine):
                       transitions={'succeeded':'end', 'timeout':'Debloque'})
             
          
+            #cas d'erreur
             PreemptiveStateMachine.add('Debloque',
                       Replay(1.0),
-                      transitions={'succeeded':'problem', 'timeout':'problem'})       
+                      transitions={'succeeded':'problem', 'timeout':'ExitState'})
+            
+            PreemptiveStateMachine.add('ExitState',
+                      FingerClawState('close'), 
+                      transitions={'succeeded':'problem', 'timeout':'problem'})   

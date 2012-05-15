@@ -19,26 +19,34 @@ class CleanCloseTotem(PreemptiveStateMachine):
                                        
             PreemptiveStateMachine.add('OpenFinger',
                       FingersOnlyState('open'), 
-                      transitions={'succeeded':'GotoFirstTotemCoin', 'timeout':'GotoFirstTotemCoin'})
+                      transitions={'succeeded':'SetVmax', 'timeout':'GotoFirstTotemCoin'})
             #as initial state is not the preemptive one, it is necessary to add the information here !
             self.setInitialState('OpenFinger')
             
-            pose = TotemPose(0.080, 0.450,-pi/4,table_half)
+            PreemptiveStateMachine.add('SetVmax', 
+                      SetVMaxState(0.3),
+                      transitions={'succeeded':'GotoFirstTotemCoin','timeout':'GotoFirstTotemCoin'})   
+            
+            poseFirst = TotemPose(0.080, 0.450,-pi/4,table_half)
             PreemptiveStateMachine.add('GotoFirstTotemCoin',
-                      AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
-                      transitions={'succeeded':'TotemClean', 'timeout':'Debloque'})
+                      AmbiOmniDirectOrder(poseFirst.x, poseFirst.y, poseFirst.h),
+                      transitions={'succeeded':'UnSetVmax', 'timeout':'Debloque'})
             
-            pose = TotemPose(0.600,0.400,-pi/4,table_half)
+            PreemptiveStateMachine.add('UnSetVmax', 
+                      SetVMaxState(0.0),
+                      transitions={'succeeded':'TotemClean','timeout':'TotemClean'})   
+            
+            poseClean = TotemPose(0.600,0.420,-pi/4,table_half)
             PreemptiveStateMachine.add('TotemClean',
-                      AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
-                      transitions={'succeeded':'PushALot', 'timeout':'Back'})
+                      AmbiOmniDirectOrder(poseClean.x, poseClean.y, poseClean.h),
+                      transitions={'succeeded':'PushALot', 'timeout':'Retry'})
             
-            pose = TotemPose(1.10,0.150,0,table_half)
+            pose = TotemPose(1.10,0.150,pi/12,table_half)
             PreemptiveStateMachine.add('PushALot',
                       AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
                       transitions={'succeeded':'Back', 'timeout':'Back'})
             
-            pose = TotemPose(0.700,0.500,-pi/2,table_half)
+            pose = TotemPose(0.700,0.400,-pi/2,table_half)
             PreemptiveStateMachine.add('Back',
                       AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
                       transitions={'succeeded':'CloseFingers', 'timeout':'Debloque'})
@@ -47,9 +55,25 @@ class CleanCloseTotem(PreemptiveStateMachine):
                       FingersOnlyState('close'), 
                       transitions={'succeeded':'endClean', 'timeout':'endClean'})
             
-            
+            #si on a rate le nettoyage le doigt droit s'est peut etre pris dans le totem
+            #on recommence une fois en partant de plus loin
+            PreemptiveStateMachine.add('Retry',
+                      Replay(1.0),
+                      transitions={'succeeded':'RetryFirstTotemCoin', 'timeout':'ExitState'})
+            PreemptiveStateMachine.add('RetryFirstTotemCoin',
+                      AmbiOmniDirectOrder(poseFirst.x, poseFirst.y + 0.030, poseFirst.h),
+                      transitions={'succeeded':'RetryTotemClean', 'timeout':'ExitState'})
+            PreemptiveStateMachine.add('RetryTotemClean',
+                      AmbiOmniDirectOrder(poseClean.x, poseClean.y + 0.030, poseClean.h),
+                      transitions={'succeeded':'PushALot', 'timeout':'ExitState'})
+                        
+            #replay + rangement du doigt
             PreemptiveStateMachine.add('Debloque',
                       Replay(1.0),
+                      transitions={'succeeded':'problem', 'timeout':'ExitState'})
+            
+            PreemptiveStateMachine.add('ExitState',
+                      FingerClawState('close'), 
                       transitions={'succeeded':'problem', 'timeout':'problem'})
 
 
@@ -79,9 +103,6 @@ class WorkCloseTotem(PreemptiveStateMachine):
             PreemptiveStateMachine.add('EnterTotem',
                       AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
                       transitions={'succeeded':'OpenFinger', 'timeout':'Debloque'})
-            #as initial state is not the preemptive one, it is necessary to add the information here !
-            self.setInitialState('EnterTotem')
-            
             
             PreemptiveStateMachine.add('OpenFinger',
                       AmbiClawFingerOrder(Robot2012.FINGER_HALF_CLOSE,Robot2012.FINGER_HALF_CLOSE,
@@ -106,6 +127,10 @@ class WorkCloseTotem(PreemptiveStateMachine):
              
             PreemptiveStateMachine.add('Debloque',
                       Replay(1.0),
+                      transitions={'succeeded':'problem', 'timeout':'ExitState'})
+            
+            PreemptiveStateMachine.add('ExitState',
+                      FingerClawState('close'), 
                       transitions={'succeeded':'problem', 'timeout':'problem'})
 
 
@@ -139,10 +164,11 @@ class AntiWorkCloseTotem(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('SetStratInfo_TotemFinished',
                       SetStratInfoState('topCloseTotemFull',False),
-                      transitions={'ok':'OpenAll'})
+                      transitions={'ok':'CloseASide'})
             
-            PreemptiveStateMachine.add('OpenAll',
-                      FingerClawState("open"),
+            PreemptiveStateMachine.add('CloseASide',
+                      AmbiClawFingerOrder(Robot2012.FINGER_HALF_CLOSE,Robot2012.FINGER_OPEN,
+                                          Robot2012.CLAW_HALF_CLOSE, Robot2012.CLAW_OPEN),
                       transitions={'succeeded':'EndSlashTotem', 'timeout':'EndSlashTotem'})  
             
             pose = TotemPose(0.750,0.125,-pi/2,table_half)
@@ -151,14 +177,17 @@ class AntiWorkCloseTotem(PreemptiveStateMachine):
                                                  pose.x, pose.y, pose.h),
                       transitions={'succeeded':'PushABit', 'timeout':'Debloque'})
             
-            pose = TotemPose(0.750,0.000,-pi/2,table_half)
+            pose = TotemPose(0.750,0.000,-pi/2+pi/12,table_half)
             PreemptiveStateMachine.add('PushABit',
-                      AmbiOmniDirectOrder_cpoint(0.060,0,0,
-                                                 pose.x, pose.y, pose.h),
+                      AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
                       transitions={'succeeded':'endTotem', 'timeout':'Debloque'})
              
             PreemptiveStateMachine.add('Debloque',
                       Replay(1.0),
+                      transitions={'succeeded':'problem', 'timeout':'ExitState'})
+            
+            PreemptiveStateMachine.add('ExitState',
+                      FingerClawState('close'), 
                       transitions={'succeeded':'problem', 'timeout':'problem'})
 
 
@@ -175,19 +204,37 @@ class ThrowUpCloseTotem(PreemptiveStateMachine):
                                     
             PreemptiveStateMachine.add('OpenClawMore',
                        AmbiClawFingerOrder(Robot2012.FINGER_HALF_CLOSE,Robot2012.FINGER_OPEN,
-                                           Robot2012.CLAW_HALF_CLOSE, Robot2012.CLAW_OPEN),
+                                           Robot2012.CLAW_CLOSE, Robot2012.CLAW_OPEN),
                       transitions={'succeeded':'ThrowUp', 'timeout':'ThrowUp'})  
             self.setInitialState('OpenClawMore')
             
-            pose = TotemPose(1.180,0.080,-pi/5,table_half)
+            pose = TotemPose(1.050,0.200,0,table_half)
             PreemptiveStateMachine.add('ThrowUp',
-                      AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
-                      transitions={'succeeded':'SetStratInfo_ThrowUpFinished', 'timeout':'Back'})
+                      AmbiOmniDirectOrder_cpoint(0,0.200,0,
+                                                 pose.x, pose.y, pose.h),
+                      transitions={'succeeded':'ThrowUpFinish', 'timeout':'Back'})
+            
+            pose = TotemPose(1.050,-0.200,-pi/6,table_half)
+            PreemptiveStateMachine.add('ThrowUpFinish',
+                      AmbiOmniDirectOrder_cpoint(0,-0.200,0,
+                                                 pose.x, pose.y, pose.h),
+                      transitions={'succeeded':'SetStratInfo_ThrowUpFinished', 'timeout':'BackFinish'})
             
             PreemptiveStateMachine.add('SetStratInfo_ThrowUpFinished',
                       SetStratInfoState('closeFreeGoldbarInPosition', False),
-                      transitions={'ok':'Back'})
+                      transitions={'ok':'OpenClawABit'})
             
+            PreemptiveStateMachine.add('OpenClawABit',
+                      AmbiClawFingerOrder(Robot2012.FINGER_HALF_CLOSE,Robot2012.FINGER_OPEN,
+                                           Robot2012.CLAW_HALF_CLOSE, Robot2012.CLAW_OPEN),
+                      transitions={'succeeded':'BackFinish', 'timeout':'ThrowUp'}) 
+            
+            pose = TotemPose(0.950,-0.050,-pi/6,table_half)
+            PreemptiveStateMachine.add('BackFinish',
+                      AmbiOmniDirectOrder_cpoint(0,-0.200,0,
+                                                 pose.x, pose.y, pose.h),
+                      transitions={'succeeded':'Back', 'timeout':'Back'})
+                                       
             pose = TotemPose(0.950,0.150,-pi/2,table_half)
             PreemptiveStateMachine.add('Back',
                       AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
@@ -199,6 +246,10 @@ class ThrowUpCloseTotem(PreemptiveStateMachine):
 
             PreemptiveStateMachine.add('Debloque',
                       Replay(1.0),
+                      transitions={'succeeded':'problem', 'timeout':'ExitState'})
+            
+            PreemptiveStateMachine.add('ExitState',
+                      FingerClawState('close'), 
                       transitions={'succeeded':'problem', 'timeout':'problem'})
 
 
