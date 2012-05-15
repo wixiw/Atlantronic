@@ -1,0 +1,4 @@
+string color
+# 'red' or 'purple'
+---
+bool success

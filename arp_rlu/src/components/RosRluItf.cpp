@@ -18,7 +18,7 @@ using namespace arp_core;
 ORO_LIST_COMPONENT_TYPE( arp_rlu::RosRluItf )
 
 RosRluItf::RosRluItf(std::string const name):
-        RluTaskContext(name)
+RluTaskContext(name)
 {
     addPort("inPose",inPose);
     addPort("inTwist",inTwist);
@@ -113,11 +113,23 @@ bool RosRluItf::srvAutoInit(AutoInit::Request& req, AutoInit::Response& res)
     return res.success;
 }
 
-//bool RosRluItf::srvSetColor(GetAutoInitPose::Request& req, AutoInit::Response& res)
-//{
-//    res.success =
-//    return res.success;
-//}
+bool RosRluItf::srvSetColor(SetColor::Request& req, SetColor::Response& res)
+{
+    if( req.color.compare("red") == 0  )
+    {
+        m_ooSwitchToRedConfig();
+        res.success = true;
+        return res.success;
+    }
+    if( req.color.compare("purple") == 0  )
+    {
+        m_ooSwitchToPurpleConfig();
+        res.success = true;
+        return res.success;
+    }
+    res.success = false;
+    return res.success;
+}
 
 
 
@@ -126,4 +138,5 @@ void RosRluItf::createRosInterface()
     ros::NodeHandle nh;
     m_srvInitialize = nh.advertiseService("/Localizator/setPosition", &RosRluItf::srvInitialize, this);
     m_srvAutoInit = nh.advertiseService("/Localizator/setAutoInit", &RosRluItf::srvAutoInit, this);
+    m_srvSetColor = nh.advertiseService("/Localizator/setColor", &RosRluItf::srvSetColor, this);
 }
