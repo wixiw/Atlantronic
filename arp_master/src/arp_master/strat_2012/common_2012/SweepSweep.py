@@ -45,9 +45,13 @@ class SweepSweep(PreemptiveStateMachine):
             #cas d'erreur
             PreemptiveStateMachine.add('Debloque',
                       Replay(1.0),
-                      transitions={'succeeded':'problem', 'timeout':'ExitState'})
+                      transitions={'succeeded':'UnSetVmax', 'timeout':'UnSetVmax'})
+            
+            PreemptiveStateMachine.add('UnSetVmax', 
+                      SetVMaxState(0.0),
+                      transitions={'succeeded':'ExitState','timeout':'ExitState'}) 
             
             PreemptiveStateMachine.add('ExitState',
                       FingerClawState('close'), 
-                      transitions={'succeeded':'problem', 'timeout':'problem'})
+                      transitions={'succeeded':'problem', 'timeout':'problem'})  
             

@@ -71,12 +71,15 @@ class CleanCloseTotem(PreemptiveStateMachine):
             #replay + rangement du doigt
             PreemptiveStateMachine.add('Debloque',
                       Replay(1.0),
-                      transitions={'succeeded':'problem', 'timeout':'ExitState'})
+                      transitions={'succeeded':'UnSetVmaxRecover', 'timeout':'UnSetVmaxRecover'})
+            
+            PreemptiveStateMachine.add('UnSetVmaxRecover', 
+                      SetVMaxState(0.0),
+                      transitions={'succeeded':'ExitState','timeout':'ExitState'}) 
             
             PreemptiveStateMachine.add('ExitState',
                       FingerClawState('close'), 
-                      transitions={'succeeded':'problem', 'timeout':'problem'})
-
+                      transitions={'succeeded':'problem', 'timeout':'problem'})  
 
 
 #you should not use this state, please see user states at the end of file
@@ -122,13 +125,18 @@ class WorkCloseTotem(PreemptiveStateMachine):
                                                  pose.x, pose.y, pose.h),
                       transitions={'succeeded':'endTotem', 'timeout':'Debloque'})
              
+            #cas d'erreur
             PreemptiveStateMachine.add('Debloque',
                       Replay(1.0),
-                      transitions={'succeeded':'problem', 'timeout':'ExitState'})
+                      transitions={'succeeded':'UnSetVmax', 'timeout':'UnSetVmax'})
+            
+            PreemptiveStateMachine.add('UnSetVmax', 
+                      SetVMaxState(0.0),
+                      transitions={'succeeded':'ExitState','timeout':'ExitState'}) 
             
             PreemptiveStateMachine.add('ExitState',
                       FingerClawState('close'), 
-                      transitions={'succeeded':'problem', 'timeout':'problem'})
+                      transitions={'succeeded':'problem', 'timeout':'problem'})  
 
 
 #you should not use this state, please see user states at the end of file
@@ -141,7 +149,7 @@ class AntiWorkCloseTotem(PreemptiveStateMachine):
                                              transitions={'endMatch':'endTotem'})
 
             
-            pose = TotemPose(0.100, 0.280, -pi/2,table_half)
+            pose = TotemPose(0.070, 0.280, -pi/2,table_half)
             PreemptiveStateMachine.add('EnterTotem',
                       AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
                       transitions={'succeeded':'OpenClaws', 'timeout':'Debloque'})
@@ -157,7 +165,7 @@ class AntiWorkCloseTotem(PreemptiveStateMachine):
             
             pose = TotemPose(0.500,0.125,-pi/2,table_half)
             PreemptiveStateMachine.add('SlashTotem',
-                      AmbiOmniDirectOrder_cpoint(0.100,0,0,
+                      AmbiOmniDirectOrder_cpoint(0.090,0,0,
                                                  pose.x, pose.y, pose.h),
                       transitions={'succeeded':'SetStratInfo_TotemFinished', 'timeout':'Debloque'})
             
@@ -166,14 +174,14 @@ class AntiWorkCloseTotem(PreemptiveStateMachine):
                       transitions={'ok':'CloseASide'})
             
             PreemptiveStateMachine.add('CloseASide',
-                      TotemClawState(Robot2012.FINGER_HALF_CLOSE,Robot2012.FINGER_OPEN,
-                                          Robot2012.CLAW_HALF_CLOSE, Robot2012.CLAW_OPEN,
+                      TotemClawState(Robot2012.FINGER_CLOSE,Robot2012.FINGER_OPEN,
+                                          Robot2012.CLAW_CLOSE, Robot2012.CLAW_OPEN,
                                           table_half),
                       transitions={'succeeded':'EndSlashTotem', 'timeout':'EndSlashTotem'})  
             
             pose = TotemPose(0.750,0.125,-pi/2,table_half)
             PreemptiveStateMachine.add('EndSlashTotem',
-                      AmbiOmniDirectOrder_cpoint(0.100,0,0,
+                      AmbiOmniDirectOrder_cpoint(0.090,0,0,
                                                  pose.x, pose.y, pose.h),
                       transitions={'succeeded':'PushABit', 'timeout':'Debloque'})
             
@@ -182,13 +190,18 @@ class AntiWorkCloseTotem(PreemptiveStateMachine):
                       AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
                       transitions={'succeeded':'endTotem', 'timeout':'Debloque'})
              
+            #cas d'erreur
             PreemptiveStateMachine.add('Debloque',
                       Replay(1.0),
-                      transitions={'succeeded':'problem', 'timeout':'ExitState'})
+                      transitions={'succeeded':'UnSetVmax', 'timeout':'UnSetVmax'})
+            
+            PreemptiveStateMachine.add('UnSetVmax', 
+                      SetVMaxState(0.0),
+                      transitions={'succeeded':'ExitState','timeout':'ExitState'}) 
             
             PreemptiveStateMachine.add('ExitState',
                       FingerClawState('close'), 
-                      transitions={'succeeded':'problem', 'timeout':'problem'})
+                      transitions={'succeeded':'problem', 'timeout':'problem'})  
 
 
 
@@ -203,21 +216,21 @@ class ThrowUpCloseTotem(PreemptiveStateMachine):
             
                                     
             PreemptiveStateMachine.add('OpenClawMore',
-                      TotemClawState(Robot2012.FINGER_HALF_CLOSE,Robot2012.FINGER_OPEN,
+                      TotemClawState(Robot2012.FINGER_CLOSE,Robot2012.FINGER_OPEN,
                                            Robot2012.CLAW_CLOSE, Robot2012.CLAW_OPEN,
                                            table_half),
                       transitions={'succeeded':'ThrowUp', 'timeout':'ThrowUp'})  
             self.setInitialState('OpenClawMore')
             
-            pose = TotemPose(1.050,0.200,0,table_half)
-            cpoint = TotemPose(0,0.200,0, table_half)
+            pose = TotemPose(1.050,0.150,0,table_half)
+            cpoint = TotemPose(0,0.150,0, table_half)
             PreemptiveStateMachine.add('ThrowUp',
                       AmbiOmniDirectOrder_cpoint(cpoint.x, cpoint.y, cpoint.h,
                                                  pose.x, pose.y, pose.h),
                       transitions={'succeeded':'ThrowUpFinish', 'timeout':'Back'})
             
-            pose = TotemPose(1.050,-0.200,-pi/6,table_half)
-            cpoint = TotemPose(0,-0.200,0, table_half)
+            pose = TotemPose(1.050,-0.150,-pi/6,table_half)
+            cpoint = TotemPose(0,-0.150,0, table_half)
             PreemptiveStateMachine.add('ThrowUpFinish',
                       AmbiOmniDirectOrder_cpoint(cpoint.x, cpoint.y, cpoint.h,
                                                  pose.x, pose.y, pose.h),
@@ -233,8 +246,8 @@ class ThrowUpCloseTotem(PreemptiveStateMachine):
                                            table_half),
                       transitions={'succeeded':'BackFinish', 'timeout':'ThrowUp'}) 
             
-            pose = TotemPose(1.000,-0.200, 0, table_half)
-            cpoint = TotemPose(0,-0.200,0, table_half)
+            pose = TotemPose(1.000,-0.150, 0, table_half)
+            cpoint = TotemPose(0,-0.150,0, table_half)
             PreemptiveStateMachine.add('BackFinish',
                       AmbiOmniDirectOrder_cpoint(cpoint.x, cpoint.y, cpoint.h,
                                                  pose.x, pose.y, pose.h),
@@ -249,13 +262,18 @@ class ThrowUpCloseTotem(PreemptiveStateMachine):
                       FingerClawState('close'),
                       transitions={'succeeded':'end', 'timeout':'end'}) 
 
+            #cas d'erreur
             PreemptiveStateMachine.add('Debloque',
                       Replay(1.0),
-                      transitions={'succeeded':'problem', 'timeout':'ExitState'})
+                      transitions={'succeeded':'UnSetVmax', 'timeout':'UnSetVmax'})
+            
+            PreemptiveStateMachine.add('UnSetVmax', 
+                      SetVMaxState(0.0),
+                      transitions={'succeeded':'ExitState','timeout':'ExitState'}) 
             
             PreemptiveStateMachine.add('ExitState',
                       FingerClawState('close'), 
-                      transitions={'succeeded':'problem', 'timeout':'problem'})
+                      transitions={'succeeded':'problem', 'timeout':'problem'})  
 
 
 #######################################################################################################

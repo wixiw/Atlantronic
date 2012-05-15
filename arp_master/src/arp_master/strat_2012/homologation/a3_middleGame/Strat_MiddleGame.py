@@ -70,6 +70,15 @@ class MiddleGame(PreemptiveStateMachine):
                       CloseBottleAndCoin(),
                       transitions={'end':'endMiddleGame', 'problem':'endMiddleGame'})
             
+                        #cas d'erreur
             PreemptiveStateMachine.add('Debloque',
                       Replay(1.0),
+                      transitions={'succeeded':'UnSetVmax', 'timeout':'UnSetVmax'})
+            
+            PreemptiveStateMachine.add('UnSetVmax', 
+                      SetVMaxState(0.0),
+                      transitions={'succeeded':'ExitState','timeout':'ExitState'}) 
+            
+            PreemptiveStateMachine.add('ExitState',
+                      FingerClawState('close'), 
                       transitions={'succeeded':'endMiddleGame', 'timeout':'endMiddleGame'})  

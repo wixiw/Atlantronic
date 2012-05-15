@@ -48,11 +48,15 @@ class MiddleObjects(PreemptiveStateMachine):
             #cas d'erreur
             PreemptiveStateMachine.add('Debloque',
                       Replay(1.0),
-                      transitions={'succeeded':'problem', 'timeout':'ExitState'})
+                      transitions={'succeeded':'UnSetVmax', 'timeout':'UnSetVmax'})
+            
+            PreemptiveStateMachine.add('UnSetVmax', 
+                      SetVMaxState(0.0),
+                      transitions={'succeeded':'ExitState','timeout':'ExitState'}) 
             
             PreemptiveStateMachine.add('ExitState',
                       FingerClawState('close'), 
-                      transitions={'succeeded':'problem', 'timeout':'problem'})
+                      transitions={'succeeded':'problem', 'timeout':'problem'})  
             
      
      
@@ -65,23 +69,35 @@ class BackFromMiddleObjects(PreemptiveStateMachine):
                                              transitions={'endMatch':'end'})
             
             PreemptiveStateMachine.add('OpenFingers',
-                      FingersOnlyState('open'), 
-                      transitions={'succeeded':'EngageFarBotTotem', 'timeout':'EngageFarBotTotem'})
+                      FingersOnlyState('open_right'), 
+                      transitions={'succeeded':'SetVmax', 'timeout':'SetVmax'})
             self.setInitialState('OpenFingers')
             
+            PreemptiveStateMachine.add('SetVmax', 
+                      SetVMaxState(0.5),
+                      transitions={'succeeded':'EngageFarBotTotem','timeout':'EngageFarBotTotem'})   
+            
             PreemptiveStateMachine.add('EngageFarBotTotem',
-                      AmbiOmniDirectOrder(-0.800,-0.380,0),
+                      AmbiOmniDirectOrder(-0.830,-0.370,0),
                       transitions={'succeeded':'Moissbat', 'timeout':'Debloque'})
             
             PreemptiveStateMachine.add('Moissbat',
-                      AmbiOmniDirectOrder(0.600,-0.420,0),
-                      transitions={'succeeded':'end', 'timeout':'Debloque'})
+                      AmbiOmniDirectOrder(0.600,-0.400,0),
+                      transitions={'succeeded':'UnSetVmax', 'timeout':'Debloque'})
+            
+            PreemptiveStateMachine.add('UnSetVmax', 
+                      SetVMaxState(0.0),
+                      transitions={'succeeded':'end','timeout':'end'})   
             
          
             #cas d'erreur
             PreemptiveStateMachine.add('Debloque',
                       Replay(1.0),
-                      transitions={'succeeded':'problem', 'timeout':'ExitState'})
+                      transitions={'succeeded':'UnSetVmaxRecover', 'timeout':'UnSetVmaxRecover'})
+            
+            PreemptiveStateMachine.add('UnSetVmaxRecover', 
+                      SetVMaxState(0.0),
+                      transitions={'succeeded':'ExitState','timeout':'ExitState'}) 
             
             PreemptiveStateMachine.add('ExitState',
                       FingerClawState('close'), 
