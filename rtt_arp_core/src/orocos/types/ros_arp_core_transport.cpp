@@ -1,5 +1,4 @@
 
-#include <arp_core/LocalizatorState.h>
 #include <arp_core/Velocity.h>
 #include <arp_core/OmniCommand.h>
 #include <arp_core/Obstacle.h>
@@ -10,6 +9,7 @@
 #include <arp_core/Odo.h>
 #include <arp_core/DifferentialCommand.h>
 #include <arp_core/OmniOdo.h>
+#include <arp_core/LocalizationState.h>
 
 #include "ros_msg_transporter.hpp"
 #include "RosLib.hpp"
@@ -23,9 +23,7 @@ namespace ros_integration {
     {
       bool registerTransport(std::string name, types::TypeInfo* ti)
       {
-                   if(name == "/arp_core/LocalizatorState")
-              return ti->addProtocol(ORO_ROS_PROTOCOL_ID,new RosMsgTransporter<arp_core::LocalizatorState>());
-         if(name == "/arp_core/Velocity")
+                   if(name == "/arp_core/Velocity")
               return ti->addProtocol(ORO_ROS_PROTOCOL_ID,new RosMsgTransporter<arp_core::Velocity>());
          if(name == "/arp_core/OmniCommand")
               return ti->addProtocol(ORO_ROS_PROTOCOL_ID,new RosMsgTransporter<arp_core::OmniCommand>());
@@ -45,6 +43,8 @@ namespace ros_integration {
               return ti->addProtocol(ORO_ROS_PROTOCOL_ID,new RosMsgTransporter<arp_core::DifferentialCommand>());
          if(name == "/arp_core/OmniOdo")
               return ti->addProtocol(ORO_ROS_PROTOCOL_ID,new RosMsgTransporter<arp_core::OmniOdo>());
+         if(name == "/arp_core/LocalizationState")
+              return ti->addProtocol(ORO_ROS_PROTOCOL_ID,new RosMsgTransporter<arp_core::LocalizationState>());
 
           return false;
       }

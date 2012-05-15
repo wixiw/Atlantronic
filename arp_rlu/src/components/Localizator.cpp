@@ -531,7 +531,7 @@ std::string Localizator::getInfo()
         EstimatedPose2D estim_H_robot_table = kfloc.getLastEstimatedPose2D();
         ss << "Estimate : " << estim_H_robot_table.toString() << std::endl;
         std::vector< arp_math::Vector2 > obstacles = kfloc.getDetectedObstacles();
-        ss << "Obstacles (N = " << obstacles.size() << "): ";
+        //ss << "Obstacles (N = " << obstacles.size() << "): ";
         for(unsigned int i = 0 ; (i < obstacles.size()) && ( i < 3) ; i++)
         {
             ss << "(" << obstacles[i].transpose() << ") ";
@@ -541,7 +541,7 @@ std::string Localizator::getInfo()
     {
         ss << " - Theoretical Visu: None" << std::endl;
         ss << "Estimate : None" << std::endl;
-        ss << "Obstacles : None";
+        //ss << "Obstacles : None";
     }
 
     return ss.str();

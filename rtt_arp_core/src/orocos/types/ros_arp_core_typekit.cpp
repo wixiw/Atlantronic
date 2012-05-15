@@ -1,4 +1,3 @@
-#include <arp_core/LocalizatorState.h>
 #include <arp_core/Velocity.h>
 #include <arp_core/OmniCommand.h>
 #include <arp_core/Obstacle.h>
@@ -9,6 +8,7 @@
 #include <arp_core/Odo.h>
 #include <arp_core/DifferentialCommand.h>
 #include <arp_core/OmniOdo.h>
+#include <arp_core/LocalizationState.h>
 
 #include <rtt/types/TypekitPlugin.hpp>
 #include <rtt/types/StructTypeInfo.hpp>
@@ -17,8 +17,7 @@ namespace ros_integration {
   using namespace RTT;
 
     /** Declare all factory functions */
-            void rtt_ros_addType_LocalizatorState();
-        void rtt_ros_addType_Velocity();
+            void rtt_ros_addType_Velocity();
         void rtt_ros_addType_OmniCommand();
         void rtt_ros_addType_Obstacle();
         void rtt_ros_addType_OpponentsList();
@@ -28,6 +27,7 @@ namespace ros_integration {
         void rtt_ros_addType_Odo();
         void rtt_ros_addType_DifferentialCommand();
         void rtt_ros_addType_OmniOdo();
+        void rtt_ros_addType_LocalizationState();
 
    
     /**
@@ -43,8 +43,7 @@ namespace ros_integration {
 
       virtual bool loadTypes() {
           // call all factory functions
-                  rtt_ros_addType_LocalizatorState(); // factory function for adding TypeInfo.
-        rtt_ros_addType_Velocity(); // factory function for adding TypeInfo.
+                  rtt_ros_addType_Velocity(); // factory function for adding TypeInfo.
         rtt_ros_addType_OmniCommand(); // factory function for adding TypeInfo.
         rtt_ros_addType_Obstacle(); // factory function for adding TypeInfo.
         rtt_ros_addType_OpponentsList(); // factory function for adding TypeInfo.
@@ -54,6 +53,7 @@ namespace ros_integration {
         rtt_ros_addType_Odo(); // factory function for adding TypeInfo.
         rtt_ros_addType_DifferentialCommand(); // factory function for adding TypeInfo.
         rtt_ros_addType_OmniOdo(); // factory function for adding TypeInfo.
+        rtt_ros_addType_LocalizationState(); // factory function for adding TypeInfo.
 
           return true;
       }

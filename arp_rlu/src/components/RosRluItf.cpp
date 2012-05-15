@@ -29,7 +29,7 @@ RluTaskContext(name)
     addPort("inOpponents",inOpponents);
     addPort("outPose",outPose);
     addPort("outOpponents",outOpponents);
-    addPort("outLocalizatorState",outLocalizatorState);
+    addPort("outLocalizationState",outLocalizationState);
     createRosInterface();
 }
 
@@ -70,26 +70,20 @@ void RosRluItf::updateHook()
     pOut.vtheta = tIn.vh();
     outPose.write(pOut);
 
-    LocalizatorState stateOut;
+    LocalizationState stateOut;
     int locState = -1; //0; //STOPPED
     inLocalizationState.readNewest(locState);
     stateOut.state = locState;
     int locMode = -1; //0; //ODO_ONLY
-    inLocalizationState.readNewest(locMode);
+    inLocalizationMode.readNewest(locMode);
     stateOut.mode = locMode;
     int locQuality = -1; //0; //LOST
-    inLocalizationState.readNewest(locQuality);
+    inLocalizationQuality.readNewest(locQuality);
     stateOut.quality = locQuality;
     int locVisu = -1; //0; //NONE
-    inLocalizationState.readNewest(locVisu);
+    inLocalizationVisibility.readNewest(locVisu);
     stateOut.visibility = locVisu;
-    outLocalizatorState.write(stateOut);
-
-    //LOG( Info ) << "*********************************************" << locState << endlog();
-    //LOG( Info ) << "locState : " << locState << endlog();
-    //LOG( Info ) << "locMode : " << locMode << endlog();
-    //LOG( Info ) << "locQuality : " << locQuality << endlog();
-    //LOG( Info ) << "locVisu : " << locVisu << endlog();
+    outLocalizationState.write(stateOut);
 
     arp_core::OpponentsList opponentsOut;
     std::vector<arp_math::EstimatedPose2D>::iterator opp;

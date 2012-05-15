@@ -14,7 +14,7 @@
 //rosmsg
 #include <arp_core/Pose.h>
 #include <arp_core/OpponentsList.h>
-#include <arp_core/LocalizatorState.h>
+#include <arp_core/LocalizationState.h>
 
 //rossrv
 #include <arp_core/SetPosition.h>
@@ -40,7 +40,7 @@ class RosRluItf: public arp_rlu::RluTaskContext
         RTT::InputPort<arp_math::EstimatedTwist2D> inTwist;
         RTT::InputPort< std::vector<arp_math::EstimatedPose2D> > inOpponents;
         RTT::OutputPort<arp_core::Pose> outPose;
-        RTT::OutputPort< arp_core::LocalizatorState > outLocalizatorState;
+        RTT::OutputPort< arp_core::LocalizationState > outLocalizationState;
         RTT::OutputPort< arp_core::OpponentsList > outOpponents;
 
         RTT::OperationCaller<bool(double,double,double)> m_ooInitialize;
