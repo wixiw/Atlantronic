@@ -20,9 +20,17 @@ LastComponent::LastComponent(const std::string name):
     addPort("outDeployed",outDeployed);
 }
 
-void LastComponent::updateHook()
+LastComponent::~LastComponent()
+{
+    system("sh /opt/ard/arp_core/script/linux/clear_files.sh");
+}
+
+bool LastComponent::startHook()
 {
     Bool deployed;
     deployed.data = true;
     outDeployed.write(deployed);
+
+    system("sh /opt/ard/arp_core/script/linux/deployment_deployed.sh");
+    return true;
 }

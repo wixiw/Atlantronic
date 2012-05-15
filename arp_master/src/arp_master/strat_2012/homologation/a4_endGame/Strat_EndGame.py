@@ -2,7 +2,7 @@
 
 #libraries for ROS
 import roslib; roslib.load_manifest('arp_master')
-
+import os
 from arp_master import *
 
 class EndGame(PreemptiveStateMachine):

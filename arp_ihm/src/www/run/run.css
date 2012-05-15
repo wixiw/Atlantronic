@@ -13,16 +13,18 @@ html {
 body {
 	height: 100%;
 	margin: auto;
-	background-image: url("../ressource/slide.gif");
+	/*background-image: url("../ressource/slide.gif");*/
 	background-repeat: no-repeat;
 }
 
 header {
-	color: #e8ecf6;
-	background-image: url("../ressource/topmenu_ard.png");
+	color: #4a64aa;
+  background-image: url("../ressource/slide.gif");
+	/*background-image: url("../ressource/topmenu_ard.png");*/
 	background-repeat: no-repeat;
+	background-position:center; 
 	width: 940px;
-	height: 90px;
+	height: 450px;
 	margin-left: 42px;
 	padding-top: 10px;
 	margin-bottom: 50px;
@@ -47,24 +49,49 @@ section p
 
 footer
 {
-	margin-top: 400 px;
-	margin-left: 780px;
+  color: #4a64aa;
+  width: 940px;
+  height: 60px;
+  margin-left: 42px;
+  margin-right: 42px;
 }
 
 .button
 {
-	color: #e8ecf6;
+	color: #ffffff;
 	background-color: #3c404c;
 	border-radius: 10px;
 	font-size: 40px;
 	width: 200px;
 	height: 40px;
 	text-align: center;
-	padding-bottom: 15px;
+	padding-bottom: 5px;
+  padding-top: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.state
+{
+  color: #4a64aa;
+  vertical-align: middle;
+}
+
+.floatright 
+{ 
+	float: right; 
+}
+
+logOrocos
+{ 
+  color: #000000;
+  font-size:15px;
+  display : block; 
+  background-color : #ffffff;
 }
 
 a
 {
 	text-decoration:none;
-	color: #4a64aa;
+	color: #ffffff;
 }

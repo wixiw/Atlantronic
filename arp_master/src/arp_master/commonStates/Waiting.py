@@ -43,6 +43,7 @@ class WaitForMatch(CyclicState):
     
     def executeIn(self):
         os.system("beep -f 300 -l300 -r3") 
+        os.system("sh /opt/ard/arp_core/script/linux/match_ready.sh")
     
     def executeTransitions(self):
        if Inputs.getstart()==1:
@@ -52,3 +53,4 @@ class WaitForMatch(CyclicState):
         #je note le temps de debut de match
         Data.start_time=rospy.get_rostime()
         os.system("beep -f 300 -l150")
+        os.system("sh /opt/ard/arp_core/script/linux/match_running.sh")

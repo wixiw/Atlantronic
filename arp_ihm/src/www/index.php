@@ -11,11 +11,11 @@
 </head>
 <body>
 	<nav>
-		<a href="run/run.php?action=homologation"><div class="bouton">Homolog</div></a>
-		<a href="run/run.php?action=qualif"><div class="bouton">Qualif</div></a>
-		<a href="run/run.php?action=matchA"><div class="bouton">Match A</div></a>
-		<a href="run/run.php?action=matchB"><div class="bouton">Match B</div></a>
-		<a href="run/run.php?action=manual"><div class="bouton">Manual</div></a>
+		<a href="run/run.php?type=Homologation&action=do"><div class="bouton">Homolog</div></a>
+		<a href="run/run.php?type=Qualif&action=do"><div class="bouton">Qualif</div></a>
+		<a href="run/run.php?type=MatchA&action=do"><div class="bouton">Match A</div></a>
+		<a href="run/run.php?type=MatchB&action=do"><div class="bouton">Match B</div></a>
+		<a href="run/run.php?type=Manual&action=do"><div class="bouton">Manual</div></a>
 	</nav>
 	
 	<header>

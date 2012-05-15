@@ -18,7 +18,8 @@ class LastComponent: public MasterTaskContext
 {
     public:
         LastComponent(const std::string name);
-        void updateHook();
+        ~LastComponent();
+        bool startHook();
 
     protected:
         RTT::OutputPort<std_msgs::Bool> outDeployed;

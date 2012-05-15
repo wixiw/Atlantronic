@@ -26,6 +26,7 @@ class UninitialisationState(CyclicState):
     def executeIn(self):
         self.result = self.disablePower()
         os.system("beep -f 300 -l3000") 
+        os.system("sh /opt/ard/arp_core/script/linux/match_finished.sh")
         
     def executeTransitions(self):
         return 'ok'     

@@ -76,6 +76,10 @@ class Uninitialisation(smach.StateMachine):
     
         smach.StateMachine.__init__(self,outcomes=['endUninitialisation'])
         with self:
+            smach.StateMachine.add('Uninitialisation',
+                      Uninitialisation(),
+                      transitions={'endUninitialisation':'PrintStratInfo'})
+            
             smach.StateMachine.add('PrintStratInfo',
                       PrintStratInfo(),
                       transitions={'ok':'WaitForStart'})
