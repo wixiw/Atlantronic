@@ -36,8 +36,9 @@ class Opening(PreemptiveStateMachine):
                       CleanTopCloseTotem(),
                       transitions={'endClean':'endOpening', 'problem':'Debloque'})
             
+            #cas d'erreur
             PreemptiveStateMachine.add('Debloque',
-                      Replay(1.0),
-                      transitions={'succeeded':'problem', 'timeout':'problem'})
+                      DeblocReloc(),
+                      transitions={'endDeblocReloc':'problem'})
             
  

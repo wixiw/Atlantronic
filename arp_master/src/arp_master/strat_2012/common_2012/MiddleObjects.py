@@ -5,6 +5,7 @@ import roslib; roslib.load_manifest('arp_master')
 from arp_master import *
 
 from DynamixelActionState import *
+from DeblocReloc import *
 from Table2012 import *
 from Robot2012 import *
 
@@ -47,16 +48,8 @@ class MiddleObjects(PreemptiveStateMachine):
             
             #cas d'erreur
             PreemptiveStateMachine.add('Debloque',
-                      Replay(1.0),
-                      transitions={'succeeded':'UnSetVmax', 'timeout':'UnSetVmax'})
-            
-            PreemptiveStateMachine.add('UnSetVmax', 
-                      SetVMaxState(0.0),
-                      transitions={'succeeded':'ExitState','timeout':'ExitState'}) 
-            
-            PreemptiveStateMachine.add('ExitState',
-                      FingerClawState('close'), 
-                      transitions={'succeeded':'problem', 'timeout':'problem'})  
+                      DeblocReloc(),
+                      transitions={'endDeblocReloc':'problem'})
             
      
      
@@ -92,13 +85,5 @@ class BackFromMiddleObjects(PreemptiveStateMachine):
          
             #cas d'erreur
             PreemptiveStateMachine.add('Debloque',
-                      Replay(1.0),
-                      transitions={'succeeded':'UnSetVmaxRecover', 'timeout':'UnSetVmaxRecover'})
-            
-            PreemptiveStateMachine.add('UnSetVmaxRecover', 
-                      SetVMaxState(0.0),
-                      transitions={'succeeded':'ExitState','timeout':'ExitState'}) 
-            
-            PreemptiveStateMachine.add('ExitState',
-                      FingerClawState('close'), 
-                      transitions={'succeeded':'problem', 'timeout':'problem'})   
+                      DeblocReloc(),
+                      transitions={'endDeblocReloc':'problem'}) 

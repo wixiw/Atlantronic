@@ -30,6 +30,11 @@ class Table2012(TableVierge):
         #P_GOLDBAR_TOTEM_TOP_FAR
         #P_GOLDBAR_TOTEM_BOT_FAR
         
+        #balises
+        P_RED_BEACON_UP    = Point(1.565, 1.040)
+        P_RED_BEACON_DOWN    = Point(1.565,-1.040)
+        P_RED_BEACON_LEFT    = Point(-1.560, 0.)
+
         #poitns d'engagement des totems pour racler
         #P_ENGAGE_TOTEM_TOP_CLOSE
         #P_ENGAGE_TOTEM_BOT_CLOSE

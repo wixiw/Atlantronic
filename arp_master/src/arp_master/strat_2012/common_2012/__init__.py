@@ -6,5 +6,6 @@ from InitStates import *
 from MiddleObjects import *
 from Robot2012 import *
 from SweepSweep import *
+from DeblocReloc import *
 from Table2012 import *
 from TotemStates import *

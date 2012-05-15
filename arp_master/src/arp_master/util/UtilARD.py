@@ -38,7 +38,9 @@ def intersectCircle(x0,y0,r0,x1,y1,r1):
     
     return (x3_1,y3_1,x3_2,y3_2)
 
-
+def averageAngle(h1,h2):
+    #compute the mean angle, between - PI and +PI, of 2 angles. takes the smallest angle between h1 and h2 to define the direction
+    return normalizeAngle(h1+normalizeAngle(h2-h1)/2)
 
 
     
