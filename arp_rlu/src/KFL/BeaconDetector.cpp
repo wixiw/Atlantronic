@@ -249,19 +249,17 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
 
     //*****************************
     // Détection des obstacles
+    beaconCandidates = detectedCircles;
     obsTimer.Start();
     detectedObstacles.clear();
-    beaconCandidates.clear();
     for(unsigned int i = 0 ; i < detectedCircles.size() ; i++)
     {
         if( (detectedCircles[i].getCartesianMean()[0] < params.xMinObstacle) || (detectedCircles[i].getCartesianMean()[0] > params.xMaxObstacle) )
         {
-            beaconCandidates.push_back( detectedCircles[i] );
             continue;
         }
         if( (detectedCircles[i].getCartesianMean()[1] < params.yMinObstacle) || (detectedCircles[i].getCartesianMean()[1] > params.yMaxObstacle) )
         {
-            beaconCandidates.push_back( detectedCircles[i] );
             continue;
         }
         detectedObstacles.push_back( arp_math::Vector2( detectedCircles[i].x(), detectedCircles[i].y() ) );
