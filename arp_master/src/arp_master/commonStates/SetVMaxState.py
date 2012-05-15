@@ -18,7 +18,11 @@ class SetVMaxState(CyclicState):
         self.v = vMax
             
     def executeIn(self):
-        self.setVMax(self.v)
+        try:
+            self.setVMax(self.v)
+        except Exception:
+            rospy.logerr("SETVMAXSTATE: j'ai pas reussi a faire passer le SetVMax mais bon... continuons !") 
+            
 
     def executeTransitions(self):
         return 'succeeded'
