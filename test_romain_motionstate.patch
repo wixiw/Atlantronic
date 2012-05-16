@@ -1,0 +1,438 @@
+Index: arp_master/src/arp_master/fsmFramework/MotionState.py
+===================================================================
+--- arp_master/src/arp_master/fsmFramework/MotionState.py	(revision 1408)
++++ arp_master/src/arp_master/fsmFramework/MotionState.py	(working copy)
+@@ -15,22 +15,21 @@
+ 
+ # ** You should not have to use this state **
+ # Prefer the use of class from MotionStateCollection
+-class MotionState(CyclicState):
++class MotionState(CyclicActionState):
+     
+     def __init__(self):
+         CyclicState.__init__(self,outcomes=['succeeded','timeout'])
+         self.timeout = 10
+         self.lastStart=None
+-        try:
+-            self.blinding_period=rospy.get_param("/blinding_period")
+-        except KeyError:
+-            rospy.logerr("Failed to find a rosparam : /blinding_period") 
+-            self.blinding_period=0
++        #maximum number of retry
++        self.nMaxTry=1
++        # time we will wait before try again
++        self.timeoutWAIT=2
++        #current retry number
++        self.curTry=0
++        #current state. can be TRY or WAIT
++        self.motionState='TRY'
+    
+-    
+-    # the main execute function
+-    #it overrides the one of CyclicState
+-    #here, transitions are handled automatically (succeded or aborted following action result)   
+     def execute(self,userdata):
+         self.timeIn=rospy.get_rostime().secs
+         Inputs.update()
+@@ -53,12 +52,9 @@
+                 if preempted:
+                     self.client.cancel_all_goals()
+                     return label
+-                
+-            #check if the timeout is fired
+-            if (self.timeout != 0 and rospy.get_rostime().secs-self.timeIn>self.timeout):
+-                return 'timeout'
++
+             #is the order terminated ?
+-            self.trans=self.executeClientTransition()  
++            self.trans=self.executeTransition()  
+                      
+             if self.trans!=None:
+                 self.executeOut()
+@@ -72,119 +68,48 @@
+         
+     #this is the transition function. It checks if the order has succeded or not, following action status
+     # it also check if there is an obstacle
+-    def executeClientTransition(self):
++    def executeTransition(self):
++        obstacle=self.isObstacle()
+         state=self.client.get_state()
+-        if state==actionlib.GoalStatus.SUCCEEDED:
+-            return 'succeeded'
++        #check if the timeout is fired
++        if (self.timeout != 0 and rospy.get_rostime().secs-self.timeIn>self.timeout):
++                return 'timeout'
++         
++        # are we moving ?
++        if self.motionState=='TRY':    
++            if state==actionlib.GoalStatus.SUCCEEDED:
++                return 'succeeded'
++            
++            if state==actionlib.GoalStatus.ABORTED or state==actionlib.GoalStatus.REJECTED or state==actionlib.GoalStatus.LOST or state==actionlib.GoalStatus.PREEMPTED or self.isFrontObstacle() or self.isRearObstacle():
++                self.client.cancel_all_goals()
++                return 'timeout'
++            
++            #we have a problem and we will wait before try again
++            if  obstacle and self.curTry<nMaxTry:
++                self.client.cancel_all_goals()
++                state='WAIT'
++                self.timeInWAIT=rospy.get_rostime().secs
++                return None 
++            # we have a problem and we wont try again
++            if  obstacle and self.curTry>=nMaxTry:
++                return 'timeout'
+         
+-        if state==actionlib.GoalStatus.ABORTED or state==actionlib.GoalStatus.REJECTED or state==actionlib.GoalStatus.LOST or state==actionlib.GoalStatus.PREEMPTED or self.isFrontObstacle() or self.isRearObstacle():
+-            self.client.cancel_all_goals()
+-            return 'timeout'  
+-        #all others are considered "waiting"
+-        #Possible States Are: PENDING, ACTIVE, RECALLED, REJECTED, PREEMPTED, ABORTED, SUCCEEDED, LOST
+-    
++        #are we waiting for the next try ?
++        if self.motionState=='WAIT':
++            if  rospy.get_rostime().secs-self.timeInWAIT>self.timeoutWAIT:
++                state='TRY'
++                self.createAction()
++                self.nMaxTry=self.nMaxTry+1
++                return None
++            else:
++                return None
++              
+     #check for obstacles
+-    def isFrontObstacle(self):
+-        if Inputs.getObstacle()==1 and rospy.get_rostime().secs-Data.timeObstacleInAction>self.blinding_period and Inputs.getLinearVelocity()>0.010:
+-            Data.timeObstacleInAction=rospy.get_rostime().secs
++    def isObstacle(self):
++        opp = Inputs.getOpponents()
++        if opp.closest_distance<0.200:
+             return True
+         else:
+             return False
+-    def isRearObstacle(self):    
+-        if Inputs.getRearObstacle()==1 and rospy.get_rostime().secs-Data.timeRearObstacleInAction>self.blinding_period and Inputs.getLinearVelocity()<-0.010:
+-            Data.timeRearObstacleInAction=rospy.get_rostime().secs
+-            return True
+-        else:
+-            return False     
+-             
+-    # generic motioncontrol action creator.
+-    def createMotionControlAction(self,x,y,theta,move_type,passe,max_speed):
+-        self.createMotionControlAction_cpoint(0,0,0,x,y,theta,move_type,passe,0,0,0,0,max_speed)
+  
+-     # motioncontrol action creator with a control point
+-    def createMotionControlAction_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x,y,theta,move_type,passe,x_speed,y_speed,theta_speed,openloop_duration,max_speed):
+-        self.client = actionlib.SimpleActionClient('MotionControl', OrderAction)
+-        goal=OrderGoal()
+-        goal.x_des=x
+-        goal.y_des=y
+-        goal.theta_des=theta
+-        goal.x_cpoint=x_cpoint
+-        goal.y_cpoint=y_cpoint
+-        goal.theta_cpoint=theta_cpoint
+-        goal.move_type=move_type
+-        goal.passe=passe
+-        goal.x_speed=x_speed
+-        goal.y_speed=y_speed
+-        goal.theta_speed=theta_speed
+-        goal.openloop_duration=openloop_duration
+-        goal.max_speed=max_speed
+-        
+-        self.client.wait_for_server(rospy.Duration.from_sec(5.0))
+-        self.client.cancel_all_goals
+-        self.client.send_goal(goal)
+-        
+-        self.actionCreated=True       
+-        
+-        
+-    # these are useful motions functions that allow not to give all parameters  
+-    def forward(self,dist,v_max=-1.0):
+-        self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()),
+-                                       Inputs.gety()+dist*sin(Inputs.gettheta()),
+-                                       Inputs.gettheta(),
+-                                       'OMNIDIRECT',False,v_max)
+-        
+-    def backward(self,dist,v_max=-1.0):
+-        self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()+pi),
+-                                       Inputs.gety()+dist*sin(Inputs.gettheta()+pi),
+-                                       Inputs.gettheta(),
+-                                       'OMNIDIRECT',False,v_max)
+-    def leftward(self,dist,v_max=-1.0):
+-        self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()+pi/2),
+-                                       Inputs.gety()+dist*sin(Inputs.gettheta()+pi/2),
+-                                       Inputs.gettheta(),
+-                                       'OMNIDIRECT',False,v_max)
+-        
+-    def rightward(self,dist,v_max=-1.0):
+-        self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()-pi/2),
+-                                       Inputs.gety()+dist*sin(Inputs.gettheta()-pi/2),
+-                                       Inputs.gettheta(),
+-                                       'OMNIDIRECT',False,v_max)
+-
+-    def omnidirect(self,x,y,theta,v_max=-1.0):
+-        self.createMotionControlAction_cpoint(-0.0583,0,0,
+-                                              x,y,theta,
+-                                              'OMNIDIRECT',False,
+-                                              0,0,0,0,v_max)
+-    
+-    def omnidirect_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x,y,theta,v_max=-1.0):
+-        self.createMotionControlAction_cpoint(x_cpoint,y_cpoint,theta_cpoint,
+-                                              x,y,theta,
+-                                              'OMNIDIRECT',False,
+-                                              0,0,0,0,v_max)    
+-        
+-    def cap(self,theta,v_max=-1.0):
+-        self.createMotionControlAction_cpoint(0.0,0,0,
+-                                              Inputs.getx(),Inputs.gety(),theta,
+-                                              'OMNIDIRECT',False,
+-                                              0,0,0,0,v_max)
+-        
+-    def openloop(self,x_speed,y_speed,theta_speed,openloop_duration):
+-        self.createMotionControlAction_cpoint(-0.0583,0,0,
+-                                              0,0,0,
+-                                              'OPENLOOP',False,
+-                                              x_speed,y_speed,theta_speed,openloop_duration,-1.0)
+-        
+-    def openloop_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,
+-                        x_speed,y_speed,theta_speed,
+-                        openloop_duration):
+-        self.createMotionControlAction_cpoint(x_cpoint,y_cpoint,theta_cpoint,
+-                                              0,0,0,
+-                                              'OPENLOOP',False,
+-                                              x_speed,y_speed,theta_speed,openloop_duration,-1.0)
+-        
+-    def replay(self,replay_duration):
+-        self.createMotionControlAction_cpoint(0,0,0,
+-                                              0,0,0,
+-                                              'REPLAY',False,
+-                                              0,0,0,replay_duration,-1.0)
+-            
+\ No newline at end of file
++     
+\ No newline at end of file
+Index: arp_master/src/arp_master/fsmFramework/MotionStateCollection.py
+===================================================================
+--- arp_master/src/arp_master/fsmFramework/MotionStateCollection.py	(revision 1408)
++++ arp_master/src/arp_master/fsmFramework/MotionStateCollection.py	(working copy)
+@@ -7,8 +7,7 @@
+ import smach_msgs
+ import actionlib
+ 
+-
+-from CyclicActionState import CyclicActionState
++from MotionState import *
+ from arp_master.util import *
+ from arp_ods.msg import *
+ from math import *
+@@ -16,9 +15,9 @@
+ # Use this Order State to quickly add move state in your FSM
+ # give the target (x,y,theta) in (m,m,rad) of robot's CDG and match color
+ # Ex : AmbiOmniDirectOrder(1.200, -0.700,pi/2)             
+-class AmbiOmniDirectOrder(CyclicActionState):
++class AmbiOmniDirectOrder(MotionState):
+     def __init__(self,x,y,theta, vmax=-1.0):
+-        CyclicActionState.__init__(self)
++        MotionState.__init__(self)
+         self.x = x
+         self.y = y
+         self.theta = theta
+@@ -31,9 +30,9 @@
+ # Use this Order State to quickly add move state in your FSM with a special ControlPoint (CP)
+ # give the target (x,y,h) in (m,m,rad) of robot's CP=(CPx,CPy,CPh) and match color
+ # Ex : AmbiOmniDirectOrder(CPx=0,CPy=0,CPh=0, 1.200, -0.700,pi/2)   
+-class AmbiOmniDirectOrder_cpoint(CyclicActionState):
++class AmbiOmniDirectOrder_cpoint(MotionState):
+     def __init__(self,CPx,CPy,CPh,x,y,h):
+-        CyclicActionState.__init__(self)
++        MotionState.__init__(self)
+         self.x = x
+         self.y = y
+         self.h = h
+@@ -51,9 +50,9 @@
+ # Use this state to replay the move before the collision that has just block the robot
+ # replayDuration is the length in seconds of the replay.
+ # CAUTION : there is no insurrance that a certain distance will be done from the collision... it depends on cases.
+-class Replay(CyclicActionState):
++class Replay(MotionState):
+     def __init__(self,replayDuration):
+-        CyclicActionState.__init__(self)
++        MotionState.__init__(self)
+         self.replayDuration=replayDuration
+         
+     def createAction(self):
+@@ -61,9 +60,9 @@
+     
+ # Use this Order State to quickly add move state in your FSM (see AmbiOmniDirectOrder for details)
+ # Only use this if you are forced to specify a color dependent move (else prefer AmbiOmniDirectOrder)    
+-class OmniDirectOrder(CyclicActionState):
++class OmniDirectOrder(MotionState):
+     def __init__(self,x,y,theta):
+-        CyclicActionState.__init__(self)
++        MotionState.__init__(self)
+         self.x = x
+         self.y = y
+         self.theta = theta
+@@ -75,9 +74,9 @@
+ # Use this to call an open loop order 
+ # OpenLoppOrder(0,0,0, duration=0) 
+ # Only use this if you are forced to specify a color dependent move (else prefer AmbiOpenLoop)   
+-class AmbiOpenLoopOrder(CyclicActionState):
++class AmbiOpenLoopOrder(MotionState):
+     def __init__(self,vx,vy,vh,duration):
+-        CyclicActionState.__init__(self)
++        MotionState.__init__(self)
+         self.vx = vx
+         self.vy = vy
+         self.vh = vh
+@@ -90,9 +89,9 @@
+ # Use this to call an open loop order 
+ # OpenLoppOrder(0,0,0, duration=0) 
+ # Only use this if you are forced to specify a color dependent move (else prefer AmbiOpenLoop)   
+-class OpenLoopOrder(CyclicActionState):
++class OpenLoopOrder(MotionState):
+     def __init__(self,vx,vy,vh,duration):
+-        CyclicActionState.__init__(self)
++        MotionState.__init__(self)
+         self.vx = vx
+         self.vy = vy
+         self.vh = vh
+@@ -102,46 +101,46 @@
+         self.openloop(self.vx,self.vy,self.vh,self.duration)        
+         
+         
+-class ForwardOrder(CyclicActionState):
++class ForwardOrder(MotionState):
+     def __init__(self,dist):
+-        CyclicActionState.__init__(self)
++        MotionState.__init__(self)
+         self.dist = dist
+     def createAction(self):
+         self.forward(self,self.dist)           
+         
+-class BackwardOrder(CyclicActionState):
++class BackwardOrder(MotionState):
+     def __init__(self,dist):
+-        CyclicActionState.__init__(self)
++        MotionState.__init__(self)
+         self.dist = dist
+     def createAction(self):
+         self.backward(self,self.dist)            
+         
+-class LeftwardOrder(CyclicActionState):
++class LeftwardOrder(MotionState):
+     def __init__(self,dist):
+-        CyclicActionState.__init__(self)
++        MotionState.__init__(self)
+         self.dist = dist
+     def createAction(self):
+         self.leftward(self,self.dist)                  
+         
+-class RightwardOrder(CyclicActionState):
++class RightwardOrder(MotionState):
+     def __init__(self,dist):
+-        CyclicActionState.__init__(self)
++        MotionState.__init__(self)
+         self.dist = dist
+     def createAction(self):
+         self.rightward(self,self.dist)   
+         
+ #Use this to turn on your current position.        
+-class AmbiTurnOrder(CyclicActionState):
++class AmbiTurnOrder(MotionState):
+     def __init__(self,h):
+-        CyclicActionState.__init__(self)
++        MotionState.__init__(self)
+         self.h=h
+     def createAction(self):
+         self.cap( AmbiCapRed(self.h,Data.color).angle )      
+    
+ #You should only use this if you have color dependent stuuf to do           
+-class TurnOrder(CyclicActionState):
++class TurnOrder(MotionState):
+     def __init__(self,h):
+-        CyclicActionState.__init__(self)
++        MotionState.__init__(self)
+         self.h=h
+     def createAction(self):
+         self.cap(self.h)          
+\ No newline at end of file
+Index: arp_master/src/arp_master/strat_2012/motionTesting/MotionTestingStratNode.py
+===================================================================
+--- arp_master/src/arp_master/strat_2012/motionTesting/MotionTestingStratNode.py	(revision 1408)
++++ arp_master/src/arp_master/strat_2012/motionTesting/MotionTestingStratNode.py	(working copy)
+@@ -53,44 +53,19 @@
+                       transitions={'succeeded':'Forward', 'timeout':'Debloque'})
+                         
+             smach.StateMachine.add('Forward', Forward(),
+-                                   transitions={'succeeded':'Turn', 'timeout':'Debloque'}) 
+-            smach.StateMachine.add('Turn', Turn(),
+-                                   transitions={'succeeded':'Move1', 'timeout':'Debloque'})
+-            smach.StateMachine.add('WaitBack', WaiterState(2.0),
+-                                   transitions={'timeout':'Forward'})                 
++                                   transitions={'succeeded':'Move1', 'timeout':'Debloque'}) 
++             
+                                     
+             smach.StateMachine.add('Move1', Move1(),
+-                                   transitions={'succeeded':'Wait1', 'timeout':'Debloque'})
+-            smach.StateMachine.add('Wait1', WaiterState(2.0),
+-                                   transitions={'timeout':'Move2'})   
++                                   transitions={'succeeded':'Move2', 'timeout':'Debloque'}) 
+             smach.StateMachine.add('Move2', Move2(),
+-                                   transitions={'succeeded':'Wait2', 'timeout':'Debloque'})
+-            smach.StateMachine.add('Wait2', WaiterState(2.0),
+-                                   transitions={'timeout':'Setv2'}) 
+-            smach.StateMachine.add('Setv2', SetVMaxState(-666),
+-                                   transitions={'succeeded':'Move3','timeout':'end'})   
++                                   transitions={'succeeded':'Move1', 'timeout':'Debloque'})
++            
+             smach.StateMachine.add('Move3', Move3(),
+-                                   transitions={'succeeded':'Wait3', 'timeout':'Debloque'})
+-            smach.StateMachine.add('Wait3', WaiterState(2.0),
+-                                   transitions={'timeout':'Setv1'})
+-            smach.StateMachine.add('Setv1', SetVMaxState(0.2),
+-                                   transitions={'succeeded':'Move4','timeout':'end'})   
+-            smach.StateMachine.add('Move4', Move4(),
+-                                   transitions={'succeeded':'Wait4', 'timeout':'Debloque'})
+-            smach.StateMachine.add('Wait4', WaiterState(2.0),
+-                                   transitions={'timeout':'Move1'})    
+-                           
+-            smach.StateMachine.add('BMove1', Move4(),
+-                                   transitions={'succeeded':'BMove2', 'timeout':'Debloque'})
+-            smach.StateMachine.add('BMove2', Move3(),
+-                                   transitions={'succeeded':'BMove3', 'timeout':'Debloque'})
+-            smach.StateMachine.add('BMove3', Move2(),
+-                                   transitions={'succeeded':'BMove4', 'timeout':'Debloque'})
+-            smach.StateMachine.add('BMove4', Move1(),
+-                                   transitions={'succeeded':'BMove1', 'timeout':'Debloque'})
++                                   transitions={'succeeded':'Move1', 'timeout':'Debloque'})
+       
+             smach.StateMachine.add('Debloque', Replay(1.0),
+-                                   transitions={'succeeded':'Wait', 'timeout':'Debloque'})     
++                                   transitions={'succeeded':'Move3', 'timeout':'Debloque'})     
+             smach.StateMachine.add('Wait', WaiterState(2.0),
+                                    transitions={'timeout':'end'})           
+ 
+@@ -115,20 +90,18 @@
+ #--------------------------------------------------------------------------------------------------
+ class Move1(CyclicActionState):
+     def createAction(self):
+-        #self.omnidirect(0.800, 0.550, -pi/2)
+         self.omnidirect(0.800, 0.550, 0)
+         
+ 
+ class Move2(CyclicActionState):
+     def createAction(self):
+-        self.omnidirect(-0.800, 0.550, 0,0.3)
+-        #self.cap(0)
++        self.omnidirect(-0.800, 0.550, 0,0.5)
++
+         
+ class Move3(CyclicActionState):
+     def createAction(self):
+-        self.omnidirect(0.0, 0.550, -pi/2)
+-        #self.openloop(x_speed=0.400, y_speed=0.000, theta_speed=0.000,
+-        #              openloop_duration=2.000)  
++        self.cap(-pi/2)
++
+   
+ class Move4(CyclicActionState):
+     def createAction(self):
