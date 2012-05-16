@@ -27,10 +27,14 @@ LastComponent::~LastComponent()
 
 bool LastComponent::startHook()
 {
+    system("sh /opt/ard/arp_core/script/linux/deployment_deployed.sh");
+    return true;
+}
+
+
+void LastComponent::updateHook()
+{
     Bool deployed;
     deployed.data = true;
     outDeployed.write(deployed);
-
-    system("sh /opt/ard/arp_core/script/linux/deployment_deployed.sh");
-    return true;
 }

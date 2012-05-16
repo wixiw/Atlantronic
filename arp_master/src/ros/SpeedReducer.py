@@ -53,7 +53,7 @@ class SpeedReducer:
                 dx = distance - self.min_distance
                 dh = normalizeAngle(opp.closest_angle - self.pose.theta)
                 v = sqrt(2.0*self.decc*dx) + self.reduced_min_speed
-                
+                #rospy.loginfo("SpeedReducer : prop %s", v)
                 self.setVmax(v)
                 
                 #if fabs(dh) <= self.search_angle/2.0:

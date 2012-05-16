@@ -71,7 +71,7 @@ class BackFromMiddleObjects(PreemptiveStateMachine):
                       transitions={'succeeded':'EngageFarBotTotem','timeout':'EngageFarBotTotem'})   
             
             PreemptiveStateMachine.add('EngageFarBotTotem',
-                      AmbiOmniDirectOrder(-0.830,-0.370,0),
+                      AmbiOmniDirectOrder(-0.700,-0.400,0),
                       transitions={'succeeded':'Moissbat', 'timeout':'Debloque'})
             
             PreemptiveStateMachine.add('Moissbat',

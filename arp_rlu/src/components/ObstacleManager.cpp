@@ -22,7 +22,7 @@ ObstacleManager::ObstacleManager(const std::string& name)
   propNumberOfOpponents(2),
   attrFrontObstacles(),
   propMinProximity(0.1),
-  propCentralZoneRadius(0.1)
+  propCentralZoneRadius(0.2)
 {
     createOrocosInterface();
     std::vector<arp_math::EstimatedPose2D> opponents(propNumberOfOpponents);

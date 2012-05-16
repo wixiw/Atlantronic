@@ -49,7 +49,7 @@ class WaitForOrocos(CyclicState):
         CyclicState.__init__(self, outcomes=['deployed'])
     
     def executeTransitions(self):
-       if Inputs.getdeployed() is True:
+        if Inputs.getdeployed() is True:
             return 'deployed'
     
     def executeOut(self):
