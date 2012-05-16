@@ -22,7 +22,7 @@
 		Allow from all
 	</Directory>
 
-	ErrorLog /opt/ard/arp_ihm/error.log
+	ErrorLog /tmp/ihm_error.log
 
 	# Possible values include: debug, info, notice, warn, error, crit,
 	# alert, emerg.
