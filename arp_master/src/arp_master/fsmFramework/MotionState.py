@@ -15,22 +15,18 @@ from math import *
 
 # ** You should not have to use this state **
 # Prefer the use of class from MotionStateCollection
-class MotionState(CyclicState):
+class MotionState(CyclicActionState):
     
     def __init__(self):
         CyclicState.__init__(self,outcomes=['succeeded','timeout'])
         self.timeout = 10
         self.lastStart=None
-        try:
-            self.blinding_period=rospy.get_param("/blinding_period")
-        except KeyError:
-            rospy.logerr("Failed to find a rosparam : /blinding_period") 
-            self.blinding_period=0
+        #maximum number of retry
+        self.nMaxTry=1
+        # time we will wait before try again
+        self.timeoutWAIT=2
+
    
-    
-    # the main execute function
-    #it overrides the one of CyclicState
-    #here, transitions are handled automatically (succeded or aborted following action result)   
     def execute(self,userdata):
         self.timeIn=rospy.get_rostime().secs
         Inputs.update()
@@ -40,6 +36,11 @@ class MotionState(CyclicState):
         if self.actionCreated==False:
             rospy.logerr("aucune Action creee dans un etat qui etait fait pour ca !")
             return
+        
+        #current retry number
+        self.curTry=0
+        #current state. can be TRY or WAIT
+        self.motionState='TRY'
         
         while(not rospy.is_shutdown()):
             
@@ -53,12 +54,9 @@ class MotionState(CyclicState):
                 if preempted:
                     self.client.cancel_all_goals()
                     return label
-                
-            #check if the timeout is fired
-            if (self.timeout != 0 and rospy.get_rostime().secs-self.timeIn>self.timeout):
-                return 'timeout'
+
             #is the order terminated ?
-            self.trans=self.executeClientTransition()  
+            self.trans=self.executeTransition()  
                      
             if self.trans!=None:
                 self.executeOut()
@@ -72,119 +70,53 @@ class MotionState(CyclicState):
         
     #this is the transition function. It checks if the order has succeded or not, following action status
     # it also check if there is an obstacle
-    def executeClientTransition(self):
+    def executeTransition(self):
+        obstacle=self.isObstacle()
         state=self.client.get_state()
-        if state==actionlib.GoalStatus.SUCCEEDED:
-            return 'succeeded'
+        #check if the timeout is fired
+        if (self.timeout != 0 and rospy.get_rostime().secs-self.timeIn>self.timeout):
+                return 'timeout'
+         
+        # are we moving ?
+        if self.motionState=='TRY':    
+            if state==actionlib.GoalStatus.SUCCEEDED:
+                return 'succeeded'
+            
+            if state==actionlib.GoalStatus.ABORTED or state==actionlib.GoalStatus.REJECTED or state==actionlib.GoalStatus.LOST or state==actionlib.GoalStatus.PREEMPTED or self.isFrontObstacle() or self.isRearObstacle():
+                self.client.cancel_all_goals()
+                return 'timeout'
+            
+            #we have a problem and we will wait before try again
+            if  obstacle and self.curTry<self.nMaxTry:
+                self.client.cancel_all_goals()
+                self.motionState='WAIT'
+                self.timeInWAIT=rospy.get_rostime().secs
+                rospy.logerr("MOTION STATE : try passe en wait")
+                return None 
+            # we have a problem and we wont try again
+            if  obstacle and self.curTry>=self.nMaxTry:
+                rospy.logerr("MOTION STATE : try passe en fail")
+                return 'timeout'
         
-        if state==actionlib.GoalStatus.ABORTED or state==actionlib.GoalStatus.REJECTED or state==actionlib.GoalStatus.LOST or state==actionlib.GoalStatus.PREEMPTED or self.isFrontObstacle() or self.isRearObstacle():
-            self.client.cancel_all_goals()
-            return 'timeout'  
-        #all others are considered "waiting"
-        #Possible States Are: PENDING, ACTIVE, RECALLED, REJECTED, PREEMPTED, ABORTED, SUCCEEDED, LOST
-    
+        #are we waiting for the next try ?
+        if self.motionState=='WAIT':
+            if  rospy.get_rostime().secs-self.timeInWAIT>self.timeoutWAIT:
+                rospy.logerr("MOTION STATE : wait passe en try")
+                self.motionState='TRY'
+                self.createAction()
+                self.curTry=self.curTry+1
+                return None
+            else:
+                return None
+              
     #check for obstacles
-    def isFrontObstacle(self):
-        if Inputs.getObstacle()==1 and rospy.get_rostime().secs-Data.timeObstacleInAction>self.blinding_period and Inputs.getLinearVelocity()>0.010:
-            Data.timeObstacleInAction=rospy.get_rostime().secs
+    def isObstacle(self):
+        opp = Inputs.getOpponents()
+        #opp.printOpponents()
+        if opp.closest_distance<0.400:
+            rospy.logerr("MOTION STATE : vu qqn")
             return True
         else:
             return False
-    def isRearObstacle(self):    
-        if Inputs.getRearObstacle()==1 and rospy.get_rostime().secs-Data.timeRearObstacleInAction>self.blinding_period and Inputs.getLinearVelocity()<-0.010:
-            Data.timeRearObstacleInAction=rospy.get_rostime().secs
-            return True
-        else:
-            return False     
-             
-    # generic motioncontrol action creator.
-    def createMotionControlAction(self,x,y,theta,move_type,passe,max_speed):
-        self.createMotionControlAction_cpoint(0,0,0,x,y,theta,move_type,passe,0,0,0,0,max_speed)
  
-     # motioncontrol action creator with a control point
-    def createMotionControlAction_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x,y,theta,move_type,passe,x_speed,y_speed,theta_speed,openloop_duration,max_speed):
-        self.client = actionlib.SimpleActionClient('MotionControl', OrderAction)
-        goal=OrderGoal()
-        goal.x_des=x
-        goal.y_des=y
-        goal.theta_des=theta
-        goal.x_cpoint=x_cpoint
-        goal.y_cpoint=y_cpoint
-        goal.theta_cpoint=theta_cpoint
-        goal.move_type=move_type
-        goal.passe=passe
-        goal.x_speed=x_speed
-        goal.y_speed=y_speed
-        goal.theta_speed=theta_speed
-        goal.openloop_duration=openloop_duration
-        goal.max_speed=max_speed
-        
-        self.client.wait_for_server(rospy.Duration.from_sec(5.0))
-        self.client.cancel_all_goals
-        self.client.send_goal(goal)
-        
-        self.actionCreated=True       
-        
-        
-    # these are useful motions functions that allow not to give all parameters  
-    def forward(self,dist,v_max=-1.0):
-        self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()),
-                                       Inputs.gety()+dist*sin(Inputs.gettheta()),
-                                       Inputs.gettheta(),
-                                       'OMNIDIRECT',False,v_max)
-        
-    def backward(self,dist,v_max=-1.0):
-        self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()+pi),
-                                       Inputs.gety()+dist*sin(Inputs.gettheta()+pi),
-                                       Inputs.gettheta(),
-                                       'OMNIDIRECT',False,v_max)
-    def leftward(self,dist,v_max=-1.0):
-        self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()+pi/2),
-                                       Inputs.gety()+dist*sin(Inputs.gettheta()+pi/2),
-                                       Inputs.gettheta(),
-                                       'OMNIDIRECT',False,v_max)
-        
-    def rightward(self,dist,v_max=-1.0):
-        self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()-pi/2),
-                                       Inputs.gety()+dist*sin(Inputs.gettheta()-pi/2),
-                                       Inputs.gettheta(),
-                                       'OMNIDIRECT',False,v_max)
-
-    def omnidirect(self,x,y,theta,v_max=-1.0):
-        self.createMotionControlAction_cpoint(-0.0583,0,0,
-                                              x,y,theta,
-                                              'OMNIDIRECT',False,
-                                              0,0,0,0,v_max)
-    
-    def omnidirect_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x,y,theta,v_max=-1.0):
-        self.createMotionControlAction_cpoint(x_cpoint,y_cpoint,theta_cpoint,
-                                              x,y,theta,
-                                              'OMNIDIRECT',False,
-                                              0,0,0,0,v_max)    
-        
-    def cap(self,theta,v_max=-1.0):
-        self.createMotionControlAction_cpoint(0.0,0,0,
-                                              Inputs.getx(),Inputs.gety(),theta,
-                                              'OMNIDIRECT',False,
-                                              0,0,0,0,v_max)
-        
-    def openloop(self,x_speed,y_speed,theta_speed,openloop_duration):
-        self.createMotionControlAction_cpoint(-0.0583,0,0,
-                                              0,0,0,
-                                              'OPENLOOP',False,
-                                              x_speed,y_speed,theta_speed,openloop_duration,-1.0)
-        
-    def openloop_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,
-                        x_speed,y_speed,theta_speed,
-                        openloop_duration):
-        self.createMotionControlAction_cpoint(x_cpoint,y_cpoint,theta_cpoint,
-                                              0,0,0,
-                                              'OPENLOOP',False,
-                                              x_speed,y_speed,theta_speed,openloop_duration,-1.0)
-        
-    def replay(self,replay_duration):
-        self.createMotionControlAction_cpoint(0,0,0,
-                                              0,0,0,
-                                              'REPLAY',False,
-                                              0,0,0,replay_duration,-1.0)
-            
+     

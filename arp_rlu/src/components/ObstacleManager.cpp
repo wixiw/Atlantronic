@@ -145,7 +145,16 @@ void ObstacleManager::updateHook()
 //        }
 //        LOG( Info ) << ss.str() << endlog();
 //    }
-
+    /*std::vector<arp_math::EstimatedPose2D> dummy;
+    opponents = dummy;
+    arp_math::EstimatedPose2D oppDummy;
+    oppDummy.x(0.600);
+    oppDummy.y(0.500);
+    opponents.push_back( oppDummy );
+    arp_math::EstimatedPose2D oppDummy2;
+    oppDummy2.x(0.500);
+    oppDummy2.y(0.500);
+    opponents.push_back( oppDummy2 );*/
     outOpponents.write(opponents);
 }
 

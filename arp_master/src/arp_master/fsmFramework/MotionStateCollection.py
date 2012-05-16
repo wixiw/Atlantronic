@@ -7,8 +7,8 @@ import smach_ros
 import smach_msgs
 import actionlib
 
-
-from CyclicActionState import CyclicActionState
+from MotionState import *
+from CyclicActionState import *
 from arp_master.util import *
 from arp_ods.msg import *
 from math import *
@@ -16,9 +16,9 @@ from math import *
 # Use this Order State to quickly add move state in your FSM
 # give the target (x,y,theta) in (m,m,rad) of robot's CDG and match color
 # Ex : AmbiOmniDirectOrder(1.200, -0.700,pi/2)             
-class AmbiOmniDirectOrder(CyclicActionState):
+class AmbiOmniDirectOrder(MotionState):
     def __init__(self,x,y,theta, vmax=-1.0):
-        CyclicActionState.__init__(self)
+        MotionState.__init__(self)
         self.x = x
         self.y = y
         self.theta = theta
@@ -31,9 +31,9 @@ class AmbiOmniDirectOrder(CyclicActionState):
 # Use this Order State to quickly add move state in your FSM with a special ControlPoint (CP)
 # give the target (x,y,h) in (m,m,rad) of robot's CP=(CPx,CPy,CPh) and match color
 # Ex : AmbiOmniDirectOrder(CPx=0,CPy=0,CPh=0, 1.200, -0.700,pi/2)   
-class AmbiOmniDirectOrder_cpoint(CyclicActionState):
+class AmbiOmniDirectOrder_cpoint(MotionState):
     def __init__(self,CPx,CPy,CPh,x,y,h):
-        CyclicActionState.__init__(self)
+        MotionState.__init__(self)
         self.x = x
         self.y = y
         self.h = h
@@ -61,9 +61,9 @@ class Replay(CyclicActionState):
     
 # Use this Order State to quickly add move state in your FSM (see AmbiOmniDirectOrder for details)
 # Only use this if you are forced to specify a color dependent move (else prefer AmbiOmniDirectOrder)    
-class OmniDirectOrder(CyclicActionState):
+class OmniDirectOrder(MotionState):
     def __init__(self,x,y,theta):
-        CyclicActionState.__init__(self)
+        MotionState.__init__(self)
         self.x = x
         self.y = y
         self.theta = theta
@@ -75,9 +75,9 @@ class OmniDirectOrder(CyclicActionState):
 # Use this to call an open loop order 
 # OpenLoppOrder(0,0,0, duration=0) 
 # Only use this if you are forced to specify a color dependent move (else prefer AmbiOpenLoop)   
-class AmbiOpenLoopOrder(CyclicActionState):
+class AmbiOpenLoopOrder(MotionState):
     def __init__(self,vx,vy,vh,duration):
-        CyclicActionState.__init__(self)
+        MotionState.__init__(self)
         self.vx = vx
         self.vy = vy
         self.vh = vh
@@ -90,9 +90,9 @@ class AmbiOpenLoopOrder(CyclicActionState):
 # Use this to call an open loop order 
 # OpenLoppOrder(0,0,0, duration=0) 
 # Only use this if you are forced to specify a color dependent move (else prefer AmbiOpenLoop)   
-class OpenLoopOrder(CyclicActionState):
+class OpenLoopOrder(MotionState):
     def __init__(self,vx,vy,vh,duration):
-        CyclicActionState.__init__(self)
+        MotionState.__init__(self)
         self.vx = vx
         self.vy = vy
         self.vh = vh
@@ -102,46 +102,46 @@ class OpenLoopOrder(CyclicActionState):
         self.openloop(self.vx,self.vy,self.vh,self.duration)        
         
         
-class ForwardOrder(CyclicActionState):
+class ForwardOrder(MotionState):
     def __init__(self,dist):
-        CyclicActionState.__init__(self)
+        MotionState.__init__(self)
         self.dist = dist
     def createAction(self):
         self.forward(self,self.dist)           
         
-class BackwardOrder(CyclicActionState):
+class BackwardOrder(MotionState):
     def __init__(self,dist):
-        CyclicActionState.__init__(self)
+        MotionState.__init__(self)
         self.dist = dist
     def createAction(self):
         self.backward(self,self.dist)            
         
-class LeftwardOrder(CyclicActionState):
+class LeftwardOrder(MotionState):
     def __init__(self,dist):
-        CyclicActionState.__init__(self)
+        MotionState.__init__(self)
         self.dist = dist
     def createAction(self):
         self.leftward(self,self.dist)                  
         
-class RightwardOrder(CyclicActionState):
+class RightwardOrder(MotionState):
     def __init__(self,dist):
-        CyclicActionState.__init__(self)
+        MotionState.__init__(self)
         self.dist = dist
     def createAction(self):
         self.rightward(self,self.dist)   
         
 #Use this to turn on your current position.        
-class AmbiTurnOrder(CyclicActionState):
+class AmbiTurnOrder(MotionState):
     def __init__(self,h):
-        CyclicActionState.__init__(self)
+        MotionState.__init__(self)
         self.h=h
     def createAction(self):
         self.cap( AmbiCapRed(self.h,Data.color).angle )      
    
 #You should only use this if you have color dependent stuuf to do           
-class TurnOrder(CyclicActionState):
+class TurnOrder(MotionState):
     def __init__(self,h):
-        CyclicActionState.__init__(self)
+        MotionState.__init__(self)
         self.h=h
     def createAction(self):
         self.cap(self.h)          
