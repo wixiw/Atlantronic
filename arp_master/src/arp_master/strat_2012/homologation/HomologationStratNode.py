@@ -66,7 +66,7 @@ class MainStateMachine(smach.StateMachine):
                                    Strat_EndGame.EndGame(),
                                     transitions={'endEndGame':'Uninitialisation'})
             smach.StateMachine.add('Uninitialisation', 
-                                   InitStates.Uninitialisation(1.070,0.75,pi),
+                                   InitStates.Uninitialisation2012(1.070,0.75,pi),
                                     transitions={'endUninitialisation':'end'})
 
    

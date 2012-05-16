@@ -68,7 +68,7 @@ class StartSequence2012(smach.StateMachine):
 
 ####################################################################################################################
 
-class Uninitialisation(smach.StateMachine):
+class Uninitialisation2012(smach.StateMachine):
     #a appeler avec la position initiale a rejoindre
     def __init__(self,x,y,theta):
         X_VALUE = 0.800
