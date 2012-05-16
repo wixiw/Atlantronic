@@ -85,9 +85,9 @@ Localizator::Localizator(const std::string& name)
 
     // Red is default config
     propParams.referencedBeacons = std::vector< lsl::Circle >();
-    propParams.referencedBeacons.push_back( lsl::Circle(-1.560, 0.   , 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle( 1.565,-1.040, 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle( 1.565, 1.040, 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle(-1.567, 0.   , 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( 1.569,-1.069, 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( 1.567, 1.051, 0.04 ) );
 
     propParams.iekfParams.defaultOdoVelTransSigma = 0.01;
     propParams.iekfParams.defaultOdoVelRotSigma   = 0.01;
@@ -363,9 +363,6 @@ void Localizator::createOrocosInterface()
 
     addOperation("ooSwitchToRedConfig",&Localizator::ooSwitchToRedConfig, this, OwnThread)
     .doc("Définit les balises pour le départ Red");
-    propParams.referencedBeacons.push_back( lsl::Circle(-1.560, 0.   , 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle( 1.565,-1.040, 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle( 1.565, 1.040, 0.04 ) );
 
     addOperation("ooSwitchToPurpleConfig",&Localizator::ooSwitchToPurpleConfig, this, OwnThread)
     .doc("Définit les balises pour le départ Purple");
@@ -413,9 +410,9 @@ std::string Localizator::coGetPerformanceReport()
 void Localizator::ooSwitchToRedConfig()
 {
     propParams.referencedBeacons = std::vector< lsl::Circle >();
-    propParams.referencedBeacons.push_back( lsl::Circle(-1.560, 0.   , 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle( 1.565,-1.040, 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle( 1.565, 1.040, 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle(-1.567, 0.   , 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( 1.569,-1.069, 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( 1.567, 1.051, 0.04 ) );
     kfloc.setParams(propParams);
 
     LOG(Info) << "Switched to Red Beacon configuration" << endlog();
@@ -424,9 +421,9 @@ void Localizator::ooSwitchToRedConfig()
 void Localizator::ooSwitchToPurpleConfig()
 {
     propParams.referencedBeacons = std::vector< lsl::Circle >();
-    propParams.referencedBeacons.push_back( lsl::Circle( 1.560, 0., 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle(-1.555, 1.040, 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle(-1.555,-1.040, 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( 1.567, 0., 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle(-1.567, 1.051, 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle(-1.569,-1.069, 0.04 ) );
     kfloc.setParams(propParams);
 
     LOG(Info) << "Switched to Purple Beacon configuration" << endlog();

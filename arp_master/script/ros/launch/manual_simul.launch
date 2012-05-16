@@ -15,6 +15,4 @@
 		output="screen" launch-prefix="nice"/>
 	<node name="ManualStratNode" pkg="arp_master" type="ManualStratNode.py" args=""
 		output="screen"/>
-	<include file="$(find arp_master)/script/ros/launch/arp_master_ros.launch"/>
-
 </launch>
