@@ -2,6 +2,7 @@
 import roslib; roslib.load_manifest('arp_master')
 import rospy
 import tf
+from itertools import count, izip 
 
 # import the definition of the messages
 from arp_core.msg import OpponentsList
@@ -107,7 +108,7 @@ class Inputs:
 
     @staticmethod
     def getOpponents():
-        return Opponents(Inputs.opponentsInput.data)
+        return Opponents(Inputs.opponentsInput.data, Point(Inputs.getx(), Inputs.gety()) )
 
     @staticmethod
     def getRearObstacle():
@@ -129,26 +130,34 @@ class Inputs:
     def getLinearVelocity():
         return Inputs.linearVelocityInput.data.linear
 
-
+#classe helper qui permet de cosntruire des informations haut niveau a partir de la liste des points
+#on le construit avec le ros message OpponentList recu d'un topic et la position courante du robot
 class Opponents:
-    def __init__(self,opponents_list):
-        self.list = opponents_list
-        
+    def __init__(self,opponents_list, robot_position):
+        self.list = opponents_list.Opponents
         self.distances = []
         self.angles = []
-        for obs in self.list.Opponents:
-            self.distances.append(Point(obs.x, obs.y).dist(Point(Inputs.getx(), Inputs.gety())))
-            self.angles.append(Point(obs.x, obs.y).angle(Point(Inputs.getx(), Inputs.gety())))
-            
+        self.robot_position = robot_position
+        for obs in self.list:
+            self.distances.append(Point(obs.x, obs.y).dist(Point(self.robot_position.x, self.robot_position.y )))
+            self.angles.append(Point(obs.x, obs.y).angle(Point(self.robot_position.x, self.robot_position.y)))
+        self.nb_opponents = len( self.list )
         
-    def getClosestDistance(self):
-        if distances.len(distances) <= 0:
-            return 666;
-        return min(self.distances) 
+        if self.nb_opponents > 0:
+            self.closest_index = self.distances.index(min(self.distances)) 
+            self.closest_angle = self.angles[self.closest_index]
+            self.closest_distance = self.distances[self.closest_index]
+        else:
+             self.closest_index = -666
+             self.closest_angle = 0
+             self.closest_distance = 666
+        
+        #rospy.loginfo("NB Opponent INIT %s", self.nb_opponents)
         
     def printOpponents(self):
-        for obs in self.list.Opponents:
-            distance = Point(obs.x, obs.y).dist(Point(Inputs.getx(), Inputs.gety()))
+        rospy.loginfo("NB Opponent %s", self.nb_opponents)
+        for obs in self.list:
+            distance = Point(obs.x, obs.y).dist(Point(self.robot_position.x, self.robot_position.y))
             rospy.loginfo("Opponent %s %s %s, distance from us %s", obs.x, obs.y, obs.theta, distance)
             
         

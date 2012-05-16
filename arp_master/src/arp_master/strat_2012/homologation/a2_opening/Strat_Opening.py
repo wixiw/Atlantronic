@@ -14,6 +14,14 @@ class Opening(PreemptiveStateMachine):
                                              transitions={'endMatch':'problem'})
             
             
+            PreemptiveStateMachine.add('Move1',
+                      AmbiOmniDirectOrder(-0.850, 0.750,-pi),
+                      transitions={'succeeded':'Move2', 'timeout':'Debloque'})
+            PreemptiveStateMachine.add('Move2',
+                      AmbiOmniDirectOrder(0.850, 0.750,-pi),
+                      transitions={'succeeded':'Move1', 'timeout':'Debloque'})
+            
+            
 #            PreemptiveStateMachine.add('SweepSweep',
 #                      SweepSweep(), 
 #                      transitions={'succeeded':'problem', 'timeout':'problem'})
@@ -22,7 +30,7 @@ class Opening(PreemptiveStateMachine):
             PreemptiveStateMachine.add('OpenLeftFinger',
                       FingersOnlyState('open_left'), 
                       transitions={'succeeded':'GotoTopCloseCoin', 'timeout':'GotoTopCloseCoin'})
-            self.setInitialState('OpenLeftFinger')
+            self.setInitialState('Move1')
             
             PreemptiveStateMachine.add('GotoTopCloseCoin',
                       AmbiOmniDirectOrder(0.100, 0.600,-pi/2),
