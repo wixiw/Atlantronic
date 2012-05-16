@@ -52,5 +52,5 @@ class WaitForMatch(CyclicState):
     def executeOut(self):
         #je note le temps de debut de match
         Data.start_time=rospy.get_rostime()
-        os.system("beep -f 300 -l150")
+        #os.system("beep -f 300 -l150")
         os.system("sh /opt/ard/arp_core/script/linux/match_running.sh")
