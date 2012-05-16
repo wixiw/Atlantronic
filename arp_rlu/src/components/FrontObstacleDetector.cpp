@@ -29,7 +29,7 @@ FrontObstacleDetector::FrontObstacleDetector(const std::string& name)
 , pcp(lsl::PolarCrop::Params())
 , psp(lsl::PolarSegment::Params())
 , minNbPoints(3)
-, cartStddevMax(0.05)
+, cartStddevMax(0.20)
 , cip(lsl::CircleIdentif::Params())
 , xMinAccessible(-1.4)
 , xMaxAccessible(1.4)
@@ -53,7 +53,7 @@ FrontObstacleDetector::FrontObstacleDetector(const std::string& name)
     psp.rangeThres = 0.08;
 
     minNbPoints = 3;
-    cartStddevMax = 0.10;
+    cartStddevMax = 0.20;
 
     cip.radius = 0.04;
     cip.coeffs = std::vector<double>();
