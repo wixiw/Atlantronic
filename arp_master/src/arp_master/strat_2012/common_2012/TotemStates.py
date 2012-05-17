@@ -260,7 +260,7 @@ class ThrowUpCloseTotem(PreemptiveStateMachine):
             PreemptiveStateMachine.add('ThrowUpFinish',
                       AmbiOmniDirectOrder_cpoint(cpoint.x, cpoint.y, cpoint.h,
                                                  pose.x, pose.y, pose.h),
-                      transitions={'succeeded':'SetStratInfo_ThrowUpFinished', 'timeout':'BackFinish'})
+                      transitions={'succeeded':'SetStratInfo_ThrowUpFinished', 'timeout':'OpenClawABit'})
             
             PreemptiveStateMachine.add('SetStratInfo_ThrowUpFinished',
                       SetStratInfoState('closeFreeGoldbarInPosition', False),
