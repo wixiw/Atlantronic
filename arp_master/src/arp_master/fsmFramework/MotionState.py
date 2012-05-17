@@ -113,6 +113,9 @@ class MotionState(CyclicActionState):
     def isObstacle(self):
         opp = Inputs.getOpponents()
         #opp.printOpponents()
+        #################################OVERRIDE !
+        return False
+    
         if opp.closest_distance<0.400:
             rospy.logerr("MOTION STATE : vu qqn")
             return True
