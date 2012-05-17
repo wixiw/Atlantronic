@@ -78,6 +78,14 @@ class CloseBottleAndCoin(PreemptiveStateMachine):
             #get close bot coin and throw up
             PreemptiveStateMachine.add('ThrowUp1',
                       AmbiOmniDirectOrder(0.790,-0.200, pi/4),
+                      transitions={'succeeded':'SetStratInfoCoin', 'timeout':'RetryThrowUp1Back'})
+            
+            #si on a bloque on recommence un peu en arriere
+            PreemptiveStateMachine.add('RetryThrowUp1Back',
+                      BackwardOrder(0.050),
+                      transitions={'succeeded':'RetryThrowUp1', 'timeout':'RetryThrowUp1'})
+            PreemptiveStateMachine.add('RetryThrowUp1',
+                      AmbiOmniDirectOrder(0.740,-0.200, pi/4),
                       transitions={'succeeded':'SetStratInfoCoin', 'timeout':'Debloque'})
             
             PreemptiveStateMachine.add('SetStratInfoCoin',

@@ -22,7 +22,7 @@ class Robot2012(RobotVierge):
     CDG_POSE = Point(-0.0583,0)
     
     #marge entre l'interieur du "E" de la griffe et le totem
-    TOTEM_CLAW_MARGIN = 0.016
+    TOTEM_CLAW_MARGIN = 0.022
     
     #position du doigt droit lorsqu'il est ouvert (dans le repere du robot)
     LEFT_FINGER_OPEN_POSE = Point(162,173)

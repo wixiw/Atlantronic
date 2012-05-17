@@ -36,6 +36,14 @@ class MiddleObjects(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('PushCoins',
                       AmbiOmniDirectOrder(-0.100,-0.800,3*pi/4),
+                      transitions={'succeeded':'PassThrought', 'timeout':'RetryPushBack'})
+            
+            #si on a tape le mur on essaye plus loin 
+            PreemptiveStateMachine.add('RetryPushBack',
+                      AmbiOmniDirectOrder(0.250,-0.700,3*pi/4),
+                      transitions={'succeeded':'RetryPush', 'timeout':'RetryPush'})
+            PreemptiveStateMachine.add('RetryPush',
+                      AmbiOmniDirectOrder(-0.100,-0.700,3*pi/4),
                       transitions={'succeeded':'PassThrought', 'timeout':'Debloque'})
             
             PreemptiveStateMachine.add('PassThrought',
