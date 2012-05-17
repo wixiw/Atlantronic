@@ -1,18 +1,5 @@
 # A utiliser pour aller quelque part sans se payer le decor
             
-class SmartAmbiOmniDirectOrder(MotionState):
-    def __init__(self,x,y,theta, vmax=-1.0):
-        MotionState.__init__(self)
-        self.x = x
-        self.y = y
-        self.theta = theta
-        self.vmax = vmax
-        
-    def createAction(self):
-        self.pose = AmbiPoseRed(self.x, self.y, self.theta, Data.color)
-        self.omnidirect(self.pose.x, self.pose.y, self.pose.theta, self.vmax)
-        
-        
 class SmartAmbiOmniDirectOrder(PreemptiveStateMachine):
     def __init__(self,x,y,theta, vmax=-1.0):
         PreemptiveStateMachine.__init__(self,outcomes=['succeeded','problem'])
@@ -27,13 +14,18 @@ class SmartAmbiOmniDirectOrder(PreemptiveStateMachine):
             self.setInitialState('ChooseState')
 
 
-            PreemptiveStateMachine.add('ChooseState',
-                      ChooseState, 
-                      transitions={'inHalfTable':'GoDirect', 'inNearHalfTable':'GoNextHalf', 'inDiagHalfTable':'GoDiagHalf'})
-            self.setInitialState('ChooseState')
+            PreemptiveStateMachine.add('GoDirect',
+                      AmbiOmniDirectOrder(x,y,theta), 
+                      transitions={'succeeded':'succeeded', 'timeout':'problem'})
 
-
-
+            PreemptiveStateMachine.add('GoNextHalf',
+                      GoInHalf(getTableHalf(x,y,Data.color)), 
+                      transitions={'succeeded':'succeeded', 'timeout':'problem'})
+            
+          #todo  
+            PreemptiveStateMachine.add('GoDiagHalf',
+                      AmbiOmniDirectOrder(x,y,theta), 
+                      transitions={'succeeded':'succeeded', 'timeout':'problem'})
 
 class ChooseState(CyclicState):
     def __init__(self):
@@ -48,3 +40,18 @@ class ChooseState(CyclicState):
             return 'inDiagHalfTable'
         else:
             return 'inNearHalfTable'
+
+class GoInHalf(CyclicState):
+        def __init__(self, table_half):
+            CyclicState.__init__(self, outcomes=['succeeded'])
+
+        def executeTransitions(self):
+            if  robot_table == "closeTop":
+                target = Point(800,700)
+            elif  robot_table == "closeBot":
+                target = Point(800,-700)
+            elif  robot_table == "farBot":
+                target = Point(-800,-700)
+            elif  robot_table == "farTop":
+                target = Point(-800,700)
+            self.omnidirect(target.x, target.y, target.theta)
