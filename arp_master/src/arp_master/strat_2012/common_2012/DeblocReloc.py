@@ -15,7 +15,7 @@ class DeblocReloc(PreemptiveStateMachine):
         PreemptiveStateMachine.__init__(self,outcomes=['endDeblocReloc'])
         with self:      
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
-                                             EndMatchPreempter(0.0),
+                                             EndMatchPreempter(Robot2012.END_GAME_DELAY),
                                              transitions={'endMatch':'endDeblocReloc'})
             
             #replay + rangement du doigt

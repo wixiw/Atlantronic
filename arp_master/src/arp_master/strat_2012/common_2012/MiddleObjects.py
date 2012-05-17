@@ -14,7 +14,7 @@ class MiddleObjects(PreemptiveStateMachine):
         PreemptiveStateMachine.__init__(self,outcomes=['end','problem'])
         with self:      
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
-                                             EndMatchPreempter(-5.0),
+                                             EndMatchPreempter(-Robot2012.END_GAME_DELAY),
                                              transitions={'endMatch':'end'})
             
             PreemptiveStateMachine.add('HalfCloseFingers',
@@ -58,7 +58,7 @@ class BackFromMiddleObjects(PreemptiveStateMachine):
         PreemptiveStateMachine.__init__(self,outcomes=['end','problem'])
         with self:      
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
-                                             EndMatchPreempter(-5.0),
+                                             EndMatchPreempter(-Robot2012.END_GAME_DELAY),
                                              transitions={'endMatch':'end'})
             
             PreemptiveStateMachine.add('OpenFingers',
