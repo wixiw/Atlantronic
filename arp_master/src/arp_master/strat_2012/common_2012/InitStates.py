@@ -50,12 +50,15 @@ class StartSequence2012(smach.StateMachine):
             
             smach.StateMachine.add('CloseClaws',
                       FingerClawState('close'),
-                      transitions={'succeeded':'PrintObstacles', 'timeout':'problem'})                    
+                      transitions={'succeeded':'ShowReady', 'timeout':'problem'})                    
             
-            smach.StateMachine.add('PrintObstacles',
-                      PrintOpponents(),
-                      transitions={'ok':'WaitForMatch'})
+            smach.StateMachine.add('ShowReady',
+                      AmbiOmniDirectOrder(0.500,0.75,pi/2, vmax = 0.3),
+                      transitions={'succeeded':'GoHome', 'timeout':'problem'})
             
+            smach.StateMachine.add('GoHome',
+                      AmbiOmniDirectOrder(1.140,0.75,-pi, vmax = 0.3),
+                      transitions={'succeeded':'WaitForMatch', 'timeout':'problem'})
             
             smach.StateMachine.add('WaitForMatch', 
                       WaitForMatch(),
