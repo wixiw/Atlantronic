@@ -21,6 +21,9 @@ class MotionState(CyclicActionState):
         CyclicState.__init__(self,outcomes=['succeeded','timeout'])
         self.timeout = 10
         self.lastStart=None
+        
+        self.motionTargetPublisher = rospy.Publisher('Master/motionTarget', MotionTarget)
+        
         #maximum number of retry
         self.nMaxTry=1
         # time we will wait before try again
@@ -41,6 +44,9 @@ class MotionState(CyclicActionState):
         self.curTry=0
         #current state. can be TRY or WAIT
         self.motionState='TRY'
+        
+        poseTarget=Pose(Data.motionTarget.x,Data.motionTarget.y,0.0,0.0,0.0,0.0,0.0)
+        self.motionTargetPublisher.publish(MotionTarget(poseTarget,Data.isMotionTranslation))
         
         while(not rospy.is_shutdown()):
             

@@ -7,6 +7,8 @@ import smach_ros
 import smach_msgs
 import actionlib
 
+from arp_core.msg import Pose
+from arp_core.msg import MotionTarget
 
 from CyclicState import CyclicState
 from arp_master.util import *
@@ -19,6 +21,7 @@ class CyclicActionState(CyclicState):
         CyclicState.__init__(self,outcomes=['succeeded','timeout'])
         self.timeout = 10
         self.lastStart=None
+        self.motionTargetPublisher = rospy.Publisher('Master/motionTarget', MotionTarget)
         try:
             self.blinding_period=rospy.get_param("/blinding_period")
         except KeyError:
@@ -38,6 +41,9 @@ class CyclicActionState(CyclicState):
         if self.actionCreated==False:
             rospy.logerr("aucune Action creee dans un etat qui etait fait pour ca !")
             return
+        
+        poseTarget=Pose(Data.motionTarget.x,Data.motionTarget.y,0.0,0.0,0.0,0.0,0.0)
+        self.motionTargetPublisher.publish(MotionTarget(poseTarget,Data.isMotionTranslation))
         
         while(not rospy.is_shutdown()):
             
@@ -117,12 +123,30 @@ class CyclicActionState(CyclicState):
         goal.openloop_duration=openloop_duration
         goal.max_speed=max_speed
         
+        if move_type=='OMNIDIRECT' and x_cpoint == 0.0 and y_cpoint==0.0 and x==Inputs.getx() and y==Inputs.gety():
+            isTurn=True
+        else:
+            isTurn=False
+        
+        if move_type=='OPENLOOP' or move_type=='REPLAY' or isTurn:
+            self.clearMotionTarget()
+        else:
+            self.setMotionTarget(x,y) ## TODO ceci ne fonctionne pas pour un Cpoint puisque je vais donner le cpoint comme objectif. enfin bon... c'est du python quoi
+        
         self.client.wait_for_server(rospy.Duration.from_sec(5.0))
         self.client.cancel_all_goals
         self.client.send_goal(goal)
         
         self.actionCreated=True       
+    
+    def setMotionTarget(self,x,y):
+        Data.isMotionTranslation=True
+        Data.motionTarget=Point(x,y)
+
         
+    def clearMotionTarget(self):
+        Data.isMotionTranslation=False
+        Data.motionTarget=Point(0,0)
         
     # these are useful motions functions that allow not to give all parameters  
     def forward(self,dist,v_max=-1.0):

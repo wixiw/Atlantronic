@@ -33,10 +33,13 @@ class MiddleGame(PreemptiveStateMachine):
             PreemptiveStateMachine.add('CloseBottleAndCoin',
                       CloseBottleAndCoin(),
                       transitions={'end':'PrepareBotTotem', 'problem':'PrepareBotTotem'})
+            ####### A MODIFIER POUR ASSURER NON ARRET
          
             PreemptiveStateMachine.add('PrepareBotTotem',
                       AmbiOmniDirectOrder(0.550, -0.650, pi/2),
-                      transitions={'succeeded':'CleanBotCloseTotem', 'timeout':'Debloque'})   
+                      transitions={'succeeded':'CleanBotCloseTotem', 'timeout':'Debloque'})  
+            ####### A MODIFIER (OU PAS) POUR ASSURER NON ARRET 
+            
     ##
     # Bot TOTEM         
 
@@ -65,14 +68,17 @@ class MiddleGame(PreemptiveStateMachine):
             PreemptiveStateMachine.add('MiddleObject',
                       MiddleObjects(),
                       transitions={'end':'FarBottle', 'problem':'endMiddleGame'})
+             ####### A MODIFIER POUR ASSURER NON ARRET
             
             PreemptiveStateMachine.add('FarBottle',
                       FarBottleState(),
                       transitions={'endBottle':'BackFromMiddleObjects', 'problem':'endMiddleGame'})
+             ####### A MODIFIER POUR ASSURER NON ARRET
             
             PreemptiveStateMachine.add('BackFromMiddleObjects',
                       BackFromMiddleObjects(),
                       transitions={'end':'ThrowUp', 'problem':'endMiddleGame'})
+             ####### A MODIFIER POUR ASSURER NON ARRET
             
             PreemptiveStateMachine.add('ThrowUp',
                       AmbiOmniDirectOrder(1.100,0.050,pi/5),
@@ -85,10 +91,12 @@ class MiddleGame(PreemptiveStateMachine):
             PreemptiveStateMachine.add('Back',
                       AmbiOmniDirectOrder(0.950,-0.100,pi/2),
                       transitions={'succeeded':'CloseFingersAndClaws', 'timeout':'CloseFingersAndClaws'})
+            ####### A MODIFIER POUR ASSURER NON ARRET
             
             PreemptiveStateMachine.add('CloseFingersAndClaws',
                       FingerClawState('close'),
                       transitions={'succeeded':'endMiddleGame', 'timeout':'endMiddleGame'}) 
+            ####### A MODIFIER POUR ASSURER NON ARRET
 
 
             
@@ -96,3 +104,4 @@ class MiddleGame(PreemptiveStateMachine):
             PreemptiveStateMachine.add('Debloque',
                       DeblocReloc(),
                       transitions={'endDeblocReloc':'endMiddleGame'})
+            ####### A MODIFIER POUR ASSURER NON ARRET

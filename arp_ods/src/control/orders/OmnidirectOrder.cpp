@@ -53,10 +53,15 @@ shared_ptr<MotionOrder> OmnidirectOrder::createOrder(const OrderGoalConstPtr &go
     order->setEndPose(end);
 
     order->setPass(goal->passe);
-    if (goal->max_speed > 0.0 and goal->max_speed < conf.LIN_DEC)
+    if (goal->max_speed > 0.0 and goal->max_speed < conf.LIN_VEL_MAX)
         order->m_vmax_order = goal->max_speed;
     else
-        order->m_vmax_order = conf.LIN_DEC;
+        order->m_vmax_order = conf.LIN_VEL_MAX;
+
+    //mettre m_timeout a la bonne valeur pour pas perdre trop de temps
+    // il s'agit de timeout = timeout max  si v = 0 et timeoutmin si v=lindec
+    // TODO et oui j'ecrase la conf comme un gros porcasse
+    conf.ORDER_TIMEOUT=TIMEOUTMAX+(TIMEOUTMIN-TIMEOUTMAX)/(conf.LIN_VEL_MAX)*order->m_vmax_order;
 
     order->setConf(conf);
 
@@ -363,6 +368,14 @@ Twist2D OmnidirectOrder::saturateTwist(Twist2D twist_input, double dt)
     Twist2D twist_output;
     double vmaxlin = min(min(min(m_conf.LIN_VEL_MAX, m_v_correction_old.speedNorm() + dt * m_conf.LIN_DEC * 2.0),
             m_vmax_order),m_vmax_asked);
+
+    /*Log(DEBUG) << ">>saturateTwist  ";
+    Log(DEBUG) << "m_vmax_order  "<<m_vmax_order;
+    Log(DEBUG) << "m_vmax_asked  "<<m_vmax_asked;
+    Log(DEBUG) << "vmaxlin  "<<vmaxlin;
+    Log(DEBUG) << "<<saturateTwist  ";*/
+
+
     double vmaxrot = min(m_conf.ANG_VEL_MAX, fabs(m_v_correction_old.vh()) + dt * m_conf.ANG_DEC * 2.0);
 
     double satvlin = max(twist_input.speedNorm() / vmaxlin, 1.0);
@@ -382,12 +395,14 @@ Twist2D OmnidirectOrder::handleReconfiguration(Twist2D twist_input)
 {
     Twist2D twist_output;
 
+    /*
     Log(DEBUG) << ">>handleReconfiguration  ";
     Log(DEBUG) << "twist_input  "<<twist_input.toString();
     Log(DEBUG) << "m_twist_init_registered  "<<m_twist_init_registered;
     Log(DEBUG) << "m_twist_init  "<<m_twist_init.toString();
     Log(DEBUG) << "getTime()  "<<getTime();
     Log(DEBUG) << "m_initTime  "<<m_initTime;
+*/
 
     if (getTime() - m_initTime < RECONF_TIME)
     {
@@ -397,20 +412,20 @@ Twist2D OmnidirectOrder::handleReconfiguration(Twist2D twist_input)
             m_twist_init_registered=true;
         }
         twist_output = m_twist_init * 1e-6;
-        Log(DEBUG) << "applied SMALL twist  ";
+        //Log(DEBUG) << "applied SMALL twist  ";
     }
     else
     {
         twist_output = twist_input;
-        Log(DEBUG) << "applied full twist  ";
+        //Log(DEBUG) << "applied full twist  ";
     }
 
 
 
-
+/*
     Log(DEBUG) << "twist_output  "<<twist_output.toString();
     Log(DEBUG) << "<<handleReconfiguration  ";
-
+*/
 
     return twist_output;
 }

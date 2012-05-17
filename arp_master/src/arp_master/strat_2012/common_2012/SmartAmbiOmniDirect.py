@@ -24,7 +24,7 @@ class SmartAmbiOmniDirectOrder(PreemptiveStateMachine):
             
           #todo  
             PreemptiveStateMachine.add('GoDiagHalf',
-                      AmbiOmniDirectOrder(x,y,theta), 
+                      GoDiagHalf(x,y,theta), 
                       transitions={'succeeded':'succeeded', 'timeout':'problem'})
 
 class ChooseState(CyclicState):

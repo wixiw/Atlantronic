@@ -2,6 +2,10 @@
 import roslib; roslib.load_manifest('arp_master')
 import rospy
 
+from arp_master import *
+from arp_master.util.RobotVierge import * 
+from arp_master.util.TableVierge import * 
+
 #il faut voir ca comme un namespace
 class Data:
     #temps de cycle de la machine d'etat
@@ -24,6 +28,12 @@ class Data:
     #ce sont les etats qui le changent pour que la preemption reagisse differemment
     obstacleAvoidType='None'
     rearObstacleAvoidType='None'
+    
+    #stockge des donnees de deplacement pour verifier si on va peter le cul de l'adversaire sur notre trajectoire
+    #est-ce une translation ?
+    isMotionTranslation = False
+    motionTarget=Point(0,0)
+    
 
     
     

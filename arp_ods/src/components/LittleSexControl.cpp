@@ -159,16 +159,7 @@ bool LittleSexControl::ooSetOrder(shared_ptr<MotionOrder> order)
 
 bool LittleSexControl::ooSetVMax(double vmax)
 {
-    if( vmax > 0.0 )
-    {
-        attrVmax_asked = vmax;
-        return true;
-    }
-    else
-    {
-        attrVmax_asked = 1.0;
-        return true;
-    }
+attrVmax_asked = vmax;
 }
 
 void LittleSexControl::createOrocosInterface()

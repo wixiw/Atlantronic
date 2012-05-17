@@ -93,6 +93,9 @@ class OmnidirectOrder: public MotionOrder
         static const double ANGLE_CHGT_ASSERV=0.17;
         static const double RECONF_TIME=0.0;
         static const double MIN_LIN_DEC=0.2;
+        static const double TIMEOUTMAX=10;
+        static const double TIMEOUTMIN=5;
+
 
 
 private:

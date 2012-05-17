@@ -148,8 +148,8 @@ void ObstacleManager::updateHook()
     /*std::vector<arp_math::EstimatedPose2D> dummy;
     opponents = dummy;
     arp_math::EstimatedPose2D oppDummy;
-    oppDummy.x(0.600);
-    oppDummy.y(0.500);
+    oppDummy.x(1.064);
+    oppDummy.y(0.000);
     opponents.push_back( oppDummy );
     arp_math::EstimatedPose2D oppDummy2;
     oppDummy2.x(0.500);

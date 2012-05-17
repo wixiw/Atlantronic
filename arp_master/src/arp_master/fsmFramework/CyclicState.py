@@ -183,7 +183,7 @@ class CyclicState(smach.StateMachine):
         self.setVMax_srv(v,False)
         
     def setVMaxDefault(self):
-        self.setVMax_srv(0,True)
+        self.setVMax_srv(-1.0,True)
         
     def configureColor(self, color):
         try:
