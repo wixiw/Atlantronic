@@ -304,10 +304,50 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
         angles.minCoeff(&iFirst);
         angles.maxCoeff(&iThird);
         iSecond = 3 - iFirst - iThird;
-        foundBeacons.push_back( std::make_pair( triangle[0].first[iFirst],  triangle[0].second[iFirst] ) );
-        foundBeacons.push_back( std::make_pair( triangle[0].first[iSecond], triangle[0].second[iSecond] ) );
-        foundBeacons.push_back( std::make_pair( triangle[0].first[iThird],  triangle[0].second[iThird] ) );
-        lsl::Log( INFO ) << "BeaconDetector::process - Triangle detected";
+
+        //        foundBeacons.push_back( std::make_pair( triangle[0].first[iFirst],  triangle[0].second[iFirst] ) );
+        //        foundBeacons.push_back( std::make_pair( triangle[0].first[iSecond], triangle[0].second[iSecond] ) );
+        //        foundBeacons.push_back( std::make_pair( triangle[0].first[iThird],  triangle[0].second[iThird] ) );
+        //        lsl::Log( INFO ) << "BeaconDetector::process - Triangle detected";
+        //        tcTimer.Stop();
+        //        globalTimer.Stop();
+        //        return true;
+
+        double firstRatio = (triangle[0].second[iThird].getPosition() - triangle[0].second[iSecond].getPosition()).norm()
+                                  / (triangle[0].first[iThird].getPosition() - triangle[0].first[iSecond].getPosition()).norm();
+
+        double secondRatio = (triangle[0].second[iFirst].getPosition() - triangle[0].second[iThird].getPosition()).norm()
+                                  / (triangle[0].first[iFirst].getPosition() - triangle[0].first[iThird].getPosition()).norm();
+
+        double thirdRatio = (triangle[0].second[iFirst].getPosition() - triangle[0].second[iSecond].getPosition()).norm()
+                                  / (triangle[0].first[iFirst].getPosition() - triangle[0].first[iSecond].getPosition()).norm();
+
+        Eigen::Vector3d ratios;
+        ratios(0) = fabs(firstRatio - 1.0);
+        ratios(1) = fabs(secondRatio - 1.0);
+        ratios(2) = fabs(thirdRatio - 1.0);
+
+        int iMin;
+        double minRatio = ratios.minCoeff(&iMin);
+
+        switch(iMin)
+        {
+            case 0:
+                foundBeacons.push_back( std::make_pair( triangle[0].first[iSecond],  triangle[0].second[iSecond] ) );
+                foundBeacons.push_back( std::make_pair( triangle[0].first[iThird], triangle[0].second[iThird] ) );
+                break;
+            case 1:
+                foundBeacons.push_back( std::make_pair( triangle[0].first[iFirst],  triangle[0].second[iFirst] ) );
+                foundBeacons.push_back( std::make_pair( triangle[0].first[iThird], triangle[0].second[iThird] ) );
+                break;
+            case 2:
+            default:
+                foundBeacons.push_back( std::make_pair( triangle[0].first[iFirst],  triangle[0].second[iFirst] ) );
+                foundBeacons.push_back( std::make_pair( triangle[0].first[iSecond], triangle[0].second[iSecond] ) );
+                break;
+        }
+
+        lsl::Log( INFO ) << "BeaconDetector::process - Triangle detected - Select segment " <<  iMin << " with ratio " << minRatio;
         tcTimer.Stop();
         globalTimer.Stop();
         return true;
