@@ -6,5 +6,4 @@ rm -f /tmp/ARP_READY
 rm -f /tmp/ARP_RUNNING
 rm -f /tmp/ARP_FINISHED
 
-beep -f300 -l300
 touch /tmp/ARP_READY
