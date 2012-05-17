@@ -10,7 +10,7 @@ class Opening(PreemptiveStateMachine):
         PreemptiveStateMachine.__init__(self, outcomes=['endOpening', 'problem'])
         with self:
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
-                                             EndMatchPreempter(-5.0),
+                                             EndMatchPreempter(-Robot2012.END_GAME_DELAY),
                                              transitions={'endMatch':'problem'})
             
             
@@ -38,12 +38,8 @@ class Opening(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('SetStratInfo',
                       SetStratInfoState('topCloseCoinInPosition', False),
-                      transitions={'ok':'CleanTopCloseTotem'})
+                      transitions={'ok':'endOpening'})
              
-            PreemptiveStateMachine.add('CleanTopCloseTotem',
-                      CleanTopCloseTotem(),
-                      transitions={'endClean':'endOpening', 'problem':'Debloque'})
-            
             #cas d'erreur
             PreemptiveStateMachine.add('Debloque',
                       DeblocReloc(),

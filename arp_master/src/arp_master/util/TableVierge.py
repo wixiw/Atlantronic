@@ -24,6 +24,32 @@ class TableVierge:
             return True
         else:
             return False
+    
+    @staticmethod
+    def getTableHalf(x,y):
+        if Data.color == 'red':
+            rospy.loginfo("Color is red")
+            if x < 0 and y < 0:
+                return 'farBot'
+            if x < 0 and y >= 0:
+                return 'farTop'
+            if x >= 0 and y >= 0:
+                return 'closeTop'     
+            #if x >= 0 and y < 0:
+            return 'closeBot'    
+        elif Data.color == 'purple':
+            rospy.loginfo("Color is not red")
+            if x < 0 and y < 0:
+                return 'closeBot'
+            if x < 0 and y >= 0:
+                return 'closeTop'
+            if x >= 0 and y >= 0:
+                return 'farTop'     
+            #if x >= 0 and y < 0:
+            return 'farBot'    
+        else:
+            rospy.loginfo("Color is unknown : %s", Data.color)
+            return 'closeTop'  
         
 class AmbiPoseRed:
     def __init__(self,x,y,theta,color):
