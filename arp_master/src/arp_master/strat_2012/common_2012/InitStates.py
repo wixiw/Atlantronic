@@ -38,20 +38,28 @@ class StartSequence2012(smach.StateMachine):
             
             smach.StateMachine.add('SetDrivingPower',
                       SetDrivingPower(),
-                      transitions={'succeeded':'SetInitialPosition', 'timeout':'problem'})
+                      transitions={'succeeded':'OpenClaws', 'timeout':'SetDrivingPower'})
             
-            smach.StateMachine.add('SetInitialPosition',
-                      SetInitialPosition(x,y,theta),
-                      transitions={'succeeded':'OpenClaws', 'timeout':'problem'})
-
             smach.StateMachine.add('OpenClaws',
                       FingerClawState('half_open'),
                       transitions={'succeeded':'CloseClaws', 'timeout':'problem'})      
             
             smach.StateMachine.add('CloseClaws',
                       FingerClawState('close'),
-                      transitions={'succeeded':'ShowReady', 'timeout':'problem'})                    
+                      transitions={'succeeded':'PrepareTurrets', 'timeout':'problem'})                    
             
+            smach.StateMachine.add('PrepareTurrets',
+                      AmbiOpenLoopOrder(0.015,0.000,0.0, duration=0.5),
+                      transitions={'succeeded':'SetInitialPosition', 'timeout':'SetInitialPosition'})
+            
+            smach.StateMachine.add('SetInitialPosition',
+                      SetInitialPosition(x,y,theta),
+                      transitions={'succeeded':'WaitForLoc', 'timeout':'problem'})
+
+            smach.StateMachine.add('WaitForLoc', 
+                      WaiterState(2.0),
+                      transitions={'timeout':'ShowReady'})
+
             smach.StateMachine.add('ShowReady',
                       AmbiOmniDirectOrder(0.500,0.75,pi/2, vmax = 0.3),
                       transitions={'succeeded':'GoHome', 'timeout':'problem'})
