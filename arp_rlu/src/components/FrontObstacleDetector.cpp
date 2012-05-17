@@ -53,18 +53,13 @@ FrontObstacleDetector::FrontObstacleDetector(const std::string& name)
     psp.rangeThres = 0.08;
 
     minNbPoints = 3;
-    cartStddevMax = 0.20;
+    cartStddevMax = 0.15;
+    opponentRadius = 0.15;
 
-    cip.radius = 0.04;
+    cip.radius = opponentRadius;
     cip.coeffs = std::vector<double>();
-    cip.coeffs.push_back(-0.01743846);
-    cip.coeffs.push_back( 0.19259734);
-    cip.coeffs.push_back(-0.83735629);
-    cip.coeffs.push_back( 1.81203033);
-    cip.coeffs.push_back(-2.04349845);
-    cip.coeffs.push_back( 1.17177993);
-    cip.coeffs.push_back( 0.67248282);
-    cip.coeffs.push_back( 0.07096937);
+    cip.coeffs.push_back( 1.0);
+    cip.coeffs.push_back( opponentRadius );
 
     xMinAccessible = -1.3;
     xMaxAccessible =  1.3;
@@ -287,8 +282,8 @@ void FrontObstacleDetector::createOrocosInterface()
     addProperty("PolarSegmentRangeThreshold", psp.rangeThres);
 
     addProperty("MinNbPoints", minNbPoints);
-
     addProperty("cartStddevMax", cartStddevMax);
+    addProperty("opponentRadius", opponentRadius);
 
     addProperty("xMinAccessible", xMinAccessible);
     addProperty("xMaxAccessible", xMaxAccessible);

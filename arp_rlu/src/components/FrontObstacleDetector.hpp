@@ -64,6 +64,11 @@ class FrontObstacleDetector: public RluTaskContext
     double cartStddevMax;
 
     /**
+     * Rayon standard du robot adverse
+     */
+    double opponentRadius;
+
+    /**
      * Paramètres pour la quatrième étape, celle qui consiste à identifier les clusters comme étant des cercles.
      */
     lsl::CircleIdentif::Params cip;
