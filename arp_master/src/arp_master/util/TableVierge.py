@@ -25,6 +25,7 @@ class TableVierge:
         else:
             return False
     
+    #donne le quart de table dans lequel est le point x,y (en fonction de la couleur)
     @staticmethod
     def getTableHalf(x,y, color):
         if color == 'red':
@@ -48,8 +49,23 @@ class TableVierge:
             #if x >= 0 and y < 0:
             return 'farBot'    
         else:
-            rospy.loginfo("Color is unknown : %s", color)
+            rospy.loginfo("getTableHalf: Color is unknown : %s", color)
             return 'closeTop'  
+        
+    #renvoit le quart de table oppose        
+    @staticmethod
+    def getOppositeHalf(table_half):
+        if table_half == "closeTop":
+            return "farBot"
+        elif table_half == "closeBot":
+            return "farTop"
+        elif table_half == "farBot":
+            return "closeTop"
+        elif table_half == "farTop":
+            return "closeBot"
+        else:
+            rospy.loginfo("getOppositeHalf: wrong table half %s", table_half)
+            return 'closeTop' 
         
 class AmbiPoseRed:
     def __init__(self,x,y,theta,color):

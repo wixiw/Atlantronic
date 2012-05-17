@@ -37,12 +37,12 @@ class CleanCloseTotem(PreemptiveStateMachine):
                       transitions={'succeeded':'CloseFingersABit', 'timeout':'Retry'})
             
             PreemptiveStateMachine.add('CloseFingersABit',
-                      TotemClawState(0.25,Robot2012.FINGER_OPEN,
-                                          Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE, table_half), 
+                      TotemClawState(0.25, Robot2012.FINGER_OPEN,
+                                     Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE, table_half), 
                       transitions={'succeeded':'PushALot', 'timeout':'PushALot'})
             
             PreemptiveStateMachine.add('PushALot',
-                      AmbiOmniDirectOrder(1.10,0.100,pi/12),
+                      AmbiOmniDirectOrder(1.10,0.150,pi/12),
                       transitions={'succeeded':'Back', 'timeout':'Back'})
             
             pose = TotemPose(0.700,0.400,-pi/2,table_half)
@@ -181,7 +181,20 @@ class AntiWorkCloseTotem(PreemptiveStateMachine):
                              table_half)
             PreemptiveStateMachine.add('EndSlashTotem',
                       AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
+                      transitions={'succeeded':'PushABit', 'timeout':'GoBack'})
+            
+            #si ca bloque va a destination en s'ecartant
+            PreemptiveStateMachine.add('GoBack',
+                      BackwardOrder(0.070),
+                      transitions={'succeeded':'GoAway', 'timeout':'GoAway'})
+            pose = TotemPose(0.750,
+                             0.204 - Robot2012.CDG_POSE.x + Robot2012.TOTEM_CLAW_MARGIN + 0.050,
+                             -pi/2,
+                             table_half)
+            PreemptiveStateMachine.add('GoAway',
+                      AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
                       transitions={'succeeded':'PushABit', 'timeout':'Debloque'})
+            
             
             pose = TotemPose(0.750,0.000,-pi/2+pi/12,table_half)
             PreemptiveStateMachine.add('PushABit',
@@ -191,10 +204,11 @@ class AntiWorkCloseTotem(PreemptiveStateMachine):
             #si on a rate le slash, on s'est peut etre pris dans le totem
             #on recommence une fois en partant de plus loin   
             PreemptiveStateMachine.add('Retry',
-                      Replay(1.0),
+                      BackwardOrder(0.060),
                       transitions={'succeeded':'RetryEnterTotem', 'timeout':'Debloque'})
+            
             poseEnter = TotemPose(0.070, 
-                             0.204 - Robot2012.CDG_POSE.x + Robot2012.TOTEM_CLAW_MARGIN + 0.030,
+                             0.204 - Robot2012.CDG_POSE.x + Robot2012.TOTEM_CLAW_MARGIN + 0.060,
                              -pi/2,
                              table_half)
             PreemptiveStateMachine.add('RetryEnterTotem',
@@ -202,7 +216,7 @@ class AntiWorkCloseTotem(PreemptiveStateMachine):
                       transitions={'succeeded':'RetryTotemSlash', 'timeout':'Debloque'})
             
             poseTotem = TotemPose(0.500,
-                 0.204 - Robot2012.CDG_POSE.x + Robot2012.TOTEM_CLAW_MARGIN + 0.030,
+                 0.204 - Robot2012.CDG_POSE.x + Robot2012.TOTEM_CLAW_MARGIN + 0.040,
                  -pi/2,
                  table_half)
             PreemptiveStateMachine.add('RetryTotemSlash',
@@ -256,7 +270,7 @@ class ThrowUpCloseTotem(PreemptiveStateMachine):
                       TotemClawState(Robot2012.FINGER_HALF_CLOSE,Robot2012.FINGER_OPEN,
                                            Robot2012.CLAW_HALF_CLOSE, Robot2012.CLAW_OPEN,
                                            table_half),
-                      transitions={'succeeded':'BackFinish', 'timeout':'ThrowUp'}) 
+                      transitions={'succeeded':'BackFinish', 'timeout':'BackFinish'}) 
             
             pose = TotemPose(1.000,-0.150, 0, table_half)
             cpoint = TotemPose(0,-0.150,0, table_half)
@@ -265,7 +279,7 @@ class ThrowUpCloseTotem(PreemptiveStateMachine):
                                                  pose.x, pose.y, pose.h),
                       transitions={'succeeded':'Back', 'timeout':'Back'})
                                        
-            pose = TotemPose(0.920,0.150,-pi/2,table_half)
+            pose = TotemPose(0.900,0.150,-pi/2,table_half)
             PreemptiveStateMachine.add('Back',
                       AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
                       transitions={'succeeded':'CloseFingersAndClaws', 'timeout':'Debloque'})

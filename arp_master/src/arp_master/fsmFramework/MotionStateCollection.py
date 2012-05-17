@@ -107,28 +107,28 @@ class ForwardOrder(MotionState):
         MotionState.__init__(self)
         self.dist = dist
     def createAction(self):
-        self.forward(self,self.dist)           
+        self.forward(self.dist)           
         
 class BackwardOrder(MotionState):
     def __init__(self,dist):
         MotionState.__init__(self)
         self.dist = dist
     def createAction(self):
-        self.backward(self,self.dist)            
+        self.backward(self.dist)            
         
 class LeftwardOrder(MotionState):
     def __init__(self,dist):
         MotionState.__init__(self)
         self.dist = dist
     def createAction(self):
-        self.leftward(self,self.dist)                  
+        self.leftward(self.dist)                  
         
 class RightwardOrder(MotionState):
     def __init__(self,dist):
         MotionState.__init__(self)
         self.dist = dist
     def createAction(self):
-        self.rightward(self,self.dist)   
+        self.rightward(self.dist)   
         
 #Use this to turn on your current position.        
 class AmbiTurnOrder(MotionState):

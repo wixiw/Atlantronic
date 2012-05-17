@@ -35,7 +35,7 @@ class MiddleGame(PreemptiveStateMachine):
                       transitions={'end':'PrepareBotTotem', 'problem':'PrepareBotTotem'})
          
             PreemptiveStateMachine.add('PrepareBotTotem',
-                      AmbiOmniDirectOrder(0.550, -0.600, pi/2),
+                      AmbiOmniDirectOrder(0.550, -0.650, pi/2),
                       transitions={'succeeded':'CleanBotCloseTotem', 'timeout':'Debloque'})   
     ##
     # Bot TOTEM         
@@ -75,7 +75,7 @@ class MiddleGame(PreemptiveStateMachine):
                       transitions={'end':'ThrowUp', 'problem':'endMiddleGame'})
             
             PreemptiveStateMachine.add('ThrowUp',
-                      AmbiOmniDirectOrder(1.150,0.150,pi/5),
+                      AmbiOmniDirectOrder(1.100,0.050,pi/5),
                       transitions={'succeeded':'SetStratInfo_ThrowUpFinished', 'timeout':'Back'})
 
             PreemptiveStateMachine.add('SetStratInfo_ThrowUpFinished',
@@ -84,11 +84,11 @@ class MiddleGame(PreemptiveStateMachine):
     
             PreemptiveStateMachine.add('Back',
                       AmbiOmniDirectOrder(0.950,-0.100,pi/2),
-                      transitions={'succeeded':'CloseFingersAndClaws', 'timeout':'Debloque'})
+                      transitions={'succeeded':'CloseFingersAndClaws', 'timeout':'CloseFingersAndClaws'})
             
             PreemptiveStateMachine.add('CloseFingersAndClaws',
                       FingerClawState('close'),
-                      transitions={'succeeded':'PrepareBotTotem', 'timeout':'endMiddleGame'}) 
+                      transitions={'succeeded':'endMiddleGame', 'timeout':'endMiddleGame'}) 
 
 
             
