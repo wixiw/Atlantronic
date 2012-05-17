@@ -177,6 +177,13 @@ std::vector< std::pair< std::pair<DetectedCircle, DetectedCircle>, std::pair<Cir
                 Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] " << candidates.second.toString();
                 Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] bestDeltaLength : " << bestDeltaLength;
                 Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] secondBestDeltaLength : " << secondBestDeltaLength;
+                Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] measure length before correction : " << (candidates.first.getPosition() - candidates.second.getPosition()).norm();
+                Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] reference length : " << (references.first.getPosition() - references.second.getPosition()).norm();
+                double ratio = (references.first.getPosition() - references.second.getPosition()).norm() / (candidates.first.getPosition() - candidates.second.getPosition()).norm();
+                Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] ratio : " << ratio;
+                candidates.first.setApparentCenterRange( ratio * candidates.first.getApparentCenterRange() );
+                candidates.second.setApparentCenterRange( ratio * candidates.second.getApparentCenterRange() );
+                Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] measure length after correction : " << (candidates.first.getPosition() - candidates.second.getPosition()).norm();
                 out.push_back( std::make_pair( std::make_pair(candidates.first, candidates.second), std::make_pair(references.first, references.second) ));
             }
             else
