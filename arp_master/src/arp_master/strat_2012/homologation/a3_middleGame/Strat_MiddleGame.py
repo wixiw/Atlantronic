@@ -35,7 +35,7 @@ class MiddleGame(PreemptiveStateMachine):
                       transitions={'end':'PrepareBotTotem', 'problem':'PrepareBotTotem'})
          
             PreemptiveStateMachine.add('PrepareBotTotem',
-                      AmbiOmniDirectOrder(0.700, -0.450, pi/2),
+                      AmbiOmniDirectOrder(0.550, -0.600, pi/2),
                       transitions={'succeeded':'CleanBotCloseTotem', 'timeout':'Debloque'})   
     ##
     # Bot TOTEM         

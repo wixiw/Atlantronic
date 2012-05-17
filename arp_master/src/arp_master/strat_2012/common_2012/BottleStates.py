@@ -14,7 +14,7 @@ class BottleState(PreemptiveStateMachine):
         PreemptiveStateMachine.__init__(self,outcomes=['endBottle','problem'])
         with self:      
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
-                                             EndMatchPreempter(-5.0),
+                                             EndMatchPreempter(-Robot2012.END_GAME_DELAY),
                                              transitions={'endMatch':'endBottle'})
             
             #onveut taper avec le milieu de la tourelle droite d'ou le -0.058m pour tenir compte d'omni order qui pilote le CdG
@@ -67,7 +67,7 @@ class CloseBottleAndCoin(PreemptiveStateMachine):
         PreemptiveStateMachine.__init__(self,outcomes=['end','problem'])
         with self:      
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
-                                             EndMatchPreempter(-5.0),
+                                             EndMatchPreempter(-Robot2012.END_GAME_DELAY),
                                              transitions={'endMatch':'end'})            
             
             PreemptiveStateMachine.add('CloseBottle',
@@ -77,7 +77,7 @@ class CloseBottleAndCoin(PreemptiveStateMachine):
             
             #get close bot coin and throw up
             PreemptiveStateMachine.add('ThrowUp1',
-                      AmbiOmniDirectOrder(0.850,-0.200, pi/3),
+                      AmbiOmniDirectOrder(0.790,-0.200, pi/4),
                       transitions={'succeeded':'SetStratInfoCoin', 'timeout':'Debloque'})
             
             PreemptiveStateMachine.add('SetStratInfoCoin',
@@ -96,3 +96,12 @@ class CloseBottleAndCoin(PreemptiveStateMachine):
             PreemptiveStateMachine.add('Debloque',
                       DeblocReloc(),
                       transitions={'endDeblocReloc':'problem'})
+            
+    
+#class ChooseBotCoinPreparation(CyclicState):
+#    def __init__(self):
+#        CyclicState.__init__(self, outcomes=['topEscape','botEscape'])
+#    
+#    def executeTransitions(self):
+#       if Inputs.getstart()==0:
+#            return 'start' 

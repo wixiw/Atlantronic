@@ -16,41 +16,33 @@ class CleanCloseTotem(PreemptiveStateMachine):
         PreemptiveStateMachine.__init__(self,outcomes=['endClean','problem'])
         with self:      
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
-                                             EndMatchPreempter(-5.0),
+                                             EndMatchPreempter(-Robot2012.END_GAME_DELAY),
                                              transitions={'endMatch':'endClean'})
                                        
             PreemptiveStateMachine.add('OpenFinger',
                       FingersOnlyState('open'), 
-                      transitions={'succeeded':'SetVmax', 'timeout':'GotoFirstTotemCoin'})
+                      transitions={'succeeded':'GotoFirstTotemCoin', 'timeout':'GotoFirstTotemCoin'})
             #as initial state is not the preemptive one, it is necessary to add the information here !
             self.setInitialState('OpenFinger')
             
-            PreemptiveStateMachine.add('SetVmax', 
-                      SetVMaxState(0.3),
-                      transitions={'succeeded':'GotoFirstTotemCoin','timeout':'GotoFirstTotemCoin'})   
-            
-            poseFirst = TotemPose(0.080, 0.450,-pi/4,table_half)
+            #Catia a dit 426mm en y pour le CDG quand on slash les doigts ouverts
+            poseFirst = TotemPose(0.080, 0.480,-pi/4,table_half)
             PreemptiveStateMachine.add('GotoFirstTotemCoin',
-                      AmbiOmniDirectOrder(poseFirst.x, poseFirst.y, poseFirst.h),
-                      transitions={'succeeded':'UnSetVmax', 'timeout':'Debloque'})
+                      AmbiOmniDirectOrder(poseFirst.x, poseFirst.y, poseFirst.h, vmax=0.3),
+                      transitions={'succeeded':'TotemClean', 'timeout':'Debloque'})
             
-            PreemptiveStateMachine.add('UnSetVmax', 
-                      SetVMaxState(0.0),
-                      transitions={'succeeded':'TotemClean','timeout':'TotemClean'})   
-            
-            poseClean = TotemPose(0.600,0.420,-pi/4,table_half)
+            poseClean = TotemPose(0.600,0.450,-pi/4,table_half)
             PreemptiveStateMachine.add('TotemClean',
                       AmbiOmniDirectOrder(poseClean.x, poseClean.y, poseClean.h),
-                      transitions={'succeeded':'PushALot', 'timeout':'Retry'})
-            
-            pose = TotemPose(1.10,0.150,pi/12,table_half)
-            PreemptiveStateMachine.add('PushALot',
-                      AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
-                      transitions={'succeeded':'CloseFingersABit', 'timeout':'Back'})
+                      transitions={'succeeded':'CloseFingersABit', 'timeout':'Retry'})
             
             PreemptiveStateMachine.add('CloseFingersABit',
                       TotemClawState(0.25,Robot2012.FINGER_OPEN,
                                           Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE, table_half), 
+                      transitions={'succeeded':'PushALot', 'timeout':'PushALot'})
+            
+            PreemptiveStateMachine.add('PushALot',
+                      AmbiOmniDirectOrder(1.10,0.100,pi/12),
                       transitions={'succeeded':'Back', 'timeout':'Back'})
             
             pose = TotemPose(0.700,0.400,-pi/2,table_half)
@@ -66,13 +58,13 @@ class CleanCloseTotem(PreemptiveStateMachine):
             #on recommence une fois en partant de plus loin   
             PreemptiveStateMachine.add('Retry',
                       Replay(1.0),
-                      transitions={'succeeded':'RetryFirstTotemCoin', 'timeout':'ExitState'})
+                      transitions={'succeeded':'RetryFirstTotemCoin', 'timeout':'Debloque'})
             PreemptiveStateMachine.add('RetryFirstTotemCoin',
-                      AmbiOmniDirectOrder(poseFirst.x, poseFirst.y + 0.030, poseFirst.h, 0.3),
-                      transitions={'succeeded':'RetryTotemClean', 'timeout':'ExitState'})
+                      AmbiOmniDirectOrder(poseFirst.x, poseFirst.y + 0.030, poseFirst.h, 0.2),
+                      transitions={'succeeded':'RetryTotemClean', 'timeout':'Debloque'})
             PreemptiveStateMachine.add('RetryTotemClean',
-                      AmbiOmniDirectOrder(poseClean.x, poseClean.y + 0.030, poseClean.h),
-                      transitions={'succeeded':'PushALot', 'timeout':'ExitState'})
+                      AmbiOmniDirectOrder(poseClean.x, poseClean.y + 0.030, poseClean.h, 0.2),
+                      transitions={'succeeded':'PushALot', 'timeout':'Debloque'})
             
                         
             #cas d'erreur
@@ -80,18 +72,16 @@ class CleanCloseTotem(PreemptiveStateMachine):
                       DeblocReloc(),
                       transitions={'endDeblocReloc':'problem'}) 
             
-            PreemptiveStateMachine.add('ExitState',
-                      WaiterState(0.0), 
-                      transitions={'timeout':'problem'}) 
-
 
 #you should not use this state, please see user states at the end of file
+# TODO : a mettre a jour avec le retry
+# TODO : a tester avant usage
 class WorkCloseTotem(PreemptiveStateMachine):
     def __init__(self, table_half):
         PreemptiveStateMachine.__init__(self,outcomes=['endTotem','problem'])
         with self:      
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
-                                             EndMatchPreempter(-5.0),
+                                             EndMatchPreempter(-Robot2012.END_GAME_DELAY),
                                              transitions={'endMatch':'endTotem'})
             pose = TotemPose(0.350,0.400,-pi/4,table_half)
             PreemptiveStateMachine.add('ApproachTotem',
@@ -106,26 +96,32 @@ class WorkCloseTotem(PreemptiveStateMachine):
                                           Robot2012.CLAW_CLOSE, Robot2012.CLAW_TOTEM, table_half),
                       transitions={'succeeded':'EnterTotem', 'timeout':'EndSlashTotem'})  
             
-            pose = TotemPose(0.200, 0.260, -pi/2,table_half)
+            #y=0.204 est la distance theorique entre le centre du totem et le Robot dans Catia 
+            # lorsque la griffe est sortie a 90 deg et que le robot est parrallele au totem
+            pose = TotemPose(0.200, 
+                             0.204 - Robot2012.CDG_POSE.x + Robot2012.TOTEM_CLAW_MARGIN , 
+                             -pi/2,
+                             table_half)
             PreemptiveStateMachine.add('EnterTotem',
                       AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
                       transitions={'succeeded':'EndSlashTotem', 'timeout':'Debloque'})
               
             
-            pose = TotemPose(0.750,0.125,-pi/2,table_half)
+            pose = TotemPose(0.750,
+                             0.204 - Robot2012.CDG_POSE.x + Robot2012.TOTEM_CLAW_MARGIN , 
+                             -pi/2,
+                             table_half)
             PreemptiveStateMachine.add('EndSlashTotem',
-                      AmbiOmniDirectOrder_cpoint(0.060,0,0,
-                                                 pose.x, pose.y, pose.h),
+                      AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
                       transitions={'succeeded':'SetStratInfo_TotemFinished', 'timeout':'Debloque'})
             
             PreemptiveStateMachine.add('SetStratInfo_TotemFinished',
                       SetStratInfoState('topCloseTotemFull',False),
                       transitions={'ok':'PushABit'})
             
-            pose = TotemPose(0.750,0.060,-pi/2,table_half)
+            pose = TotemPose(0.750,0.120,-pi/2,table_half)
             PreemptiveStateMachine.add('PushABit',
-                      AmbiOmniDirectOrder_cpoint(0.060,0,0,
-                                                 pose.x, pose.y, pose.h),
+                      AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
                       transitions={'succeeded':'endTotem', 'timeout':'Debloque'})
              
             #cas d'erreur
@@ -140,13 +136,16 @@ class AntiWorkCloseTotem(PreemptiveStateMachine):
         PreemptiveStateMachine.__init__(self,outcomes=['endTotem','problem'])
         with self:      
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
-                                             EndMatchPreempter(-5.0),
+                                             EndMatchPreempter(-Robot2012.END_GAME_DELAY),
                                              transitions={'endMatch':'endTotem'})
-
             
-            pose = TotemPose(0.070, 0.280, -pi/2,table_half)
+            #en cas de modification, modifier le retry aussi
+            poseEnter = TotemPose(0.070, 
+                             0.204 - Robot2012.CDG_POSE.x + Robot2012.TOTEM_CLAW_MARGIN,
+                             -pi/2,
+                             table_half)
             PreemptiveStateMachine.add('EnterTotem',
-                      AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
+                      AmbiOmniDirectOrder(poseEnter.x, poseEnter.y, poseEnter.h),
                       transitions={'succeeded':'OpenClaws', 'timeout':'Debloque'})
             #as initial state is not the preemptive one, it is necessary to add the information here !
             self.setInitialState('EnterTotem')
@@ -157,12 +156,14 @@ class AntiWorkCloseTotem(PreemptiveStateMachine):
                                    table_half),
                     transitions={'succeeded':'SlashTotem', 'timeout':'SlashTotem'})
 
-            
-            pose = TotemPose(0.500,0.125,-pi/2,table_half)
+            #en cas de modification, modifier le retry aussi
+            poseTotem = TotemPose(0.500,
+                             0.204 - Robot2012.CDG_POSE.x + Robot2012.TOTEM_CLAW_MARGIN,
+                             -pi/2,
+                             table_half)
             PreemptiveStateMachine.add('SlashTotem',
-                      AmbiOmniDirectOrder_cpoint(0.090,0,0,
-                                                 pose.x, pose.y, pose.h),
-                      transitions={'succeeded':'SetStratInfo_TotemFinished', 'timeout':'Debloque'})
+                      AmbiOmniDirectOrder(poseTotem.x, poseTotem.y, poseTotem.h),
+                      transitions={'succeeded':'SetStratInfo_TotemFinished', 'timeout':'Retry'})
             
             PreemptiveStateMachine.add('SetStratInfo_TotemFinished',
                       SetStratInfoState('topCloseTotemFull',False),
@@ -174,16 +175,40 @@ class AntiWorkCloseTotem(PreemptiveStateMachine):
                                           table_half),
                       transitions={'succeeded':'EndSlashTotem', 'timeout':'EndSlashTotem'})  
             
-            pose = TotemPose(0.750,0.125,-pi/2,table_half)
+            pose = TotemPose(0.750,
+                             0.204 - Robot2012.CDG_POSE.x + Robot2012.TOTEM_CLAW_MARGIN,
+                             -pi/2,
+                             table_half)
             PreemptiveStateMachine.add('EndSlashTotem',
-                      AmbiOmniDirectOrder_cpoint(0.090,0,0,
-                                                 pose.x, pose.y, pose.h),
+                      AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
                       transitions={'succeeded':'PushABit', 'timeout':'Debloque'})
             
             pose = TotemPose(0.750,0.000,-pi/2+pi/12,table_half)
             PreemptiveStateMachine.add('PushABit',
                       AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
                       transitions={'succeeded':'endTotem', 'timeout':'Debloque'})
+             
+            #si on a rate le slash, on s'est peut etre pris dans le totem
+            #on recommence une fois en partant de plus loin   
+            PreemptiveStateMachine.add('Retry',
+                      Replay(1.0),
+                      transitions={'succeeded':'RetryEnterTotem', 'timeout':'Debloque'})
+            poseEnter = TotemPose(0.070, 
+                             0.204 - Robot2012.CDG_POSE.x + Robot2012.TOTEM_CLAW_MARGIN + 0.030,
+                             -pi/2,
+                             table_half)
+            PreemptiveStateMachine.add('RetryEnterTotem',
+                      AmbiOmniDirectOrder(poseEnter.x, poseEnter.y + 0.030, poseEnter.h, vmax=0.2),
+                      transitions={'succeeded':'RetryTotemSlash', 'timeout':'Debloque'})
+            
+            poseTotem = TotemPose(0.500,
+                 0.204 - Robot2012.CDG_POSE.x + Robot2012.TOTEM_CLAW_MARGIN + 0.030,
+                 -pi/2,
+                 table_half)
+            PreemptiveStateMachine.add('RetryTotemSlash',
+                      AmbiOmniDirectOrder(poseTotem.x, poseTotem.y , poseTotem.h, vmax=0.2),
+                      transitions={'succeeded':'SetStratInfo_TotemFinished', 'timeout':'Debloque'}) 
+             
              
             #cas d'erreur
             PreemptiveStateMachine.add('Debloque',
@@ -198,7 +223,7 @@ class ThrowUpCloseTotem(PreemptiveStateMachine):
         PreemptiveStateMachine.__init__(self,outcomes=['end','problem'])
         with self:      
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
-                                             EndMatchPreempter(-5.0),
+                                             EndMatchPreempter(-Robot2012.END_GAME_DELAY),
                                              transitions={'endMatch':'end'})
             
                                     
@@ -240,7 +265,7 @@ class ThrowUpCloseTotem(PreemptiveStateMachine):
                                                  pose.x, pose.y, pose.h),
                       transitions={'succeeded':'Back', 'timeout':'Back'})
                                        
-            pose = TotemPose(0.950,0.150,-pi/2,table_half)
+            pose = TotemPose(0.920,0.150,-pi/2,table_half)
             PreemptiveStateMachine.add('Back',
                       AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
                       transitions={'succeeded':'CloseFingersAndClaws', 'timeout':'Debloque'})

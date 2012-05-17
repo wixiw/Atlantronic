@@ -58,7 +58,11 @@ class StartSequence2012(smach.StateMachine):
             
             smach.StateMachine.add('GoHome',
                       AmbiOmniDirectOrder(1.140,0.75,-pi, vmax = 0.3),
-                      transitions={'succeeded':'WaitForMatch', 'timeout':'problem'})
+                      transitions={'succeeded':'WaitForStart', 'timeout':'problem'})
+            
+            smach.StateMachine.add('WaitForStart', 
+                       WaitForStart(),
+                       transitions={'start':'WaitForMatch','timeout':'WaitForStart'})
             
             smach.StateMachine.add('WaitForMatch', 
                       WaitForMatch(),
@@ -128,29 +132,7 @@ class SelectState(CyclicState):
         CyclicState.__init__(self, outcomes=['farBot','farTop','closeTop','closeBot'])
 
     def executeTransitions(self):
-        if Data.color == 'red':
-            rospy.loginfo("Color is red")
-            if Inputs.getx() < 0 and Inputs.gety() < 0:
-                return 'farBot'
-            if Inputs.getx() < 0 and Inputs.gety() >= 0:
-                return 'farTop'
-            if Inputs.getx() >= 0 and Inputs.gety() >= 0:
-                return 'closeTop'     
-            #if Inputs.getx() >= 0 and Inputs.gety() < 0:
-            return 'closeBot'    
-        elif Data.color == 'purple':
-            rospy.loginfo("Color is not red")
-            if Inputs.getx() < 0 and Inputs.gety() < 0:
-                return 'closeBot'
-            if Inputs.getx() < 0 and Inputs.gety() >= 0:
-                return 'closeTop'
-            if Inputs.getx() >= 0 and Inputs.gety() >= 0:
-                return 'farTop'     
-            #if Inputs.getx() >= 0 and Inputs.gety() < 0:
-            return 'farBot'    
-        else:
-            rospy.loginfo("Color is unknown : %s", Data.color)
-            return 'closeTop'     
+        return Table2012.getTableHalf(Inputs.getx(), Inputs.gety(),Data.color); 
     
     
 ####################################################################################################################    
