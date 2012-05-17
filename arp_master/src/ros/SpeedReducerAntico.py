@@ -120,7 +120,8 @@ class SpeedReducerAntico:
         try:
             self.setVMax_srv(v,False)
         except:
-            rospy.logerr("Failed to setVmax");
+            #rospy.logerr("Failed to setVmax");
+            pass;
             
     def unsetVmax(self):
         try:
