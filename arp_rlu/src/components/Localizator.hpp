@@ -29,7 +29,8 @@ enum LocalizationState
 enum LocalizationMode
 {
     ODO_ONLY = 0,
-    FUSION = 1
+    SMOOTH = 1,
+    FUSION = 2
 };
 
 enum LocalizationQuality
@@ -154,7 +155,7 @@ class Localizator: public RluTaskContext
         unsigned int propIEKFMaxIt;
         double propIEKFInnovationMin;
 
-
+        bool smoothMode;
         bool predictionOk;
         bool updateOk;
         int nbSeenBeacons;

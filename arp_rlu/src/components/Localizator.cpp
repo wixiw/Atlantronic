@@ -27,8 +27,9 @@ const char * LocalizationStateNames[2] = {
         "_RUNNING_"
 };
 
-const char * LocalizationModeNames[2] = {
+const char * LocalizationModeNames[3] = {
         "_ODO_ONLY_",
+        "__SMOOTH__",
         "__FUSION__"
 };
 
@@ -53,12 +54,13 @@ Localizator::Localizator(const std::string& name)
 , propMaxReliableBadOdoRotStddev( deg2rad(12.) )
 , propMaxReliableLostTransStddev(0.20)
 , propMaxReliableLostRotStddev( deg2rad(22.) )
-, propLaserRangeSigma(0.10)
-, propLaserThetaSigma(0.10)
-, propLaserRangeSigmaSmooth(1000)
-, propLaserThetaSigmaSmooth(1000)
+, propLaserRangeSigma(0.01) //, propLaserRangeSigma(0.10)
+, propLaserThetaSigma(0.1) //, propLaserThetaSigma(0.10)
+, propLaserRangeSigmaSmooth(0.1) //, propLaserRangeSigmaSmooth(1000)
+, propLaserThetaSigmaSmooth(1.0) //, propLaserThetaSigmaSmooth(1000)
 , propIEKFMaxIt(10)
 , propIEKFInnovationMin(0.0122474)
+, smoothMode(false)
 , predictionOk(false)
 , updateOk(false)
 , nbSeenBeacons(0)
@@ -68,7 +70,7 @@ Localizator::Localizator(const std::string& name)
 , currentVisibility(NONE)
 {
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
-    arp_rlu::lsl::Logger::InitFile("LSL", INFO);
+    arp_rlu::lsl::Logger::InitFile("LSL", DEBUG);
     arp_rlu::kfl::Logger::InitFile("KFL", INFO);
 
     createOrocosInterface();
@@ -92,7 +94,7 @@ Localizator::Localizator(const std::string& name)
     propParams.iekfParams.defaultOdoVelTransSigma = 0.01;
     propParams.iekfParams.defaultOdoVelRotSigma   = 0.01;
     propParams.iekfParams.defaultLaserRangeSigma  = 0.10;
-    propParams.iekfParams.defaultLaserThetaSigma  = 0.05;
+    propParams.iekfParams.defaultLaserThetaSigma  = 0.10;
     propParams.iekfParams.iekfMaxIt               = 100; //10
     propParams.iekfParams.iekfInnovationMin       = 0.001; //0.0122474;
 
@@ -158,7 +160,7 @@ void Localizator::updateHook()
         return;
     }
 
-    bool smoothMode = false;
+    smoothMode = false;
     inSmoothMode.read(smoothMode);
     if(smoothMode && (propParams.iekfParams.defaultLaserRangeSigma !=  propLaserRangeSigmaSmooth||
             propParams.iekfParams.defaultLaserThetaSigma != propLaserThetaSigmaSmooth ) )
@@ -326,7 +328,8 @@ void Localizator::createOrocosInterface()
     std::stringstream ssLocMode;
     ssLocMode << "Localization mode :" << std::endl;
     ssLocMode << " [*] 0 : ODO_ONLY  if Localization is using odometry only" << std::endl;
-    ssLocMode << " [*] 1 : FUSION if Localization is using both odometry and laser" << std::endl;
+    ssLocMode << " [*] 1 : SMOOTH if Localization is using odometry with large gains for Laser" << std::endl;
+    ssLocMode << " [*] 2 : FUSION if Localization is using both odometry and laser" << std::endl;
     addPort("outLocalizationMode",outLocalizationMode)
     .doc(ssLocMode.str());
 
@@ -457,7 +460,14 @@ void Localizator::updateLocalizationStates()
     // Mode
     if( updateOk == true )
     {
-        currentMode = FUSION;
+        if( smoothMode )
+        {
+            currentMode = SMOOTH;
+        }
+        else
+        {
+            currentMode = FUSION;
+        }
     }
     else
     {
