@@ -55,21 +55,14 @@ class StartSequence2012(smach.StateMachine):
             smach.StateMachine.add('SetInitialPosition',
                       SetInitialPosition(x,y,theta),
                       transitions={'succeeded':'WaitForMatch0', 'timeout':'problem'})
-
-
-
-            smach.StateMachine.add('WaitForLoc', 
-                      WaiterState(2.0),
-                      transitions={'timeout':'ShowReady'})
             
             smach.StateMachine.add('WaitForMatch0', 
                       WaitForMatch(),
                       transitions={'start':'ShowReady', 'timeout':'WaitForMatch0'})
-            
-            
 
             smach.StateMachine.add('ShowReady',
-                      AmbiOmniDirectOrder(0.500,0.75,pi/2, vmax = 0.3),
+                      # AmbiOmniDirectOrder(0.500,0.75,pi/2, vmax = 0.3),
+                      AmbiOmniDirectOrder(0.500,0.75,-pi, vmax = 0.3),
                       transitions={'succeeded':'WaitForLoc2', 'timeout':'problem'})
             
             smach.StateMachine.add('WaitForLoc2', 
