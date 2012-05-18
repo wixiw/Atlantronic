@@ -71,7 +71,7 @@ class MiddleGame(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('FarBottle',
                       FarBottleState(),
-                      transitions={'endBottle':'BackFromMiddleObjects', 'problem':'endMiddleGame'})
+                      transitions={'endBottle':'endMiddleGame', 'problem':'endMiddleGame'})
              ####### A MODIFIER POUR ASSURER NON ARRET
             
             PreemptiveStateMachine.add('BackFromMiddleObjects',
