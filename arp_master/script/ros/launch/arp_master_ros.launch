@@ -1,9 +1,5 @@
 <launch>
 	<node name="SpeedReducerAntico" pkg="arp_master" type="SpeedReducerAntico.py" args=""
 		output="screen">
-		<param name="min_distance" type="double" value="0.50" />
-		<param name="reduced_min_speed" type="double" value="0.000" />
-		<param name="decc" type="double" value="1.0" />
-		<param name="search_angle" type="double" value="1.57" />
 	</node>
 </launch>
