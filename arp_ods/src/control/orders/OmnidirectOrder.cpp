@@ -366,7 +366,7 @@ Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double d
 Twist2D OmnidirectOrder::saturateTwist(Twist2D twist_input, double dt)
 {
     Twist2D twist_output;
-    double vmaxlin = min(min(min(m_conf.LIN_VEL_MAX, m_v_correction_old.speedNorm() + dt * m_conf.LIN_DEC * 2.0),
+    double vmaxlin = min(min(min(m_conf.LIN_VEL_MAX, m_v_correction_old.speedNorm() + dt * m_conf.LIN_DEC * 1.0),
             m_vmax_order),m_vmax_asked);
 
     /*Log(DEBUG) << ">>saturateTwist  ";
