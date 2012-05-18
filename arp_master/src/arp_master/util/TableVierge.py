@@ -29,43 +29,92 @@ class TableVierge:
     @staticmethod
     def getTableHalf(x,y, color):
         if color == 'red':
-            rospy.loginfo("Color is red")
-            if x < 0 and y < 0:
-                return 'farBot'
-            if x < 0 and y >= 0:
-                return 'farTop'
-            if x >= 0 and y >= 0:
-                return 'closeTop'     
-            #if x >= 0 and y < 0:
-            return 'closeBot'    
+            #rospy.loginfo("Color is red")
+            if x < 0.0 and y < 0.0:
+                table_half = 'farBot'
+            elif x < 0.0 and y >= 0.0:
+                table_half =  'farTop'
+            elif x >= 0.0 and y >= 0.0:
+                table_half =  'closeTop'     
+            elif x >= 0.0 and y < 0.0:
+                table_half =  'closeBot'   
+            else:
+                 rospy.loginfo("getTableHalf: Failed to find half !! (%s,%s)", x,y)
+                 table_half = "closeBot"
         elif color == 'purple':
-            rospy.loginfo("Color is not red")
-            if x < 0 and y < 0:
-                return 'closeBot'
-            if x < 0 and y >= 0:
-                return 'closeTop'
-            if x >= 0 and y >= 0:
-                return 'farTop'     
-            #if x >= 0 and y < 0:
-            return 'farBot'    
+            #rospy.loginfo("Color is not red")
+            if x < 0.0 and y < 0.0:
+                table_half =  'closeBot'
+            elif x < 0.0 and y >= 0.0:
+                table_half =  'closeTop'
+            elif x >= 0.0 and y >= 0.0:
+                table_half =  'farTop'     
+            elif x >= 0 and y < 0:
+                table_half =  'farBot'
+            else:
+                rospy.loginfo("getTableHalf: Failed to find half !! (%s,%s)", x,y)
+                table_half =  'farBot'    
         else:
-            rospy.loginfo("getTableHalf: Color is unknown : %s", color)
-            return 'closeTop'  
+            rospy.loginfo("getTableHalf: is unknown : %s", color)
+            table_half =  'closeTop'  
+            
+        #rospy.loginfo("getTableHalf: is %s (%s,%s)", table_half, x,y) 
+        return table_half
         
     #renvoit le quart de table oppose        
     @staticmethod
     def getOppositeHalf(table_half):
         if table_half == "closeTop":
-            return "farBot"
+            opposite_half = "farBot"
         elif table_half == "closeBot":
-            return "farTop"
+            opposite_half = "farTop"
         elif table_half == "farBot":
-            return "closeTop"
+            opposite_half = "closeTop"
         elif table_half == "farTop":
-            return "closeBot"
+            opposite_half = "closeBot"
         else:
             rospy.loginfo("getOppositeHalf: wrong table half %s", table_half)
-            return 'closeTop' 
+            opposite_half = 'closeTop' 
+        
+        #rospy.loginfo("**** getOppositeHalf: choosed %s", opposite_half)
+        return opposite_half
+        
+    #Renvoit le prochain quart de table dans le sens trigo cote rouge, horaire cote oppose
+    @staticmethod
+    def getNextHalfAmbiTrigo(table_half):
+        if table_half == "closeTop":
+            next_half = "farTop"
+        elif table_half == "closeBot":
+            next_half = "closeTop"
+        elif table_half == "farBot":
+            next_half = "closeBot"
+        elif table_half == "farTop":
+            next_half = "farBot"
+        else:
+            rospy.loginfo("getOppositeHalf: wrong table half %s", table_half)
+            next_half = 'closeTop' 
+            
+        #rospy.loginfo("getNextHalfAmbiTrigo: %s -> %s", table_half, next_half)
+        return next_half
+
+
+    #Renvoit le prochain quart de table dans le sens trigo cote oppose, horaire cote rouge
+    @staticmethod
+    def getNextHalfAmbiHoraire(table_half):
+        if table_half == "closeTop":
+            next_half =  "closeBot"
+        elif table_half == "closeBot":
+            next_half =  "farBot"
+        elif table_half == "farBot":
+            next_half =  "farTop"
+        elif table_half == "farTop":
+            next_half =  "closeTop"
+        else:
+            rospy.loginfo("getOppositeHalf: wrong table half %s", table_half)
+            next_half =  'closeTop' 
+            
+        #rospy.loginfo("getNextHalfAmbiHoraire: %s -> %s", table_half, next_half)
+        return next_half
         
 class AmbiPoseRed:
     def __init__(self,x,y,theta,color):
