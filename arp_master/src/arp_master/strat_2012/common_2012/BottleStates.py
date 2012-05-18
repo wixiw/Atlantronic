@@ -113,3 +113,5 @@ class CloseBottleAndCoin(PreemptiveStateMachine):
 #    def executeTransitions(self):
 #       if Inputs.getstart()==0:
 #            return 'start' 
+
+

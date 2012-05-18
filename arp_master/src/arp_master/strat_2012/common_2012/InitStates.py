@@ -62,7 +62,7 @@ class StartSequence2012(smach.StateMachine):
 
             smach.StateMachine.add('ShowReady',
                       # AmbiOmniDirectOrder(0.500,0.75,pi/2, vmax = 0.3),
-                      AmbiOmniDirectOrder(0.500,0.75,-pi, vmax = 0.3),
+                      AmbiOmniDirectOrder(0.500,0.70,-pi, vmax = 0.3),
                       transitions={'succeeded':'WaitForLoc2', 'timeout':'problem'})
             
             smach.StateMachine.add('WaitForLoc2', 

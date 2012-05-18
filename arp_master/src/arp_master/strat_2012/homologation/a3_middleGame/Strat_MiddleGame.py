@@ -63,10 +63,16 @@ class MiddleGame(PreemptiveStateMachine):
 #        
 #
 #            
+            #go far bottle
             
             PreemptiveStateMachine.add('MiddleObject',
-                      MiddleObjects(),
-                      transitions={'end':'FarBottle', 'problem':'endMiddleGame'})
+                      AmbiOmniDirectOrder(0.500,-0.700,-pi/2),
+                      transitions={'succeeded':'GoFarBottle', 'timeout':'endMiddleGame'})
+            
+            PreemptiveStateMachine.add('GoFarBottle',
+                      AmbiOmniDirectOrder(Table2012.P_BOTTLE_FAR.x,-0.700,-pi/2),
+                      transitions={'succeeded':'FarBottle', 'timeout':'endMiddleGame'})
+            
              ####### A MODIFIER POUR ASSURER NON ARRET
             
             PreemptiveStateMachine.add('FarBottle',

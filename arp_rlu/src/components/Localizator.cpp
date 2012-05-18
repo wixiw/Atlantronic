@@ -112,10 +112,10 @@ Localizator::Localizator(const std::string& name)
     propParams.procParams.yMin = -1.5;
     propParams.procParams.yMax =  1.5;
 
-    propParams.procParams.xMinObstacle = -1.3;
-    propParams.procParams.xMaxObstacle =  1.3;
-    propParams.procParams.yMinObstacle = -0.85;
-    propParams.procParams.yMaxObstacle =  0.85;
+    propParams.procParams.xMinObstacle = -1.35;
+    propParams.procParams.xMaxObstacle =  1.35;
+    propParams.procParams.yMinObstacle = -0.9;
+    propParams.procParams.yMaxObstacle =  0.9;
 
     propParams.procParams.cip.radius = 0.04;
     propParams.procParams.cip.coeffs = std::vector<double>();

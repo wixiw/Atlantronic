@@ -61,10 +61,10 @@ FrontObstacleDetector::FrontObstacleDetector(const std::string& name)
     cip.coeffs.push_back( 1.0);
     cip.coeffs.push_back( opponentRadius );
 
-    xMinAccessible = -1.3;
-    xMaxAccessible =  1.3;
-    yMinAccessible = -0.85;
-    yMaxAccessible =  0.85;
+    xMinAccessible = -1.35;
+    xMaxAccessible =  1.35;
+    yMinAccessible = -0.9;
+    yMaxAccessible =  0.9;
 
     H_hky_robot = arp_math::Pose2D(0.034, 0., 0.);
 
