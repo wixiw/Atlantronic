@@ -179,11 +179,38 @@ std::vector< std::pair< std::pair<DetectedCircle, DetectedCircle>, std::pair<Cir
                 Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] secondBestDeltaLength : " << secondBestDeltaLength;
                 Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] measure length before correction : " << (candidates.first.getPosition() - candidates.second.getPosition()).norm();
                 Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] reference length : " << (references.first.getPosition() - references.second.getPosition()).norm();
+
+                // Correction Thales
                 double ratio = (references.first.getPosition() - references.second.getPosition()).norm() / (candidates.first.getPosition() - candidates.second.getPosition()).norm();
                 Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] ratio : " << ratio;
                 candidates.first.setApparentCenterRange( ratio * candidates.first.getApparentCenterRange() );
                 candidates.second.setApparentCenterRange( ratio * candidates.second.getApparentCenterRange() );
-                Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] measure length after correction : " << (candidates.first.getPosition() - candidates.second.getPosition()).norm();
+
+
+//                // Correction Al Kashi
+//                Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] first meas before correction : (" << candidates.first.getApparentCenterRange() << " , " << candidates.first.getApparentCenterTheta() << " )";
+//                Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] second meas before correction : (" << candidates.second.getApparentCenterRange() << " , " << candidates.second.getApparentCenterTheta() << " )";
+//                double ratio = (references.first.getPosition() - candidates.first.getPointOfView()).norm()
+//                             / (references.second.getPosition() - candidates.second.getPointOfView()).norm();
+//                double refBase = (references.first.getPosition() - references.second.getPosition()).norm();
+//                double gamma = betweenMinusPiAndPlusPi( candidates.second.getApparentCenterTheta() - candidates.first.getApparentCenterTheta());
+//                candidates.second.setApparentCenterRange( sqrt( refBase*refBase / (ratio*ratio + 1. - 2. * ratio * cos(gamma)) )  );
+//                candidates.first.setApparentCenterRange( ratio * candidates.second.getApparentCenterRange() );
+//                Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] bestDeltaLength : " << bestDeltaLength;
+//                Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] ratio : " << ratio;
+//                Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] first meas after correction : (" << candidates.first.getApparentCenterRange() << " , " << candidates.first.getApparentCenterTheta() << " )";
+//                Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] second meas after correction : (" << candidates.second.getApparentCenterRange() << " , " << candidates.second.getApparentCenterTheta() << " )";
+
+
+                // Log
+                Vector2 newSegmt;
+                newSegmt(0) = candidates.first.getApparentCenterRange() * cos(candidates.first.getApparentCenterTheta())
+                            - candidates.second.getApparentCenterRange() * cos(candidates.second.getApparentCenterTheta());
+                newSegmt(1) = candidates.first.getApparentCenterRange() * sin(candidates.first.getApparentCenterTheta())
+                            - candidates.second.getApparentCenterRange() * sin(candidates.second.getApparentCenterTheta());
+                Log( DEBUG ) << "DuoCircleIdentif::apply -    [*] measure length after correction : " << newSegmt.norm();
+
+                // Constitution du résultat
                 out.push_back( std::make_pair( std::make_pair(candidates.first, candidates.second), std::make_pair(references.first, references.second) ));
             }
             else
