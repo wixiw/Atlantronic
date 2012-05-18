@@ -181,6 +181,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         result.y_end = pose.y();
         result.theta_end = pose.h();
         m_order = orders::defaultOrder;
+        m_ooSetOrder(m_order);
         m_actionServer.setSucceeded(result);
         return;
     preempted:
