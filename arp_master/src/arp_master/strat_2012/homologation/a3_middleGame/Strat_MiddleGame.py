@@ -31,13 +31,12 @@ class MiddleGame(PreemptiveStateMachine):
     ##
             
             PreemptiveStateMachine.add('CloseBottleAndCoin',
-                      CloseBottleAndCoin(),
-                      transitions={'end':'PrepareBotTotem', 'problem':'PrepareBotTotem'})
-            ####### A MODIFIER POUR ASSURER NON ARRET
+                      CloseBottleState(),
+                      transitions={'endBottle':'CleanBotCloseTotem', 'problem':'CleanBotCloseTotem'})
          
-            PreemptiveStateMachine.add('PrepareBotTotem',
-                      AmbiOmniDirectOrder(0.550, -0.650, pi/2),
-                      transitions={'succeeded':'CleanBotCloseTotem', 'timeout':'Debloque'})  
+#            PreemptiveStateMachine.add('PrepareBotTotem',
+#                      AmbiOmniDirectOrder(0.550, -0.650, pi/2),
+#                      transitions={'succeeded':'CleanBotCloseTotem', 'timeout':'Debloque'})  
             ####### A MODIFIER (OU PAS) POUR ASSURER NON ARRET 
             
     ##
