@@ -69,26 +69,50 @@ class BackFromMiddleObjects(PreemptiveStateMachine):
                                              EndMatchPreempter(-Robot2012.END_GAME_DELAY),
                                              transitions={'endMatch':'end'})
             
-            PreemptiveStateMachine.add('OpenFingers',
-                      FingersOnlyState('open_right'), 
-                      transitions={'succeeded':'SetVmax', 'timeout':'SetVmax'})
-            self.setInitialState('OpenFingers')
             
-            PreemptiveStateMachine.add('SetVmax', 
-                      SetVMaxState(0.5),
-                      transitions={'succeeded':'EngageFarBotTotem','timeout':'EngageFarBotTotem'})   
             
             PreemptiveStateMachine.add('EngageFarBotTotem',
-                      AmbiOmniDirectOrder(-0.700,-0.400,0),
+                      AmbiOmniDirectOrder(-0.700,-0.420,0),
                       transitions={'succeeded':'Moissbat', 'timeout':'Debloque'})
+            self.setInitialState('OpenFingers')
+            
+            PreemptiveStateMachine.add('OpenFingers',
+                      FingersOnlyState('open_right'), 
+                      transitions={'succeeded':'EngageFarBotTotem', 'timeout':'EngageFarBotTotem'})
             
             PreemptiveStateMachine.add('Moissbat',
-                      AmbiOmniDirectOrder(0.600,-0.400,0),
-                      transitions={'succeeded':'UnSetVmax', 'timeout':'Debloque'})
+                      AmbiOmniDirectOrder(0.550,-0.420,0, 0.4),
+                      transitions={'succeeded':'end', 'timeout':'Debloque'})
             
-            PreemptiveStateMachine.add('UnSetVmax', 
-                      SetVMaxState(0.0),
-                      transitions={'succeeded':'end','timeout':'end'})   
+         
+            #cas d'erreur
+            PreemptiveStateMachine.add('Debloque',
+                      DeblocReloc(),
+                      transitions={'endDeblocReloc':'problem'}) 
+            
+            
+class BackFromHalfMiddleObjects(PreemptiveStateMachine):
+    def __init__(self):
+        PreemptiveStateMachine.__init__(self,outcomes=['end','problem'])
+        with self:      
+            PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
+                                             EndMatchPreempter(-Robot2012.END_GAME_DELAY),
+                                             transitions={'endMatch':'end'})
+            
+            
+            
+            PreemptiveStateMachine.add('EngageFarBotTotem',
+                      AmbiOmniDirectOrder(-0.300,-0.430,pi/5),
+                      transitions={'succeeded':'Moissbat', 'timeout':'Debloque'})
+            self.setInitialState('OpenFingers')
+            
+            PreemptiveStateMachine.add('OpenFingers',
+                      FingersOnlyState('open_right'), 
+                      transitions={'succeeded':'EngageFarBotTotem', 'timeout':'EngageFarBotTotem'})
+            
+            PreemptiveStateMachine.add('Moissbat',
+                      AmbiOmniDirectOrder(0.550,-0.430,pi/5, 0.4),
+                      transitions={'succeeded':'end', 'timeout':'Debloque'})
             
          
             #cas d'erreur

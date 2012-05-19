@@ -196,7 +196,7 @@ class AntiWorkCloseTotem(PreemptiveStateMachine):
                       transitions={'succeeded':'PushABit', 'timeout':'Debloque'})
             
             
-            pose = TotemPose(0.750,0.000,-pi/2+pi/12,table_half)
+            pose = TotemPose(0.750,-0.050,-pi/2+pi/12,table_half)
             PreemptiveStateMachine.add('PushABit',
                       AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
                       transitions={'succeeded':'endTotem', 'timeout':'Debloque'})
@@ -334,3 +334,116 @@ class ThrowUpBotCloseTotem(ThrowUpCloseTotem):
         ThrowUpCloseTotem.__init__(self,"bot_close")
 
 #######################################################################################################
+
+
+
+
+
+class AntiWorkFullBotTotem(PreemptiveStateMachine):
+    def __init__(self):
+        PreemptiveStateMachine.__init__(self,outcomes=['endTotem','problem'])
+        with self:      
+            PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
+                                             EndMatchPreempter(-Robot2012.END_GAME_DELAY),
+                                             transitions={'endMatch':'endTotem'})
+            
+            #en cas de modification, modifier le retry aussi
+            PreemptiveStateMachine.add('PrepareTotem',
+                      AmbiOmniDirectOrder(0.850, -0.204 + Robot2012.CDG_POSE.x - 5*Robot2012.TOTEM_CLAW_MARGIN, pi/2+pi/5),
+                      transitions={'succeeded':'SlashEnter', 'timeout':'Debloque'})
+            #as initial state is not the preemptive one, it is necessary to add the information here !
+            self.setInitialState('PrepareTotem')
+            
+            PreemptiveStateMachine.add('SlashEnter',
+                      AmbiOmniDirectOrder(-0.750, -0.204 + Robot2012.CDG_POSE.x - 5*Robot2012.TOTEM_CLAW_MARGIN,  pi/2+pi/5, 0.6),
+                      transitions={'succeeded':'OpenClaws', 'timeout':'Debloque'})
+            
+            PreemptiveStateMachine.add('OpenClaws',
+                    AmbiClawFingerOrder(Robot2012.FINGER_CLOSE,Robot2012.FINGER_CLOSE,
+                                   Robot2012.CLAW_CLOSE, Robot2012.CLAW_OPEN),
+                    transitions={'succeeded':'EnterTotem', 'timeout':'EnterTotem'})
+            
+            PreemptiveStateMachine.add('EnterTotem',
+                      AmbiOmniDirectOrder(-0.500, -0.204 + Robot2012.CDG_POSE.x - Robot2012.TOTEM_CLAW_MARGIN,  pi/2, 0.6),
+                      transitions={'succeeded':'SlashTotem1', 'timeout':'SlashTotem1'})
+            
+            PreemptiveStateMachine.add('SlashTotem1',
+                      AmbiOmniDirectOrder(-0.200,-0.204 + Robot2012.CDG_POSE.x - Robot2012.TOTEM_CLAW_MARGIN, pi/2, 0.4),
+                      transitions={'succeeded':'CloseClaws', 'timeout':'Debloque'})
+            
+            PreemptiveStateMachine.add('CloseClaws',
+                    AmbiClawFingerOrder(Robot2012.FINGER_CLOSE,Robot2012.FINGER_CLOSE,
+                                   Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE),
+                    transitions={'succeeded':'AntiWorkCloseTotem', 'timeout':'AntiWorkCloseTotem'})
+            
+            PreemptiveStateMachine.add('AntiWorkCloseTotem',
+                      AntiWorkBotCloseTotem(),
+                      transitions={'endTotem':'ThrowUpBotCloseTotem', 'problem':'problem'})
+            
+            PreemptiveStateMachine.add('ThrowUpBotCloseTotem',
+                      ThrowUpBotCloseTotem(),
+                      transitions={'end':'endTotem', 'problem':'problem'})
+
+
+            #cas d'erreur
+            PreemptiveStateMachine.add('Debloque',
+                      DeblocReloc(),
+                      transitions={'endDeblocReloc':'endTotem'})
+
+
+
+
+class AntiWorkFullTopTotem(PreemptiveStateMachine):
+    def __init__(self):
+        PreemptiveStateMachine.__init__(self,outcomes=['endTotem','problem'])
+        with self:      
+            PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
+                                             EndMatchPreempter(-Robot2012.END_GAME_DELAY),
+                                             transitions={'endMatch':'endTotem'})
+            
+            #en cas de modification, modifier le retry aussi
+            PreemptiveStateMachine.add('PrepareTotem',
+                      AmbiOmniDirectOrder(0.850, 0.204 - Robot2012.CDG_POSE.x + 5*Robot2012.TOTEM_CLAW_MARGIN, -pi/2-pi/5),
+                      transitions={'succeeded':'SlashEnter', 'timeout':'Debloque'})
+            #as initial state is not the preemptive one, it is necessary to add the information here !
+            self.setInitialState('PrepareTotem')
+            
+            PreemptiveStateMachine.add('SlashEnter',
+                      AmbiOmniDirectOrder(-0.750, +0.204 - Robot2012.CDG_POSE.x + 5*Robot2012.TOTEM_CLAW_MARGIN,  -pi/2-pi/5, 0.6),
+                      transitions={'succeeded':'OpenClaws', 'timeout':'Debloque'})
+            
+            PreemptiveStateMachine.add('OpenClaws',
+                    AmbiClawFingerOrder(Robot2012.FINGER_CLOSE,Robot2012.FINGER_CLOSE,
+                                   Robot2012.CLAW_OPEN, Robot2012.CLAW_CLOSE),
+                    transitions={'succeeded':'EnterTotem', 'timeout':'EnterTotem'})
+            
+            PreemptiveStateMachine.add('EnterTotem',
+                      AmbiOmniDirectOrder(-0.500, +0.204 - Robot2012.CDG_POSE.x + Robot2012.TOTEM_CLAW_MARGIN,  -pi/2, 0.6),
+                      transitions={'succeeded':'SlashTotem1', 'timeout':'SlashTotem1'})
+            
+            PreemptiveStateMachine.add('SlashTotem1',
+                      AmbiOmniDirectOrder(0.-200,0.204 - Robot2012.CDG_POSE.x + Robot2012.TOTEM_CLAW_MARGIN, -pi/2, 0.4),
+                      transitions={'succeeded':'CloseClaws', 'timeout':'Debloque'})
+            
+            PreemptiveStateMachine.add('CloseClaws',
+                    AmbiClawFingerOrder(Robot2012.FINGER_CLOSE,Robot2012.FINGER_CLOSE,
+                                   Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE),
+                    transitions={'succeeded':'AntiWorkCloseTotem', 'timeout':'AntiWorkCloseTotem'})
+            
+            PreemptiveStateMachine.add('AntiWorkCloseTotem',
+                      AntiWorkTopCloseTotem(),
+                      transitions={'endTotem':'ThrowUpTopCloseTotem', 'problem':'problem'})
+            
+            PreemptiveStateMachine.add('ThrowUpTopCloseTotem',
+                      ThrowUpTopCloseTotem(),
+                      transitions={'end':'endTotem', 'problem':'problem'})
+
+
+            #cas d'erreur
+            PreemptiveStateMachine.add('Debloque',
+                      DeblocReloc(),
+                      transitions={'endDeblocReloc':'endTotem'})
+
+
+
+

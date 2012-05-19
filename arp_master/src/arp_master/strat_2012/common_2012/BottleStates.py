@@ -49,7 +49,34 @@ class BottleState(PreemptiveStateMachine):
                       DeblocReloc(),
                       transitions={'endDeblocReloc':'problem'})
 
+   
+class FarAntiBottleState(PreemptiveStateMachine):
+    def __init__(self):
+        PreemptiveStateMachine.__init__(self,outcomes=['endBottle','problem'])
+        with self:      
+            PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
+                                             EndMatchPreempter(-Robot2012.END_GAME_DELAY),
+                                             transitions={'endMatch':'endBottle'})
             
+            #onveut taper avec le milieu de la tourelle droite d'ou le -0.058m pour tenir compte d'omni order qui pilote le CdG
+            PreemptiveStateMachine.add('Prepare',
+                      AmbiOmniDirectOrder(Table2012.P_BOTTLE_FAR.x+0.050,-0.700,-pi),
+                      transitions={'succeeded':'Push', 'timeout':'Push'})
+            self.setInitialState('Prepare')
+            
+            PreemptiveStateMachine.add('Push',
+                      AmbiOpenLoopOrder(0,0.300,0,
+                               2),
+                      transitions={'succeeded':'Back', 'timeout':'Back'})
+            
+            PreemptiveStateMachine.add('Back',
+                      AmbiOmniDirectOrder(Table2012.P_BOTTLE_FAR.x+0.050,-0.700,-pi),
+                      transitions={'succeeded':'endBottle', 'timeout':'endBottle'})
+            
+            #cas d'erreur
+            PreemptiveStateMachine.add('Debloque',
+                      DeblocReloc(),
+                      transitions={'endDeblocReloc':'problem'})         
             
 class FarBottleState(BottleState):
     def __init__(self):  
@@ -59,8 +86,7 @@ class FarBottleState(BottleState):
 class CloseBottleState(BottleState):
     def __init__(self):  
             BottleState.__init__(self,Table2012.P_BOTTLE_CLOSE.x+0.058,-0.700,0, "closeBottlePushed")   
-            
-            
+   
             
 class CloseBottleAndCoin(PreemptiveStateMachine):
     def __init__(self):
