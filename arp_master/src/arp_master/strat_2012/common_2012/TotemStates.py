@@ -196,10 +196,27 @@ class AntiWorkCloseTotem(PreemptiveStateMachine):
                       transitions={'succeeded':'PushABit', 'timeout':'Debloque'})
             
             
-            pose = TotemPose(0.750,-0.050,-pi/2+pi/12,table_half)
+            pose = TotemPose(0.730,-0.050,-pi/2+pi/12,table_half)
             PreemptiveStateMachine.add('PushABit',
                       AmbiOmniDirectOrder(pose.x, pose.y, pose.h),
-                      transitions={'succeeded':'endTotem', 'timeout':'Debloque'})
+                      transitions={'succeeded':'WaitPump', 'timeout':'WaitPump'})
+            
+            PreemptiveStateMachine.add('WaitPump',
+                      WaiterState(1.0),
+                      transitions={'timeout':'ClosePump'})  
+            
+            PreemptiveStateMachine.add('ClosePump',
+                      TotemClawState(Robot2012.FINGER_CLOSE,Robot2012.FINGER_HALF_CLOSE,
+                                          Robot2012.CLAW_CLOSE, Robot2012.CLAW_HALF_CLOSE,
+                                          table_half),
+                      transitions={'succeeded':'OpenPump', 'timeout':'OpenPump'})  
+            
+            PreemptiveStateMachine.add('OpenPump',
+                      TotemClawState(Robot2012.FINGER_CLOSE,Robot2012.FINGER_HALF_CLOSE,
+                                          Robot2012.CLAW_CLOSE, Robot2012.CLAW_HALF_CLOSE,
+                                          table_half),
+                      transitions={'succeeded':'endTotem', 'timeout':'endTotem'})  
+            
              
             #si on a rate le slash, on s'est peut etre pris dans le totem
             #on recommence une fois en partant de plus loin   

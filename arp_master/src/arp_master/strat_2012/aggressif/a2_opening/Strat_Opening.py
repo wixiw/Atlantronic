@@ -19,7 +19,7 @@ class Opening(PreemptiveStateMachine):
             self.setInitialState('EscapeStart')
             
             PreemptiveStateMachine.add('BourrineCloseBottle',
-                      AmbiOmniDirectOrder(Table2012.P_BOTTLE_CLOSE.x+0.040, - 1.050,-pi),
+                      AmbiOmniDirectOrder(Table2012.P_BOTTLE_CLOSE.x+0.058, - 1.050,-pi),
                       transitions={'succeeded':'OpenFingers', 'timeout':'OpenFingers'})
             self.setInitialState('EscapeStart')
             
