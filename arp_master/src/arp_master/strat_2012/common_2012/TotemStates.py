@@ -202,7 +202,7 @@ class AntiWorkCloseTotem(PreemptiveStateMachine):
                       transitions={'succeeded':'WaitPump', 'timeout':'WaitPump'})
             
             PreemptiveStateMachine.add('WaitPump',
-                      WaiterState(1.0),
+                      WaiterState(0.3),
                       transitions={'timeout':'ClosePump'})  
             
             PreemptiveStateMachine.add('ClosePump',

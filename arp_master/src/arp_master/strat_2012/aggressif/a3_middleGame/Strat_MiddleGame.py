@@ -11,16 +11,14 @@ class MiddleGame(PreemptiveStateMachine):
                                              EndMatchPreempter(-Robot2012.END_GAME_DELAY),
                                              transitions={'endMatch':'endMiddleGame'})
     
-            PreemptiveStateMachine.add('BackFromMiddleObjects',
-                      BackFromHalfMiddleObjects(),
-                      transitions={'end':'CloseFingersABit', 'problem':'endMiddleGame'})
-            self.setInitialState('BackFromMiddleObjects')
+
              
             PreemptiveStateMachine.add('CloseFingersABit',
                       AmbiClawFingerOrder(0.25, Robot2012.FINGER_CLOSE,
                                      Robot2012.CLAW_CLOSE, Robot2012.CLAW_CLOSE), 
                       transitions={'succeeded':'ThrowUp', 'timeout':'ThrowUp'})
-            
+            self.setInitialState('CloseFingersABit')
+             
             PreemptiveStateMachine.add('ThrowUp',
                       AmbiOmniDirectOrder(1.100,0.150,pi/5),
                       transitions={'succeeded':'OpenFingers', 'timeout':'OpenFingers'})
