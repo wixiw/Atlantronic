@@ -1,6 +1,7 @@
 #include <arp_core/Velocity.h>
 #include <arp_core/OmniCommand.h>
 #include <arp_core/Obstacle.h>
+#include <arp_core/MotionTarget.h>
 #include <arp_core/OpponentsList.h>
 #include <arp_core/Pose.h>
 #include <arp_core/Start.h>
@@ -20,6 +21,7 @@ namespace ros_integration {
             void rtt_ros_addType_Velocity();
         void rtt_ros_addType_OmniCommand();
         void rtt_ros_addType_Obstacle();
+        void rtt_ros_addType_MotionTarget();
         void rtt_ros_addType_OpponentsList();
         void rtt_ros_addType_Pose();
         void rtt_ros_addType_Start();
@@ -46,6 +48,7 @@ namespace ros_integration {
                   rtt_ros_addType_Velocity(); // factory function for adding TypeInfo.
         rtt_ros_addType_OmniCommand(); // factory function for adding TypeInfo.
         rtt_ros_addType_Obstacle(); // factory function for adding TypeInfo.
+        rtt_ros_addType_MotionTarget(); // factory function for adding TypeInfo.
         rtt_ros_addType_OpponentsList(); // factory function for adding TypeInfo.
         rtt_ros_addType_Pose(); // factory function for adding TypeInfo.
         rtt_ros_addType_Start(); // factory function for adding TypeInfo.

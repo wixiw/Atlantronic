@@ -2,6 +2,7 @@
 #include <arp_core/Velocity.h>
 #include <arp_core/OmniCommand.h>
 #include <arp_core/Obstacle.h>
+#include <arp_core/MotionTarget.h>
 #include <arp_core/OpponentsList.h>
 #include <arp_core/Pose.h>
 #include <arp_core/Start.h>
@@ -29,6 +30,8 @@ namespace ros_integration {
               return ti->addProtocol(ORO_ROS_PROTOCOL_ID,new RosMsgTransporter<arp_core::OmniCommand>());
          if(name == "/arp_core/Obstacle")
               return ti->addProtocol(ORO_ROS_PROTOCOL_ID,new RosMsgTransporter<arp_core::Obstacle>());
+         if(name == "/arp_core/MotionTarget")
+              return ti->addProtocol(ORO_ROS_PROTOCOL_ID,new RosMsgTransporter<arp_core::MotionTarget>());
          if(name == "/arp_core/OpponentsList")
               return ti->addProtocol(ORO_ROS_PROTOCOL_ID,new RosMsgTransporter<arp_core::OpponentsList>());
          if(name == "/arp_core/Pose")
