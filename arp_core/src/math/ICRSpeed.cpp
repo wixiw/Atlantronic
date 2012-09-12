@@ -6,6 +6,7 @@
  */
 
 #include "math/ICRSpeed.hpp"
+#include "math/ICR.hpp"
 #include <iostream>
 
 using namespace arp_math;
@@ -17,118 +18,87 @@ std::ostream &operator<<(std::ostream &flux, arp_math::ICRSpeed const& t)
     return flux << t.toString();
 }
 
-ICRSpeed::ICRSpeed(double ro, double alpha, double q) :
-        m_ro(ro), m_alpha(alpha), m_q(q)
+ICRSpeed::ICRSpeed(double ro, double phi, double delta)
 {
+    m_ro = ro;
+    m_ICR = ICR(phi, delta);
+}
+
+ICRSpeed::ICRSpeed(double ro, ICR ICR)
+{
+    m_ro = ro;
+    m_ICR = ICR;
+}
+
+ICRSpeed::ICRSpeed(Twist2DNorm twist)
+{
+    initFromTwist(twist);
+
 }
 
 ICRSpeed::ICRSpeed(Twist2D twist)
 {
-    double v;
-    double ro;
-    double alpha;
-    double q;
-    v = sqrt(twist.vx() * twist.vx() + twist.vy() * twist.vy());
+    initFromTwist(Twist2DNorm(twist));
+}
 
-    if (twist.vh() != 0.0)
-        ro = atan(v / twist.vh());
-    else
-        ro = PI / 2.0;
-    if (twist.vx() != 0.0 or twist.vy() != 0.0)
-        alpha = atan2(twist.vy(), twist.vx());
-    else
-        alpha = 0.0;
-    q = v + twist.vh();
+void ICRSpeed::initFromTwist(Twist2DNorm twist)
+{
+    // if twist is null, then ICRspeed cannot be defined. default ICRSpeed is used
+        if (twist.vx() == 0.0 and twist.vy() == 0.0 and twist.vh() == 0.0)
+        {
+            m_ro = 0;
+            m_ICR = ICR(0, 0);
+            return;
+        }
 
-    m_ro = ro;
-    m_alpha = alpha;
-    m_q = q;
+        //ro
+        m_ro = sqrt(twist.vx() * twist.vx() + twist.vy() * twist.vy() + twist.vh() * twist.vh());
+        m_ICR = ICR(twist.getTVector());
 
 }
 
-Twist2D ICRSpeed::twist()
+Twist2DNorm ICRSpeed::twistNorm()
 {
-    double v;
     double vx;
     double vy;
     double vh;
 
-    if (m_ro == PI / 2.0)
-        v = m_q;
-    else if (m_ro == 0.0)
-        v = 0.0;
-    else
-        v = m_q / (1 + 1 / tan(m_ro));
+    vx = ro() * cos(delta()) * cos(phi());
+    vy = ro() * cos(delta()) * sin(phi());
+    vh = ro() * sin(delta());
 
-    vx = v * cos(m_alpha);
-    vy = v * sin(m_alpha);
-    vh = m_q - v;
-
-    return Twist2D(vx, vy, vh);
+    return Twist2DNorm(vx, vy, vh);
 }
 
-ICRSpeed ICRSpeed::createFromICR(Vector2 ICR,Vector2 speedPoint, Vector2 speed)
+Twist2D ICRSpeed::twist()
 {
-    //used for cross products
-    Vector3 speed3(speed(0),speed(1),0);
-    Vector3 ICR3(ICR(0),ICR(1),0);
-    Vector3 speedPoint3(speedPoint(0),speedPoint(1),0);
-    Vector3 ICR_to_speedpoint3=speedPoint3-ICR3;
-
-    ICRSpeed result;
-
-    if (speed.norm()!=0.0)
-    {
-
-
-    //omega: we have
-    // speed = v(speedPoint) = v(ICR)  +   omega  ^ ( ICR to speedpoint )
-    // speed=omega  ^ ( ICR to speedpoint )
-    // boris says that consequently
-    // omega = ( ICR to speedpoint ) ^ speed / ( ICR to speedpoint )²
-    Vector3 omega= ICR_to_speedpoint3.cross(speed3) / (ICR_to_speedpoint3.norm()*ICR_to_speedpoint3.norm());
-    Vector3 speedRef=omega.cross(-1.0*ICR3);
-
-    result.ro(atan(ICR.norm()*sign(omega(2))));
-
-    if (ICR(1)!=0.0 or ICR(0)!=0.0)
-        result.alpha(atan2(speedRef(1),speedRef(0)));
-    else
-        result.alpha(0.0);
-
-    result.q(omega(2)+speedRef.norm());
-    }
-    else
-    {
-        //there is no motion at all. i only need to define my ICR
-        result.ro(atan(ICR.norm()));
-        result.alpha(atan2(-ICR(0),ICR(1)));
-        result.q(0);
-    }
-
-    return result;
+    return twistNorm().getTwist();
 }
 
-ICRSpeed ICRSpeed::createFromTranslation(double alpha,double speed)
+Vector3 ICRSpeed::speedDirection()
 {
-    Twist2D twist(speed*cos(alpha),speed*sin(alpha),0.0);
-    return ICRSpeed(twist);
+    return m_ICR.getCartesianVector();
 }
 
+ICRSpeed ICRSpeed::getOppositeRep()
+{
+    ICR antipodICR = m_ICR.getAntipodICR();
+    return ICRSpeed(-m_ro, antipodICR.phi(), antipodICR.delta());
+}
 
 double ICRSpeed::ro() const
 {
     return m_ro;
 }
 
-double ICRSpeed::alpha() const
+double ICRSpeed::phi() const
 {
-    return m_alpha;
+    return m_ICR.phi();
 }
 
-double ICRSpeed::q() const
+double ICRSpeed::delta() const
 {
-    return m_q;
+    return m_ICR.delta();
 }
 
 double& ICRSpeed::roRef()
@@ -136,14 +106,14 @@ double& ICRSpeed::roRef()
     return m_ro;
 }
 
-double& ICRSpeed::alphaRef()
+double& ICRSpeed::phiRef()
 {
-    return m_alpha;
+    return m_ICR.phiRef();
 }
 
-double& ICRSpeed::qRef()
+double& ICRSpeed::deltaRef()
 {
-    return m_q;
+    return m_ICR.deltaRef();
 }
 
 void ICRSpeed::ro(double ro)
@@ -151,19 +121,36 @@ void ICRSpeed::ro(double ro)
     m_ro = ro;
 }
 
-void ICRSpeed::alpha(double alpha)
+void ICRSpeed::phi(double phi)
 {
-    m_alpha = alpha;
+    m_ICR.phi(phi);
 }
 
-void ICRSpeed::q(double q)
+void ICRSpeed::delta(double delta)
 {
-    m_q = q;
+    m_ICR.delta(delta);
 }
 
 std::string ICRSpeed::toString() const
 {
     std::ostringstream s;
-    s << "(" << ro() << "," << alpha() << "," << q() << ")";
+    s << "(" << ro() << "," << phi() << "," << delta() << ")";
     return s.str();
 }
+
+ICRSpeed ICRSpeed::createIdleFromICRPosition(Vector2 ICRPosition)
+{
+    double phi = betweenMinusPiAndPlusPi(atan2(ICRPosition[1], ICRPosition[0])-PI/2);
+    double delta = atan(Twist2DNorm::dmax/ICRPosition.norm());
+
+    return ICRSpeed(0, phi, delta);
+}
+
+ICRSpeed ICRSpeed::createIdleFromTranslation(double angle)
+{
+    double phi = betweenMinusPiAndPlusPi(angle+PI/2);
+    double delta = 0;
+
+    return ICRSpeed(0, phi, delta);
+}
+

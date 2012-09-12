@@ -11,6 +11,8 @@
 #include "math/math.hpp"
 #include "math/Pose2D.hpp"
 #include "math/Twist2D.hpp"
+#include "math/Twist2DNorm.hpp"
+#include "math/ICR.hpp"
 #include <string.h>
 
 namespace arp_math
@@ -36,59 +38,53 @@ class ICRSpeed
 
         /** Constructeur principal.
          * Il permet une initialisation par défaut (à zéro) de la vitesse, avec un CIR à l'infini pour aller tout droit */
-        ICRSpeed(double ro = PI/2.0, double alpha = 0.0,double q=0);
+        ICRSpeed(double ro = 0.0, double phi = 0.0, double delta = 0.0);
+        ICRSpeed(double ro, ICR ICR);
 
         /** Constructeur secondaire.
          * Il permet d'initialiser les vitesses avec un twist. */
+        ICRSpeed(Twist2DNorm twist);
         ICRSpeed(Twist2D twist);
 
-        /** creation of ICRSpeed with a known ICR
-         * if you have the ICR (don't work with translations)
-         * ICR: point of the ICR
-         * speedPoint: point where you give the speed
-         * speed: speed vector at this point. the computation will consider that the speed is consistent (perpendicular to radius)
-         */
-        static ICRSpeed createFromICR(Vector2 ICR,Vector2 speedPoint, Vector2 speed);
-        /** creation of ICRSpeed in case of a translation
-         * alpha: angle of direction of translation
-         * speed: speed of translation
-         */
-        static ICRSpeed createFromTranslation(double alpha,double speed);
+        /** returns the direction (in 3D) of the speed) */
+        Vector3 speedDirection();
+        /** returns equivalent representation with opposite sign of ro and ICR at antipod*/
+        ICRSpeed getOppositeRep();
 
-        /** \returns atan(distance IRC) */
+        /** for a robot not moving, allow to create the ICRSpeed defined by the position "ICR" and a null speed*/
+        static ICRSpeed createIdleFromICRPosition(Vector2 ICRPosition);
+        /** for a robot not moving, allow to create the ICRSpeed defined by the ICR at infinity with angle "angle" and a null speed*/
+        static ICRSpeed createIdleFromTranslation(double angle);
+
         double ro() const;
+        double phi() const;
+        double delta() const;
 
-        /** \returns  angle of IRC to te referential*/
-        double alpha() const;
-
-        /** \returns v at referential+omega */
-        double q() const;
-
-        /** Pour le typekit */
+        /** for typekit */
         double& roRef();
-        double& alphaRef();
-        double& qRef();
-
+        double& phiRef();
+        double& deltaRef();
 
         void ro(double ro);
-        void alpha(double _alpha);
-        void q(double q);
+        void phi(double phi);
+        void delta(double q);
 
         /** returns a equivalent twist */
+        Twist2DNorm twistNorm();
         Twist2D twist();
 
         /** affiche (vx,vy,vtheta) */
         std::string toString() const;
 
-
     protected:
         double m_ro;
-        double m_alpha;
-        double m_q;
+        ICR m_ICR;
+        void initFromTwist(Twist2DNorm twist);
+
 
 };
 
-std::ostream &operator<<( std::ostream &flux, arp_math::ICRSpeed const& t);
+std::ostream &operator<<(std::ostream &flux, arp_math::ICRSpeed const& t);
 
 }
 

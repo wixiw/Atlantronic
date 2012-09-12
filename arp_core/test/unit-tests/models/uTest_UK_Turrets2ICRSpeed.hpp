@@ -14,7 +14,7 @@
 using namespace arp_math;
 using namespace arp_model;
 
-void check_twist2turrets2twix2twist(double vx, double vy, double vh)
+void check_twist2turrets2ICRSpeed2twist(double vx, double vy, double vh)
 {
     arp_model::UbiquityParams params;
     arp_math::Twist2D inTwist;
@@ -33,84 +33,137 @@ void check_twist2turrets2twix2twist(double vx, double vy, double vh)
     res = arp_model::UbiquityKinematics::simpleTurrets2ICRspeed(turretCmd, twix, params);
     outTwist = twix.twist();
 
+    /*
+     cout << "inTwist"<<inTwist.toString()<<endl;
+     cout << "inTwist->twix"<<ICRSpeed(inTwist).toString()<<endl;
+     cout << "turrets->twix"<<twix.toString()<<endl;
+     cout << "outTwist"<<outTwist.toString()<<endl;
+     */
+
     BOOST_CHECK_EQUAL(res, true);
     BOOST_CHECK_SMALL(outTwist.vx() - inTwist.vx(), 1.e-10);
     BOOST_CHECK_SMALL(outTwist.vy() - inTwist.vy(), 1.e-10);
     BOOST_CHECK_SMALL(outTwist.vh() - inTwist.vh(), 1.e-10);
 }
 
-void check_noMotion(double ICRx, double ICRy)
+void check_noMotion(double vx, double vy, double vh)
 {
     arp_model::UbiquityParams params;
-       arp_math::Twist2D outTwist;
-       arp_model::TurretState turretCmd;
-       ICRSpeed twix;
-       bool res;
 
-       Vector2 ICR(ICRx,ICRy);
+    arp_math::Twist2D inTwist;
+    arp_math::Twist2D inTwist_inv;
+    arp_model::TurretState turretCmd;
+    ICRSpeed twixDesire;
+    ICRSpeed twixDesire_inv;
+    ICRSpeed twixObtenu;
 
-       //angle turret to CIR
-       Vector2 leftVect(Vector2(params.getLeftTurretPosition().x(),params.getLeftTurretPosition().y())-ICR);
-       Vector2 rightVect(Vector2(params.getRightTurretPosition().x(),params.getRightTurretPosition().y())-ICR);
-       Vector2 rearVect(Vector2(params.getRearTurretPosition().x(),params.getRearTurretPosition().y())-ICR);
-       turretCmd.steering.left.position=atan2(leftVect(1),leftVect(0))+PI/2;
-       turretCmd.steering.right.position=atan2(rightVect(1),rightVect(0))+PI/2;
-       turretCmd.steering.rear.position=atan2(rearVect(1),rearVect(0))+PI/2;
+    bool res;
 
-       res = arp_model::UbiquityKinematics::simpleTurrets2ICRspeed(turretCmd, twix, params);
-       outTwist=twix.twist();
+    inTwist.vx(vx);
+    inTwist.vy(vy);
+    inTwist.vh(vh);
 
-       BOOST_CHECK_EQUAL( res , true);
-       BOOST_CHECK_SMALL( outTwist.vx() , 1.e-10 );
-       BOOST_CHECK_SMALL( outTwist.vy() , 1.e-10 );
-       BOOST_CHECK_SMALL( outTwist.vh() , 1.e-10 );
+    //je calcule le twix que je veux au final
+    twixDesire = ICRSpeed(inTwist);
+    twixDesire.ro(0);
+    //l'ICR oppose est aussi une solution
+    inTwist_inv = Twist2D(-inTwist.vx(), -inTwist.vy(), -inTwist.vh());
+    twixDesire_inv = ICRSpeed(inTwist_inv);
+    twixDesire_inv.ro(0);
 
-       BOOST_CHECK_SMALL(tan(twix.ro())*cos(twix.alpha()+PI/2)-ICRx,1e-6);
-       BOOST_CHECK_SMALL(tan(twix.ro())*sin(twix.alpha()+PI/2)-ICRy,1e-6);
+    //je calcule les tourelles
+    arp_model::UbiquityKinematics::twist2Turrets(inTwist, turretCmd, params);
+    //je fous les tourelles a 0
+    turretCmd.driving.left.velocity = 0;
+    turretCmd.driving.right.velocity = 0;
+    turretCmd.driving.rear.velocity = 0;
 
+    //et la je calcule le twix
+    arp_model::UbiquityKinematics::simpleTurrets2ICRspeed(turretCmd, twixObtenu, params);
+    /*
+     cout << "-----------TEST----------" << endl;
+     cout << "inTwist" << inTwist.toString() << endl;
+     cout << "inTwist_inv" << inTwist_inv.toString() << endl;
+     cout << "twixDesire" << twixDesire.toString() << endl;
+     cout << "twixDesire_inv" << twixDesire_inv.toString() << endl;
+     cout << "turretCmd" << turretCmd.toString() << endl;
+     cout << "twixObtenu" << twixObtenu.toString() << endl;
+     */
+    BOOST_CHECK_SMALL(twixObtenu.ro() - 0, 1.e-10);
+    BOOST_CHECK_SMALL(twixDesire.ro() - 0, 1.e-10);
+    BOOST_CHECK_SMALL(twixDesire_inv.ro() - 0, 1.e-10);
+
+    //le petit teste pour voir si je compare au normal ou a l'inverse ... un peu complique je sais..
+    bool deltaLikeNormal = abs(twixObtenu.delta() - twixDesire.delta()) < 1.e-10;
+    bool phiLikeNormal = abs(twixObtenu.phi() - twixDesire.phi()) < 1.e-10;
+    bool carePhi = twixDesire.delta() < PI / 2 - 1.e-5 and twixDesire.delta() > -PI / 2 + 1.e-5;
+    /*
+     cout << "---"<< endl;
+     cout <<"deltaLikeNormal"<<deltaLikeNormal<<endl;
+     cout <<"phiLikeNormal"<<phiLikeNormal<<endl;
+     cout <<"carePhi"<<carePhi<<endl;
+     cout << "---"<< endl;
+     */
+    if (deltaLikeNormal and (phiLikeNormal or !carePhi))
+    {
+        // soit c'est le twix normal
+        //cout << "je checke  twix normal" << endl;
+        if (twixDesire.delta() < PI / 2 - 1.e-5 and twixDesire.delta() > -PI / 2 + 1.e-5) //aux poles on se tape de phi
+        {
+            //cout << "je checke  phi" << endl;
+            BOOST_CHECK_SMALL(betweenMinusPiAndPlusPi(twixObtenu.phi() - twixDesire.phi()), 1.e-10);
+        }
+        else
+        {
+            //cout << "je checke pas phi" << endl;
+
+        }
+        BOOST_CHECK_SMALL(twixObtenu.delta() - twixDesire.delta(), 1.e-10);
+    }
+    else
+    {
+        //cout << "je checke  twix inverse" << endl;
+        //soit le twix antipode
+        if (twixDesire_inv.delta() < PI / 2 - 1.e-5 and twixDesire_inv.delta() > -PI / 2 + 1.e-5) //aux poles on se tape de phi
+        {
+            //cout << "je checke  phi" << endl;
+            BOOST_CHECK_SMALL(betweenMinusPiAndPlusPi(twixObtenu.phi() - twixDesire_inv.phi()), 1.e-10);
+        }
+        else
+        {
+            //cout << "je checke pas phi" << endl;
+
+        }
+        BOOST_CHECK_SMALL(twixObtenu.delta() - twixDesire_inv.delta(), 1.e-10);
+    }
 }
 
 BOOST_AUTO_TEST_CASE( UK_Turrets2ICRSpeed_Motions )
 {
-    cout << "1 check_twist2turrets2twix2twist(0.0,0.0,0.0);"<<endl;
-    check_twist2turrets2twix2twist(0.0,0.0,0.0);
-    cout << "1 check_twist2turrets2twix2twist(0.0,0.0,-2.0);"<<endl;
-    check_twist2turrets2twix2twist(0.0,0.0,-2.0);
-    cout << "2 check_twist2turrets2twix2twist(0.0,0.0,10.0);"<<endl;
-    check_twist2turrets2twix2twist(0.0,0.0,10.0);
-    cout << "3 check_twist2turrets2twix2twist(3.0,0.0,0.0);"<<endl;
-    check_twist2turrets2twix2twist(3.0,0.0,0.0);
-    cout << "4 check_twist2turrets2twix2twist(-1.8,0.0,0.0);"<<endl;
-    check_twist2turrets2twix2twist(-1.8,0.0,0.0);
-    cout << "5 check_twist2turrets2twix2twist(0.0,1.2,0.0);"<<endl;
-    check_twist2turrets2twix2twist(0.0,1.2,0.0);
-    cout << "6 check_twist2turrets2twix2twist(0.0,-15.8,0.0);"<<endl;
-    check_twist2turrets2twix2twist(0.0,-15.8,0.0);
-    cout << "7 check_twist2turrets2twix2twist(0.0,0.254,0.0);"<<endl;
-    check_twist2turrets2twix2twist(0.0,-15.8,0.0);
-    cout << "8 check_twist2turrets2twix2twist(-4.212,0.7897,1.5456)"<<endl;
-    check_twist2turrets2twix2twist(-4.212,0.7897,1.5456);
-    cout << "9 check_twist2turrets2twix2twist(-8.541,1.212,-9.121)"<<endl;
-    check_twist2turrets2twix2twist(-8.541,1.212,-9.121);
-    cout << "10 check_twist2turrets2twix2twist(-0.2654,5.21,0.0123)"<<endl;
-    check_twist2turrets2twix2twist(-0.2654,5.21,0.0123);
+    check_twist2turrets2ICRSpeed2twist(0.0,0.0,-2.0);
+    check_twist2turrets2ICRSpeed2twist(0.0,0.0,10.0);
+    check_twist2turrets2ICRSpeed2twist(3.0,0.0,0.0);
+    check_twist2turrets2ICRSpeed2twist(-1.8,0.0,0.0);
+    check_twist2turrets2ICRSpeed2twist(0.0,1.2,0.0);
+    check_twist2turrets2ICRSpeed2twist(0.0,-15.8,0.0);
+    check_twist2turrets2ICRSpeed2twist(0.0,-15.8,0.0);
+    check_twist2turrets2ICRSpeed2twist(-4.212,0.7897,1.5456);
+    check_twist2turrets2ICRSpeed2twist(-8.541,1.212,-9.121);
+    check_twist2turrets2ICRSpeed2twist(-0.2654,5.21,0.0123);
 }
 
 BOOST_AUTO_TEST_CASE( UK_Turrets2ICRSpeed_NoMotion)
 {
-    arp_model::UbiquityParams params;
-
-    cout << "1 check_noMotion(0.0,0.0);"<<endl;
-    check_noMotion(0.0,0.0);
-    cout << "2 check_noMotion(params.getLeftTurretPosition().x(),params.getLeftTurretPosition().y());"<<endl;
-    check_noMotion(params.getLeftTurretPosition().x(),params.getLeftTurretPosition().y());
-    cout << "3 check_noMotion(params.getRightTurretPosition().x(),params.getRightTurretPosition().y());"<<endl;
-    check_noMotion(params.getRightTurretPosition().x(),params.getRightTurretPosition().y());
-    cout << "4 check_noMotion(params.getRearTurretPosition().x(),params.getRearTurretPosition().y());"<<endl;
-    check_noMotion(params.getRearTurretPosition().x(),params.getRearTurretPosition().y());
-    cout << "5 check_noMotion(8.2123,-5.12);"<<endl;
-    check_noMotion(8.2123,-5.12);
-
+    check_noMotion(0.0,0.0,-2.0);
+    check_noMotion(0.0,0.0,10.0);
+    check_noMotion(3.0,0.0,0.0);
+    check_noMotion(-1.8,0.0,0.0);
+    check_noMotion(0.0,1.2,0.0);
+    check_noMotion(0.0,-15.8,0.0);
+    check_noMotion(0.0,-15.8,0.0);
+    check_noMotion(-4.212,0.7897,1.5456);
+    check_noMotion(-8.541,1.212,-9.121);
+    check_noMotion(-0.2654,5.21,0.0123);
 
 }
 
