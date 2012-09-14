@@ -277,7 +277,7 @@ bool UbiquityKinematics::simpleTurrets2ICRspeed(const TurretState & iTS, ICRSpee
         {
             if (parLeftRear) // the third is parralel also
             {
-                oICRs = ICRSpeed::createIdleFromTranslation(iTS.steering.rear.position+PI/2);
+                oICRs = ICRSpeed::createIdleFromTranslation(iTS.steering.rear.position + PI / 2);
 
             }
             else // the third turret is not parralel: we are turning around a point on the front turrets line
@@ -288,7 +288,7 @@ bool UbiquityKinematics::simpleTurrets2ICRspeed(const TurretState & iTS, ICRSpee
         }
         else if (parLeftRight) // front turrets are parralel but not colinear, the robot is in translation
         {
-            oICRs = ICRSpeed::createIdleFromTranslation(iTS.steering.left.position+PI/2);
+            oICRs = ICRSpeed::createIdleFromTranslation(iTS.steering.left.position + PI / 2);
         }
 
         else // standard case: the front turrets are crossing
@@ -338,6 +338,15 @@ bool UbiquityKinematics::motors2Twist(const MotorState & iMS, TurretState& oTS, 
     res &= motors2Turrets(iMS, oTS, iParams);
 //    res &= turrets2Twist(oTS, oTw, oSR, iParams);
     simpleTurrets2Twist(oTS, oTw, oSR, iParams);
+    return res;
+}
+
+bool UbiquityKinematics::motors2ICRSpeed(const MotorState & iMS, TurretState& oTS, ICRSpeed& oICRs, SlippageReport& oSR,
+        const UbiquityParams & iParams)
+{
+    bool res = true;
+    res &= motors2Turrets(iMS, oTS, iParams);
+    simpleTurrets2ICRspeed(oTS, oICRs, iParams);
     return res;
 }
 

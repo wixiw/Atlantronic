@@ -45,6 +45,11 @@ class LittleSexControl: public OdsTaskContext
 
         /** Measure of the current robot Twist */
         RTT::InputPort<arp_math::EstimatedTwist2D> inCurrentTwist;
+        /** current motor state
+         *  redondant with inCurrentTwist, but it is need to work with ICRSpeed */
+        RTT::InputPort<arp_model::MotorState> inCurrentMotorState;
+        /** Geometric parameters */
+        RTT::InputPort<arp_model::UbiquityParams> inParams;
 
         /**
          * This is the result of computation : the Twist that the robot should do
@@ -100,6 +105,14 @@ class LittleSexControl: public OdsTaskContext
          * buffer for current twist
          */
         EstimatedTwist2D attrCurrentTwist;
+       /*
+        * buffer for current motor state
+        */
+        MotorState attrCurrentMotorState;
+        /*
+         * platform parameters
+         */
+        arp_model::UbiquityParams attrParams;
 
         /**
          * Buffer for input order

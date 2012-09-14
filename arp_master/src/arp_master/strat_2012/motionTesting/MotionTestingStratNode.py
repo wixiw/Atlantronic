@@ -4,6 +4,7 @@
 import roslib; roslib.load_manifest('arp_master')
 
 from arp_master import *
+from math import *
 
 ###########################  TEMPORAL BEHAVIOR
 
@@ -52,20 +53,18 @@ class MainStateMachine(smach.StateMachine):
                       SetInitialPosition(0,0,0),
                       transitions={'succeeded':'Forward', 'timeout':'Debloque'})
                         
-            smach.StateMachine.add('Forward', Forward(),
+            smach.StateMachine.add('Forward', AmbiOmniDirectOrder2(0.5,-0.2,pi/2, vmax=0.3),
                                    transitions={'succeeded':'Move1', 'timeout':'Debloque'}) 
              
                                     
-            smach.StateMachine.add('Move1', AmbiOmniDirectOrder(0.800,0.500,0, vmax=0.3),
+            smach.StateMachine.add('Move1', AmbiOmniDirectOrder2(0.800,0.500,pi/4, vmax=0.3),
                                    transitions={'succeeded':'Move2', 'timeout':'Debloque'}) 
-            smach.StateMachine.add('Move2', AmbiOmniDirectOrder(-0.800,0.500,0, vmax=0.3),
+            smach.StateMachine.add('Move2', AmbiOmniDirectOrder2(-0.800,0.500,0, vmax=0.3),
                                    transitions={'succeeded':'Move1', 'timeout':'Debloque'})
             
-            smach.StateMachine.add('Move3', TurnOrder(-pi),
-                                   transitions={'succeeded':'Move1', 'timeout':'Debloque'})
-      
-            smach.StateMachine.add('Debloque', Replay(1.0),
-                                   transitions={'succeeded':'Move3', 'timeout':'Debloque'})     
+            smach.StateMachine.add('Debloque', Replay(2.0),
+                                   transitions={'succeeded':'end','timeout':'end'})  
+                        
             smach.StateMachine.add('Wait', WaiterState(2.0),
                                    transitions={'timeout':'end'})           
 

@@ -49,10 +49,8 @@ class UbiquityKinematics
          * @param[in] iParams : paramètres géométriques du robot
          * @return : true if computation succeed, false otherwise (param inconsistent for instance)
          */
-        static bool turrets2Motors(const TurretState & iTS,
-                                const MotorState & iMS,
-                                MotorState& oMS,
-                                const UbiquityParams & iParams);
+        static bool turrets2Motors(const TurretState & iTS, const MotorState & iMS, MotorState& oMS,
+                const UbiquityParams & iParams);
 
         /**
          * Modèle cinématique direct de la base.
@@ -67,24 +65,23 @@ class UbiquityKinematics
          * @param[in] iParams : paramètres géométriques du robot
          * @return : true if computation succeed, false otherwise (param inconsistent for instance)
          */
-        static bool turrets2Twist(const TurretState & iTS,
-                                    arp_math::Twist2D& oTw,
-                                    SlippageReport& oSR,
-                                    const UbiquityParams & iParams);
+        static bool turrets2Twist(const TurretState & iTS, arp_math::Twist2D& oTw, SlippageReport& oSR,
+                const UbiquityParams & iParams);
 
         /**
          * Modèle cinématique direct de la base, version simpliste qui ne prend que 3 mesures pour faire le calcul des 3 coordonées du twist (avec une matrice inversible)
          * ne sert qu'au debug
          */
-        static void simpleTurrets2Twist(const TurretState & iTS, arp_math::Twist2D& oTw, SlippageReport& oSR, const UbiquityParams & iParams);
+        static void simpleTurrets2Twist(const TurretState & iTS, arp_math::Twist2D& oTw, SlippageReport& oSR,
+                const UbiquityParams & iParams);
 
         /**
          * Modèle cinématique direct de la base.
          * Convertit l'état des tourelles en un ICRSpeed (mouvement du repère de référence du chassis par rapport au sol projeté et réduit dans le
          * repère de référence du chassis).\n
          */
-        static bool simpleTurrets2ICRspeed(const TurretState & iTS, arp_math::ICRSpeed& oICRs, const UbiquityParams & iParams);
-
+        static bool simpleTurrets2ICRspeed(const TurretState & iTS, arp_math::ICRSpeed& oICRs,
+                const UbiquityParams & iParams);
 
         /**
          * Modèle cinématique indirect de la base
@@ -101,26 +98,26 @@ class UbiquityKinematics
          */
         static bool twist2Turrets(const arp_math::Twist2D & iTw, TurretState& oTS, const UbiquityParams & iParams);
 
-
         /**
          * Echainement des modèles direct de tourelle et cinématique
          * @param oTS : [out] the intermediate computation of Turret State. Should be only used for debug or user feedback
          */
-        static bool motors2Twist(const MotorState & iMS,
-                TurretState& oTS,
-                arp_math::Twist2D& oTw,
-                SlippageReport& oSR,
+        static bool motors2Twist(const MotorState & iMS, TurretState& oTS, arp_math::Twist2D& oTw, SlippageReport& oSR,
+                const UbiquityParams & iParams);
+
+        /*
+         * enchaine les modeles directs
+         * convertit l'etat des moteurs en un ICRSpeed
+         */
+        static bool motors2ICRSpeed(const MotorState & iMS, TurretState& oTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
                 const UbiquityParams & iParams);
 
         /**
          * Enchainement des modèles indirects de tourelle et cinématique
          * @param oTS : [out] the intermediate computation of Turret State. Should be only used for debug or user feedback
          */
-        static bool twist2Motors(const arp_math::Twist2D & iTw,
-                                    const MotorState & iMS,
-                                    TurretState& oTS,
-                                    MotorState& oMS,
-                                    const UbiquityParams & iParams);
+        static bool twist2Motors(const arp_math::Twist2D & iTw, const MotorState & iMS, TurretState& oTS,
+                MotorState& oMS, const UbiquityParams & iParams);
 
         /**
          * Les tourelles permettent de recouvrir l'état de possibles de plusieurs façons lorsqu'elles sont pilotés en marche

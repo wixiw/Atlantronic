@@ -331,7 +331,7 @@ void OmnidirectOrder::decideSmoothNeeded(arp_math::Pose2D & currentPosition)
         outDEBUGSmoothLocNeeded = 0.0;
 
 }
-Twist2D OmnidirectOrder::computeSpeed(arp_math::Pose2D currentPosition, double dt)
+Twist2D OmnidirectOrder::computeSpeed(Pose2D currentPosition,MotorState motorState,UbiquityParams params, double dt)
 {
 
     if (m_currentMode == MODE_DONE || m_currentMode == MODE_ERROR)

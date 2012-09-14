@@ -1,12 +1,12 @@
 /*
  * OmnidirectOrder.hpp
  *
- *  Created on: 210 april 2012
+ *  Created on: 14 sept 2013
  *      Author: RMO
  */
 
-#ifndef OMNIDIRECTORDER_HPP_
-#define OMNIDIRECTORDER_HPP_
+#ifndef OMNIDIRECTORDER2_HPP_
+#define OMNIDIRECTORDER2_HPP_
 
 #include "MotionOrder.hpp"
 #include "math/math.hpp"
@@ -17,7 +17,7 @@
 namespace arp_ods{ namespace orders
 {
 
-class OmnidirectOrder: public MotionOrder
+class OmnidirectOrder2: public MotionOrder
 {
     public:
 
@@ -27,8 +27,8 @@ class OmnidirectOrder: public MotionOrder
          */
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-        OmnidirectOrder();
-        OmnidirectOrder(MotionOrder);
+        OmnidirectOrder2();
+        OmnidirectOrder2(MotionOrder);
 
         /**
          * Override to define specific parameters
@@ -55,7 +55,7 @@ class OmnidirectOrder: public MotionOrder
         /*
          * compute the usual "mode run" twist
          */
-        Twist2D computeRunTwist(arp_math::Pose2D currentPosition, double dt);
+        Twist2DNorm computeRunTwist(arp_math::Pose2D currentPosition,ICRSpeed curICRSpeed,double dt);
 
         /*
          * twist of precedent turn
@@ -85,7 +85,6 @@ class OmnidirectOrder: public MotionOrder
 
         //surcharges
         void switchRun(arp_math::Pose2D currentPosition);
-        void switchApproach(arp_math::Pose2D currentPosition);
 
         static const double TIMELAG=0.030;
         static const double DIST_SMOOTH=0.100;
@@ -100,10 +99,9 @@ class OmnidirectOrder: public MotionOrder
 
 private:
     Pose2D getPositionError_RobotRef(arp_math::Pose2D currentPosition);
-    Twist2D computeApproachTwist(arp_math::Pose2D currentPosition, double dt);
     double getTotalError(Pose2D pose);
     void decideSmoothNeeded(arp_math::Pose2D & currentPosition);
-    Twist2D handleReconfiguration(Twist2D twist_input);
+
 
 };
 

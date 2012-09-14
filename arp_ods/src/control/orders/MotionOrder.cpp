@@ -42,7 +42,7 @@ MotionOrder::MotionOrder() :
 
 }
 
-Twist2D MotionOrder::computeSpeed(Pose2D currentPosition, double dt)
+Twist2D MotionOrder::computeSpeed(Pose2D currentPosition,MotorState motorState,UbiquityParams params, double dt)
 {
     m_smoothLocNeeded = false;
 
@@ -103,6 +103,9 @@ std::string MotionOrder::getTypeString() const
             break;
         case OMNIDIRECT:
             return "OMNIDIRECT";
+            break;
+        case OMNIDIRECT2:
+            return "OMNIDIRECT2";
             break;
         case OPENLOOP:
             return "OPENLOOP";

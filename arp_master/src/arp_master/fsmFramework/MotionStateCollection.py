@@ -28,6 +28,18 @@ class AmbiOmniDirectOrder(MotionState):
         self.pose = AmbiPoseRed(self.x, self.y, self.theta, Data.color)
         self.omnidirect(self.pose.x, self.pose.y, self.pose.theta, self.vmax)
 
+class AmbiOmniDirectOrder2(MotionState):
+    def __init__(self,x,y,theta, vmax=-1.0):
+        MotionState.__init__(self)
+        self.x = x
+        self.y = y
+        self.theta = theta
+        self.vmax = vmax
+        
+    def createAction(self):
+        self.pose = AmbiPoseRed(self.x, self.y, self.theta, Data.color)
+        self.omnidirect2(self.pose.x, self.pose.y, self.pose.theta, self.vmax)
+        
 # Use this Order State to quickly add move state in your FSM with a special ControlPoint (CP)
 # give the target (x,y,h) in (m,m,rad) of robot's CP=(CPx,CPy,CPh) and match color
 # Ex : AmbiOmniDirectOrder(CPx=0,CPy=0,CPh=0, 1.200, -0.700,pi/2)   

@@ -28,7 +28,7 @@ LittleSexControl::LittleSexControl(const std::string& name):
     createOrocosInterface();
 
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
-    arp_ods::orders::Logger::InitFile("arp_ods", INFO);
+    arp_ods::orders::Logger::InitFile("arp_ods", DEBUG);
 }
 
 void LittleSexControl::getInputs()
@@ -36,6 +36,8 @@ void LittleSexControl::getInputs()
     //faut-il tester que c'est bien mis à jour ?
     inPosition.readNewest(attrPosition);
     inCurrentTwist.readNewest(attrCurrentTwist);
+    inCurrentMotorState.readNewest(attrCurrentMotorState);
+    inParams.readNewest(attrParams);
 }
 
 void LittleSexControl::updateHook()
@@ -55,7 +57,7 @@ void LittleSexControl::updateHook()
 
     // calcule les consignes
     attrOrder->setVmax(attrVmax_asked);
-    attrComputedTwistCmd = attrOrder->computeSpeed(attrPosition,attrDt);
+    attrComputedTwistCmd = attrOrder->computeSpeed(attrPosition,attrCurrentMotorState,attrParams,attrDt);
 
     /*
      * DEBUG: recuperation des données de l'omnidirect
@@ -76,7 +78,7 @@ void LittleSexControl::updateHook()
         attrOrder->attrGain=attrGain;
     }
 
-    if (attrOrder->getType()==OMNIDIRECT)
+    if (attrOrder->getType()==OMNIDIRECT or attrOrder->getType()==OMNIDIRECT2)
         outSmoothLocNeeded.write( attrOrder->m_smoothLocNeeded);
     else
         outSmoothLocNeeded.write( false);
@@ -170,13 +172,17 @@ void LittleSexControl::createOrocosInterface()
     addAttribute("attrVmax_asked",attrVmax_asked);
     addAttribute("attrCurrentOrder",attrCurrentOrder);
     addAttribute("attrCurrentTwist",attrCurrentTwist);
-
+    addAttribute("attrCurrentMotorState",attrCurrentMotorState);
+    addAttribute("attrParams", attrParams);
     addAttribute("attrGain",attrGain);
 
     addPort("inPosition",inPosition)
         .doc("");
     addPort("inCurrentTwist",inCurrentTwist)
             .doc("");
+    addPort("inCurrentMotorState",inCurrentMotorState)
+            .doc("");
+    addPort("inParams", inParams).doc("");
 
     //DEBUG
     addPort("outTwistCmd",outTwistCmd)

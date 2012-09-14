@@ -1,6 +1,8 @@
 #include <math/math.hpp>
 #include <math/Pose2D.hpp>
+#include <math/Pose2DNorm.hpp>
 #include <math/Twist2D.hpp>
+#include <math/Twist2DNorm.hpp>
 #include <math/ICRSpeed.hpp>
 #include <math/EstimatedPose2D.hpp>
 #include <math/EstimatedTwist2D.hpp>

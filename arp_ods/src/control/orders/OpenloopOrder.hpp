@@ -39,7 +39,7 @@ class OpenloopOrder: public MotionOrder
         /**
          *
          */
-        virtual arp_math::Twist2D computeSpeed(arp_math::Pose2D currentPosition, double dt);
+        virtual arp_math::Twist2D computeSpeed(Pose2D currentPosition,MotorState motorState,UbiquityParams params, double dt);
 
         /*
          * returns the error on position between actual an objective,  in table referential

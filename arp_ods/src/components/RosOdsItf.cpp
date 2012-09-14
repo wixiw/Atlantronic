@@ -89,6 +89,15 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
                 goal->theta_des, goal->passe);
         LOG(Info) << string << endlog();
     }
+
+    else if (goal->move_type == "OMNIDIRECT2")
+    {
+        inPose.readNewest(pose);
+        m_order = OmnidirectOrder2::createOrder(goal, pose, propOrderConfig);
+        sprintf( string, "new Omnidirect2 goal (%0.3f,%0.3f,%0.3f) pass %d", goal->x_des, goal->y_des,
+                goal->theta_des, goal->passe);
+        LOG(Info) << string << endlog();
+    }
     else if (goal->move_type == "OPENLOOP")
     {
         inPose.readNewest(pose);

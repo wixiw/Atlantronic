@@ -74,7 +74,7 @@ void OpenloopOrder::switchRun(arp_math::Pose2D currentPosition)
 
 
 
-Twist2D OpenloopOrder::computeSpeed(arp_math::Pose2D currentPosition, double dt)
+Twist2D OpenloopOrder::computeSpeed(Pose2D currentPosition,MotorState motorState,UbiquityParams params, double dt)
 {
     m_smoothLocNeeded = false;
 

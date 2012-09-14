@@ -71,6 +71,11 @@ class Pose2D
         Displacement2 getDisplacement2Matrix() const;
 
         /**
+         * Retourne la pose sous forme de Vecteur 3 (x,y,theta)
+         */
+        Vector3 getTVector() const;
+
+        /**
          * \returns la matrice symétrique 2x2 correspondant à la partie rotation.\n
          * Il s'agit d'un racourcis de this->orientation().toMatrixRotation()
          */

@@ -178,6 +178,12 @@ class CyclicActionState(CyclicState):
                                               'OMNIDIRECT',False,
                                               0,0,0,0,v_max)
     
+    def omnidirect2(self,x,y,theta,v_max=-1.0):
+        self.createMotionControlAction_cpoint(0,0,0,
+                                              x,y,theta,
+                                              'OMNIDIRECT2',False,
+                                              0,0,0,0,v_max)
+        
     def omnidirect_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x,y,theta,v_max=-1.0):
         self.createMotionControlAction_cpoint(x_cpoint,y_cpoint,theta_cpoint,
                                               x,y,theta,

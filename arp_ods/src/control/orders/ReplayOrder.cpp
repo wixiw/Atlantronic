@@ -55,7 +55,7 @@ void ReplayOrder::switchRun(arp_math::Pose2D currentPosition)
 
 
 
-Twist2D ReplayOrder::computeSpeed(arp_math::Pose2D currentPosition, double dt)
+Twist2D ReplayOrder::computeSpeed(Pose2D currentPosition,MotorState motorState,UbiquityParams params, double dt)
 {
     m_smoothLocNeeded = false;
 

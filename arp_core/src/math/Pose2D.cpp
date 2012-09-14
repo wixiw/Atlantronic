@@ -117,10 +117,19 @@ Pose2D Pose2D::inverse() const
     return p;
 }
 
+Vector3 Pose2D::getTVector() const
+{
+    Vector3 T;
+    T[0] = x();
+    T[1] = y();
+    T[2] = h();
+    return T;
+}
+
 std::string Pose2D::toString() const
 {
     std::ostringstream  s;
-    s << "( x: " << toStrMaxDecimals(x(), 3) << " m , y: " << toStrMaxDecimals(y(), 3) << " m , h: " << toStrMaxDecimals(rad2deg(betweenMinusPiAndPlusPi( h() )), 3) << " deg )";
+    s << "( x: " << toStrMaxDecimals(x(), 3) << " m , y: " << toStrMaxDecimals(y(), 3) << " m , h: "<< toStrMaxDecimals(h(), 3) <<" rad / "<< toStrMaxDecimals(rad2deg(betweenMinusPiAndPlusPi( h() )), 3) << " deg )";
     return s.str();
 }
 

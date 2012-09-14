@@ -13,6 +13,7 @@
 #include "ModeSelector.hpp"
 #include "MotionOrder.hpp"
 #include "OmnidirectOrder.hpp"
+#include "OmnidirectOrder2.hpp"
 #include "OpenloopOrder.hpp"
 #include "ReplayOrder.hpp"
 

@@ -22,7 +22,7 @@ namespace arp_ods{ namespace orders
 
 enum OrderType
 {
-    NO_ORDER, STAY_IN_POSITION, TRANSLATE, ROTATE, FANTOM, OMNIDIRECT, OPENLOOP, REPLAY
+    NO_ORDER, STAY_IN_POSITION, TRANSLATE, ROTATE, FANTOM, OMNIDIRECT, OMNIDIRECT2, OPENLOOP, REPLAY
 };
 
 
@@ -54,7 +54,7 @@ class MotionOrder: public ModeSelector
          * @param currentPosition : current Robot position
          * @param dt : time since last call
          */
-        virtual Twist2D computeSpeed(Pose2D currentPosition, double dt);
+        virtual Twist2D computeSpeed(Pose2D currentPosition,MotorState motorState,UbiquityParams params, double dt);
 
         /**
          * Factory to create an order with default parameters from the order
