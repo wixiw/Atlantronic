@@ -5,6 +5,6 @@
 		<description>
 			Set this to true a parallelize the configure/start/stop/cleanup calls on monitored peers
 		</description>
-		<value>0</value>
+		<value>1</value>
 	</simple>
 </properties>

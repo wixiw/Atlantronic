@@ -426,22 +426,24 @@ bool Monitor::connect(const std::string& compA, const std::string& portA, const 
 bool Monitor::checkSendHandle(vector< SendHandle<bool(void)> > operationsSentHandles)
 {
     bool res = true;
-
+    double chrono = 0; //in second
+    double pollingPeriod = 1; //in second
+    double timeout = 5; //in second
     bool oneOperationIsNotReady = true;
     vector< SendHandle<bool(void)> >::iterator h;
 
-    //check operation sent handles to check if all operations are finished.
-    while(oneOperationIsNotReady)
+    //check operation sent handles to check if all operations are finished (5s timeout).
+    while(oneOperationIsNotReady && chrono >= 0 && chrono < timeout)
     {
         oneOperationIsNotReady = false;
 
         //we wait 1s to let time to peers to process the sent operation.
-        sleep(1);
+        chrono += pollingPeriod;
+        usleep(pollingPeriod*1E6);
 
         for ( h = operationsSentHandles.begin() ; h != operationsSentHandles.end() ; h++ )
         {
             SendHandle<bool(void)> handle = *h;
-
             //if one operation has not finished to be processed, we continue to wait.
             if( handle.collect() == SendNotReady )
             {
@@ -451,22 +453,31 @@ bool Monitor::checkSendHandle(vector< SendHandle<bool(void)> > operationsSentHan
         }
     }
 
-    //now operation are processed, we check if they succeed
-    for ( h = operationsSentHandles.begin() ; h != operationsSentHandles.end() ; h++ )
+    //if the timeout is exceeded it's not great at all :(
+    if( chrono >= timeout )
     {
-        bool operationReturn = false;
-        SendHandle<bool(void)> handle = *h;
-
-        //check if they where correctly processed
-        if( handle.collect(operationReturn) != SendSuccess )
+        LOG(Error) << "Monitor::configure timeout expired during parallel work" << endlog();
+        res = false;
+    }
+    else
+    {
+        //now operation are processed, we check if they succeed
+        for ( h = operationsSentHandles.begin() ; h != operationsSentHandles.end() ; h++ )
         {
-            LOG(Error) << "Monitor::configure failed to call one peer configure() operation for unknown reason."<< endlog();
-            res = false;
-        }
+            bool operationReturn = false;
+            SendHandle<bool(void)> handle = *h;
 
-        //check the return value
-        if( operationReturn == false )
-            res = false;
+            //check if they where correctly processed
+            if( handle.collect(operationReturn) != SendSuccess )
+            {
+                LOG(Error) << "Monitor::configure failed to call one peer operation for unknown reason."<< endlog();
+                res = false;
+            }
+
+            //check the return value
+            if( operationReturn == false )
+                res = false;
+        }
     }
 
     return res;

@@ -42,6 +42,8 @@ namespace arp_core
          * on peers are called in a blocking (Sequential configure) or non-blocking
          * (Parallel configure) way. In the latter case, the polling rate of results is 1Hz
          * (1 every second).
+         *
+         * There is a 5s timeout on polling.
          */
         virtual bool configureHook();
 
@@ -53,6 +55,8 @@ namespace arp_core
          * on peers are called in a blocking (Sequential start) or non-blocking
          * (Parallel start) way. In the latter case, the polling rate of results is 1Hz
          * (1 every second).
+         *
+         * There is a 5s timeout on polling.
          */
         virtual bool startHook();
 

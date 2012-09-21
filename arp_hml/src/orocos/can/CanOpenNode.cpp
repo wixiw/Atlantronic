@@ -23,7 +23,7 @@ CanOpenNode::CanOpenNode(const std::string& name):
 	HmlTaskContext(name),
     propNodeId(int(0xFF)),
     propNmtTimeout(1.000),
-    propDeviceBootTime(0.6),
+    propDeviceBootTime(0.5),
     propCanOpenControllerName("Can1"),
     propCanConfigurationScript(""),
     propResetFirst(true),
@@ -43,6 +43,8 @@ CanOpenNode::CanOpenNode(const std::string& name):
         .doc("CAN adress of the node");
     addProperty("propNmtTimeout",propNmtTimeout)
         .doc("Timeout before considering a node is not responding to a NMT request (in s)");
+    addProperty("propDeviceBootTime",propDeviceBootTime)
+        .doc("Delay we wait during a reboot of the device (during a ResetNode for instance)");
     addProperty("propCanOpenControllerName",propCanOpenControllerName)
         .doc("name of the CanOpenController this component will connect");
     addProperty("propCanConfigurationScript",propCanConfigurationScript)
@@ -122,6 +124,13 @@ bool CanOpenNode::configureHook()
 
     if( !HmlTaskContext::configureHook())
     	goto failed;
+
+	//comme on peut etre appele par un thread "à part" lors d'un configure
+	//"send", il faut passer sous xenomai pour avoir les droit d'écriture sur la socket can
+    //shadowing = going to xenomai primary mode == task switch to hard RT
+    mlockall(MCL_CURRENT | MCL_FUTURE);
+    rt_task_shadow(&rt_task_desc, getName().c_str(), 5, T_FPU );
+    //on ne check pas le resultat parce que peut déjà être dans un thread RT
 
     //mise à jour de la nodeIdCard car la propriété a été lue dans le configureHook précédent
     updateNodeIdCard();
