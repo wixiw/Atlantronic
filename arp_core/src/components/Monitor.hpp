@@ -28,17 +28,31 @@ namespace arp_core
         /** Destructeur par défaut */
         virtual ~Monitor();
 
+        /** This property can be set to true to enable a parallel call of configure/start/stop/cleanup functions */
+        bool propParallelStart;
+
+
         /**
          * Configure all peers previously registered by the addMonitoredPeer command
          * The configuration is done in the order in which elements where inserted.
          *
          * It also checks that all input ports of registered peers are connected.
+         *
+         * Depending on the value of propParallelStart, the configure operation
+         * on peers are called in a blocking (Sequential configure) or non-blocking
+         * (Parallel configure) way. In the latter case, the polling rate of results is 1Hz
+         * (1 every second).
          */
         virtual bool configureHook();
 
         /**
          * Start all peers previously registered by the addMonitoredPeer command
          * The configuration is done in the order in which elements where inserted
+         *      
+         * Depending on the value of propParallelStart, the start operation
+         * on peers are called in a blocking (Sequential start) or non-blocking
+         * (Parallel start) way. In the latter case, the polling rate of results is 1Hz
+         * (1 every second).
          */
         virtual bool startHook();
 
@@ -55,12 +69,20 @@ namespace arp_core
         /**
          * Stop all peers previously registered by the addMonitoredPeer command
          * The configuration is done in the reverse order in which elements where inserted
+         *    
+         * Depending on the value of propParallelStart, the stop operation
+         * on peers are called in a blocking (Sequential stop) or non-blocking
+         * (Parallel stop) way.
          */
         virtual void stopHook();
 
         /**
          * Cleanup all peers previously registered by the addMonitoredPeer command
          * The configuration is done in the reversed order in which elements where inserted
+         * 
+         * Depending on the value of propParallelStart, the cleanup operation
+         * on peers are called in a blocking (Sequential cleanup) or non-blocking
+         * (Parallel cleanup) way.
          */
         virtual void cleanupHook();
 
@@ -96,7 +118,8 @@ namespace arp_core
         /** Use this fucntion to check that all input port of registered components are connected */
         bool checkPortConnection();
 
-
+        /** This is an helper function to hide code that checks the results of sent handles in configure/start parallelised call.*/
+        bool checkSendHandle(std::vector< RTT::SendHandle<bool(void)> > operationsSentHandles);
 
     };
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "cpf.dtd">
+<properties>
+	<simple name="propParallelStart" type="boolean">
+		<description>
+			Set this to true a parallelize the configure/start/stop/cleanup calls on monitored peers
+		</description>
+		<value>0</value>
+	</simple>
+</properties>
