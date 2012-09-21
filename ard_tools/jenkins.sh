@@ -5,7 +5,14 @@
 
 . ard/ard_tools/env.sh
 
-cecho red "TEST !!!!!!!!!!!!!!!!!!!!!!!!!"
+echo ""
+echo "***********************************************"
+echo "   INFO DEBUG "
+echo "   ----------
+echo ""
+echo "CanFestival compiled for : " $CAN_FLAVOR
+echo "***********************************************"
+echo ""
 
 #configuration of ccache
 export PATH=/var/lib/jenkins/ccache:$PATH
