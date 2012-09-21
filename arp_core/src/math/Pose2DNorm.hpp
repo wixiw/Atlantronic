@@ -27,10 +27,9 @@ class Pose2DNorm: public Pose2D
 
     Pose2D getPose();
 
-        /* cette valeur permet de normaliser la rotation et de lui donner le meme ordre de grandeur que les translations sur le robot*/
-        //TODO demande à willy ou ca va.    >>>>    Willy, ou ca va ? <<<<<<
-    // arf zut en plus j'ai un doublon avec le twist2DNorm
-        const static double dmax = 0.2;
+    /* cette valeur permet de normaliser la rotation et de lui donner le meme ordre de grandeur que les translations sur le robot*/
+    // TODO arf zut en plus j'ai un doublon avec le twist2DNorm
+    const static double dmax = 0.2;
 };
 
 
