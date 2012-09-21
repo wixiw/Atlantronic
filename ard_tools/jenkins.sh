@@ -8,7 +8,7 @@
 echo ""
 echo "***********************************************"
 echo "   INFO DEBUG "
-echo "   ----------
+echo "   ----------"
 echo ""
 echo "CanFestival compiled for : " $CAN_FLAVOR
 echo "***********************************************"
