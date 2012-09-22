@@ -6,6 +6,7 @@ import roslib; roslib.load_manifest('arp_master')
 from arp_master import *
 from std_msgs.msg import Bool
 from ActuatorStates import *
+#from arp_master.strat_2012.common_2012 import *   
 
 ###########################  TEMPORAL BEHAVIOR
 
@@ -59,11 +60,13 @@ class Go(CyclicState):
         self.pub.publish(Bool(True))
         
     def executeTransitions(self):
-        return
+        return "exit"
     
 class StateSleep(CyclicState):
     def __init__(self):
         CyclicState.__init__(self,outcomes=[])
+    def executeTransitions(self):
+        return
 
 
 #La machine a etat Run correspond aux 6 boutons 1(A),2(B),3(C),4(D),9(start),10(select) de la manette type PS2.
@@ -71,55 +74,43 @@ class Run(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['exit'])
         with self:
-            smach.StateMachine.add('State1', 
-                                   State1(),
-                                   transitions={'2':'State2', 
+            smach.StateMachine.add('Go', Go(),
+                                   transitions={'exit':'StateSelector','timeout':'StateSelector'}) 
+            
+            smach.StateMachine.add('StateSelector', 
+                                   StateSelector(),
+                                   transitions={'1':'State1',
+                                                '2':'State2', 
                                                 '3':'State3',
                                                 '4':'State4',
                                                 '9':'State9',
                                                 '10':'State10',
-                                                'timeout':'StateSleep'})
-            smach.StateMachine.add('State2', 
-                                   State2(),
-                                   transitions={'1':'State1', 
-                                                '3':'State3',
-                                                '4':'State4',
-                                                '9':'State9',
-                                                '10':'State10',
-                                                'timeout':'StateSleep'})
-            smach.StateMachine.add('State3', 
-                                   State3(),
-                                   transitions={'1':'State1', 
-                                                '2':'State2',
-                                                '4':'State4',
-                                                '9':'State9',
-                                                '10':'State10',
-                                                'timeout':'StateSleep'})
-            smach.StateMachine.add('State4', 
-                                   State4(),
-                                   transitions={'1':'State1', 
-                                                '2':'State2',
-                                                '3':'State3',
-                                                '9':'State9',
-                                                '10':'State10',
-                                                'timeout':'StateSleep'})
-            smach.StateMachine.add('State9', 
-                                   State9(),
-                                   transitions={'1':'State1', 
-                                                '2':'State2',
-                                                '3':'State3',
-                                                '4':'State4',
-                                                '10':'State10',
-                                                'timeout':'StateSleep'})
-            smach.StateMachine.add('State10', 
-                                   State10(),
-                                   transitions={'1':'State1', 
-                                                '2':'State2',
-                                                '3':'State3',
-                                                '4':'State4',
-                                                '9':'State9',
                                                 'timeout':'StateSleep'})
             
+            smach.StateMachine.add('State1', 
+                                   FingerClawState('close'),
+                                   transitions={'succeeded':'StateSelector', 'timeout':'StateSelector'})
+            
+            smach.StateMachine.add('State2', 
+                                   FingersOnlyState('open'),
+                                   transitions={'succeeded':'StateSelector', 'timeout':'StateSelector'})
+    
+            smach.StateMachine.add('State3', 
+                                   ClawsOnlyState('open'),
+                                   transitions={'succeeded':'StateSelector', 'timeout':'StateSelector'})
+    
+            smach.StateMachine.add('State4', 
+                                   FingerClawState('open'),
+                                   transitions={'succeeded':'StateSelector', 'timeout':'StateSelector'})
+            
+            smach.StateMachine.add('State9', 
+                                   FingersOnlyState('open'),
+                                   transitions={'succeeded':'StateSelector', 'timeout':'StateSelector'})
+            
+            smach.StateMachine.add('State10', 
+                                   FingersOnlyState('open'),
+                                   transitions={'succeeded':'StateSelector', 'timeout':'StateSelector'})            
+
             smach.StateMachine.add('StateSleep', 
                                    StateSleep(),
                                    transitions={'timeout':'StateSleep'})
