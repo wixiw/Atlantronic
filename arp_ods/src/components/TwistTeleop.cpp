@@ -73,7 +73,7 @@ void TwistTeleop::updateHook()
     inParams.readNewest(params);
 
 
-    //selection des proprietes en mode normal/expert
+    //selection des proprietes en mode normal/expert en fonction de l'etat du bouton "ExpertMode"
     if( inExpertMode.readNewest(expert) != NoData && expert )
     {
         linAcc = propExpertLinearAcc;
@@ -87,6 +87,19 @@ void TwistTeleop::updateHook()
         rotAcc = propAngularAcc;
         linVel = propLinearGain;
         rotVel = propAngularGain;
+
+        //on garde les acc expert si on a une vitesse trop grande
+        if( fabs(attrSpeedCmd) > fabs(propLinearGain) )
+        {
+            linAcc = propExpertLinearAcc;
+            cerr << "Linear vcmd = " << attrSpeedCmd << endl;
+        }
+        if( fabs(attrAngularCmd) > fabs(propAngularGain) )
+        {
+            rotAcc = propExpertAngularAcc;
+            cerr << "Angular vcmd = " << attrAngularCmd << endl;
+        }
+
     }
 
     //on filtre les petits mouvements
