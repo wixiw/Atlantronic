@@ -208,122 +208,9 @@
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 		<buildTargets>
-			<target name="clean" path="arp_ihm" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments/>
-				<buildTarget>clean</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
-			<target name="install ihm on beta" path="arp_ihm" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>/opt/ard/ard_tools/default/script/install_target.sh</buildCommand>
-				<buildArguments>arp_ihm beta</buildArguments>
-				<buildTarget/>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>false</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
-			<target name="make arp_ihm" path="arp_ihm" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>rosmake</buildCommand>
-				<buildArguments>arp_ihm</buildArguments>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>false</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
-			<target name="clean" path="arp_ods" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildArguments/>
-				<buildTarget>clean</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
-			<target name="make arp_ods" path="arp_ods" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>rosmake</buildCommand>
-				<buildArguments>arp_ods</buildArguments>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>false</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
-			<target name="install ods on beta" path="arp_ods" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>/opt/ard/ard_tools/default/script/install_target.sh</buildCommand>
-				<buildArguments>arp_ods beta</buildArguments>
-				<buildTarget/>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>false</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
-			<target name="make arp_rlu" path="arp_rlu" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>rosmake</buildCommand>
-				<buildArguments>arp_rlu</buildArguments>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>false</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
-			<target name="install rlu on beta" path="arp_rlu" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>/opt/ard/ard_tools/default/script/install_target.sh</buildCommand>
-				<buildArguments>arp_rlu beta</buildArguments>
-				<buildTarget/>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>false</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
-			<target name="make all" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>rosmake</buildCommand>
-				<buildArguments>ard</buildArguments>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>false</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
-			<target name="install all on beta" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>/opt/ard/ard_tools/default/script/install_target.sh</buildCommand>
-				<buildArguments>ard beta</buildArguments>
-				<buildTarget/>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>false</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
-			<target name="clean" path="arp_hml" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>make</buildCommand>
-				<buildTarget>clean</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
-			<target name="make arp_hml" path="arp_hml" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>rosmake</buildCommand>
-				<buildArguments>arp_hml</buildArguments>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>false</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
-			<target name="install hml on beta" path="arp_hml" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>/opt/ard/ard_tools/default/script/install_target.sh</buildCommand>
-				<buildArguments>arp_hml beta</buildArguments>
-				<buildTarget/>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>false</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
-			<target name="make arp_master" path="arp_master" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>rosmake</buildCommand>
-				<buildArguments>arp_master</buildArguments>
-				<buildTarget>make arp_master</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>false</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
-			<target name="install master on beta" path="arp_master" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>/opt/ard/ard_tools/default/script/install_target.sh</buildCommand>
-				<buildArguments>arp_master beta</buildArguments>
-				<buildTarget/>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>false</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
 			<target name="clean" path="arp_core" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
+				<buildArguments/>
 				<buildTarget>clean</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
@@ -339,7 +226,114 @@
 			<target name="install core on beta" path="arp_core" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>/opt/ard/ard_tools/default/script/install_target.sh</buildCommand>
 				<buildArguments>arp_core beta</buildArguments>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="make arp_rlu" path="arp_rlu" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>rosmake</buildCommand>
+				<buildArguments>arp_rlu</buildArguments>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="install rlu on beta" path="arp_rlu" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>/opt/ard/ard_tools/default/script/install_target.sh</buildCommand>
+				<buildArguments>arp_rlu beta</buildArguments>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="clean" path="arp_hml" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments/>
+				<buildTarget>clean</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="make arp_hml" path="arp_hml" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>rosmake</buildCommand>
+				<buildArguments>arp_hml</buildArguments>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="install hml on beta" path="arp_hml" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>/opt/ard/ard_tools/default/script/install_target.sh</buildCommand>
+				<buildArguments>arp_hml beta</buildArguments>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="clean" path="arp_ihm" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildTarget>clean</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="install ihm on beta" path="arp_ihm" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>/opt/ard/ard_tools/default/script/install_target.sh</buildCommand>
+				<buildArguments>arp_ihm beta</buildArguments>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="make arp_ihm" path="arp_ihm" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>rosmake</buildCommand>
+				<buildArguments>arp_ihm</buildArguments>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="make arp_master" path="arp_master" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>rosmake</buildCommand>
+				<buildArguments>arp_master</buildArguments>
+				<buildTarget>make arp_master</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="install master on beta" path="arp_master" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>/opt/ard/ard_tools/default/script/install_target.sh</buildCommand>
+				<buildArguments>arp_master beta</buildArguments>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="make all" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>rosmake</buildCommand>
+				<buildArguments>ard</buildArguments>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="install all on Ubiquity" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>/opt/ard/ard_tools/default/script/install_target.sh</buildCommand>
+				<buildArguments>ard beta</buildArguments>
 				<buildTarget/>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="clean" path="arp_ods" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildTarget>clean</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="make arp_ods" path="arp_ods" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>rosmake</buildCommand>
+				<buildArguments>arp_ods</buildArguments>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="install ods on beta" path="arp_ods" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>/opt/ard/ard_tools/default/script/install_target.sh</buildCommand>
+				<buildArguments>arp_ods beta</buildArguments>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
