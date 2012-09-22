@@ -11,6 +11,7 @@ from arp_core.msg import Start
 from arp_core.msg import Pose
 from arp_core.msg import Velocity
 from std_msgs.msg import Bool
+from std_msgs.msg import String
 from UtilARD import *
 from TableVierge import *
 
@@ -54,6 +55,7 @@ class Inputs:
         Inputs.linearVelocityInput=Inputs.createInput("/Command/velocity",Velocity)
         Inputs.deployed=Inputs.createInput("Master/deployed", Bool)
         Inputs.homingdone=Inputs.createInput("/Ubiquity/homing_done", Bool)
+        Inputs.manualButton=Inputs.createInput("/Ubiquity/manual_button", String)
     
     @staticmethod
     def createInput(name,type):
@@ -83,6 +85,10 @@ class Inputs:
     @staticmethod
     def gethomingdone():
         return Inputs.homingdone.data.data
+    
+    @staticmethod
+    def getManualButton():
+        return Inputs.manualButton.data.data
     
     #get obstacle will return that there is an obstacle only if the obstacle is on the table
     @staticmethod

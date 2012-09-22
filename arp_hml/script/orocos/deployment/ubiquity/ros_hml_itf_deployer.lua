@@ -36,6 +36,13 @@ function RosHmlItfDeployer:connect()
 	assert( Deployer:connect("RosHmlItf.inIoRearObstacle", "WoodheadIn.outBit8",cp))
 	
 	assert( Deployer:connect("RosHmlItf.inIsHomingDone", "HmlMonitor.outHomingDone",cp))
+	
+	assert( Deployer:connect("RosHmlItf.inButton1", "Joystick.outButton1",cp))
+	assert( Deployer:connect("RosHmlItf.inButton2", "Joystick.outButton2",cp))
+	assert( Deployer:connect("RosHmlItf.inButton3", "Joystick.outButton3",cp))
+	assert( Deployer:connect("RosHmlItf.inButton4", "Joystick.outButton4",cp))
+	assert( Deployer:connect("RosHmlItf.inButton9", "Joystick.outButton9",cp))
+	assert( Deployer:connect("RosHmlItf.inButton10", "Joystick.outButton10",cp))
 
 --connexion ROS
 	
@@ -53,6 +60,7 @@ function RosHmlItfDeployer:connect()
 	assert( Deployer:stream("RosHmlItf.outFrontLeftObstacle",ros:topic("/Ubiquity/front_left_obstacle")))
 	assert( Deployer:stream("RosHmlItf.outFrontRightObstacle",ros:topic("/Ubiquity/front_right_obstacle")))
 	assert( Deployer:stream("RosHmlItf.outRearObstacle",ros:topic("/Ubiquity/rear_obstacle")))
+	assert( Deployer:stream("RosHmlItf.outJoystickButton",ros:topic("/Ubiquity/manual_button")))
 	
 	return true
 end

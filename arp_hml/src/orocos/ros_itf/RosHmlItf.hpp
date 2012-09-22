@@ -30,6 +30,7 @@
 #include <arp_core/Obstacle.h>
 #include <arp_core/Pose.h>
 #include <std_msgs/Bool.h>
+#include <std_msgs/String.h>
 //pour les services
 #include <arp_core/SetPosition.h>
 #include <arp_hml/SetMotorPower.h>
@@ -160,8 +161,12 @@ namespace arp_hml
         /** Homing done */
         OutputPort<std_msgs::Bool> outIsHomingDone;
 
-        /** Order from simulation to block the wheels         */
+        /** Button joystick */
+        OutputPort<std_msgs::String> outJoystickButton;
+
+        /** Order from simulation to block the wheels */
         InputPort<std_msgs::Bool> inBlockRobot;
+
 
 /*****************************************************************
  *  Interface with the INSIDE (hml !)
@@ -197,6 +202,14 @@ namespace arp_hml
         InputPort<bool> inLeftSteeringBlocked;
         InputPort<bool> inRightSteeringBlocked;
         InputPort<bool> inRearSteeringBlocked;
+
+        /** Joystick */
+        InputPort<bool> inButton1;
+        InputPort<bool> inButton2;
+        InputPort<bool> inButton3;
+        InputPort<bool> inButton4;
+        InputPort<bool> inButton9;
+        InputPort<bool> inButton10;
 
         /** order of blocking robot */
         OutputPort<bool> outBlockRobot;
@@ -265,6 +278,11 @@ protected:
          * read if someone asked for a robot blockage
          */
         void readBlockRobot();
+
+        /**
+         * read joystick button pressure
+         */
+        void readJoystick();
 
         /**
          * create the Orocos interface (creation of ports, commands, attributes, ...)

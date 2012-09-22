@@ -68,6 +68,9 @@ void RosHmlItf::updateHook()
     //lecture de la demande de blocage robot
     readBlockRobot();
 
+    //lecture du dernier button du joystick
+    readJoystick();
+
     bool pouette;
     Bool homingDone;
     if( NoData != inIsHomingDone.readNewest(pouette) )
@@ -172,6 +175,55 @@ void RosHmlItf::readBlockRobot()
     outBlockRobot.write(blockRobot.data);
 }
 
+void RosHmlItf::readJoystick()
+{
+    String button;
+    bool state;
+    bool oneButtonPressed = false;
+
+    if( inButton1.read(state) != NoData && state)
+    {
+        button.data = "1";
+        outJoystickButton.write(button);
+        oneButtonPressed = true;
+    }
+    if( inButton2.read(state) != NoData && state)
+    {
+        button.data = "2";
+        outJoystickButton.write(button);
+        oneButtonPressed = true;
+    }
+    if( inButton3.read(state) != NoData && state)
+    {
+        button.data = "3";
+        outJoystickButton.write(button);
+        oneButtonPressed = true;
+    }
+    if( inButton4.read(state) != NoData && state)
+    {
+        button.data = "4";
+        outJoystickButton.write(button);
+        oneButtonPressed = true;
+    }
+    if( inButton9.read(state) != NoData && state)
+    {
+        button.data = "9";
+        outJoystickButton.write(button);
+        oneButtonPressed = true;
+    }
+    if( inButton10.read(state) != NoData && state)
+    {
+        button.data = "10";
+        outJoystickButton.write(button);
+        oneButtonPressed = true;
+    }
+    if( oneButtonPressed == false )
+    {
+        button.data="0";
+        outJoystickButton.write(button);
+    }
+}
+
 //--------------------------------------------------------------------------------------------------
 
 
@@ -262,6 +314,9 @@ void RosHmlItf::createOrocosInterface()
         .doc("Position calculated by the simulation (is just a type conversion from same named input port)");
     addPort("outIsHomingDone",outIsHomingDone)
         .doc("Is true when the 3 steering motors have finished their homing command");
+    addPort("outJoystickButton",outJoystickButton)
+        .doc("Is a string representing the last activated button");
+
     addPort("inBlockRobot",inBlockRobot)
             .doc("Is true when in simulation someone is asking to arbitrary block the wheels");
 
@@ -297,6 +352,20 @@ void RosHmlItf::createOrocosInterface()
             .doc("Right steering motor is blocked");
     addPort("inRearSteeringBlocked",inRearSteeringBlocked)
             .doc("Rear steering motor is blocked");
+
+    addPort("inButton1",inButton1)
+            .doc("Joystick button 1 state");
+    addPort("inButton2",inButton2)
+            .doc("Joystick button 2 state");
+    addPort("inButton3",inButton3)
+            .doc("Joystick button 3 state");
+    addPort("inButton4",inButton4)
+            .doc("Joystick button 4 state");
+    addPort("inButton9",inButton9)
+            .doc("Joystick button 9 state");
+    addPort("inButton10",inButton10)
+            .doc("Joystick button 10 state");
+
 
     addPort("outBlockRobot",outBlockRobot)
                 .doc("Is true when in simulation someone is asking to arbitrary block the wheels");
