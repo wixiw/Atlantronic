@@ -14,6 +14,12 @@
 
 #include <ros/ros.h>
 
+#include <arp_core/Pose.h>
+#include <arp_core/MotionTarget.h>
+
+#include "math/math.hpp"
+#include <math/core>
+
 #include <std_srvs/Empty.h>
 #include <arp_core/Spawn.h>
 #include <arp_core/Kill.h>
@@ -130,6 +136,16 @@ namespace arp_master
          */
         wxImage robot_image_;
 
+        /*
+         * motion target
+         */
+        ros::Subscriber m_motionTargetSub;
+        arp_core::MotionTarget m_motionTarget;
+        void motionTargetCallback(const arp_core::MotionTarget& m);
+
+        void drawArrow(wxPaintDC & dc,double x, double y, double theta, double lenght);
+        Vector2 real2Frame(Vector2 vect);
+        void drawLineInDC(wxPaintDC & dc, Vector2 start,Vector2 end);
     };
 
 }

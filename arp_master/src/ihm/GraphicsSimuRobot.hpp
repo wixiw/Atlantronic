@@ -193,15 +193,9 @@ namespace arp_master
          */
         int old_canvas_y_;
 
-        /**
-         * Subscriber used to receive DifferentialCommand
-         */
         ros::Subscriber m_realPosSub;
-
-        /**
-         * Subscriber used to receive DifferentialCommand
-         */
         ros::Subscriber m_computedPosSub;
+
 
         /**
          * ServiceServer used to (des-)activate pen
