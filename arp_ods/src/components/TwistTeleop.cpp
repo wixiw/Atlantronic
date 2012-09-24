@@ -23,10 +23,10 @@ TwistTeleop::TwistTeleop(const std::string& name):
         propAngularGain(1),
         propLinearAcc(0.5),
         propAngularAcc(5),
-        propExpertLinearGain(1),
-        propExpertAngularGain(4),
-        propExpertLinearAcc(3),
-        propExpertAngularAcc(14),
+        propExpertLinearGain(0.5),
+        propExpertAngularGain(2),
+        propExpertLinearAcc(1.5),
+        propExpertAngularAcc(7),
         propFilter(true),
         attrSpeedCmd(0),
         attrOldSpeedCmd(0),
@@ -109,7 +109,19 @@ void TwistTeleop::updateHook()
         vy = 0.0;
     if( fabs(vtheta) <= 0.1 )
         vtheta = 0.0;
-
+    //saturation des entrées supposées etre en -1 et 1
+    if( vx < -1 )
+        vx = -1;
+    if( vx > 1 )
+        vx = 1;
+    if( vy < -1 )
+        vy = -1;
+    if( vy > 1 )
+        vy = 1;
+    if( vtheta < -1 )
+        vtheta = -1;
+    if( vtheta > 1 )
+        vtheta = 1;
 
     //filtrage puissance sur les entrees pour adoucir le début de la course joystick
     vx = pow(vx,3);

@@ -9,17 +9,18 @@ Deployer:import("arp_ods");
 
 dofile("/opt/ard/arp_ods/script/orocos/deployment/components/kinematics_base_deployer.lua");
 dofile("/opt/ard/arp_ods/script/orocos/deployment/components/twist_teleop_deployer.lua");
+--dofile("/opt/ard/arp_ods/script/orocos/deployment/components/freewheel_deployer.lua");
 --dofile("/opt/ard/arp_ods/script/orocos/deployment/components/script_teleop_deployer.lua");
 dofile("/opt/ard/arp_ods/script/orocos/deployment/components/ods_monitor_deployer.lua");
 dofile("/opt/ard/arp_ods/script/orocos/deployment/components/ros_ods_itf_deployer.lua");
 
-TwistTeleopDeployer:load();
+MotionControlDeployer:load();
 --ScriptTeleopDeployer:load();
 KinematicBaseDeployer:load();
 RosOdsItfDeployer:load();
 OdsMonitorDeployer:load();
 
-TwistTeleopDeployer:connect();
+MotionControlDeployer:connect();
 --ScriptTeleopDeployer:connect();
 KinematicBaseDeployer:connect();
 --RosOdsItfDeployer:connect();
