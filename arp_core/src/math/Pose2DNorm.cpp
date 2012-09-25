@@ -29,10 +29,18 @@ Pose2D Pose2DNorm::getPose()
     return Pose2D(x(), y(), h() / dmax);
 }
 
+std::string Pose2DNorm::toString() const
+{
+    std::ostringstream  s;
+    s << "( x: " << toStrMaxDecimals(x(), 3) << " m , y: " << toStrMaxDecimals(y(), 3) << " m , sigma: "<< toStrMaxDecimals(h(), 3) <<" mm / "<< toStrMaxDecimals(rad2deg( h() / dmax ), 3) << " deg )";
+    return s.str();
+}
+
 
 std::ostream& operator <<(std::ostream& os, Pose2DNorm _pose)
 {
   os << _pose.toString();
   return os;
 }
+
 

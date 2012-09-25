@@ -74,16 +74,7 @@ shared_ptr<MotionOrder> OmnidirectOrder2::createOrder(const OrderGoalConstPtr &g
 void OmnidirectOrder2::switchRun(arp_math::Pose2D currentPosition)
 {
 
-    Pose2D deltaPos_refTable = getPositionError(currentPosition);
-    double distance_error = deltaPos_refTable.vectNorm();
-    double angle_error = deltaPos_refTable.h();
-
-    Pose2D current_cpoint_position = currentPosition * m_cpoint;
-
-    Pose2D deltaPos_refCpoint = getPositionError_RobotRef(currentPosition);
-
-    if (fabs(m_error_approach.translation().dot(deltaPos_refCpoint.translation())) < m_conf.DISTANCE_ACCURACY
-            && fabs(deltaPos_refCpoint.h()) < m_conf.ANGLE_ACCURACY)
+    if (getPositionInNormalRef(currentPosition).getTVector().norm() < m_conf.DISTANCE_ACCURACY)
     {
         Log(INFO) << getTypeString() << " switched MODE_RUN --> MODE_DONE " << "because in final zone ";
         m_currentMode = MODE_DONE;
@@ -94,55 +85,21 @@ void OmnidirectOrder2::switchRun(arp_math::Pose2D currentPosition)
 
 }
 
-Pose2D OmnidirectOrder2::getPositionError(arp_math::Pose2D currentPosition)
+
+Twist2DNorm OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSpeed curICRSpeed, double dt)
 {
-    Pose2D current_cpoint_position = currentPosition * m_cpoint;
-
-    // Pourquoi ?
-    // currentPosition est la pose du robot dans le repère de la table
-    // m_cpoint est la pose du point de controle dans le repère du robot
-    // pour avoir le point de controle dans le repère de la table, il suffit de composer (opérateur *) les deux poses
-
-    //position error
-    return MathFactory::createPose2D(m_endPose.translation() - current_cpoint_position.translation(),
-            Rotation2(betweenMinusPiAndPlusPi(m_endPose.angle() - current_cpoint_position.angle())));
-}
-
-Pose2D OmnidirectOrder2::getPositionError_RobotRef(arp_math::Pose2D currentPosition)
-{
-    Rotation2 orient_cpoint(currentPosition.h() + m_cpoint.h());
-    //position error in table referential
-    Pose2D deltaPos_refTable = getPositionError(currentPosition);
-    //position error in robot referential
-    Pose2D deltaPos_refCpoint;
-    deltaPos_refCpoint.translation(orient_cpoint.inverse().toRotationMatrix() * deltaPos_refTable.translation());
-    deltaPos_refCpoint.orientation(betweenMinusPiAndPlusPi(deltaPos_refTable.h()));
-
-    outDEBUGPositionError = deltaPos_refCpoint;
-
-    return deltaPos_refCpoint;
-}
-
-Twist2DNorm OmnidirectOrder2::computeRunTwist(Pose2D currentPosition, ICRSpeed curICRSpeed, double dt)
-{
-
-    //TODO a ce stade le theta est entre 0 et 2 PI, il faut gere le remettage entre -PI et PI
-    Pose2DNorm currentPositionNorm(currentPosition);
-
-
 
     Vector3 Cerr=-1.0*currentPositionNorm.getTVector();
     double ro=sqrt(2*0.5)*sqrt(Cerr.norm());
     double phi=atan2(Cerr[1],Cerr[0]);
-    double delta=0;
-    //double delta=atan(Cerr[2]/sqrt(Cerr[0]*Cerr[0]+Cerr[1]*Cerr[1]));
+    double delta=asin(Cerr[2]/Cerr.norm());
 
     ICRSpeed corICRSpeed=ICRSpeed(ro,phi,delta);
 
     Log(DEBUG) << ">>computeRunTwist  ";
-    Log(DEBUG) << "currentPosition  "<<currentPosition.toString();
     Log(DEBUG) << "currentPositionNorm  "<<currentPositionNorm.toString();
     Log(DEBUG) << "curICRSpeed  "<<curICRSpeed.toString();
+    Log(DEBUG) << "Cerr  "<<Cerr;
     Log(DEBUG) << "corICRSpeed  "<<corICRSpeed.toString();
     Log(DEBUG) << "<<computeRunTwist  ";
 
@@ -151,9 +108,8 @@ Twist2DNorm OmnidirectOrder2::computeRunTwist(Pose2D currentPosition, ICRSpeed c
 
 void OmnidirectOrder2::decideSmoothNeeded(arp_math::Pose2D & currentPosition)
 {
-    //is a smooth localization needed ?
-    Pose2D deltaPos_refCpoint = getPositionError_RobotRef(currentPosition);
-    if (deltaPos_refCpoint.vectNorm() < DIST_SMOOTH)
+
+    if (getPositionInNormalRef(currentPosition).vectNorm() < DIST_SMOOTH)
         m_smoothLocNeeded = true;
 
     else
@@ -180,24 +136,26 @@ Twist2D OmnidirectOrder2::computeSpeed(Pose2D currentPosition, MotorState motorS
     SlippageReport oSR;
 
     //conversion des tourelles en ICRSpeed
+    //TODO attention curICRSpeed est dans le repere robot il devrait etre dans le repere target
     UbiquityKinematics::motors2ICRSpeed(motorState, oTS, curICRSpeed, oSR, params);
 
-    //Rtarget = repere objectif
-    // Rtarget->Rrobot = (RO->Rtarget)⁻1 x (R0->Rrobot)
-    Pose2D RTarget_Rrobot=m_endPose.inverse()*currentPosition;
-
     //compute run twist travaille dans un espace 3D ou l'objectif est en (0,0,0)
-    //attention curICRSpeed est dans le repere target
-    ICRSpeed corICRSpeed=computeRunTwist(RTarget_Rrobot, curICRSpeed, dt);
+    ICRSpeed corICRSpeed=computeRunTwist(getPositionInNormalRef(currentPosition), curICRSpeed, dt);
     //dans le repere robot
-    corICRSpeed.phi(corICRSpeed.phi()-m_endPose.h() - currentPosition.h());
+    corICRSpeed.phi(corICRSpeed.phi()+m_endPose.h() - currentPosition.h());
 
     Twist2D corTwist = corICRSpeed.twist();
     return corTwist;
 
 }
 
-double OmnidirectOrder2::getTotalError(Pose2D pose)
+Pose2DNorm OmnidirectOrder2::getPositionInNormalRef(Pose2D currentPosition)
 {
-    return sqrt(pose.x() * pose.x() + pose.y() * pose.y() + 0.2 * 0.2 * pose.h() * pose.h());
-}
+    //Rtarget = repere objectif
+    // Rtarget->Rrobot = (RO->Rtarget)⁻1 x (R0->Rrobot)
+    Pose2D result(m_endPose.inverse()*currentPosition);
+    result.h(betweenMinusPiAndPlusPi(result.h()));
+    Pose2DNorm resultNorm(result);
+    return resultNorm;
+    }
+

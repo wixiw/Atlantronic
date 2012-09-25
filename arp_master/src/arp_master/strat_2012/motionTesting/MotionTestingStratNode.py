@@ -2,6 +2,7 @@
 
 #libraries for ROS
 import roslib; roslib.load_manifest('arp_master')
+import random
 
 from arp_master import *
 
@@ -46,19 +47,34 @@ class MainStateMachine(smach.StateMachine):
                                    transitions={'gogogo':'SetInitialPosition', 'problem':'end'})  
             
             smach.StateMachine.add('SetInitialPosition',
-                      SetInitialPosition(0,0,0),
-                      transitions={'succeeded':'Forward', 'timeout':'Debloque'})
+                      SetInitialPosition(0, 0, 0),
+                      transitions={'succeeded':'Move', 'timeout':'Debloque'})
+            
                         
-            smach.StateMachine.add('Forward', AmbiOmniDirectOrder2(0.8,-0.7,0, vmax=0.3),
-                                   transitions={'succeeded':'Wait', 'timeout':'Debloque'}) 
+            smach.StateMachine.add('Move', RandomMove(),
+                                   transitions={'succeeded':'Move', 'timeout':'Debloque'}) 
 
             
             smach.StateMachine.add('Debloque', Replay(2.0),
-                                   transitions={'succeeded':'end','timeout':'end'})  
+                                   transitions={'succeeded':'end', 'timeout':'end'})  
                         
             smach.StateMachine.add('Wait', WaiterState(2.0),
                                    transitions={'timeout':'end'})           
 
+
+class RandomMove(MotionState):
+    def __init__(self):
+        MotionState.__init__(self)
+        seed = random.randint(0, 1000)
+        random.seed(seed)
+        rospy.loginfo("randomized with seed: ...%d" % (seed))
+
+    def createAction(self):
+        self.x = random.uniform(-1.3, 1.3)
+        self.y = random.uniform(-0.8, 0.8)
+        self.theta = random.uniform(-pi, pi)
+        self.vmax = random.uniform(0.1, 1)
+        self.omnidirect2(self.x, self.y, self.theta, self.vmax)
         
 ########################## EXECUTABLE 
 #shall be always at the end ! so that every function is defined before

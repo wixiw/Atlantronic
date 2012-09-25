@@ -42,7 +42,7 @@ class CyclicActionState(CyclicState):
             rospy.logerr("aucune Action creee dans un etat qui etait fait pour ca !")
             return
         
-        poseTarget=Pose(Data.motionTarget.x,Data.motionTarget.y,0.0,0.0,0.0,0.0,0.0)
+        poseTarget=Pose(Data.motionTarget.x,Data.motionTarget.y,Data.motionTargetTheta,0.0,0.0,0.0,0.0)
         self.motionTargetPublisher.publish(MotionTarget(poseTarget,Data.isMotionTranslation))
         
         while(not rospy.is_shutdown()):
@@ -131,7 +131,7 @@ class CyclicActionState(CyclicState):
         if move_type=='OPENLOOP' or move_type=='REPLAY' or isTurn:
             self.clearMotionTarget()
         else:
-            self.setMotionTarget(x,y) ## TODO ceci ne fonctionne pas pour un Cpoint puisque je vais donner le cpoint comme objectif. enfin bon... c'est du python quoi
+            self.setMotionTarget(x,y,theta) ## TODO ceci ne fonctionne pas pour un Cpoint puisque je vais donner le cpoint comme objectif. enfin bon... c'est du python quoi
         
         self.client.wait_for_server(rospy.Duration.from_sec(5.0))
         self.client.cancel_all_goals
@@ -139,14 +139,16 @@ class CyclicActionState(CyclicState):
         
         self.actionCreated=True       
     
-    def setMotionTarget(self,x,y):
+    def setMotionTarget(self,x,y,theta):
         Data.isMotionTranslation=True
         Data.motionTarget=Point(x,y)
+        Data.motionTargetTheta=theta
 
         
     def clearMotionTarget(self):
         Data.isMotionTranslation=False
         Data.motionTarget=Point(0,0)
+        Data.motionTargetTheta=0
         
     # these are useful motions functions that allow not to give all parameters  
     def forward(self,dist,v_max=-1.0):

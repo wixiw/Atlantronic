@@ -45,7 +45,7 @@ class MotionState(CyclicActionState):
         #current state. can be TRY or WAIT
         self.motionState='TRY'
         
-        poseTarget=Pose(Data.motionTarget.x,Data.motionTarget.y,0.0,0.0,0.0,0.0,0.0)
+        poseTarget=Pose(Data.motionTarget.x,Data.motionTarget.y,Data.motionTargetTheta,0.0,0.0,0.0,0.0)
         self.motionTargetPublisher.publish(MotionTarget(poseTarget,Data.isMotionTranslation))
         
         while(not rospy.is_shutdown()):

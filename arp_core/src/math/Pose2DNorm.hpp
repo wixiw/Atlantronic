@@ -24,7 +24,7 @@ class Pose2DNorm: public Pose2D
     public:
     Pose2DNorm(double _x = 0., double _y = 0., double _h = 0.);
     Pose2DNorm(Pose2D pose);
-
+    std::string toString() const;
     Pose2D getPose();
 
     /* cette valeur permet de normaliser la rotation et de lui donner le meme ordre de grandeur que les translations sur le robot*/
