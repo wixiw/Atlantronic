@@ -12,12 +12,8 @@ from a3_middleGame import Strat_MiddleGame
 from a4_endGame import Strat_EndGame
 #from a5_... =>utilisation de l'etat commun
 
-#from arp_master.strat_2012 import Table2012
-#from arp_master.strat_2012 import Robot2012
 
-###### Variables globales
-#Table = Table2012();
-#Robot = Robot2012();
+from arp_master.strat_2012 import *
 
 ###########################  TEMPORAL BEHAVIOR
 

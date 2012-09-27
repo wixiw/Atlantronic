@@ -2,9 +2,8 @@
 
 #libraries for ROS
 import roslib; roslib.load_manifest('arp_master')
-import os
 from arp_master import *
-from arp_master.strat_2012 import *
+from arp_master.strat_2013 import *
 
 class EndGame(PreemptiveStateMachine):
     def __init__(self):
@@ -15,8 +14,11 @@ class EndGame(PreemptiveStateMachine):
                                              transitions={'endMatch':'endEndGame'})
             
             PreemptiveStateMachine.add('FinalDrop',
-                       ClawFingerOrder(0.5,0.5,0.5,0.5),
-                      transitions={'succeeded':'endEndGame','timeout':'endEndGame'})
+                      FinalDrop(),
+                      transitions={'succeeded':'endEndGame','timeout':'FinalDrop'})
             self.setInitialState('FinalDrop')
+
+class FinalDrop(CyclicActionState):
+    def createAction(self):
+        self.cap(pi/2)
             
- 

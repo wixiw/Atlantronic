@@ -13,8 +13,7 @@ from a3_middleGame import Strat_MiddleGame
 from a4_endGame import Strat_EndGame
 #from a5_uninitialisation import Strat_Uninitialisation => utilisation de l'etat commun
 
-from arp_master.strat_2012 import Table2012
-from arp_master.strat_2012 import Robot2012
+from arp_master.strat_2012 import *
 
 ###### Variables globales
 Table = Table2012();

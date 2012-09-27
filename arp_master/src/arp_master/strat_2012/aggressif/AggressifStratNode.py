@@ -10,6 +10,8 @@ from a2_opening import Strat_Opening
 from a3_middleGame import Strat_MiddleGame
 from a4_endGame import Strat_EndGame
 
+from arp_master.strat_2012 import *
+
 ###########################  TEMPORAL BEHAVIOR
 
 class StratNode_vierge():
