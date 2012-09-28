@@ -9,6 +9,8 @@
 #define OMNIDIRECTORDER2_HPP_
 
 #include "MotionOrder.hpp"
+#include "control/OnlineTrajectoryGenerator.hpp"
+
 #include "math/math.hpp"
 #include <boost/shared_ptr.hpp>
 #include <math/core>
@@ -82,6 +84,10 @@ class OmnidirectOrder2: public MotionOrder
         double m_vmax_order;
 
 
+
+        //speed at last turn - used for acceleration computation
+        ICRSpeed m_oldICRSpeed;
+        double m_predictedAcc;
 
         //surcharges
         void switchRun(arp_math::Pose2D currentPosition);

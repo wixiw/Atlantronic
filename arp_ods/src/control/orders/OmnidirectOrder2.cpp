@@ -21,6 +21,9 @@ OmnidirectOrder2::OmnidirectOrder2() :
     m_twist_init = Twist2D(0, 0, 0);
     m_twist_init_registered = false;
 
+    m_oldICRSpeed = ICRSpeed();
+    m_predictedAcc=0;
+
 }
 
 OmnidirectOrder2::OmnidirectOrder2(MotionOrder order) :
@@ -88,21 +91,57 @@ void OmnidirectOrder2::switchRun(arp_math::Pose2D currentPosition)
 
 Twist2DNorm OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSpeed curICRSpeed, double dt)
 {
-
-    Vector3 Cerr=-1.0*currentPositionNorm.getTVector();
-    double ro=sqrt(2*0.5)*sqrt(Cerr.norm());
-    double phi=atan2(Cerr[1],Cerr[0]);
-    double delta=asin(Cerr[2]/Cerr.norm());
-
-    ICRSpeed corICRSpeed=ICRSpeed(ro,phi,delta);
-
     Log(DEBUG) << ">>computeRunTwist  ";
-    Log(DEBUG) << "currentPositionNorm  "<<currentPositionNorm.toString();
-    Log(DEBUG) << "curICRSpeed  "<<curICRSpeed.toString();
-    Log(DEBUG) << "Cerr  "<<Cerr;
-    Log(DEBUG) << "corICRSpeed  "<<corICRSpeed.toString();
+
+    Vector3 Cerr = -1.0 * currentPositionNorm.getTVector();
+
+    /*
+     * ro: ensure that Cerr norm is covered
+     */
+    PosVelAcc start;
+    start.position = 0;
+    start.velocity = curICRSpeed.ro();
+    //start.acceleration = (curICRSpeed.ro() - m_oldICRSpeed.ro()) / dt;
+   //mmm ca affole l'OTG cette acceleration. essayons sur le predit plutot que le realise. oh ! ca marche !
+    start.acceleration = m_predictedAcc;
+    PosVelAcc end;
+    end.position = Cerr.norm();
+    end.velocity = 0;
+    end.acceleration = 0;
+    PosVelAcc next;
+    double ro;
+
+    if (OTG == NULL)
+    {
+        ro = 0;
+        Log(DEBUG) << "*** PB sur calcul RO : pointeur null sur OTG ****";
+    }
+
+    bool OTGres = OTG->computeNextStep(start, end, m_conf.LIN_VEL_MAX, m_conf.LIN_DEC, m_conf.LIN_DEC * 5, next);
+
+    if (OTGres)
+    {
+        ro = next.velocity;
+    }
+    else
+    {
+        ro = 0;
+        Log(DEBUG) << "*** PB sur calcul RO: reflexxes a retourne false ****";
+    }
+
+    double phi = atan2(Cerr[1], Cerr[0]);
+    double delta = asin(Cerr[2] / Cerr.norm());
+
+    ICRSpeed corICRSpeed = ICRSpeed(ro, phi, delta);
+
+    Log(DEBUG) << "currentPositionNorm  " << currentPositionNorm.toString();
+    Log(DEBUG) << "curICRSpeed  " << curICRSpeed.toString();
+    Log(DEBUG) << "Cerr  " << Cerr;
+    Log(DEBUG) << "corICRSpeed  " << corICRSpeed.toString();
     Log(DEBUG) << "<<computeRunTwist  ";
 
+    m_oldICRSpeed = curICRSpeed;
+    m_predictedAcc=next.acceleration;
     return corICRSpeed.twistNorm();
 }
 
@@ -140,9 +179,9 @@ Twist2D OmnidirectOrder2::computeSpeed(Pose2D currentPosition, MotorState motorS
     UbiquityKinematics::motors2ICRSpeed(motorState, oTS, curICRSpeed, oSR, params);
 
     //compute run twist travaille dans un espace 3D ou l'objectif est en (0,0,0)
-    ICRSpeed corICRSpeed=computeRunTwist(getPositionInNormalRef(currentPosition), curICRSpeed, dt);
+    ICRSpeed corICRSpeed = computeRunTwist(getPositionInNormalRef(currentPosition), curICRSpeed, dt);
     //dans le repere robot
-    corICRSpeed.phi(corICRSpeed.phi()+m_endPose.h() - currentPosition.h());
+    corICRSpeed.phi(corICRSpeed.phi() + m_endPose.h() - currentPosition.h());
 
     Twist2D corTwist = corICRSpeed.twist();
     return corTwist;
@@ -153,9 +192,9 @@ Pose2DNorm OmnidirectOrder2::getPositionInNormalRef(Pose2D currentPosition)
 {
     //Rtarget = repere objectif
     // Rtarget->Rrobot = (RO->Rtarget)⁻1 x (R0->Rrobot)
-    Pose2D result(m_endPose.inverse()*currentPosition);
+    Pose2D result(m_endPose.inverse() * currentPosition);
     result.h(betweenMinusPiAndPlusPi(result.h()));
     Pose2DNorm resultNorm(result);
     return resultNorm;
-    }
+}
 

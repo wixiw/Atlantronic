@@ -22,7 +22,8 @@ LittleSexControl::LittleSexControl(const std::string& name):
         attrVmax_asked(1.0),
         attrCurrentOrder("default"),
         m_twistBuffer(),
-        attrGain(0.2)
+        attrGain(0.2),
+        OTG()
 
 {
     createOrocosInterface();
@@ -149,6 +150,7 @@ bool LittleSexControl::ooSetOrder(shared_ptr<MotionOrder> order)
         // mais je l'ai mis car le cassage des ordres se fait la bas
         // moralité refaire l'archi.
         attrOrder->setTwistBuffer(m_twistBuffer);
+        attrOrder->setOTG(&OTG);
 
         return true;
    /* }

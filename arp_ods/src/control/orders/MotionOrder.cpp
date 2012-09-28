@@ -31,6 +31,7 @@ MotionOrder::MotionOrder(const MotionOrder& order):
     m_openloop_duration=order.m_openloop_duration;
     m_smoothLocNeeded=false;
     m_error_old=Pose2D(0,0,0);
+    OTG=NULL;
 
     attrGain=0.03;
     //m_id != m_id !!
@@ -129,6 +130,11 @@ void MotionOrder::setId(int id)
 void MotionOrder::setTwistBuffer(TwistBuffer twistBuffer )
 {
     m_twistBuffer = twistBuffer;
+}
+
+void MotionOrder::setOTG(OnlineTrajectoryGenerator * OTG_)
+{
+    OTG = OTG_;
 }
 
 void MotionOrder::setVmax(double vmax)

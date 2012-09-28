@@ -13,6 +13,7 @@
 #include <boost/shared_ptr.hpp>
 #include <math/core>
 #include "control/TwistBuffer.hpp"
+#include "control/OnlineTrajectoryGenerator.hpp"
 
 
 using namespace arp_math;
@@ -85,6 +86,7 @@ class MotionOrder: public ModeSelector
          * set
          */
         void setTwistBuffer(TwistBuffer twistBuffer );
+        void setOTG(OnlineTrajectoryGenerator * OTG_);
 
         /*
          * DEBUG
@@ -131,6 +133,10 @@ class MotionOrder: public ModeSelector
          */
         Pose2D m_error_old;
 
+        /*
+         *  a pointer to the profile computation library
+         */
+        OnlineTrajectoryGenerator * OTG;
 
 };
 

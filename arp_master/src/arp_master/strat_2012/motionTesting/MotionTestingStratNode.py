@@ -67,7 +67,9 @@ class RandomMove(MotionState):
         MotionState.__init__(self)
         seed = random.randint(0, 1000)
         random.seed(seed)
-        rospy.loginfo("randomized with seed: ...%d" % (seed))
+        rospy.loginfo("------------MOTIONTESTING INIT----------------")
+        rospy.loginfo("randomized with seed: %d" % (seed))
+        rospy.loginfo("----------------------------------------------")
 
     def createAction(self):
         self.x = random.uniform(-1.3, 1.3)
