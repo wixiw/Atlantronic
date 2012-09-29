@@ -91,16 +91,16 @@ class MotionOrder: public ModeSelector
         /*
          * DEBUG
          */
-        arp_math::Pose2D outDEBUGPositionError;
-        double outDEBUGLinSpeedCorrection;
-        double outDEBUGAngSpeedCorrection;
-        double outDEBUGSaturation;
-        double outDEBUGNormalizedError;
-        double outDEBUGErrorApproachInit;
-        double outDEBUGErrorApproachCur;
-
-        double  outDEBUGSmoothLocNeeded;
-        double  outDEBUGSpeedAngle;
+        double outDEBUG1;
+        double outDEBUG2;
+        double outDEBUG3;
+        double outDEBUG4;
+        double outDEBUG5;
+        double outDEBUG6;
+        double outDEBUG7;
+        double  outDEBUG8;
+        double  outDEBUG9;
+        double  outDEBUG10;
 
         double attrGain;
 

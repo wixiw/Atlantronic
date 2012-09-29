@@ -182,7 +182,13 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
 
     m_oldICRSpeed = curICRSpeed;
 
-    //return corICRSpeed.twistNorm();
+    //for debug
+    outDEBUG1=Cerr.norm();
+    outDEBUG2=k_delta;
+    outDEBUG3=ro;
+
+
+
     return corICRSpeed;
 }
 
@@ -196,9 +202,9 @@ void OmnidirectOrder2::decideSmoothNeeded(arp_math::Pose2D & currentPosition)
         m_smoothLocNeeded = false;
 
     if (m_smoothLocNeeded)
-        outDEBUGSmoothLocNeeded = 1.0;
+        outDEBUG8 = 1.0;
     else
-        outDEBUGSmoothLocNeeded = 0.0;
+        outDEBUG8 = 0.0;
 
 }
 Twist2D OmnidirectOrder2::computeSpeed(Pose2D currentPosition, MotorState motorState, UbiquityParams params, double dt)

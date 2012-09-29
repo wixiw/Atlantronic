@@ -176,8 +176,6 @@ Pose2D OmnidirectOrder::getPositionError_RobotRef(arp_math::Pose2D currentPositi
     deltaPos_refCpoint.translation(orient_cpoint.inverse().toRotationMatrix() * deltaPos_refTable.translation());
     deltaPos_refCpoint.orientation(betweenMinusPiAndPlusPi(deltaPos_refTable.h()));
 
-    outDEBUGPositionError = deltaPos_refCpoint;
-
     return deltaPos_refCpoint;
 }
 
@@ -227,8 +225,8 @@ Twist2D OmnidirectOrder::computeRunTwist(arp_math::Pose2D currentPosition, doubl
 
     m_error_old = deltaPos_refCpoint;
 
-    outDEBUGLinSpeedCorrection = speedcorrection;
-    outDEBUGAngSpeedCorrection = angcorrection;
+    outDEBUG2 = speedcorrection;
+    outDEBUG3 = angcorrection;
     //transfer of the twist to robot referential
     Twist2D v_correction_ref;
     v_correction_ref = v_correction_cpoint.transport(m_cpoint.inverse());
@@ -259,9 +257,9 @@ Twist2D OmnidirectOrder::computeApproachTwist(arp_math::Pose2D currentPosition, 
     // this is the current % of the initial error when I entered the approach zone
     m_normalizedError = getTotalError(deltaPos_refCpoint) / getTotalError(m_error_approach);
 
-    outDEBUGNormalizedError = m_normalizedError;
-    outDEBUGErrorApproachInit = getTotalError(m_error_approach);
-    outDEBUGErrorApproachCur = getTotalError(deltaPos_refCpoint);
+    outDEBUG5 = m_normalizedError;
+    outDEBUG6 = getTotalError(m_error_approach);
+    outDEBUG7 = getTotalError(deltaPos_refCpoint);
 
     /*
      Log(DEBUG) << ">>computeApproachTwist  ";
@@ -326,9 +324,9 @@ void OmnidirectOrder::decideSmoothNeeded(arp_math::Pose2D & currentPosition)
         m_smoothLocNeeded = false;
 
     if (m_smoothLocNeeded)
-        outDEBUGSmoothLocNeeded = 1.0;
+        outDEBUG8 = 1.0;
     else
-        outDEBUGSmoothLocNeeded = 0.0;
+        outDEBUG8 = 0.0;
 
 }
 Twist2D OmnidirectOrder::computeSpeed(Pose2D currentPosition,MotorState motorState,UbiquityParams params, double dt)
@@ -385,8 +383,8 @@ Twist2D OmnidirectOrder::saturateTwist(Twist2D twist_input, double dt)
     twist_output = Twist2D(saturated_linspeed * cos(twist_input.speedAngle()),
             saturated_linspeed * sin(twist_input.speedAngle()), saturated_angspeed);
 
-    outDEBUGSaturation = saturated_angspeed;
-    outDEBUGSpeedAngle = twist_input.speedAngle();
+    outDEBUG4 = saturated_angspeed;
+    outDEBUG9 = twist_input.speedAngle();
 
     return twist_output;
 }

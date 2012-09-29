@@ -63,18 +63,19 @@ void LittleSexControl::updateHook()
     /*
      * DEBUG: recuperation des données de l'omnidirect
      */
-    if (attrOrder->getType()==OMNIDIRECT)
+    if (attrOrder->getType()==OMNIDIRECT or attrOrder->getType()==OMNIDIRECT2)
     {
-        outDEBUGPositionError.write(attrOrder->outDEBUGPositionError);
-        outDEBUGLinSpeedCorrection.write(attrOrder->outDEBUGLinSpeedCorrection);
-        outDEBUGAngSpeedCorrection.write(attrOrder->outDEBUGAngSpeedCorrection);
-        outDEBUGSaturation.write(attrOrder->outDEBUGSaturation);
-        outDEBUGNormalizedError.write(attrOrder->outDEBUGNormalizedError);
-        outDEBUGMode.write(attrOrder->getMode());
-        outDEBUGErrorApproachInit.write(attrOrder->outDEBUGErrorApproachInit);
-        outDEBUGErrorApproachCur.write(attrOrder->outDEBUGErrorApproachCur);
-        outDEBUGSmoothLocNeeded.write(attrOrder->outDEBUGSmoothLocNeeded);
-        outDEBUGSpeedAngle.write(attrOrder->outDEBUGSpeedAngle);
+        outDEBUG1.write(attrOrder->outDEBUG1);
+        outDEBUG2.write(attrOrder->outDEBUG2);
+        outDEBUG3.write(attrOrder->outDEBUG3);
+        outDEBUG4.write(attrOrder->outDEBUG4);
+        outDEBUG5.write(attrOrder->outDEBUG5);
+        outDEBUG6.write(attrOrder->outDEBUG6);
+        outDEBUG7.write(attrOrder->outDEBUG7);
+        outDEBUG8.write(attrOrder->outDEBUG8);
+        outDEBUG9.write(attrOrder->outDEBUG9);
+        outDEBUG10.write(attrOrder->outDEBUG10);
+
 
         attrOrder->attrGain=attrGain;
     }
@@ -127,7 +128,7 @@ bool LittleSexControl::isOrderFinished()
 
     if (attrOrder->getMode() == MODE_DONE)
     {
-        outDEBUGMode.write(attrOrder->getMode());
+        outDEBUG6.write(attrOrder->getMode());
         return true;
     }
 
@@ -194,25 +195,25 @@ void LittleSexControl::createOrocosInterface()
     addPort("outOrderInError",outOrderInError)
             .doc("");
 
-    addPort("outDEBUGSaturation",outDEBUGSaturation)
+    addPort("outDEBUG4",outDEBUG4)
                 .doc("");
-    addPort("outDEBUGPositionError",outDEBUGPositionError)
+    addPort("outDEBUG1",outDEBUG1)
             .doc("");
-    addPort("outDEBUGLinSpeedCorrection",outDEBUGLinSpeedCorrection)
+    addPort("outDEBUG2",outDEBUG2)
             .doc("");
-    addPort("outDEBUGAngSpeedCorrection",outDEBUGAngSpeedCorrection)
+    addPort("outDEBUG3",outDEBUG3)
              .doc("");
-    addPort("outDEBUGMode",outDEBUGMode)
+    addPort("outDEBUG6",outDEBUG6)
              .doc("");
-    addPort("outDEBUGNormalizedError",outDEBUGNormalizedError)
+    addPort("outDEBUG5",outDEBUG5)
                  .doc("");
-    addPort("outDEBUGErrorApproachInit",outDEBUGErrorApproachInit)
+    addPort("outDEBUG7",outDEBUG7)
                  .doc("");
-    addPort("outDEBUGErrorApproachCur",outDEBUGErrorApproachCur)
+    addPort("outDEBUG8",outDEBUG8)
                  .doc("");
-    addPort("outDEBUGSmoothLocNeeded",outDEBUGSmoothLocNeeded)
+    addPort("outDEBUG9",outDEBUG9)
                  .doc("");
-    addPort("outDEBUGSpeedAngle",outDEBUGSpeedAngle)
+    addPort("outDEBUG10",outDEBUG10)
                  .doc("");
 
 

@@ -76,18 +76,16 @@ class LittleSexControl: public OdsTaskContext
         /*
          * DEBUG
          */
-        RTT::OutputPort<arp_math::Pose2D> outDEBUGPositionError;
-        RTT::OutputPort<double> outDEBUGLinSpeedCorrection;
-        RTT::OutputPort<double> outDEBUGAngSpeedCorrection;
-        RTT::OutputPort<double> outDEBUGSaturation;
-        RTT::OutputPort<int> outDEBUGMode;
-        RTT::OutputPort<double> outDEBUGNormalizedError;
-
-        RTT::OutputPort<double>  outDEBUGErrorApproachInit;
-        RTT::OutputPort<double>  outDEBUGErrorApproachCur;
-
-        RTT::OutputPort<double>  outDEBUGSmoothLocNeeded;
-        RTT::OutputPort<double>  outDEBUGSpeedAngle;
+        RTT::OutputPort<double> outDEBUG1;
+        RTT::OutputPort<double> outDEBUG2;
+        RTT::OutputPort<double> outDEBUG3;
+        RTT::OutputPort<double> outDEBUG4;
+        RTT::OutputPort<double> outDEBUG6;
+        RTT::OutputPort<double> outDEBUG5;
+        RTT::OutputPort<double>  outDEBUG7;
+        RTT::OutputPort<double>  outDEBUG8;
+        RTT::OutputPort<double>  outDEBUG9;
+        RTT::OutputPort<double>  outDEBUG10;
 
         //DEBUG
         double attrGain;
