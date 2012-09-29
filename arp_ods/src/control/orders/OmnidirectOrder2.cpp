@@ -22,7 +22,7 @@ OmnidirectOrder2::OmnidirectOrder2() :
     m_twist_init_registered = false;
 
     m_oldICRSpeed = ICRSpeed();
-    m_predictedAcc=0;
+    m_predictedAcc = 0;
 
 }
 
@@ -88,24 +88,16 @@ void OmnidirectOrder2::switchRun(arp_math::Pose2D currentPosition)
 
 }
 
-
-Twist2DNorm OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSpeed curICRSpeed, double dt)
+double OmnidirectOrder2::profileRo(double distance, ICRSpeed curICRSpeed)
 {
-    Log(DEBUG) << ">>computeRunTwist  ";
-
-    Vector3 Cerr = -1.0 * currentPositionNorm.getTVector();
-
-    /*
-     * ro: ensure that Cerr norm is covered
-     */
     PosVelAcc start;
     start.position = 0;
     start.velocity = curICRSpeed.ro();
     //start.acceleration = (curICRSpeed.ro() - m_oldICRSpeed.ro()) / dt;
-   //mmm ca affole l'OTG cette acceleration. essayons sur le predit plutot que le realise. oh ! ca marche !
+    //mmm ca affole l'OTG cette acceleration. essayons sur le predit plutot que le realise. oh ! ca marche !
     start.acceleration = m_predictedAcc;
     PosVelAcc end;
-    end.position = Cerr.norm();
+    end.position = distance;
     end.velocity = 0;
     end.acceleration = 0;
     PosVelAcc next;
@@ -129,20 +121,69 @@ Twist2DNorm OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, IC
         Log(DEBUG) << "*** PB sur calcul RO: reflexxes a retourne false ****";
     }
 
-    double phi = atan2(Cerr[1], Cerr[0]);
-    double delta = asin(Cerr[2] / Cerr.norm());
+    m_predictedAcc = next.acceleration;
 
-    ICRSpeed corICRSpeed = ICRSpeed(ro, phi, delta);
+    return ro;
+}
 
+ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSpeed curICRSpeed, double dt)
+{
+    Log(DEBUG) << ">>computeRunTwist  ";
     Log(DEBUG) << "currentPositionNorm  " << currentPositionNorm.toString();
     Log(DEBUG) << "curICRSpeed  " << curICRSpeed.toString();
-    Log(DEBUG) << "Cerr  " << Cerr;
+
+    Vector3 Cerr = -1.0 * currentPositionNorm.getTVector();
+    double k_delta = Cerr.dot(curICRSpeed.speedDirection());
+
+    Log(DEBUG) << "k_delta  " << k_delta;
+
+    double ro = profileRo(k_delta, curICRSpeed);
+
+    Log(DEBUG) << "ro  " << ro;
+
+    /*
+     * theta and phi:
+     * there are first the "perfect" theta and phi
+     * but in fact we cannot reach any theta and phi instantly
+     * so we choose something inbetween
+     */
+    double vrotmax = PI; //turret speed in red/s
+    double s_max = vrotmax * 0.02; //travel max on sphere
+    //TODO c'est l'endroit ou gerer le parkison final. a voir si besoin.
+
+    double phi_perfect = atan2(Cerr[1], Cerr[0]);
+    double delta_perfect = asin(Cerr[2] / Cerr.norm());
+    ICR ICR_perfect(phi_perfect, delta_perfect);
+
+    ICR curICR;
+    if (k_delta > 0) //    if kdelta<0, I want to go backward. and I don't want to go to the antipod with the ICR !
+        {
+        curICR = curICRSpeed.getICR();
+        }
+    else
+    {
+        curICR = curICRSpeed.getOppositeRep().getICR();
+        m_predictedAcc=-m_predictedAcc;
+    }
+
+    //limitation of the motion of the ICR
+    ICR ICR_possible = curICR.getIntermediate(ICR_perfect, s_max);
+
+    ICRSpeed corICRSpeed = ICRSpeed(ro, ICR_possible);
+
+    //put back corICRspeed with ro >0
+    if (corICRSpeed.ro()<0) corICRSpeed=corICRSpeed.getOppositeRep();
+
+
+
     Log(DEBUG) << "corICRSpeed  " << corICRSpeed.toString();
     Log(DEBUG) << "<<computeRunTwist  ";
+    Log(DEBUG) << "                   ";
 
     m_oldICRSpeed = curICRSpeed;
-    m_predictedAcc=next.acceleration;
-    return corICRSpeed.twistNorm();
+
+    //return corICRSpeed.twistNorm();
+    return corICRSpeed;
 }
 
 void OmnidirectOrder2::decideSmoothNeeded(arp_math::Pose2D & currentPosition)
@@ -175,8 +216,9 @@ Twist2D OmnidirectOrder2::computeSpeed(Pose2D currentPosition, MotorState motorS
     SlippageReport oSR;
 
     //conversion des tourelles en ICRSpeed
-    //TODO attention curICRSpeed est dans le repere robot il devrait etre dans le repere target
     UbiquityKinematics::motors2ICRSpeed(motorState, oTS, curICRSpeed, oSR, params);
+    // curICRSpeed est dans le repere robot il faut  le mettre dans le repere target
+    curICRSpeed.phi(curICRSpeed.phi() - m_endPose.h() + currentPosition.h());
 
     //compute run twist travaille dans un espace 3D ou l'objectif est en (0,0,0)
     ICRSpeed corICRSpeed = computeRunTwist(getPositionInNormalRef(currentPosition), curICRSpeed, dt);

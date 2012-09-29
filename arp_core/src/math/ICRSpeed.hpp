@@ -59,6 +59,7 @@ class ICRSpeed
         double ro() const;
         double phi() const;
         double delta() const;
+        ICR getICR() const;
 
         /** for typekit */
         double& roRef();

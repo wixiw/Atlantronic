@@ -101,6 +101,11 @@ double ICRSpeed::delta() const
     return m_ICR.delta();
 }
 
+ICR ICRSpeed::getICR() const
+{
+    return m_ICR;
+}
+
 double& ICRSpeed::roRef()
 {
     return m_ro;

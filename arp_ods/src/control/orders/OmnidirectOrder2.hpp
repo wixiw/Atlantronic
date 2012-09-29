@@ -57,7 +57,8 @@ class OmnidirectOrder2: public MotionOrder
         /*
          * compute the usual "mode run" twist
          */
-        Twist2DNorm computeRunTwist(arp_math::Pose2DNorm currentPosition,ICRSpeed curICRSpeed,double dt);
+        ICRSpeed computeRunTwist(arp_math::Pose2DNorm currentPosition,ICRSpeed curICRSpeed,double dt);
+        double profileRo(double distance,ICRSpeed curICRSpeed);
 
         /*
          * twist of precedent turn
