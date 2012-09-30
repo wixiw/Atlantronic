@@ -48,12 +48,15 @@ class OnlineTrajectoryGenerator
 
         ReflexxesAPI *RML ;
         bool computeNextStep(const PosVelAcc & iStart, const PosVelAcc & iEnd, const double & iMaxVelocity,const double & iMaxAcceleration,const double & iMaxJerk,  PosVelAcc & oNext);
+        bool computeNextStepCheap(const PosVelAcc & iStart, const PosVelAcc & iEnd, const double & iMaxVelocity,const double & iMaxAcceleration,const double & iMaxJerk,  PosVelAcc & oNext);
 
         RMLPositionInputParameters  *IP                        ;
 
         RMLPositionOutputParameters *OP                         ;
 
         RMLPositionFlags            Flags                                   ;
+
+        double m_dt;
 };
 
 }

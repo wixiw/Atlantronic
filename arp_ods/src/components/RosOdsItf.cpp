@@ -30,7 +30,7 @@ RosOdsItf::RosOdsItf(std::string const name):
     //C'est une conf par defaut safe ! Utiliser le fichier de conf dans script/orocos/conf pour modifier
     propOrderConfig.RADIUS_APPROACH_ZONE = 0.020;
     propOrderConfig.ANGLE_ACCURACY = deg2rad(10);
-    propOrderConfig.DISTANCE_ACCURACY = 0.050;
+    propOrderConfig.DISTANCE_ACCURACY = 0.005;
 
     propOrderConfig.LIN_VEL_MAX = 0.3;
     propOrderConfig.ANG_VEL_MAX = 1.0;
@@ -68,6 +68,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
     bool tmp;
     bool finished;
 
+    /*
     //if a goal was already defined it is refused
     if (m_order->getType() != NO_ORDER)
     {
@@ -76,7 +77,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
                 goal->move_type.c_str());
         goto abort;
     }
-
+*/
 
     //TODO a remplacer par une factory plus efficace
     char string[250];
@@ -189,8 +190,9 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         result.x_end = pose.x();
         result.y_end = pose.y();
         result.theta_end = pose.h();
-        m_order = orders::defaultOrder;
-        m_ooSetOrder(m_order);
+        //je veux laisser vivre mon ordre ! qu'il puisse finir son asservissement sur le point final pendant que ca fait de la bouine dans le master
+        //m_order = orders::defaultOrder;
+        //m_ooSetOrder(m_order);
         m_actionServer.setSucceeded(result);
         return;
     preempted:

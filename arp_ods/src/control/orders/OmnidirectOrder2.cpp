@@ -109,7 +109,16 @@ double OmnidirectOrder2::profileRo(double distance, ICRSpeed curICRSpeed)
         Log(DEBUG) << "*** PB sur calcul RO : pointeur null sur OTG ****";
     }
 
-    bool OTGres = OTG->computeNextStep(start, end, m_conf.LIN_VEL_MAX, m_conf.LIN_DEC, m_conf.LIN_DEC * 5, next);
+    Log(DEBUG) << "*** computeNextStepCheap ****";
+    Log(DEBUG)
+            << "bool OTGres = OTG->computeNextStepCheap(start, end, m_conf.LIN_VEL_MAX, m_conf.LIN_DEC, m_conf.LIN_DEC * 5, next);";
+    Log(DEBUG) << "start.position" << start.position;
+    Log(DEBUG) << "start.velocity" << start.velocity;
+    Log(DEBUG) << "end.position" << end.position;
+    Log(DEBUG) << "m_conf.LIN_VEL_MAX" << m_conf.LIN_VEL_MAX;
+    Log(DEBUG) << "m_conf.LIN_DEC" << m_conf.LIN_DEC;
+    bool OTGres = OTG->computeNextStepCheap(start, end, m_conf.LIN_VEL_MAX, m_conf.LIN_DEC, m_conf.LIN_DEC * 5, next);
+    Log(DEBUG) << "--->next.velocity" << next.velocity;
 
     if (OTGres)
     {
@@ -138,8 +147,11 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
     Log(DEBUG) << "k_delta  " << k_delta;
 
     double ro = profileRo(k_delta, curICRSpeed);
+    //double ro = profileRo(Cerr.norm(), curICRSpeed);
 
-    Log(DEBUG) << "ro  " << ro;
+    Log(DEBUG) << "m_conf.LIN_DEC" << m_conf.LIN_DEC;
+    Log(DEBUG) << "Cerr.norm()   " << Cerr.norm();
+    Log(DEBUG) << "ro            " << ro;
 
     /*
      * theta and phi:
@@ -149,7 +161,9 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
      */
     double vrotmax = PI; //turret speed in red/s
     double s_max = vrotmax * 0.02; //travel max on sphere
-    //TODO c'est l'endroit ou gerer le parkison final. a voir si besoin.
+
+    // gestion du parkinson final
+    s_max=s_max*getParkinsonLimitationFactor(Cerr.norm());
 
     double phi_perfect = atan2(Cerr[1], Cerr[0]);
     double delta_perfect = asin(Cerr[2] / Cerr.norm());
@@ -157,24 +171,32 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
 
     ICR curICR;
     if (k_delta > 0) //    if kdelta<0, I want to go backward. and I don't want to go to the antipod with the ICR !
-        {
+    {
         curICR = curICRSpeed.getICR();
-        }
+    }
     else
     {
         curICR = curICRSpeed.getOppositeRep().getICR();
-        m_predictedAcc=-m_predictedAcc;
+        m_predictedAcc = -m_predictedAcc;
     }
 
     //limitation of the motion of the ICR
     ICR ICR_possible = curICR.getIntermediate(ICR_perfect, s_max);
 
-    ICRSpeed corICRSpeed = ICRSpeed(ro, ICR_possible);
+    ICRSpeed corICRSpeed ;
+    if (k_delta > 0)
+        corICRSpeed= ICRSpeed(ro, ICR_possible);
+    else
+        corICRSpeed= ICRSpeed(-ro, ICR_possible);
 
+    /*
     //put back corICRspeed with ro >0
-    if (corICRSpeed.ro()<0) corICRSpeed=corICRSpeed.getOppositeRep();
+    if (corICRSpeed.ro() < 0)
+        corICRSpeed = corICRSpeed.getOppositeRep();
+        */
 
-
+    /***** DEBUG ****/
+    //corICRSpeed = ICRSpeed(ro, phi_perfect, delta_perfect);
 
     Log(DEBUG) << "corICRSpeed  " << corICRSpeed.toString();
     Log(DEBUG) << "<<computeRunTwist  ";
@@ -183,11 +205,10 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
     m_oldICRSpeed = curICRSpeed;
 
     //for debug
-    outDEBUG1=Cerr.norm();
-    outDEBUG2=k_delta;
-    outDEBUG3=ro;
-
-
+    outDEBUG1 = Cerr.norm();
+    outDEBUG2 = ro;
+    outDEBUG3 = m_predictedAcc;
+    outDEBUG4 = dt;
 
     return corICRSpeed;
 }
@@ -210,7 +231,7 @@ void OmnidirectOrder2::decideSmoothNeeded(arp_math::Pose2D & currentPosition)
 Twist2D OmnidirectOrder2::computeSpeed(Pose2D currentPosition, MotorState motorState, UbiquityParams params, double dt)
 {
 
-    if (m_currentMode == MODE_DONE || m_currentMode == MODE_ERROR)
+    if (m_currentMode == MODE_ERROR)
     {
         return Twist2D(0, 0, 0);
     }
@@ -246,3 +267,9 @@ Pose2DNorm OmnidirectOrder2::getPositionInNormalRef(Pose2D currentPosition)
     return resultNorm;
 }
 
+double OmnidirectOrder2::getParkinsonLimitationFactor(double distance)
+{
+    double d_start = 0.05;
+    double d_end = 0;
+    return smoothStep(distance, 0, d_end, 1, d_start);
+}

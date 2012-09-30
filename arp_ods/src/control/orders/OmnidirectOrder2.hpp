@@ -108,7 +108,7 @@ private:
     Pose2D getPositionError_RobotRef(arp_math::Pose2D currentPosition);
     void decideSmoothNeeded(arp_math::Pose2D & currentPosition);
     Pose2DNorm getPositionInNormalRef(Pose2D currentPosition);
-
+    double getParkinsonLimitationFactor(double distance);
 };
 
 }}
