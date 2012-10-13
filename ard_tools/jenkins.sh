@@ -21,4 +21,4 @@ ccache -M 3G
 
 rosmake arp_master
 
-ard/test_all.sh
+#ard/test_all.sh
