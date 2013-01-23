@@ -6,7 +6,7 @@ import roslib; roslib.load_manifest('arp_master')
 from arp_master import *
 from std_msgs.msg import Bool
 from ActuatorStates import *
-#from arp_master.strat_2012.common_2012 import *   
+from arp_master.strat_2012.common_2012 import *   
 
 ###########################  TEMPORAL BEHAVIOR
 

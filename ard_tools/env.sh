@@ -71,7 +71,7 @@ ccache -M 2G 2&>/dev/null
 export CCACHE_HARDLINK=1
 export PATH=/home/ard/ccache:$PATH
 export DISTCC_HOSTS="--randomize 192.168.1.59 192.168.1.72"
-export CCACHE_PREFIX=distcc
+#export CCACHE_PREFIX=distcc
 
 #configuration des priorites de thread RT
 ulimit -r 90

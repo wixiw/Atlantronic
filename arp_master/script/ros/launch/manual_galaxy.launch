@@ -1,4 +1,8 @@
 <launch>
+	<node 	name="StartupBashScript" 
+		pkg="arp_core" 
+		type="deployment_loading.sh"
+		/>
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
 	<include file="$(find arp_master)/script/ros/launch/rosparam.launch"/>
 	<node name="ArpOrocos" pkg="ocl" type="cdeployer-gnulinux" args="-s $(find

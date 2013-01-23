@@ -23,7 +23,7 @@ CanOpenNode::CanOpenNode(const std::string& name):
 	HmlTaskContext(name),
     propNodeId(int(0xFF)),
     propNmtTimeout(1.000),
-    propDeviceBootTime(0.5),
+    propDeviceBootTime(0.6),
     propCanOpenControllerName("Can1"),
     propCanConfigurationScript(""),
     propResetFirst(true),

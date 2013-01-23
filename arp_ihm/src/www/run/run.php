@@ -2,21 +2,21 @@
 if ($_GET["action"] === "do")
 {
 	switch ($_GET["type"]) {
-		case "Homologation":
-			exec('sudo /etc/init.d/ard_ihm_launcher.sh start arp_master homologation_galaxy.launch');
-			break;
-		case "Qualif":
-			exec('sudo /etc/init.d/ard_ihm_launcher.sh start arp_master homologation_galaxy.launch');
-			break;
-		case "MatchA":
-			exec('sudo /etc/init.d/ard_ihm_launcher.sh start arp_master homologation_galaxy.launch');
-			break;
-		case "MatchB":
-			exec('sudo /etc/init.d/ard_ihm_launcher.sh start arp_master homologation_galaxy.launch');
-			break;
+// 		case "Homologation":
+// 			exec('sudo /etc/init.d/ard_ihm_launcher.sh start arp_master homologation_galaxy.launch');
+// 			break;
+// 		case "Qualif":
+// 			exec('sudo /etc/init.d/ard_ihm_launcher.sh start arp_master homologation_galaxy.launch');
+// 			break;
+// 		case "MatchA":
+// 			exec('sudo /etc/init.d/ard_ihm_launcher.sh start arp_master homologation_galaxy.launch');
+// 			break;
+// 		case "MatchB":
+// 			exec('sudo /etc/init.d/ard_ihm_launcher.sh start arp_master homologation_galaxy.launch');
+// 			break;
 		case "Manual":
 			exec('sudo /etc/init.d/ard_ihm_launcher.sh start arp_master manual_galaxy.launch');
-			reak;
+			break;
 		case "Kill":
 			echo exec('sudo /etc/init.d/ard_ihm_launcher.sh stop');
 			break;

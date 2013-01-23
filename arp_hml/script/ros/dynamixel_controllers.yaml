@@ -20,7 +20,7 @@ left_finger:
         type: JointPositionController
     joint_name: left_finger_joint
     joint_speed: 13.0
-    joint_torque_limit: 0.3
+    joint_torque_limit: 0.5
     init_pos: -1.8
     motor:
         id: 10
@@ -50,7 +50,7 @@ right_finger:
         type: JointPositionController
     joint_name: left_finger_joint
     joint_speed: 13.0
-    joint_torque_limit: 0.3
+    joint_torque_limit: 0.5
     init_pos: -1.8
     motor:
         id: 12

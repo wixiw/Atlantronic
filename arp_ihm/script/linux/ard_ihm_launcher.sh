@@ -61,6 +61,8 @@ fi
 #
 do_start()
 {
+	rm -f /tmp/ARP_*
+	
 	# Return
 	#   0 if daemon has been started
 	#   1 if daemon was already running
@@ -111,6 +113,8 @@ do_stop()
 	else
 		cecho "yellow" "No program is running for now..."
 	fi
+	
+	rm -f /tmp/ARP_*
 }
 
 
