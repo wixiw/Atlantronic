@@ -64,7 +64,7 @@ alias df='df -h'
 
 #configuration du prompt
 force_color_prompt=yes
-PS1='${debian_chroot:+($debian_chroot)}\[\033[01;35m\]\u@\h\[\033[00m\](`cat /opt/kernel/ard-vm-version`):\[\033[01;34m\]\w\[\033[00m\]\$ '
+PS1='${debian_chroot:+($debian_chroot)}\[\033[01;35m\]\u@(`cat /etc/hostname`)\[\033[00m\](`cat /opt/kernel/ard-vm-version`):\[\033[01;34m\]\w\[\033[00m\]\$ '
 
 #configuration de ccache
 export CCACHE_DIR=/home/ard/ccache/compilation.cache
