@@ -17,6 +17,7 @@ else
 fi
 export ROS_HOME=/opt/ros
 export ROS_PARALLEL_JOBS=-j10
+export ROS_OS_OVERRIDE=debian:squeeze
 
 #configuration des couleurs de log
 . /opt/ard/ard_tools/vm/color.sh
