@@ -55,6 +55,11 @@ then
 	echo -e $BLEU "[!] you are on the target !" $NORMAL
 	exit 0
 fi
+if [ $HOSTNAME == "ubiquity" ]
+then
+	echo -e $BLEU "[!] you are on the target !" $NORMAL
+	exit 0
+fi
 
 #check IP connexion
 echo -e $BLEU  "Ping $ip_adress" $NORMAL
