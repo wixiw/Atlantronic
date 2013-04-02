@@ -16,7 +16,7 @@ else
 	export EDITOR=gedit
 fi
 export ROS_HOME=/opt/ros
-export ROS_PARALLEL_JOBS=-j10
+export ROS_PARALLEL_JOBS=-j4
 export ROS_OS_OVERRIDE=debian:squeeze
 
 #configuration des couleurs de log
