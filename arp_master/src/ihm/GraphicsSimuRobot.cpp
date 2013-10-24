@@ -22,7 +22,7 @@ GraphicsSimuRobot::GraphicsSimuRobot(const ros::NodeHandle& nh,
     robot_ = wxBitmap(robot_image_);
 
     std::string images_path = ros::package::getPath("arp_master")
-             + "/ressource/images/robot_claw_light.png"  ;
+             + "/ressource/images/robot_light.png"  ;
     m_robotLightImage.LoadFile(
             wxString::FromAscii(images_path.c_str()));
     m_robotLightImage.SetMask(true);

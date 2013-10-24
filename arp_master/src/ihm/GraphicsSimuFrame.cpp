@@ -33,7 +33,7 @@ GraphicsSimuFrame::GraphicsSimuFrame(std::string topicName) :
     robot_image_.SetMask(true);
     robot_image_.SetMaskColour(255, 255, 255);
 
-    std::string table_image_file = "table.png"; // 609 x 409 px
+    std::string table_image_file = "table_2014.png"; // 600 x 400 px
     table_image_.LoadFile(wxString::FromAscii((images_path + table_image_file).c_str()));
     table_image_.SetMask(false);
 

@@ -47,19 +47,20 @@ namespace arp_master
     private:
 
         /**
-         * one meter in pixel
-         */
-        static const double one_meter_in_pixel = 200.0;
-
-        /**
          * table length in pixel. Should be the width of table image
          */
-        static const double table_length_in_pixel = 609.0;
+        static const double table_length_in_pixel = 600.0;
 
         /**
          * table width in pixel. Should be the height of table image
          */
         static const double table_width_in_pixel = 400.0;
+
+        /**
+         * one meter in pixel
+         */
+        static const double one_meter_in_pixel = 200.0;
+
     public:
 
         /**
