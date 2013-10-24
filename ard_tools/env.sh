@@ -40,8 +40,9 @@ export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/opencv/lib/pkgconfig
 #alias ARD
 alias alpha='ssh root@alpha'
 alias beta='ssh root@beta'
+alias ubiquity='ssh root@ubiquity'
 alias vm='ssh root@vm'
-alias wixibox='ssh wixiw@wixibox'
+alias wixibox='ssh ard@wixibox'
 alias ard-install-alpha='/opt/ard/default/script/install_target.sh ard alpha'
 alias ard-install-beta='/opt/ard/default/script/install_target.sh ard beta'
 alias rosbeta='ROS_MASTER_URI=http://beta:11311'

@@ -4,7 +4,7 @@
 #include "ObjDict.h"
 
 /**************************************************************************/
-/* Declaration of the mapped variables                                    */
+/* Declaration of mapped variables                                        */
 /**************************************************************************/
 UNS8 Read_Inputs_8_Bit[] =		/* Mapped at index 0x6000, subindex 0x01 - 0x01 */
   {
@@ -76,7 +76,7 @@ INTEGER32 Analogue_Output_Error_Value_Integer[] =		/* Mapped at index 0x6444, su
   };
 
 /**************************************************************************/
-/* Declaration of the value range types                                   */
+/* Declaration of value range types                                       */
 /**************************************************************************/
 
 #define valueRange_EMC 0x9F /* Type for index 0x1003 subindex 0x00 (only set of value 0 is possible) */
@@ -164,21 +164,21 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                     UNS32 ObjDict_obj1006 = 0x0;   /* 0 */
 
 /* index 0x1008 :   Manufacturer Device Name. */
-                    UNS8 ObjDict_obj1008[10] = "";
+                    INTEGER8 ObjDict_obj1008[10] = "";
                     subindex ObjDict_Index1008[] = 
                      {
                        { RO, visible_string, 10, (void*)&ObjDict_obj1008 }
                      };
 
 /* index 0x1009 :   Manufacturer Hardware Version. */
-                    UNS8 ObjDict_obj1009[10] = "";
+                    INTEGER8 ObjDict_obj1009[10] = "";
                     subindex ObjDict_Index1009[] = 
                      {
                        { RO, visible_string, 10, (void*)&ObjDict_obj1009 }
                      };
 
 /* index 0x100A :   Manufacturer Software Version. */
-                    UNS8 ObjDict_obj100A[10] = "";
+                    INTEGER8 ObjDict_obj100A[10] = "";
                     subindex ObjDict_Index100A[] = 
                      {
                        { RO, visible_string, 10, (void*)&ObjDict_obj100A }
@@ -217,7 +217,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                      };
 
 /* index 0x1014 :   Emergency COB ID */
-                    UNS32 ObjDict_obj1014 = 0x0;   /* 0 */
+                    UNS32 ObjDict_obj1014 = 0x80 + 0x00;   /* 128 + NodeID */
 
 /* index 0x1016 :   Consumer Heartbeat Time. */
                     UNS8 ObjDict_highestSubIndex_obj1016 = 3; /* number of subindex - 1*/
@@ -576,6 +576,10 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, int32, sizeof (INTEGER32), (void*)&Analogue_Output_Error_Value_Integer[3] }
                      };
 
+/**************************************************************************/
+/* Declaration of pointed variables                                       */
+/**************************************************************************/
+
 const indextable ObjDict_objdict[] = 
 {
   { (subindex*)ObjDict_Index1000,sizeof(ObjDict_Index1000)/sizeof(ObjDict_Index1000[0]), 0x1000},
@@ -676,7 +680,7 @@ const indextable * ObjDict_scanIndexOD (UNS16 wIndex, UNS32 * errorCode, ODCallb
  */
 s_PDO_status ObjDict_PDO_status[3] = {s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer};
 
-quick_index ObjDict_firstIndex = {
+const quick_index ObjDict_firstIndex = {
   15, /* SDO_SVR */
   0, /* SDO_CLT */
   16, /* PDO_RCV */
@@ -685,7 +689,7 @@ quick_index ObjDict_firstIndex = {
   23 /* PDO_TRS_MAP */
 };
 
-quick_index ObjDict_lastIndex = {
+const quick_index ObjDict_lastIndex = {
   15, /* SDO_SVR */
   0, /* SDO_CLT */
   17, /* PDO_RCV */
@@ -694,7 +698,7 @@ quick_index ObjDict_lastIndex = {
   25 /* PDO_TRS_MAP */
 };
 
-UNS16 ObjDict_ObjdictSize = sizeof(ObjDict_objdict)/sizeof(ObjDict_objdict[0]); 
+const UNS16 ObjDict_ObjdictSize = sizeof(ObjDict_objdict)/sizeof(ObjDict_objdict[0]); 
 
 CO_Data ObjDict_Data = CANOPEN_NODE_DATA_INITIALIZER(ObjDict);
 

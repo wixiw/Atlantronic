@@ -4,67 +4,10 @@
 <launch>
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
 	<include file="$(find arp_hml)/script/ros/launch/ubiquity/geometry_ubiquity.launch"/>
-  	
 	
-	<remap from="scan" to="top_scan" />
-	<node 	name="TopHokuyo" 
-			pkg="hokuyo_node" 
-			type="hokuyo_node" 
-			respawn="false" 
-			output="screen" 
-			required="false" >
-    	<param name="calibrate_time" type="bool" value="true"/> 
-    	<param name="port" type="string" value="/dev/hokuyo_H1100701"/> 
-  		<param name="intensity" type="bool" value="false"/> 
-  		<param name="frame_id" type="string" value="top_laser" />
-  		<param name="min_ang" type="double" value="-2.08621" />
-  		<param name="max_ang" type="double" value="2.08621" />
-  	</node>
+  	<!--
+  	<include file="$(find arp_hml)/script/ros/launch/ubiquity/hokuyo.launch"/>
+  	<include file="$(find arp_hml)/script/ros/launch/ubiquity/dynamixel.launch"/>
+  	-->
   	
-  	<remap from="scan" to="front_scan" />
-	<node 	name="FrontHokuyo" 
-			pkg="hokuyo_node" 
-			type="hokuyo_node" 
-			respawn="false" 
-			output="screen" 
-			required="false" >
-    	<param name="calibrate_time" type="bool" value="true"/> 
-    	<param name="port" type="string" value="/dev/hokuyo_H0900580"/> 
-  		<param name="intensity" type="bool" value="false"/> 
-  		<param name="frame_id" type="string" value="top_laser" />
-  		<param name="min_ang" type="double" value="-2.08621" />
-  		<param name="max_ang" type="double" value="2.08621" />
-  	</node>
-  	
-  	
-  	<node 	name="DynamixelControllerManager" 
-  	  		pkg="dynamixel_controllers" 
-  	  		type="controller_manager.py" 
-  	  		required="false" 
-  	  		output="screen">
-        <rosparam>
-            namespace: dynamixel_manager
-            serial_ports:
-                dynamixel_bus:
-                    port_name: /dev/usb2dynamixel
-                    baud_rate: 115200
-                    min_motor_id: 10
-                    max_motor_id: 20
-                    update_rate: 20
-        </rosparam>
-    </node>
-    
-    <rosparam file="$(find arp_hml)/script/ros/dynamixel_controllers.yaml" command="load"/>
-	<node name="dynamixel_controller_spawner" pkg="dynamixel_controllers" type="controller_spawner.py"
-		args="--manager=dynamixel_manager
-			--port=dynamixel_bus
-			--type=simple
-			  left_finger
-			  left_claw
-			  right_finger
-			  right_claw"
-		output="screen" >
-	</node>
-	
-	<node name="DynamixelManager"   pkg="arp_hml"  type="DynamixelManager.py" args="" output="screen" respawn="false" />
 </launch>
