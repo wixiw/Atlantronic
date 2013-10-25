@@ -3,7 +3,7 @@
 #libraries for ROS
 import roslib; roslib.load_manifest('arp_master')
 from arp_master import *
-from arp_master.strat_2013 import *
+from arp_master.strat_2014 import *
 
 class MiddleGame(PreemptiveStateMachine):
     def __init__(self):

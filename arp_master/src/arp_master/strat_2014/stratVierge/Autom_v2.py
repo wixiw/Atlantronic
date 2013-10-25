@@ -13,7 +13,7 @@ from a3_middleGame import Strat_MiddleGame
 from a4_endGame import Strat_EndGame
 #from a5_uninitialisation import Strat_Uninitialisation => utilisation de l'etat commun
 
-from arp_master.strat_2013 import *
+from arp_master.strat_2014 import *
 
 ###########################  TEMPORAL BEHAVIOR
 
@@ -24,8 +24,8 @@ class StratNode_vierge():
         #creation of the node
         rospy.init_node('StratNode')
         #recuperation des parametres (on a besoin d'etre un noeud pour ca
-        Table2013.getParams()
-        Robot2013.getParams()
+        Table2014.getParams()
+        Robot2014.getParams()
         #creation of the cadencer for all states
         Data.stateMachineRate =rospy.Rate(10)
         #linking of the input in Inputs to the topics
@@ -35,7 +35,7 @@ class StratNode_vierge():
     
         #welcome message
         rospy.loginfo("******************************************************")
-        rospy.loginfo("Welcome to Advanced Robotics Platform. I am StratNode 2013.")
+        rospy.loginfo("Welcome to Advanced Robotics Platform. I am StratNode 2014.")
         rospy.loginfo("Choose color with button")
         rospy.loginfo("Then plug start")
         rospy.loginfo("Wait for initialisation sequence")
@@ -57,7 +57,7 @@ class MainStateMachine(smach.StateMachine):
         with self:
             smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
                                    transitions={'endInitialisation':'StartSequence','failed':'end'})
-            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(1.140 + Robot2013.CDG_POSE.x,0.75,-pi),
+            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(1.140 + Robot2014.CDG_POSE.x,0.75,-pi),
                                    transitions={'gogogo':'Opening','problem':'end'})
             smach.StateMachine.add('Opening', Strat_Opening.Opening(),
                                     transitions={'endOpening':'MiddleGame','problem':'MiddleGame'})

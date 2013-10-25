@@ -4,7 +4,7 @@ from arp_master.util.RobotVierge import *
 from arp_master.util.TableVierge import * 
 
 #il faut voir ca comme un namespace
-class Robot2013(RobotVierge):
+class Robot2014(RobotVierge):
     
     #positions predefinies des dynamixels des doigts
     FINGER_CLOSE = -1.7

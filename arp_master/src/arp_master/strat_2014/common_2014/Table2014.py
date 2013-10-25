@@ -8,7 +8,7 @@ import smach
 from arp_master.util.Data import *
 
 #il faut voir ca comme un namespace
-class Table2013(TableVierge):
+class Table2014(TableVierge):
         #
         # Points d'interet
         #     les points sont defini cote rouge comme toujours

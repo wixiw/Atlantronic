@@ -1,3 +1,3 @@
-print("Importing 2014 strat module")
+print("Importing  strat module")
 
-from common_2014 import *
+from common_ import *

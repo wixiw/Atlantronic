@@ -1,5 +1,5 @@
-print("Importing common_2012 module")
+print("Importing common_ module")
 
-from Robot2013 import *
-from Table2013 import *
+from Robot import *
+from Table import *
 
