@@ -6,18 +6,18 @@ import roslib; roslib.load_manifest('arp_master')
 from arp_master import *
 
 #import the main state machines substates     
-#from a0_initialisation import Strat_Initialisation => utilisation de l'etat commun
-#from a1_startSequence import Strat_StartSequence => utilisation de l'etat commun
+from a0_initialisation import Strat_Initialisation
+from a1_startSequence import Strat_StartSequence
 from a2_opening import Strat_Opening
 from a3_middleGame import Strat_MiddleGame
 from a4_endGame import Strat_EndGame
-#from a5_uninitialisation import Strat_Uninitialisation => utilisation de l'etat commun
+from a5_uninitialisation import Strat_Uninitialisation
 
 from arp_master.strat_2014 import *
 
 ###########################  TEMPORAL BEHAVIOR
 
-class StratNode_vierge():
+class StratNode_Brainstorming2014():
     
     def __init__(self):
         
@@ -74,7 +74,7 @@ class MainStateMachine(smach.StateMachine):
 # this main function is the one called by ros
 if __name__ == '__main__':
     try:
-        StratNode_vierge()
+        StratNode_Brainstorming2014()
     except rospy.ROSInterruptException: 
         rospy.loginfo("handling rospy.ROSInterruptException ...")
         rospy.loginfo("Exiting")
