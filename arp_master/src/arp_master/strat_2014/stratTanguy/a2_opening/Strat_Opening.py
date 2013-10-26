@@ -13,28 +13,21 @@ class Opening(PreemptiveStateMachine):
                                              EndMatchPreempter(-5.0),
                                              transitions={'endMatch':'problem'})
             
-            PreemptiveStateMachine.add('GotoMilieu',
-                      GotoMilieu(),
+            PreemptiveStateMachine.add('EscapeStartArea',
+                      AmbiOmniDirectOrder(1.300 - Robot2014.FRONT_SIDE.x,0.400, 0),
                       transitions={'succeeded':'WaitBeforeNext', 'timeout':'Debloque'})
             
-            self.setInitialState('GotoMilieu')
+            self.setInitialState('EscapeStartArea')
             
             PreemptiveStateMachine.add('Debloque',
-                      Replay(1.0),
-                      transitions={'succeeded':'GotoMilieu', 'timeout':'GotoMilieu'})
+                      Rewind(1.0),
+                      transitions={'succeeded':'EscapeStartArea', 'timeout':'EscapeStartArea'})
             
             PreemptiveStateMachine.add('WaitBeforeNext',
                       WaiterState(1.0),
                       transitions={'timeout':'endOpening'})
                         
             
-        
-############### Ordres de motion
-
-class GotoMilieu(CyclicActionState):
-    def createAction(self):
-        pose = AmbiPoseRed(-0.500, 0.500,0, Data.color)
-        self.omnidirect2(pose.x, pose.y, pose.theta)
-
+    
          
 

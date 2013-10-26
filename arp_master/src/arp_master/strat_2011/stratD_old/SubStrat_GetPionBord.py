@@ -165,10 +165,10 @@ class Avance(CyclicActionState):
  ##### pour le blocage: reverse et depose du pion avant de reessayer
 class Reverse1(CyclicActionState):
     def createAction(self):
-        order=Data.listReplayOrders.pop()#retourne le dernier element et l'enleve de la liste
+        order=Data.listRewindOrders.pop()#retourne le dernier element et l'enleve de la liste
         if order==None:
             self.dropOnCase(Case(0,0))
-        self.executeReplayOrder(order)  
+        self.executeRewindOrder(order)  
  
 class TakeMiddle(CyclicActionState):
     def createAction(self):

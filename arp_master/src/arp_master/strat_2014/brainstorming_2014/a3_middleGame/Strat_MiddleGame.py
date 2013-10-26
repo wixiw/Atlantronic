@@ -24,7 +24,7 @@ class MiddleGame(PreemptiveStateMachine):
                       transitions={'succeeded':'EtatA', 'timeout':'ReverseOrder'})
 
             PreemptiveStateMachine.add('ReverseOrder',
-                      Replay(1.0),
+                      Rewind(1.0),
                       transitions={'succeeded':'endMiddleGame', 'timeout':'endMiddleGame'})
 
 

@@ -7,7 +7,7 @@ from Data import Data
 
 from arp_ods.msg import OrderGoal
 
-class ReplayOrder:
+class RewindOrder:
     def __init__(self,x,y,theta,move_type,reverse,passe):
         #je note l'heure de passage
         self.time=rospy.get_rostime().secs

@@ -60,16 +60,16 @@ class AmbiOmniDirectOrder_cpoint(MotionState):
                                self.pose.x, self.pose.y, self.pose.theta)
 
 
-# Use this state to replay the move before the collision that has just block the robot
-# replayDuration is the length in seconds of the replay.
+# Use this state to Rewind the move before the collision that has just block the robot
+# RewindDuration is the length in seconds of the Rewind.
 # CAUTION : there is no insurrance that a certain distance will be done from the collision... it depends on cases.
-class Replay(CyclicActionState):
-    def __init__(self,replayDuration):
+class Rewind(CyclicActionState):
+    def __init__(self,rewindDuration):
         CyclicActionState.__init__(self)
-        self.replayDuration=replayDuration
+        self.rewindDuration=rewindDuration
         
     def createAction(self):
-        self.replay(self.replayDuration)  
+        self.rewind(self.rewindDuration)  
     
 # Use this Order State to quickly add move state in your FSM (see AmbiOmniDirectOrder for details)
 # Only use this if you are forced to specify a color dependent move (else prefer AmbiOmniDirectOrder)    

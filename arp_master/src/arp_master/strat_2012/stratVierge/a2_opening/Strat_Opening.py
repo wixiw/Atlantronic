@@ -20,7 +20,7 @@ class Opening(PreemptiveStateMachine):
             self.setInitialState('GotoMilieu')
             
             PreemptiveStateMachine.add('Debloque',
-                      Replay(1.0),
+                      Rewind(1.0),
                       transitions={'succeeded':'GotoMilieu', 'timeout':'GotoMilieu'})
             
             PreemptiveStateMachine.add('WaitBeforeNext',

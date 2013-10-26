@@ -42,4 +42,4 @@ class GotoSecondBottle(CyclicActionState):
 ################# REVERSER
 class ReverseOrder(CyclicActionState):
     def createAction(self):
-        self.replay(1.0)  
+        self.Rewind(1.0)  

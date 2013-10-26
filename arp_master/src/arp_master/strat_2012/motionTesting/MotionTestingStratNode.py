@@ -55,7 +55,7 @@ class MainStateMachine(smach.StateMachine):
                                    transitions={'succeeded':'Move', 'timeout':'Debloque'}) 
 
             
-            smach.StateMachine.add('Debloque', Replay(2.0),
+            smach.StateMachine.add('Debloque', Rewind(2.0),
                                    transitions={'succeeded':'end', 'timeout':'end'})  
                         
             smach.StateMachine.add('Wait', WaiterState(2.0),

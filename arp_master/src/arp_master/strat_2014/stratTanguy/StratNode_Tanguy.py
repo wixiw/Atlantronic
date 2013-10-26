@@ -17,7 +17,7 @@ from arp_master.strat_2014 import *
 
 ###########################  TEMPORAL BEHAVIOR
 
-class StratNode_vierge():
+class StratNode_Tanguy():
     
     def __init__(self):
         
@@ -57,7 +57,7 @@ class MainStateMachine(smach.StateMachine):
         with self:
             smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
                                    transitions={'endInitialisation':'StartSequence','failed':'end'})
-            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(1.140 + Robot2014.CDG_POSE.x,0.75,-pi),
+            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(1.500 - Robot2014.FRONT_SIDE.x,0.550,0),
                                    transitions={'gogogo':'Opening','problem':'end'})
             smach.StateMachine.add('Opening', Strat_Opening.Opening(),
                                     transitions={'endOpening':'MiddleGame','problem':'MiddleGame'})
@@ -74,7 +74,7 @@ class MainStateMachine(smach.StateMachine):
 # this main function is the one called by ros
 if __name__ == '__main__':
     try:
-        StratNode_vierge()
+        StratNode_Tanguy()
     except rospy.ROSInterruptException: 
         rospy.loginfo("handling rospy.ROSInterruptException ...")
         rospy.loginfo("Exiting")

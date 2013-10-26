@@ -18,9 +18,9 @@ class DeblocReloc(PreemptiveStateMachine):
                                              EndMatchPreempter(Robot2012.END_GAME_DELAY),
                                              transitions={'endMatch':'endDeblocReloc'})
             
-            #replay + rangement du doigt
+            #Rewind + rangement du doigt
             PreemptiveStateMachine.add('Debloque',
-                      Replay(1.0),
+                      Rewind(1.0),
                       transitions={'succeeded':'UnSetVmaxRecover', 'timeout':'UnSetVmaxRecover'})
             
             self.setInitialState('Debloque')

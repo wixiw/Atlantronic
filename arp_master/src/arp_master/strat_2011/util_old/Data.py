@@ -17,7 +17,7 @@ class Data:
 
     liste_cases2_faites=[]
     
-    listReplayOrders=[]
+    listRewindOrders=[]
     
     casePriority=[DropCase(3,3),DropCase(3,-1)]
     

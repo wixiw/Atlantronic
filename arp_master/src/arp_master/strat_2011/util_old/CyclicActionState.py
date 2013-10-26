@@ -19,7 +19,7 @@ from arp_ods.msg import OrderAction
 from Table2011 import *
 from UtilARD import *
 
-from ReplayOrder import ReplayOrder
+from RewindOrder import RewindOrder
 
 class CyclicActionState(CyclicState):
     
@@ -106,7 +106,7 @@ class CyclicActionState(CyclicState):
             ##########################FONCTION BLOQUANTE !
             #self.waitForStart()
         
-        self.registerReplayOrder(x,y,theta,move_type,reverse,passe)
+        self.registerRewindOrder(x,y,theta,move_type,reverse,passe)
             
         # THIS IS BLOCKING ! <<<<<<<<<<<<<<<<<<<<<<< !!!!!!!!!!!!!!
         self.client.wait_for_server()
@@ -150,11 +150,11 @@ class CyclicActionState(CyclicState):
         self.pointcap(xrobot,yrobot, cap )
 
 
-    def registerReplayOrder(self,x,y,theta,move_type,reverse,passe):
-        Data.listReplayOrders.append(ReplayOrder(x,y,theta,move_type,reverse,passe))   
+    def registerRewindOrder(self,x,y,theta,move_type,reverse,passe):
+        Data.listRewindOrders.append(RewindOrder(x,y,theta,move_type,reverse,passe))   
     
-    def executeReplayOrder(self,replayOrder):
-        self.createMotionControlAction(replayOrder.reversegoal.x_des,replayOrder.reversegoal.y_des,replayOrder.reversegoal.theta_des,replayOrder.reversegoal.move_type,replayOrder.reversegoal.reverse,replayOrder.reversegoal.passe)
+    def executeRewindOrder(self,RewindOrder):
+        self.createMotionControlAction(RewindOrder.reversegoal.x_des,RewindOrder.reversegoal.y_des,RewindOrder.reversegoal.theta_des,RewindOrder.reversegoal.move_type,RewindOrder.reversegoal.reverse,RewindOrder.reversegoal.passe)
    
     
     

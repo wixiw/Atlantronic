@@ -57,7 +57,7 @@ class CleanCloseTotem(PreemptiveStateMachine):
             #si on a rate le nettoyage le doigt droit s'est peut etre pris dans le totem
             #on recommence une fois en partant de plus loin   
             PreemptiveStateMachine.add('Retry',
-                      Replay(1.0),
+                      Rewind(1.0),
                       transitions={'succeeded':'RetryFirstTotemCoin', 'timeout':'Debloque'})
             PreemptiveStateMachine.add('RetryFirstTotemCoin',
                       AmbiOmniDirectOrder(poseFirst.x, poseFirst.y + 0.030, poseFirst.h, 0.2),

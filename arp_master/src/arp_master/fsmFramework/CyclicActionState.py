@@ -128,7 +128,7 @@ class CyclicActionState(CyclicState):
         else:
             isTurn=False
         
-        if move_type=='OPENLOOP' or move_type=='REPLAY' or isTurn:
+        if move_type=='OPENLOOP' or move_type=='Rewind' or isTurn:
             self.clearMotionTarget()
         else:
             self.setMotionTarget(x,y,theta) ## TODO ceci ne fonctionne pas pour un Cpoint puisque je vais donner le cpoint comme objectif. enfin bon... c'est du python quoi
@@ -149,61 +149,75 @@ class CyclicActionState(CyclicState):
         Data.isMotionTranslation=False
         Data.motionTarget=Point(0,0)
         Data.motionTargetTheta=0
-        
+    
+    #    
     # these are useful motions functions that allow not to give all parameters  
+    #
+    
+    #Avance d'une certaine distance
     def forward(self,dist,v_max=-1.0):
         self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()),
                                        Inputs.gety()+dist*sin(Inputs.gettheta()),
                                        Inputs.gettheta(),
                                        'OMNIDIRECT',False,v_max)
         
+    #Recule d'une certaine distance
     def backward(self,dist,v_max=-1.0):
         self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()+pi),
                                        Inputs.gety()+dist*sin(Inputs.gettheta()+pi),
                                        Inputs.gettheta(),
                                        'OMNIDIRECT',False,v_max)
+        
+    #Translate sur la gauche d'une certaine distance.
     def leftward(self,dist,v_max=-1.0):
         self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()+pi/2),
                                        Inputs.gety()+dist*sin(Inputs.gettheta()+pi/2),
                                        Inputs.gettheta(),
                                        'OMNIDIRECT',False,v_max)
         
+    #Translate sur la droite d'une certaine distance.
     def rightward(self,dist,v_max=-1.0):
         self.createMotionControlAction(Inputs.getx()+dist*cos(Inputs.gettheta()-pi/2),
                                        Inputs.gety()+dist*sin(Inputs.gettheta()-pi/2),
                                        Inputs.gettheta(),
                                        'OMNIDIRECT',False,v_max)
 
+    #Va a un point (x,y,cap)
     def omnidirect(self,x,y,theta,v_max=-1.0):
         self.createMotionControlAction_cpoint(-0.0583,0,0,
                                               x,y,theta,
                                               'OMNIDIRECT',False,
                                               0,0,0,0,v_max)
     
+    #Va a un point (x,y,cap) avec l'autom v2
     def omnidirect2(self,x,y,theta,v_max=-1.0):
         self.createMotionControlAction_cpoint(0,0,0,
                                               x,y,theta,
                                               'OMNIDIRECT2',False,
                                               0,0,0,0,v_max)
         
+    #Idem omnidirect avec un controle point different du centre du robot (utile pour faire un cercle ou positionner un actionneur/capteur).
     def omnidirect_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,x,y,theta,v_max=-1.0):
         self.createMotionControlAction_cpoint(x_cpoint,y_cpoint,theta_cpoint,
                                               x,y,theta,
                                               'OMNIDIRECT',False,
                                               0,0,0,0,v_max)    
-        
+    
+    #Realise une rotation vers une direction absolue    
     def cap(self,theta,v_max=-1.0):
         self.createMotionControlAction_cpoint(0.0,0,0,
                                               Inputs.getx(),Inputs.gety(),theta,
                                               'OMNIDIRECT',False,
                                               0,0,0,0,v_max)
-        
+    
+    #Commande en vitesse pendant un temps donne    
     def openloop(self,x_speed,y_speed,theta_speed,openloop_duration):
         self.createMotionControlAction_cpoint(-0.0583,0,0,
                                               0,0,0,
                                               'OPENLOOP',False,
                                               x_speed,y_speed,theta_speed,openloop_duration,-1.0)
-        
+    
+    #Idem openloop avec un point de controle different du centre du robot.    
     def openloop_cpoint(self,x_cpoint,y_cpoint,theta_cpoint,
                         x_speed,y_speed,theta_speed,
                         openloop_duration):
@@ -211,10 +225,11 @@ class CyclicActionState(CyclicState):
                                               0,0,0,
                                               'OPENLOOP',False,
                                               x_speed,y_speed,theta_speed,openloop_duration,-1.0)
-        
-    def replay(self,replay_duration):
+    
+    #rejoue en "arriere" les dernieres secondes du deplacement precedent    
+    def rewind(self,Rewind_duration):
         self.createMotionControlAction_cpoint(0,0,0,
                                               0,0,0,
                                               'REPLAY',False,
-                                              0,0,0,replay_duration,-1.0)
+                                              0,0,0,Rewind_duration,-1.0)
             

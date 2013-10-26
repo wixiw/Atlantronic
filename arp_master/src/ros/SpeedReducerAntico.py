@@ -52,7 +52,7 @@ class SpeedReducerAntico:
             
             #rospy.loginfo("SpeedReducer : isTranslation %s", self.motionTarget.isTranslation)
             
-            if self.motionTarget.isTranslation==True: # en bfcap ou replay je fais rien, en translation je checke
+            if self.motionTarget.isTranslation==True: # en bfcap ou Rewind je fais rien, en translation je checke
             
                 opp = Opponents(self.opponentsMgs,Point(self.pose.x, self.pose.y ))
                 #opp.printOpponents()
