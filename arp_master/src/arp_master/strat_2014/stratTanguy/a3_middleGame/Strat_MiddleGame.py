@@ -14,19 +14,15 @@ class MiddleGame(PreemptiveStateMachine):
                                              transitions={'endMatch':'endMiddleGame'})
             # other states
             PreemptiveStateMachine.add('EtatA',
-                      AmbiOmniDirectOrder(0.7, 0.7,0),
+                      AmbiOmniDirectOrder(0.700, -0.700,pi,0.300),
                       transitions={'succeeded':'EtatB', 'timeout':'ReverseOrder'})
             #as initial state is not the preemptive one, it is necessary to add the information here !
             self.setInitialState('EtatA')
             
             PreemptiveStateMachine.add('EtatB',
-                      AmbiOmniDirectOrder(-0.0,-0.7,pi),
-                      transitions={'succeeded':'EtatC', 'timeout':'ReverseOrder'})
-            
-            PreemptiveStateMachine.add('EtatC',
-                      AmbiOmniDirectOrder(0.7,-0.7,0),
+                      AmbiOmniDirectOrder(0.700,-0.000,pi,0.300),
                       transitions={'succeeded':'EtatA', 'timeout':'ReverseOrder'})
-
+        
             PreemptiveStateMachine.add('ReverseOrder',
                       Rewind(1.0),
                       transitions={'succeeded':'endMiddleGame', 'timeout':'endMiddleGame'})

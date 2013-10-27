@@ -14,17 +14,13 @@ class Opening(PreemptiveStateMachine):
                                              transitions={'endMatch':'problem'})
             
             PreemptiveStateMachine.add('EscapeStartArea',
-                      AmbiOmniDirectOrder(1.300 - Robot2014.FRONT_SIDE.x,0.400, 0),
-                      transitions={'succeeded':'WaitBeforeNext', 'timeout':'Debloque'})
-            
+                      AmbiOmniDirectOrder(1.300 - Robot2014.FRONT_SIDE.x,0.400, 0, 0.300),
+                      transitions={'succeeded':'WaitBeforeNext', 'timeout':'problem'})
             self.setInitialState('EscapeStartArea')
-            
-            PreemptiveStateMachine.add('Debloque',
-                      Rewind(1.0),
-                      transitions={'succeeded':'EscapeStartArea', 'timeout':'EscapeStartArea'})
+
             
             PreemptiveStateMachine.add('WaitBeforeNext',
-                      WaiterState(1.0),
+                      WaiterState(3.0),
                       transitions={'timeout':'endOpening'})
                         
             

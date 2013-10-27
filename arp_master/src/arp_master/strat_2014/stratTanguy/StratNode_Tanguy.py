@@ -60,7 +60,7 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(1.500 - Robot2014.FRONT_SIDE.x,0.550,0),
                                    transitions={'gogogo':'Opening','problem':'end'})
             smach.StateMachine.add('Opening', Strat_Opening.Opening(),
-                                    transitions={'endOpening':'MiddleGame','problem':'MiddleGame'})
+                                    transitions={'endOpening':'MiddleGame','problem':'end'})
             smach.StateMachine.add('MiddleGame', Strat_MiddleGame.MiddleGame(),
                                     transitions={'endMiddleGame':'EndGame'})
             smach.StateMachine.add('EndGame', Strat_EndGame.EndGame(),
