@@ -21,7 +21,7 @@ class AmbiControlPointRed:
             self.x=x
             self.y=y
             self.theta=theta
-        elif color=='purple':
+        elif color=='yellow':
             self.x=x
             self.y=-y
             self.theta=normalizeAngle(-theta)
@@ -29,4 +29,4 @@ class AmbiControlPointRed:
             self.x=0
             self.y=0
             self.theta=0
-            rospy.loginfo("AmbiPoseRed : default case : color (%s)  not defined !!",color)
+            rospy.loginfo("AmbiPoseYellow : default case : color (%s)  not defined !!",color)

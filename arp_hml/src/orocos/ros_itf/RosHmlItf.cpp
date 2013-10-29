@@ -109,7 +109,7 @@ void RosHmlItf::readIo()
         if( io )
             startColor.color = "red";
         else
-            startColor.color = "purple";
+            startColor.color = "yellow";
         outIoStartColor.write(startColor);
     }
 

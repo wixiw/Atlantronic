@@ -25,7 +25,7 @@ class AmbiOmniDirectOrder(MotionState):
         self.vmax = vmax
         
     def createAction(self):
-        self.pose = AmbiPoseRed(self.x, self.y, self.theta, Data.color)
+        self.pose = AmbiPoseYellow(self.x, self.y, self.theta, Data.color)
         self.omnidirect(self.pose.x, self.pose.y, self.pose.theta, self.vmax)
 
 class AmbiOmniDirectOrder2(MotionState):
@@ -37,7 +37,7 @@ class AmbiOmniDirectOrder2(MotionState):
         self.vmax = vmax
         
     def createAction(self):
-        self.pose = AmbiPoseRed(self.x, self.y, self.theta, Data.color)
+        self.pose = AmbiPoseYellow(self.x, self.y, self.theta, Data.color)
         self.omnidirect2(self.pose.x, self.pose.y, self.pose.theta, self.vmax)
         
 # Use this Order State to quickly add move state in your FSM with a special ControlPoint (CP)
@@ -54,7 +54,7 @@ class AmbiOmniDirectOrder_cpoint(MotionState):
         self.CPh = CPh
         
     def createAction(self):
-        self.pose = AmbiPoseRed(self.x, self.y, self.h, Data.color)
+        self.pose = AmbiPoseYellow(self.x, self.y, self.h, Data.color)
         self.control_point = AmbiControlPointRed(self.CPx, self.CPy, self.CPh, Data.color)
         self.omnidirect_cpoint(self.control_point.x, self.control_point.y, self.control_point.theta,
                                self.pose.x, self.pose.y, self.pose.theta)
@@ -148,7 +148,7 @@ class AmbiTurnOrder(MotionState):
         MotionState.__init__(self)
         self.h=h
     def createAction(self):
-        self.cap( AmbiCapRed(self.h,Data.color).angle )      
+        self.cap( AmbiCapYellow(self.h,Data.color).angle )      
    
 #You should only use this if you have color dependent stuuf to do           
 class TurnOrder(MotionState):

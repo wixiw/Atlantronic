@@ -46,7 +46,7 @@ class Point(object):
     
     def toAmbiPose(self,theta,color):       
         """ permet de convertir le point en une ambicase. """
-        return AmbiPoseRed(self.x,self.y,theta,color)
+        return AmbiPoseYellow(self.x,self.y,theta,color)
     
 def normalizeAngle(angle):
     angle=angle%(2*pi)

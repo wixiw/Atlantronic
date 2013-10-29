@@ -42,7 +42,7 @@ bool RosRluItf::configureHook()
     res &= getOperation("LaserOnlyLocalizator",     "ooGetEstimatedPose",                   m_ooGetEstimatedPose);
     res &= getOperation("LaserOnlyLocalizator",     "ooGetRelativeHeadingForConfirmation",  m_ooGetRelativeHeadingForConfirmation);
     res &= getOperation("Localizator",     "ooSwitchToRedConfig",                  m_ooSwitchToRedConfig);
-    res &= getOperation("Localizator",     "ooSwitchToPurpleConfig",               m_ooSwitchToPurpleConfig);
+    res &= getOperation("Localizator",     "ooSwitchToYellowConfig",               m_ooSwitchToYellowConfig);
 
 
 
@@ -141,9 +141,9 @@ bool RosRluItf::srvSetColor(SetColor::Request& req, SetColor::Response& res)
         res.success = true;
         return res.success;
     }
-    if( req.color.compare("purple") == 0  )
+    if( req.color.compare("yellow") == 0  )
     {
-        m_ooSwitchToPurpleConfig();
+        m_ooSwitchToYellowConfig();
         res.success = true;
         return res.success;
     }

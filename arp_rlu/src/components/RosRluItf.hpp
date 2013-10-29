@@ -48,7 +48,7 @@ class RosRluItf: public arp_rlu::RluTaskContext
         RTT::OperationCaller<arp_math::EstimatedPose2D(void)> m_ooGetEstimatedPose;
         RTT::OperationCaller<double(void)> m_ooGetRelativeHeadingForConfirmation;
         RTT::OperationCaller<void(void)> m_ooSwitchToRedConfig;
-        RTT::OperationCaller<void(void)> m_ooSwitchToPurpleConfig;
+        RTT::OperationCaller<void(void)> m_ooSwitchToYellowConfig;
 
         bool srvInitialize(arp_core::SetPosition::Request& req, arp_core::SetPosition::Response& res);
         bool srvAutoInit(AutoInit::Request& req, AutoInit::Response& res);

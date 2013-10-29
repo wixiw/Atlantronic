@@ -111,8 +111,8 @@ void LaserOnlyLocalizatorCpn::createOrocosInterface()
     addOperation("ooSwitchToRedConfig",&LaserOnlyLocalizatorCpn::ooSwitchToRedConfig, this, OwnThread)
     .doc("Définit les balises pour le départ Red");
 
-    addOperation("ooSwitchToPurpleConfig",&LaserOnlyLocalizatorCpn::ooSwitchToPurpleConfig, this, OwnThread)
-    .doc("Définit les balises pour le départ Purple");
+    addOperation("ooSwitchToYellowConfig",&LaserOnlyLocalizatorCpn::ooSwitchToYellowConfig, this, OwnThread)
+    .doc("Définit les balises pour le départ Yellow");
 
 }
 
@@ -226,7 +226,7 @@ void LaserOnlyLocalizatorCpn::ooSwitchToRedConfig()
     LOG(Info) << "Switched to Red Beacon configuration" << endlog();
 }
 
-void LaserOnlyLocalizatorCpn::ooSwitchToPurpleConfig()
+void LaserOnlyLocalizatorCpn::ooSwitchToYellowConfig()
 {
     propParams.referencedBeacons = std::vector< lsl::Circle >();
     propParams.referencedBeacons.push_back( lsl::Circle( 1.560, 0., 0.04 ) );
@@ -234,6 +234,6 @@ void LaserOnlyLocalizatorCpn::ooSwitchToPurpleConfig()
     propParams.referencedBeacons.push_back( lsl::Circle(-1.555,-1.040, 0.04 ) );
     loloc.setParams(propParams);
 
-    LOG(Info) << "Switched to Purple Beacon configuration" << endlog();
+    LOG(Info) << "Switched to Yellow Beacon configuration" << endlog();
 }
 

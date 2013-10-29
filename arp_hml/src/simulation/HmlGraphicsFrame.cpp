@@ -27,7 +27,7 @@ HmlGraphicsFrame::HmlGraphicsFrame():
 	color_pub(),
 	obstacle_pub()
 {
-	m_color.color = "purple";
+	m_color.color = "yellow";
 	m_start.go = true;
 	m_obstacle.detected = false;
 	m_rearObstacle.data = false;
@@ -91,7 +91,8 @@ void HmlGraphicsFrame::onPaint(wxPaintEvent& evt)
     else
     {
     	//dc.SetBrush(*wxBLUE_BRUSH) ;
-        dc.SetBrush(  wxBrush( wxColor(75,0,75) ) );
+        //yellow
+        dc.SetBrush(  wxBrush( wxColor(255,255,0) ) );
     }
     dc.DrawRectangle(125,20,180,30);
 
@@ -175,7 +176,7 @@ void HmlGraphicsFrame::onColor(wxCommandEvent& event)
 {
 	//inversion de la couleur
 	if( m_color.color == "red" )
-		m_color.color = "purple";
+		m_color.color = "yellow";
 	else
 		m_color.color = "red";
 }

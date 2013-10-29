@@ -47,7 +47,7 @@ class LaserOnlyLocalizatorCpn: public RluTaskContext
         virtual std::string coGetPerformanceReport();
 
         void ooSwitchToRedConfig();
-        void ooSwitchToPurpleConfig();
+        void ooSwitchToYellowConfig();
 
         /**
          *

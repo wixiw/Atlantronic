@@ -41,7 +41,7 @@ class TableVierge:
             else:
                  rospy.loginfo("getTableHalf: Failed to find half !! (%s,%s)", x,y)
                  table_half = "closeBot"
-        elif color == 'purple':
+        elif color == 'yellow':
             #rospy.loginfo("Color is not red")
             if x < 0.0 and y < 0.0:
                 table_half =  'closeBot'
@@ -116,13 +116,13 @@ class TableVierge:
         #rospy.loginfo("getNextHalfAmbiHoraire: %s -> %s", table_half, next_half)
         return next_half
         
-class AmbiPoseRed:
+class AmbiPoseYellow:
     def __init__(self,x,y,theta,color):
-        if color=='red':
+        if color=='yellow':
             self.x=x
             self.y=y
             self.theta=theta
-        elif color=='purple':
+        elif color=='red':
             self.x=-x
             self.y=y
             self.theta=normalizeAngle(pi-theta)
@@ -130,17 +130,17 @@ class AmbiPoseRed:
             self.x=0
             self.y=0
             self.theta=0
-            rospy.logerr("AmbiPoseRed : default case : color not defined !!")
+            rospy.logerr("AmbiPoseYellow : default case : color not defined !!")
             
-class AmbiCapRed:
+class AmbiCapYellow:
     def __init__(self,angle,color):
-        if color=='red':
+        if color=='yellow':
             self.angle=angle
-        elif color=='purple':
+        elif color=='red':
                 self.angle=normalizeAngle(pi-angle)  
         else:
             self.angle=0
-            rospy.logerr("AmbiCapRed : default case : color not defined !!")
+            rospy.logerr("AmbiCapYellow : default case : color not defined !!")
             
             
 

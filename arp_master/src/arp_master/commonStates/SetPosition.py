@@ -26,7 +26,7 @@ class SetInitialPosition(CyclicState):
             rospy.logerr("SetInitialPosition is done with incorrect range values, check units %f %f %f", self.xi, self.yi, self.thetai)
             self.result = False;
         else:
-            poseDepart=AmbiPoseRed(self.xi,self.yi,self.thetai,Data.color)
+            poseDepart=AmbiPoseYellow(self.xi,self.yi,self.thetai,Data.color)
             self.setPosition(poseDepart.x,poseDepart.y,poseDepart.theta)
             self.result = True;
     

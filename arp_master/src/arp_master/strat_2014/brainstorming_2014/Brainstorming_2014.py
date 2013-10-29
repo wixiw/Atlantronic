@@ -6,12 +6,12 @@ import roslib; roslib.load_manifest('arp_master')
 from arp_master import *
 
 #import the main state machines substates     
-from a0_initialisation import Strat_Initialisation
-from a1_startSequence import Strat_StartSequence
+#from a0_initialisation import Strat_Initialisation
+#from a1_startSequence import Strat_StartSequence
 from a2_opening import Strat_Opening
 from a3_middleGame import Strat_MiddleGame
 from a4_endGame import Strat_EndGame
-from a5_uninitialisation import Strat_Uninitialisation
+#from a5_uninitialisation import Strat_Uninitialisation
 
 from arp_master.strat_2014 import *
 
@@ -57,10 +57,10 @@ class MainStateMachine(smach.StateMachine):
         with self:
             smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
                                    transitions={'endInitialisation':'StartSequence','failed':'end'})
-            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(1.140 + Robot2014.CDG_POSE.x,0.75,-pi),
-                                   transitions={'gogogo':'Opening','problem':'end'})
-            smach.StateMachine.add('Opening', Strat_Opening.Opening(),
-                                    transitions={'endOpening':'MiddleGame','problem':'MiddleGame'})
+            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(0.000,0.000,0.0),
+                                   transitions={'gogogo':'MiddleGame','problem':'end'})
+#            smach.StateMachine.add('Opening', Strat_Opening.Opening(),
+#                                    transitions={'endOpening':'MiddleGame','problem':'MiddleGame'})
             smach.StateMachine.add('MiddleGame', Strat_MiddleGame.MiddleGame(),
                                     transitions={'endMiddleGame':'EndGame'})
             smach.StateMachine.add('EndGame', Strat_EndGame.EndGame(),

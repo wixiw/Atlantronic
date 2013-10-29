@@ -64,7 +64,7 @@ class SetColor(CyclicState):
     def executeIn(self):
         Data.color=Inputs.getcolor()
         if Data.color=='red':
-            Data.adv_color='purple'
+            Data.adv_color='yellow'
         else:
             Data.adv_color='red'
         rospy.loginfo("Start plugged")
