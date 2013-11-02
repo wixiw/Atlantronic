@@ -28,6 +28,10 @@ class AmbiOmniDirectOrder(MotionState):
         self.pose = AmbiPoseYellow(self.x, self.y, self.theta, Data.color)
         self.omnidirect(self.pose.x, self.pose.y, self.pose.theta, self.vmax)
 
+# Use this Order State to quickly add move state in your FSM
+# give the target (x,y,theta) in (m,m,rad) of robot's CDG and match color
+# It uses the 2014 displacement orders
+# Ex : AmbiOmniDirectOrder2(1.200, -0.700,pi/2)  
 class AmbiOmniDirectOrder2(MotionState):
     def __init__(self,x,y,theta, vmax=-1.0):
         MotionState.__init__(self)

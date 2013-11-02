@@ -191,7 +191,7 @@ class CyclicActionState(CyclicState):
     
     #Va a un point (x,y,cap) avec l'autom v2
     def omnidirect2(self,x,y,theta,v_max=-1.0):
-        self.createMotionControlAction_cpoint(0,0,0,
+        self.createMotionControlAction_cpoint(-0.0583,0,0,
                                               x,y,theta,
                                               'OMNIDIRECT2',False,
                                               0,0,0,0,v_max)

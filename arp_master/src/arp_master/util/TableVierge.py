@@ -144,3 +144,18 @@ class AmbiCapYellow:
             
             
 
+class AmbiControlPointYellow:
+    def __init__(self,x,y,theta,color):
+        if color=='red':
+            self.x=x
+            self.y=y
+            self.theta=theta
+        elif color=='yellow':
+            self.x=x
+            self.y=-y
+            self.theta=normalizeAngle(-theta)
+        else:
+            self.x=0
+            self.y=0
+            self.theta=0
+            rospy.loginfo("AmbiControlPointYellow : default case : color (%s)  not defined !!",color)
