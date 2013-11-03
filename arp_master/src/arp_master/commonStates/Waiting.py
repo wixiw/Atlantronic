@@ -13,10 +13,15 @@ import os
 # * WaitForMatch is waiting for a start unplug (will record start time)
 ############################################################
 
+#the state is a waiting timer. Take care about waitTime=0 which is interpreted as a little timeout of 0.001.
+#@param waitTime is in second
 class WaiterState(CyclicState):
     def __init__(self,waitTime):
         CyclicState.__init__(self, outcomes=[])
-        self.timeout = waitTime
+        if waitTime == 0:
+            self.timeout = 0.001
+        else:
+            self.timeout = waitTime
         
     def executeTransitions(self):
             return
