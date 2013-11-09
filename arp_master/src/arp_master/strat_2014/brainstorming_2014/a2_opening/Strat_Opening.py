@@ -24,7 +24,7 @@ class Opening(PreemptiveStateMachine):
                       transitions={'succeeded':'GotoMilieu', 'timeout':'GotoMilieu'})
             
             PreemptiveStateMachine.add('WaitBeforeNext',
-                      WaiterState(1.0),
+                      WaiterState(0.0),
                       transitions={'timeout':'endOpening'})
                         
         

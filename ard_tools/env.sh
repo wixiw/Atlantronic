@@ -1,3 +1,6 @@
+#config linux
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH;/usr/local/lib"
+
 #configuration de ROS
 HOSTNAME=`cat /etc/hostname`
 if [ $HOSTNAME == "alpha" ]; then

@@ -43,7 +43,9 @@ class MotionScheduler: public FBSched
         bool propTimeReporting;
         RTT::InputPort<timespec> inClock;
         arp_core::StatTimer m_timer;
+
         void timeReport();
+        void setMaxBufferSize(unsigned int size);
 };
 
 } /* namespace arp_core */

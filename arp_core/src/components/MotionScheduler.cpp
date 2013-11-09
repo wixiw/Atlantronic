@@ -29,7 +29,13 @@ MotionScheduler::MotionScheduler(const std::string& name):
 {
     addProperty("propTimeReporting",propTimeReporting);
     addPort("inClock",inClock);
-    addOperation("timeReport", &MotionScheduler::timeReport, this, ClientThread).doc("Computes and prints time reports.");
+    addOperation("timeReport", &MotionScheduler::timeReport, this, ClientThread)
+        .doc("Computes and prints time reports.");
+    addOperation("setMaxBufferSize", &MotionScheduler::setMaxBufferSize, this, ClientThread)
+        .arg(
+                  "bufSize",
+                  "New number of period that will be logged.")
+        .doc("Change the timing log buffer size.");
 }
 
 bool MotionScheduler::configureHook()
@@ -102,6 +108,11 @@ void MotionScheduler::timeReport()
         cout << "Time Stats are disabled. The component must be in running state with propTimereporting=true." << endl;
     else
         cout << m_timer.GetReport() << endl;
+}
+
+void MotionScheduler::setMaxBufferSize(unsigned int size)
+{
+    m_timer.SetMaxBufferSize(size);
 }
 
 MotionScheduler::~MotionScheduler()
