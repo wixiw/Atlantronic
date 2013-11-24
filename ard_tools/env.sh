@@ -22,13 +22,19 @@ export ROS_HOME=/opt/ros
 export ROS_PARALLEL_JOBS=-j4
 export ROS_OS_OVERRIDE=debian:squeeze
 
+export CAN_FLAVOR="gnulinux"
+export ORO_LOGFILE="/tmp/orocos.log"
+
 #configuration des couleurs de log
 . /opt/ard/ard_tools/vm/color.sh
 
 #chargement des scripts d'environnement des sous modules.
 . /opt/ros/setup.bash
 . /opt/ros_addons/env.sh
-. /opt/ard/env.sh
+
+ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:/opt/ard
+
+
 
 #ajout du path pour bricoler en LUA
 RTTLUA_MODULES=`rospack find ocl`/lua/modules/?.lua
@@ -54,7 +60,7 @@ alias ard-update='bash /opt/kernel/check_update.sh'
 alias ard-clean-build='find /opt -name build | xargs rm -rf; find /opt/ros_addons  -name build | xargs rm -rf;strip /opt/ros/*;strip /opt/ros_addons/*'
 alias myip="sudo ifconfig | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}'"
 alias ard-stress='stress --cpu 2 --io 1 --vm 1 --vm-bytes 128M'
-alias ard-mount-robot='sudo mkdir /media/robot -p;sudo sshfs root@beta:/ /media/robot'
+alias ard-mount-robot='sudo mkdir /media/ubiquity -p;sudo sshfs root@ubiquity:/ /media/ubiquity'
 alias ard-kst='python /opt/ard/arp_core/src/tools/ksthelper.py'
 
 #alias Linux utiles
