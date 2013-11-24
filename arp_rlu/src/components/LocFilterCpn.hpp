@@ -45,7 +45,6 @@ class LocFilterCpn: public RluTaskContext
 
     //*****************************************************
     // Operations
-    virtual std::string coGetPerformanceReport();
 
     bool ooReset();
 

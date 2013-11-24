@@ -17,6 +17,7 @@ using namespace arp_core::log;
 using namespace arp_rlu;
 using namespace arp_math;
 using namespace RTT;
+using namespace std;
 
 ORO_LIST_COMPONENT_TYPE( arp_rlu::LaserOnlyLocalizatorCpn )
 
@@ -206,12 +207,15 @@ double LaserOnlyLocalizatorCpn::ooGetRelativeHeadingForConfirmation()
     return loloc.getRelativeHeadingForConfirmation().angle();
 }
 
-std::string LaserOnlyLocalizatorCpn::coGetPerformanceReport()
+void LaserOnlyLocalizatorCpn::ooGetPerformanceReport()
 {
-    std::stringstream os;
-    os << timer.GetReport();
-    os << loloc.getPerformanceReport();
-    return os.str();
+    if( !isRunning() || !propTimeReporting )
+        cout << "Time Stats are disabled. The component must be in running state with propTimereporting=true." << endl;
+    else
+    {
+        cout << m_timer.GetReport() << endl;
+        cout << loloc.getPerformanceReport() << endl;
+    }
 }
 
 

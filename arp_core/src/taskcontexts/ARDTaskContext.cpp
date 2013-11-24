@@ -15,11 +15,19 @@ using namespace std;
 using namespace arp_math;
 
 ARDTaskContext::ARDTaskContext(const std::string& name, const std::string projectRootPath) :
-                TaskContext(name, PreOperational), propEnableLog(true), propAutoLoadScript(""), propAutoLoadStateMachines(""), attrProjectRootPath(
-                        projectRootPath), attrPropertyPath("script/orocos/conf"), attrScriptPath("script/orocos/ops"), attrStateMachinePath(
-                                "script/orocos/osd"), attrDt(0.0),
-                                /* TODO WLA logger(dynamic_cast<OCL::logging::Category*>(&log4cpp::Category::getInstance("ard")))*/
-                                logger(name)
+                TaskContext(name, PreOperational),
+                propEnableLog(true),
+                propAutoLoadScript(""),
+                propAutoLoadStateMachines(""),
+                propTimeReporting(false),
+                attrProjectRootPath(projectRootPath),
+                attrPropertyPath("script/orocos/conf"),
+                attrScriptPath("script/orocos/ops"),
+                attrStateMachinePath("script/orocos/osd"),
+                attrDt(0.0),
+                /* TODO WLA logger(dynamic_cast<OCL::logging::Category*>(&log4cpp::Category::getInstance("ard")))*/
+                logger(name),
+                m_timer(0)
 {
     addProperty("propAutoLoadScript", propAutoLoadScript).doc(
             "If non empty, the component will automatically load this script during configure() (le dossier ops est automatiquement ajouté, l'extension est mise par le soft)");
@@ -27,6 +35,8 @@ ARDTaskContext::ARDTaskContext(const std::string& name, const std::string projec
             "If non empty, the component will automatically load this state machine during configure() (le dossier fsm-osd est automatiquement ajouté, l'extension est mise par le soft)");
     addProperty("propEnableLog", propEnableLog).doc(
             "If set to true the composant is allowed to write in the log file, if set to false it will not log anything. Use it when a component is spamming log and this annoys you");
+    addProperty("propTimeReporting",propTimeReporting).doc(
+            "Activate or not Time statistics computation");
 
     addAttribute("attrProjectRootPath", attrProjectRootPath);
     addAttribute("attrPropertyPath", attrPropertyPath);
@@ -43,7 +53,13 @@ ARDTaskContext::ARDTaskContext(const std::string& name, const std::string projec
             "This Client Operation allows reset the component");
     addOperation("ooWriteProperties", &ARDTaskContext::ooWriteProperties, this, OwnThread).doc(
             "Write current Component properties to disk");
-    addOperation("coGetPerformanceReport", &ARDTaskContext::coGetPerformanceReport, this, ClientThread).doc("Get Performance report about timing, already formated in readable string");
+
+    addOperation("ooGetPerformanceReport", &ARDTaskContext::ooGetPerformanceReport, this, OwnThread).doc("Get Performance report about timing, already formated in readable string");
+    addOperation("ooSetMaxBufferSize", &ARDTaskContext::ooSetMaxBufferSize, this, OwnThread)
+        .arg(
+                  "bufSize",
+                  "New number of period that will be logged.")
+        .doc("Change the timing log buffer size.");
 
     attrUpdateTime.tv_sec = 0.0;
     attrUpdateTime.tv_nsec = 0.0;
@@ -80,20 +96,15 @@ bool ARDTaskContext::startHook()
 {
     bool res = TaskContext::startHook();
 
-    timer.ResetStat();
+    m_timer.ResetStat();
 
     return res;
 }
 
 void ARDTaskContext::updateHook()
 {
-    timer.Start();
-    TaskContext::updateHook();
-
     timespec time;
     clock_gettime(CLOCK_MONOTONIC, &time);
-
-    timer.Stop();
 
     if (attrUpdateTime.tv_nsec == 0.0 && attrUpdateTime.tv_sec == 0.0)
     {
@@ -103,9 +114,11 @@ void ARDTaskContext::updateHook()
     }
     else
     {
-        attrDt = delta_t(attrUpdateTime,time);
         attrUpdateTime = time;
+        attrDt = delta_t(attrUpdateTime,time);
     }
+
+    TaskContext::updateHook();
 }
 
 void ARDTaskContext::stopHook()
@@ -120,12 +133,6 @@ void ARDTaskContext::cleanupHook()
     std::vector<std::string>::iterator itProg;
     std::vector<std::string> fsmList = scripting->getStateMachineList();
     std::vector<std::string>::iterator itFsm;
-
-    //   if( marshalling != NULL )
-    //   {
-    //       fileName = attrRootProjectPath + "/" + attrPropertyPath  + "/" + getName() + ".xml";
-    //       marshalling->writeProperties(fileName);
-    //   }
 
     //dechargement de tous les programs
     for (itProg = progList.begin(); itProg != progList.end(); itProg++)
@@ -258,6 +265,7 @@ bool ARDTaskContext::checkProperties()
     return true;
 }
 
+//TODO WOUAT ? Est-ce vérifié ailleurs comme dans le deployer par ex ?
 //bool ARDTaskContext::checkInputsPorts()
 //{
 //    bool res = true;
@@ -335,22 +343,15 @@ bool ARDTaskContext::ooWriteProperties()
     return res;
 }
 
-
-std::string ARDTaskContext::coGetPerformanceReport()
+void ARDTaskContext::ooGetPerformanceReport()
 {
-    std::stringstream info;
-    info << "============================================" << std::endl;
-    info << this->getName() << " Performance Report (ms)" << std::endl;
-    info << "--------------------------------------------" << std::endl;
-    info << "  [*] Number of samples used : " << timer.GetRawRefreshTime().size() << std::endl;
-    info << "  [*] Period                 : mean=" << timer.GetMeanRefreshTime()*1000.;
-    info << "  , stddev=" << sqrt(timer.GetStdDevRefreshTime())*1000.;
-    info << "  , min=" << timer.GetMinRefreshTime()*1000.;
-    info << "  , max=" << timer.GetMaxRefreshTime()*1000. << std::endl;
-    info << "  [*] Global Duration        : mean=" << timer.GetMeanElapsedTime()*1000.;
-    info << "  , stddev=" << sqrt(timer.GetStdDevElapsedTime())*1000.;
-    info << "  , min=" << timer.GetMinElapsedTime()*1000.;
-    info << "  , max=" << timer.GetMaxElapsedTime()*1000. << std::endl;
-    return info.str();
+    if( !isRunning() || !propTimeReporting )
+        cout << "Time Stats are disabled. The component must be in running state with propTimereporting=true." << endl;
+    else
+        cout << m_timer.GetReport() << endl;
 }
 
+void ARDTaskContext::ooSetMaxBufferSize(unsigned int size)
+{
+    m_timer.SetMaxBufferSize(size);
+}

@@ -135,6 +135,8 @@ class ARDTaskContext : public RTT::TaskContext
     std::string propAutoLoadScript;
     /** Nom de la machine à états à charger automatiquement, si vide on ne charge rien snas erreur */
     std::string propAutoLoadStateMachines;
+    /** Activate or not the time reporting */
+    bool propTimeReporting;
 
     /**Chemin vers le project */
     std::string attrProjectRootPath;
@@ -161,7 +163,7 @@ class ARDTaskContext : public RTT::TaskContext
     // TODO WLA OCL::logging::Category* logger;
     RTT::Logger::In logger;
 
-    arp_core::StatTimer timer;
+    arp_core::StatTimer m_timer;
 
     /**
      * Check if the properties have correct values. This function may be override in components
@@ -204,9 +206,12 @@ class ARDTaskContext : public RTT::TaskContext
     /**
      * Permet d'obtenir un rapport sur les timings
      */
-    virtual std::string coGetPerformanceReport();
+    virtual void ooGetPerformanceReport();
 
-
+    /**
+     * Permet de regler la duree pendant laquelle les stats de performances temporelles sont faites
+     */
+    void ooSetMaxBufferSize(unsigned int size);
 };
 }
 

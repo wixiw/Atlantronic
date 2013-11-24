@@ -20,9 +20,10 @@ ORO_LIST_COMPONENT_TYPE( arp_rlu::ObstacleManager )
 ObstacleManager::ObstacleManager(const std::string& name)
 : RluTaskContext(name),
   propNumberOfOpponents(2),
-  attrFrontObstacles(),
   propMinProximity(0.1),
-  propCentralZoneRadius(0.25)
+  propCentralZoneRadius(0.25),
+  attrFrontObstacles(),
+  attrRearObstacles()
 {
     createOrocosInterface();
     std::vector<arp_math::EstimatedPose2D> opponents(propNumberOfOpponents);

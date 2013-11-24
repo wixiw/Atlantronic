@@ -92,14 +92,6 @@ std::string LocFilterCpn::printParams()
     return ss.str();
 }
 
-std::string LocFilterCpn::coGetPerformanceReport()
-{
-    std::stringstream os;
-    os << timer.GetReport();
-    return os.str();
-}
-
-
 bool LocFilterCpn::ooReset()
 {
     initialized = false;

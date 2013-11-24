@@ -116,7 +116,7 @@ class Localizator: public RluTaskContext
 
         //*****************************************************
         // Operations
-        virtual std::string coGetPerformanceReport();
+        virtual void ooGetPerformanceReport();
 
         void ooSwitchToRedConfig();
         void ooSwitchToYellowConfig();
