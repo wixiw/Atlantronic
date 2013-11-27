@@ -35,31 +35,6 @@ namespace arp_hml
  * 			OROCOS INTERFACE
  ****************************************************************************/
 
-    public:
-
-        /**
-         * Read the motor measures and publish them to Orocos
-         * should be called early in the cycle
-         */
-        void updateHook();
-
-        /**
-         * Read the motor commands and send on CAN bus.
-         * Should be called late in the cycle
-         */
-        void updateLate();
-
-        /**
-         * Calls the ArdMotorItf::init() function
-         */
-        bool configureHook();
-
-        /**
-         * Disable drive
-         */
-        void stopHook();
-
-
     protected:
 
         /**
@@ -129,8 +104,27 @@ namespace arp_hml
         /** Is true when the Homing sequence is finished. It has no sense when the motor is not in HOMING mode */
         OutputPort<bool> outHomingDone;
 
-        OutputPort<double> outDEBUGSpeedCmd;
-        OutputPort<double> outDEBUGSpeedCmdCan;
+        /**
+          * Read the motor measures from CAN and publish them to Orocos
+          * should be called early in the cycle
+          */
+         void updateHook();
+
+         /**
+          * Read the motor commands and send on CAN bus.
+          * Should be called late in the cycle
+          */
+         void updateLateHook();
+
+         /**
+          * Calls the ArdMotorItf::init() function
+          */
+         bool configureHook();
+
+         /**
+          * Disable drive
+          */
+         void stopHook();
 
         /**
          * Limits the torque on the motor via a current limitation.

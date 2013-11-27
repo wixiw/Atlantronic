@@ -8,11 +8,6 @@
 #include <string.h>
 #include <rtt/Component.hpp>
 
-//pourle mlockall
-#include <sys/mman.h>
-#include <errno.h>
-#include "wus.hpp"
-
 #include "CanOpenController.hpp"
 #include "orocos/can/wrappers/can_festival_ARD_master_wrapper.hpp"
 #include <math/core>
@@ -30,21 +25,17 @@ CanOpenController::CanOpenController(const std::string& name) :
             attrCurrentNMTState(Unknown_state),
             propCanFestivalDriverName(
                     "/opt/ard/can_festival/lib/libcanfestival_can_socket.so"),
-            propBusName("can0"), propBaudRate("1000K"), propNodeId(0),
-            propMasterMaxBootDelay(0.500), propSyncPeriod(0.010),
-            propPdoMaxAwaitedDelay(propSyncPeriod/2),
-            propTimeReporting(true),
-            propWUS(false),
+            propBusName("can0"), 
+            propBaudRate("1000K"), 
+            propNodeId(0),
+            propMasterMaxBootDelay(0.500), 
+            propSyncPeriod(0.010),
             m_dispatcher(*this),
-            m_canPort(NULL),
-            m_timer(3000)
+            m_canPort(NULL)
 {
-
     clock_gettime(CLOCK_MONOTONIC, &m_lastSyncTime);
-
-    //recuperation du signal envoye lors du switch en mode secondaire xenomai pour afficher une backtrace
-    signal(SIGXCPU, warn_upon_switch);
-
+    propTimeReporting = true;
+    m_timer.SetMaxBufferSize(3000);
     createOrocosInterface();
 }
 
@@ -62,18 +53,6 @@ bool CanOpenController::checkInputsPorts()
 bool CanOpenController::configureHook()
 {
     bool res = HmlTaskContext::configureHook();
-
-    //shadowing = going to xenomai primary mode == task switch to hard RT
-    mlockall(MCL_CURRENT | MCL_FUTURE);
-    int ret = rt_task_shadow(&rt_task_desc, getName().c_str(), 60, T_FPU );
-    if (ret)
-    {
-        log(Error) << "rt_task_shadow failed with : " << strerror(-ret) << endlog();
-        res = false;
-    }
-    else
-        log(Info) << "Shadowing ok" << endlog();
-
 
     //Initialize all CanFestival related stuff (shared datas, wrappers, timers loop, loading drivers,...)
     res &= initializeCanFestival();
@@ -152,42 +131,9 @@ bool CanOpenController::startHook()
  */
 void CanOpenController::updateHook()
 {
-    //TODO workarounf WLA : je ne sais pas pourquoi la tache RT disparait... du coup je la reforce ici
-    //c'est over moche
-    int ret;
-    RT_TASK* task;
-
     //tic
     if( propTimeReporting )
         m_timer.Start();
-
-    task = rt_task_self ();
-    if( task == NULL )
-    {
-        LOG(Info) << "CanOpenController On n'est PAS RT, going RT" << endlog();
-        //shadowing = going to xenomai primary mode == task switch to hard RT
-        mlockall(MCL_CURRENT | MCL_FUTURE);
-        ret = rt_task_shadow(&rt_task_desc, "workaround", 40, T_FPU );
-        if (ret)
-        {
-            log(Error) << "rt_task_shadow failed with : " << strerror(-ret) << endlog();
-        }
-        else
-            log(Info) << "Shadowing ok" << endlog();
-    }
-
-    //active ou pas les WUS
-    if( propWUS )
-    {
-        rt_task_set_mode(0, T_WARNSW , NULL);
-    }
-    else
-    {
-        rt_task_set_mode(T_WARNSW, 0 , NULL);
-    }
-
-
-    //TODO fin workaround
 
     //Récupération de la date du cycle CAN
     inSync.readNewest(attrSyncTime);
@@ -203,9 +149,6 @@ void CanOpenController::updateHook()
     //dispatch bootup frame to the rigth output port
     m_dispatcher.dispatchBootUp(propNodeId, inBootUpReceived);
 
-    //wake up slave activities of all registered nodes after a certain amount of time to wait for PDOs
-    usleep(propPdoMaxAwaitedDelay*1E6);
-
     outPeriod.write(period);
     outClock.write(attrSyncTime);
 
@@ -215,18 +158,19 @@ void CanOpenController::updateHook()
     //actions de fin de scheduling pour les devices qui vont ecrire sur le bus
     m_dispatcher.triggerAllWrite();
 
+    //envoit des PDO manuels de fin de cycle
+    sendPDOevent(&CanARD_Data);
+
     //tac
     if( propTimeReporting )
+    {
         m_timer.Stop();
+		LOG(Info) << "Period = " << period*1000<< "ms" << endlog();
+	}
 }
 
 void CanOpenController::stopHook()
 {
-    if( propWUS )
-    {
-        if( rt_task_set_mode(T_WARNSW, 0 , NULL) )
-            log(Error) << "Failed to desactivate warn upon switchs" << endlog();
-    }
 }
 
 
@@ -551,18 +495,10 @@ bool CanOpenController::ooSetSyncPeriod(double period)
     return coWriteInLocalDico(dicoEntry);
 }
 
-
-void CanOpenController::ooTimeReport()
-{
-    if( !isRunning() || !propTimeReporting )
-        cout << "Time Stats are disabled. The component must be in running state with propTimereporting=true." << endl;
-    else
-        cout << m_timer.GetReport() << endl;
-}
-
 void CanOpenController::createOrocosInterface()
 {
-    addAttribute("attrCurrentNMTState", attrCurrentNMTState);
+    //TODO makes the "ls" in orocos deployer buggy, the typekit is certainly broken"
+    //addAttribute("attrCurrentNMTState", attrCurrentNMTState);
       addAttribute("attrSyncTime", attrSyncTime);
       addAttribute("sdo", attrTestingSdo);
 
@@ -578,10 +514,10 @@ void CanOpenController::createOrocosInterface()
               "defines the maximal allowed duration for master bootup (in ms)");
       addProperty("propSyncPeriod", propSyncPeriod) .doc(
               "delay between 2 SYNC messages in s ");
-      addProperty("propPdoMaxAwaitedDelay", propPdoMaxAwaitedDelay ).doc("");
-      //TODO WLA mettre la doc sur les 2 prop ci dessus et les mettre dans check prop
-      addProperty("propTimeReporting",propTimeReporting);
-      addProperty("propWUS",propWUS);
+      addProperty("propTimeReporting",propTimeReporting).doc(""
+              "Set this to true to activate timing reporting");
+
+
 
       addPort("inControllerNmtState", inControllerNmtState) .doc(
               "This port is connected to the CanFestival thread to populate attrCurrentNMTState");
@@ -646,6 +582,5 @@ void CanOpenController::createOrocosInterface()
               &CanOpenDispatcher::ooPrintRegisteredNodes, &m_dispatcher,
               OwnThread) .doc(
               "DEBUG purposes : this operation prints in the console the registred nodes.");
-      addOperation("coTimeReport", &CanOpenController::ooTimeReport, this, ClientThread).doc("Computes and prints time reports.");
 
 }

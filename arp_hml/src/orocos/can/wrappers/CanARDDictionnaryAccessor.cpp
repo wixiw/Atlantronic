@@ -155,3 +155,27 @@ INTEGER32* CanARDDictionnaryAccessor::getINTEGER32Pointer(string componentName, 
 
 	return NULL;
 }
+
+int CanARDDictionnaryAccessor::getTransmitPdoNumber()
+{
+    if( CanARD_Data.lastIndex == NULL || CanARD_Data.firstIndex == NULL )
+        return -1;
+    else
+        return CanARD_Data.lastIndex->PDO_TRS - CanARD_Data.firstIndex->PDO_TRS +1;
+}
+
+int CanARDDictionnaryAccessor::getTransmitPdoIndex(const UNS16 pdoCobId)
+{
+    int pdoIndex = -1;
+
+    for( int i = 0 ; i< CanARDDictionnaryAccessor::getTransmitPdoNumber() ; i++ )
+    {
+        if( CanARD_Data.PDO_status[i].last_message.cob_id == pdoCobId )
+        {
+            pdoIndex = i;
+            break;
+        }
+    }
+
+    return pdoIndex;
+}

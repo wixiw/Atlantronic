@@ -11,13 +11,6 @@ function LocalizatorFilterDeployer:load()
 end
 
 
-function LocalizatorFilterDeployer:registerToSql()
-	OrocosSqlMonitor = assert(Deployer:getPeer("OrocosSqlBridge"))
-	assert(Deployer:addPeer("OrocosSqlBridge",me))
-	return true
-end
-
-
 function LocalizatorFilterDeployer:connect()
 	assert(Deployer:connect(me..".inPose","Localizator.outPose",cp))
 	assert(Deployer:addPeer("Reporting", me))

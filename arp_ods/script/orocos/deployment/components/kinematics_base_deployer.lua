@@ -9,11 +9,6 @@ function KinematicBaseDeployer:load()
 end
 
 
-function KinematicBaseDeployer:registerToSql()
-	OrocosSqlMonitor = Deployer:getPeer("OrocosSqlBridge")
-	Deployer:addPeer("OrocosSqlBridge",me)
-end
-
 function KinematicBaseDeployer:connect()
 	Deployer:addPeer("Reporting", me)
 

@@ -11,7 +11,6 @@
 #include "orocos/taskcontexts/HmlTaskContext.hpp"
 #include "orocos/can/ard_can_types.hpp"
 #include "orocos/can/CanOpenDispatcher.hpp"
-#include <native/task.h>
 #include <timer/StatTimer.hpp>
 
 namespace arp_hml
@@ -33,6 +32,55 @@ namespace arp_hml
         CanOpenController(const std::string& name);
         ~CanOpenController();
 
+    protected:
+        /** This attribute contains the current NMT status of the Controller node */
+        e_nodeState attrCurrentNMTState;
+        /** Last sync time received */
+        timespec attrSyncTime;
+        /** This is for test purposes only, when sending request to the can via the taskBrowser */
+        CanDicoEntry attrTestingSdo;
+
+        /** This property contains the name of the can driver library that will be loaded dynamically */
+        std::string propCanFestivalDriverName;
+        /** This property contains the name of the bus attached to the CanController */
+        std::string propBusName;
+        /** This propertu contains the baudrate of the attached bus (10K,250K,500K,1000K, ...)*/
+        std::string propBaudRate;
+        /** This property contains the nodeID of the Controller node on the attached bus (in decimal)*/
+        int propNodeId;
+        /** This property defines the maximal allowed duration of slaves nodes before considering they are not on the bus (in s)*/
+        double propMasterMaxBootDelay;
+        /** Delay between 2 SYNC messgaes in s */
+        double propSyncPeriod;
+
+        /**
+         * This port is connected to the CanFestival thread to populate attrCurrentNMTState
+         */
+        InputPort<e_nodeState> inControllerNmtState;
+        /**
+         * This port is connected to the CanFestival thread to dispatch the boot event to registred Device Components
+         */
+        InputPort<nodeID_t> inBootUpReceived;
+        /**
+         * In Sync. Contains the date of the sync object
+         */
+        InputPort<timespec> inSync;
+
+        /**
+         * clock port, each node must listed this port to execute
+         * It contains the SYNC CAN message date
+         */
+        OutputPort<timespec> outClock;
+
+        /** Delay beetween inSync and last cycle inSync in s*/
+        OutputPort<double> outPeriod;
+
+
+        /**
+         * The routing stuff is delegated to this class
+         * */
+        CanOpenDispatcher m_dispatcher;
+
         /**
          * Initialize CanFestival and set the bus into Operationnal Mode
          */
@@ -50,7 +98,7 @@ namespace arp_hml
         void updateHook();
 
         /**
-         * Deactivate xenomai WUS
+         *
          */
         void stopHook();
 
@@ -103,67 +151,6 @@ namespace arp_hml
         bool ooSetSyncPeriod(double period);
 
         /**
-         * Generate a timer report. Use this for debug only
-         */
-        void ooTimeReport();
-
-    protected:
-        /** This attribute contains the current NMT status of the Controller node */
-        e_nodeState attrCurrentNMTState;
-        /** Last sync time received **/
-        timespec attrSyncTime;
-        /** This is for test purposes only, when sending request to the can via the taskBrowser */
-        CanDicoEntry attrTestingSdo;
-
-        /** This property contains the name of the can driver library that will be loaded dynamically */
-        std::string propCanFestivalDriverName;
-        /** This property contains the name of the bus attached to the CanController */
-        std::string propBusName;
-        /** This propertu contains the baudrate of the attached bus (10K,250K,500K,1000K, ...)*/
-        std::string propBaudRate;
-        /** This property contains the nodeID of the Controller node on the attached bus (in decimal)*/
-        int propNodeId;
-        /** This property defines the maximal allowed duration of slaves nodes before considering they are not on the bus (in s)*/
-        double propMasterMaxBootDelay;
-        /** Delay between 2 SYNC messgaes in s */
-        double propSyncPeriod;
-        /** Delay max beetween the sync order and the time we consider all PDO to be received*/
-        double propPdoMaxAwaitedDelay;
-        /** Set to true to register timings for be abble to generate reports. You should let this to false when not debugging */
-        bool propTimeReporting;
-        /** Activate xenomai WUS */
-        bool propWUS;
-
-
-        /**
-         * This port is connected to the CanFestival thread to populate attrCurrentNMTState
-         */
-        InputPort<e_nodeState> inControllerNmtState;
-        /**
-         * This port is connected to the CanFestival thread to dispatch the boot event to registred Device Components
-         */
-        InputPort<nodeID_t> inBootUpReceived;
-        /**
-         * In Sync. Contains the date of the sync object
-         */
-        InputPort<timespec> inSync;
-
-        /**
-         * clock port, each node must listed this port to execute
-         * It contains the SYNC CAN message date
-         */
-        OutputPort<timespec> outClock;
-
-        /** Delay beetween inSync and last cycle inSync in s*/
-        OutputPort<double> outPeriod;
-
-
-        /**
-         * The routing stuff is delegated to this class
-         * */
-        CanOpenDispatcher m_dispatcher;
-
-        /**
          * Call this to initialize all the CanFestival related stuff (shared datas, wrappers, timers loop, loading drivers,...)
          * @return true if initialization succeed;
          */
@@ -202,15 +189,8 @@ namespace arp_hml
         /** last Sync time to compute period */
         timespec m_lastSyncTime;
 
-        /** Timer to record and generate time reports */
-        arp_core::StatTimer m_timer;
-
         /** Utility function to deport non functionnal code to the end of file */
         void createOrocosInterface();
-
-        //TODO workaround en attendant xenomai sous Orocos
-        RT_TASK rt_task_desc;
-
     };
 
 }

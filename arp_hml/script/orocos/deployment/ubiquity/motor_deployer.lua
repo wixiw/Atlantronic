@@ -20,24 +20,11 @@ function MotorDeployer:load()
 	return true
 end
 
-function MotorDeployer:registerToSql(name)
-	OrocosSqlMonitor = assert( Deployer:getPeer("OrocosSqlBridge"))
-	assert( Deployer:addPeer("OrocosSqlBridge",name))
-	assert( OrocosSqlMonitor:ooRegisterBoolPort(name,"outConnected"))
-	assert( OrocosSqlMonitor:ooRegisterBoolPort(name,"outDriveEnable"))
-	assert( OrocosSqlMonitor:ooRegisterStringPort(name,"outCurrentOperationMode"))
-	assert( OrocosSqlMonitor:ooRegisterDoublePort(name,"outSpeed"))
-	assert( OrocosSqlMonitor:ooRegisterDoublePort(name,"outPosition"))
-	assert( OrocosSqlMonitor:ooRegisterDoublePort(name,"outTorque"))
-	return true
-end
-
 function MotorDeployer:connectMotor(name)
 	--on s'enregistre en peer au composant de trace
 	assert( Deployer:addPeer("Reporting", name))
 	--on enregistre chez nous le controlleur Can
 	assert( Deployer:addPeer(name, "Can1"))
-	--assert( MotorDeployer:registerToSql(name))
 	assert( MotorDeployer:check(me))
 	return true
 end

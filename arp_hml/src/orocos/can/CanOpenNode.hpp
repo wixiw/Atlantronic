@@ -12,7 +12,6 @@
 #include "orocos/can/ard_can_types.hpp"
 #include <canfestival/canfestival.h>
 #include "orocos/can/dictionnary/CanARD.h"
-#include <native/task.h>
 
 using namespace arp_core;
 
@@ -64,36 +63,11 @@ namespace arp_hml
         CanOpenNode(const std::string& name);
 
         /**
-         * Connect to the CanOpenController, reset the node and send CAN configuration SDO
-         */
-        virtual bool configureHook();
-
-        /**
-         * Put the node in operationnal mode
-         */
-        virtual bool startHook();
-
-        /**
-         * Handles Bootup : log a warning message
-         */
-        virtual void updateHook();
-
-        /**
          * This function is for external schedulers that would like to let read/write functions to be done early and lately in the cycle.
          * Thoses schedulers have to take the CanOpenNode as a slave peer and update() early in the cycle and call updateLate() and the end of the cycle.
+         * It calls updateLateHook() when isRunning())==TRUE
          */
-        virtual void updateLate(){};
-
-        /**
-         * Put the node in stop mode
-         */
-        virtual void stopHook();
-
-        /**
-         * unregister the node from the CanOpenController
-         */
-        virtual void cleanupHook();
-
+        void updateLate();
 
     protected:
         /** Last sync time received **/
@@ -159,6 +133,35 @@ namespace arp_hml
          */
         OperationCaller<bool(CanDicoEntry,int*)> m_coReadInRemoteDico;
 
+        /**
+         * Connect to the CanOpenController, reset the node and send CAN configuration SDO
+         */
+        virtual bool configureHook();
+
+        /**
+         * Put the node in operationnal mode
+         */
+        virtual bool startHook();
+
+        /**
+         * Handles Bootup : log a warning message
+         */
+        virtual void updateHook();
+
+        /**
+         *
+         */
+        virtual void updateLateHook(){};
+
+        /**
+         * Put the node in stop mode
+         */
+        virtual void stopHook();
+
+        /**
+         * unregister the node from the CanOpenController
+         */
+        virtual void cleanupHook();
 
         /**
          * use this operation in deployment to register the node into the CanOpenController
@@ -194,7 +197,6 @@ namespace arp_hml
 
         /**
          * Use this operation to send a PDO.
-         * If you are under xenomai you must run in primary mode
          * @param pdoNumber : number of the PDO on the CanFestival table (!! it is *NOT* the COBID !!)
          */
         bool coSendPdo(int pdoNumber);
@@ -228,10 +230,6 @@ namespace arp_hml
          * Shared structure with CanOpenController
          */
         CanNodeIdCard m_nodeIdCard;
-
-        //TODO workaround en attendant xenomai sous Orocos
-        RT_TASK rt_task_desc;
-
     };
 
 }

@@ -9,11 +9,6 @@ function MotionControlDeployer:load()
 end
 
 
-function MotionControlDeployer:registerToSql()
-	OrocosSqlMonitor = Deployer:getPeer("OrocosSqlBridge")
-	Deployer:addPeer("OrocosSqlBridge",me)
-end
-
 function MotionControlDeployer:connect()
 	MotionControl = Deployer:getPeer(me);
 	Deployer:addPeer("HmlMonitor", me)

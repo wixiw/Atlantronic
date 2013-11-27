@@ -1,26 +1,20 @@
 var CanDicoEntry sdo;
 require("print");
 attrScriptRes=true;
-//set motor  current  in mA
-//print.log(Info,"configure  max current");
-//sdo = CanDicoEntry(,0x2301,1,0x81,0,1);
-//coWriteInRemoteDico(sdo);
-//sdo = CanDicoEntry(,0x2301,2,200,0,4);
-//coWriteInRemoteDico(sdo);
 
-//configure PDO1 of motor   to be send every sync
+//configure PDO1 of motor   to be send every sync (so it is in the motor Dictionnay !! not in ours)
 print.log(Info, "configure PDO1 to be send every sync");
 sdo = CanDicoEntry(propNodeId,0x1800,2,1,0,1);
 attrScriptRes = Can1.coWriteInRemoteDico(sdo);
 if (attrScriptRes==false) then return;
 
-//configure PDO2 of motor   to be send every sync
+//configure PDO2 of motor   to be send every sync (so it is in the motor Dictionnay !! not in ours)
 print.log(Info, "configure PDO2 to be send every sync");
 sdo = CanDicoEntry(propNodeId,0x1801,2,1,0,1);
 attrScriptRes = Can1.coWriteInRemoteDico(sdo);
 if (attrScriptRes==false) then return;
 
-//configure PDO3 of motor   to be send every sync
+//configure PDO3 of motor   to be send every sync (so it is in the motor Dictionnay !! not in ours)
 print.log(Info, "configure PDO3 to be send every sync");
 sdo = CanDicoEntry(propNodeId,0x1802,2,1,0,1);
 attrScriptRes = Can1.coWriteInRemoteDico(sdo);
@@ -53,15 +47,6 @@ sdo = CanDicoEntry(propNodeId,0x2303,2, 4,0,1);
 attrScriptRes = Can1.coWriteInRemoteDico(sdo);
 if (attrScriptRes==false) then return;
 
-//set position windows time  
-print.log(Info,"set trace configuration");
-sdo = CanDicoEntry(propNodeId,0x2303,1, 200,0,1);
-attrScriptRes = Can1.coWriteInRemoteDico(sdo);
-if (attrScriptRes==false) then return;
-sdo = CanDicoEntry(propNodeId,0x2303,2, 4,0,1);
-attrScriptRes = Can1.coWriteInRemoteDico(sdo);
-if (attrScriptRes==false) then return;
-
 
 //necessite requestes NMT ...
 ////configure Node Guarding of motor 
@@ -75,8 +60,8 @@ if (attrScriptRes==false) then return;
 //if (attrScriptRes==false) then return;
 
 
-////configure Fault Reaction of the motor
-//print.log(Info, "configure Faulhaber Fault reaction");
-//sdo = CanDicoEntry(propNodeId,0x2320,3,0x100,0,2);
-//attrScriptRes = Can1.coWriteInRemoteDico(sdo);
-//if (attrScriptRes==false) then return;
+//configure Fault Reaction of the motor
+print.log(Info, "configure Faulhaber Fault reaction");
+sdo = CanDicoEntry(propNodeId,0x2320,3,0x100,0,2);
+attrScriptRes = Can1.coWriteInRemoteDico(sdo);
+if (attrScriptRes==false) then return;

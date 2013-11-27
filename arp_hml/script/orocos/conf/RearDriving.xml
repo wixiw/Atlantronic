@@ -9,7 +9,7 @@
 		<description>
 			this script is executed in the configureHook to set up CAN config values
 		</description>
-		<value>ConfigureProtokrotDriving.ops</value>
+		<value>ConfigureDriving.ops</value>
 	</simple>
 	<simple name="propMaximalTorque" type="double">
 		<description>Maximal Torque allowed in Amps</description>

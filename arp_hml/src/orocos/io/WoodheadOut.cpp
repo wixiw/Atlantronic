@@ -17,9 +17,12 @@ using namespace arp_core;
 ORO_LIST_COMPONENT_TYPE( arp_hml::WoodheadOut )
 
 WoodheadOut::WoodheadOut(const std::string& name) :
-    CanOpenNode(name)
+    CanOpenNode(name),
+    attrPdoIndex(-1)
 {
 	m_outputs = CanARDDictionnaryAccessor::getUNS8Pointer(name,"outputs");
+
+	addAttribute("attrPdoIndex",attrPdoIndex);
 
     addPort("inBit1",inBit1)
         .doc("Value of the output #1");
@@ -58,13 +61,24 @@ bool WoodheadOut::configureHook()
 	    *m_outputs = 0;
 	}
 
+	 //recuperation de l'index du PDO transmit dans la table CanFestival
+	attrPdoIndex = CanARDDictionnaryAccessor::getTransmitPdoIndex(0x200 + propNodeId);
+    //si on est là, on n'a pas trouvé.
+    if( attrPdoIndex < 0)
+    {
+        LOG(Error) << "Failed to find Faulhaber Command PDO index among "
+                << CanARDDictionnaryAccessor::getTransmitPdoNumber()
+        << " tested index. Check your dictionnary." << endlog();
+        res = false;
+    }
+
 	return res;
 }
 
-void WoodheadOut::updateLate()
+void WoodheadOut::updateLateHook()
 {
     //appel du parent car il log les bootUp
-    CanOpenNode::updateLate();
+    CanOpenNode::updateLateHook();
 
     UNS8 inputs = 0;
     bool tmpRead;
@@ -104,4 +118,7 @@ void WoodheadOut::updateLate()
     EnterMutex();
     *m_outputs = inputs;
     LeaveMutex();
+
+    //notification pour envoit du PDO operationnel de commande
+    CanARD_Data.PDO_status[attrPdoIndex].last_message.cob_id = 0;
 }

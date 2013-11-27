@@ -22,8 +22,10 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         ArdMotorItf(),
         attrState(ArdDs402::UnknownDs402State),
         attrBlockingDelay(0),
+        attrFaulhaberCommandPdoIndex(-1),
         attrHomingState(NOT_IN_HOMNG_MODE),
         attrHardNotify(false),
+
         propInvertDriveDirection(false),
         propReductorValue(676.0 / 49.0),
         propEncoderResolution(3000),
@@ -79,43 +81,22 @@ bool Faulhaber3268Bx4::checkProperties()
 
 bool Faulhaber3268Bx4::configureHook()
 {
-    int numberOfPdo = 0 ;
-    int i = 0;
-
     if( !init() )
         goto fail;
 
     if( !CanOpenNode::configureHook() )
         goto fail;
 
-
-    //on recherche dans la liste des PDO l'index du PDO de la commande Faulhaber pour pouvoir l'envoyer directement dans certains modes de fonctionnement
-    if( CanARD_Data.lastIndex == NULL || CanARD_Data.firstIndex == NULL )
-    {
-        LOG(Error) << "The Dictionnary seems to be corrupted ! Index reference are NULL." << endlog();
-        goto fail;
-    }
-    numberOfPdo = CanARD_Data.lastIndex->PDO_TRS_MAP - CanARD_Data.firstIndex->PDO_TRS_MAP;
-    if( numberOfPdo <= 0 )
-    {
-        LOG(Error) << "The Dictionnary seems to be corrupted ! Number of PDO should be positive." << endlog();
-        goto fail;
-    }
-    for( i = 0 ; i< numberOfPdo ; i++ )
-    {
-        //cout << "tested PDO in dico : [" << i << "] 0x" << std::hex << CanARD_Data.PDO_status[i].last_message.cob_id << std::dec << endl;
-        if( CanARD_Data.PDO_status[i].last_message.cob_id == 0x300 + propNodeId )
-        {
-            attrFaulhaberCommandPdoIndex = i;
-            break;
-        }
-    }
-    //si on est là, on n'a pas trouvé.
-    if( i == numberOfPdo )
-    {
-        LOG(Error) << "Failed to find Faulhaber Command PDO number among " << numberOfPdo << " tested index. Check your dictionnary." << endlog();
-        goto fail;
-    }
+    //recuperation de l'index du PDO transmit dans la table CanFestival
+   attrFaulhaberCommandPdoIndex = CanARDDictionnaryAccessor::getTransmitPdoIndex(0x300 + propNodeId);
+   //si on est là, on n'a pas trouvé.
+   if( attrFaulhaberCommandPdoIndex < 0)
+   {
+       LOG(Error) << "Failed to find Faulhaber Command PDO index among "
+               << CanARDDictionnaryAccessor::getTransmitPdoNumber()
+       << " tested index. Check your dictionnary." << endlog();
+       goto fail;
+   }
 
     goto success;
 
@@ -137,13 +118,18 @@ void Faulhaber3268Bx4::updateHook()
     setOutputs();
 }
 
-void Faulhaber3268Bx4::updateLate()
+void Faulhaber3268Bx4::updateLateHook()
 {
+    CanOpenNode::updateLateHook();
+
     //read inputs from Orocos interface
     getInputs();
 
     //appel du run de la classe générique moteur
     ArdMotorItf::run();
+
+    //notification pour envoit du PDO operationnel de commande
+    CanARD_Data.PDO_status[attrFaulhaberCommandPdoIndex].last_message.cob_id = 0;
 }
 
 void Faulhaber3268Bx4::getInputs()
@@ -186,10 +172,8 @@ void Faulhaber3268Bx4::setOutputs()
 {
 	//publication de la position
 	outPosition.write( ArdMotorItf::getPositionMeasure() );
-
     //publication de la vitesse
 	outVelocity.write( ArdMotorItf::getSpeedMeasure() );
-	outDEBUGSpeedCmd.write(m_speedCommand );
     //lecture du courant
     outTorque.write( ArdMotorItf::getTorqueMeasure() );
 
@@ -246,9 +230,8 @@ void Faulhaber3268Bx4::runSpeed()
         EnterMutex();
         *m_faulhaberCommand = F_CMD_V;
         *m_faulhaberCommandParameter = speed;
-        	outDEBUGSpeedCmdCan.write(speed );
-       
         LeaveMutex();
+
     /*
         usleep(500);
 
@@ -299,7 +282,7 @@ void Faulhaber3268Bx4::runPosition()
 
 void Faulhaber3268Bx4::runHoming()
 {
-    //TODO gestion de homing error ? ...
+	//TODO gestion de homing error ? ...
     // The submodes are not called is the motor is not powered
     if( outDriveEnable.getLastWrittenValue() )
     {
@@ -757,7 +740,8 @@ unsigned int Faulhaber3268Bx4::getError()
 
 void Faulhaber3268Bx4::createOrocosInterface()
 {
-    addAttribute("attrState",attrState);
+    //TODO makes the "ls" in orocos deployer buggy, the typekit is certainly broken"
+    //addAttribute("attrState",attrState);
     addAttribute("attrVelocityCmd",m_speedCommand);
     addAttribute("attrPositionCmd",m_positionCommand);
     addAttribute("attrTorqueCmd",m_torqueCommand);
@@ -813,9 +797,6 @@ void Faulhaber3268Bx4::createOrocosInterface()
         .doc(" Is true when the propMaximalTorque has been reached (at 95%)for more propBlockingTorqueTimeout");
     addPort("outHomingDone",outHomingDone)
         .doc("Is true when the Homing sequence is finished. It has no sense when the motor is not in HOMING mode");
-
-    addPort("outDEBUGSpeedCmd",outDEBUGSpeedCmd);
-    addPort("outDEBUGSpeedCmdCan",outDEBUGSpeedCmdCan);
 
     addOperation("ooEnableDrive", &Faulhaber3268Bx4::enableDrive,this, OwnThread )
         .doc("Activate the power on the motor. Without a speed command it acts as a brake. Returns false if the component is not running.");

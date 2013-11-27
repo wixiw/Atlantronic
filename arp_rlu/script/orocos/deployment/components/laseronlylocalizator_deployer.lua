@@ -11,13 +11,6 @@ function LaserOnlyLocalizatorDeployer:load()
 end
 
 
-function LaserOnlyLocalizatorDeployer:registerToSql()
-	OrocosSqlMonitor = assert(Deployer:getPeer("OrocosSqlBridge") )
-	assert( Deployer:addPeer("OrocosSqlBridge",me) )
-	return true
-end
-
-
 function LaserOnlyLocalizatorDeployer:connect()
 	assert( Deployer:stream(me..".inScan",ros:topic("/top_scan")) )
 	assert( Deployer:addPeer("Reporting", me) )

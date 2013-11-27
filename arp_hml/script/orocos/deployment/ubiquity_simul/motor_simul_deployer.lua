@@ -31,7 +31,6 @@ end
 
 function MotorSimulDeployer:connectMotor(name)
 	assert( Deployer:addPeer("Reporting", name))
-	--assert( MotorDeployer:registerToSql("LeftDriving"))
 	assert( Deployer:connect(name..".inClock", "Can1.outClock",cp))
 	assert( MotorSimulDeployer:check(name))
 	return true

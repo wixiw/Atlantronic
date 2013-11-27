@@ -75,16 +75,6 @@ class ARDTaskContext : public RTT::TaskContext
     /** Destructeur par défaut */
     virtual ~ARDTaskContext();
 
-    /** Callback de Configuration.*/
-    virtual bool configureHook();
-    /** Callback de Démarrage */
-    virtual bool startHook();
-    /** Calcule le temps de cycle (attention au premier cycle la période est nulle */
-    virtual void updateHook();
-    /** Callback d'Arrêt */
-    virtual void stopHook();
-    /** Callback de Déconfiguration */
-    virtual void cleanupHook();
 
     /** Defini si le composant est autorisé à logger. Publique pour que les services puissent y accéder */
     bool propEnableLog;
@@ -164,6 +154,17 @@ class ARDTaskContext : public RTT::TaskContext
     RTT::Logger::In logger;
 
     arp_core::StatTimer m_timer;
+
+    /** Callback de Configuration.*/
+    virtual bool configureHook();
+    /** Callback de Démarrage */
+    virtual bool startHook();
+    /** Calcule le temps de cycle (attention au premier cycle la période est nulle */
+    virtual void updateHook();
+    /** Callback d'Arrêt */
+    virtual void stopHook();
+    /** Callback de Déconfiguration */
+    virtual void cleanupHook();
 
     /**
      * Check if the properties have correct values. This function may be override in components

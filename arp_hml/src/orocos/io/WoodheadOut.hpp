@@ -23,17 +23,10 @@ namespace arp_hml
     public:
     	WoodheadOut(const std::string& name);
 
-    	/**
-    	 * Get CanFestival pointer
-    	 */
-    	virtual bool configureHook();
-
-    	/**
-    	 * Replace the normal updateHook as this device is a writter to be executed at the end of the loop
-    	 */
-    	virtual void updateLate();
-
     protected:
+        /** index of the Faulhaber Command PDO */
+        int attrPdoIndex;
+
     	InputPort<bool> inBit1;
     	InputPort<bool> inBit2;
     	InputPort<bool> inBit3;
@@ -44,6 +37,16 @@ namespace arp_hml
     	InputPort<bool> inBit8;
 
     	UNS8* m_outputs;
+
+        /**
+         * Get CanFestival pointer
+         */
+        virtual bool configureHook();
+
+        /**
+         * Replace the normal updateHook as this device is a writter to be executed at the end of the loop
+         */
+        virtual void updateLateHook();
 
     	virtual bool checkInputsPorts();
 

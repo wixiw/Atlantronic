@@ -17,12 +17,6 @@ include_directories(${Eigen_INCLUDE_DIRS})
 include_directories("/opt/ard/can_festival/include")
 include_directories("/opt/ard/can_festival/include/canfestival")
 
-#xenomai config
-include_directories("/usr/include/xenomai")
-add_definitions("-D_GNU_SOURCE -D_REENTRANT -Wall -pipe -D__XENO__")
-link_directories("/opt/ard/can_festival/lib")
-
-
 rosbuild_add_boost_directories()
 
 ####################################################################################################################

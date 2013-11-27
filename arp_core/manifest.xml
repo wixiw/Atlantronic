@@ -16,7 +16,6 @@
 	<depend package="fbsched" />
 	<!--empeche le build local <rosdep name="eigen" />-->
 	<export>
-		<!--<cpp os="xenomai" cflags="-I${prefix}/src" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -larp_core-xenomai -lrt -larp_core-math -larp_core-filters -larp_core-timer -larp_core-logger -larp_core-tools -L${prefix}/lib/orocos/xenomai -larp_core-components-xenomai"/>-->
 		<cpp os="gnulinux" cflags="-I${prefix}/src" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -larp_core-gnulinux -lrt -larp_core-math -larp_core-filters -larp_core-timer -larp_core-logger -larp_core-tools -L${prefix}/lib/orocos/gnulinux -larp_core-components-gnulinux"/>
 		<rosbuild cmake_directory="${prefix}/cmake"/>
 	</export>

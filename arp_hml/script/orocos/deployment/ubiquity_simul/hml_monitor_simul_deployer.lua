@@ -41,7 +41,6 @@ function HmlMonitorSimulDeployer:connect()
 	assert( HmlMonitorSimulDeployer:addToMonitor("Syncronizator"))
 	assert( HmlMonitorSimulDeployer:addToMonitor("MockSched"))
 
-	--assert( HmlMonitorDeployer:registerToSql())
 	assert( HmlMonitorSimulDeployer:check("HmlMonitor"))
 	
 	return true

@@ -22,9 +22,6 @@ namespace arp_hml
     {
     public:
     	WoodheadIn(const std::string& name);
-    	bool configureHook();
-    	void updateHook();
-
     protected:
     	OutputPort<bool> outBit1;
     	OutputPort<bool> outBit2;
@@ -37,6 +34,8 @@ namespace arp_hml
 
     	UNS8* m_inputs;
 
+        bool configureHook();
+        void updateHook();
     	virtual bool checkInputsPorts();
 
     };

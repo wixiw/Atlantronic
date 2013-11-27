@@ -11,13 +11,6 @@ function ObstacleManager:load()
 end
 
 
-function ObstacleManager:registerToSql()
-	OrocosSqlMonitor = assert(Deployer:getPeer("OrocosSqlBridge"))
-	assert( Deployer:addPeer("OrocosSqlBridge",me))
-	return true
-end
-
-
 function ObstacleManager:connect()
 	assert( Deployer:addPeer("Reporting", me))
     assert( Deployer:connect(me..".inRearObstacles", "Localizator.outObstacles",cp))

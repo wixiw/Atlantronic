@@ -19,7 +19,6 @@ namespace arp_hml
     {
     public:
         WoodheadSimul(const std::string& name);
-    	void updateHook();
 
     protected:
     	OutputPort<bool> outBit1;
@@ -41,6 +40,8 @@ namespace arp_hml
         InputPort<bool> inBit6;
         InputPort<bool> inBit7;
         InputPort<bool> inBit8;
+
+        void updateHook();
     };
 
 }

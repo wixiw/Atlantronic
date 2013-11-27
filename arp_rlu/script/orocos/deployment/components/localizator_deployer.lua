@@ -11,13 +11,6 @@ function LocalizatorDeployer:load()
 end
 
 
-function LocalizatorDeployer:registerToSql()
-	OrocosSqlMonitor = Deployer:getPeer("OrocosSqlBridge")
-	Deployer:addPeer("OrocosSqlBridge",me)
-	return true
-end
-
-
 function LocalizatorDeployer:connect()
 	Deployer:connect(me..".inOdo","Odometry.outTwist",cp)
 	assert( Deployer:stream(me..".inScan",ros:topic("/top_scan")))

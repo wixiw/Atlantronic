@@ -4,7 +4,7 @@
 #include "TestMaster.h"
 
 /**************************************************************************/
-/* Declaration of the mapped variables                                    */
+/* Declaration of mapped variables                                        */
 /**************************************************************************/
 UNS8 DO = 0x0;		/* Mapped at index 0x2000, subindex 0x00 */
 INTEGER16 AO1 = 0x0;		/* Mapped at index 0x2001, subindex 0x00 */
@@ -29,7 +29,7 @@ UNS8 DI7 = 0x0;		/* Mapped at index 0x2015, subindex 0x00 */
 UNS8 DI8 = 0x0;		/* Mapped at index 0x2016, subindex 0x00 */
 
 /**************************************************************************/
-/* Declaration of the value range types                                   */
+/* Declaration of value range types                                       */
 /**************************************************************************/
 
 #define valueRange_EMC 0x9F /* Type for index 0x1003 subindex 0x00 (only set of value 0 is possible) */
@@ -118,7 +118,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                      };
 
 /* index 0x1014 :   Emergency COB ID */
-                    UNS32 TestMaster_obj1014 = 0x0;   /* 0 */
+                    UNS32 TestMaster_obj1014 = 0x80 + 0x00;   /* 128 + NodeID */
 
 /* index 0x1016 :   Consumer Heartbeat Time. */
                     UNS8 TestMaster_highestSubIndex_obj1016 = 1; /* number of subindex - 1*/
@@ -484,6 +484,10 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, boolean, sizeof (UNS8), (void*)&DI8 }
                      };
 
+/**************************************************************************/
+/* Declaration of pointed variables                                       */
+/**************************************************************************/
+
 const indextable TestMaster_objdict[] = 
 {
   { (subindex*)TestMaster_Index1000,sizeof(TestMaster_Index1000)/sizeof(TestMaster_Index1000[0]), 0x1000},
@@ -584,7 +588,7 @@ const indextable * TestMaster_scanIndexOD (UNS16 wIndex, UNS32 * errorCode, ODCa
  */
 s_PDO_status TestMaster_PDO_status[2] = {s_PDO_status_Initializer,s_PDO_status_Initializer};
 
-quick_index TestMaster_firstIndex = {
+const quick_index TestMaster_firstIndex = {
   0, /* SDO_SVR */
   6, /* SDO_CLT */
   7, /* PDO_RCV */
@@ -593,7 +597,7 @@ quick_index TestMaster_firstIndex = {
   15 /* PDO_TRS_MAP */
 };
 
-quick_index TestMaster_lastIndex = {
+const quick_index TestMaster_lastIndex = {
   0, /* SDO_SVR */
   6, /* SDO_CLT */
   9, /* PDO_RCV */
@@ -602,7 +606,7 @@ quick_index TestMaster_lastIndex = {
   16 /* PDO_TRS_MAP */
 };
 
-UNS16 TestMaster_ObjdictSize = sizeof(TestMaster_objdict)/sizeof(TestMaster_objdict[0]); 
+const UNS16 TestMaster_ObjdictSize = sizeof(TestMaster_objdict)/sizeof(TestMaster_objdict[0]); 
 
 CO_Data TestMaster_Data = CANOPEN_NODE_DATA_INITIALIZER(TestMaster);
 

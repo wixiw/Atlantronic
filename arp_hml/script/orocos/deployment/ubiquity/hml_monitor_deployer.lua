@@ -7,8 +7,6 @@ local me = "HmlMonitor"
 function HmlMonitorDeployer:load()
 	assert( Deployer:loadComponent(me, "arp_hml::HmlMonitor"))
 	assert( Deployer:setActivity(me, 0.100, 10, rtt.globals.ORO_SCHED_RT))
-	--turn it into a Corba server
-	assert( Deployer:server(me, true))
 	return true
 end
 
@@ -35,16 +33,6 @@ function HmlMonitorDeployer:addToBusMonitor(name)
 	assert( Deployer:addPeer(me, name))
 	assert( HmlMonitor:ooAddHmlBusMonitoredPeer(name))
 	Deployer:removePeer (name)
-	return true
-end
-
-
-function HmlMonitorDeployer:registerToSql()
-	OrocosSqlMonitor = assert( Deployer:getPeer("OrocosSqlBridge"))
-	assert(Deployer:addPeer("OrocosSqlBridge",me))
-	assert(OrocosSqlMonitor:ooRegisterBoolPort(me,"outDrivingEnable"))
-	assert(OrocosSqlMonitor:ooRegisterBoolPort(me,"outEnable"))
-	assert(OrocosSqlMonitor:ooRegisterBoolPort(me,"outSteeringEnable"))
 	return true
 end
 
@@ -90,8 +78,6 @@ function HmlMonitorDeployer:connect()
 	assert(HmlMonitorDeployer:addToMonitor("Syncronizator"))
 
 	assert(HmlMonitorDeployer:addToMonitor("RosHmlItf"))
-
-	--assert(HmlMonitorDeployer:registerToSql())
 	
 	assert(HmlMonitorDeployer:check("HmlMonitor"))
 	return true
@@ -119,18 +105,12 @@ function HmlMonitorDeployer:start()
 	assert(RearSteering:ooSetOperationMode("other"))
 
 	print("setting torques")
-	LeftDriving:ooFaulhaberCmd(0x81,RearDriving:getProperty("propMaximalTorque"):get()*1000)
-	RightDriving:ooFaulhaberCmd(0x81,RearDriving:getProperty("propMaximalTorque"):get()*1000)
-	RearDriving:ooFaulhaberCmd(0x81,RearDriving:getProperty("propMaximalTorque"):get()*1000)
-	LeftSteering:ooFaulhaberCmd(0x81,RearSteering:getProperty("propMaximalTorque"):get()*1000)
-	RightSteering:ooFaulhaberCmd(0x81,RearSteering:getProperty("propMaximalTorque"):get()*1000)
-	RearSteering:ooFaulhaberCmd(0x81,RearSteering:getProperty("propMaximalTorque"):get()*1000)
-	LeftDriving:ooFaulhaberCmd(0x80,RearDriving:getProperty("propMaximalTorque"):get()*1000)
-	RightDriving:ooFaulhaberCmd(0x80,RearDriving:getProperty("propMaximalTorque"):get()*1000)
-	RearDriving:ooFaulhaberCmd(0x80,RearDriving:getProperty("propMaximalTorque"):get()*1000)
-	LeftSteering:ooFaulhaberCmd(0x80,RearSteering:getProperty("propMaximalTorque"):get()*1000)
-	RightSteering:ooFaulhaberCmd(0x80,RearSteering:getProperty("propMaximalTorque"):get()*1000)
-	RearSteering:ooFaulhaberCmd(0x80,RearSteering:getProperty("propMaximalTorque"):get()*1000)
+	LeftDriving:ooLimitCurrent(RearDriving:getProperty("propMaximalTorque"):get())
+	RightDriving:ooLimitCurrent(RearDriving:getProperty("propMaximalTorque"):get())
+	RearDriving:ooLimitCurrent(RearDriving:getProperty("propMaximalTorque"):get())
+	LeftSteering:ooLimitCurrent(RearSteering:getProperty("propMaximalTorque"):get())
+	RightSteering:ooLimitCurrent(RearSteering:getProperty("propMaximalTorque"):get())
+	RearSteering:ooLimitCurrent(RearSteering:getProperty("propMaximalTorque"):get())
 	print("sleep")
 	
 	RearDriving:ooSleep(1);

@@ -9,11 +9,6 @@ function LittleSexControlDeployer:load()
 end
 
 
-function LittleSexControlDeployer:registerToSql()
-	OrocosSqlMonitor = Deployer:getPeer("OrocosSqlBridge")
-	Deployer:addPeer("OrocosSqlBridge",me)
-end
-
 function LittleSexControlDeployer:connect()
 	Deployer:addPeer("Reporting", me)
 	RluMonitor = Deployer:getPeer("RluMonitor");

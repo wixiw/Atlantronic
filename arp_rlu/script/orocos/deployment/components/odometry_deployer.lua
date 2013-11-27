@@ -10,14 +10,6 @@ function OdometryDeployer:load()
 	return true
 end
 
-
-function OdometryDeployer:registerToSql()
-	OrocosSqlMonitor = assert( Deployer:getPeer("OrocosSqlBridge") )
-	assert( Deployer:addPeer("OrocosSqlBridge",me) )
-	return true
-end
-
-
 function OdometryDeployer:connect()
 	--on s'ajoute en peer a HmlMonitor pour pouvoir faire les connections
 	assert( Deployer:addPeer("HmlMonitor", me) )

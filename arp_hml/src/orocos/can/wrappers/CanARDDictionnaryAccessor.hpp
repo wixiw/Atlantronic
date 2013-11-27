@@ -25,6 +25,17 @@ namespace arp_hml
 		static UNS32* getUNS32Pointer(string componentName, string varName);
 		static INTEGER16* getINTEGER16Pointer(string componentName, string varName);
 		static INTEGER32* getINTEGER32Pointer(string componentName, string varName);
+
+		/**
+		 * Counts the number of transmit PDO in the dictionnary
+		 */
+		static int getTransmitPdoNumber();
+
+		/**
+		 * For a given PDO COB ID, it finds the index of the PDO in the PDO Transmit array of CanFestival
+		 * returns -1 on failure
+		 */
+		static int getTransmitPdoIndex(const UNS16 pdoCobId);
 	};
 }
 

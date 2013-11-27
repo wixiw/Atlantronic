@@ -1,12 +1,20 @@
 <launch>
+	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
+	<include file="$(find arp_master)/script/ros/launch/rosparam.launch"/>
+	<include file="$(find arp_hml)/script/ros/launch/arp_hml_ros.launch"/>
+	<include file="$(find arp_master)/script/ros/launch/arp_master_ros.launch"/>
+	
 	<node 	name="StartupBashScript" 
 		pkg="arp_core" 
 		type="deployment_loading.sh"
-		/>
-	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
-	<include file="$(find arp_master)/script/ros/launch/rosparam.launch"/>
+		launch-prefix="nice -n 19"/>
 	
-	<node name="StratNode_Tanguy"   pkg="arp_master"  type="StratNode_Tanguy.py"     args="" output="screen"/>
+	<node name="StratNode_Tanguy"   
+		pkg="arp_master"  
+		type="StratNode_Tanguy.py"     
+		args="" output="screen" 
+		launch-prefix="nice -n 19"/>
+	
 	<node 	name="ArpOrocos" 
 		pkg="ocl" 
 		type="deployer-corba-gnulinux" 
@@ -16,6 +24,4 @@
 		required="true"
 		/>
 	
-	<include file="$(find arp_hml)/script/ros/launch/arp_hml_ros.launch"/>
-	<include file="$(find arp_master)/script/ros/launch/arp_master_ros.launch"/>
 </launch>

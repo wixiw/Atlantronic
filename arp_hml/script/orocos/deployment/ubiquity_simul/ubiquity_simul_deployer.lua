@@ -9,23 +9,10 @@ function UbiquitySimulDeployer:load()
 	return true
 end
 
-function UbiquitySimulDeployer:registerToSql(name)
-	OrocosSqlMonitor = assert( Deployer:getPeer("OrocosSqlBridge"))
-	assert( Deployer:addPeer("OrocosSqlBridge",name)) 
-	return true
-end
-
 function UbiquitySimulDeployer:connect()
 	--je m'ajoute aux autres
 	assert( Deployer:addPeer("Reporting", "UbiquitySimul"))
 	assert( Deployer:addPeer("RosHmlItf", "UbiquitySimul"))
-	
-	--assert( UbiquitySimulDeployer:registerToSql("LeftDriving"))
-	--assert( UbiquitySimulDeployer:registerToSql("RightDriving"))
-	--assert( UbiquitySimulDeployer:registerToSql("RearDriving"))
-	--assert( UbiquitySimulDeployer:registerToSql("LeftSteering"))
-	--assert( UbiquitySimulDeployer:registerToSql("RightSteering"))
-	--assert( UbiquitySimulDeployer:registerToSql("RearSteering"))
 
 	assert( Deployer:connect("LeftDriving.outFilteredSpeedCommand","UbiquitySimul.inLeftDrivingSpeedCmd",cp) )
 	assert( Deployer:connect("RightDriving.outFilteredSpeedCommand","UbiquitySimul.inRightDrivingSpeedCmd",cp) )

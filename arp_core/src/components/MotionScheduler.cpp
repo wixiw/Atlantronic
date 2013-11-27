@@ -29,9 +29,9 @@ MotionScheduler::MotionScheduler(const std::string& name):
 {
     addProperty("propTimeReporting",propTimeReporting);
     addPort("inClock",inClock);
-    addOperation("timeReport", &MotionScheduler::timeReport, this, ClientThread)
+    addOperation("ooGetPerformanceReport", &MotionScheduler::ooGetPerformanceReport, this, OwnThread)
         .doc("Computes and prints time reports.");
-    addOperation("setMaxBufferSize", &MotionScheduler::setMaxBufferSize, this, ClientThread)
+    addOperation("ooSetMaxBufferSize", &MotionScheduler::ooSetMaxBufferSize, this, OwnThread)
         .arg(
                   "bufSize",
                   "New number of period that will be logged.")
@@ -102,15 +102,17 @@ void MotionScheduler::stopHook()
 
 }
 
-void MotionScheduler::timeReport()
+void MotionScheduler::ooGetPerformanceReport()
 {
+    cout << "WARNING : the rigth place to look about timings in in CanopenController (usually named Can1)" << endl;
+
     if( !isRunning() || !propTimeReporting )
         cout << "Time Stats are disabled. The component must be in running state with propTimereporting=true." << endl;
     else
         cout << m_timer.GetReport() << endl;
 }
 
-void MotionScheduler::setMaxBufferSize(unsigned int size)
+void MotionScheduler::ooSetMaxBufferSize(unsigned int size)
 {
     m_timer.SetMaxBufferSize(size);
 }
