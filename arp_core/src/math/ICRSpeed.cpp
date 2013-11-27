@@ -139,7 +139,7 @@ void ICRSpeed::delta(double delta)
 std::string ICRSpeed::toString() const
 {
     std::ostringstream s;
-    s << "(" << ro() << "," << phi() << "," << delta() << ")";
+    s << "(" << ro() << "m/s ," << rad2deg(phi()) << "° ," << rad2deg(delta()) << "° )";
     return s.str();
 }
 

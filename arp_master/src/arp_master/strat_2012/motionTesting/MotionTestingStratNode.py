@@ -5,6 +5,7 @@ import roslib; roslib.load_manifest('arp_master')
 import random
 
 from arp_master import *
+from arp_master.strat_2014 import *
 
 ###########################  TEMPORAL BEHAVIOR
 
@@ -48,9 +49,33 @@ class MainStateMachine(smach.StateMachine):
             
             smach.StateMachine.add('SetInitialPosition',
                       SetInitialPosition(0, 0, 0),
-                      transitions={'succeeded':'Move', 'timeout':'Debloque'})
+                      transitions={'succeeded':'M1', 'timeout':'Debloque'})
             
+            
+            smach.StateMachine.add('M1',
+                       AmbiOmniDirectOrder2(x = 0.6, 
+                                           y = 0, 
+                                           theta = 0, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'waitM2', 'timeout':'Debloque'})
+             
+            smach.StateMachine.add('waitM2',
+                      WaiterState(3),
+                      transitions={'timeout':'M2'})
+             
                         
+            smach.StateMachine.add('M2',
+                       AmbiOmniDirectOrder2(x = 0.600, 
+                                           y = 0, 
+                                           theta = pi/2, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'waitMove', 'timeout':'Debloque'})            
+            
+            smach.StateMachine.add('waitMove',
+                      WaiterState(3),
+                      transitions={'timeout':'Move'})
+                        
+                                    
             smach.StateMachine.add('Move', RandomMove(),
                                    transitions={'succeeded':'Move', 'timeout':'Debloque'}) 
 
