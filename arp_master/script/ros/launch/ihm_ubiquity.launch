@@ -1,6 +1,11 @@
 <!--  use this launch file to monitor a running robot -->
 <launch>
 	<env name="ROS_MASTER_URI" value="http://beta:11311"></env>
+	<!--<node 	name="monitor" 
+			pkg="runtime_monitor" 
+			type="monitor" 
+			respawn="false" 
+			output="screen" /> -->
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
 	<node 	name="GraphicsSimu"     
 			pkg="arp_master"  
@@ -16,12 +21,6 @@
 			output="screen" 
 			args="-d $(find arp_hml)/script/ros/hml.vcg"
 	/>-->
-	<node 	name="monitor" 
-			pkg="runtime_monitor" 
-			type="monitor" 
-			respawn="false" 
-			output="screen" 
-	/>
 	<!--<node 	name="Taskbrowser" 
 		pkg="ocl" 
 		type="ctaskbrowser-gnulinux" 

@@ -13,4 +13,9 @@
 		<description></description>
 		<value>0.010</value>
 	</simple>
+	<simple name="propTimeReporting" type="boolean">
+		<description></description>
+		<value>0</value>
+	</simple>
+	
 </properties>
