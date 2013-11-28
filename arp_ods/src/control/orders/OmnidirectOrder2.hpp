@@ -59,6 +59,7 @@ class OmnidirectOrder2: public MotionOrder
          */
         ICRSpeed computeRunTwist(arp_math::Pose2DNorm currentPosition,ICRSpeed curICRSpeed,double dt);
         double profileRo(double distance,ICRSpeed curICRSpeed);
+        double profileRoJerking(double distance, ICRSpeed curICRSpeed);
 
         /*
          * twist of precedent turn
@@ -89,6 +90,7 @@ class OmnidirectOrder2: public MotionOrder
         //speed at last turn - used for acceleration computation
         ICRSpeed m_oldICRSpeed;
         double m_predictedAcc;
+        double m_lastRo;
 
         //surcharges
         void switchRun(arp_math::Pose2D currentPosition);

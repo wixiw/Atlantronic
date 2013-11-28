@@ -23,6 +23,7 @@ OmnidirectOrder2::OmnidirectOrder2() :
 
     m_oldICRSpeed = ICRSpeed();
     m_predictedAcc = 0;
+    m_lastRo=0;
 
 }
 
@@ -135,6 +136,29 @@ double OmnidirectOrder2::profileRo(double distance, ICRSpeed curICRSpeed)
     return ro;
 }
 
+double OmnidirectOrder2::profileRoJerking(double distance, ICRSpeed curICRSpeed)
+{
+    double lin_dec=0.3;
+    double v_max=0.5;
+
+    double ro = sqrt2(2.0 * lin_dec)* sqrt2(distance);
+    ro=saturate(ro,-v_max,v_max);
+    if ((ro-m_lastRo)>lin_dec )
+            {
+            //acceleration saturation
+            ro=m_lastRo+lin_dec;
+            }
+
+    m_lastRo=ro;
+    Log(DEBUG) << "<< profileRoJerking";
+    Log(DEBUG) << "distance" << distance;
+    Log(DEBUG) << "ro" << ro;
+    Log(DEBUG) << ">> profileRoJerking";
+    return ro;
+
+}
+
+
 ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSpeed curICRSpeed, double dt)
 {
     Log(DEBUG) << ">>computeRunTwist  ";
@@ -146,7 +170,8 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
 
     Log(DEBUG) << "k_delta  " << k_delta;
 
-    double ro = profileRo(k_delta, curICRSpeed);
+
+    double ro = profileRoJerking(k_delta, curICRSpeed);
     //double ro = profileRo(Cerr.norm(), curICRSpeed);
 
     Log(DEBUG) << "m_conf.LIN_DEC" << m_conf.LIN_DEC;
@@ -160,10 +185,13 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
      * so we choose something inbetween
      */
     double vrotmax = PI; //turret speed in red/s
-    double s_max = vrotmax * 0.02; //travel max on sphere
+    double s_max = vrotmax * 0.05; //travel max on sphere
 
     // gestion du parkinson final
     s_max=s_max*getParkinsonLimitationFactor(Cerr.norm());
+
+    Log(DEBUG) << "getParkinsonLimitationFactor  " << getParkinsonLimitationFactor(Cerr.norm());
+    Log(DEBUG) << "s_max                         " << s_max;
 
     double phi_perfect = atan2(Cerr[1], Cerr[0]);
     double delta_perfect = asin(Cerr[2] / Cerr.norm());
@@ -182,6 +210,9 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
 
     //limitation of the motion of the ICR
     ICR ICR_possible = curICR.getIntermediate(ICR_perfect, s_max);
+
+    /***** DEBUG ****/
+    ICR_possible=ICR_perfect;
 
     ICRSpeed corICRSpeed ;
     if (k_delta > 0)
@@ -269,7 +300,7 @@ Pose2DNorm OmnidirectOrder2::getPositionInNormalRef(Pose2D currentPosition)
 
 double OmnidirectOrder2::getParkinsonLimitationFactor(double distance)
 {
-    double d_start = 0.05;
-    double d_end = 0;
-    return smoothStep(distance, 0, d_end, 1, d_start);
+    double freeze_distance=0.05;
+    double noConstraint_distance=1;
+    return smoothStep(distance, freeze_distance, 0, noConstraint_distance, 1);
 }
