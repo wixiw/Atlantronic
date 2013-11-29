@@ -48,12 +48,12 @@ class MainStateMachine(smach.StateMachine):
                                    transitions={'gogogo':'SetInitialPosition', 'problem':'end'})  
             
             smach.StateMachine.add('SetInitialPosition',
-                      SetInitialPosition(0, 0, 0),
-                      transitions={'succeeded':'M1', 'timeout':'Debloque'})
+                      SetInitialPosition(0.750, 0, 0),
+                      transitions={'succeeded':'Move', 'timeout':'Debloque'})
             
             
             smach.StateMachine.add('M1',
-                       AmbiOmniDirectOrder2(x = 0.6, 
+                       AmbiOmniDirectOrder2(x = 0.950, 
                                            y = 0, 
                                            theta = 0, 
                                            vmax = 1.0),
@@ -91,14 +91,15 @@ class RandomMove(MotionState):
     def __init__(self):
         MotionState.__init__(self)
         seed = random.randint(0, 1000)
-        random.seed(seed)
+        #random.seed(seed)
+        random.seed(133)
         rospy.loginfo("------------MOTIONTESTING INIT----------------")
         rospy.loginfo("randomized with seed: %d" % (seed))
         rospy.loginfo("----------------------------------------------")
 
     def createAction(self):
-        self.x = random.uniform(-1.3, 1.3)
-        self.y = random.uniform(-0.8, 0.8)
+        self.x = random.uniform(0.4, 1.1)
+        self.y = random.uniform(-0.6, 0.6)
         self.theta = random.uniform(-pi, pi)
         self.vmax = random.uniform(0.1, 1)
         self.omnidirect2(self.x, self.y, self.theta, self.vmax)

@@ -346,6 +346,11 @@ if (number>=0.0)
 
 }
 
+double angleBetweenVectors(Vector3 M1, Vector3 M2)
+{
+    return acos(M1.dot(M2)/(M1.norm()*M2.norm()));
+}
+
 std::string toStrMaxDecimals(double value, int decimals)
 {
     std::ostringstream ss;

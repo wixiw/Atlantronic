@@ -85,8 +85,13 @@ ICR ICR::getIntermediate(ICR ICR2, double s)
     if (M1cM2 == Vector3(0, 0, 0))
         M1cM2 = M1.cross(Vector3(1, 0, 0));
 
+    // N is the unitary vector that is center of rotation to tranform M1 into M2
     Vector3 N = 1 / M1cM2.norm() * M1cM2;
 
+    // s should be saturated so as not to go beyond M2
+    s = min (s,angleBetweenVectors(M1,M2));
+
+    //apply rotation of M1, of a distance s
     Vector3 M3 = cos(s) * M1 + (1 - cos(s)) * (M1.dot(N)) * N + sin(s) * N.cross(M1);
 
     //TODO handle s>PI, take shortest path
@@ -117,7 +122,7 @@ double& ICR::deltaRef()
 
 void ICR::phi(double phi)
 {
-    m_phi = phi;
+    m_phi = betweenMinusPiAndPlusPi(phi);
 }
 
 void ICR::delta(double delta)
@@ -128,6 +133,6 @@ void ICR::delta(double delta)
 std::string ICR::toString() const
 {
     std::ostringstream s;
-    s << "ICR en (phi=" << phi() << ",delta=" << delta() << ")";
+    s << "ICR en (phi=" << rad2deg(phi()) << "° ,delta=" << rad2deg(delta()) << "° )";
     return s.str();
 }

@@ -301,5 +301,14 @@ BOOST_AUTO_TEST_CASE( Math_linesIntersection )
     BOOST_CHECK_EQUAL( colinear4, false);
 }
 
+BOOST_AUTO_TEST_CASE( Math_angleBetweenVectors )
+{
+    BOOST_CHECK_CLOSE( angleBetweenVectors(Vector3(1,0,0),Vector3(0,1,0)), PI/2,1e-6);
+    BOOST_CHECK_CLOSE( angleBetweenVectors(Vector3(1,0,0),Vector3(-1,0,0)), PI,1e-6);
+    BOOST_CHECK_CLOSE( angleBetweenVectors(Vector3(0,0,1),Vector3(0,-1,0)), PI/2,1e-6);
+    BOOST_CHECK_CLOSE( angleBetweenVectors(Vector3(0,0,-1),Vector3(-sqrt(2)/2,0,-sqrt(2)/2)), PI/4,1e-6);
+}
+
+
 
 #endif /* UTEST_MATH_HPP_ */

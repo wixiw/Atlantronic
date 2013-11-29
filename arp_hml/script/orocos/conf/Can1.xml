@@ -15,7 +15,7 @@
 	</simple>
 	<simple name="propTimeReporting" type="boolean">
 		<description></description>
-		<value>0</value>
+		<value>1</value>
 	</simple>
 	
 </properties>

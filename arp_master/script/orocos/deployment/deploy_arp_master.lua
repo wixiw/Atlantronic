@@ -15,7 +15,7 @@ dofile("/opt/ard/arp_master/script/orocos/deployment/lua/telemetry.lua");
 dofile("/opt/ard/arp_master/script/orocos/deployment/lua/last_component.lua");
 
 --a activer pour avoir des traces dans reports.dat (soit dans le répertoire courant soit dans /opt/ros)
---Telemetry:report()
+Telemetry:report()
 
 assert( LastComponentDeployer:load())
 assert( LastComponentDeployer:connect())

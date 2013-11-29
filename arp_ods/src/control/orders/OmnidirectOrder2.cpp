@@ -138,23 +138,28 @@ double OmnidirectOrder2::profileRo(double distance, ICRSpeed curICRSpeed)
 
 double OmnidirectOrder2::profileRoJerking(double distance, ICRSpeed curICRSpeed)
 {
-    double lin_dec=0.3;
+    //TODO passer les parametres en en argument
+    double lin_dec=0.6;
     double v_max=0.5;
+    //TODO passer period en argument
+    double period = 0.010;
 
     double ro = sqrt2(2.0 * lin_dec)* sqrt2(distance);
-    ro=saturate(ro,-v_max,v_max);
-    if ((ro-m_lastRo)>lin_dec )
-            {
-            //acceleration saturation
-            ro=m_lastRo+lin_dec;
-            }
+    double ros=saturate(ro,-v_max,v_max);
 
-    m_lastRo=ro;
+    //TODO il faudrait que ca sature l'acceleration en vitesse positive et la deceleration en vitesse negative
+    double ross=firstDerivateLimitation(ros, m_lastRo, period, -lin_dec*2,lin_dec*2);
+
     Log(DEBUG) << "<< profileRoJerking";
-    Log(DEBUG) << "distance" << distance;
-    Log(DEBUG) << "ro" << ro;
+    Log(DEBUG) << "m_lastRo " << m_lastRo;
+    Log(DEBUG) << "distance " << distance;
+    Log(DEBUG) << "ro       " << ro;
+    Log(DEBUG) << "ros      " << ros;
+    Log(DEBUG) << "ross     " << ross;
     Log(DEBUG) << ">> profileRoJerking";
-    return ro;
+
+    m_lastRo=ross;
+    return ross;
 
 }
 
@@ -165,18 +170,11 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
     Log(DEBUG) << "currentPositionNorm  " << currentPositionNorm.toString();
     Log(DEBUG) << "curICRSpeed  " << curICRSpeed.toString();
 
+    ICRSpeed corICRSpeed ;
+
+
     Vector3 Cerr = -1.0 * currentPositionNorm.getTVector();
-    double k_delta = Cerr.dot(curICRSpeed.speedDirection());
 
-    Log(DEBUG) << "k_delta  " << k_delta;
-
-
-    double ro = profileRoJerking(k_delta, curICRSpeed);
-    //double ro = profileRo(Cerr.norm(), curICRSpeed);
-
-    Log(DEBUG) << "m_conf.LIN_DEC" << m_conf.LIN_DEC;
-    Log(DEBUG) << "Cerr.norm()   " << Cerr.norm();
-    Log(DEBUG) << "ro            " << ro;
 
     /*
      * theta and phi:
@@ -190,12 +188,25 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
     // gestion du parkinson final
     s_max=s_max*getParkinsonLimitationFactor(Cerr.norm());
 
-    Log(DEBUG) << "getParkinsonLimitationFactor  " << getParkinsonLimitationFactor(Cerr.norm());
-    Log(DEBUG) << "s_max                         " << s_max;
+    //TODO debug
+    s_max=2;
 
     double phi_perfect = atan2(Cerr[1], Cerr[0]);
     double delta_perfect = asin(Cerr[2] / Cerr.norm());
+
     ICR ICR_perfect(phi_perfect, delta_perfect);
+    //limitation of the motion of the ICR
+    ICR curICR = curICRSpeed.getICR();
+    ICR ICR_possible = curICR.getIntermediate(ICR_perfect, s_max);
+
+    corICRSpeed = ICRSpeed(1.0, ICR_possible);
+
+    Log(DEBUG) << "ICR_perfect        " << ICR_perfect.toString();
+    Log(DEBUG) << "curICR             " << curICR.toString();
+    Log(DEBUG) << "ICR_possible       " << ICR_possible.toString();
+
+    /*
+
 
     ICR curICR;
     if (k_delta > 0) //    if kdelta<0, I want to go backward. and I don't want to go to the antipod with the ICR !
@@ -208,26 +219,42 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
         m_predictedAcc = -m_predictedAcc;
     }
 
-    //limitation of the motion of the ICR
-    ICR ICR_possible = curICR.getIntermediate(ICR_perfect, s_max);
 
-    /***** DEBUG ****/
+
+    //TODO THIS IS DEBUG
     ICR_possible=ICR_perfect;
 
-    ICRSpeed corICRSpeed ;
+
     if (k_delta > 0)
         corICRSpeed= ICRSpeed(ro, ICR_possible);
     else
         corICRSpeed= ICRSpeed(-ro, ICR_possible);
 
-    /*
-    //put back corICRspeed with ro >0
-    if (corICRSpeed.ro() < 0)
-        corICRSpeed = corICRSpeed.getOppositeRep();
-        */
 
-    /***** DEBUG ****/
+    //put back corICRspeed with ro >0
+   // if (corICRSpeed.ro() < 0)
+   //     corICRSpeed = corICRSpeed.getOppositeRep();
+
+
+    */
+
+    //TODO DEBUG
+    //TODO le 1 c'est degueu
+    //corICRSpeed = ICRSpeed(1.0, phi_perfect, delta_perfect);
+
+
+    //double k_delta = Cerr.dot(curICRSpeed.speedDirection());
+    double k_delta = Cerr.dot(corICRSpeed.speedDirection());
+
+    Log(DEBUG) << "Cerr.norm()   " << Cerr.norm();
+    Log(DEBUG) << "k_delta       " << k_delta;
+
+    double ro = profileRoJerking(k_delta, curICRSpeed);
+
+    //TODO DEBUG
     //corICRSpeed = ICRSpeed(ro, phi_perfect, delta_perfect);
+    corICRSpeed = ICRSpeed(ro, ICR_possible);
+
 
     Log(DEBUG) << "corICRSpeed  " << corICRSpeed.toString();
     Log(DEBUG) << "<<computeRunTwist  ";

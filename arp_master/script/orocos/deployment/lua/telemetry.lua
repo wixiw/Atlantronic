@@ -92,11 +92,11 @@ function Telemetry:reportOmnidirect()
 	Reporting:reportPort("MotionControl","outDEBUG2")
 	Reporting:reportPort("MotionControl","outDEBUG3")
 	Reporting:reportPort("MotionControl","outDEBUG4")
-	Reporting:reportPort("MotionControl","outDEBUG5")
-	Reporting:reportPort("MotionControl","outDEBUG6")
-	Reporting:reportPort("MotionControl","outDEBUG7")
-	Reporting:reportPort("MotionControl","outDEBUG8")
-	Reporting:reportPort("MotionControl","outDEBUG9")
+	--Reporting:reportPort("MotionControl","outDEBUG5")
+	--Reporting:reportPort("MotionControl","outDEBUG6")
+	--Reporting:reportPort("MotionControl","outDEBUG7")
+	--Reporting:reportPort("MotionControl","outDEBUG8")
+	--Reporting:reportPort("MotionControl","outDEBUG9")
 end
 
 
@@ -116,7 +116,7 @@ function Telemetry:report()
 	--Telemetry:reportRobotState()
 	--Telemetry:reportMotorState()
 	--Telemetry:reportTiming()
-	--Telemetry:reportOmnidirect()
+	Telemetry:reportOmnidirect()
 
 	
 	

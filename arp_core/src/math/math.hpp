@@ -54,6 +54,11 @@ namespace arp_math
     double rad2deg(const double rad);
     double sign(double number);
 
+    /*
+     * return the angle between 2 3D vectors
+     */
+    double angleBetweenVectors(Vector3 M1, Vector3 M2);
+
     /**
      * Tri à bulle
      * \return le vecteur d'entrée trié par ordre croissant

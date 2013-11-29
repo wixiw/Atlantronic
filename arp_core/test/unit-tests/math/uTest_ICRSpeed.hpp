@@ -215,7 +215,8 @@ void testICRIntermediate(double phi1, double delta1, double phi2, double delta2,
     ICR ICR1 = ICR(phi1, delta1);
     ICR ICR2 = ICR(phi2, delta2);
     ICR ICR3 = ICR1.getIntermediate(ICR2, dist);
-/*
+
+    /*
     cout << "--------TEST--------" << endl;
     cout << "phi1=  " << phi1 << "delta1=  " << delta1 << endl;
     cout << "ICR1=  " << ICR1.toString() << endl;
@@ -226,7 +227,8 @@ void testICRIntermediate(double phi1, double delta1, double phi2, double delta2,
     cout << "phi3=  " << phi3 << "delta3=  " << delta3 << endl;
     cout << "got:" << endl;
     cout << "ICR3=  " << ICR3.toString() << endl;
-*/
+    */
+
     BOOST_CHECK_SMALL(ICR3.phi() - phi3, 1e-6);
     BOOST_CHECK_SMALL(ICR3.delta() - delta3, 1e-6);
 
@@ -237,13 +239,16 @@ BOOST_AUTO_TEST_CASE( ICR_intermediate)
     testICRIntermediate(0,0,0,0,0,0,0);
     testICRIntermediate(0,0,PI/2,0,0,0,0);
     testICRIntermediate(0,0,PI/2,0,PI/4,PI/4,0);
-    testICRIntermediate(0,0,PI/2,0,3*PI/4,3*PI/4,0);
+    testICRIntermediate(0,0,PI/2,0,3*PI/4,PI/2,0);
     testICRIntermediate(0,0,3*PI/4,0,PI/2,PI/2,0);
     testICRIntermediate(-PI/2,0,PI/2,0,PI/2,0,0);
     testICRIntermediate(0,0,0,-PI/2,PI/4,0,-PI/4);
     testICRIntermediate(PI/2,0,-PI/2,PI/4,PI/4,PI/2,PI/4);
     //from pole to pole
     testICRIntermediate(PI/4,-PI/2,-PI/4,PI/2,PI/2,0,0);
+    // no limitation on distance & no distance
+    testICRIntermediate(1.2,0.8,-2.1,0.2,10,-2.1,0.2);
+    testICRIntermediate(1.2,0.8,-2.1,0.2,0,1.2,0.8);
 
     //TODO did not manage to test the case where they are opposite, due to rounding errors, the condition "opposite" is never met
 }
