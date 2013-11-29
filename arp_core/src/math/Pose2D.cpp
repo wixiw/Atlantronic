@@ -117,6 +117,11 @@ Pose2D Pose2D::inverse() const
     return p;
 }
 
+Pose2D Pose2D::opposite() const
+{
+    return -1.0*(*this);
+}
+
 Vector3 Pose2D::getTVector() const
 {
     Vector3 T;
@@ -190,6 +195,12 @@ Vector2 Pose2D::operator*(const Vector2& v) const
     Vector3 res = this->getDisplacement2Matrix() * v_;
     return res.head<2>();
 }
+
+Pose2D operator*(const double scalaire, const Pose2D& pose)
+{
+    return Pose2D(scalaire*pose.x(),scalaire*pose.y(),scalaire*pose.h());
+}
+
 
 std::ostream& operator <<(std::ostream& os, Pose2D _pose)
 {

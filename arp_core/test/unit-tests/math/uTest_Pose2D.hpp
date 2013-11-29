@@ -81,6 +81,26 @@ BOOST_AUTO_TEST_CASE( Pose2D_Inverse )
     BOOST_CHECK_SMALL( b.y() - 3, 1.e-10 );
 }
 
+BOOST_AUTO_TEST_CASE( Pose2D_Opposite )
+{
+    Pose2D zero(0,0,0);
+    Pose2D a(1,2,3);
+    Pose2D aThOp(-1,-2,-3);
+    Pose2D b(-1,2,3);
+    Pose2D bThOp(1,-2,-3);
+    Pose2D c(1,-2,3);
+    Pose2D cThOp(-1,2,-3);
+    Pose2D d(1,2,-3);
+    Pose2D dThOp(-1,-2,3);
+
+    BOOST_CHECK( zero.opposite() == zero );
+    BOOST_CHECK( a.opposite() == aThOp );
+    BOOST_CHECK( b.opposite() == bThOp );
+    BOOST_CHECK( c.opposite() == cThOp );
+    BOOST_CHECK( d.opposite() == dThOp );
+}
+
+
 BOOST_AUTO_TEST_CASE( Pose2D_Operators_equal )
 {
     Pose2D a,c;
@@ -222,4 +242,14 @@ BOOST_AUTO_TEST_CASE( Pose2D_BigAdjoint )
             }
         }
     }
+}
+
+BOOST_AUTO_TEST_CASE( Pose2D_ScalarMultiplication )
+{
+    Pose2D zero(0,0,0);
+    Pose2D a(1,2,0.3);
+    Pose2D aThOp(10,20,3);
+
+    BOOST_CHECK( 10*zero == zero );
+    BOOST_CHECK( 10*a == aThOp );
 }

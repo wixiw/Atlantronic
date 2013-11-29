@@ -114,6 +114,11 @@ class Pose2D
         Pose2D inverse() const;
 
         /**
+         * Permet de prendre l'opposé de la pose défini par l'opposé de la translation et l'opposé de la rotation
+         */
+        Pose2D opposite() const;
+
+        /**
          * Crée une chaine de caractère représentant la pose sous forme (x,y,theta)
          */
         std::string toString() const;
@@ -189,12 +194,11 @@ class Pose2D
          * les orientatations des deux repères, mais aussi le déport de leurs origines.
          */
         Vector2 operator*(const Vector2& v) const;
-
-
 };
 
-std::ostream operator <<(std::ostream os, arp_math::Pose2D _pose);
-
 }
+
+std::ostream operator <<(std::ostream os, arp_math::Pose2D _pose);
+arp_math::Pose2D operator*(const double scalaire, const arp_math::Pose2D& pose);
 
 #endif /* _ARP_MATH_POSE2D_HPP_ */
