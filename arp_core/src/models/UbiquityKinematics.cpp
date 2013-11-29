@@ -267,7 +267,7 @@ bool UbiquityKinematics::simpleTurrets2ICRspeed(const TurretState & iTS, ICRSpee
     Twist2D oTw;
     SlippageReport oSR;
     simpleTurrets2Twist(iTS, oTw, oSR, iParams);
-    if (oTw.vx() != 0.0 or oTw.vy() != 0.0 or oTw.vh() != 0.0)
+    if (abs(oTw.vx()) > 0.001 or abs(oTw.vy()) > 0.001 or abs(oTw.vh()) > 0.001)
     {
         oICRs = ICRSpeed(oTw);
     }

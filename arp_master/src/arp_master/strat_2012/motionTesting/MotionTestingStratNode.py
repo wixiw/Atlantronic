@@ -49,7 +49,7 @@ class MainStateMachine(smach.StateMachine):
             
             smach.StateMachine.add('SetInitialPosition',
                       SetInitialPosition(0.750, 0, 0),
-                      transitions={'succeeded':'Move', 'timeout':'Debloque'})
+                      transitions={'succeeded':'M1', 'timeout':'Debloque'})
             
             
             smach.StateMachine.add('M1',
@@ -91,8 +91,8 @@ class RandomMove(MotionState):
     def __init__(self):
         MotionState.__init__(self)
         seed = random.randint(0, 1000)
-        #random.seed(seed)
-        random.seed(133)
+        #seed=133
+        random.seed(seed)
         rospy.loginfo("------------MOTIONTESTING INIT----------------")
         rospy.loginfo("randomized with seed: %d" % (seed))
         rospy.loginfo("----------------------------------------------")
