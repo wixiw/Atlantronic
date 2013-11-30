@@ -17,14 +17,14 @@ Pose2DNorm::Pose2DNorm(double _x, double _y, double _h)
 {
 }
 
-Pose2DNorm::Pose2DNorm(Pose2D pose)
+Pose2DNorm::Pose2DNorm(const Pose2D& pose)
 {
     x(pose.x());
     y(pose.y());
     h(pose.h() * dmax);
 }
 
-Pose2D Pose2DNorm::getPose()
+Pose2D Pose2DNorm::getPose() const
 {
     return Pose2D(x(), y(), h() / dmax);
 }

@@ -39,24 +39,24 @@ class ICRSpeed
         /** Constructeur principal.
          * Il permet une initialisation par défaut (à zéro) de la vitesse, avec un CIR à l'infini pour aller tout droit */
         ICRSpeed(double ro = 0.0, double phi = 0.0, double delta = 0.0);
-        ICRSpeed(double ro, ICR ICR);
-        ICRSpeed(const ICRSpeed &icrSpeed);
+        ICRSpeed(double ro, const ICR& ICR);
+        ICRSpeed(const ICRSpeed& icrSpeed);
 
         /** Constructeur secondaire.
          * Il permet d'initialiser les vitesses avec un twist. */
-        ICRSpeed(Twist2DNorm twist);
-        ICRSpeed(Twist2D twist);
+        ICRSpeed(const Twist2DNorm& twist);
+        ICRSpeed(const Twist2D& twist);
 
 
         /** returns the direction (in 3D) of the speed) */
-        Vector3 speedDirection();
+        Vector3 speedDirection() const;
         /** returns equivalent representation with opposite sign of ro and ICR at antipod*/
-        ICRSpeed getOppositeRep();
+        ICRSpeed getOppositeRep() const;
         /** normalize the representation so that ro>0 */
-        ICRSpeed getNormalizedRep();
+        ICRSpeed getNormalizedRep() const;
 
         /** for a robot not moving, allow to create the ICRSpeed defined by the position "ICR" and a null speed*/
-        static ICRSpeed createIdleFromICRPosition(Vector2 ICRPosition);
+        static ICRSpeed createIdleFromICRPosition(const Vector2& ICRPosition);
         /** for a robot not moving, allow to create the ICRSpeed defined by the ICR at infinity with angle "angle" and a null speed*/
         static ICRSpeed createIdleFromTranslation(double angle);
 
@@ -75,8 +75,8 @@ class ICRSpeed
         void delta(double q);
 
         /** returns a equivalent twist */
-        Twist2DNorm twistNorm();
-        Twist2D twist();
+        Twist2DNorm twistNorm() const;
+        Twist2D twist() const;
 
         /** affiche (vx,vy,vtheta) */
         std::string toString() const;
@@ -84,7 +84,7 @@ class ICRSpeed
     protected:
         double m_ro;
         ICR m_ICR;
-        void initFromTwist(Twist2DNorm twist);
+        void initFromTwist(const Twist2DNorm& twist);
 
 
 };

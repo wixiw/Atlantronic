@@ -28,12 +28,12 @@ class Twist2DNorm: public Twist2D
 {
     public:
         Twist2DNorm(double _vx = 0, double _vy = 0, double _vh = 0);
-        Twist2DNorm(Twist2D twist);
+        Twist2DNorm(const Twist2D& twist);
 
-        Twist2D getTwist();
+        Twist2D getTwist() const;
 
         /* cette valeur permet de normaliser la rotation et de lui donner le meme ordre de grandeur que les translations sur le robot*/
-        //TODO demande à willy ou ca va.    >>>>    Willy, ou ca va ? <<<<<<
+        //TODO demande à willy ou ca va.    >>>>    Willy, ou ca va ? <<<<<<   !!!! Dans ton cul !!!!
         const static double dmax = 0.2;
 };
 

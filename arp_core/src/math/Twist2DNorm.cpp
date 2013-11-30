@@ -22,14 +22,14 @@ Twist2DNorm::Twist2DNorm(double _vx, double _vy, double _vh) :
 {
 }
 
-Twist2DNorm::Twist2DNorm(Twist2D twist)
+Twist2DNorm::Twist2DNorm(const Twist2D& twist)
 {
     vx(twist.vx());
     vy(twist.vy());
     vh(twist.vh() * dmax);
 }
 
-Twist2D Twist2DNorm::getTwist()
+Twist2D Twist2DNorm::getTwist() const
 {
     return (Twist2D(vx(), vy(), vh() / dmax));
 }

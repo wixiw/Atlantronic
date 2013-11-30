@@ -23,9 +23,9 @@ class Pose2DNorm: public Pose2D
 {
     public:
     Pose2DNorm(double _x = 0., double _y = 0., double _h = 0.);
-    Pose2DNorm(Pose2D pose);
+    Pose2DNorm(const Pose2D& pose);
     std::string toString() const;
-    Pose2D getPose();
+    Pose2D getPose() const;
 
     /* cette valeur permet de normaliser la rotation et de lui donner le meme ordre de grandeur que les translations sur le robot*/
     // TODO arf zut en plus j'ai un doublon avec le twist2DNorm

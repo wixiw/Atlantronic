@@ -37,13 +37,13 @@ class ICR
         ICR(const ICR&);
 
         /** returns ICR on the other side of the sphere */
-        ICR getAntipodICR();
+        ICR getAntipodICR() const;
         /** returns the orthodromic distance to another ICR on the sphere */
-        double sphericalDistance(ICR ICR2);
+        double sphericalDistance(const ICR& ICR2) const;
         /** returns a cartesian vector instead of spherical angles (its norm is 1)*/
-        Vector3 getCartesianVector();
+        Vector3 getCartesianVector() const;
         /** returns an ICR, on the great circle between me and ICR2, that is at a distance s from me*/
-        ICR getIntermediate(ICR ICR2, double s);
+        ICR getIntermediate(const ICR& ICR2, double s) const;
 
 
         double phi() const;

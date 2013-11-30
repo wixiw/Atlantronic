@@ -48,14 +48,14 @@ ICR::ICR(Vector3 cartesianVector)
 
 }
 
-ICR ICR::getAntipodICR()
+ICR ICR::getAntipodICR() const
 {
     double phi = betweenMinusPiAndPlusPi(m_phi + PI);
     double delta = -m_delta;
 
     return ICR(phi, delta);
 }
-Vector3 ICR::getCartesianVector()
+Vector3 ICR::getCartesianVector() const
 {
     double dx;
     double dy;
@@ -68,13 +68,13 @@ Vector3 ICR::getCartesianVector()
     return Vector3(dx, dy, dh);
 }
 
-double ICR::sphericalDistance(ICR ICR2)
+double ICR::sphericalDistance(const ICR& ICR2) const
 {
     double dotprod = sin(delta()) * sin(ICR2.delta()) + cos(delta()) * cos(ICR2.delta()) * cos(phi() - ICR2.phi());
     return acos(dotprod);
 }
 
-ICR ICR::getIntermediate(ICR ICR2, double s)
+ICR ICR::getIntermediate(const ICR& ICR2, double s) const
 {
     Vector3 M1 = getCartesianVector();
     Vector3 M2 = ICR2.getCartesianVector();
