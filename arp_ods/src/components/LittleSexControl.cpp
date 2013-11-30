@@ -22,7 +22,7 @@ LittleSexControl::LittleSexControl(const std::string& name):
         attrVmax_asked(1.0),
         attrCurrentOrder("default"),
         attrGain(0.2),
-        m_twistBuffer(),
+        m_ICRSpeedBuffer(),
         OTG()
 
 {
@@ -36,8 +36,7 @@ void LittleSexControl::getInputs()
 {
     //faut-il tester que c'est bien mis à jour ?
     inPosition.readNewest(attrPosition);
-    inCurrentTwist.readNewest(attrCurrentTwist);
-    inCurrentMotorState.readNewest(attrCurrentMotorState);
+    inCurrentICRSpeed.readNewest(attrCurrentICRSpeed);
     inParams.readNewest(attrParams);
 }
 
@@ -48,8 +47,8 @@ void LittleSexControl::updateHook()
     //bufferise inputs
     getInputs();
 
-    //note the twist reliazed for this turn
-    storeTwist();
+    //note the ICRSpeed reliazed for this turn
+    storeICRSpeed();
 
     attrCurrentOrder = attrOrder->getTypeString();
 
@@ -58,7 +57,7 @@ void LittleSexControl::updateHook()
 
     // calcule les consignes
     attrOrder->setVmax(attrVmax_asked);
-    attrComputedTwistCmd = attrOrder->computeSpeed(attrPosition,attrCurrentMotorState,attrParams,attrDt);
+    attrComputedICRSpeedCmd = attrOrder->computeSpeed(attrPosition,attrParams,attrDt);
 
     /*
      * DEBUG: recuperation des données de l'omnidirect
@@ -92,7 +91,7 @@ void LittleSexControl::updateHook()
 
 void LittleSexControl::stopHook()
 {
-    attrComputedTwistCmd=Twist2D(0,0,0);
+    attrComputedICRSpeedCmd=ICRSpeed(0,0,0);
     setOutputs();
 }
 
@@ -110,14 +109,14 @@ void LittleSexControl::setOutputs()
         outOrderFinished.write( true );
     }
 
-    outTwistCmd.write(attrComputedTwistCmd);
+    outICRSpeedCmd.write(attrComputedICRSpeedCmd);
 }
 
-void LittleSexControl::storeTwist()
+void LittleSexControl::storeICRSpeed()
 {
-    if( attrCurrentTwist.distanceTo(Twist2D(0,0,0),1,0.2) >= MIN_STORED_TWIST_SPEED )
+    if( attrCurrentICRSpeed.distanceTo(ICRSpeed(0,0,0),1,0.2) >= MIN_STORED_TWIST_SPEED )
     {
-        m_twistBuffer.addTwist(attrCurrentTwist,attrDt);
+        m_ICRSpeedBuffer.addICRSpeed(attrCurrentICRSpeed,attrDt);
     }
 }
 
@@ -150,7 +149,7 @@ bool LittleSexControl::ooSetOrder(shared_ptr<MotionOrder> order)
         // j'aurais pas du mettre le controle de blocage robot la bas
         // mais je l'ai mis car le cassage des ordres se fait la bas
         // moralité refaire l'archi.
-        attrOrder->setTwistBuffer(m_twistBuffer);
+        attrOrder->setICRSpeedBuffer(m_ICRSpeedBuffer);
         attrOrder->setOTG(&OTG);
 
         return true;
@@ -170,26 +169,23 @@ bool LittleSexControl::ooSetVMax(double vmax)
 
 void LittleSexControl::createOrocosInterface()
 {
-    addAttribute("attrComputedTwistCmd",attrComputedTwistCmd);
+    addAttribute("attrComputedICRSpeedCmd",attrComputedICRSpeedCmd);
     addAttribute("attrPosition",attrPosition);
     addAttribute("attrOrder",attrOrder);
     addAttribute("attrVmax_asked",attrVmax_asked);
     addAttribute("attrCurrentOrder",attrCurrentOrder);
-    addAttribute("attrCurrentTwist",attrCurrentTwist);
-    addAttribute("attrCurrentMotorState",attrCurrentMotorState);
+    addAttribute("attrCurrentICRSpeed",attrCurrentICRSpeed);
     addAttribute("attrParams", attrParams);
     addAttribute("attrGain",attrGain);
 
     addPort("inPosition",inPosition)
         .doc("");
-    addPort("inCurrentTwist",inCurrentTwist)
-            .doc("");
-    addPort("inCurrentMotorState",inCurrentMotorState)
+    addPort("inCurrentICRSpeed",inCurrentICRSpeed)
             .doc("");
     addPort("inParams", inParams).doc("");
 
     //DEBUG
-    addPort("outTwistCmd",outTwistCmd)
+    addPort("outICRSpeedCmd",outICRSpeedCmd)
             .doc("");
     addPort("outOrderFinished",outOrderFinished)
             .doc("");

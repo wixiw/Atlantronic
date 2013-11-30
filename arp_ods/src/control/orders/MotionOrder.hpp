@@ -12,7 +12,7 @@
 #include <arp_ods/OrderAction.h>
 #include <boost/shared_ptr.hpp>
 #include <math/core>
-#include "control/TwistBuffer.hpp"
+#include "control/ICRSpeedBuffer.hpp"
 #include "control/OnlineTrajectoryGenerator.hpp"
 
 
@@ -55,7 +55,7 @@ class MotionOrder: public ModeSelector
          * @param currentPosition : current Robot position
          * @param dt : time since last call
          */
-        virtual Twist2D computeSpeed(Pose2D currentPosition,MotorState motorState,UbiquityParams params, double dt);
+        virtual ICRSpeed computeSpeed(Pose2D currentPosition,UbiquityParams params, double dt);
 
         /**
          * Factory to create an order with default parameters from the order
@@ -85,7 +85,7 @@ class MotionOrder: public ModeSelector
         /*
          * set
          */
-        void setTwistBuffer(TwistBuffer twistBuffer );
+        void setICRSpeedBuffer(ICRSpeedBuffer twistBuffer );
         void setOTG(OnlineTrajectoryGenerator * OTG_);
 
         /*
@@ -126,7 +126,7 @@ class MotionOrder: public ModeSelector
         /*
          * buffer of twist for replaying backward
          */
-        TwistBuffer m_twistBuffer;
+        ICRSpeedBuffer m_twistBuffer;
 
         /**
          * error at precedent turn

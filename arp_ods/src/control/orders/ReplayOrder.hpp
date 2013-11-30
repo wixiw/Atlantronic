@@ -39,8 +39,7 @@ class ReplayOrder: public MotionOrder
         /**
          *
          */
-        virtual arp_math::Twist2D computeSpeed(Pose2D currentPosition,MotorState motorState,UbiquityParams params, double dt);
-
+        virtual arp_math::ICRSpeed computeSpeed(Pose2D currentPosition,UbiquityParams params, double dt);
         /*
          * returns the error on position between actual an objective,  in table referential
          */

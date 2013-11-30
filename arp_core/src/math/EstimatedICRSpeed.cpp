@@ -48,6 +48,13 @@ void EstimatedICRSpeed::date(const long double & _date)
     estimationDate = _date;
 }
 
+EstimatedTwist2D EstimatedICRSpeed::twist() const
+{
+    //TODO a implementer
+    return EstimatedTwist2D(ICRSpeed::twist());
+}
+
+
 EstimatedICRSpeed EstimatedICRSpeed::transport(const Pose2D & p) const
 {
     //TODO a implementer

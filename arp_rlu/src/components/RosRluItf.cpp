@@ -25,7 +25,7 @@ RluTaskContext(name)
     addPort("inLocalizationMode", inLocalizationMode);
     addPort("inLocalizationQuality", inLocalizationQuality);
     addPort("inLocalizationVisibility", inLocalizationVisibility);
-    addPort("inTwist",inTwist);
+    addPort("inICRSpeed",inICRSpeed);
     addPort("inOpponents",inOpponents);
     addPort("outPose",outPose);
     addPort("outOpponents",outOpponents);
@@ -55,10 +55,12 @@ void RosRluItf::updateHook()
     RluTaskContext::updateHook();
     EstimatedPose2D pIn;
     EstimatedTwist2D tIn;
+    EstimatedICRSpeed speedIn;
     std::vector<arp_math::EstimatedPose2D> opponentsIn;
 
     inPose.readNewest(pIn);
-    inTwist.readNewest(tIn);
+    inICRSpeed.readNewest(speedIn);
+    tIn = speedIn.twist();
     inOpponents.readNewest(opponentsIn);
 
     Pose pOut;

@@ -78,6 +78,8 @@ class ICRSpeed
         Twist2DNorm twistNorm() const;
         Twist2D twist() const;
 
+        double distanceTo(ICRSpeed other, double coefTrans, double coefRot) const;
+
         /** affiche (vx,vy,vtheta) */
         std::string toString() const;
 

@@ -4,7 +4,7 @@ MotionControlDeployer = ComposantDeployer:new()
 local me = "MotionControl"
 
 function MotionControlDeployer:load()
-	Deployer:loadComponent(me,"arp_ods::TwistTeleop");
+	Deployer:loadComponent(me,"arp_ods::ICRSpeedTeleop");
 	Deployer:setMasterSlaveActivity("MotionScheduler", me)
 end
 
@@ -24,7 +24,7 @@ function MotionControlDeployer:connect()
 	
 	--Deployer:addPeer("RluMonitor", me)
 	--RluMonitor = Deployer:getPeer("RluMonitor");
-	--RluMonitor:connect(me,"inTwist","Localizator","outTwist");
+	--RluMonitor:connect(me,"inICRSpeed","Localizator","outICRSpeed");
 end
 
 

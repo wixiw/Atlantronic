@@ -67,7 +67,7 @@ class Localizator: public RluTaskContext
         //*****************************************************
         // Ports
         RTT::InputPort<sensor_msgs::LaserScan> inScan;
-        RTT::InputPort<arp_math::EstimatedTwist2D > inOdo;
+        RTT::InputPort<arp_math::EstimatedICRSpeed > inOdo;
         RTT::InputPort< bool > inSmoothMode;
 
 
@@ -82,7 +82,7 @@ class Localizator: public RluTaskContext
          * Il s'agit de T_robot_table_p_robot_r_robot c'est à dire le Twist du robot
          * par rapport à la table, projeté ET réduit dans le repère du robot.
          */
-        RTT::OutputPort<arp_math::EstimatedTwist2D> outTwist;
+        RTT::OutputPort<arp_math::EstimatedICRSpeed> outICRSpeed;
 
         /**
          * Indique l'état de la localization.\n

@@ -55,20 +55,21 @@ void ReplayOrder::switchRun(arp_math::Pose2D currentPosition)
 
 
 
-Twist2D ReplayOrder::computeSpeed(Pose2D currentPosition,MotorState motorState,UbiquityParams params, double dt)
+ICRSpeed ReplayOrder::computeSpeed(Pose2D currentPosition,UbiquityParams params, double dt)
 {
     m_smoothLocNeeded = false;
 
     if (m_currentMode==MODE_DONE or m_currentMode==MODE_ERROR)
         return Twist2D(0,0,0);
 
-    Twist2D twist_applied;
+    ICRSpeed speed_applied;
     double dt_applied;
 
-    m_twistBuffer.removeTwist(twist_applied,dt_applied);
+    m_twistBuffer.removeICRSpeed(speed_applied,dt_applied);
     m_replayTime+=dt_applied;
 
-    return twist_applied*(-1.0);
+    //reverse the speed
+    return ICRSpeed(-speed_applied.ro(),speed_applied.getICR());
 }
 
 

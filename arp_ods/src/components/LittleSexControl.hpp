@@ -10,7 +10,7 @@
 
 #include "taskcontexts/OdsTaskContext.hpp"
 #include "control/orders/orders.h"
-#include "control/TwistBuffer.hpp"
+#include "control/ICRSpeedBuffer.hpp"
 #include <math/core>
 
 namespace arp_ods
@@ -44,17 +44,15 @@ class LittleSexControl: public OdsTaskContext
         RTT::InputPort< arp_math::EstimatedPose2D > inPosition;
 
         /** Measure of the current robot Twist */
-        RTT::InputPort<arp_math::EstimatedTwist2D> inCurrentTwist;
-        /** current motor state
-         *  redondant with inCurrentTwist, but it is need to work with ICRSpeed */
-        RTT::InputPort<arp_model::MotorState> inCurrentMotorState;
+        RTT::InputPort<arp_math::EstimatedICRSpeed> inCurrentICRSpeed;
+
         /** Geometric parameters */
         RTT::InputPort<arp_model::UbiquityParams> inParams;
 
         /**
          * This is the result of computation : the Twist that the robot should do
          */
-        RTT::OutputPort<arp_math::Twist2D> outTwistCmd;
+        RTT::OutputPort<arp_math::ICRSpeed> outICRSpeedCmd;
 
         /**
          * Motioncontrol in approach mode
@@ -93,7 +91,7 @@ class LittleSexControl: public OdsTaskContext
         /**
          * Buffer for computed speed commands
          */
-        arp_math::Twist2D attrComputedTwistCmd;
+        arp_math::ICRSpeed attrComputedICRSpeedCmd;
 
         /**
          * Buffer for current robot position
@@ -102,11 +100,7 @@ class LittleSexControl: public OdsTaskContext
         /*
          * buffer for current twist
          */
-        EstimatedTwist2D attrCurrentTwist;
-       /*
-        * buffer for current motor state
-        */
-        MotorState attrCurrentMotorState;
+        arp_math::EstimatedICRSpeed attrCurrentICRSpeed;
         /*
          * platform parameters
          */
@@ -152,11 +146,11 @@ class LittleSexControl: public OdsTaskContext
         /*
          * buffer of twist for replaying backward
          */
-        TwistBuffer m_twistBuffer;
+        ICRSpeedBuffer m_ICRSpeedBuffer;
         /*
          * function called to store the twist in the buffer
          */
-        void storeTwist();
+        void storeICRSpeed();
         /*
          * minimum speed for twist that is stored
          */

@@ -27,11 +27,9 @@ class KinematicBase: public OdsTaskContext
         bool attrRobotBlockedTimeout;
         /** time I began to block */
         double attrBlockTime;
-        /** Pour le debug uniquement, permet de commander des 0 purs aux moteurs de directions pour "détourer" */
-        bool attrGoToZero;
-        arp_math::Twist2D attrTwistCmd;
-        arp_math::Twist2D attrCurrentTwist;
-        arp_math::Twist2D attrAcceptableTwist;
+        arp_math::ICRSpeed attrICRSpeedCmd;
+        arp_math::ICRSpeed attrCurrentICRSpeed;
+        arp_math::ICRSpeed attrAcceptableICRSpeed;
         arp_model::MotorState attrMotorStateCommand;
         /**Internal model feedback, for debug info only */
         arp_model::TurretState attrTurretState;
@@ -39,7 +37,6 @@ class KinematicBase: public OdsTaskContext
         arp_model::UbiquityParams attrParams;
         double attrQuality;
 
-        double propMinSpeed;
         /** timeout for the robot to be considered blocked */
         double propRobotBlockedTimeout;
         /** Distance maximale du twist mesuré au twist commandé en m/s avant de détecter un blocage*/
@@ -49,9 +46,9 @@ class KinematicBase: public OdsTaskContext
 
 
         /** Clock port which trigger our activity. contains the Twist command we ha to try to do on the robot*/
-        RTT::InputPort<arp_math::Twist2D> inTwistCmd;
+        RTT::InputPort<arp_math::ICRSpeed> inICRSpeedCmd;
         /** Measure of the current robot Twist */
-        RTT::InputPort<arp_math::EstimatedTwist2D> inCurrentTwist;
+        RTT::InputPort<arp_math::EstimatedICRSpeed> inCurrentICRSpeed;
         /** Measures of the motor state. In a way it is redundant with inCurrentTwist but as the state does'nt
          match the same size, I prefer getting them from HML instead of computed it from inTwist. And to finish wit
          we need internally Turret speeds anyway to compute couplings so it doesn't cost much to take the entire state */
@@ -68,7 +65,7 @@ class KinematicBase: public OdsTaskContext
         RTT::OutputPort<double> outRearSteeringPositionCmd;
 
         RTT::OutputPort<double> outFiltrationFeedback;
-        RTT::OutputPort<arp_math::Twist2D> outFilteredTwist;
+        RTT::OutputPort<arp_math::ICRSpeed> outFilteredICRSpeed;
         RTT::OutputPort<bool> outRobotBlocked;
 
         /**

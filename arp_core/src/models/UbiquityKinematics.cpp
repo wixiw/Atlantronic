@@ -341,21 +341,32 @@ bool UbiquityKinematics::motors2Twist(const MotorState & iMS, TurretState& oTS, 
     return res;
 }
 
-bool UbiquityKinematics::motors2ICRSpeed(const MotorState & iMS, TurretState& oTS, ICRSpeed& oICRs, SlippageReport& oSR,
-        const UbiquityParams & iParams)
-{
-    bool res = true;
-    res &= motors2Turrets(iMS, oTS, iParams);
-    simpleTurrets2ICRspeed(oTS, oICRs, iParams);
-    return res;
-}
-
 bool UbiquityKinematics::twist2Motors(const arp_math::Twist2D & iTw, const MotorState & iMS, TurretState& oTS,
         MotorState& oMS, const UbiquityParams & iParams)
 {
     bool res = true;
     res &= twist2Turrets(iTw, oTS, iParams);
     res &= turrets2Motors(oTS, iMS, oMS, iParams);
+    return res;
+}
+
+bool UbiquityKinematics::ICRSpeed2Motors(const arp_math::ICRSpeed& iICRs, const MotorState & iMS, TurretState& oTS,
+        MotorState& oMS, const UbiquityParams & iParams)
+{
+    //TODO remplacer par un ICR2Turrets
+    bool res = true;
+    res &= twist2Turrets(iICRs.twist(), oTS, iParams);
+    res &= turrets2Motors(oTS, iMS, oMS, iParams);
+    return res;
+
+}
+
+bool UbiquityKinematics::motors2ICRSpeed(const MotorState & iMS, TurretState& oTS, ICRSpeed& oICRs, SlippageReport& oSR,
+        const UbiquityParams & iParams)
+{
+    bool res = true;
+    res &= motors2Turrets(iMS, oTS, iParams);
+    simpleTurrets2ICRspeed(oTS, oICRs, iParams);
     return res;
 }
 

@@ -105,19 +105,27 @@ class UbiquityKinematics
         static bool motors2Twist(const MotorState & iMS, TurretState& oTS, arp_math::Twist2D& oTw, SlippageReport& oSR,
                 const UbiquityParams & iParams);
 
-        /*
-         * enchaine les modeles directs
-         * convertit l'etat des moteurs en un ICRSpeed
-         */
-        static bool motors2ICRSpeed(const MotorState & iMS, TurretState& oTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
-                const UbiquityParams & iParams);
-
         /**
          * Enchainement des modèles indirects de tourelle et cinématique
          * @param oTS : [out] the intermediate computation of Turret State. Should be only used for debug or user feedback
          */
         static bool twist2Motors(const arp_math::Twist2D & iTw, const MotorState & iMS, TurretState& oTS,
                 MotorState& oMS, const UbiquityParams & iParams);
+
+        /**
+         * Enchainement des modèles indirects de tourelle et cinématique
+         * @param oTS : [out] the intermediate computation of Turret State. Should be only used for debug or user feedback
+         */
+        static bool ICRSpeed2Motors(const arp_math::ICRSpeed& iICRs, const MotorState & iMS, TurretState& oTS,
+                MotorState& oMS, const UbiquityParams & iParams);
+
+
+        /*
+         * enchaine les modeles directs
+         * convertit l'etat des moteurs en un ICRSpeed
+         */
+        static bool motors2ICRSpeed(const MotorState & iMS, TurretState& oTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
+                const UbiquityParams & iParams);
 
         /**
          * Les tourelles permettent de recouvrir l'état de possibles de plusieurs façons lorsqu'elles sont pilotés en marche

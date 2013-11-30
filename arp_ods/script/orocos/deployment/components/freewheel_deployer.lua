@@ -20,7 +20,7 @@ function MotionControlDeployer:connect()
 	
 	--Deployer:addPeer("RluMonitor", me)
 	--RluMonitor = Deployer:getPeer("RluMonitor");
-	--RluMonitor:connect(me,"inTwist","Localizator","outTwist");
+	--RluMonitor:connect(me,"inICRSpeed","Localizator","outICRSpeed");
 end
 
 

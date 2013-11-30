@@ -43,14 +43,11 @@ MotionOrder::MotionOrder() :
 
 }
 
-Twist2D MotionOrder::computeSpeed(Pose2D currentPosition,MotorState motorState,UbiquityParams params, double dt)
+ICRSpeed MotionOrder::computeSpeed(Pose2D currentPosition,UbiquityParams params, double dt)
 {
     m_smoothLocNeeded = false;
 
-    Twist2D v;
-    v.vx(0);
-    v.vy(0);
-    v.vh(0);
+    ICRSpeed v;
     return v;
 }
 
@@ -127,7 +124,7 @@ void MotionOrder::setId(int id)
     m_id = id;
 }
 
-void MotionOrder::setTwistBuffer(TwistBuffer twistBuffer )
+void MotionOrder::setICRSpeedBuffer(ICRSpeedBuffer twistBuffer )
 {
     m_twistBuffer = twistBuffer;
 }

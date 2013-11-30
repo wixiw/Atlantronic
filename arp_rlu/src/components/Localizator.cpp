@@ -181,9 +181,11 @@ void Localizator::updateHook()
     }
 
     predictionOk = false;
-    EstimatedTwist2D T_odo_table_p_odo_r_odo;
-    if( RTT::NewData == inOdo.read(T_odo_table_p_odo_r_odo) )
+
+    EstimatedICRSpeed odoSpeed;
+    if( RTT::NewData == inOdo.read(odoSpeed) )
     {
+        EstimatedTwist2D T_odo_table_p_odo_r_odo = odoSpeed.twist();
         //update du Kalman
         predictionOk = kfloc.newOdoVelocity(T_odo_table_p_odo_r_odo);
     }
@@ -227,7 +229,7 @@ void Localizator::updateHook()
     outObstacles.write(obstacles);
 
     outPose.write(estim_H_robot_table);
-    outTwist.write(estim_T_robot_table_p_robot_r_robot);
+    outICRSpeed.write(ICRSpeed(estim_T_robot_table_p_robot_r_robot));
     outLocalizationState.write(currentState);
     outLocalizationMode.write(currentMode);
     outLocalizationQuality.write(currentQuality);
@@ -251,7 +253,7 @@ bool Localizator::ooInitialize(double x, double y, double theta)
         EstimatedTwist2D estim_T_robot_table_p_robot_r_robot = kfloc.getLastEstimatedTwist2D();
 
         outPose.write(estim_H_robot_table);
-        outTwist.write(estim_T_robot_table_p_robot_r_robot);
+        outICRSpeed.write(ICRSpeed(estim_T_robot_table_p_robot_r_robot));
 
         predictionOk = false;
         updateOk = false;
@@ -316,7 +318,7 @@ void Localizator::createOrocosInterface()
     addPort("outPose",outPose)
     .doc("Last estimation of H_robot_table.\n It is an EstimatedPose2D, so it contains Pose2D, estimation date (in sec) and covariance matrix.");
 
-    addPort("outTwist",outTwist)
+    addPort("outICRSpeed",outICRSpeed)
     .doc("Last estimation of T_robot_table_p_robot_r_robot Twist of robot reference frame relative to table frame, reduced and expressed in robot reference frame.\n It is an EstimatedTwist2D, so it contains Twist, estimation date (in sec) and covariance matrix.");
 
     std::stringstream ssLocState;

@@ -18,7 +18,7 @@ function KinematicBaseDeployer:connect()
 	Deployer:addPeer("HmlMonitor", me)
 	HmlMonitor:connect(me,"inMotorState","Syncronizator","outMotorMeasures");
 	Deployer:connect(me..".inParams","UbiquityParams.outParams",cp);
-	Deployer:connect(me..".inTwistCmd","MotionControl.outTwistCmd",cp);
+	Deployer:connect(me..".inICRSpeedCmd","MotionControl.outICRSpeedCmd",cp);
 	HmlMonitor:connect("LeftDriving","inSpeedCmd",me,"outLeftDrivingVelocityCmd");
 	HmlMonitor:connect("RightDriving","inSpeedCmd",me,"outRightDrivingVelocityCmd");
 	HmlMonitor:connect("RearDriving","inSpeedCmd",me,"outRearDrivingVelocityCmd");
@@ -29,7 +29,7 @@ function KinematicBaseDeployer:connect()
 	--on s'ajoute en peer a HmlMonitor pour pouvoir faire les connections
 	RluMonitor = Deployer:getPeer("RluMonitor");
 	Deployer:addPeer("RluMonitor", me)
-	RluMonitor:connect(me,"inCurrentTwist","Localizator","outTwist");
+	RluMonitor:connect(me,"inCurrentICRSpeed","Localizator","outICRSpeed");
 end
 
 

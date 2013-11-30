@@ -173,3 +173,7 @@ ICRSpeed ICRSpeed::createIdleFromTranslation(double angle)
     return ICRSpeed(0, phi, delta);
 }
 
+double ICRSpeed::distanceTo(ICRSpeed other, double coefTrans, double coefRot) const
+{
+    return this->twist().distanceTo(other.twist(),coefTrans,coefRot);
+}

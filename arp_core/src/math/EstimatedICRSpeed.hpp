@@ -10,11 +10,12 @@
 
 #include <math/math.hpp>
 #include <math/ICRSpeed.hpp>
+#include <math/EstimatedTwist2D.hpp>
 
 namespace arp_math
 {
 
-class EstimatedICRSpeed: ICRSpeed
+class EstimatedICRSpeed: public ICRSpeed
 {
     public:
         virtual ~EstimatedICRSpeed();
@@ -27,6 +28,8 @@ class EstimatedICRSpeed: ICRSpeed
 
         void cov(const Covariance3 &) ;
         void date(const long double &);
+
+        EstimatedTwist2D twist() const ;
 
     /**
      * Transporte et réduit le EstimatedICRSpeed courant dans le nouveau repère

@@ -37,7 +37,7 @@ class RosRluItf: public arp_rlu::RluTaskContext
         RTT::InputPort<int> inLocalizationMode;
         RTT::InputPort<int> inLocalizationQuality;
         RTT::InputPort<int> inLocalizationVisibility;
-        RTT::InputPort<arp_math::EstimatedTwist2D> inTwist;
+        RTT::InputPort<arp_math::EstimatedICRSpeed> inICRSpeed;
         RTT::InputPort< std::vector<arp_math::EstimatedPose2D> > inOpponents;
         RTT::OutputPort<arp_core::Pose> outPose;
         RTT::OutputPort< arp_core::LocalizationState > outLocalizationState;
