@@ -12,4 +12,5 @@ float64 y_speed
 float64 theta_speed
 float64 openloop_duration
 bool passe
+float64 passe_speed
 float64 max_speed

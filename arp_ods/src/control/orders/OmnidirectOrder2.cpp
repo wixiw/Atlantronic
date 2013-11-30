@@ -54,6 +54,11 @@ shared_ptr<MotionOrder> OmnidirectOrder2::createOrder(const OrderGoalConstPtr &g
     end.y(goal->y_des);
     end.h(goal->theta_des);
     endMotionState.setPosition(end);
+    if(goal->passe==false)
+        endMotionState.getSpeed().ro(0.0);
+    else
+        endMotionState.getSpeed().ro(goal->passe_speed);
+
     order->setEndMotionState(endMotionState);
 
     order->setPass(goal->passe);

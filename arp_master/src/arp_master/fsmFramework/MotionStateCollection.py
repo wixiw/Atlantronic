@@ -13,20 +13,6 @@ from arp_master.util import *
 from arp_ods.msg import *
 from math import *
 
-# Use this Order State to quickly add move state in your FSM
-# give the target (x,y,theta) in (m,m,rad) of robot's CDG and match color
-# Ex : AmbiOmniDirectOrder(1.200, -0.700,pi/2)             
-class AmbiOmniDirectOrder(MotionState):
-    def __init__(self,x,y,theta, vmax=-1.0):
-        MotionState.__init__(self)
-        self.x = x
-        self.y = y
-        self.theta = theta
-        self.vmax = vmax
-        
-    def createAction(self):
-        self.pose = AmbiPoseYellow(self.x, self.y, self.theta, Data.color)
-        self.omnidirect(self.pose.x, self.pose.y, self.pose.theta, self.vmax)
 
 # Use this Order State to quickly add move state in your FSM
 # give the target (x,y,theta) in (m,m,rad) of robot's CDG and match color
@@ -43,26 +29,19 @@ class AmbiOmniDirectOrder2(MotionState):
     def createAction(self):
         self.pose = AmbiPoseYellow(self.x, self.y, self.theta, Data.color)
         self.omnidirect2(self.pose.x, self.pose.y, self.pose.theta, self.vmax)
-        
-# Use this Order State to quickly add move state in your FSM with a special ControlPoint (CP)
-# give the target (x,y,h) in (m,m,rad) of robot's CP=(CPx,CPy,CPh) given in the robot coordinates and match color
-# Ex : AmbiOmniDirectOrder(CPx=0,CPy=0,CPh=0, 1.200, -0.700,pi/2)   
-class AmbiOmniDirectOrder_cpoint(MotionState):
-    def __init__(self,CPx,CPy,CPh,x,y,h):
+
+class AmbiOmniDirectOrder2Pass(MotionState):
+    def __init__(self,x,y,theta,vpasse=-1.0, vmax=-1.0):
         MotionState.__init__(self)
         self.x = x
         self.y = y
-        self.h = h
-        self.CPx = CPx
-        self.CPy = CPy
-        self.CPh = CPh
+        self.theta = theta
+        self.vpasse=vpasse
+        self.vmax = vmax
         
     def createAction(self):
-        self.pose = AmbiPoseYellow(self.x, self.y, self.h, Data.color)
-        self.control_point = AmbiControlPointYellow(self.CPx, self.CPy, self.CPh, Data.color)
-        self.omnidirect_cpoint(self.control_point.x, self.control_point.y, self.control_point.theta,
-                               self.pose.x, self.pose.y, self.pose.theta)
-
+        self.pose = AmbiPoseYellow(self.x, self.y, self.theta, Data.color)
+        self.omnidirect2Pass(self.pose.x, self.pose.y, self.pose.theta, self.vpasse,self.vmax)
 
 # Use this state to Rewind the move before the collision that has just block the robot
 # RewindDuration is the length in seconds of the Rewind.
@@ -77,16 +56,28 @@ class Rewind(CyclicActionState):
     
 # Use this Order State to quickly add move state in your FSM (see AmbiOmniDirectOrder for details)
 # Only use this if you are forced to specify a color dependent move (else prefer AmbiOmniDirectOrder)    
-class OmniDirectOrder(MotionState):
-    def __init__(self,x,y,theta):
+class OmniDirectOrder2(MotionState):
+    def __init__(self,x,y,theta,vmax=-1.0):
         MotionState.__init__(self)
         self.x = x
         self.y = y
         self.theta = theta
+        self.vmax=vmax
         
     def createAction(self):
-        self.omnidirect(self.x,self.y,self.theta)        
+        self.omnidirect2(self.x,self.y,self.theta,self.vmax)        
 
+class OmniDirectOrder2Pass(MotionState):
+    def __init__(self,x,y,theta,vpasse,vmax=-1.0):
+        MotionState.__init__(self)
+        self.x = x
+        self.y = y
+        self.theta = theta
+        self.vpasse = vpasse
+        self.vmax = vmax
+        
+    def createAction(self):
+        self.omnidirect2Pass(self.x,self.y,self.theta,self.vpasse,self.vmax) 
 
 # Use this to call an open loop order 
 # OpenLoppOrder(0,0,0, duration=0) 
