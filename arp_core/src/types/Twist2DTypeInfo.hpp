@@ -1,8 +1,12 @@
+#ifndef TWIST2DTYPEINFO_HPP_
+#define TWIST2DTYPEINFO_HPP_
+
 #include <rtt/types/StructTypeInfo.hpp>
 #include "math/Twist2D.hpp"
 #include <ostream>
 #include <istream>
 #include <boost/lexical_cast.hpp>
+
 
 using namespace arp_math;
 using namespace RTT;
@@ -64,3 +68,4 @@ struct Twist2DTypeInfo: public RTT::types::StructTypeInfo<Twist2D,false>
     }
 };
 
+#endif

@@ -1,3 +1,6 @@
+#ifndef PARAMSTYPEINFO_HPP_
+#define PARAMSTYPEINFO_HPP_
+
 #include <rtt/types/StructTypeInfo.hpp>
 #include "models/UbiquityParams.hpp"
 #include <ostream>
@@ -61,3 +64,4 @@ struct ParamsTypeInfo: public RTT::types::StructTypeInfo<UbiquityParams,false>
     }
 };
 
+#endif

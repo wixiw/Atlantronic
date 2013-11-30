@@ -50,8 +50,11 @@ void EstimatedICRSpeed::date(const long double & _date)
 
 EstimatedTwist2D EstimatedICRSpeed::twist() const
 {
-    //TODO a implementer
-    return EstimatedTwist2D(ICRSpeed::twist());
+    Twist2D twist = ICRSpeed::twist();
+    EstimatedTwist2D estimatedTwist(twist);
+    //TODO convertir les covariances
+    estimatedTwist.date(date());
+    return estimatedTwist;
 }
 
 

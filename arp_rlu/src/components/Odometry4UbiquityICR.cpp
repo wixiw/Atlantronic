@@ -26,7 +26,6 @@ void Odometry4UbiquityICR::updateHook()
 {
     RluTaskContext::updateHook();
     ICRSpeed computedICRSpeed;
-    EstimatedICRSpeed measuredICRSpeed;
     SlippageReport report;
 
     if( RTT::NewData != inTime.readNewest(attrTime))
@@ -57,10 +56,9 @@ void Odometry4UbiquityICR::updateHook()
     //TODO slippage detection
     outSlippageDetected.write(false);
 
-
     //TODO calculer la covariance
+    EstimatedICRSpeed measuredICRSpeed(computedICRSpeed);
     //measuredICRSpeed.cov( covariance );
-
     measuredICRSpeed.date( timespec2Double(attrTime) );
 
     outICRSpeed.write(measuredICRSpeed);

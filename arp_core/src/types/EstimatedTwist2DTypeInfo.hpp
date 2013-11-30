@@ -5,6 +5,9 @@
 #include <istream>
 #include <boost/lexical_cast.hpp>
 
+#ifndef ESTIMATEDTWIST2DTYPEINFO_HPP_
+#define ESTIMATEDTWIST2DTYPEINFO_HPP_
+
 using namespace arp_math;
 using namespace RTT;
 
@@ -71,3 +74,4 @@ struct EstimatedTwist2DTypeInfo: public RTT::types::StructTypeInfo<EstimatedTwis
     }
 };
 
+#endif

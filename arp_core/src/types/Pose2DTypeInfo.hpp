@@ -1,3 +1,6 @@
+#ifndef POSE2DTYPEINFO_HPP_
+#define POSE2DTYPEINFO_HPP_
+
 #include <rtt/types/StructTypeInfo.hpp>
 #include "math/Pose2D.hpp"
 #include <ostream>
@@ -64,3 +67,4 @@ struct Pose2DTypeInfo: public RTT::types::StructTypeInfo<Pose2D,false>
     }
 };
 
+#endif

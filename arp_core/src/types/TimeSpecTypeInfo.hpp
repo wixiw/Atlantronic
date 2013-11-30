@@ -1,8 +1,12 @@
+#ifndef TIMESPECTYPEINFO_HPP_
+#define TIMESPECTYPEINFO_HPP_
+
 #include <rtt/types/StructTypeInfo.hpp>
 #include <ostream>
 #include <istream>
 #include <boost/lexical_cast.hpp>
 #include <time.h>
+
 
 using namespace arp_math;
 using namespace RTT;
@@ -41,3 +45,4 @@ struct TimeSpecTypeInfo: public RTT::types::StructTypeInfo<timespec,false>
     }
 };
 
+#endif

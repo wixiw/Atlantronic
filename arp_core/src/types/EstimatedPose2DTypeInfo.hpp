@@ -1,3 +1,6 @@
+#ifndef ESTIMATEDPOSE2DTYPEINFO_HPP_
+#define ESTIMATEDPOSE2DTYPEINFO_HPP_
+
 #include <rtt/types/StructTypeInfo.hpp>
 #include "math/EstimatedPose2D.hpp"
 #include "math/MathFactory.hpp"
@@ -73,3 +76,4 @@ struct EstimatedPose2DTypeInfo: public RTT::types::StructTypeInfo<EstimatedPose2
     }
 };
 
+#endif
