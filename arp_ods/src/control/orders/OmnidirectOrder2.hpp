@@ -93,6 +93,7 @@ class OmnidirectOrder2: public MotionOrder
         double m_lastRo;
 
         //surcharges
+        void switchInit(arp_math::Pose2D currentPosition);
         void switchRun(arp_math::Pose2D currentPosition);
 
         static const double TIMELAG=0.030;
@@ -111,6 +112,7 @@ private:
     void decideSmoothNeeded(arp_math::Pose2D & currentPosition);
     Pose2DNorm getPositionInNormalRef(Pose2D currentPosition);
     double getParkinsonLimitationFactor(double distance);
+    bool m_firstTime;
 };
 
 }}

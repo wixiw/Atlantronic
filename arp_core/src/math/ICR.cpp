@@ -24,6 +24,12 @@ ICR::ICR(double phi, double delta)
     m_delta = delta;
 }
 
+ICR::ICR(const ICR& icr)
+{
+    m_phi = icr.phi();
+    m_delta = icr.delta();
+}
+
 ICR::ICR(Vector3 cartesianVector)
 {
     //phi

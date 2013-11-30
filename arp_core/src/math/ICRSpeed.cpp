@@ -41,6 +41,12 @@ ICRSpeed::ICRSpeed(Twist2D twist)
     initFromTwist(Twist2DNorm(twist));
 }
 
+ICRSpeed::ICRSpeed(const ICRSpeed& icrSpeed)
+{
+    m_ro = icrSpeed.ro();
+    m_ICR = ICR(icrSpeed.getICR());
+}
+
 void ICRSpeed::initFromTwist(Twist2DNorm twist)
 {
     // if twist is null, then ICRspeed cannot be defined. default ICRSpeed is used
@@ -84,6 +90,14 @@ ICRSpeed ICRSpeed::getOppositeRep()
 {
     ICR antipodICR = m_ICR.getAntipodICR();
     return ICRSpeed(-m_ro, antipodICR.phi(), antipodICR.delta());
+}
+
+ICRSpeed ICRSpeed::getNormalizedRep()
+{
+    if (m_ro<0)
+        return getOppositeRep();
+    else
+        return ICRSpeed(*this);
 }
 
 double ICRSpeed::ro() const

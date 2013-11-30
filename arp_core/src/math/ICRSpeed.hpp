@@ -40,16 +40,20 @@ class ICRSpeed
          * Il permet une initialisation par défaut (à zéro) de la vitesse, avec un CIR à l'infini pour aller tout droit */
         ICRSpeed(double ro = 0.0, double phi = 0.0, double delta = 0.0);
         ICRSpeed(double ro, ICR ICR);
+        ICRSpeed(const ICRSpeed &icrSpeed);
 
         /** Constructeur secondaire.
          * Il permet d'initialiser les vitesses avec un twist. */
         ICRSpeed(Twist2DNorm twist);
         ICRSpeed(Twist2D twist);
 
+
         /** returns the direction (in 3D) of the speed) */
         Vector3 speedDirection();
         /** returns equivalent representation with opposite sign of ro and ICR at antipod*/
         ICRSpeed getOppositeRep();
+        /** normalize the representation so that ro>0 */
+        ICRSpeed getNormalizedRep();
 
         /** for a robot not moving, allow to create the ICRSpeed defined by the position "ICR" and a null speed*/
         static ICRSpeed createIdleFromICRPosition(Vector2 ICRPosition);

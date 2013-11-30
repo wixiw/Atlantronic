@@ -252,3 +252,20 @@ BOOST_AUTO_TEST_CASE( ICR_intermediate)
 
     //TODO did not manage to test the case where they are opposite, due to rounding errors, the condition "opposite" is never met
 }
+
+void testGetNormalizedRep(double ro1, double phi1, double delta1, double ro2, double phi2, double delta2)
+{
+    ICRSpeed ICR1 = ICRSpeed(ro1,phi1,delta1);
+    ICRSpeed normalizedRep=ICR1.getNormalizedRep();
+
+    BOOST_CHECK_SMALL(normalizedRep.ro() - ro2, 1e-6);
+    BOOST_CHECK_SMALL(normalizedRep.phi() - phi2, 1e-6);
+    BOOST_CHECK_SMALL(normalizedRep.delta() - delta2, 1e-6);
+}
+
+BOOST_AUTO_TEST_CASE( ICRSpeed_normalizedRep)
+{
+    testGetNormalizedRep(-1,PI/2,0,1,-PI/2,0);
+    testGetNormalizedRep(1,PI/2,0,1,PI/2,0);
+    testGetNormalizedRep(-2.3,PI/4,-PI/4,2.3,-3*PI/4,PI/4);
+}

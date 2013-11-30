@@ -33,6 +33,8 @@ class ICR
         ICR(double phi = 0.0, double delta = 0);
         /** construction from a vector expressed in cartesian coordinates */
         ICR(Vector3 cartesianVector);
+        /** copy constructor */
+        ICR(const ICR&);
 
         /** returns ICR on the other side of the sphere */
         ICR getAntipodICR();
