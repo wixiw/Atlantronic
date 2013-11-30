@@ -23,7 +23,7 @@ namespace arp_ods{ namespace orders
 
 enum OrderType
 {
-    NO_ORDER, STAY_IN_POSITION, TRANSLATE, ROTATE, FANTOM, OMNIDIRECT, OMNIDIRECT2, OPENLOOP, REPLAY
+    NO_ORDER, STAY_IN_POSITION, TRANSLATE, ROTATE, FANTOM, OMNIDIRECT2, OPENLOOP, REPLAY
 };
 
 
@@ -50,22 +50,24 @@ class MotionOrder: public ModeSelector
          */
         MotionOrder();
 
+        ~MotionOrder();
+
         /**
          * Compute the motor set points according to the current mode.
-         * @param currentPosition : current Robot position
+         * @param currentMotionState : current Robot position
          * @param dt : time since last call
          */
-        virtual ICRSpeed computeSpeed(Pose2D currentPosition,UbiquityParams params, double dt);
+        virtual ICRSpeed computeSpeed(UbiquityMotionState currentMotionState,UbiquityParams params, double dt);
 
         /**
          * Factory to create an order with default parameters from the order
          * TODO il faudrait une vraie Factory en dehors, parce que là c'est un peu Joe La Bricole
          * @param goal : action lib goal to process
-         * @param currentPose : current position of the robot
+         * @param currentMotionState : current motion state of the robot
          * @param conf : automation parameters (gains)
          * @return : a MotionOrder to execute
          */
-        static boost::shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, Pose2D currentPose, orders::config conf  );
+        static boost::shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, UbiquityMotionState currentMotionState, orders::config conf  );
 
         /**
          * Returns the type of the order

@@ -33,19 +33,17 @@ OmnidirectOrder2::OmnidirectOrder2(MotionOrder order) :
 {
 }
 
-shared_ptr<MotionOrder> OmnidirectOrder2::createOrder(const OrderGoalConstPtr &goal, Pose2D currentPose,
+shared_ptr<MotionOrder> OmnidirectOrder2::createOrder(const OrderGoalConstPtr &goal, arp_math::UbiquityMotionState currentMotionState,
         orders::config conf)
 {
     shared_ptr<OmnidirectOrder2> order(new OmnidirectOrder2());
 
-    Pose2D begin;
+    UbiquityMotionState beginMotionState;
+    UbiquityMotionState endMotionState;
     Pose2D end;
     Pose2D cpoint;
 
-    begin.x(currentPose.x());
-    begin.y(currentPose.y());
-    begin.h(currentPose.h());
-    order->setBeginPose(begin);
+    order->setBeginMotionState(currentMotionState);
 
     cpoint.x(goal->x_cpoint);
     cpoint.y(goal->y_cpoint);
@@ -55,7 +53,8 @@ shared_ptr<MotionOrder> OmnidirectOrder2::createOrder(const OrderGoalConstPtr &g
     end.x(goal->x_des);
     end.y(goal->y_des);
     end.h(goal->theta_des);
-    order->setEndPose(end);
+    endMotionState.setPosition(end);
+    order->setEndMotionState(endMotionState);
 
     order->setPass(goal->passe);
     if (goal->max_speed > 0.0 and goal->max_speed < conf.LIN_VEL_MAX)
@@ -70,22 +69,22 @@ shared_ptr<MotionOrder> OmnidirectOrder2::createOrder(const OrderGoalConstPtr &g
 
     order->setConf(conf);
 
-    Log(INFO) << order->getTypeString() << "from [" << begin.toString() << "] to [" << end.toString()
+    Log(INFO) << order->getTypeString() << "from [" << beginMotionState.getPosition().toString() << "] to [" << end.toString()
             << "] control_point=[" << cpoint.toString() << "]";
 
     return static_cast<shared_ptr<MotionOrder> >(order);
 }
 
-void OmnidirectOrder2::switchInit(arp_math::Pose2D currentPosition)
+void OmnidirectOrder2::switchInit(arp_math::UbiquityMotionState currentMotionState)
 {
     m_firstTime = true;
-    ModeSelector::switchInit(currentPosition);
+    ModeSelector::switchInit(currentMotionState);
 }
 
-void OmnidirectOrder2::switchRun(arp_math::Pose2D currentPosition)
+void OmnidirectOrder2::switchRun(arp_math::UbiquityMotionState currentMotionState)
 {
 
-    if (getPositionInNormalRef(currentPosition).getTVector().norm() < m_conf.DISTANCE_ACCURACY)
+    if (getPositionInNormalRef(currentMotionState.getPosition()).getTVector().norm() < m_conf.DISTANCE_ACCURACY)
     {
         Log(INFO) << getTypeString() << " switched MODE_RUN --> MODE_DONE " << "because in final zone ";
         m_currentMode = MODE_DONE;
@@ -268,17 +267,11 @@ void OmnidirectOrder2::decideSmoothNeeded(arp_math::Pose2D & currentPosition)
         outDEBUG8 = 0.0;
 
 }
-Twist2D OmnidirectOrder2::computeSpeed(Pose2D currentPosition, MotorState motorState, UbiquityParams params, double dt)
+ICRSpeed OmnidirectOrder2::computeSpeed(UbiquityMotionState currentMotionState, UbiquityParams params, double dt)
 {
-
+    Pose2D currentPosition = currentMotionState.getPosition();
     decideSmoothNeeded(currentPosition);
-
-    ICRSpeed curICRSpeed;
-    TurretState oTS;
-    SlippageReport oSR;
-
-    //conversion des tourelles en ICRSpeed
-    UbiquityKinematics::motors2ICRSpeed(motorState, oTS, curICRSpeed, oSR, params);
+    ICRSpeed curICRSpeed = currentMotionState.getSpeed();
 
     if (m_currentMode == MODE_ERROR)
     {
@@ -292,28 +285,13 @@ Twist2D OmnidirectOrder2::computeSpeed(Pose2D currentPosition, MotorState motorS
         Log(DEBUG) << "---curICRSpeed initialise " <<curICRSpeed.toString();
     }
 
-    //DEBUG
-    Twist2D oTw;
-    TurretState otS;
-    UbiquityKinematics::motors2Twist(motorState, oTS, oTw, oSR, params);
-
-    if (abs(oTw.vx()) > 0.001 or abs(oTw.vy()) > 0.001 or abs(oTw.vh()) > 0.001)
-    {
-        Log(DEBUG) << "calcul en passant par twist  ";
-    }
-    else
-    {
-        Log(DEBUG) << "calcul en passant par icr et ro=0  ";
-    }
-    // FIN DEBUG
-
     // curICRSpeed est dans le repere robot il faut  le mettre dans le repere target
-    curICRSpeed.phi(curICRSpeed.phi() - m_endPose.h() + currentPosition.h());
+    curICRSpeed.phi(curICRSpeed.phi() - m_endMotionState.getPosition().h() + currentPosition.h());
 
     //compute run twist travaille dans un espace 3D ou l'objectif est en (0,0,0)
     ICRSpeed corICRSpeed = computeRunTwist(getPositionInNormalRef(currentPosition), curICRSpeed, dt);
     //dans le repere robot
-    corICRSpeed.phi(corICRSpeed.phi() + m_endPose.h() - currentPosition.h());
+    corICRSpeed.phi(corICRSpeed.phi() + m_endMotionState.getPosition().h() - currentPosition.h());
 
     Twist2D corTwist = corICRSpeed.twist();
     return corTwist;
@@ -324,7 +302,7 @@ Pose2DNorm OmnidirectOrder2::getPositionInNormalRef(Pose2D currentPosition)
 {
     //Rtarget = repere objectif
     // Rtarget->Rrobot = (RO->Rtarget)⁻1 x (R0->Rrobot)
-    Pose2D result(m_endPose.inverse() * currentPosition);
+    Pose2D result(m_endMotionState.getPosition().inverse() * currentPosition);
     result.h(betweenMinusPiAndPlusPi(result.h()));
     Pose2DNorm resultNorm(result);
     return resultNorm;

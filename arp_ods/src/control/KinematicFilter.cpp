@@ -47,7 +47,7 @@ bool KinematicFilter::filterTwist(const Twist2D & desiredTwist,
     MotorState desiredMS;
     //Variable intermédiaires pour les modèle qu'on utilisera pas
     TurretState ioTS;
-    SlippageReport oSR;
+    //SlippageReport oSR;
     quality = -666;
 
     if( !params.check() )

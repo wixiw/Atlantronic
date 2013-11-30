@@ -34,12 +34,12 @@ class ReplayOrder: public MotionOrder
         /**
          * Override to define specific parameters
          */
-        static shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, arp_math::Pose2D currentPose, orders::config conf  );
+        static shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal,UbiquityMotionState currentMotionState, orders::config conf  );
 
         /**
          *
          */
-        virtual arp_math::ICRSpeed computeSpeed(Pose2D currentPosition,UbiquityParams params, double dt);
+        virtual arp_math::ICRSpeed computeSpeed(UbiquityMotionState currentMotionState,UbiquityParams params, double dt);
         /*
          * returns the error on position between actual an objective,  in table referential
          */

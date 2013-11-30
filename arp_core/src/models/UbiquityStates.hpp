@@ -13,6 +13,11 @@
 #include <iostream>
 #include <sstream>
 
+/**
+ * This file is used to generate Orocos typekit with orogen, so you need to conform to orogen limitations
+ * for instance you can't have non primitive types as for members
+ */
+
 namespace arp_model
 {
 
@@ -209,6 +214,7 @@ class UbiquityKinematicState
         }
 };
 
+//TODO a clarifier par willy - mmm mais pourquoi c'est comme ca
 typedef UbiquityKinematicState TurretState;
 typedef UbiquityKinematicState MotorState;
 

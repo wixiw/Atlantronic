@@ -13,6 +13,7 @@ using namespace orders;
 using namespace RTT;
 using namespace std;
 using namespace arp_core::log;
+using namespace arp_math;
 
 ORO_LIST_COMPONENT_TYPE( arp_ods::LittleSexControl )
 
@@ -35,8 +36,13 @@ LittleSexControl::LittleSexControl(const std::string& name):
 void LittleSexControl::getInputs()
 {
     //faut-il tester que c'est bien mis à jour ?
-    inPosition.readNewest(attrPosition);
-    inCurrentICRSpeed.readNewest(attrCurrentICRSpeed);
+    EstimatedPose2D position;
+    inPosition.readNewest(position);
+    EstimatedICRSpeed speed;
+    inCurrentICRSpeed.readNewest(speed);
+    attrMotionState.setPosition(position);
+    attrMotionState.setSpeed(speed);
+
     inParams.readNewest(attrParams);
 }
 
@@ -53,16 +59,19 @@ void LittleSexControl::updateHook()
     attrCurrentOrder = attrOrder->getTypeString();
 
     //compute current order mode
-    attrOrder->switchMode(attrPosition);
+    attrOrder->switchMode(attrMotionState);
 
     // calcule les consignes
     attrOrder->setVmax(attrVmax_asked);
-    attrComputedICRSpeedCmd = attrOrder->computeSpeed(attrPosition,attrParams,attrDt);
+
+    arp_ods::orders::Log(DEBUG) << "    attrComputedICRSpeedCmd = attrOrder->computeSpeed(attrPosition,attrParams,attrDt);";
+
+    attrComputedICRSpeedCmd = attrOrder->computeSpeed(attrMotionState,attrParams,attrDt);
 
     /*
      * DEBUG: recuperation des données de l'omnidirect
      */
-    if (attrOrder->getType()==OMNIDIRECT or attrOrder->getType()==OMNIDIRECT2)
+    if (attrOrder->getType()==OMNIDIRECT2)
     {
         outDEBUG1.write(attrOrder->outDEBUG1);
         outDEBUG2.write(attrOrder->outDEBUG2);
@@ -79,7 +88,7 @@ void LittleSexControl::updateHook()
         attrOrder->attrGain=attrGain;
     }
 
-    if (attrOrder->getType()==OMNIDIRECT or attrOrder->getType()==OMNIDIRECT2)
+    if (attrOrder->getType()==OMNIDIRECT2)
         outSmoothLocNeeded.write( attrOrder->m_smoothLocNeeded);
     else
         outSmoothLocNeeded.write( false);
@@ -114,9 +123,9 @@ void LittleSexControl::setOutputs()
 
 void LittleSexControl::storeICRSpeed()
 {
-    if( attrCurrentICRSpeed.distanceTo(ICRSpeed(0,0,0),1,0.2) >= MIN_STORED_TWIST_SPEED )
+    if( attrMotionState.getSpeed().distanceTo(ICRSpeed(0,0,0),1,0.2) >= MIN_STORED_TWIST_SPEED )
     {
-        m_ICRSpeedBuffer.addICRSpeed(attrCurrentICRSpeed,attrDt);
+        m_ICRSpeedBuffer.addICRSpeed(attrMotionState.getSpeed(),attrDt);
     }
 }
 
@@ -141,8 +150,9 @@ bool LittleSexControl::ooSetOrder(shared_ptr<MotionOrder> order)
     {*/
         // l'ordre peut etre casse par l'etage du dessus en cas de detection d'erreur, et un nouvel ordre rempile
         outOrderFinished.write(false);
-        LOG(Info) << "Received a new order " << order->getTypeString() << " to go to " << order->getEndPose().toString() << endlog();
+        LOG(Info) << "Received a new order " << order->getTypeString() << " to go to " << order->getEndMotionState().getPosition().toString() << endlog();
         attrOrder = order;
+        //TODO
         // oui je sais willy c'est dégueulasse mais éh, c'est pas à RosOsdItf de stocker des informations sur le comportement du robot. c'est a LittleSexcontrol.
         // les ordres devraient etre créés ici c'est ca le probleme
         // et pis RosOdsItf devrait etre une simple passerelle
@@ -170,11 +180,10 @@ bool LittleSexControl::ooSetVMax(double vmax)
 void LittleSexControl::createOrocosInterface()
 {
     addAttribute("attrComputedICRSpeedCmd",attrComputedICRSpeedCmd);
-    addAttribute("attrPosition",attrPosition);
+    addAttribute("attrMotionState",attrMotionState);
     addAttribute("attrOrder",attrOrder);
     addAttribute("attrVmax_asked",attrVmax_asked);
     addAttribute("attrCurrentOrder",attrCurrentOrder);
-    addAttribute("attrCurrentICRSpeed",attrCurrentICRSpeed);
     addAttribute("attrParams", attrParams);
     addAttribute("attrGain",attrGain);
 

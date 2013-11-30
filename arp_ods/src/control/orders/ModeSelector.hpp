@@ -10,6 +10,7 @@
 
 #include "OrderConfig.hpp"
 #include <math/core>
+#include <models/core>
 
 namespace arp_ods{ namespace orders
 {
@@ -39,7 +40,7 @@ class ModeSelector
          * Call this function every cycle to check if a new mode is available.
          * If a mode is available, the new mode is automatically entered
          */
-        void switchMode(arp_math::Pose2D currentPosition);
+        void switchMode(arp_math::UbiquityMotionState currentMotionState);
 
         /**
          * Switch the mode back to MODE_INIT
@@ -53,32 +54,32 @@ class ModeSelector
         void testTimeout();
 
         /**
-         * Returns the distance to the m_endPose
+         * Returns the distance to the m_endMotionState
          * @param currentPosition : current position of the robot
          */
-        virtual double getRemainingDistance(arp_math::Pose2D currentPosition);
+        virtual double getRemainingDistance(arp_math::UbiquityMotionState currentMotionState);
 
         /**
-         * Returns the angle difference (normalized) between m_endPose and currentPosition
+         * Returns the angle difference (normalized) between m_endMotionState and currentPosition
          * @param currentPosition : current position of the robot
          */
-        virtual double getRemainingAngle(arp_math::Pose2D currentPosition);
+        virtual double getRemainingAngle(arp_math::UbiquityMotionState currentMotionState);
 
         /**
-         * Returns the distance from the m_beginPose
+         * Returns the distance from the m_beginMotionState
          * @param currentPosition : current position of the robot
          */
-        virtual double getCoveredDistance(arp_math::Pose2D currentPosition);
+        virtual double getCoveredDistance(arp_math::UbiquityMotionState currentMotionState);
 
         /**
-         * Returns the Begin pose m_beginPose
+         * Returns the Begin pose m_beginMotionState
          */
-        arp_math::Pose2D getBeginPose() const;
+        arp_math::UbiquityMotionState getBeginMotionState() const;
 
         /**
-         * Returns the End pose m_endPose
+         * Returns the End pose m_endMotionState
          */
-        arp_math::Pose2D getEndPose() const;
+        arp_math::UbiquityMotionState getEndMotionState() const;
 
         /*
          * returns the control point
@@ -101,17 +102,17 @@ class ModeSelector
          */
         void setPass(bool pass);
 
-        void setBeginPose(arp_math::Pose2D beginPose);
-        void setEndPose(arp_math::Pose2D endPose);
+        void setBeginMotionState(arp_math::UbiquityMotionState beginMotionState);
+        void setEndMotionState(arp_math::UbiquityMotionState endMotionState);
         void setCpoint(arp_math::Pose2D cpoint);
 
 
     protected:
-        /** Pose of the expected begin of the move */
-        arp_math::Pose2D m_beginPose;
+        /** MotionState of the expected begin of the move */
+        arp_math::UbiquityMotionState m_beginMotionState;
 
-        /** Pose of the expected end of the move */
-        arp_math::Pose2D m_endPose;
+        /** MotionState of the expected end of the move */
+        arp_math::UbiquityMotionState m_endMotionState;
 
         /** Control point on the robot */
         arp_math::Pose2D m_cpoint;
@@ -140,32 +141,32 @@ class ModeSelector
         /**
          * This function is called by switchMode when m_currentMode==MODE_INIT
          */
-        virtual void switchInit(arp_math::Pose2D currentPosition);
+        virtual void switchInit(arp_math::UbiquityMotionState currentMotionState);
 
         /**
          * This function is called by switchMode when m_currentMode==MODE_RUN
          */
-        virtual void switchRun(arp_math::Pose2D currentPosition);
+        virtual void switchRun(arp_math::UbiquityMotionState currentMotionState);
 
         /**
          * This function is called by switchMode when m_currentMode==MODE_APPROACH
          */
-        virtual void switchApproach(arp_math::Pose2D currentPosition);
+        virtual void switchApproach(arp_math::UbiquityMotionState currentMotionState);
 
         /**
          * This function is called by switchMode when m_currentMode==MODE_DONE
          */
-        virtual void switchDone(arp_math::Pose2D currentPosition);
+        virtual void switchDone(arp_math::UbiquityMotionState currentMotionState);
 
         /**
          * This function is called by switchMode when m_currentMode==MODE_ERROR
          */
-        virtual void switchError(arp_math::Pose2D currentPosition);
+        virtual void switchError(arp_math::UbiquityMotionState currentMotionState);
 
         /**
          * This function is called by switchMode when m_currentMode==MODE_PASS
          */
-        virtual void switchPass(arp_math::Pose2D currentPosition);
+        virtual void switchPass(arp_math::UbiquityMotionState currentMotionState);
 
 };
 

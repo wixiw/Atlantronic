@@ -24,8 +24,8 @@ MotionOrder::MotionOrder(const MotionOrder& order):
 {
     m_type = order.m_type;
     m_pass = order.m_pass;
-    m_beginPose = order.m_beginPose;
-    m_endPose = order.m_endPose;
+    m_beginMotionState = order.m_beginMotionState;
+    m_endMotionState = order.m_endMotionState;
     m_conf=order.m_conf;
     m_openloop_twist=order.m_openloop_twist;
     m_openloop_duration=order.m_openloop_duration;
@@ -43,30 +43,33 @@ MotionOrder::MotionOrder() :
 
 }
 
-ICRSpeed MotionOrder::computeSpeed(Pose2D currentPosition,UbiquityParams params, double dt)
+MotionOrder::~MotionOrder()
+{
+
+}
+
+ICRSpeed MotionOrder::computeSpeed(UbiquityMotionState currentMotionState,UbiquityParams params, double dt)
 {
     m_smoothLocNeeded = false;
 
-    ICRSpeed v;
-    return v;
+    ICRSpeed defaultNullSpeedCmd(0,0,0);
+    return defaultNullSpeedCmd;
 }
 
-shared_ptr<MotionOrder> MotionOrder::createOrder( const OrderGoalConstPtr &goal, Pose2D currentPose, orders::config conf )
+shared_ptr<MotionOrder> MotionOrder::createOrder( const OrderGoalConstPtr &goal, UbiquityMotionState currentMotionState, orders::config conf )
 {
     shared_ptr<MotionOrder> order(new MotionOrder());
 
-    Pose2D begin;
+    order->setBeginMotionState(currentMotionState);
+
     Pose2D end;
-
-    begin.x(currentPose.x());
-    begin.y(currentPose.y());
-    begin.h(currentPose.h());
-    order->setBeginPose(begin);
-
+    UbiquityMotionState endMotionState;
     end.x(goal->x_des);
     end.y(goal->y_des);
     end.h(goal->theta_des);
-    order->setEndPose(end);
+    endMotionState.setPosition(end);
+    //TODO mapper la vitesse
+    order->setEndMotionState(endMotionState);
 
     order->setPass(goal->passe);
 
@@ -98,9 +101,6 @@ std::string MotionOrder::getTypeString() const
             break;
         case FANTOM:
             return "FANTOM";
-            break;
-        case OMNIDIRECT:
-            return "OMNIDIRECT";
             break;
         case OMNIDIRECT2:
             return "OMNIDIRECT2";

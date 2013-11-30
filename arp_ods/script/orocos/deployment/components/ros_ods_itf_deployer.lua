@@ -18,6 +18,7 @@ function RosOdsItfDeployer:connect()
 	RluMonitor = Deployer:getPeer("RluMonitor");
 	Deployer:addPeer("RluMonitor", me);
 	RluMonitor:connect(me,"inPose","Localizator","outPose");
+	RluMonitor:connect(me,"inSpeed","Localizator","outICRSpeed");
 end
 
 

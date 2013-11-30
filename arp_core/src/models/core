@@ -1,3 +1,4 @@
+#include <models/UbiquityMotionState.hpp>
 #include <models/UbiquityStates.hpp>
 #include <models/UbiquityParams.hpp>
 #include <models/UbiquityKinematics.hpp>

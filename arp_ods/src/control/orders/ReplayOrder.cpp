@@ -26,7 +26,7 @@ ReplayOrder::ReplayOrder(MotionOrder order) :
 }
 
 
-shared_ptr<MotionOrder> ReplayOrder::createOrder( const OrderGoalConstPtr &goal, Pose2D currentPose, orders::config conf  )
+shared_ptr<MotionOrder> ReplayOrder::createOrder( const OrderGoalConstPtr &goal,UbiquityMotionState currentMotionState, orders::config conf  )
 {
     shared_ptr<ReplayOrder> order(new ReplayOrder());
 
@@ -55,7 +55,7 @@ void ReplayOrder::switchRun(arp_math::Pose2D currentPosition)
 
 
 
-ICRSpeed ReplayOrder::computeSpeed(Pose2D currentPosition,UbiquityParams params, double dt)
+ICRSpeed ReplayOrder::computeSpeed(UbiquityMotionState currentMotionState,UbiquityParams params, double dt)
 {
     m_smoothLocNeeded = false;
 

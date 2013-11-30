@@ -47,8 +47,8 @@ std::ostream& operator<<(std::ostream& os, const arp_ods::orders::mode& mode)
 
 ModeSelector::ModeSelector()
 {
-    m_beginPose = arp_math::Pose2D();
-    m_endPose = arp_math::Pose2D();
+    m_beginMotionState = UbiquityMotionState();
+    m_endMotionState = UbiquityMotionState();
     m_pass = false;
     m_currentMode = MODE_INIT;
     m_passTime = 0;
@@ -82,7 +82,7 @@ void ModeSelector::setConf(config conf)
     m_conf=conf;
 }
 
-void ModeSelector::switchInit(arp_math::Pose2D currentPosition)
+void ModeSelector::switchInit(UbiquityMotionState currentMotionState)
 {
     // as init is left as soon as it is entered, I allow to put the last init time into m_initTime
     m_initTime = getTime();
@@ -90,12 +90,12 @@ void ModeSelector::switchInit(arp_math::Pose2D currentPosition)
     m_currentMode = MODE_RUN;
     m_runTime = getTime();
 
-    Log(INFO) << "[" << m_endPose.toString()<< "] entered MODE_INIT at time " << m_initTime;
+    Log(INFO) << "[" << m_endMotionState.toString()<< "] entered MODE_INIT at time " << m_initTime;
 }
 
-void ModeSelector::switchRun(arp_math::Pose2D currentPosition)
+void ModeSelector::switchRun(UbiquityMotionState currentMotionState)
 {
-    if (getRemainingDistance(currentPosition) <= m_conf.RADIUS_APPROACH_ZONE)
+    if (getRemainingDistance(currentMotionState) <= m_conf.RADIUS_APPROACH_ZONE)
     {
         if (getPass())
         {
@@ -115,17 +115,17 @@ void ModeSelector::switchRun(arp_math::Pose2D currentPosition)
     testTimeout();
 }
 
-void ModeSelector::switchApproach(arp_math::Pose2D currentPosition)
+void ModeSelector::switchApproach(UbiquityMotionState currentMotionState)
 {
-    double distance_error = getRemainingDistance(currentPosition);
-    double angle_error = getRemainingAngle(currentPosition);
+    double distance_error = getRemainingDistance(currentMotionState);
+    double angle_error = getRemainingAngle(currentMotionState);
 
     if (distance_error < m_conf.DISTANCE_ACCURACY && fabs(angle_error) < m_conf.ANGLE_ACCURACY)
     {
         Log(INFO) << "switched MODE_APPROACH --> MODE_DONE";
         char string [250];
-        sprintf(string,"(%.3fm,%.3fm,%.1fdeg) with e_d=%.1fmm e_cap=%.1fdeg", currentPosition.x(), currentPosition.y(),
-                        rad2deg(currentPosition.h()), distance_error * 1000, rad2deg(angle_error));
+        sprintf(string,"(%.3fm,%.3fm,%.1fdeg) with e_d=%.1fmm e_cap=%.1fdeg", currentMotionState.getPosition().x(), currentMotionState.getPosition().y(),
+                        rad2deg(currentMotionState.getPosition().h()), distance_error * 1000, rad2deg(angle_error));
         Log(INFO) << string;
         m_currentMode = MODE_DONE;
         return;
@@ -134,17 +134,17 @@ void ModeSelector::switchApproach(arp_math::Pose2D currentPosition)
 
 }
 
-void ModeSelector::switchDone(arp_math::Pose2D currentPosition)
+void ModeSelector::switchDone(UbiquityMotionState currentMotionState)
 {
 
 }
 
-void ModeSelector::switchError(arp_math::Pose2D currentPosition)
+void ModeSelector::switchError(UbiquityMotionState currentMotionState)
 {
 
 }
 
-void ModeSelector::switchPass(arp_math::Pose2D currentPosition)
+void ModeSelector::switchPass(UbiquityMotionState currentMotionState)
 {
     double t = getTime();
     double dt = t - m_passTime;
@@ -156,60 +156,60 @@ void ModeSelector::switchPass(arp_math::Pose2D currentPosition)
     }
 }
 
-void ModeSelector::switchMode(Pose2D currentPosition)
+void ModeSelector::switchMode(UbiquityMotionState currentMotionState)
 {
     switch (m_currentMode)
     {
         case MODE_INIT:
-            switchInit(currentPosition);
+            switchInit(currentMotionState);
             break;
         case MODE_RUN:
-            switchRun(currentPosition);
+            switchRun(currentMotionState);
             break;
         case MODE_APPROACH:
-            switchApproach(currentPosition);
+            switchApproach(currentMotionState);
             break;
         case MODE_DONE:
-            switchDone(currentPosition);
+            switchDone(currentMotionState);
             break;
         case MODE_ERROR:
-            switchError(currentPosition);
+            switchError(currentMotionState);
             break;
         case MODE_PASS:
-            switchPass(currentPosition);
+            switchPass(currentMotionState);
             break;
         default:
             break;
     }
 }
 
-double ModeSelector::getRemainingDistance(arp_math::Pose2D currentPosition)
+double ModeSelector::getRemainingDistance(UbiquityMotionState currentMotionState)
 {
-    return currentPosition.distanceTo(m_endPose);
+    return currentMotionState.getPosition().distanceTo(m_endMotionState.getPosition());
 }
 
-double ModeSelector::getRemainingAngle(arp_math::Pose2D currentPosition)
+double ModeSelector::getRemainingAngle(UbiquityMotionState currentMotionState)
 {
-    double e_theta = currentPosition.angleTo(m_endPose);
+    double e_theta = currentMotionState.getPosition().angleTo(m_endMotionState.getPosition());
     return e_theta;
 }
 
-double ModeSelector::getCoveredDistance(arp_math::Pose2D currentPosition)
+double ModeSelector::getCoveredDistance(UbiquityMotionState currentMotionState)
 {
-    return currentPosition.distanceTo(m_beginPose);
+    return currentMotionState.getPosition().distanceTo(m_beginMotionState.getPosition());
 }
 
-arp_math::Pose2D ModeSelector::getBeginPose() const
+UbiquityMotionState ModeSelector::getBeginMotionState() const
 {
-    return m_beginPose;
+    return m_beginMotionState;
 }
 
-arp_math::Pose2D ModeSelector::getEndPose() const
+UbiquityMotionState ModeSelector::getEndMotionState() const
 {
-    return m_endPose;
+    return m_endMotionState;
 }
 
-arp_math::Pose2D ModeSelector::getCpoint() const
+Pose2D ModeSelector::getCpoint() const
 {
     return m_cpoint;
 }
@@ -229,16 +229,16 @@ void ModeSelector::setPass(bool pass)
     m_pass = pass;
 }
 
-void ModeSelector::setBeginPose(Pose2D beginPose)
+void ModeSelector::setBeginMotionState(UbiquityMotionState beginMotionState)
 {
-    beginPose.h(betweenMinusPiAndPlusPi(beginPose.h()));
-    this->m_beginPose = beginPose;
+    beginMotionState.getPosition().h(betweenMinusPiAndPlusPi(beginMotionState.getPosition().h()));
+    this->m_beginMotionState = beginMotionState;
 }
 
-void ModeSelector::setEndPose(Pose2D endPose)
+void ModeSelector::setEndMotionState(UbiquityMotionState endMotionState)
 {
-    endPose.h(betweenMinusPiAndPlusPi(endPose.h()));
-    this->m_endPose = endPose;
+    endMotionState.getPosition().h(betweenMinusPiAndPlusPi(endMotionState.getPosition().h()));
+    this->m_endMotionState = endMotionState;
 }
 
 

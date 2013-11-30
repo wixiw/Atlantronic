@@ -29,6 +29,7 @@ class RosOdsItf: public OdsTaskContext
 
     protected:
         RTT::InputPort<arp_math::EstimatedPose2D> inPose;
+        RTT::InputPort<arp_math::EstimatedICRSpeed> inSpeed;
         RTT::InputPort<bool> inCurrentOrderIsFinished;
         RTT::InputPort<bool> inCurrentOrderIsInError;
 

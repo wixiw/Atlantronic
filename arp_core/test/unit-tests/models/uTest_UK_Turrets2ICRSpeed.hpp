@@ -57,8 +57,6 @@ void check_noMotion(double vx, double vy, double vh)
     ICRSpeed twixDesire_inv;
     ICRSpeed twixObtenu;
 
-    bool res;
-
     inTwist.vx(vx);
     inTwist.vy(vy);
     inTwist.vh(vh);

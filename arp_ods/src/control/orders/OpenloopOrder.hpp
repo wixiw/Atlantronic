@@ -34,12 +34,12 @@ class OpenloopOrder: public MotionOrder
         /**
          * Override to define specific parameters
          */
-        static shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, arp_math::Pose2D currentPose, orders::config conf  );
+        static shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, UbiquityMotionState currentMotionState, orders::config conf  );
 
         /**
          *
          */
-        virtual arp_math::Twist2D computeSpeed(Pose2D currentPosition,MotorState motorState,UbiquityParams params, double dt);
+        virtual ICRSpeed computeSpeed(UbiquityMotionState currentMotionState,UbiquityParams params, double dt);
 
         /*
          * returns the error on position between actual an objective,  in table referential
@@ -54,7 +54,7 @@ class OpenloopOrder: public MotionOrder
         arp_math::Twist2D m_v_correction_old;
 
         //surcharger pour supprimer le mode approche en mode normal. En mode PASS la distance approche est utilisée
-        void switchRun(arp_math::Pose2D currentPosition);
+        void switchRun(UbiquityMotionState currentMotionState);
 
 
         static const double MAX_OPENLOOP_TIME=5.0;
@@ -62,4 +62,4 @@ class OpenloopOrder: public MotionOrder
 
 }}
 
-#endif /* OMNIDIRECTORDER_HPP_ */
+#endif /* OPENLOOPORDER_HPP_ */

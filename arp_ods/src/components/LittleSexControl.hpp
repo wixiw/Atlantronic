@@ -94,13 +94,11 @@ class LittleSexControl: public OdsTaskContext
         arp_math::ICRSpeed attrComputedICRSpeedCmd;
 
         /**
-         * Buffer for current robot position
+         * Buffer for motion state
          */
-        arp_math::EstimatedPose2D attrPosition;
-        /*
-         * buffer for current twist
-         */
-        arp_math::EstimatedICRSpeed attrCurrentICRSpeed;
+        arp_math::UbiquityMotionState attrMotionState;
+
+
         /*
          * platform parameters
          */

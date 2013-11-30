@@ -27,7 +27,7 @@ OpenloopOrder::OpenloopOrder(MotionOrder order) :
 }
 
 
-shared_ptr<MotionOrder> OpenloopOrder::createOrder( const OrderGoalConstPtr &goal, Pose2D currentPose, orders::config conf  )
+shared_ptr<MotionOrder> OpenloopOrder::createOrder( const OrderGoalConstPtr &goal, UbiquityMotionState currentMotionState, orders::config conf  )
 {
     shared_ptr<OpenloopOrder> order(new OpenloopOrder());
 
@@ -52,7 +52,7 @@ shared_ptr<MotionOrder> OpenloopOrder::createOrder( const OrderGoalConstPtr &goa
     return static_cast<shared_ptr<MotionOrder>  >(order);
 }
 
-void OpenloopOrder::switchRun(arp_math::Pose2D currentPosition)
+void OpenloopOrder::switchRun(UbiquityMotionState currentMotionState)
 {
 
     // test for DONE
@@ -74,7 +74,7 @@ void OpenloopOrder::switchRun(arp_math::Pose2D currentPosition)
 
 
 
-Twist2D OpenloopOrder::computeSpeed(Pose2D currentPosition,MotorState motorState,UbiquityParams params, double dt)
+ICRSpeed OpenloopOrder::computeSpeed(UbiquityMotionState currentMotionState,UbiquityParams params, double dt)
 {
     m_smoothLocNeeded = false;
 
@@ -139,7 +139,7 @@ Twist2D OpenloopOrder::computeSpeed(Pose2D currentPosition,MotorState motorState
 
     m_v_correction_old=v_correction_saturated;
 
-    return v_correction_saturated;
+    return ICRSpeed(v_correction_saturated);
 
 
 }

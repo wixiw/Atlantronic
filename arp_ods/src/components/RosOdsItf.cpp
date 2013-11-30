@@ -65,6 +65,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
     ros::Rate r(20);
     OrderResult result;
     EstimatedPose2D pose;
+    EstimatedICRSpeed speed;
     bool tmp;
     bool finished;
 
@@ -82,35 +83,27 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
     //TODO a remplacer par une factory plus efficace
     char string[250];
 
-    if (goal->move_type == "OMNIDIRECT")
-    {
-        inPose.readNewest(pose);
-        m_order = OmnidirectOrder::createOrder(goal, pose, propOrderConfig);
-        sprintf( string, "new Omnidirect goal (%0.3f,%0.3f,%0.3f) pass %d", goal->x_des, goal->y_des,
-                goal->theta_des, goal->passe);
-        LOG(Info) << string << endlog();
-    }
+    inPose.readNewest(pose);
+    inSpeed.readNewest(speed);
+    UbiquityMotionState currentMotionState(pose,speed);
 
-    else if (goal->move_type == "OMNIDIRECT2")
+    if (goal->move_type == "OMNIDIRECT2")
     {
-        inPose.readNewest(pose);
-        m_order = OmnidirectOrder2::createOrder(goal, pose, propOrderConfig);
+        m_order = OmnidirectOrder2::createOrder(goal, currentMotionState, propOrderConfig);
         sprintf( string, "new Omnidirect2 goal (%0.3f,%0.3f,%0.3f) pass %d", goal->x_des, goal->y_des,
                 goal->theta_des, goal->passe);
         LOG(Info) << string << endlog();
     }
     else if (goal->move_type == "OPENLOOP")
     {
-        inPose.readNewest(pose);
-        m_order = OpenloopOrder::createOrder(goal, pose, propOrderConfig);
+        m_order = OpenloopOrder::createOrder(goal, currentMotionState, propOrderConfig);
         sprintf( string, "new Openloop goal Twist:(%0.3f,%0.3f,%0.3f) time : %0.3f ", goal->x_speed, goal->y_speed,
                 goal->theta_speed, goal->openloop_duration);
         LOG(Info) << string << endlog();
     }
     else if (goal->move_type == "REPLAY")
     {
-        inPose.readNewest(pose);
-        m_order = ReplayOrder::createOrder(goal, pose, propOrderConfig);
+        m_order = ReplayOrder::createOrder(goal, currentMotionState, propOrderConfig);
         sprintf( string, "new Replay goal Twist:(%0.3f,%0.3f,%0.3f) time : %0.3f ", goal->x_speed, goal->y_speed,
                 goal->theta_speed, goal->openloop_duration);
         LOG(Info) << string << endlog();
@@ -238,6 +231,7 @@ void RosOdsItf::createOrocosInterface()
     addProperty("propOrderConfig",propOrderConfig);
 
     addPort("inPose",inPose);
+    addPort("inSpeed",inSpeed);
     addPort("inCurrentOrderIsFinished",inCurrentOrderIsFinished);
     addPort("inCurrentOrderIsInError",inCurrentOrderIsInError);
     addPort("inRobotBlocked",inRobotBlocked);

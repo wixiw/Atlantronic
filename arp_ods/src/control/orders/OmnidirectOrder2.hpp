@@ -14,7 +14,7 @@
 #include "math/math.hpp"
 #include <boost/shared_ptr.hpp>
 #include <math/core>
-
+#include <models/core>
 
 namespace arp_ods{ namespace orders
 {
@@ -30,17 +30,20 @@ class OmnidirectOrder2: public MotionOrder
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
         OmnidirectOrder2();
+        ~OmnidirectOrder2(){};
         OmnidirectOrder2(MotionOrder);
 
         /**
          * Override to define specific parameters
          */
-        static boost::shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, arp_math::Pose2D currentPose, orders::config conf  );
+        static boost::shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, arp_math::UbiquityMotionState currentMotionState, orders::config conf  );
 
         /**
          *
          */
-        virtual arp_math::Twist2D computeSpeed(Pose2D currentPosition,MotorState motorState,UbiquityParams params, double dt);
+        //virtual arp_math::Twist2D computeSpeed(Pose2D currentPosition,MotorState motorState,UbiquityParams params, double dt);
+        virtual ICRSpeed computeSpeed(arp_math::UbiquityMotionState currentMotionState, UbiquityParams params, double dt);
+
 
         /*
          * returns the error on position between actual an objective,  in table referential
@@ -93,8 +96,8 @@ class OmnidirectOrder2: public MotionOrder
         double m_lastRo;
 
         //surcharges
-        void switchInit(arp_math::Pose2D currentPosition);
-        void switchRun(arp_math::Pose2D currentPosition);
+        void switchInit(arp_math::UbiquityMotionState currentMotionState);
+        void switchRun(arp_math::UbiquityMotionState currentMotionState);
 
         static const double TIMELAG=0.030;
         static const double DIST_SMOOTH=0.100;
