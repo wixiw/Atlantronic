@@ -64,8 +64,6 @@ void LittleSexControl::updateHook()
     // calcule les consignes
     attrOrder->setVmax(attrVmax_asked);
 
-    arp_ods::orders::Log(DEBUG) << "    attrComputedICRSpeedCmd = attrOrder->computeSpeed(attrPosition,attrParams,attrDt);";
-
     attrComputedICRSpeedCmd = attrOrder->computeSpeed(attrMotionState,attrParams,attrDt);
 
     /*

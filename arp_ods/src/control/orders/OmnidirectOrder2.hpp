@@ -62,7 +62,22 @@ class OmnidirectOrder2: public MotionOrder
          */
         ICRSpeed computeRunTwist(arp_math::Pose2DNorm currentPosition,ICRSpeed curICRSpeed,double dt);
         double profileRo(double distance,ICRSpeed curICRSpeed);
-        double profileRoJerking(double distance, ICRSpeed curICRSpeed);
+        double profileRoJerking(double distance, ICRSpeed curICRSpeed, double roPass);
+
+        /*  this little function creates the "cheat" on distance given to profile, to compensate for the delay in the loop
+         *
+         *                return
+         *                  ^
+         *                  |     /
+         *                  |    /
+         *        -----__________--------> realDistance
+         *            /     |<--> distdelay
+         *           /      |
+         *
+         *
+         */
+        double distanceModifier(double realDistance, double distanceDelay);
+
 
         /*
          * twist of precedent turn
@@ -115,7 +130,6 @@ private:
     void decideSmoothNeeded(arp_math::Pose2D & currentPosition);
     Pose2DNorm getPositionInNormalRef(Pose2D currentPosition);
     double getParkinsonLimitationFactor(double distance);
-    bool m_firstTime;
 };
 
 }}

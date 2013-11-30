@@ -40,6 +40,7 @@
 									<listOptionValue builtIn="false" value="/opt/ros_addons/orocos_toolchain/install/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros_addons/laser_drivers/hokuyo_node/include"/>
 									<listOptionValue builtIn="false" value="/usr/lib/xenomai"/>
+									<listOptionValue builtIn="false" value="/usr/include/eigen3/"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1393136034" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -57,6 +58,7 @@
 									<listOptionValue builtIn="false" value="/opt/ros_addons/orocos_toolchain/install/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros_addons/laser_drivers/hokuyo_node/include"/>
 									<listOptionValue builtIn="false" value="/usr/lib/xenomai"/>
+									<listOptionValue builtIn="false" value="/usr/include/eigen3/"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.399882191" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -81,6 +83,7 @@
 									<listOptionValue builtIn="false" value="/opt/ros_addons/orocos_toolchain/install/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros_addons/laser_drivers/hokuyo_node/include"/>
 									<listOptionValue builtIn="false" value="/usr/lib/xenomai"/>
+									<listOptionValue builtIn="false" value="/usr/include/eigen3/"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.2146203453" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>

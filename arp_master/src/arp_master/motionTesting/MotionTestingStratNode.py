@@ -49,8 +49,8 @@ class MainStateMachine(smach.StateMachine):
             
             smach.StateMachine.add('SetInitialPosition',
                       SetInitialPosition(0.750, 0, 0),
-                      #transitions={'succeeded':'M1', 'timeout':'Debloque'})
-                      transitions={'succeeded':'AmbiOmniDirectOrder2', 'timeout':'Debloque'})
+                      transitions={'succeeded':'M1', 'timeout':'end'})
+                      #transitions={'succeeded':'AmbiOmniDirectOrder2', 'timeout':'end'})
             
             #les ordres a tester
 
@@ -62,13 +62,13 @@ class MainStateMachine(smach.StateMachine):
                                            y = 0, 
                                            theta = 0, 
                                            vmax = 1.0),
-                      transitions={'succeeded':'OmniDirectOrder2', 'timeout':'Debloque'})
+                      transitions={'succeeded':'OmniDirectOrder2', 'timeout':'end'})
             smach.StateMachine.add('OmniDirectOrder2',
                        OmniDirectOrder2(x = 0.950, 
                                            y = 0.3, 
                                            theta = 0, 
                                            vmax = 1.0),
-                      transitions={'succeeded':'AmbiOmniDirectOrder2Pass', 'timeout':'Debloque'}) 
+                      transitions={'succeeded':'AmbiOmniDirectOrder2Pass', 'timeout':'end'}) 
     
             smach.StateMachine.add('AmbiOmniDirectOrder2Pass',
                        AmbiOmniDirectOrder2Pass(x = 0.7, 
@@ -76,7 +76,7 @@ class MainStateMachine(smach.StateMachine):
                                            theta = 0, 
                                            vpasse=0.5,
                                            vmax = 1.0),
-                      transitions={'succeeded':'OmniDirectOrder2Pass', 'timeout':'Debloque'})         
+                      transitions={'succeeded':'OmniDirectOrder2Pass', 'timeout':'end'})         
 
             smach.StateMachine.add('OmniDirectOrder2Pass',
                        OmniDirectOrder2Pass(x = 0.7, 
@@ -84,44 +84,44 @@ class MainStateMachine(smach.StateMachine):
                                            theta = 0, 
                                            vpasse=0.5,
                                            vmax = 1.0),
-                      transitions={'succeeded':'AmbiOpenLoopOrder', 'timeout':'Debloque'})  
+                      transitions={'succeeded':'AmbiOpenLoopOrder', 'timeout':'end'})  
 
             smach.StateMachine.add('AmbiOpenLoopOrder',
                        AmbiOpenLoopOrder(vx = 0.3, 
                                            vy = 0.3, 
                                            vh = 0.3, 
                                            duration=1.0),
-                      transitions={'succeeded':'OpenLoopOrder', 'timeout':'Debloque'})  
+                      transitions={'succeeded':'OpenLoopOrder', 'timeout':'end'})  
 
             smach.StateMachine.add('OpenLoopOrder',
                        OpenLoopOrder(vx = 0.3, 
                                            vy = 0.3, 
                                            vh = 0.3, 
                                            duration=1.0),
-                      transitions={'succeeded':'ForwardOrder', 'timeout':'Debloque'}) 
+                      transitions={'succeeded':'ForwardOrder', 'timeout':'end'}) 
          
             smach.StateMachine.add('ForwardOrder',
                        ForwardOrder(dist = 0.15),
-                      transitions={'succeeded':'BackwardOrder', 'timeout':'Debloque'}) 
+                      transitions={'succeeded':'BackwardOrder', 'timeout':'end'}) 
             smach.StateMachine.add('BackwardOrder',
                        BackwardOrder(dist = 0.15),
-                      transitions={'succeeded':'LeftwardOrder', 'timeout':'Debloque'}) 
+                      transitions={'succeeded':'LeftwardOrder', 'timeout':'end'}) 
             smach.StateMachine.add('LeftwardOrder',
                        LeftwardOrder(dist = 0.15),
-                      transitions={'succeeded':'RightwardOrder', 'timeout':'Debloque'}) 
+                      transitions={'succeeded':'RightwardOrder', 'timeout':'end'}) 
             smach.StateMachine.add('RightwardOrder',
                        RightwardOrder(dist = 0.15),
-                      transitions={'succeeded':'AmbiTurnOrder', 'timeout':'Debloque'}) 
+                      transitions={'succeeded':'AmbiTurnOrder', 'timeout':'end'}) 
             
             smach.StateMachine.add('AmbiTurnOrder',
                        AmbiTurnOrder(h = pi/2),
-                      transitions={'succeeded':'TurnOrder', 'timeout':'Debloque'}) 
+                      transitions={'succeeded':'TurnOrder', 'timeout':'end'}) 
             smach.StateMachine.add('TurnOrder',
                        TurnOrder(h = pi/2),
-                      transitions={'succeeded':'Rewind', 'timeout':'Debloque'})      
+                      transitions={'succeeded':'Rewind', 'timeout':'end'})      
             smach.StateMachine.add('Rewind',
                        Rewind(rewindDuration = 2.0),
-                      transitions={'succeeded':'Move', 'timeout':'Debloque'})   
+                      transitions={'succeeded':'Move', 'timeout':'end'})   
             
             # SPECIFIC TESTS
             
@@ -130,7 +130,7 @@ class MainStateMachine(smach.StateMachine):
                                            y = 0, 
                                            theta = 0, 
                                            vmax = 1.0),
-                      transitions={'succeeded':'waitM2', 'timeout':'Debloque'})
+                      transitions={'succeeded':'waitM2', 'timeout':'end'})
              
             smach.StateMachine.add('waitM2',
                       WaiterState(1),
@@ -142,7 +142,7 @@ class MainStateMachine(smach.StateMachine):
                                            y = 0, 
                                            theta = pi/2, 
                                            vmax = 1.0),
-                      transitions={'succeeded':'waitMove', 'timeout':'Debloque'})            
+                      transitions={'succeeded':'waitMove', 'timeout':'end'})            
             
             smach.StateMachine.add('waitMove',
                       WaiterState(1),
@@ -151,14 +151,10 @@ class MainStateMachine(smach.StateMachine):
             # TEST OF ALL RANDOM OMNIDIRECT ORDERS ##########################
                         
             smach.StateMachine.add('Move', RandomMove(),
-                                   transitions={'succeeded':'Move', 'timeout':'Debloque'}) 
+                                   transitions={'succeeded':'Move', 'timeout':'end'}) 
 
-            
-            smach.StateMachine.add('Debloque', Rewind(2.0),
-                                   transitions={'succeeded':'end', 'timeout':'end'})  
                         
-            smach.StateMachine.add('Wait', WaiterState(2.0),
-                                   transitions={'timeout':'end'})           
+       
 
 
 class RandomMove(MotionState):
