@@ -5,7 +5,7 @@ OdometryDeployer = ComposantDeployer:new()
 local me = "Odometry"
 
 function OdometryDeployer:load()
-	assert( Deployer:loadComponent(me, "arp_rlu::Odometry4Ubiquity") )
+	assert( Deployer:loadComponent(me, "arp_rlu::Odometry4UbiquityICR") )
 	assert( Deployer:setMasterSlaveActivity("MotionScheduler", me) )
 	return true
 end

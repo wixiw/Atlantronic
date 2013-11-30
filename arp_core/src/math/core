@@ -6,6 +6,7 @@
 #include <math/ICRSpeed.hpp>
 #include <math/EstimatedPose2D.hpp>
 #include <math/EstimatedTwist2D.hpp>
+#include <math/EstimatedICRSpeed.hpp>
 #include <math/Interpolator.hpp>
 #include <math/Stats.hpp>
 #include <math/MathFactory.hpp>
