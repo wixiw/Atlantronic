@@ -33,12 +33,12 @@ class OmnidirectOrder: public MotionOrder
         /**
          * Override to define specific parameters
          */
-        static boost::shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, arp_math::Pose2D currentPose, orders::config conf  );
+        static boost::shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, arp_math::UbiquityMotionState currentMotionState, orders::config conf  );
 
         /**
          *
          */
-        virtual arp_math::Twist2D computeSpeed(Pose2D currentPosition,MotorState motorState,UbiquityParams params, double dt);
+        virtual ICRSpeed computeSpeed(arp_math::UbiquityMotionState currentMotionState, UbiquityParams params, double dt);
 
         /*
          * returns the error on position between actual an objective,  in table referential
@@ -84,8 +84,8 @@ class OmnidirectOrder: public MotionOrder
 
 
         //surcharges
-        void switchRun(arp_math::Pose2D currentPosition);
-        void switchApproach(arp_math::Pose2D currentPosition);
+        void switchRun(arp_math::UbiquityMotionState currentMotionState);
+        void switchApproach(arp_math::UbiquityMotionState currentMotionState);
 
         static const double TIMELAG=0.030;
         static const double DIST_SMOOTH=0.100;

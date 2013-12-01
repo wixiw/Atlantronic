@@ -28,8 +28,7 @@ OmnidirectOrder::OmnidirectOrder(MotionOrder order) :
 {
 }
 
-shared_ptr<MotionOrder> OmnidirectOrder::createOrder(const OrderGoalConstPtr &goal, Pose2D currentPose,
-        orders::config conf)
+shared_ptr<MotionOrder> OmnidirectOrder::createOrder( const OrderGoalConstPtr &goal, arp_math::UbiquityMotionState currentMotionState, orders::config conf  )
 {
     shared_ptr<OmnidirectOrder> order(new OmnidirectOrder());
 
@@ -37,10 +36,9 @@ shared_ptr<MotionOrder> OmnidirectOrder::createOrder(const OrderGoalConstPtr &go
     Pose2D end;
     Pose2D cpoint;
 
-    begin.x(currentPose.x());
-    begin.y(currentPose.y());
-    begin.h(currentPose.h());
-    order->setBeginPose(begin);
+    Pose2D currentPose = currentMotionState.getPosition();
+    UbiquityMotionState beginMotionState = currentMotionState;
+    order->setBeginMotionState(beginMotionState);
 
     cpoint.x(goal->x_cpoint);
     cpoint.y(goal->y_cpoint);
@@ -50,7 +48,9 @@ shared_ptr<MotionOrder> OmnidirectOrder::createOrder(const OrderGoalConstPtr &go
     end.x(goal->x_des);
     end.y(goal->y_des);
     end.h(goal->theta_des);
-    order->setEndPose(end);
+    UbiquityMotionState endMotionState;
+    endMotionState.setPosition(end);
+    order->setEndMotionState(endMotionState);
 
     order->setPass(goal->passe);
     if (goal->max_speed > 0.0 and goal->max_speed < conf.LIN_VEL_MAX)
@@ -71,9 +71,9 @@ shared_ptr<MotionOrder> OmnidirectOrder::createOrder(const OrderGoalConstPtr &go
     return static_cast<shared_ptr<MotionOrder> >(order);
 }
 
-void OmnidirectOrder::switchRun(arp_math::Pose2D currentPosition)
+void OmnidirectOrder::switchRun(arp_math::UbiquityMotionState currentMotionState)
 {
-
+    Pose2D currentPosition = currentMotionState.getPosition();
 //position error in table referential
     Pose2D deltaPos_refTable = getPositionError(currentPosition);
     double distance_error = deltaPos_refTable.vectNorm();
@@ -104,8 +104,9 @@ void OmnidirectOrder::switchRun(arp_math::Pose2D currentPosition)
 
 }
 
-void OmnidirectOrder::switchApproach(arp_math::Pose2D currentPosition)
+void OmnidirectOrder::switchApproach(arp_math::UbiquityMotionState currentMotionState)
 {
+    Pose2D currentPosition = currentMotionState.getPosition();
     Pose2D deltaPos_refTable = getPositionError(currentPosition);
     double distance_error = deltaPos_refTable.vectNorm();
     double angle_error = deltaPos_refTable.h();
@@ -138,7 +139,7 @@ void OmnidirectOrder::switchApproach(arp_math::Pose2D currentPosition)
         Log(INFO) << getTypeString() << " switched MODE_APPROACH --> MODE_DONE " << "because error began to increase";
         Log(INFO) << "robot position  " << currentPosition.toString();
         Log(INFO) << "cpoint position " << current_cpoint_position.toString();
-        Log(INFO) << "aim position    " << m_endPose.toString();
+        Log(INFO) << "aim position    " << m_endMotionState.getPosition().toString();
         Log(INFO) << "distance_error  " << distance_error;
         Log(INFO) << "angle_error     " << angle_error;
 
@@ -162,8 +163,8 @@ Pose2D OmnidirectOrder::getPositionError(arp_math::Pose2D currentPosition)
     // pour avoir le point de controle dans le repère de la table, il suffit de composer (opérateur *) les deux poses
 
     //position error
-    return MathFactory::createPose2D(m_endPose.translation() - current_cpoint_position.translation(),
-            Rotation2(betweenMinusPiAndPlusPi(m_endPose.angle() - current_cpoint_position.angle())));
+    return MathFactory::createPose2D(m_endMotionState.getPosition().translation() - current_cpoint_position.translation(),
+            Rotation2(betweenMinusPiAndPlusPi(m_endMotionState.getPosition().angle() - current_cpoint_position.angle())));
 }
 
 Pose2D OmnidirectOrder::getPositionError_RobotRef(arp_math::Pose2D currentPosition)
@@ -329,8 +330,11 @@ void OmnidirectOrder::decideSmoothNeeded(arp_math::Pose2D & currentPosition)
         outDEBUG8 = 0.0;
 
 }
-Twist2D OmnidirectOrder::computeSpeed(Pose2D currentPosition,MotorState motorState,UbiquityParams params, double dt)
+
+ICRSpeed OmnidirectOrder::computeSpeed(arp_math::UbiquityMotionState currentMotionState, UbiquityParams params, double dt)
 {
+    Pose2D currentPosition = currentMotionState.getPosition();
+
 
     if (m_currentMode == MODE_DONE || m_currentMode == MODE_ERROR)
     {

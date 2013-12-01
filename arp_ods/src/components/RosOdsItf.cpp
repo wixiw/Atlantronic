@@ -89,6 +89,14 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
     inSpeed.readNewest(speed);
     UbiquityMotionState currentMotionState(pose,speed);
 
+    if (goal->move_type == "OMNIDIRECT")
+    {
+        m_order = OmnidirectOrder::createOrder(goal, currentMotionState, propOrderConfig);
+        sprintf( string, "new Omnidirect goal (%0.3f,%0.3f,%0.3f) pass %d @ %0.3f m/s", goal->x_des, goal->y_des,
+                goal->theta_des, goal->passe, goal->passe_speed);
+        arp_ods::orders::Log(Info) << string << endlog();
+    }
+    
     if (goal->move_type == "OMNIDIRECT2")
     {
         m_order = OmnidirectOrder2::createOrder(goal, currentMotionState, propOrderConfig);

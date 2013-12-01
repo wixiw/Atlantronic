@@ -28,7 +28,7 @@ class MiddleGame(PreemptiveStateMachine):
                       transitions={'timeout':'EtatB'})
                         
             PreemptiveStateMachine.add('EtatB',
-                      AmbiOmniDirectOrder(0.700,-0.000,pi,0.300),
+                      AmbiOmniDirectOrder2(0.700,-0.000,pi,0.300),
                       transitions={'succeeded':'PickRFB', 'timeout':'ReverseOrder'})
         
             PreemptiveStateMachine.add('ReverseOrder',
