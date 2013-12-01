@@ -182,12 +182,10 @@ void Localizator::updateHook()
 
     predictionOk = false;
 
-    LOG(Info) << "XXXXXX  READ ODO"  << endlog();
     EstimatedICRSpeed odoSpeed;
     if( RTT::NewData == inOdo.read(odoSpeed) )
     {
         EstimatedTwist2D T_odo_table_p_odo_r_odo = odoSpeed.twist();
-        LOG(Info) << "XXXXXX  odoSpeed=" << odoSpeed.toString() << " Twist=" << T_odo_table_p_odo_r_odo.toString() << endlog();
         //update du Kalman
         predictionOk = kfloc.newOdoVelocity(T_odo_table_p_odo_r_odo);
     }
@@ -230,7 +228,6 @@ void Localizator::updateHook()
     outObstacles.write(obstacles);
 
     ICRSpeed outSpeed(estim_T_robot_table_p_robot_r_robot);
-    LOG(Info) << "XXXXXX  outSpeed=" << outSpeed.toString() << " Twist=" << estim_T_robot_table_p_robot_r_robot.toString() << endlog();
 
     outPose.write(estim_H_robot_table);
     outICRSpeed.write(outSpeed);

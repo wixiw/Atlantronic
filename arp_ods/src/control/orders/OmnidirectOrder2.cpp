@@ -151,6 +151,7 @@ double OmnidirectOrder2::profileRo(double distance, ICRSpeed curICRSpeed)
 double OmnidirectOrder2::profileRoJerking(double distance, ICRSpeed curICRSpeed, double roPass)
 {
     //TODO passer les parametres en en argument
+    double lin_acc = 1;
     double lin_dec = 1;
     double v_max = 1;
     //TODO passer period en argument
@@ -184,7 +185,7 @@ double OmnidirectOrder2::profileRoJerking(double distance, ICRSpeed curICRSpeed,
     double ross = ros;
 
     // limitation de l'acceleration
-    double accStep = lin_dec * period;
+    double accStep = lin_acc * period;
     if (ros > 0)
     {
         if (curRo < ros)
@@ -255,7 +256,7 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
 
     // gestion du parkinson final
     // TODO depend de dt
-    double s_max = 0.1 * getParkinsonLimitationFactor(Cerr.norm());
+    double s_max = 0.2 * getParkinsonLimitationFactor(Cerr.norm());
 
     if (ICR_perfect.sphericalDistance(curICR) > PI / 2)
         ICR_perfect = ICR_perfect.getAntipodICR();
