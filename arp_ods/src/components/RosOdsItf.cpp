@@ -7,6 +7,7 @@
 
 #include "RosOdsItf.hpp"
 #include <rtt/Component.hpp>
+#include "control/orders/Logger.hpp"
 
 using namespace arp_math;
 using namespace arp_ods;
@@ -30,7 +31,7 @@ RosOdsItf::RosOdsItf(std::string const name):
     //C'est une conf par defaut safe ! Utiliser le fichier de conf dans script/orocos/conf pour modifier
     propOrderConfig.RADIUS_APPROACH_ZONE = 0.020;
     propOrderConfig.ANGLE_ACCURACY = deg2rad(10);
-    propOrderConfig.DISTANCE_ACCURACY = 0.005;
+    propOrderConfig.DISTANCE_ACCURACY = 0.007;
 
     propOrderConfig.LIN_VEL_MAX = 0.3;
     propOrderConfig.ANG_VEL_MAX = 1.0;
@@ -42,6 +43,7 @@ RosOdsItf::RosOdsItf(std::string const name):
     propOrderConfig.LIN_DEC=1.0;
     propOrderConfig.ANG_DEC=3.0;
 
+    arp_ods::orders::Logger::InitFile("arp_ods", DEBUG);
 }
 
 bool RosOdsItf::configureHook()
@@ -90,27 +92,27 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
     if (goal->move_type == "OMNIDIRECT2")
     {
         m_order = OmnidirectOrder2::createOrder(goal, currentMotionState, propOrderConfig);
-        sprintf( string, "new Omnidirect2 goal (%0.3f,%0.3f,%0.3f) pass %d", goal->x_des, goal->y_des,
-                goal->theta_des, goal->passe);
-        LOG(Info) << string << endlog();
+        sprintf( string, "new Omnidirect2 goal (%0.3f,%0.3f,%0.3f) pass %d @ %0.3f m/s", goal->x_des, goal->y_des,
+                goal->theta_des, goal->passe, goal->passe_speed);
+        arp_ods::orders::Log(Info) << string << endlog();
     }
     else if (goal->move_type == "OPENLOOP")
     {
         m_order = OpenloopOrder::createOrder(goal, currentMotionState, propOrderConfig);
         sprintf( string, "new Openloop goal Twist:(%0.3f,%0.3f,%0.3f) time : %0.3f ", goal->x_speed, goal->y_speed,
                 goal->theta_speed, goal->openloop_duration);
-        LOG(Info) << string << endlog();
+        arp_ods::orders::Log(Info) << string << endlog();
     }
     else if (goal->move_type == "REPLAY")
     {
         m_order = ReplayOrder::createOrder(goal, currentMotionState, propOrderConfig);
         sprintf( string, "new Replay goal Twist:(%0.3f,%0.3f,%0.3f) time : %0.3f ", goal->x_speed, goal->y_speed,
                 goal->theta_speed, goal->openloop_duration);
-        LOG(Info) << string << endlog();
+        arp_ods::orders::Log(Info) << string << endlog();
     }
     else
     {
-        LOG(Error) << "order " << goal->move_type.c_str() << "is not possible" << endlog();
+        arp_ods::orders::Log(Error) << "order " << goal->move_type.c_str() << "is not possible" << endlog();
         goto abort;
     }
 
@@ -130,7 +132,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         //An interrupt has been requested
         if (m_actionServer.isPreemptRequested() || !ros::ok())
         {
-            LOG(Error) << goal->move_type.c_str() << " Preempted" << endlog();
+            arp_ods::orders::Log(Error) << goal->move_type.c_str() << " Preempted" << endlog();
             //TODO faudrait peut être l'envoyer à LittleSexControl
             goto preempted;
         }
@@ -143,7 +145,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         }
         if ( inError )
         {
-            LOG(Error) << goal->move_type.c_str() << ": not processed due to MODE_ERROR" << endlog();
+            arp_ods::orders::Log(Error) << goal->move_type.c_str() << ": not processed due to MODE_ERROR" << endlog();
             goto abort;
         }
 
@@ -153,7 +155,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         inRobotBlocked.readNewest(blocked);
         if(blocked and time-m_blockTime>1.0) //1 of occultation, to allow the beginning of the new motion
         {
-            LOG(Error) << goal->move_type.c_str() << ": not processed due to Robot Blockage detection" << endlog();
+            arp_ods::orders::Log(Error) << goal->move_type.c_str() << ": not processed due to Robot Blockage detection" << endlog();
             m_blockTime= time;
             goto abort;
         }
@@ -205,12 +207,12 @@ void RosOdsItf::ooSetNewSpeedConf(double linSpeed, double angSpeed)
     if( linSpeed > 0 && linSpeed < 10 )
         propOrderConfig.LIN_VEL_MAX = linSpeed;
     else
-        LOG(Error) << "You required a new linSpeed for propOrderConfig.LIN_VEL_MAX which is out range (check units ? sign ?)" << endlog();
+        arp_ods::orders::Log(Error) << "You required a new linSpeed for propOrderConfig.LIN_VEL_MAX which is out range (check units ? sign ?)" << endlog();
 
     if( angSpeed > 0 && angSpeed < 30 )
         propOrderConfig.ANG_VEL_MAX = angSpeed;
     else
-        LOG(Error) << "You required a new angSpeed for propOrderConfig.ANG_VEL_MAX which is out range (check units ? sign ?)" << endlog();
+        arp_ods::orders::Log(Error) << "You required a new angSpeed for propOrderConfig.ANG_VEL_MAX which is out range (check units ? sign ?)" << endlog();
 }
 
 void RosOdsItf::ooSetNewAccConf(double linAcc, double angAcc)
@@ -218,12 +220,12 @@ void RosOdsItf::ooSetNewAccConf(double linAcc, double angAcc)
     if( linAcc > 0 && linAcc < 15 )
         propOrderConfig.LIN_DEC = linAcc;
     else
-        LOG(Error) << "You required a new linAcc for propOrderConfig.LIN_DEC which is out range (check units ? sign ?)" << endlog();
+        arp_ods::orders::Log(Error) << "You required a new linAcc for propOrderConfig.LIN_DEC which is out range (check units ? sign ?)" << endlog();
 
     if( angAcc > 0 && angAcc < 50 )
         propOrderConfig.ANG_DEC = angAcc;
     else
-        LOG(Error) << "You required a new angAcc for propOrderConfig.ANG_DEC which is out range (check units ? sign ?)" << endlog();
+        arp_ods::orders::Log(Error) << "You required a new angAcc for propOrderConfig.ANG_DEC which is out range (check units ? sign ?)" << endlog();
 }
 
 void RosOdsItf::createOrocosInterface()

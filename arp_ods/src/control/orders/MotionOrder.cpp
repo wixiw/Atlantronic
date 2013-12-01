@@ -24,6 +24,7 @@ MotionOrder::MotionOrder(const MotionOrder& order):
 {
     m_type = order.m_type;
     m_pass = order.m_pass;
+    m_passSpeed = order.m_passSpeed;
     m_beginMotionState = order.m_beginMotionState;
     m_endMotionState = order.m_endMotionState;
     m_conf=order.m_conf;
@@ -69,6 +70,7 @@ shared_ptr<MotionOrder> MotionOrder::createOrder( const OrderGoalConstPtr &goal,
     order->setEndMotionState(endMotionState);
 
     order->setPass(goal->passe);
+    order->setPassSpeed(goal->passe_speed);
 
     order->setConf(conf);
 

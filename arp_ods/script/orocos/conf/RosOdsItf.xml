@@ -3,7 +3,7 @@
 <properties>
   <struct name="propOrderConfig" type="OrderConfig">
      <simple name="RADIUS_APPROACH_ZONE" type="double"><description>Part</description><value>0.010</value></simple>
-     <simple name="DISTANCE_ACCURACY" type="double"><description>Part</description><value>0.005</value></simple>
+     <simple name="DISTANCE_ACCURACY" type="double"><description>Part</description><value>0.010</value></simple>
      <simple name="ANGLE_ACCURACY" type="double"><description>Part</description><value>0.018</value></simple>
      <simple name="PASS_TIMEOUT" type="double"><description>Part</description><value>1</value></simple>
      <simple name="ORDER_TIMEOUT" type="double"><description>Part</description><value>10</value></simple>

@@ -49,11 +49,245 @@ class MainStateMachine(smach.StateMachine):
             
             smach.StateMachine.add('SetInitialPosition',
                       SetInitialPosition(0.750, 0, 0),
-                      transitions={'succeeded':'M1', 'timeout':'end'})
+                      #transitions={'succeeded':'p1', 'timeout':'end'})
                       #transitions={'succeeded':'AmbiOmniDirectOrder2', 'timeout':'end'})
+                      transitions={'succeeded':'M1', 'timeout':'end'})
             
-            #les ordres a tester
+            # VIDEO DEMO ##########################
 
+            x1=1.100
+            y1=0.350
+            x2=0.400
+            y2=0.350
+            x3=0.400
+            y3=-0.350
+            x4=1.100
+            y4=-0.350
+            wait_time=0.1
+            
+
+            #carre moisi
+            
+            
+            smach.StateMachine.add('p1',
+                       OmniDirectOrder2(x = x1, 
+                                           y = 0, 
+                                           theta = 0, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'wp1', 'timeout':'end'})
+             
+            smach.StateMachine.add('wp1',
+                      WaiterState(wait_time),
+                      transitions={'timeout':'p2'})
+            
+            smach.StateMachine.add('p2',
+                       OmniDirectOrder2(x = x1, 
+                                           y = 0, 
+                                           theta = pi/2, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'wp2', 'timeout':'end'})
+             
+            smach.StateMachine.add('wp2',
+                      WaiterState(wait_time),
+                      transitions={'timeout':'p3'})
+            
+            smach.StateMachine.add('p3',
+                       OmniDirectOrder2(x = x1, 
+                                           y = y1, 
+                                           theta = pi/2, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'wp3', 'timeout':'end'})
+             
+            smach.StateMachine.add('wp3',
+                      WaiterState(wait_time),
+                      transitions={'timeout':'p4'})
+
+           
+            smach.StateMachine.add('p4',
+                       OmniDirectOrder2(x = x1, 
+                                           y = y1, 
+                                           theta = pi, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'wp4', 'timeout':'end'})
+             
+            smach.StateMachine.add('wp4',
+                      WaiterState(wait_time),
+                      transitions={'timeout':'p5'}) 
+            
+            smach.StateMachine.add('p5',
+                       OmniDirectOrder2(x = x2, 
+                                           y = y2, 
+                                           theta = pi, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'wp5', 'timeout':'end'})
+             
+            smach.StateMachine.add('wp5',
+                      WaiterState(wait_time),
+                      transitions={'timeout':'p6'})
+            
+            smach.StateMachine.add('p6',
+                       OmniDirectOrder2(x = x2, 
+                                           y = y2, 
+                                           theta = -pi/2, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'wp6', 'timeout':'end'})
+             
+            smach.StateMachine.add('wp6',
+                      WaiterState(wait_time),
+                      transitions={'timeout':'p7'})   
+            
+            smach.StateMachine.add('p7',
+                       OmniDirectOrder2(x = x3, 
+                                           y = y3, 
+                                           theta = -pi/2, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'wp8', 'timeout':'end'})
+             
+            smach.StateMachine.add('wp8',
+                      WaiterState(wait_time),
+                      transitions={'timeout':'p9'})    
+            
+            smach.StateMachine.add('p9',
+                       OmniDirectOrder2(x = x3, 
+                                           y = y3, 
+                                           theta = pi, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'wp9', 'timeout':'end'})
+             
+            smach.StateMachine.add('wp9',
+                      WaiterState(wait_time),
+                      transitions={'timeout':'p10'})               
+            
+            smach.StateMachine.add('p10',
+                       OmniDirectOrder2(x = x4, 
+                                           y = y4, 
+                                           theta = pi, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'wp10', 'timeout':'end'})
+             
+            smach.StateMachine.add('wp10',
+                      WaiterState(wait_time),
+                      transitions={'timeout':'p11'})  
+            
+            smach.StateMachine.add('p11',
+                       OmniDirectOrder2(x = x4, 
+                                           y = y4, 
+                                           theta = pi/2, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'wp11', 'timeout':'end'})
+             
+            smach.StateMachine.add('wp11',
+                      WaiterState(wait_time),
+                      transitions={'timeout':'p12'}) 
+            
+            smach.StateMachine.add('p12',
+                       OmniDirectOrder2(x = x1, 
+                                           y = y1, 
+                                           theta = pi/2, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'wp12', 'timeout':'end'})
+             
+            smach.StateMachine.add('wp12',
+                      WaiterState(wait_time),
+                      transitions={'timeout':'p13'})  
+            
+            # carre translation
+            smach.StateMachine.add('p13',
+                       OmniDirectOrder2(x = x2, 
+                                           y = y2, 
+                                           theta = pi/2, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'p14', 'timeout':'end'})
+            
+            smach.StateMachine.add('p14',
+                       OmniDirectOrder2(x = x3, 
+                                           y = y3,
+                                           theta = pi/2, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'p15', 'timeout':'end'})
+
+            smach.StateMachine.add('p15',
+                       OmniDirectOrder2(x = x4, 
+                                           y = y4, 
+                                           theta = pi/2, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'p16', 'timeout':'end'})
+            
+            smach.StateMachine.add('p16',
+                       OmniDirectOrder2(x = x1, 
+                                           y = y1, 
+                                           theta = pi/2, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'wp16', 'timeout':'end'})
+            
+            smach.StateMachine.add('wp16',
+                      WaiterState(wait_time),
+                      transitions={'timeout':'p17'}) 
+            
+            ## carre avec rotation
+            smach.StateMachine.add('p17',
+                       OmniDirectOrder2(x = x2, 
+                                           y = y2, 
+                                           theta = -pi/2, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'p18', 'timeout':'end'})
+            
+            smach.StateMachine.add('p18',
+                       OmniDirectOrder2(x = x3, 
+                                           y = y3, 
+                                           theta = pi/2, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'p19', 'timeout':'end'})
+            
+            smach.StateMachine.add('p19',
+                       OmniDirectOrder2(x = x4, 
+                                           y = y4, 
+                                           theta = -pi/2, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'p20', 'timeout':'end'})
+            
+            smach.StateMachine.add('p20',
+                       OmniDirectOrder2(x = x1, 
+                                           y = y1, 
+                                           theta = pi/2, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'wp20', 'timeout':'end'})
+            
+            smach.StateMachine.add('wp20',
+                      WaiterState(wait_time),
+                      transitions={'timeout':'p21'}) 
+            
+            ## carre passage
+            smach.StateMachine.add('p21',
+                       OmniDirectOrder2Pass(x = x2, 
+                                           y = y2, 
+                                           theta = -pi/2,
+                                           vpasse=0.5, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'p22', 'timeout':'end'})
+            
+            smach.StateMachine.add('p22',
+                       OmniDirectOrder2Pass(x = x3, 
+                                           y = y3, 
+                                           theta = pi/2, 
+                                           vpasse=0.5, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'p23', 'timeout':'end'})
+            
+            smach.StateMachine.add('p23',
+                       OmniDirectOrder2Pass(x = x4, 
+                                           y = y4, 
+                                           theta = -pi/2, 
+                                           vpasse=0.5, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'p24', 'timeout':'end'})
+            
+            smach.StateMachine.add('p24',
+                       OmniDirectOrder2(x = x1, 
+                                           y = y1, 
+                                           theta = pi/2, 
+                                           vmax = 1.0),
+                      transitions={'succeeded':'end', 'timeout':'end'})
             
             # TEST OF ALL MOTION STATES ##########################
             
@@ -123,7 +357,7 @@ class MainStateMachine(smach.StateMachine):
                        Rewind(rewindDuration = 2.0),
                       transitions={'succeeded':'Move', 'timeout':'end'})   
             
-            # SPECIFIC TESTS
+            # SPECIFIC DEBUG TESTS ##########################
             
             smach.StateMachine.add('M1',
                        AmbiOmniDirectOrder2(x = 0.950, 
@@ -160,8 +394,8 @@ class MainStateMachine(smach.StateMachine):
 class RandomMove(MotionState):
     def __init__(self):
         MotionState.__init__(self)
-        seed = random.randint(0, 1000)
-        #seed=133
+        #seed = random.randint(0, 1000)
+        seed=221
         random.seed(seed)
         rospy.loginfo("------------MOTIONTESTING INIT----------------")
         rospy.loginfo("randomized with seed: %d" % (seed))
@@ -172,11 +406,20 @@ class RandomMove(MotionState):
         self.y = random.uniform(-0.6, 0.6)
         self.theta = random.uniform(-pi, pi)
         self.vmax = random.uniform(0.1, 1)
-        if random.uniform(0.0,1.0)< 0.3 :
+        self.vpass = random.uniform(0.1, 0.5)
+        rospy.loginfo("--- OMNIDIRECTORDER2 ---")
+        rospy.loginfo("x =%.3f y=%.3f theta=%.3f"%(self.x, self.y, self.theta))
+        rospy.loginfo("vmax =%.3f"%(self.vmax))
+
+        if random.uniform(0, 1)< 0.2 :
+            rospy.loginfo("Stop on point")
             self.omnidirect2(self.x, self.y, self.theta, self.vmax)
         else:
-            self.omnidirect2Pass(self.x, self.y, self.theta, self.vmax/2.0,self.vmax)
-        
+            rospy.loginfo("Pass with v=%.3f"%(self.vpass))
+            self.omnidirect2Pass(self.x, self.y, self.theta, self.vpass,self.vmax)
+
+            
+            
 ########################## EXECUTABLE 
 #shall be always at the end ! so that every function is defined before
 # main function, called by ros

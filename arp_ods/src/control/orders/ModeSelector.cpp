@@ -42,6 +42,7 @@ std::ostream& operator<<(std::ostream& os, const arp_ods::orders::mode& mode)
             return os << "MODE_UNKNOWN";
             break;
     }
+    return os << "MODE_UNKNOWN";
 }
 
 
@@ -116,7 +117,7 @@ void ModeSelector::switchRun(UbiquityMotionState currentMotionState)
 }
 
 void ModeSelector::switchApproach(UbiquityMotionState currentMotionState)
-{
+{/*
     double distance_error = getRemainingDistance(currentMotionState);
     double angle_error = getRemainingAngle(currentMotionState);
 
@@ -129,7 +130,7 @@ void ModeSelector::switchApproach(UbiquityMotionState currentMotionState)
         Log(INFO) << string;
         m_currentMode = MODE_DONE;
         return;
-    }
+    }*/
     testTimeout();
 
 }
@@ -145,7 +146,7 @@ void ModeSelector::switchError(UbiquityMotionState currentMotionState)
 }
 
 void ModeSelector::switchPass(UbiquityMotionState currentMotionState)
-{
+{/*
     double t = getTime();
     double dt = t - m_passTime;
     if (dt < 0 || dt > m_conf.PASS_TIMEOUT)
@@ -153,7 +154,9 @@ void ModeSelector::switchPass(UbiquityMotionState currentMotionState)
         Log(INFO) << "switched MODE_PASS --> MODE_DONE because of dt= "<< dt;
         m_currentMode = MODE_DONE;
         return;
-    }
+    }*/
+
+    testTimeout();
 }
 
 void ModeSelector::switchMode(UbiquityMotionState currentMotionState)
@@ -227,6 +230,17 @@ mode ModeSelector::getMode() const
 void ModeSelector::setPass(bool pass)
 {
     m_pass = pass;
+}
+
+void ModeSelector::setPassSpeed(double passSpeed)
+{
+    if( passSpeed <= 0.0 )
+    {
+        m_passSpeed = 0.1;
+        Log(ERROR) << "ModeSelector::setPassSpeed(" << passSpeed << ") : Pass Speed is incorrect, should be positive";
+    }
+    else
+        m_passSpeed = passSpeed;
 }
 
 void ModeSelector::setBeginMotionState(UbiquityMotionState beginMotionState)

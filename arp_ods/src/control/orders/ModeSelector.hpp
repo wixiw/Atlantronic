@@ -101,6 +101,7 @@ class ModeSelector
          * Define the pass mode
          */
         void setPass(bool pass);
+        void setPassSpeed(double passSpeed);
 
         void setBeginMotionState(arp_math::UbiquityMotionState beginMotionState);
         void setEndMotionState(arp_math::UbiquityMotionState endMotionState);
@@ -119,6 +120,7 @@ class ModeSelector
 
         /** motion without stop at the end */
         bool m_pass;
+        double m_passSpeed;
 
         /** mode of operation*/
         mode m_currentMode;

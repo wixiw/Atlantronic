@@ -61,6 +61,8 @@ shared_ptr<MotionOrder> OmnidirectOrder2::createOrder(const OrderGoalConstPtr &g
     order->setEndMotionState(endMotionState);
 
     order->setPass(goal->passe);
+    order->setPassSpeed(goal->passe_speed);
+
     if (goal->max_speed > 0.0 and goal->max_speed < conf.LIN_VEL_MAX)
         order->m_vmax_order = goal->max_speed;
     else
@@ -73,8 +75,9 @@ shared_ptr<MotionOrder> OmnidirectOrder2::createOrder(const OrderGoalConstPtr &g
 
     order->setConf(conf);
 
-    Log(INFO) << order->getTypeString() << "from [" << ((Pose2D) (beginMotionState.getPosition())).toString()
-            << "] to [" << end.toString() << "] control_point=[" << cpoint.toString() << "]";
+    Log(INFO) << order->getTypeString() << " from [" << ((Pose2D) (beginMotionState.getPosition())).toString()
+            << "] to [" << end.toString() << "] control_point=[" << cpoint.toString() << "]" << "pass = "
+            << order->m_pass << " @ " << order->m_passSpeed << " m/s";
 
     return static_cast<shared_ptr<MotionOrder> >(order);
 }
@@ -91,9 +94,18 @@ void OmnidirectOrder2::switchRun(arp_math::UbiquityMotionState currentMotionStat
 
     if (getPositionInNormalRef(currentMotionState.getPosition()).getTVector().norm() < m_conf.DISTANCE_ACCURACY)
     {
-        Log(INFO) << getTypeString() << " switched MODE_RUN --> MODE_DONE " << "because in final zone ";
-        m_currentMode = MODE_DONE;
-        return;
+        if (m_pass == false)
+        {
+            Log(INFO) << getTypeString() << " switched MODE_RUN --> MODE_DONE " << "because in final zone ";
+            m_currentMode = MODE_DONE;
+            return;
+        }
+        else
+        {
+            Log(INFO) << getTypeString() << " switched MODE_RUN --> MODE_PASS " << "because in final zone ";
+            m_currentMode = MODE_PASS;
+            return;
+        }
     }
 
     testTimeout();
@@ -147,16 +159,14 @@ double OmnidirectOrder2::profileRo(double distance, ICRSpeed curICRSpeed)
     return ro;
 }
 
-//TODO last_ro devrait etre passé en parametre
-double OmnidirectOrder2::profileRoJerking(double distance, ICRSpeed curICRSpeed, double roPass)
+double OmnidirectOrder2::profileRoJerking(double distance, ICRSpeed curICRSpeed, double roPass, double dt)
 {
     //TODO passer les parametres en en argument
     double lin_acc = 1;
     double lin_dec = 1;
     double v_max = 1;
-    //TODO passer period en argument
-    double period = 0.010;
 
+    //TODO brancher vitesse plutot que last ro
     double curRo = m_oldICRSpeed.ro();
     //double curRo=curICRSpeed.ro();
 
@@ -167,44 +177,52 @@ double OmnidirectOrder2::profileRoJerking(double distance, ICRSpeed curICRSpeed,
     Log(DEBUG) << "m_lastRo " << m_lastRo;
     Log(DEBUG) << "distance " << distance;
 
-    if (abs(distance) > limite_lineaire)
+    if (roPass)
     {
-        ro = sqrt2(2.0 * lin_dec) * sqrt2(distance);
-        Log(DEBUG) << "ro  racine       " << ro;
+        ro = sqrt2(sign(curRo) * roPass * roPass + 2.0 * lin_dec * distance);
+        Log(DEBUG) << "curRo=" << curRo << " roPass=" << roPass << "   ro avec ropass=" << ro;
     }
     else
     {
-        ro = (sqrt2(2.0 * lin_dec) * sqrt2(limite_lineaire)) / limite_lineaire * distance;
-        Log(DEBUG) << "ro  lineaire     " << ro;
+        if (abs(distance) > limite_lineaire)
+        {
+            ro = sqrt2(2.0 * lin_dec) * sqrt2(distance);
+            Log(DEBUG) << "ro  racine       " << ro;
+        }
+        else
+        {
+            ro = (sqrt2(2.0 * lin_dec) * sqrt2(limite_lineaire)) / limite_lineaire * distance;
+            Log(DEBUG) << "ro  lineaire     " << ro;
+        }
     }
 
     double ros = saturate(ro, -v_max, v_max);
     double ross = ros;
 
     // limitation de l'acceleration
-    double accStep = lin_acc * period;
+    double accStep = lin_acc * dt;
     if (ros > 0)
     {
         if (curRo < ros)
-        {//accel
+        { //accel
             ross = min(ros, curRo + accStep);
         }
         else
-        {//decel
+        { //decel
+            //ross = max(ros, curRo - accStep);
         }
     }
     else
     {
         if (curRo > ros)
-        {//"augmentation du mouvement"
+        { //"augmentation du mouvement"
             ross = max(ros, curRo - accStep);
         }
         else
-        {//"diminution du mouvement"
+        { //"diminution du mouvement"
+            //ross = min(ros, curRo + accStep);
         }
     }
-
-    //ross = firstDerivateLimitation(ross, curRo, period, -lin_dec * 2.0, lin_dec * 2.0);
 
     Log(DEBUG) << "ros      " << ros;
     Log(DEBUG) << "ross     " << ross;
@@ -213,24 +231,26 @@ double OmnidirectOrder2::profileRoJerking(double distance, ICRSpeed curICRSpeed,
     return ross;
 
 }
+/*
+ double OmnidirectOrder2::distanceModifier(double realDistance, double distanceDelay)
+ {
+ if (abs(realDistance) < 0.001)
+ return 0;
 
-double OmnidirectOrder2::distanceModifier(double realDistance, double distanceDelay)
-{
-    if (abs(realDistance) < 0.001)
-        return 0;
-
-    if (realDistance > 0)
-        return realDistance - distanceDelay;
-    else
-        return realDistance + distanceDelay;
-}
-
+ if (realDistance > 0)
+ return realDistance - distanceDelay;
+ else
+ return realDistance + distanceDelay;
+ }
+ */
 ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSpeed curICRSpeed, double dt)
 {
     if (curICRSpeed.getICR().sphericalDistance(m_oldICRSpeed.getICR()) > PI / 2)
         curICRSpeed = curICRSpeed.getOppositeRep();
 
     Log(DEBUG) << ">>computeRunTwist  ";
+    Log(DEBUG) << "dt donne =  " << dt;
+    dt = 0.010;
     Log(DEBUG) << "currentPositionNorm  " << currentPositionNorm.toString();
     Log(DEBUG) << "curICRSpeed  " << curICRSpeed.toString();
 
@@ -252,8 +272,7 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
     ICR curICR = m_oldICRSpeed.getICR();
 
     // gestion du parkinson final
-    // TODO depend de dt
-    double s_max = 0.2 * getParkinsonLimitationFactor(Cerr.norm());
+    double s_max = 20 * dt * getParkinsonLimitationFactor(Cerr.norm());
 
     if (ICR_perfect.sphericalDistance(curICR) > PI / 2)
         ICR_perfect = ICR_perfect.getAntipodICR();
@@ -271,7 +290,11 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
 
     double k_delta = Cerr.dot(corICRSpeed.speedDirection());
     //TODO donner la vitesse de passage
-    double ro = profileRoJerking(k_delta, curICRSpeed, 0.0);
+    double ro;
+    if (m_pass == false)
+        ro = profileRoJerking(k_delta, curICRSpeed, 0.0, dt);
+    else
+        ro = profileRoJerking(k_delta, curICRSpeed, m_passSpeed, dt);
 
     Log(DEBUG) << "k_delta       " << k_delta;
     Log(DEBUG) << "ro            " << ro;
@@ -285,7 +308,7 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
 
     Log(DEBUG) << "Cerr.norm()           " << Cerr.norm();
 
-    Log(DEBUG) << "corICRSpeed normalise " << corICRSpeed.toString();
+    Log(DEBUG) << "corICRSpeed           " << corICRSpeed.toString();
     Log(DEBUG) << "<<computeRunTwist     ";
     Log(DEBUG) << "                      ";
 
@@ -323,20 +346,26 @@ ICRSpeed OmnidirectOrder2::computeSpeed(UbiquityMotionState currentMotionState, 
 
     if (m_currentMode == MODE_ERROR)
     {
-        return Twist2D(0, 0, 0);
+        return ICRSpeed(0, curICRSpeed.getICR());
     }
 
-    // curICRSpeed est dans le repere robot il faut  le mettre dans le repere target
-    curICRSpeed.phi(curICRSpeed.phi() - m_endMotionState.getPosition().h() + currentPosition.h());
+    if (m_currentMode == MODE_PASS)
+    {
+        return curICRSpeed;
+    }
 
-    //compute run twist travaille dans un espace 3D ou l'objectif est en (0,0,0)
-    ICRSpeed corICRSpeed = computeRunTwist(getPositionInNormalRef(currentPosition), curICRSpeed, dt);
-    //dans le repere robot
-    corICRSpeed.phi(corICRSpeed.phi() + m_endMotionState.getPosition().h() - currentPosition.h());
+    if (m_currentMode == MODE_RUN or m_currentMode == MODE_DONE)
+    {
+        // curICRSpeed est dans le repere robot il faut  le mettre dans le repere target
+        curICRSpeed.phi(curICRSpeed.phi() - m_endMotionState.getPosition().h() + currentPosition.h());
+        //compute run twist travaille dans un espace 3D ou l'objectif est en (0,0,0)
+        ICRSpeed corICRSpeed = computeRunTwist(getPositionInNormalRef(currentPosition), curICRSpeed, dt);
+        //dans le repere robot
+        corICRSpeed.phi(corICRSpeed.phi() + m_endMotionState.getPosition().h() - currentPosition.h());
+        return corICRSpeed;
+    }
 
-    Twist2D corTwist = corICRSpeed.twist();
-    return corTwist;
-
+    return ICRSpeed(0, 0, 0);
 }
 
 Pose2DNorm OmnidirectOrder2::getPositionInNormalRef(Pose2D currentPosition)

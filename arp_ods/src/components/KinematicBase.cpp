@@ -20,7 +20,7 @@ using namespace std;
 ORO_LIST_COMPONENT_TYPE( arp_ods::KinematicBase)
 
 KinematicBase::KinematicBase(const std::string& name) :
-        OdsTaskContext(name), attrRobotBlockedTimeout(false), attrBlockTime(0), propRobotBlockedTimeout(1.0), propMaxSpeedDiff(0.050)
+        OdsTaskContext(name), attrRobotBlockedTimeout(false), attrBlockTime(0), propRobotBlockedTimeout(1.0), propMaxSpeedDiff(0.200)
 {
     createOrocosInterface();
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot

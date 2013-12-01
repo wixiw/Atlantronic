@@ -121,7 +121,7 @@ void LittleSexControl::storeICRSpeed()
 {
     if( attrMotionState.getSpeed().distanceTo(ICRSpeed(0,0,0),1,0.2) >= MIN_STORED_TWIST_SPEED )
     {
-        m_ICRSpeedBuffer.addICRSpeed(attrMotionState.getSpeed(),attrDt);
+        m_ICRSpeedBuffer.addICRSpeed(attrMotionState.getSpeed(),attrCanPeriod);
     }
 }
 

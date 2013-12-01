@@ -50,7 +50,7 @@ class MotionOrder: public ModeSelector
          */
         MotionOrder();
 
-        ~MotionOrder();
+        virtual ~MotionOrder();
 
         /**
          * Compute the motor set points according to the current mode.
