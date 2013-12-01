@@ -22,7 +22,6 @@ LittleSexControl::LittleSexControl(const std::string& name):
         attrOrder(orders::defaultOrder),
         attrVmax_asked(1.0),
         attrCurrentOrder("default"),
-        attrGain(0.2),
         m_ICRSpeedBuffer(),
         OTG()
 
@@ -38,11 +37,13 @@ void LittleSexControl::getInputs()
     //faut-il tester que c'est bien mis à jour ?
     EstimatedPose2D position;
     inPosition.readNewest(position);
+    attrMotionState.setPosition(position);
+
     EstimatedICRSpeed speed;
     inCurrentICRSpeed.readNewest(speed);
-    attrMotionState.setPosition(position);
     attrMotionState.setSpeed(speed);
 
+    inCanPeriod.readNewest(attrCanPeriod);
     inParams.readNewest(attrParams);
 }
 
@@ -64,7 +65,7 @@ void LittleSexControl::updateHook()
     // calcule les consignes
     attrOrder->setVmax(attrVmax_asked);
 
-    attrComputedICRSpeedCmd = attrOrder->computeSpeed(attrMotionState,attrParams,attrDt);
+    attrComputedICRSpeedCmd = attrOrder->computeSpeed(attrMotionState,attrParams,attrCanPeriod);
 
     /*
      * DEBUG: recuperation des données de l'omnidirect
@@ -81,9 +82,6 @@ void LittleSexControl::updateHook()
         outDEBUG8.write(attrOrder->outDEBUG8);
         outDEBUG9.write(attrOrder->outDEBUG9);
         outDEBUG10.write(attrOrder->outDEBUG10);
-
-
-        attrOrder->attrGain=attrGain;
     }
 
     if (attrOrder->getType()==OMNIDIRECT2)
@@ -182,14 +180,16 @@ void LittleSexControl::createOrocosInterface()
     addAttribute("attrOrder",attrOrder);
     addAttribute("attrVmax_asked",attrVmax_asked);
     addAttribute("attrCurrentOrder",attrCurrentOrder);
+    addAttribute("attrCanPeriod", attrCanPeriod);
     addAttribute("attrParams", attrParams);
-    addAttribute("attrGain",attrGain);
 
     addPort("inPosition",inPosition)
         .doc("");
     addPort("inCurrentICRSpeed",inCurrentICRSpeed)
             .doc("");
     addPort("inParams", inParams).doc("");
+    addPort("inCanPeriod", inCanPeriod).doc("Period computed between 2 SYNC messages by the CAN layer");
+
 
     //DEBUG
     addPort("outICRSpeedCmd",outICRSpeedCmd)

@@ -104,8 +104,6 @@ class MotionOrder: public ModeSelector
         double  outDEBUG9;
         double  outDEBUG10;
 
-        double attrGain;
-
         /**
          * is smooth localization needed ?
          */

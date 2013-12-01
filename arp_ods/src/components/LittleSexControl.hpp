@@ -49,6 +49,9 @@ class LittleSexControl: public OdsTaskContext
         /** Geometric parameters */
         RTT::InputPort<arp_model::UbiquityParams> inParams;
 
+        /** Period between 2 CanOpen Sync Messages*/
+        RTT::InputPort<double> inCanPeriod;
+
         /**
          * This is the result of computation : the Twist that the robot should do
          */
@@ -85,9 +88,6 @@ class LittleSexControl: public OdsTaskContext
         RTT::OutputPort<double>  outDEBUG9;
         RTT::OutputPort<double>  outDEBUG10;
 
-        //DEBUG
-        double attrGain;
-
         /**
          * Buffer for computed speed commands
          */
@@ -98,6 +98,15 @@ class LittleSexControl: public OdsTaskContext
          */
         arp_math::UbiquityMotionState attrMotionState;
 
+        /**
+         * Period between 2 SYNC datas on the CanOpenBus
+         * Take care : you also have another period information which ARDTaskContext::attrDt
+         * which is the time between 2 calls of the updateHook.
+         *
+         * attrCanPeriod will be very stable but not related to your date of execution (you always execute after)
+         * attrDt is the real delay between your last call and may be noisy if the OS introduce jitters.
+         */
+        double attrCanPeriod;
 
         /*
          * platform parameters

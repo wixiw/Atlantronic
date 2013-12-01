@@ -17,9 +17,11 @@ function LittleSexControlDeployer:connect()
 	RluMonitor:connect(me,"inCurrentICRSpeed","Localizator","outICRSpeed");
     RluMonitor:connect(me,"outSmoothLocNeeded","Localizator","inSmoothMode");
     
-    HmlMonitor = Deployer:getPeer("HmlMonitor");
     Deployer:addPeer("HmlMonitor", me)
     Deployer:connect(me..".inParams", "UbiquityParams.outParams",cp)
+    
+    HmlMonitor = Deployer:getPeer("HmlMonitor");
+    HmlMonitor:connect(me,"inCanPeriod","Can1","outPeriod");
 end
 
 

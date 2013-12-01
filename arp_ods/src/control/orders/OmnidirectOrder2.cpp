@@ -160,9 +160,6 @@ double OmnidirectOrder2::profileRoJerking(double distance, ICRSpeed curICRSpeed,
     double curRo = m_oldICRSpeed.ro();
     //double curRo=curICRSpeed.ro();
 
-    //the distance i'll do due to my speed. i'll add that into the distance used for deceleration to take into account the delay
-    double distanceDelay = curRo * period;
-
     double limite_lineaire = 0.030;
     double ro;
 

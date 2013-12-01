@@ -109,13 +109,13 @@ void ARDTaskContext::updateHook()
     if (attrUpdateTime.tv_nsec == 0.0 && attrUpdateTime.tv_sec == 0.0)
     {
         //first time here
-        attrUpdateTime = time;
         attrDt = 0.0;
+        attrUpdateTime = time;
     }
     else
     {
-        attrUpdateTime = time;
         attrDt = delta_t(attrUpdateTime,time);
+        attrUpdateTime = time;
     }
 
     TaskContext::updateHook();

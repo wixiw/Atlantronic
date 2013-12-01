@@ -37,8 +37,6 @@ void Odometry4Ubiquity::updateHook()
     SlippageReport report;
     if( RTT::NewData != inTime.readNewest(attrTime))
     {
-        //WLA->BMO : attention, si on nous appelle via une commande c'est possible que ça trigger l'updateHook
-        //tu es egalement triggered après le start() il me semble
         LOG( Error ) << "No new data in inTime port : updateHook should not be externally trigger => return" << endlog();
         return;
     }
