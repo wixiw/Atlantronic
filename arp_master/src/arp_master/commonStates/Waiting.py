@@ -40,7 +40,15 @@ class WaitForStart(CyclicState):
        if Inputs.getstart()==0:
             return 'start'
         
-
+#the state that will wait for the start to be unpluged (before the match or for tests)
+class WaitForStartUnplug(CyclicState):
+    def __init__(self):
+        CyclicState.__init__(self, outcomes=['startunplug'])
+    
+    def executeTransitions(self):
+       if Inputs.getstart()==1:
+            return 'startunplug'
+        
 #wait for start to be plugged out
 class WaitForMatch(CyclicState):
     def __init__(self):
@@ -48,7 +56,6 @@ class WaitForMatch(CyclicState):
     
     def executeIn(self):
         os.system("beep -f 300 -l300 -r3") 
-        os.system("sh /opt/ard/arp_core/script/linux/match_ready.sh")
     
     def executeTransitions(self):
        if Inputs.getstart()==1:
@@ -57,5 +64,3 @@ class WaitForMatch(CyclicState):
     def executeOut(self):
         #je note le temps de debut de match
         Data.start_time=rospy.get_rostime()
-        #os.system("beep -f 300 -l150")
-        os.system("sh /opt/ard/arp_core/script/linux/match_running.sh")

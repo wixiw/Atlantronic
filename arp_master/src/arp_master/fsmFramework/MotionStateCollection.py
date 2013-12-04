@@ -81,7 +81,7 @@ class OmniDirectOrder2Pass(MotionState):
 
 # Use this to call an open loop order 
 # OpenLoppOrder(0,0,0, duration=0) 
-# Only use this if you are forced to specify a color dependent move (else prefer AmbiOpenLoop)   
+# Only use this if you are forced to specify a color dependent move (else prefer OpenLoopOrder)   
 class AmbiOpenLoopOrder(MotionState):
     def __init__(self,vx,vy,vh,duration):
         MotionState.__init__(self)
@@ -96,7 +96,7 @@ class AmbiOpenLoopOrder(MotionState):
 
 # Use this to call an open loop order 
 # OpenLoppOrder(0,0,0, duration=0) 
-# Only use this if you are forced to specify a color dependent move (else prefer AmbiOpenLoop)   
+# Only use this if you are forced to specify a color dependent move (else prefer AmbiOpenLoopOrder)   
 class OpenLoopOrder(MotionState):
     def __init__(self,vx,vy,vh,duration):
         MotionState.__init__(self)

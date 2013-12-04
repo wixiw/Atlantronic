@@ -58,7 +58,7 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
                                    transitions={'endInitialisation':'StartSequence','failed':'end'})
             #smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(1.500 - Robot2014.FRONT_SIDE.x,0.550,0),
-            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(1.500 + Robot2014.REAR_SIDE.x,0.550,-5*pi/6),
+            smach.StateMachine.add('StartSequence', InitStates.StartSequence2014(1.500 + Robot2014.REAR_SIDE.x,0.550,-5*pi/6),
                                    transitions={'gogogo':'Opening','problem':'end'})
             smach.StateMachine.add('Opening', Strat_Opening.Opening(),
                                     transitions={'endOpening':'MiddleGame','problem':'end'})

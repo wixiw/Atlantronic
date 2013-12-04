@@ -15,9 +15,11 @@ from Waiting import *
 #
 ##################################################
 
-class StartSequence(smach.StateMachine):
-    def __init__(self,x,y,theta):
-        smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
+
+
+class FindSteeringZeros(smach.StateMachine):
+    def __init__(self):
+        smach.StateMachine.__init__(self,outcomes=['succeeded','problem'])
         with self:
             smach.StateMachine.add('SetSteeringPower',
                       SetSteeringPower(),
@@ -33,6 +35,16 @@ class StartSequence(smach.StateMachine):
             
             smach.StateMachine.add('SetDrivingPower',
                       SetDrivingPower(),
+                      transitions={'succeeded':'succeeded', 'timeout':'problem'})
+
+
+
+class StartSequence(smach.StateMachine):
+    def __init__(self,x,y,theta):
+        smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
+        with self:
+            PreemptiveStateMachine.add('FindSteeringZeros',
+                      FindSteeringZeros(), 
                       transitions={'succeeded':'SetInitialPosition', 'timeout':'problem'})
             
             smach.StateMachine.add('SetInitialPosition',
