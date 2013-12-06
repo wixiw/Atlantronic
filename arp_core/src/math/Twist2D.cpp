@@ -10,7 +10,7 @@
 
 using namespace arp_math;
 
-std::ostream &operator<<( std::ostream &flux, arp_math::Twist2D const& t)
+std::ostream &arp_math::operator<<( std::ostream &flux, arp_math::Twist2D const& t)
 {
     return flux << t.toString();
 }
@@ -119,7 +119,7 @@ Twist2D& Twist2D::operator-=(const Twist2D& _other)
     return *this;
 }
 
-bool Twist2D::operator ==(Twist2D other) const
+bool Twist2D::operator ==(const Twist2D& other) const
 {
     //le test de translation est fait à la main sinon on perd le const... visiblement eigen ne note pas ses == const... c'est moche
     return (
@@ -129,7 +129,7 @@ bool Twist2D::operator ==(Twist2D other) const
             );
 }
 
-bool Twist2D::operator !=(Twist2D other) const
+bool Twist2D::operator !=(const Twist2D& other) const
 {
     //le test de translation est fait à la main sinon on perd le const... visiblement eigen ne note pas ses == const... c'est moche
     return (

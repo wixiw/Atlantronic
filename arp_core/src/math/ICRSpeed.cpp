@@ -13,7 +13,7 @@ using namespace arp_math;
 using namespace Eigen;
 using namespace std;
 
-std::ostream &operator<<(std::ostream &flux, arp_math::ICRSpeed const& t)
+std::ostream& arp_math::operator<<(std::ostream& flux, arp_math::ICRSpeed const& t)
 {
     return flux << t.toString();
 }
@@ -173,7 +173,41 @@ ICRSpeed ICRSpeed::createIdleFromTranslation(double angle)
     return ICRSpeed(0, phi, delta);
 }
 
+ICRSpeed ICRSpeed::transport(const Pose2D & p) const
+{
+    ICRSpeed transportedSpeed;
+
+    double a = cos(delta()) * cos(phi()) - p.y()/Twist2DNorm::dmax * sin(delta());
+    double b = cos(delta()) * sin(phi()) + p.x()/Twist2DNorm::dmax * sin(delta());
+    double c = sin(delta());
+
+    double a2 = a*a;
+    double b2 = b*b;
+    double c2 = c*c;
+
+    transportedSpeed.ro( ro() * sqrt(a2 + b2 + c2) );
+    transportedSpeed.phi( atan2(b,a) - p.angle() );
+    transportedSpeed.delta( atan(c/sqrt(a2 + b2)) );
+
+    return transportedSpeed;
+}
+
+
 double ICRSpeed::distanceTo(ICRSpeed other, double coefTrans, double coefRot) const
 {
     return this->twist().distanceTo(other.twist(),coefTrans,coefRot);
+}
+
+bool ICRSpeed::operator ==(const ICRSpeed& other) const
+{
+    return (
+            this->ro() == other.ro()
+            && this->delta() == other.delta()
+            && this->phi() == other.phi()
+            );
+}
+
+bool ICRSpeed::operator !=(const ICRSpeed& other) const
+{
+    return ( ! (*this == other) );
 }

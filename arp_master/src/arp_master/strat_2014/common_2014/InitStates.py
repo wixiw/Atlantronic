@@ -33,8 +33,15 @@ class StartSequence2014(smach.StateMachine):
             #TODO : mettre la valeur de la distance 1500-face avant
             smach.StateMachine.add('SetRecalXPosition',
                       SetInitialPosition(1.450,0.500,0),
-                      transitions={'succeeded':'EscapeRecalX', 'timeout':'problem'})
+                      transitions={'succeeded':'Debug1', 'timeout':'problem'})
             
+            smach.StateMachine.add('Debug1', 
+                       WaitForStart(),
+                       transitions={'start':'Debug2','timeout':'WaitForStart'})
+            smach.StateMachine.add('Debug2',
+                      WaitForStartUnplug(),
+                      transitions={'startunplug':'EscapeRecalX', 'timeout':'problem'})
+                        
             smach.StateMachine.add('EscapeRecalX',
                       AmbiOpenLoopOrder(-0.1,0.0,0,0.5),
                       transitions={'succeeded':'PrepareRecalY', 'timeout':'PrepareRecalY'})

@@ -92,9 +92,9 @@ class Twist2D
          * \remarks la comparaison est basée sur la double comparaison des
          * composantes de la partie translation et de l'angle de la partie
          * rotation. La précision utilisée est ici celle des double. */
-        bool operator ==(Twist2D _other) const;
+        bool operator ==(const Twist2D& _other) const;
 
-        bool operator !=(Twist2D other) const;
+        bool operator !=(const Twist2D& other) const;
 
         /**
          * Retourne le Twist sous forme de Vecteur 3 (vx,vy,omega)

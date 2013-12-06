@@ -20,8 +20,8 @@ std::ostream &operator<<(std::ostream &flux, arp_math::ICR const& t)
 
 ICR::ICR(double phi, double delta)
 {
-    m_phi = phi;
-    m_delta = delta;
+    m_phi = betweenMinusPiAndPlusPi(phi);
+    m_delta = betweenMinusPiAndPlusPi(delta);
 }
 
 ICR::ICR(const ICR& icr)
@@ -133,7 +133,7 @@ void ICR::phi(double phi)
 
 void ICR::delta(double delta)
 {
-    m_delta = delta;
+    m_delta = betweenMinusPiAndPlusPi(delta);
 }
 
 std::string ICR::toString() const

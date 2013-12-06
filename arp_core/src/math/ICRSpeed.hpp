@@ -60,6 +60,14 @@ class ICRSpeed
         /** for a robot not moving, allow to create the ICRSpeed defined by the ICR at infinity with angle "angle" and a null speed*/
         static ICRSpeed createIdleFromTranslation(double angle);
 
+        /**
+         * Transporte ET réduit l'ICRSpeed courant dans le nouveau repère
+         * définit par la Pose2D du nouveau repère dans l'ancien.\n
+         * Le repère de projection ET de réduction sont modifiés :\n
+         */
+        ICRSpeed transport(const Pose2D & p) const;
+
+
         double ro() const;
         double phi() const;
         double delta() const;
@@ -83,6 +91,16 @@ class ICRSpeed
         /** affiche (vx,vy,vtheta) */
         std::string toString() const;
 
+        /** Opérateur d'égalité.
+         * \param _other la ICRSpeed à comparer.
+         * \returns vrai si les ICRSpeed sont exactement identiques
+         * \remarks la comparaison est basée sur la comparaison des
+         * composantes ro,delta et phi entre elles.
+         * La précision utilisée est ici celle des double. */
+        bool operator ==(const ICRSpeed& other) const;
+
+        bool operator !=(const ICRSpeed& other) const;
+
     protected:
         double m_ro;
         ICR m_ICR;
@@ -91,7 +109,7 @@ class ICRSpeed
 
 };
 
-std::ostream &operator<<(std::ostream &flux, arp_math::ICRSpeed const& t);
+std::ostream& operator<<(std::ostream& flux, arp_math::ICRSpeed const& t);
 
 }
 

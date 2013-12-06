@@ -122,14 +122,14 @@ BOOST_AUTO_TEST_CASE( Math_bubbleSort )
     }
     {
         Eigen::VectorXd v = arp_math::bubbleSort(Eigen::VectorXd::Random(10));
-        for(unsigned int i = 0 ; i < v.size()-1 ; i++)
+        for(int i = 0 ; i < v.size()-1 ; i++)
         {
             BOOST_CHECK( v(i+1) >= v(i) );
         }
     }
     {
         Eigen::VectorXd v = arp_math::bubbleSort(Eigen::VectorXd::Random(17));
-        for(unsigned int i = 0 ; i < v.size()-1 ; i++)
+        for(int i = 0 ; i < v.size()-1 ; i++)
         {
             BOOST_CHECK( v(i+1) >= v(i) );
         }
@@ -166,7 +166,7 @@ BOOST_AUTO_TEST_CASE( Math_bubbleSortIndices )
         std::pair< Eigen::VectorXd, Eigen::VectorXi> p = arp_math::bubbleSortIndices(v0);
         BOOST_CHECK( p.first.size() == v0.size() );
         BOOST_CHECK( p.second.size() == v0.size() );
-        for(unsigned int i = 0 ; i < p.first.size()-1 ; i++)
+        for(int i = 0 ; i < p.first.size()-1 ; i++)
         {
             BOOST_CHECK( p.first(i+1) >= p.first(i) );
             BOOST_CHECK_EQUAL( p.first(i), v0(p.second(i)) );
@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE( Math_bubbleSortIndices )
         std::pair< Eigen::VectorXd, Eigen::VectorXi> p = arp_math::bubbleSortIndices(v0);
         BOOST_CHECK( p.first.size() == v0.size() );
         BOOST_CHECK( p.second.size() == v0.size() );
-        for(unsigned int i = 0 ; i < p.first.size()-1 ; i++)
+        for(int i = 0 ; i < p.first.size()-1 ; i++)
         {
             BOOST_CHECK( p.first(i+1) >= p.first(i) );
             BOOST_CHECK_EQUAL( p.first(i), v0(p.second(i)) );

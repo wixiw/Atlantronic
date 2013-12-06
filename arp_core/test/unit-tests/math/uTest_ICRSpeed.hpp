@@ -269,3 +269,114 @@ BOOST_AUTO_TEST_CASE( ICRSpeed_normalizedRep)
     testGetNormalizedRep(1,PI/2,0,1,PI/2,0);
     testGetNormalizedRep(-2.3,PI/4,-PI/4,2.3,-3*PI/4,PI/4);
 }
+
+BOOST_AUTO_TEST_CASE( ICRSpeed_equal)
+{
+    ICRSpeed icr1 = ICRSpeed(0,0,0);
+    ICRSpeed icr2 = ICRSpeed(1,0,0);
+    ICRSpeed icr3 = ICRSpeed(0,1,0);
+    ICRSpeed icr4 = ICRSpeed(0,0,1);
+
+    BOOST_CHECK_EQUAL(icr1, icr1);
+    BOOST_CHECK_EQUAL(icr2, icr2);
+    BOOST_CHECK_EQUAL(icr3, icr3);
+    BOOST_CHECK_EQUAL(icr4, icr4);
+
+    BOOST_CHECK(icr1 != icr2);
+    BOOST_CHECK(icr1 != icr3);
+    BOOST_CHECK(icr1 != icr4);
+    BOOST_CHECK(icr2 != icr3);
+    BOOST_CHECK(icr2 != icr4);
+    BOOST_CHECK(icr3 != icr4);
+}
+
+
+BOOST_AUTO_TEST_CASE( ICRSpeed_transport_translation)
+{
+    Pose2D p1 = Pose2D(0,0,0);
+    Pose2D xu = Pose2D(3,0,0);
+    Pose2D yu = Pose2D(0,2,0);
+    Pose2D wu = Pose2D(0,0,1);
+
+    //check null speed transport
+    ICRSpeed icr1 = ICRSpeed(0,0,0);
+    ICRSpeed icr1_t = icr1.transport(p1);
+    ICRSpeed icr1xu_t = icr1.transport(xu);
+    ICRSpeed icr1yu_t = icr1.transport(yu);
+    ICRSpeed icr1wu_t = icr1.transport(wu);
+    ICRSpeed icr1wu = ICRSpeed(0,-wu.angle(),0);
+    BOOST_CHECK_EQUAL(icr1, icr1_t);
+    BOOST_CHECK_EQUAL(icr1, icr1xu_t);
+    BOOST_CHECK_EQUAL(icr1, icr1yu_t);
+    BOOST_CHECK_EQUAL(icr1wu, icr1wu_t); //=> as ICR is kept even for null speed, the default case is aligned forward.  so being in a rotated reference has an impact
+
+
+    //check vx speed transport
+    ICRSpeed icr2 = ICRSpeed(1,0,0);
+    ICRSpeed icr2_t = icr2.transport(p1);
+    ICRSpeed icr2xu_t = icr2.transport(xu);
+    ICRSpeed icr2yu_t = icr2.transport(yu);
+    ICRSpeed icr2wu_t = icr2.transport(wu);
+    ICRSpeed icr2wu = ICRSpeed(1,-wu.angle(),0);
+    BOOST_CHECK_EQUAL(icr2, icr2_t);
+    BOOST_CHECK_EQUAL(icr2, icr2xu_t);
+    BOOST_CHECK_EQUAL(icr2, icr2yu_t);
+    BOOST_CHECK_EQUAL(icr2wu, icr2wu_t);
+
+    //check vy speed transport
+    ICRSpeed icr3 = ICRSpeed(0,2,0);
+    ICRSpeed icr3_t = icr3.transport(p1);
+    ICRSpeed icr3xu_t = icr3.transport(xu);
+    ICRSpeed icr3yu_t = icr3.transport(yu);
+    ICRSpeed icr3wu_t = icr3.transport(wu);
+    ICRSpeed icr3wu = ICRSpeed(0,2-wu.angle(),0);
+    BOOST_CHECK_EQUAL(icr3, icr3_t);
+    BOOST_CHECK_EQUAL(icr3, icr3xu_t);
+    BOOST_CHECK_EQUAL(icr3, icr3yu_t);
+    BOOST_CHECK_EQUAL(icr3wu, icr3wu_t);
+
+    //check wy speed transport
+    ICRSpeed icr4 = ICRSpeed(5,0.3,0);
+    ICRSpeed icr4_t = icr4.transport(p1);
+    ICRSpeed icr4xu_t = icr4.transport(xu);
+    ICRSpeed icr4yu_t = icr4.transport(yu);
+    ICRSpeed icr4wu_t = icr4.transport(wu);
+    ICRSpeed icr4wu = ICRSpeed(5,0.3-wu.angle(),0.0);
+    BOOST_CHECK_EQUAL(icr4, icr4_t);
+    BOOST_CHECK_EQUAL(icr4, icr4xu_t);
+    BOOST_CHECK_EQUAL(icr4, icr4yu_t);
+    BOOST_CHECK_EQUAL(icr4wu, icr4wu_t);
+}
+
+BOOST_AUTO_TEST_CASE( ICRSpeed_transport_rotation)
+{
+    Pose2D xu = Pose2D(7,0,0);
+    Pose2D yu = Pose2D(0,5,0);
+    Pose2D wu = Pose2D(0,0,0.9);
+
+    //rotation pure à vitesse nulle
+    ICRSpeed icr1 = ICRSpeed(0,0,M_PI_2);
+    ICRSpeed icr1xu_t = icr1.transport(xu);
+    ICRSpeed icr1yu_t = icr1.transport(yu);
+    ICRSpeed icr1wu_t = icr1.transport(wu);
+    BOOST_CHECK_EQUAL(0.0, icr1xu_t.ro());
+    BOOST_CHECK_EQUAL(0.0, icr1yu_t.ro());
+    BOOST_CHECK_EQUAL(ICRSpeed(0,-wu.angle(),icr1.delta()), icr1wu_t);
+
+    //rotation pure
+    ICRSpeed icr2 = ICRSpeed(3,0,M_PI_2);
+    Twist2D t2 = Twist2D(icr2.twist());
+
+    ICRSpeed icr2xu_t = icr2.transport(xu);
+    Twist2D t2xu_t = t2.transport(xu);
+
+    ICRSpeed icr2yu_t = icr2.transport(yu);
+    Twist2D t2yu_t = t2.transport(yu);
+
+    ICRSpeed icr2wu_t = icr2.transport(wu);
+    Twist2D t2wu_t = t2.transport(wu);
+
+    BOOST_CHECK_EQUAL(ICRSpeed(t2xu_t), icr2xu_t);
+    BOOST_CHECK_EQUAL(ICRSpeed(t2yu_t), icr2yu_t);
+    BOOST_CHECK_EQUAL(ICRSpeed(t2wu_t), icr2wu_t);
+}

@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE( RnLPButterworthFilter_Test2 )
 
     double f1 = 0.6;
     double f2 = 20.;
-    unsigned int N = 10000;
+    //unsigned int N = 10000;
     for(unsigned int i = 0 ; i < 100 ; i++)
     {
         X(0)  = sin( 2. * M_PI * f1 * i * T);
