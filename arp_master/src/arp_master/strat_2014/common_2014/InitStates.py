@@ -13,8 +13,8 @@ class StartSequence2014(smach.StateMachine):
     def __init__(self,x,y,theta):
         smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
         with self:
-            smach.StateMachine.add('FindSteeringZeros',
-                      FindSteeringZeros(), 
+            smach.StateMachine.add('InitTurretZeros',
+                      InitTurretZeros(), 
                       transitions={'succeeded':'SetInitialPosition', 'problem':'problem'})
             
             smach.StateMachine.add('SetInitialPosition',

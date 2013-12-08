@@ -17,7 +17,7 @@ from Waiting import *
 
 
 
-class FindSteeringZeros(smach.StateMachine):
+class InitTurretZeros(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['succeeded','problem'])
         with self:
@@ -43,15 +43,14 @@ class StartSequence(smach.StateMachine):
     def __init__(self,x,y,theta):
         smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
         with self:
-            PreemptiveStateMachine.add('FindSteeringZeros',
-                      FindSteeringZeros(), 
-                      transitions={'succeeded':'SetInitialPosition', 'timeout':'problem'})
+            smach.StateMachine.add('InitTurretZeros',
+                      InitTurretZeros(), 
+                      transitions={'succeeded':'SetInitialPosition', 'problem':'problem'})
             
             smach.StateMachine.add('SetInitialPosition',
                       SetInitialPosition(x,y,theta),
                       transitions={'succeeded':'WaitForMatch', 'timeout':'problem'})
                         
-            
             smach.StateMachine.add('WaitForMatch', 
                       WaitForMatch(),
                       transitions={'start':'gogogo', 'timeout':'problem'})
