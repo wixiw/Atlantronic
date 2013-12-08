@@ -36,34 +36,12 @@ class Opening(PreemptiveStateMachine):
 # Go to Gay Camping point, align for DoubleShoot_1
             PreemptiveStateMachine.add('GayCamping',
                       AmbiOmniDirectOrder2(0.000, 0.400, -pi/2),
-                      transitions={'succeeded':'DoubleShoot_1', 'timeout':'problem'})
-# DoubleShoot_1            
-            PreemptiveStateMachine.add('DoubleShoot_1',
-                      WaiterState(5),
-                      #transitions={'timeout':'TurnDoubleShoot_2'})
-                      transitions={'timeout':'GoToFresco'})
-            
-# 2x DoubleShoots on Mammoths, turn of 0.085 RAD = 5 DEG
+                      transitions={'succeeded':'ShootBalls', 'timeout':'problem'})
 
-            #  Turn DoubleShoot_2
-            #PreemptiveStateMachine.add('TurnDoubleShoot_2',
-            #          AmbiTurnOrder(-pi/2 + 0.00),
-            #          transitions={'succeeded':'DoubleShoot_2', 'timeout':'problem'})
-            
-            # DoubleShoot_2            
-            #PreemptiveStateMachine.add('DoubleShoot_2',
-            #          WaiterState(1.5),
-            #          transitions={'timeout':'TurnDoubleShoot_3'})
-            
-            #  Turn DoubleShoot_3
-            #PreemptiveStateMachine.add('TurnDoubleShoot_3',
-            #          AmbiTurnOrder(-pi/2 - 0.08),
-            #          transitions={'succeeded':'DoubleShoot_3', 'timeout':'problem'})
-            
-            # DoubleShoot_3           
-            #PreemptiveStateMachine.add('DoubleShoot_3',
-            #          WaiterState(1.5),
-            #          transitions={'timeout':'GoToFresco'})
+#Shoot Balls
+            PreemptiveStateMachine.add('ShootBalls',
+                      DoubleTargetShootState(),
+                      transitions={'endShoot':'GoToFresco', 'problem':'problem'})
                         
 # Go to Fresco
             PreemptiveStateMachine.add('GoToFresco',

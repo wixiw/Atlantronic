@@ -8,7 +8,8 @@ class Robot2014(RobotVierge):
 
  #cf robot vierge pour position classiques chassis
     
-    #temps en s avant la fin pour faire la fin de jeu
-    END_GAME_DELAY = 1
+    #dernier delai en s avant la fin du match pour entrer dans l'etat EOG
+    SWITCH_TO_EOG_DELAY = 1
+    
     
     
