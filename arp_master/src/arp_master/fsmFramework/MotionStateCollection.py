@@ -19,11 +19,11 @@ from math import *
 # It uses the 2014 displacement orders
 # Ex : AmbiOmniDirectOrder2(1.200, -0.700,pi/2)  
 class AmbiOmniDirectOrder2(MotionState):
-    def __init__(self,x,y,theta, vmax=-1.0):
+    def __init__(self, pose2D, vmax=-1.0):
         MotionState.__init__(self)
-        self.x = x
-        self.y = y
-        self.theta = theta
+        self.x = pose2D.x
+        self.y = pose2D.y
+        self.theta = pose2D.theta
         self.vmax = vmax
         
     def createAction(self):
@@ -31,13 +31,13 @@ class AmbiOmniDirectOrder2(MotionState):
         self.omnidirect2(self.pose.x, self.pose.y, self.pose.theta, self.vmax)
 
 class AmbiOmniDirectOrder2Pass(MotionState):
-    def __init__(self,x,y,theta,vpasse=-1.0, vmax=-1.0):
+    def __init__(self, pose2D, vmax=-1.0, vpasse=-1.0):
         MotionState.__init__(self)
-        self.x = x
-        self.y = y
-        self.theta = theta
-        self.vpasse=vpasse
+        self.x = pose2D.x
+        self.y = pose2D.y
+        self.theta = pose2D.theta
         self.vmax = vmax
+        self.vpasse=vpasse
         
     def createAction(self):
         self.pose = AmbiPoseYellow(self.x, self.y, self.theta, Data.color)
@@ -57,24 +57,24 @@ class Rewind(CyclicActionState):
 # Use this Order State to quickly add move state in your FSM (see AmbiOmniDirectOrder for details)
 # Only use this if you are forced to specify a color dependent move (else prefer AmbiOmniDirectOrder)    
 class OmniDirectOrder2(MotionState):
-    def __init__(self,x,y,theta,vmax=-1.0):
+    def __init__(self, pose2D, vmax=-1.0):
         MotionState.__init__(self)
-        self.x = x
-        self.y = y
-        self.theta = theta
-        self.vmax=vmax
+        self.x = pose2D.x
+        self.y = pose2D.y
+        self.theta = pose2D.theta
+        self.vmax = vmax
         
     def createAction(self):
         self.omnidirect2(self.x,self.y,self.theta,self.vmax)        
 
 class OmniDirectOrder2Pass(MotionState):
-    def __init__(self,x,y,theta,vpasse,vmax=-1.0):
+    def __init__(self, pose2D, vmax=-1.0, vpasse=-1.0):
         MotionState.__init__(self)
-        self.x = x
-        self.y = y
-        self.theta = theta
-        self.vpasse = vpasse
+        self.x = pose2D.x
+        self.y = pose2D.y
+        self.theta = pose2D.theta
         self.vmax = vmax
+        self.vpasse=vpasse
         
     def createAction(self):
         self.omnidirect2Pass(self.x,self.y,self.theta,self.vpasse,self.vmax) 

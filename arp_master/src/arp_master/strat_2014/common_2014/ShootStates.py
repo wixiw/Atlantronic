@@ -7,11 +7,13 @@ from arp_master import *
 from Table2014 import *
 from Robot2014 import *
 
-# This action shoot 3 balls on each mamouths (so a total of 6 balls is shot).
-#In order to use this action you have de go to the entry point DoubleTargetShootState.getEntryPoint()
+# This action shoot 3 balls on each mammoths (so a total of 6 balls are shot).
+#In order to use this action you have to go to the entry point DoubleTargetShootState.getEntryPoint()
 class DoubleTargetShootState(PreemptiveStateMachine):
-    def getEntryPoint(self):
-        return #TODO !!!!
+    
+    @staticmethod
+    def getEntryYellowPose():
+        return Pose2D(0.000, 0.400, -pi/2);
     
     def __init__(self):
         PreemptiveStateMachine.__init__(self,outcomes=['endShoot','problem'])
@@ -25,6 +27,7 @@ class DoubleTargetShootState(PreemptiveStateMachine):
                       WaiterState(5),
                       #transitions={'timeout':'TurnDoubleShoot_2'})
                       transitions={'timeout':'endShoot'})
+
             self.setInitialState('DoubleShoot')
             
 # 2x DoubleShoots on Mammoths, turn of 0.085 RAD = 5 DEG

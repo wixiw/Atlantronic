@@ -116,20 +116,15 @@ class TableVierge:
         #rospy.loginfo("getNextHalfAmbiHoraire: %s -> %s", table_half, next_half)
         return next_half
         
-class AmbiPoseYellow:
+class AmbiPoseYellow(Pose2D):
     def __init__(self,x,y,theta,color):
         if color=='yellow':
-            self.x=x
-            self.y=y
-            self.theta=theta
+            Pose2D.__init__(self,x,y,theta)
         elif color=='red':
             self.x=-x
-            self.y=y
-            self.theta=normalizeAngle(pi-theta)
+            Pose2D.__init__(self,-x,y,normalizeAngle(pi-theta))
         else:
-            self.x=0
-            self.y=0
-            self.theta=0
+            Pose2D.__init__(0,0,0)
             rospy.logerr("AmbiPoseYellow : default case : color not defined !!")
             
 class AmbiCapYellow:
@@ -144,18 +139,12 @@ class AmbiCapYellow:
             
             
 
-class AmbiControlPointYellow:
+class AmbiControlPointYellow(Pose2D):
     def __init__(self,x,y,theta,color):
         if color=='red':
-            self.x=x
-            self.y=y
-            self.theta=theta
+            Pose2D.__init__(self,x,y,theta)
         elif color=='yellow':
-            self.x=x
-            self.y=-y
-            self.theta=normalizeAngle(-theta)
+            Pose2D.__init__(self,x,-y,normalizeAngle(-theta))
         else:
-            self.x=0
-            self.y=0
-            self.theta=0
+            Pose2D.__init__(0,0,0)
             rospy.loginfo("AmbiControlPointYellow : default case : color (%s)  not defined !!",color)

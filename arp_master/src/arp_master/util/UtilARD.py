@@ -47,6 +47,31 @@ class Point(object):
     def toAmbiPose(self,theta,color):       
         """ permet de convertir le point en une ambicase. """
         return AmbiPoseYellow(self.x,self.y,theta,color)
+
+class Pose2D(Point):
+    def __init__(self, x=0, y=0, theta=0):
+        Point.__init__(self,x,y)
+        self.theta=theta
+        
+    def toAmbiPose(self,color):  
+        return AmbiPoseYellow(self.x,self.y,self.theta,color)
+    
+    def __add__(self, p):
+        return Pose(self.x+p.x, self.y+p.y, normalizeAngle(self.theta+p.theta))
+    
+    def __mul__(self, k):
+        return Pose(self.x*k, self.y*k, normalizeAngle(self.theta*k))
+    
+    def __sub__(self, p):
+        return Point(self.x-p.x, self.y-p.y,normalizeAngle(self.theta-p.theta))
+ 
+    def __repr__(self):
+        """return a string representation of this point. This method is
+        called by the repr() function, and
+        also the str() function. It should produce a string that, when
+        evaluated, returns a point with the 
+        same data."""
+        return 'Point(%f,%f,%f)' % (self.x, self.y,self.theta) 
     
 def normalizeAngle(angle):
     angle=angle%(2*pi)

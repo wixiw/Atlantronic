@@ -15,7 +15,7 @@ class MiddleGame(PreemptiveStateMachine):
 
 # Go to Red Fire Bot
             PreemptiveStateMachine.add('GoToRFB',
-                      AmbiOmniDirectOrder2(-0.400 - Robot2014.FRONT_SIDE.x, -0.600, 0, 1.0),
+                      AmbiOmniDirectOrder2(Pose2D(-0.400 - Robot2014.FRONT_SIDE.x, -0.600, 0), vmax=1.0),
                       transitions={'succeeded':'PickRFB', 'timeout':'ReverseOrder'})
             
 #as initial state is not the preemptive one, it is necessary to add the information here !
@@ -28,7 +28,7 @@ class MiddleGame(PreemptiveStateMachine):
                       transitions={'timeout':'EtatB'})
                         
             PreemptiveStateMachine.add('EtatB',
-                      AmbiOmniDirectOrder2(0.700,-0.000,pi,0.300),
+                      AmbiOmniDirectOrder2(Pose2D(0.700,-0.000,pi), vmax=0.300),
                       transitions={'succeeded':'PickRFB', 'timeout':'ReverseOrder'})
         
             PreemptiveStateMachine.add('ReverseOrder',
