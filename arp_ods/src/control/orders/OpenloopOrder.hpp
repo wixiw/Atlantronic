@@ -28,13 +28,9 @@ class OpenloopOrder: public MotionOrder
          */
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-        OpenloopOrder();
-        OpenloopOrder(MotionOrder);
+        OpenloopOrder(const OrderGoalConstPtr &goal, arp_math::UbiquityMotionState currentMotionState,
+orders::config conf);
 
-        /**
-         * Override to define specific parameters
-         */
-        static shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, UbiquityMotionState currentMotionState, orders::config conf  );
 
         /**
          *

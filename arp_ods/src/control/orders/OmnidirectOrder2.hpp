@@ -29,14 +29,10 @@ class OmnidirectOrder2: public MotionOrder
          */
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-        OmnidirectOrder2();
+        OmnidirectOrder2(const OrderGoalConstPtr &goal, arp_math::UbiquityMotionState currentMotionState,
+                orders::config conf);
         ~OmnidirectOrder2(){};
-        OmnidirectOrder2(MotionOrder);
 
-        /**
-         * Override to define specific parameters
-         */
-        static boost::shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, arp_math::UbiquityMotionState currentMotionState, orders::config conf  );
 
         /**
          *

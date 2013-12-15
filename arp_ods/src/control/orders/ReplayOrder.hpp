@@ -28,13 +28,7 @@ class ReplayOrder: public MotionOrder
          */
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-        ReplayOrder();
-        ReplayOrder(MotionOrder);
-
-        /**
-         * Override to define specific parameters
-         */
-        static shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal,UbiquityMotionState currentMotionState, orders::config conf  );
+        ReplayOrder(const OrderGoalConstPtr &goal,UbiquityMotionState currentMotionState, orders::config conf );
 
         /**
          *

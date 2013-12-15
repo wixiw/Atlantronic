@@ -8,66 +8,132 @@
 #ifndef MOTIONORDER_HPP_
 #define MOTIONORDER_HPP_
 
-#include "ModeSelector.hpp"
-#include <arp_ods/OrderAction.h>
-#include <boost/shared_ptr.hpp>
+#include "OrderConfig.hpp"
+#include <models/core>
 #include <math/core>
+#include <boost/shared_ptr.hpp>
 #include "control/ICRSpeedBuffer.hpp"
 #include "control/OnlineTrajectoryGenerator.hpp"
-
+#include <arp_ods/OrderAction.h>
 
 using namespace arp_math;
 
-namespace arp_ods{ namespace orders
+enum Mode
 {
+    MODE_INIT = 1, MODE_RUN = 2, MODE_DONE = 4, MODE_ERROR = 5
+};
 
 enum OrderType
 {
-    NO_ORDER, STAY_IN_POSITION, TRANSLATE, ROTATE, FANTOM, OMNIDIRECT, OMNIDIRECT2, OPENLOOP, REPLAY
+    STAY, OMNIDIRECT2, OPENLOOP, REPLAY
 };
+
+namespace arp_ods
+{
+namespace orders
+{
+
+
 
 
 /**
  * A motion order is containing all required information to execute an order.
  * You have to call the computeSpeed function periodically to execute the order.
  *
- * The order is a child of ModeSelector which is owning the default mode behavior. See its documentation
- * as some required stuff for a special order is in it (pass,begin/end point, accuracy...)
  *
  * TODO WLA : implémenter l'identifiant unique
  */
 
-class MotionOrder: public ModeSelector
+class MotionOrder
 {
     public:
-        /**
-         * Copy constructor
-         */
-        MotionOrder(const MotionOrder& order);
-
-        /**
-         * Default constructor
-         */
-        MotionOrder();
+        MotionOrder(const OrderGoalConstPtr &goal, arp_math::UbiquityMotionState currentMotionState,
+                orders::config conf);
 
         virtual ~MotionOrder();
+        /**
+         * Define configurable attributes
+         */
+        virtual void setConf(arp_ods::orders::config conf);
+
+        /**
+         * Call this function every cycle to check if a new Mode is available.
+         * If a Mode is available, the new Mode is automatically entered
+         */
+        void switchMode(arp_math::UbiquityMotionState currentMotionState);
+
+        /**
+         * Switch the mode back to MODE_INIT
+         * be careful when doing this.
+         */
+        void resetMode();
+
+        /**
+         *  will test for timeout and if true, set mode to ERROR
+         */
+        void testTimeout();
+
+        /**
+         * Returns the distance to the m_endMotionState
+         * @param currentPosition : current position of the robot
+         */
+        virtual double getRemainingDistance(arp_math::UbiquityMotionState currentMotionState);
+
+        /**
+         * Returns the angle difference (normalized) between m_endMotionState and currentPosition
+         * @param currentPosition : current position of the robot
+         */
+        virtual double getRemainingAngle(arp_math::UbiquityMotionState currentMotionState);
+
+        /**
+         * Returns the distance from the m_beginMotionState
+         * @param currentPosition : current position of the robot
+         */
+        virtual double getCoveredDistance(arp_math::UbiquityMotionState currentMotionState);
+
+        /**
+         * Returns the Begin pose m_beginMotionState
+         */
+        arp_math::UbiquityMotionState getBeginMotionState() const;
+
+        /**
+         * Returns the End pose m_endMotionState
+         */
+        arp_math::UbiquityMotionState getEndMotionState() const;
+
+        /*
+         * returns the control point
+         */
+        arp_math::Pose2D getCpoint() const;
+        /**
+         * Returns the pass mode
+         */
+        bool getPass() const;
+
+        /**
+         * Returns the current Mode m_currentMode
+         */
+        Mode getMode() const;
+
+        /**
+         * Define the pass Mode
+         */
+        void setPass(bool pass);
+        void setPassSpeed(double passSpeed);
+
+        void setBeginMotionState(arp_math::UbiquityMotionState beginMotionState);
+        void setEndMotionState(arp_math::UbiquityMotionState endMotionState);
+        void setCpoint(arp_math::Pose2D cpoint);
 
         /**
          * Compute the motor set points according to the current mode.
          * @param currentMotionState : current Robot position
          * @param dt : time since last call
+         * Pure virtual function
          */
-        virtual ICRSpeed computeSpeed(UbiquityMotionState currentMotionState,UbiquityParams params, double dt);
+        virtual ICRSpeed computeSpeed(UbiquityMotionState currentMotionState, UbiquityParams params, double dt)=0;
 
-        /**
-         * Factory to create an order with default parameters from the order
-         * TODO il faudrait une vraie Factory en dehors, parce que là c'est un peu Joe La Bricole
-         * @param goal : action lib goal to process
-         * @param currentMotionState : current motion state of the robot
-         * @param conf : automation parameters (gains)
-         * @return : a MotionOrder to execute
-         */
-        static boost::shared_ptr<MotionOrder> createOrder( const OrderGoalConstPtr &goal, UbiquityMotionState currentMotionState, orders::config conf  );
+
 
         /**
          * Returns the type of the order
@@ -87,7 +153,7 @@ class MotionOrder: public ModeSelector
         /*
          * set
          */
-        void setICRSpeedBuffer(ICRSpeedBuffer twistBuffer );
+        void setICRSpeedBuffer(ICRSpeedBuffer twistBuffer);
         void setOTG(OnlineTrajectoryGenerator * OTG_);
 
         /*
@@ -100,9 +166,9 @@ class MotionOrder: public ModeSelector
         double outDEBUG5;
         double outDEBUG6;
         double outDEBUG7;
-        double  outDEBUG8;
-        double  outDEBUG9;
-        double  outDEBUG10;
+        double outDEBUG8;
+        double outDEBUG9;
+        double outDEBUG10;
 
         /**
          * is smooth localization needed ?
@@ -115,6 +181,61 @@ class MotionOrder: public ModeSelector
         void setVmax(double vmax);
 
     protected:
+        /** MotionState of the expected begin of the move */
+        arp_math::UbiquityMotionState m_beginMotionState;
+
+        /** MotionState of the expected end of the move */
+        arp_math::UbiquityMotionState m_endMotionState;
+
+        /** Control point on the robot */
+        arp_math::Pose2D m_cpoint;
+
+        /** motion without stop at the end */
+        bool m_pass;
+        double m_passSpeed;
+
+        /** mode of operation*/
+        Mode m_currentMode;
+
+        /** configuration */
+        config m_conf;
+
+        /** Date at which we entered the PASS Mode */
+        long double m_passTime;
+
+        /** Date at which we entered the INIT Mode **/
+        long double m_initTime;
+
+        /** Date at which we entered the approach Mode **/
+        long double m_approachTime;
+
+        /** Date at which we entered the run mode **/
+        long double m_runTime;
+
+        /**
+         * This function is called by switchMode when m_currentMode==MODE_INIT
+         */
+        virtual void switchInit(arp_math::UbiquityMotionState currentMotionState);
+
+        /**
+         * This function is called by switchMode when m_currentMode==MODE_RUN
+         */
+        virtual void switchRun(arp_math::UbiquityMotionState currentMotionState);
+
+        /**
+         * This function is called by switchMode when m_currentMode==MODE_DONE
+         */
+        virtual void switchDone(arp_math::UbiquityMotionState currentMotionState);
+
+        /**
+         * This function is called by switchMode when m_currentMode==MODE_ERROR
+         */
+        virtual void switchError(arp_math::UbiquityMotionState currentMotionState);
+
+
+
+
+
         /** type of the current order */
         OrderType m_type;
         /** twist in case of openloop */
@@ -140,6 +261,7 @@ class MotionOrder: public ModeSelector
 
 };
 
-}}
+}
+}
 
 #endif /* MOTIONORDER_HPP_ */

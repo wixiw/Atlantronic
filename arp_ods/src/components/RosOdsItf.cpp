@@ -26,9 +26,10 @@ RosOdsItf::RosOdsItf(std::string const name):
     createOrocosInterface();
     createRosInterface();
 
-    m_order = orders::defaultOrder;
+    m_order = OrderFactory::createDefaultOrder();
 
     //C'est une conf par defaut safe ! Utiliser le fichier de conf dans script/orocos/conf pour modifier
+    // TODO remover ce truc de looser
     propOrderConfig.RADIUS_APPROACH_ZONE = 0.020;
     propOrderConfig.ANGLE_ACCURACY = deg2rad(10);
     propOrderConfig.DISTANCE_ACCURACY = 0.007;
@@ -71,52 +72,14 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
     bool tmp;
     bool finished;
 
-    /*
-    //if a goal was already defined it is refused
-    if (m_order->getType() != NO_ORDER)
-    {
-        ROS_ERROR(
-                "MotionControl : you are trying to send a new order (%s) since the last one is not processed. It won't be performed, try to interrupt it before",
-                goal->move_type.c_str());
-        goto abort;
-    }
-*/
-
-    //TODO a remplacer par une factory plus efficace
-    char string[250];
-
     inPose.readNewest(pose);
     inSpeed.readNewest(speed);
     UbiquityMotionState currentMotionState(pose,speed);
-
-    if (goal->move_type == "OMNIDIRECT")
-    {
-        m_order = OmnidirectOrder::createOrder(goal, currentMotionState, propOrderConfig);
-        sprintf( string, "new Omnidirect goal (%0.3f,%0.3f,%0.3f) pass %d @ %0.3f m/s", goal->x_des, goal->y_des,
-                goal->theta_des, goal->passe, goal->passe_speed);
-        arp_ods::orders::Log(Info) << string << endlog();
-    }
     
-    if (goal->move_type == "OMNIDIRECT2")
+    if (goal->move_type == "OMNIDIRECT2" or goal->move_type == "OPENLOOP" or goal->move_type == "REPLAY" or goal->move_type == "STAY")
     {
-        m_order = OmnidirectOrder2::createOrder(goal, currentMotionState, propOrderConfig);
-        sprintf( string, "new Omnidirect2 goal (%0.3f,%0.3f,%0.3f) pass %d @ %0.3f m/s", goal->x_des, goal->y_des,
-                goal->theta_des, goal->passe, goal->passe_speed);
-        arp_ods::orders::Log(Info) << string << endlog();
-    }
-    else if (goal->move_type == "OPENLOOP")
-    {
-        m_order = OpenloopOrder::createOrder(goal, currentMotionState, propOrderConfig);
-        sprintf( string, "new Openloop goal Twist:(%0.3f,%0.3f,%0.3f) time : %0.3f ", goal->x_speed, goal->y_speed,
-                goal->theta_speed, goal->openloop_duration);
-        arp_ods::orders::Log(Info) << string << endlog();
-    }
-    else if (goal->move_type == "REPLAY")
-    {
-        m_order = ReplayOrder::createOrder(goal, currentMotionState, propOrderConfig);
-        sprintf( string, "new Replay goal Twist:(%0.3f,%0.3f,%0.3f) time : %0.3f ", goal->x_speed, goal->y_speed,
-                goal->theta_speed, goal->openloop_duration);
-        arp_ods::orders::Log(Info) << string << endlog();
+        m_order=OrderFactory::createOrder(goal, currentMotionState, propOrderConfig);
+        arp_ods::orders::Log(Info) << " New Order! " << goal->move_type<<endlog();
     }
     else
     {
@@ -126,10 +89,8 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
 
     if( m_ooSetOrder(m_order) == false )
     {
-
         goto abort;
     }
-
 
     //TODO WLA mettre ça dans order
     //m_orderSelector.setWorkTimeout(15);
@@ -183,7 +144,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         result.x_end = pose.x();
         result.y_end = pose.y();
         result.theta_end = pose.h();
-        m_order = orders::defaultOrder;
+        m_order = OrderFactory::createStayOrder(currentMotionState, propOrderConfig);
         m_ooSetOrder(m_order);
         m_actionServer.setAborted(result);
         return;
@@ -193,13 +154,10 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         result.x_end = pose.x();
         result.y_end = pose.y();
         result.theta_end = pose.h();
-        //je veux laisser vivre mon ordre ! qu'il puisse finir son asservissement sur le point final pendant que ca fait de la bouine dans le master
-        //m_order = orders::defaultOrder;
-        //m_ooSetOrder(m_order);
         m_actionServer.setSucceeded(result);
         return;
     preempted:
-        m_order = orders::defaultOrder;
+        m_order = OrderFactory::createStayOrder(currentMotionState, propOrderConfig);
         m_ooSetOrder(m_order);
         m_actionServer.setPreempted();
         return;

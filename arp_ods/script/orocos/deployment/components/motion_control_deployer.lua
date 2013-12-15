@@ -1,15 +1,15 @@
 dofile("/opt/ard/arp_core/script/orocos/deployment/component_deployer_object.lua")
 
-LittleSexControlDeployer = ComposantDeployer:new()
+MotionControlDeployer = ComposantDeployer:new()
 local me = "MotionControl"
 
-function LittleSexControlDeployer:load()
-	Deployer:loadComponent(me,"arp_ods::LittleSexControl");
+function MotionControlDeployer:load()
+	Deployer:loadComponent(me,"arp_ods::MotionControl");
 	Deployer:setMasterSlaveActivity("MotionScheduler", me)
 end
 
 
-function LittleSexControlDeployer:connect()
+function MotionControlDeployer:connect()
 	Deployer:addPeer("Reporting", me)
 	RluMonitor = Deployer:getPeer("RluMonitor");
 	Deployer:addPeer("RluMonitor", me);

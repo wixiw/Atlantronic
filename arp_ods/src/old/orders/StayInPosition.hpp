@@ -16,10 +16,10 @@ namespace arp_ods{ namespace orders
 /**
  *  The robot is asked to stay on the position when in MODE_INIT
  */
-class StayInPosition: public MotionOrder
+class StayOrder: public MotionOrder
 {
     public:
-        StayInPosition();
+        StayOrder();
         virtual arp_math::Twist2D computeSpeed(arp_math::Pose2D currentPosition);
 };
 

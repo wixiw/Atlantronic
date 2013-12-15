@@ -14,6 +14,7 @@
 #include <arp_core/Pose.h>
 #include <actionlib/server/simple_action_server.h>
 #include "control/orders/orders.h"
+#include "control/orders/OrderFactory.hpp"
 #include <arp_ods/OrderAction.h>
 #include <arp_ods/SetVMax.h>
 

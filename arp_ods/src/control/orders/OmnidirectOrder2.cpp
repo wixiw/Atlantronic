@@ -13,9 +13,12 @@ using namespace orders;
 using namespace arp_core::log;
 using namespace boost;
 
-OmnidirectOrder2::OmnidirectOrder2() :
-        MotionOrder()
+OmnidirectOrder2::OmnidirectOrder2(const OrderGoalConstPtr &goal, arp_math::UbiquityMotionState currentMotionState,
+        orders::config conf) :
+        MotionOrder(goal, currentMotionState, conf)
+
 {
+
     m_type = OMNIDIRECT2;
     m_v_correction_old = Twist2D(0, 0, 0);
     m_twist_init = Twist2D(0, 0, 0);
@@ -25,68 +28,53 @@ OmnidirectOrder2::OmnidirectOrder2() :
     m_predictedAcc = 0;
     m_lastRo = 0;
 
-}
-
-OmnidirectOrder2::OmnidirectOrder2(MotionOrder order) :
-        MotionOrder(order)
-{
-}
-
-shared_ptr<MotionOrder> OmnidirectOrder2::createOrder(const OrderGoalConstPtr &goal,
-        arp_math::UbiquityMotionState currentMotionState, orders::config conf)
-{
-    shared_ptr<OmnidirectOrder2> order(new OmnidirectOrder2());
-
     UbiquityMotionState beginMotionState;
     UbiquityMotionState endMotionState;
     Pose2D end;
     Pose2D cpoint;
 
-    order->setBeginMotionState(currentMotionState);
+    setBeginMotionState(currentMotionState);
 
     cpoint.x(goal->x_cpoint);
     cpoint.y(goal->y_cpoint);
     cpoint.h(goal->theta_cpoint);
-    order->setCpoint(cpoint);
+    setCpoint(cpoint);
 
     end.x(goal->x_des);
     end.y(goal->y_des);
     end.h(goal->theta_des);
     endMotionState.setPosition(end);
+    setPass(goal->passe);
     if (goal->passe == false)
+    {
         endMotionState.getSpeed().ro(0.0);
+    }
     else
+    {
         endMotionState.getSpeed().ro(goal->passe_speed);
+        setPassSpeed(goal->passe_speed);
+    }
 
-    order->setEndMotionState(endMotionState);
-
-    order->setPass(goal->passe);
-    order->setPassSpeed(goal->passe_speed);
+    setEndMotionState(endMotionState);
 
     if (goal->max_speed > 0.0 and goal->max_speed < conf.LIN_VEL_MAX)
-        order->m_vmax_order = goal->max_speed;
+        m_vmax_order = goal->max_speed;
     else
-        order->m_vmax_order = conf.LIN_VEL_MAX;
+        m_vmax_order = conf.LIN_VEL_MAX;
 
     //mettre m_timeout a la bonne valeur pour pas perdre trop de temps
     // il s'agit de timeout = timeout max  si v = 0 et timeoutmin si v=lindec
     // TODO et oui j'ecrase la conf comme un gros porcasse
-    conf.ORDER_TIMEOUT = TIMEOUTMAX + (TIMEOUTMIN - TIMEOUTMAX) / (conf.LIN_VEL_MAX) * order->m_vmax_order;
+    conf.ORDER_TIMEOUT = TIMEOUTMAX + (TIMEOUTMIN - TIMEOUTMAX) / (conf.LIN_VEL_MAX) * m_vmax_order;
 
-    order->setConf(conf);
-
-    Log(INFO) << order->getTypeString() << " from [" << ((Pose2D) (beginMotionState.getPosition())).toString()
-            << "] to [" << end.toString() << "] control_point=[" << cpoint.toString() << "]" << "pass = "
-            << order->m_pass << " @ " << order->m_passSpeed << " m/s";
-
-    return static_cast<shared_ptr<MotionOrder> >(order);
 }
+
 
 void OmnidirectOrder2::switchInit(arp_math::UbiquityMotionState currentMotionState)
 {
     m_oldICRSpeed = currentMotionState.getSpeed();
     Log(DEBUG) << "---curICRSpeed initialise " << m_oldICRSpeed.toString();
-    ModeSelector::switchInit(currentMotionState);
+    MotionOrder::switchInit(currentMotionState);
 }
 
 void OmnidirectOrder2::switchRun(arp_math::UbiquityMotionState currentMotionState)
@@ -94,18 +82,9 @@ void OmnidirectOrder2::switchRun(arp_math::UbiquityMotionState currentMotionStat
 
     if (getPositionInNormalRef(currentMotionState.getPosition()).getTVector().norm() < m_conf.DISTANCE_ACCURACY)
     {
-        if (m_pass == false)
-        {
-            Log(INFO) << getTypeString() << " switched MODE_RUN --> MODE_DONE " << "because in final zone ";
-            m_currentMode = MODE_DONE;
-            return;
-        }
-        else
-        {
-            Log(INFO) << getTypeString() << " switched MODE_RUN --> MODE_PASS " << "because in final zone ";
-            m_currentMode = MODE_PASS;
-            return;
-        }
+        Log(INFO) << getTypeString() << " switched MODE_RUN --> MODE_DONE " << "because in final zone ";
+        m_currentMode = MODE_DONE;
+        return;
     }
 
     testTimeout();
@@ -209,7 +188,7 @@ double OmnidirectOrder2::profileRoJerking(double distance, ICRSpeed curICRSpeed,
         }
         else
         { //decel
-            //ross = max(ros, curRo - accStep);
+          //ross = max(ros, curRo - accStep);
         }
     }
     else
@@ -220,7 +199,7 @@ double OmnidirectOrder2::profileRoJerking(double distance, ICRSpeed curICRSpeed,
         }
         else
         { //"diminution du mouvement"
-            //ross = min(ros, curRo + accStep);
+          //ross = min(ros, curRo + accStep);
         }
     }
 
@@ -340,6 +319,7 @@ void OmnidirectOrder2::decideSmoothNeeded(arp_math::Pose2D & currentPosition)
 }
 ICRSpeed OmnidirectOrder2::computeSpeed(UbiquityMotionState currentMotionState, UbiquityParams params, double dt)
 {
+
     Pose2D currentPosition = currentMotionState.getPosition();
     decideSmoothNeeded(currentPosition);
     ICRSpeed curICRSpeed = currentMotionState.getSpeed();
@@ -349,12 +329,12 @@ ICRSpeed OmnidirectOrder2::computeSpeed(UbiquityMotionState currentMotionState, 
         return ICRSpeed(0, curICRSpeed.getICR());
     }
 
-    if (m_currentMode == MODE_PASS)
+    if (m_currentMode == MODE_DONE and m_pass == true)
     {
         return curICRSpeed;
     }
 
-    if (m_currentMode == MODE_RUN or m_currentMode == MODE_DONE)
+    if (m_currentMode == MODE_RUN or (m_currentMode == MODE_DONE and m_pass == false))
     {
         // curICRSpeed est dans le repere robot il faut  le mettre dans le repere target
         curICRSpeed.phi(curICRSpeed.phi() - m_endMotionState.getPosition().h() + currentPosition.h());

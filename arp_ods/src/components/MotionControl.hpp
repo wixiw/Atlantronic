@@ -1,25 +1,26 @@
 /*
- * LittleSexControl.hpp
+ * MotionControl.hpp
  *
  *  Created on: Apr 1, 2012
  *      Author: ard
  */
 
-#ifndef LITTLESEXCONTROL_HPP_
-#define LITTLESEXCONTROL_HPP_
+#ifndef MOTIONCONTROL_HPP_
+#define MOTIONCONTROL_HPP_
 
 #include "taskcontexts/OdsTaskContext.hpp"
 #include "control/orders/orders.h"
+#include "control/orders/OrderFactory.hpp"
 #include "control/ICRSpeedBuffer.hpp"
 #include <math/core>
 
 namespace arp_ods
 {
 
-class LittleSexControl: public OdsTaskContext
+class MotionControl: public OdsTaskContext
 {
     public:
-        LittleSexControl(const std::string& name);
+        MotionControl(const std::string& name);
         void updateHook();
         void stopHook();
 
@@ -172,4 +173,4 @@ class LittleSexControl: public OdsTaskContext
 };
 
 } /* namespace arp_ods */
-#endif /* LITTLESEXCONTROL_HPP_ */
+#endif /* MOTIONCONTROL_HPP_ */
