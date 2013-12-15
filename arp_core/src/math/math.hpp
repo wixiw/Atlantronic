@@ -15,9 +15,6 @@
 
 #include <vector>
 
-//a supprimer quand tout le mode aura switché a betweenMinusPiAndPlusPi
-#define normalizeAngle betweenMinusPiAndPlusPi
-
 namespace arp_math
 {
     typedef Eigen::Vector2d Vector2;
