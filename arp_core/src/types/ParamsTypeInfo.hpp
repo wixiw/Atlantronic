@@ -36,23 +36,11 @@ using namespace RTT;
              a & make_nvp("maxSteeringAcc",           params.getMaxSteeringAccRef());
              a & make_nvp("maxDrivingTorque",      params.getMaxDrivingTorqueRef());
              a & make_nvp("maxSteeringTorque",        params.getMaxSteeringTorqueRef());
+             a & make_nvp("maxRobotSpeed",      params.getMaxRobotSpeedRef());
+             a & make_nvp("maxRobotAccel",        params.getMaxRobotAccelRef());
       }
     }
   }
-
-
-//  // Displaying:
-//  std::ostream& operator<<(std::ostream& os, const Pose2D& pose)
-//  {
-//      return os << "(" << pose.x() << "," << pose.y() << "," << pose.angle() << ")";
-//  }
-//
-//  // Reading :
-//  std::istream& operator>>(std::istream& is, Pose2D& cd) {
-//      char c;
-//     return is >> c >> cd;
-//  }
-
 
   // The RTT helper class which uses the above function behind the scenes:
 struct ParamsTypeInfo: public RTT::types::StructTypeInfo<UbiquityParams,false>

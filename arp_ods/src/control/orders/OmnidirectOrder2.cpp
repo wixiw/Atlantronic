@@ -14,8 +14,8 @@ using namespace arp_core::log;
 using namespace boost;
 
 OmnidirectOrder2::OmnidirectOrder2(const OrderGoalConstPtr &goal, arp_math::UbiquityMotionState currentMotionState,
-        orders::config conf) :
-        MotionOrder(goal, currentMotionState, conf)
+        UbiquityParams params) :
+        MotionOrder(goal, currentMotionState, params)
 
 {
 
@@ -57,15 +57,15 @@ OmnidirectOrder2::OmnidirectOrder2(const OrderGoalConstPtr &goal, arp_math::Ubiq
 
     setEndMotionState(endMotionState);
 
-    if (goal->max_speed > 0.0 and goal->max_speed < conf.LIN_VEL_MAX)
+    if (goal->max_speed > 0.0 and goal->max_speed < m_params.getMaxRobotAccel())
         m_vmax_order = goal->max_speed;
     else
-        m_vmax_order = conf.LIN_VEL_MAX;
+        m_vmax_order = m_params.getMaxRobotSpeed();
 
     //mettre m_timeout a la bonne valeur pour pas perdre trop de temps
     // il s'agit de timeout = timeout max  si v = 0 et timeoutmin si v=lindec
-    // TODO et oui j'ecrase la conf comme un gros porcasse
-    conf.ORDER_TIMEOUT = TIMEOUTMAX + (TIMEOUTMIN - TIMEOUTMAX) / (conf.LIN_VEL_MAX) * m_vmax_order;
+    m_timeout = TIMEOUTMAX + (TIMEOUTMIN - TIMEOUTMAX) / (m_params.getMaxRobotSpeed()) * m_vmax_order;
+    Log(DEBUG) << "timeout initialise a " << m_timeout;
 
 }
 
@@ -80,7 +80,7 @@ void OmnidirectOrder2::switchInit(arp_math::UbiquityMotionState currentMotionSta
 void OmnidirectOrder2::switchRun(arp_math::UbiquityMotionState currentMotionState)
 {
 
-    if (getPositionInNormalRef(currentMotionState.getPosition()).getTVector().norm() < m_conf.DISTANCE_ACCURACY)
+    if (getPositionInNormalRef(currentMotionState.getPosition()).getTVector().norm() < RO_ACCURACY)
     {
         Log(INFO) << getTypeString() << " switched MODE_RUN --> MODE_DONE " << "because in final zone ";
         m_currentMode = MODE_DONE;
@@ -118,9 +118,9 @@ double OmnidirectOrder2::profileRo(double distance, ICRSpeed curICRSpeed)
     Log(DEBUG) << "start.position" << start.position;
     Log(DEBUG) << "start.velocity" << start.velocity;
     Log(DEBUG) << "end.position" << end.position;
-    Log(DEBUG) << "m_conf.LIN_VEL_MAX" << m_conf.LIN_VEL_MAX;
-    Log(DEBUG) << "m_conf.LIN_DEC" << m_conf.LIN_DEC;
-    bool OTGres = OTG->computeNextStepCheap(start, end, m_conf.LIN_VEL_MAX, m_conf.LIN_DEC, m_conf.LIN_DEC * 5, next);
+    Log(DEBUG) << "m_conf.LIN_VEL_MAX" << m_params.getMaxRobotSpeed();
+    Log(DEBUG) << "m_conf.LIN_DEC" << m_params.getMaxRobotAccel();
+    bool OTGres = OTG->computeNextStepCheap(start, end, m_params.getMaxRobotSpeed(), m_params.getMaxRobotAccel(), m_params.getMaxRobotAccel() * 5, next);
     Log(DEBUG) << "--->next.velocity" << next.velocity;
 
     if (OTGres)
@@ -229,6 +229,7 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
 
     Log(DEBUG) << ">>computeRunTwist  ";
     Log(DEBUG) << "dt donne =  " << dt;
+   //TODO remove moi ca bataaaard !
     dt = 0.010;
     Log(DEBUG) << "currentPositionNorm  " << currentPositionNorm.toString();
     Log(DEBUG) << "curICRSpeed  " << curICRSpeed.toString();
@@ -317,7 +318,7 @@ void OmnidirectOrder2::decideSmoothNeeded(arp_math::Pose2D & currentPosition)
         outDEBUG8 = 0.0;
 
 }
-ICRSpeed OmnidirectOrder2::computeSpeed(UbiquityMotionState currentMotionState, UbiquityParams params, double dt)
+ICRSpeed OmnidirectOrder2::computeSpeed(UbiquityMotionState currentMotionState, double dt)
 {
 
     Pose2D currentPosition = currentMotionState.getPosition();

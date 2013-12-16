@@ -28,12 +28,12 @@ class StayOrder: public MotionOrder
          */
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-        StayOrder(const OrderGoalConstPtr &goal,UbiquityMotionState currentMotionState, orders::config conf  );
+        StayOrder(const OrderGoalConstPtr &goal,UbiquityMotionState currentMotionState, UbiquityParams params );
 
         /**
          *
          */
-        virtual arp_math::ICRSpeed computeSpeed(UbiquityMotionState currentMotionState,UbiquityParams params, double dt);
+        virtual arp_math::ICRSpeed computeSpeed(UbiquityMotionState currentMotionState, double dt);
 
 
 };

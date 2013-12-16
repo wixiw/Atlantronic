@@ -13,25 +13,11 @@ namespace arp_ods{ namespace orders
 
 struct config
 {
-    /** This default parameter defines the APPROACH mode area in m*/
-    double RADIUS_APPROACH_ZONE;
 
-    /** This default parameter defines the condition in distance to end motion in m*/
-    double DISTANCE_ACCURACY;
-
-    /** This default parameter defines the condition in angle to end motion in rad*/
-    double ANGLE_ACCURACY;
-
-    /** Pass default timeout */
-    double PASS_TIMEOUT;
-
+        /*chaque ordre doit calculer son timeout */
     /** Order timeout*/
     double ORDER_TIMEOUT;
 
-    /**
-     * final velocity
-     */
-     double VEL_FINAL;
 
      /*
       * maximum linear speed

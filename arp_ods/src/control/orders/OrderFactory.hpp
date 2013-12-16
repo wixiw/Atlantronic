@@ -9,7 +9,6 @@
 #define ORDERFACTORY_H_
 
 #include "control/orders/orders.h"
-#include "OrderConfig.hpp"
 #include <models/core>
 #include <math/core>
 #include <boost/shared_ptr.hpp>
@@ -36,9 +35,9 @@ class OrderFactory
          * @return : a MotionOrder to execute
          */
         static boost::shared_ptr<MotionOrder> createOrder(const OrderGoalConstPtr &goal,
-                UbiquityMotionState currentMotionState, orders::config conf);
+                UbiquityMotionState currentMotionState, UbiquityParams params);
 
-        static boost::shared_ptr<MotionOrder> createStayOrder(UbiquityMotionState currentMotionState, orders::config conf);
+        static boost::shared_ptr<MotionOrder> createStayOrder(UbiquityMotionState currentMotionState, UbiquityParams params);
 
         static boost::shared_ptr<MotionOrder> createDefaultOrder();
 };

@@ -9,6 +9,8 @@
 #include <rtt/Component.hpp>
 #include "control/orders/Logger.hpp"
 
+#include <iostream>
+
 using namespace arp_math;
 using namespace arp_ods;
 using namespace orders;
@@ -20,31 +22,15 @@ ORO_LIST_COMPONENT_TYPE( arp_ods::RosOdsItf )
 RosOdsItf::RosOdsItf(std::string const name):
         OdsTaskContext(name),
         m_actionServer("MotionControl", boost::bind(&RosOdsItf::newOrderCB, this, _1), false),
-        propOrderConfig(),
         m_blockTime(0.0)
 {
+    arp_ods::orders::Logger::InitFile("arp_ods", DEBUG);
+
     createOrocosInterface();
     createRosInterface();
 
     m_order = OrderFactory::createDefaultOrder();
 
-    //C'est une conf par defaut safe ! Utiliser le fichier de conf dans script/orocos/conf pour modifier
-    // TODO remover ce truc de looser
-    propOrderConfig.RADIUS_APPROACH_ZONE = 0.020;
-    propOrderConfig.ANGLE_ACCURACY = deg2rad(10);
-    propOrderConfig.DISTANCE_ACCURACY = 0.007;
-
-    propOrderConfig.LIN_VEL_MAX = 0.3;
-    propOrderConfig.ANG_VEL_MAX = 1.0;
-    propOrderConfig.VEL_FINAL = 0.100;
-
-    propOrderConfig.ORDER_TIMEOUT = 10.0;
-    propOrderConfig.PASS_TIMEOUT = 1.0;
-
-    propOrderConfig.LIN_DEC=1.0;
-    propOrderConfig.ANG_DEC=3.0;
-
-    arp_ods::orders::Logger::InitFile("arp_ods", DEBUG);
 }
 
 bool RosOdsItf::configureHook()
@@ -52,7 +38,6 @@ bool RosOdsItf::configureHook()
     bool res = OdsTaskContext::configureHook();
     res &= getOperation("MotionControl",      "ooSetOrder",  m_ooSetOrder);
     res &= getOperation("MotionControl",      "ooSetVMax",  m_ooSetVMax);
-    //TODO implementer le hook qui va bien pour checker la propOrderConfig
     return res;
 }
 
@@ -69,16 +54,19 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
     OrderResult result;
     EstimatedPose2D pose;
     EstimatedICRSpeed speed;
+    UbiquityParams params;
     bool tmp;
     bool finished;
 
     inPose.readNewest(pose);
     inSpeed.readNewest(speed);
+    inParams.readNewest(params);
+
     UbiquityMotionState currentMotionState(pose,speed);
     
     if (goal->move_type == "OMNIDIRECT2" or goal->move_type == "OPENLOOP" or goal->move_type == "REPLAY" or goal->move_type == "STAY")
     {
-        m_order=OrderFactory::createOrder(goal, currentMotionState, propOrderConfig);
+        m_order=OrderFactory::createOrder(goal, currentMotionState, params);
         arp_ods::orders::Log(Info) << " New Order! " << goal->move_type<<endlog();
     }
     else
@@ -144,7 +132,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         result.x_end = pose.x();
         result.y_end = pose.y();
         result.theta_end = pose.h();
-        m_order = OrderFactory::createStayOrder(currentMotionState, propOrderConfig);
+        m_order = OrderFactory::createStayOrder(currentMotionState, params);
         m_ooSetOrder(m_order);
         m_actionServer.setAborted(result);
         return;
@@ -157,7 +145,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         m_actionServer.setSucceeded(result);
         return;
     preempted:
-        m_order = OrderFactory::createStayOrder(currentMotionState, propOrderConfig);
+        m_order = OrderFactory::createStayOrder(currentMotionState, params);
         m_ooSetOrder(m_order);
         m_actionServer.setPreempted();
         return;
@@ -168,46 +156,16 @@ bool RosOdsItf::setVMaxCallback(SetVMax::Request& req, SetVMax::Response& res)
     return m_ooSetVMax(req.vMax);
 }
 
-void RosOdsItf::ooSetNewSpeedConf(double linSpeed, double angSpeed)
-{
-    if( linSpeed > 0 && linSpeed < 10 )
-        propOrderConfig.LIN_VEL_MAX = linSpeed;
-    else
-        arp_ods::orders::Log(Error) << "You required a new linSpeed for propOrderConfig.LIN_VEL_MAX which is out range (check units ? sign ?)" << endlog();
-
-    if( angSpeed > 0 && angSpeed < 30 )
-        propOrderConfig.ANG_VEL_MAX = angSpeed;
-    else
-        arp_ods::orders::Log(Error) << "You required a new angSpeed for propOrderConfig.ANG_VEL_MAX which is out range (check units ? sign ?)" << endlog();
-}
-
-void RosOdsItf::ooSetNewAccConf(double linAcc, double angAcc)
-{
-    if( linAcc > 0 && linAcc < 15 )
-        propOrderConfig.LIN_DEC = linAcc;
-    else
-        arp_ods::orders::Log(Error) << "You required a new linAcc for propOrderConfig.LIN_DEC which is out range (check units ? sign ?)" << endlog();
-
-    if( angAcc > 0 && angAcc < 50 )
-        propOrderConfig.ANG_DEC = angAcc;
-    else
-        arp_ods::orders::Log(Error) << "You required a new angAcc for propOrderConfig.ANG_DEC which is out range (check units ? sign ?)" << endlog();
-}
 
 void RosOdsItf::createOrocosInterface()
 {
-    addProperty("propOrderConfig",propOrderConfig);
-
     addPort("inPose",inPose);
     addPort("inSpeed",inSpeed);
+    addPort("inParams",inParams);
     addPort("inCurrentOrderIsFinished",inCurrentOrderIsFinished);
     addPort("inCurrentOrderIsInError",inCurrentOrderIsInError);
     addPort("inRobotBlocked",inRobotBlocked);
 
-    addOperation("ooSetNewSpeedConf", &RosOdsItf::ooSetNewSpeedConf,
-            this, OwnThread) .doc("Use this the define new maximal speeds in propOrderConfig.");
-    addOperation("ooSetNewAccConf", &RosOdsItf::ooSetNewAccConf,
-            this, OwnThread) .doc("Use this the define new maximal accelerations in propOrderConfig.");
 }
 
 void RosOdsItf::createRosInterface()

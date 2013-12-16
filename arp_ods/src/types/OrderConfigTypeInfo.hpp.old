@@ -14,10 +14,6 @@ using namespace RTT;
       template<class Archive>
       void serialize( Archive & a, config& conf, unsigned int) {
          using boost::serialization::make_nvp;
-             a & make_nvp("RADIUS_APPROACH_ZONE",   conf.RADIUS_APPROACH_ZONE);
-             a & make_nvp("DISTANCE_ACCURACY",      conf.DISTANCE_ACCURACY );
-             a & make_nvp("ANGLE_ACCURACY",         conf.ANGLE_ACCURACY );
-             a & make_nvp("PASS_TIMEOUT",           conf.PASS_TIMEOUT );
              a & make_nvp("ORDER_TIMEOUT",          conf.ORDER_TIMEOUT );
              a & make_nvp("VEL_FINAL",              conf.VEL_FINAL );
              a & make_nvp("LIN_VEL_MAX",            conf.LIN_VEL_MAX );

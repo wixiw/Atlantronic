@@ -53,7 +53,7 @@ class KinematicBase: public OdsTaskContext
          match the same size, I prefer getting them from HML instead of computed it from inTwist. And to finish wit
          we need internally Turret speeds anyway to compute couplings so it doesn't cost much to take the entire state */
         RTT::InputPort<arp_model::MotorState> inMotorState;
-        /** Geometric parameters */
+        /** Ubiquity parameters */
         RTT::InputPort<arp_model::UbiquityParams> inParams;
 
         RTT::OutputPort<double> outLeftDrivingVelocityCmd;

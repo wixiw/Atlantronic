@@ -8,7 +8,6 @@
 #ifndef MOTIONORDER_HPP_
 #define MOTIONORDER_HPP_
 
-#include "OrderConfig.hpp"
 #include <models/core>
 #include <math/core>
 #include <boost/shared_ptr.hpp>
@@ -48,13 +47,9 @@ class MotionOrder
 {
     public:
         MotionOrder(const OrderGoalConstPtr &goal, arp_math::UbiquityMotionState currentMotionState,
-                orders::config conf);
+                UbiquityParams params);
 
         virtual ~MotionOrder();
-        /**
-         * Define configurable attributes
-         */
-        virtual void setConf(arp_ods::orders::config conf);
 
         /**
          * Call this function every cycle to check if a new Mode is available.
@@ -62,11 +57,6 @@ class MotionOrder
          */
         void switchMode(arp_math::UbiquityMotionState currentMotionState);
 
-        /**
-         * Switch the mode back to MODE_INIT
-         * be careful when doing this.
-         */
-        void resetMode();
 
         /**
          *  will test for timeout and if true, set mode to ERROR
@@ -131,7 +121,7 @@ class MotionOrder
          * @param dt : time since last call
          * Pure virtual function
          */
-        virtual ICRSpeed computeSpeed(UbiquityMotionState currentMotionState, UbiquityParams params, double dt)=0;
+        virtual ICRSpeed computeSpeed(UbiquityMotionState currentMotionState, double dt)=0;
 
 
 
@@ -197,20 +187,14 @@ class MotionOrder
         /** mode of operation*/
         Mode m_currentMode;
 
-        /** configuration */
-        config m_conf;
-
-        /** Date at which we entered the PASS Mode */
-        long double m_passTime;
-
         /** Date at which we entered the INIT Mode **/
         long double m_initTime;
 
-        /** Date at which we entered the approach Mode **/
-        long double m_approachTime;
-
         /** Date at which we entered the run mode **/
         long double m_runTime;
+
+        /** date at which the order shall stop */
+        double m_timeout;
 
         /**
          * This function is called by switchMode when m_currentMode==MODE_INIT
@@ -242,8 +226,6 @@ class MotionOrder
         Twist2D m_openloop_twist;
         /** duration of the command in case of openloop */
         double m_openloop_duration;
-        /** unique ID of the order */
-        int m_id;
         /*
          * buffer of twist for replaying backward
          */
@@ -258,6 +240,11 @@ class MotionOrder
          *  a pointer to the profile computation library
          */
         OnlineTrajectoryGenerator * OTG;
+
+        /*
+         * ubiquity parameters, given at creation of the order
+         */
+        UbiquityParams m_params;
 
 };
 

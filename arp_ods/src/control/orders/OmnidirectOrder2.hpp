@@ -30,7 +30,7 @@ class OmnidirectOrder2: public MotionOrder
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
         OmnidirectOrder2(const OrderGoalConstPtr &goal, arp_math::UbiquityMotionState currentMotionState,
-                orders::config conf);
+                UbiquityParams params);
         ~OmnidirectOrder2(){};
 
 
@@ -38,7 +38,7 @@ class OmnidirectOrder2: public MotionOrder
          *
          */
         //virtual arp_math::Twist2D computeSpeed(Pose2D currentPosition,MotorState motorState,UbiquityParams params, double dt);
-        virtual ICRSpeed computeSpeed(arp_math::UbiquityMotionState currentMotionState, UbiquityParams params, double dt);
+        virtual ICRSpeed computeSpeed(arp_math::UbiquityMotionState currentMotionState, double dt);
 
 
         /*
@@ -119,7 +119,7 @@ class OmnidirectOrder2: public MotionOrder
         static const double TIMEOUTMAX=10;
         static const double TIMEOUTMIN=5;
 
-
+        static const double RO_ACCURACY=0.005;
 
 private:
     Pose2D getPositionError_RobotRef(arp_math::Pose2D currentPosition);

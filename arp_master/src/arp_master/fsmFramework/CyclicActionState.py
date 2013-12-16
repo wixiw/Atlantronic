@@ -206,7 +206,7 @@ class CyclicActionState(CyclicState):
     def cap(self,theta,v_max=-1.0):
         self.createMotionControlAction_cpoint(0.0,0,0,
                                               Inputs.getx(),Inputs.gety(),theta,
-                                              'OMNIDIRECT',False,0,
+                                              'OMNIDIRECT2',False,0,
                                               0,0,0,0,v_max)
     
     #Commande en vitesse pendant un temps donne    

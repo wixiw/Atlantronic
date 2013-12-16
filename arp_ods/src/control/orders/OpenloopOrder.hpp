@@ -12,6 +12,7 @@
 #include "math/math.hpp"
 #include <boost/shared_ptr.hpp>
 #include <math/core>
+#include <models/core>
 
 using namespace boost;
 
@@ -29,13 +30,13 @@ class OpenloopOrder: public MotionOrder
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
         OpenloopOrder(const OrderGoalConstPtr &goal, arp_math::UbiquityMotionState currentMotionState,
-orders::config conf);
+UbiquityParams params);
 
 
         /**
          *
          */
-        virtual ICRSpeed computeSpeed(UbiquityMotionState currentMotionState,UbiquityParams params, double dt);
+        virtual ICRSpeed computeSpeed(UbiquityMotionState currentMotionState, double dt);
 
         /*
          * returns the error on position between actual an objective,  in table referential

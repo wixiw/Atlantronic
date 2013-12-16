@@ -14,12 +14,14 @@
 BOOST_AUTO_TEST_CASE( UbiquityKinematics_checkTest )
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
     BOOST_CHECK_EQUAL( params.check() , true);
 }
 
 BOOST_AUTO_TEST_CASE( UbiquityKinematics_leftWheelDiameter )
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
     //null
     params.setLeftWheelDiameter(0.0);
     BOOST_CHECK_EQUAL( params.check() , false);
@@ -34,6 +36,7 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_leftWheelDiameter )
 BOOST_AUTO_TEST_CASE( UbiquityKinematics_rightWheelDiameter )
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
     //null
     params.setRightWheelDiameter(0.0);
     BOOST_CHECK_EQUAL( params.check() , false);
@@ -48,6 +51,7 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_rightWheelDiameter )
 BOOST_AUTO_TEST_CASE( UbiquityKinematics_rearWheelDiameter )
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
     //null
     params.setRearWheelDiameter(0.0);
     BOOST_CHECK_EQUAL( params.check() , false);

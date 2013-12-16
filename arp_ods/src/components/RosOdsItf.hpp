@@ -33,22 +33,9 @@ class RosOdsItf: public OdsTaskContext
         RTT::InputPort<arp_math::EstimatedICRSpeed> inSpeed;
         RTT::InputPort<bool> inCurrentOrderIsFinished;
         RTT::InputPort<bool> inCurrentOrderIsInError;
-
         RTT::InputPort<bool> inRobotBlocked;
-
-        /**
-         * Use this the define new maximal speeds in propOrderConfig
-         * @param linSpeed : maximal linear speed in m/s
-         * @param angSpeed : maximal angular speed in rad/s
-         */
-        void ooSetNewSpeedConf(double linSpeed, double angSpeed);
-
-        /**
-         * Use this the define new maximal accelerations in propOrderConfig
-         * @param linSpeed : maximal linear speed in m/s
-         * @param angSpeed : maximal angular speed in rad/s
-         */
-        void ooSetNewAccConf(double linAcc, double angAcc);
+        /** Ubiquity parameters */
+        RTT::InputPort<arp_model::UbiquityParams> inParams;
 
         /**
          * Actionlib server.
@@ -60,9 +47,6 @@ class RosOdsItf: public OdsTaskContext
          * newOrderCB is blocking by design of the action lib
          */
         shared_ptr<orders::MotionOrder> m_order;
-
-        /** Motion control configuration. They are feeded with rosparam during init */
-        orders::config propOrderConfig;
 
         /**
          * Tells if the current order is finished with success. It is finished when the robot is in PASS mode when the order

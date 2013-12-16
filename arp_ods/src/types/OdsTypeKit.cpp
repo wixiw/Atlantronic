@@ -8,7 +8,6 @@
 #include <rtt/types/TemplateConstructor.hpp>
 
 #include "OdsTypeKit.hpp"
-#include "OrderConfigTypeInfo.hpp"
 
 using namespace RTT;
 using namespace arp_ods;
@@ -21,9 +20,6 @@ std::string OdsTypeKit::getName()
 bool OdsTypeKit::loadTypes()
 {
     bool res = true;
-
-    // Tell the RTT the name and type of this struct
-    res &= types::Types()->addType( new OrderConfigTypeInfo() );
 
     return res;
 }

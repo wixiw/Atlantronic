@@ -10,7 +10,6 @@
 
 #include <math/core>
 
-
 namespace arp_model
 {
 
@@ -18,6 +17,9 @@ class UbiquityParams
 {
     public:
         UbiquityParams();
+
+        /** this function is used by unit tests to create a default parameters list*/
+        void fillWithFakeValues(void);
 
         //use this to check to validity of params
         bool check() const;
@@ -46,6 +48,9 @@ class UbiquityParams
         double getMaxDrivingMotorAcc() const;
         double getMaxDrivingMotorSpeed() const;
 
+        double getMaxRobotAccel() const;
+        double getMaxRobotSpeed() const;
+
         double& getLeftTurretZeroRef();
         double& getRearTurretZeroRef();
         double& getRightTurretZeroRef();
@@ -64,6 +69,8 @@ class UbiquityParams
         double& getMaxSteeringAccRef();
         double& getMaxSteeringSpeedRef();
         double& getMaxSteeringTorqueRef();
+        double& getMaxRobotAccelRef();
+        double& getMaxRobotSpeedRef();
 
         void setLeftTurretZero(double leftTurretZero);
         void setRearTurretZero(double rearTurretZero);
@@ -72,6 +79,8 @@ class UbiquityParams
         void setRearWheelDiameter(double rearWheelDiameter);
         void setRightWheelDiameter(double rightWheelDiameter);
 
+        void setMaxRobotAccel(double maxRobotAccel);
+        void setMaxRobotSpeed(double maxRobotSpeed);
 
     protected:
         /** Position du moteur de direction en rad lorsque le moteur est sur le top tour. ATTENTION : peut être en dehors de -PI/PI*/
@@ -113,7 +122,6 @@ class UbiquityParams
         /** Couple maximal en Nm qu'une roue peut fournir au sol */
         double m_maxDrivingTorque;
 
-
         /**
          * Note : on peut exprimer les limitations cinématiques sur la tourelle parce qu'il n'y a pas de couplage côté direction
          */
@@ -123,6 +131,11 @@ class UbiquityParams
         double m_maxSteeringAcc;
         /** Couple maximal en Nm que la tourelle peut fournir par rapport au chassis */
         double m_maxSteeringTorque;
+
+        /** Vitesse maximale du robot, exprimee en ro de l'ICRSpeed */
+        double m_maxRobotSpeed;
+        /** Acceleration maximale du robot, exprime en derivee de ro de l'ICRSpeed */
+        double m_maxRobotAccel;
 
 };
 

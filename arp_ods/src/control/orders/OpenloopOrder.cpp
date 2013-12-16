@@ -7,14 +7,15 @@
 
 #include "OpenloopOrder.hpp"
 #include "control/orders/Logger.hpp"
+
 using namespace arp_math;
 using namespace arp_ods;
 using namespace orders;
 using namespace std;
 
 OpenloopOrder::OpenloopOrder(const OrderGoalConstPtr &goal, arp_math::UbiquityMotionState currentMotionState,
-        orders::config conf) :
-        MotionOrder(goal, currentMotionState, conf)
+        UbiquityParams params) :
+        MotionOrder(goal, currentMotionState, params)
 {
     m_type = OPENLOOP;
 
@@ -33,7 +34,7 @@ OpenloopOrder::OpenloopOrder(const OrderGoalConstPtr &goal, arp_math::UbiquityMo
     else
         m_openloop_duration = MAX_OPENLOOP_TIME;
 
-    setConf(conf);
+    m_timeout=m_openloop_duration+1.0;
 }
 
 
@@ -56,7 +57,7 @@ void OpenloopOrder::switchRun(UbiquityMotionState currentMotionState)
 
 }
 
-ICRSpeed OpenloopOrder::computeSpeed(UbiquityMotionState currentMotionState, UbiquityParams params, double dt)
+ICRSpeed OpenloopOrder::computeSpeed(UbiquityMotionState currentMotionState, double dt)
 {
     m_smoothLocNeeded = false;
 
@@ -71,8 +72,8 @@ ICRSpeed OpenloopOrder::computeSpeed(UbiquityMotionState currentMotionState, Ubi
     double t_left = (m_initTime + m_openloop_duration) - getTime();
 
     //find the time when to begin deceleration
-    double deceleration_time_lin = v_correction_ref_init.speedNorm() / m_conf.LIN_DEC;
-    double deceleration_time_rot = fabs(v_correction_ref_init.vh()) / m_conf.ANG_DEC;
+    double deceleration_time_lin = v_correction_ref_init.speedNorm() / m_params.getMaxRobotAccel();
+    double deceleration_time_rot = fabs(v_correction_ref_init.vh()) / m_params.getMaxRobotAccel();
     double deceleration_time = max(deceleration_time_lin, deceleration_time_rot);
 
     //is the twist the nominal one or is it reduced because approaching end time ?
@@ -93,15 +94,15 @@ ICRSpeed OpenloopOrder::computeSpeed(UbiquityMotionState currentMotionState, Ubi
     // LINEAR (always positive)
     //limit due to acceleration and deceleration
     double vmaxlin_sataccdec = firstDerivateLimitation(v_correction_ref.speedNorm(), m_v_correction_old.speedNorm(), dt,
-            -m_conf.LIN_DEC, m_conf.LIN_DEC);
+            -m_params.getMaxRobotAccel(), m_params.getMaxRobotAccel());
     //selection of the smallest
-    double vmaxlin = min(vmaxlin_sataccdec, m_conf.LIN_VEL_MAX);
+    double vmaxlin = min(vmaxlin_sataccdec, m_params.getMaxRobotAccel());
 
     //ANGULAR (signed)
     double vmaxrot_sataccdec = fabs(
-            firstDerivateLimitation(v_correction_ref.vh(), m_v_correction_old.vh(), dt, -m_conf.ANG_DEC,
-                    m_conf.ANG_DEC));
-    double vmaxrot = min(vmaxrot_sataccdec, m_conf.ANG_VEL_MAX);
+            firstDerivateLimitation(v_correction_ref.vh(), m_v_correction_old.vh(), dt, -m_params.getMaxRobotAccel(),
+                    m_params.getMaxRobotAccel()));
+    double vmaxrot = min(vmaxrot_sataccdec, m_params.getMaxRobotAccel());
 
     //selection of the most saturating
     double satvlin;

@@ -14,7 +14,7 @@ using namespace arp_ods;
 using namespace orders;
 using namespace RTT;
 using namespace std;
-using namespace arp_core::log;
+//using namespace arp_core::log;
 using namespace arp_math;
 
 ORO_LIST_COMPONENT_TYPE( arp_ods::MotionControl)
@@ -23,11 +23,13 @@ MotionControl::MotionControl(const std::string& name) :
         OdsTaskContext(name), attrVmax_asked(1.0), attrCurrentOrder("default"), m_ICRSpeedBuffer(), OTG()
 
 {
+    //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
+     arp_ods::orders::Logger::InitFile("arp_ods", DEBUG);
+
     attrOrder=OrderFactory::createDefaultOrder();
     createOrocosInterface();
 
-    //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
-    arp_ods::orders::Logger::InitFile("arp_ods", DEBUG);
+
 }
 
 void MotionControl::getInputs()
@@ -63,7 +65,7 @@ void MotionControl::updateHook()
     // calcule les consignes
     attrOrder->setVmax(attrVmax_asked);
 
-    attrComputedICRSpeedCmd = attrOrder->computeSpeed(attrMotionState, attrParams, attrCanPeriod);
+    attrComputedICRSpeedCmd = attrOrder->computeSpeed(attrMotionState, attrCanPeriod);
 
     /*
      * DEBUG: recuperation des données de l'omnidirect

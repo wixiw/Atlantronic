@@ -42,7 +42,7 @@ std::ostream& operator<<(std::ostream& os, const Mode& mode)
 }
 
 MotionOrder::MotionOrder(const OrderGoalConstPtr &goal, arp_math::UbiquityMotionState currentMotionState,
-        orders::config conf)
+        UbiquityParams params)
 {
     m_smoothLocNeeded=false;
     m_error_old=Pose2D(0,0,0);
@@ -58,12 +58,14 @@ MotionOrder::MotionOrder(const OrderGoalConstPtr &goal, arp_math::UbiquityMotion
 
     Log(DEBUG) << "m_currentMode  " << m_currentMode;
 
-    m_passTime = 0;
+
     // -1 is used to recognize non initialized time
     m_initTime = -1;
-    m_approachTime = -1;
 
-    setConf(conf);
+    m_timeout=-1;
+
+    m_params=params;
+
 }
 
 
@@ -101,11 +103,6 @@ std::string MotionOrder::getTypeString() const
     return "ERROR";
 }
 
-void MotionOrder::setId(int id)
-{
-    m_id = id;
-}
-
 void MotionOrder::setICRSpeedBuffer(ICRSpeedBuffer twistBuffer )
 {
     m_twistBuffer = twistBuffer;
@@ -121,18 +118,8 @@ void MotionOrder::setVmax(double vmax)
 if (vmax>=0.0)
     m_vmax_asked=vmax;
 else
-    m_vmax_asked=m_conf.LIN_VEL_MAX;
+    m_vmax_asked=m_params.getMaxRobotSpeed();
 
-}
-
-void MotionOrder::resetMode()
-{
-    m_currentMode = MODE_INIT;
-}
-
-void MotionOrder::setConf(config conf)
-{
-    m_conf=conf;
 }
 
 void MotionOrder::switchInit(UbiquityMotionState currentMotionState)
@@ -265,7 +252,7 @@ void MotionOrder::testTimeout()
     double t = getTime();
     double time_elapsed = t - m_initTime;
 
-    if (m_initTime != -1 and time_elapsed > m_conf.ORDER_TIMEOUT)
+    if (m_initTime != -1 and time_elapsed > m_timeout)
     {
         Log(INFO) << "switched from " << getMode() << " to MODE_ERROR because of dt=" << time_elapsed;
         m_currentMode = MODE_ERROR;

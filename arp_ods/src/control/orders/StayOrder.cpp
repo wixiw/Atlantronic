@@ -12,15 +12,16 @@ using namespace arp_ods;
 using namespace orders;
 using namespace arp_core::log;
 
-StayOrder::StayOrder(const OrderGoalConstPtr &goal,UbiquityMotionState currentMotionState, orders::config conf  ) :
-    MotionOrder(goal,currentMotionState,conf)
+StayOrder::StayOrder(const OrderGoalConstPtr &goal,UbiquityMotionState currentMotionState, UbiquityParams params ) :
+    MotionOrder(goal,currentMotionState,params)
 {
     m_type = STAY;
+    m_timeout=1000;
 }
 
 
 
-ICRSpeed StayOrder::computeSpeed(UbiquityMotionState currentMotionState,UbiquityParams params, double dt)
+ICRSpeed StayOrder::computeSpeed(UbiquityMotionState currentMotionState, double dt)
 {
     m_smoothLocNeeded = false;
     return ICRSpeed(0,0,0);
