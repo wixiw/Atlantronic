@@ -15,6 +15,8 @@
 
 #include <vector>
 
+#define normalizeAngle betweenMinusPiAndPlusPi
+
 namespace arp_math
 {
     typedef Eigen::Vector2d Vector2;
