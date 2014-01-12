@@ -49,7 +49,7 @@ class MainStateMachine(smach.StateMachine):
             
             smach.StateMachine.add('SetInitialPosition',
                       SetInitialPosition(0.750, 0, 0),
-                      transitions={'succeeded':'AmbiOmniDirectOrder2', 'timeout':'end'})
+                      transitions={'succeeded':'Move', 'timeout':'end'})
             
 
             

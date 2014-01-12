@@ -221,18 +221,8 @@ double OmnidirectOrder2::profileRoJerking(double distance, ICRSpeed curICRSpeed,
     return ro_sat_acc;
 
 }
-/*
- double OmnidirectOrder2::distanceModifier(double realDistance, double distanceDelay)
- {
- if (abs(realDistance) < 0.001)
- return 0;
 
- if (realDistance > 0)
- return realDistance - distanceDelay;
- else
- return realDistance + distanceDelay;
- }
- */
+
 ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSpeed curICRSpeed, double dt)
 {
     if (curICRSpeed.getICR().sphericalDistance(m_oldICRSpeed.getICR()) > PI / 2)
@@ -240,8 +230,7 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
 
     Log(DEBUG) << ">>computeRunTwist  ";
     Log(DEBUG) << "dt donne =  " << dt;
-   //TODO remove moi ca bataaaard !
-    dt = 0.010;
+
     Log(DEBUG) << "currentPositionNorm  " << currentPositionNorm.toString();
     Log(DEBUG) << "curICRSpeed  " << curICRSpeed.toString();
 
