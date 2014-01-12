@@ -57,14 +57,21 @@ OmnidirectOrder2::OmnidirectOrder2(const OrderGoalConstPtr &goal, arp_math::Ubiq
 
     setEndMotionState(endMotionState);
 
-    if (goal->max_speed > 0.0 and goal->max_speed < m_params.getMaxRobotAccel())
+    if (goal->max_speed > 0.0 and goal->max_speed < m_params.getMaxRobotSpeed())
         m_vmax_order = goal->max_speed;
     else
         m_vmax_order = m_params.getMaxRobotSpeed();
 
-    //mettre m_timeout a la bonne valeur pour pas perdre trop de temps
-    // il s'agit de timeout = timeout max  si v = 0 et timeoutmin si v=lindec
-    m_timeout = TIMEOUTMAX + (TIMEOUTMIN - TIMEOUTMAX) / (m_params.getMaxRobotSpeed()) * m_vmax_order;
+    // timeout is initialised by a rough distance / speed with a margin
+    m_timeout = max(end.distanceTo(currentMotionState.position)/m_vmax_order*2.0 , 5.0);
+
+    Log(DEBUG) << "goal->max_speed " << goal->max_speed;
+    Log(DEBUG) << "m_params.getMaxRobotSpeed() " << m_params.getMaxRobotSpeed();
+    Log(DEBUG) << "m_vmax_order " << m_vmax_order;
+    Log(DEBUG) << "end " << end.toString();
+    Log(DEBUG) << "tcurrentMotionState.position " << currentMotionState.position.toString();
+    Log(DEBUG) << "end.distanceTo(currentMotionState.position) " << end.distanceTo(currentMotionState.position);
+
     Log(DEBUG) << "timeout initialise a " << m_timeout;
 
 }
@@ -93,6 +100,8 @@ void OmnidirectOrder2::switchRun(arp_math::UbiquityMotionState currentMotionStat
 
 double OmnidirectOrder2::profileRo(double distance, ICRSpeed curICRSpeed)
 {
+    //TODO attention cette partie na jamais ete retouche depuis la refactorisation decembre 2013. les parametre utilise pour nourrir reflexxes ne sont plus les bons.
+
     PosVelAcc start;
     start.position = 0;
     start.velocity = curICRSpeed.ro();
@@ -140,62 +149,64 @@ double OmnidirectOrder2::profileRo(double distance, ICRSpeed curICRSpeed)
 
 double OmnidirectOrder2::profileRoJerking(double distance, ICRSpeed curICRSpeed, double roPass, double dt)
 {
-    //TODO passer les parametres en en argument
-    double lin_acc = 1;
-    double lin_dec = 1;
-    double v_max = 1;
-
     //TODO brancher vitesse plutot que last ro
     double curRo = m_oldICRSpeed.ro();
     //double curRo=curICRSpeed.ro();
 
-    double limite_lineaire = 0.030;
-    double ro;
+
+    double ro_non_limited;
 
     Log(DEBUG) << "<< profileRoJerking";
     Log(DEBUG) << "m_lastRo " << m_lastRo;
     Log(DEBUG) << "distance " << distance;
 
-    if (roPass)
+    /*
+     * is this a "passage point" ?
+     * if yes, use v=sqrt(dist + vpass²)
+     */
+    if (roPass > 0.0)
     {
-        ro = sqrt2(sign(curRo) * roPass * roPass + 2.0 * lin_dec * distance);
-        Log(DEBUG) << "curRo=" << curRo << " roPass=" << roPass << "   ro avec ropass=" << ro;
+        ro_non_limited = sqrt2(sign(curRo) * roPass * roPass + 2.0 * DECELERATION * distance);
+        Log(DEBUG) << "curRo=" << curRo << " roPass=" << roPass << "   ro_non_limited avec ropass=" << ro_non_limited;
     }
     else
+        /*
+         * otherwise, use v=sqrt(dist) when far, and v=k.dist when close
+         */
     {
-        if (abs(distance) > limite_lineaire)
+        if (abs(distance) > DISTANCE_LINEAR_ASSERV)
         {
-            ro = sqrt2(2.0 * lin_dec) * sqrt2(distance);
-            Log(DEBUG) << "ro  racine       " << ro;
+            ro_non_limited = sqrt2(2.0 * DECELERATION) * sqrt2(distance);
+            Log(DEBUG) << "ro_non_limited  racine       " << ro_non_limited;
         }
         else
         {
-            ro = (sqrt2(2.0 * lin_dec) * sqrt2(limite_lineaire)) / limite_lineaire * distance;
-            Log(DEBUG) << "ro  lineaire     " << ro;
+            ro_non_limited = (sqrt2(2.0 * DECELERATION) * sqrt2(DISTANCE_LINEAR_ASSERV)) / DISTANCE_LINEAR_ASSERV * distance;
+            Log(DEBUG) << "ro_non_limited  lineaire     " << ro_non_limited;
         }
     }
 
-    double ros = saturate(ro, -v_max, v_max);
-    double ross = ros;
+    double ro_sat_speed = saturate(ro_non_limited, -m_vmax_order, m_vmax_order);
+    double ro_sat_acc = ro_sat_speed;
 
     // limitation de l'acceleration
-    double accStep = lin_acc * dt;
-    if (ros > 0)
+    double accStep = m_params.getMaxRobotAccel() * dt;
+    if (ro_sat_speed > 0)
     {
-        if (curRo < ros)
+        if (curRo < ro_sat_speed)
         { //accel
-            ross = min(ros, curRo + accStep);
+            ro_sat_acc = min(ro_sat_speed, curRo + accStep);
         }
         else
         { //decel
-          //ross = max(ros, curRo - accStep);
+          //ro_sat_acc = max(ro_sat_speed, curRo - accStep);
         }
     }
     else
     {
-        if (curRo > ros)
+        if (curRo > ro_sat_speed)
         { //"augmentation du mouvement"
-            ross = max(ros, curRo - accStep);
+            ro_sat_acc = max(ro_sat_speed, curRo - accStep);
         }
         else
         { //"diminution du mouvement"
@@ -203,11 +214,11 @@ double OmnidirectOrder2::profileRoJerking(double distance, ICRSpeed curICRSpeed,
         }
     }
 
-    Log(DEBUG) << "ros      " << ros;
-    Log(DEBUG) << "ross     " << ross;
+    Log(DEBUG) << "ros      " << ro_sat_speed;
+    Log(DEBUG) << "ro_sat_acc     " << ro_sat_acc;
     Log(DEBUG) << ">> profileRoJerking";
 
-    return ross;
+    return ro_sat_acc;
 
 }
 /*

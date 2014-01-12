@@ -110,16 +110,25 @@ class OmnidirectOrder2: public MotionOrder
         void switchInit(arp_math::UbiquityMotionState currentMotionState);
         void switchRun(arp_math::UbiquityMotionState currentMotionState);
 
-        static const double TIMELAG=0.030;
+        /*
+         * distance at which we shall ask for smooth localisation so that we don't get crazy motion control
+         */
         static const double DIST_SMOOTH=0.100;
-        static const double SUP_TIME_FOR_ROTATION=1.0;
-        static const double ANGLE_CHGT_ASSERV=0.17;
-        static const double RECONF_TIME=0.0;
-        static const double MIN_LIN_DEC=0.2;
-        static const double TIMEOUTMAX=10;
-        static const double TIMEOUTMIN=5;
 
+        /*
+         * distance at which we consider that the order is DONE
+         */
         static const double RO_ACCURACY=0.005;
+
+        /*
+         * distance at which we will switch from a v=k. sqrt(dist) to v = k. dist motion control. this allow removing the unstability due to the infinite derivative of sqrt around 0
+         */
+        static const double DISTANCE_LINEAR_ASSERV=0.030;
+        /*
+         * deceleration to approach points
+         */
+        static const double DECELERATION=2.0;
+
 
 private:
     Pose2D getPositionError_RobotRef(arp_math::Pose2D currentPosition);

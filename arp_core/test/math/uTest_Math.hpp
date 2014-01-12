@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE( Math_normalizeAngle )
     {
         double angle = (double) rand()/RAND_MAX * 10. - 5.;
 
-        double res = normalizeAngle(angle);
+        double res = betweenMinusPiAndPlusPi(angle);
         BOOST_CHECK_CLOSE( cos(res), cos(angle), 0.001f );
         BOOST_CHECK_CLOSE( sin(res), sin(angle), 0.001f );
         BOOST_CHECK( res >= -PI );
