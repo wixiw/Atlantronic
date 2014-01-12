@@ -300,6 +300,8 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
     outDEBUG3 = rad2deg(ICR_possible.phi()) / 100.0;
     outDEBUG4 = rad2deg(ICR_possible.delta()) / 100.0;
 
+    outDEBUG9 = dt*1000;
+
     return corICRSpeed;
 }
 

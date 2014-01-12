@@ -20,7 +20,7 @@ using namespace arp_math;
 ORO_LIST_COMPONENT_TYPE( arp_ods::MotionControl)
 
 MotionControl::MotionControl(const std::string& name) :
-        OdsTaskContext(name), attrVmax_asked(1.0), attrCurrentOrder("default"), m_ICRSpeedBuffer(), OTG()
+        OdsTaskContext(name), attrVmax_asked(1.0), attrCurrentOrder("default"), m_ICRSpeedBuffer(), OTG(),m_norder(0)
 
 {
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
@@ -81,7 +81,7 @@ void MotionControl::updateHook()
         outDEBUG7.write(attrOrder->outDEBUG7);
         outDEBUG8.write(attrOrder->outDEBUG8);
         outDEBUG9.write(attrOrder->outDEBUG9);
-        outDEBUG10.write(attrOrder->outDEBUG10);
+        //outDEBUG10.write(attrOrder->outDEBUG10);
     }
 
     if (attrOrder->getType() == OMNIDIRECT2)
@@ -128,7 +128,6 @@ bool MotionControl::isOrderFinished()
 {
     if (attrOrder->getMode() == MODE_DONE)
     {
-        outDEBUG6.write(attrOrder->getMode());
         return true;
     }
 
@@ -153,6 +152,10 @@ bool MotionControl::ooSetOrder(shared_ptr<MotionOrder> order)
     // moralité refaire l'archi.
     attrOrder->setICRSpeedBuffer(m_ICRSpeedBuffer);
     attrOrder->setOTG(&OTG);
+
+    m_norder++;
+    outDEBUG10.write(((double)m_norder)/10.0);
+    arp_ods::orders::Log(Info) << "-------------------- order number # ---------------------   >> " <<  m_norder  << endlog();
 
     return true;
     /* }

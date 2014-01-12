@@ -89,6 +89,8 @@ class MotionControl: public OdsTaskContext
         RTT::OutputPort<double>  outDEBUG9;
         RTT::OutputPort<double>  outDEBUG10;
 
+        int m_norder;
+
         /**
          * Buffer for computed speed commands
          */
