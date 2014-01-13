@@ -30,21 +30,21 @@ ICR::ICR(const ICR& icr)
     m_delta = icr.delta();
 }
 
-ICR::ICR(Vector3 cartesianVector)
+ICR::ICR(Vector3 speedVector)
 {
     //phi
-    if (cartesianVector[0] != 0.0 or cartesianVector[1] != 0.0)
-        m_phi = atan2(cartesianVector[1], cartesianVector[0]);
+    if (speedVector[0] != 0.0 or speedVector[1] != 0.0)
+        m_phi = atan2(speedVector[1], speedVector[0]);
     else
         // pure rotation, phi not defined, but not a problem.
         m_phi = 0.0;
 
     //delta
-    double v = sqrt(cartesianVector[0] * cartesianVector[0] + cartesianVector[1] * cartesianVector[1]);
+    double v = sqrt(speedVector[0] * speedVector[0] + speedVector[1] * speedVector[1]);
     if (v != 0.0)
-        m_delta = atan(cartesianVector[2] / v);
+        m_delta = atan(speedVector[2] / v);
     else
-        m_delta = sign(cartesianVector[2]) * PI / 2.0;
+        m_delta = sign(speedVector[2]) * PI / 2.0;
 
 }
 

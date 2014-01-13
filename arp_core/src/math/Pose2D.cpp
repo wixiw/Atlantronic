@@ -14,10 +14,9 @@ using namespace arp_math;
 
 Pose2D::Pose2D(double _x, double _y, double _h)
 : positionTranslation(Vector2(_x, _y))
-, positionRotation(Rotation2(_h))
+, positionRotation(Rotation2(betweenMinusPiAndPlusPi(_h)))
 {
 }
-
 
 Vector2 Pose2D::translation() const
 {
@@ -87,7 +86,7 @@ void Pose2D::translation(Vector2 _positionTranslation)
 
 void Pose2D::orientation(Rotation2 _positionRotation)
 {
-    positionRotation = _positionRotation;
+    positionRotation = Rotation2(betweenMinusPiAndPlusPi(_positionRotation.angle()));
 }
 
 void Pose2D::x(double _x)
@@ -102,12 +101,12 @@ void Pose2D::y(double _y)
 
 void Pose2D::h(double _heading)
 {
-    positionRotation = Rotation2(_heading);
+    positionRotation = Rotation2(betweenMinusPiAndPlusPi(_heading));
 }
 
 void Pose2D::angle(double _heading)
 {
-    positionRotation = Rotation2(_heading);
+    positionRotation = Rotation2(betweenMinusPiAndPlusPi(_heading));
 }
 
 Pose2D Pose2D::inverse() const
@@ -134,7 +133,7 @@ Vector3 Pose2D::getTVector() const
 std::string Pose2D::toString() const
 {
     std::ostringstream  s;
-    s << "( x: " << toStrMaxDecimals(x(), 3) << " m , y: " << toStrMaxDecimals(y(), 3) << " m , h: "<< toStrMaxDecimals(h(), 3) <<" rad / "<< toStrMaxDecimals(rad2deg(betweenMinusPiAndPlusPi( h() )), 3) << " deg )";
+    s << "( x: " << toStrMaxDecimals(x(), 3) << " m , y: " << toStrMaxDecimals(y(), 3) << " m , h: "<< toStrMaxDecimals(h(), 3) <<" rad / "<< toStrMaxDecimals(rad2deg(h()), 3) << " deg )";
     return s.str();
 }
 
@@ -183,7 +182,7 @@ double Pose2D::vectAngle() const
 Pose2D Pose2D::operator*(const Pose2D& b) const
 {
     return MathFactory::createPose2D( this->getRotationMatrix() * b.translation() + this->translation() ,
-                                      this->orientation() * b.orientation() );
+            betweenMinusPiAndPlusPi(this->orientation() * b.orientation()) );
 }
 
 Vector2 Pose2D::operator*(const Vector2& v) const
@@ -196,9 +195,9 @@ Vector2 Pose2D::operator*(const Vector2& v) const
     return res.head<2>();
 }
 
-Pose2D operator*(const double scalaire, const Pose2D& pose)
+Pose2D operator*(double scalaire, const Pose2D& pose)
 {
-    return Pose2D(scalaire*pose.x(),scalaire*pose.y(),scalaire*pose.h());
+    return Pose2D(scalaire*pose.x(),scalaire*pose.y(),betweenMinusPiAndPlusPi(scalaire*pose.h()));
 }
 
 

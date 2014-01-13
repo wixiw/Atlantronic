@@ -16,7 +16,8 @@ std::ostream &operator<<(std::ostream &flux, arp_math::Twist2DNorm const& t)
     return flux << t.toString();
 }
 
-//TODO willy, pourquoi j'arrive pas à me debarraser de ce constructeur ? j'ai appelé le pere !
+double Twist2DNorm::dmax= Pose2DNorm::dmax;
+
 Twist2DNorm::Twist2DNorm(double _vx, double _vy, double _vh) :
         Twist2D(_vx, _vy, _vh)
 {

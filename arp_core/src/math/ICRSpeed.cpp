@@ -192,19 +192,35 @@ ICRSpeed ICRSpeed::transport(const Pose2D & p) const
     return transportedSpeed;
 }
 
-
+//TODO les coeff n'ont plus de sens, ils sont portés par position norm
 double ICRSpeed::distanceTo(ICRSpeed other, double coefTrans, double coefRot) const
 {
     return this->twist().distanceTo(other.twist(),coefTrans,coefRot);
 }
 
+double ICRSpeed::getTranslationSpeedNorm()
+{
+    return fabs(ro()*cos(delta()));
+}
+
 bool ICRSpeed::operator ==(const ICRSpeed& other) const
 {
-    return (
-            this->ro() == other.ro()
+    if ( this->ro() == other.ro()
             && this->delta() == other.delta()
-            && this->phi() == other.phi()
-            );
+            && this->phi() == other.phi() )
+    {
+        return true;
+    }
+
+    ICRSpeed oppositeOther = other.getOppositeRep();
+    if( this->ro() == oppositeOther.ro()
+            && this->delta() == oppositeOther.delta()
+            && this->phi() == oppositeOther.phi() )
+    {
+        return true;
+    }
+
+    return false;
 }
 
 bool ICRSpeed::operator !=(const ICRSpeed& other) const

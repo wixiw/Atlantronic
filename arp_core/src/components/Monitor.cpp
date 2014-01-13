@@ -215,7 +215,7 @@ void Monitor::stopHook()
         else
         {
             OperationCaller<void(void)> opConfig = tc->getOperation("stop");
-            LOG(Info) << "Configuring " << tc->getName() << endlog();
+            LOG(Info) << "Stopping " << tc->getName() << endlog();
 
             if( propParallelStart == true )
             {
@@ -247,7 +247,7 @@ void Monitor::cleanupHook()
        else
        {
            OperationCaller<void(void)> opConfig = tc->getOperation("cleanup");
-           LOG(Info) << "Configuring " << tc->getName() << endlog();
+           LOG(Info) << "Cleaning " << tc->getName() << endlog();
 
            if( propParallelStart == true )
            {

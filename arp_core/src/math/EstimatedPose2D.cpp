@@ -19,6 +19,14 @@ EstimatedPose2D::EstimatedPose2D(const Pose2D & _p)
     ;
 }
 
+EstimatedPose2D::EstimatedPose2D(const EstimatedPose2D & _p)
+: Pose2D(_p)
+, estimationDate(_p.estimationDate)
+, covariance(_p.covariance)
+{
+    ;
+}
+
 Covariance3 EstimatedPose2D::cov() const
 {
     return covariance;
@@ -56,8 +64,9 @@ std::string EstimatedPose2D::toString() const
     os << "( ";
     os << " x: " << toStrMaxDecimals(x(), 3) << " m +- " << toStrMaxDecimals(1.5 * sqrt(cov()(0,0)) * 1000., 1) << " mm ,";
     os << " y: " << toStrMaxDecimals(y(), 3) << " m +- " << toStrMaxDecimals(1.5 * sqrt(cov()(1,1)) * 1000., 1) << " mm ,";
-    os << " h: " << toStrMaxDecimals(rad2deg(betweenMinusPiAndPlusPi( h() )), 3) << " deg +- " << toStrMaxDecimals(1.5 * rad2deg(sqrt(cov()(2,2))), 3) << " deg";
+    os << " h: "<< toStrMaxDecimals(h(), 3) <<" rad / "<< toStrMaxDecimals(rad2deg(h()), 3) << " deg +- " << toStrMaxDecimals(1.5 * rad2deg(sqrt(cov()(2,2))), 3) << " deg";
     os << " )";
+
     return os.str();
 }
 

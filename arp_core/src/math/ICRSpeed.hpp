@@ -88,12 +88,15 @@ class ICRSpeed
 
         double distanceTo(ICRSpeed other, double coefTrans, double coefRot) const;
 
+        /** Compute the norm of the translation speed |v|| = sqrt(vx*vx+vy*vy) = |ro()*cos(delta)|*sqrt(cos2(phi()) + sin2(phi())) = |ro()*cos(delta())|  */
+        double getTranslationSpeedNorm();
+
         /** affiche (vx,vy,vtheta) */
         std::string toString() const;
 
         /** Opérateur d'égalité.
          * \param _other la ICRSpeed à comparer.
-         * \returns vrai si les ICRSpeed sont exactement identiques
+         * \returns vrai si les ICRSpeed (ou leurs opposés) sont exactement identiques
          * \remarks la comparaison est basée sur la comparaison des
          * composantes ro,delta et phi entre elles.
          * La précision utilisée est ici celle des double. */

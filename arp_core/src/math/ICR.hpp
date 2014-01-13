@@ -31,7 +31,7 @@ class ICR
         /** Constructeur principal.
          * Il permet une initialisation par défaut avec un CIR à l'infini (pour aller tout droit) */
         ICR(double phi = 0.0, double delta = 0);
-        /** construction from a vector expressed in cartesian coordinates */
+        /** construction from a speed vector expressed in cartesian coordinates */
         ICR(Vector3 cartesianVector);
         /** copy constructor */
         ICR(const ICR&);

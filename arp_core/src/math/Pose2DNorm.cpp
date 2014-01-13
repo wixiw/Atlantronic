@@ -18,9 +18,8 @@ Pose2DNorm::Pose2DNorm(double _x, double _y, double _h)
 }
 
 Pose2DNorm::Pose2DNorm(const Pose2D& pose)
+: Pose2D(pose)
 {
-    x(pose.x());
-    y(pose.y());
     h(pose.h() * dmax);
 }
 

@@ -9,7 +9,7 @@
 #define _ARP_MATH_TWIST2DNORM_HPP_
 
 #include <math/math.hpp>
-#include <math/Pose2D.hpp>
+#include <math/Pose2DNorm.hpp>
 #include <math/Twist2D.hpp>
 #include <iostream>
 
@@ -32,9 +32,7 @@ class Twist2DNorm: public Twist2D
 
         Twist2D getTwist() const;
 
-        /* cette valeur permet de normaliser la rotation et de lui donner le meme ordre de grandeur que les translations sur le robot*/
-        //TODO demande à willy ou ca va.    >>>>    Willy, ou ca va ? <<<<<<   !!!! Dans ton cul !!!!
-        const static double dmax = 0.2;
+        static double dmax;
 };
 
 std::ostream &operator<<( std::ostream &flux, arp_math::Twist2DNorm const& t);

@@ -212,17 +212,36 @@ class UbiquityKinematicState
             state.driving = driving / scal;
             return state;
         }
+
 };
 
-//TODO a clarifier par willy - mmm mais pourquoi c'est comme ca
-typedef UbiquityKinematicState TurretState;
-typedef UbiquityKinematicState MotorState;
-
-
+/** Represents the 2 free variables when computing odometry from 6 measure to get 3 states + 3 coherency datas */
 class SlippageReport
 {
     public:
-        double kernelQuality;
+        double coherency1;
+        double coherency2;
+        double coherency3;
+
+        std::string toString() const
+        {
+            std::stringstream ss;
+            ss  << std::endl;
+            ss << "Coherency : " << coherency1 << "," << coherency2 << "," << coherency3;
+            ss << std::endl;
+            return ss.str();
+        }
+
+        bool operator==(const SlippageReport& other) const
+        {
+            return other.coherency1==coherency1 && other.coherency2==coherency2 && other.coherency3==coherency3;
+        }
 };
+
+
+//We use the same structure to represent 2 kind of datas :
+typedef UbiquityKinematicState TurretState;
+typedef UbiquityKinematicState MotorState;
+
 } /* namespace arp_model */
 #endif /* UBIQUITYSTATES_HPP_ */

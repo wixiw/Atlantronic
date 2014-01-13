@@ -151,11 +151,6 @@ class Pose2D
          */
         double vectAngle() const;
 
-    protected:
-        Vector2 positionTranslation;
-        Rotation2 positionRotation;
-
-    public:
 
         /** Opérateur d'égalité.
          * \param _other la Pose2D à comparer.
@@ -194,11 +189,16 @@ class Pose2D
          * les orientatations des deux repères, mais aussi le déport de leurs origines.
          */
         Vector2 operator*(const Vector2& v) const;
+
+    protected:
+        Vector2 positionTranslation;
+        Rotation2 positionRotation;
+
 };
 
+std::ostream operator <<(std::ostream os, Pose2D _pose);
 }
 
-std::ostream operator <<(std::ostream os, arp_math::Pose2D _pose);
-arp_math::Pose2D operator*(const double scalaire, const arp_math::Pose2D& pose);
+arp_math::Pose2D operator*(double scalaire, const arp_math::Pose2D& pose);
 
 #endif /* _ARP_MATH_POSE2D_HPP_ */

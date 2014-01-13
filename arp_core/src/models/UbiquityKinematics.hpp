@@ -76,14 +76,6 @@ class UbiquityKinematics
                 const UbiquityParams & iParams);
 
         /**
-         * Modèle cinématique direct de la base.
-         * Convertit l'état des tourelles en un ICRSpeed (mouvement du repère de référence du chassis par rapport au sol projeté et réduit dans le
-         * repère de référence du chassis).\n
-         */
-        static bool simpleTurrets2ICRspeed(const TurretState & iTS, arp_math::ICRSpeed& oICRs,
-                const UbiquityParams & iParams);
-
-        /**
          * Modèle cinématique indirect de la base
          * Convertit un Twist (Twist du repère de référence du chassis par rapport au sol projeté et réduit dans le repère de référence du chassis)
          * en consignes articulaires pour les tourelles.
@@ -111,6 +103,28 @@ class UbiquityKinematics
          */
         static bool twist2Motors(const arp_math::Twist2D & iTw, const MotorState & iMS, TurretState& oTS,
                 MotorState& oMS, const UbiquityParams & iParams);
+
+
+        /**
+         * Modèle cinématique direct de la base.
+         * Convertit l'état des tourelles en un ICRSpeed (mouvement du repère de référence du chassis par rapport au sol projeté et réduit dans le
+         * repère de référence du chassis).\n
+         */
+        static bool turrets2ICRspeed(const TurretState & iTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
+                const UbiquityParams & iParams);
+        static bool simpleTurrets2ICRspeedWithTwist(const TurretState & iTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
+                const UbiquityParams & iParams);
+        static bool simpleTurrets2ICRspeedWithICR(const TurretState & iTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
+                const UbiquityParams & iParams);
+        static bool simpleTurrets2ICRspeed(const TurretState & iTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
+                const UbiquityParams & iParams);
+
+        /**
+         * Modèle cinématique indirect
+         * Convertit un ICR speed enc onsignes tourelles
+         */
+        static bool ICRSpeed2Turrets(const arp_math::ICRSpeed& iICRs, TurretState& oTS, const UbiquityParams & iParams);
+
 
         /**
          * Enchainement des modèles indirects de tourelle et cinématique

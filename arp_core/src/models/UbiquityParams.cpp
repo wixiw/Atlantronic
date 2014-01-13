@@ -14,6 +14,7 @@ using namespace arp_math;
 using namespace std;
 
 UbiquityParams::UbiquityParams():
+
         m_leftTurretPosition(-1,-1,-1),
         m_rightTurretPosition(-1,-1,-1),
         m_rearTurretPosition(-1,-1,-1),
