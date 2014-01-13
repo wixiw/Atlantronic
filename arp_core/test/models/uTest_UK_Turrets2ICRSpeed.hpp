@@ -21,6 +21,7 @@ void check_twist2turrets2ICRSpeed2twist(double vx, double vy, double vh)
     arp_math::Twist2D outTwist;
     arp_model::TurretState turretCmd;
     ICRSpeed twix;
+    SlippageReport oSR;
 
     bool res;
 
@@ -30,7 +31,7 @@ void check_twist2turrets2ICRSpeed2twist(double vx, double vy, double vh)
 
     res = arp_model::UbiquityKinematics::twist2Turrets(inTwist, turretCmd, params);
 
-    res = arp_model::UbiquityKinematics::simpleTurrets2ICRspeed(turretCmd, twix, params);
+    res = arp_model::UbiquityKinematics::turrets2ICRspeed(turretCmd, twix, oSR, params);
     outTwist = twix.twist();
 
     /*
@@ -56,6 +57,7 @@ void check_noMotion(double vx, double vy, double vh)
     ICRSpeed twixDesire;
     ICRSpeed twixDesire_inv;
     ICRSpeed twixObtenu;
+    SlippageReport oSR;
 
     inTwist.vx(vx);
     inTwist.vy(vy);
@@ -77,7 +79,7 @@ void check_noMotion(double vx, double vy, double vh)
     turretCmd.driving.rear.velocity = 0;
 
     //et la je calcule le twix
-    arp_model::UbiquityKinematics::simpleTurrets2ICRspeed(turretCmd, twixObtenu, params);
+    arp_model::UbiquityKinematics::turrets2ICRspeed(turretCmd, twixObtenu, oSR, params);
     /*
      cout << "-----------TEST----------" << endl;
      cout << "inTwist" << inTwist.toString() << endl;
