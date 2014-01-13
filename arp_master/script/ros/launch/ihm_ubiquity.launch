@@ -10,7 +10,7 @@
 	<node 	name="GraphicsSimu"     
 			pkg="arp_master"  
 			type="GraphicsSimuNode"     
-			args="/Localizator/pose" 
+			args="/Ubiquity/pose" 
 			output="screen" 
 	/>
 	<!--

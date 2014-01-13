@@ -44,7 +44,7 @@ class StratNode_Tanguy():
     
         # initialise the smach introspection server to view the state machine with :
         #  rosrun smach_viewer smach_viewer.py
-        sis = smach_ros.IntrospectionServer('strat_server', sm, '//StratNode_Tanguy')
+        sis = smach_ros.IntrospectionServer('strat_server', sm, '/StratNode_Tanguy')
         sis.start()
         sm.execute()
         
@@ -57,7 +57,7 @@ class MainStateMachine(smach.StateMachine):
         with self:
             smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
                                    transitions={'endInitialisation':'StartSequence','failed':'end'})
-            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(1.500 + Robot2014.REAR_SIDE.x,0.550,-5*pi/6),
+            smach.StateMachine.add('StartSequence', InitStates.StartSequence2014(1.500 + Robot2014.REAR_SIDE.x,0.550,-5*pi/6),
             #smach.StateMachine.add('StartSequence', InitStates.StartSequence2014(1.500 + Robot2014.REAR_SIDE.x,0.550,-5*pi/6),
             #position face contre mur : (1.500 - Robot2014.FRONT_SIDE.x,0.550,0)
                                    transitions={'gogogo':'Opening','problem':'end'})

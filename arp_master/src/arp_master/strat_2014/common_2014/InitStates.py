@@ -47,7 +47,7 @@ class StartSequence2014(smach.StateMachine):
                       transitions={'succeeded':'PrepareRecalY', 'timeout':'PrepareRecalY'})
             
             smach.StateMachine.add('PrepareRecalY',
-                      AmbiOmniDirectOrder2(0.900,0.500,pi/2, vmax = 0.3),
+                      AmbiOmniDirectOrder2(Pose2D(0.900,0.500,pi/2), vmax = 0.3),
                       transitions={'succeeded':'RecalY', 'timeout':'problem'})
             
             #todo faire un etat recalage
@@ -65,7 +65,7 @@ class StartSequence2014(smach.StateMachine):
                       transitions={'succeeded':'ShowReady', 'timeout':'ShowReady'})
             
             smach.StateMachine.add('ShowReady',
-                      AmbiOmniDirectOrder2(1.100,0.350,-pi/2, vmax = 0.3),
+                      AmbiOmniDirectOrder2(Pose2D(1.100,0.350,-pi/2), vmax = 0.3),
                       transitions={'succeeded':'WaitForLoc2', 'timeout':'problem'})
             
             smach.StateMachine.add('WaitForLoc2',
@@ -73,7 +73,7 @@ class StartSequence2014(smach.StateMachine):
                       transitions={'timeout':'GoHome'})
             
             smach.StateMachine.add('GoHome',
-                      AmbiOmniDirectOrder2(x,y,theta, vmax = 0.3),
+                      AmbiOmniDirectOrder2(Pose2D(x,y,theta), vmax = 0.3),
                       transitions={'succeeded':'WaitForStart', 'timeout':'WaitForStart'})
             
             smach.StateMachine.add('WaitForStart', 
