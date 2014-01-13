@@ -15,6 +15,8 @@
 BOOST_AUTO_TEST_CASE( UK_Turrets2Twist_ZeroToZeroTest )
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
+
     arp_math::Twist2D twist;
     arp_model::TurretState zeroTurretCmd;
     arp_model::SlippageReport splippage;
@@ -30,6 +32,8 @@ BOOST_AUTO_TEST_CASE( UK_Turrets2Twist_ZeroToZeroTest )
 BOOST_AUTO_TEST_CASE( UK_Turrets2Twist_Rotation_1 )
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
+
     arp_math::Twist2D inTwist;
     arp_math::Twist2D outTwist;
     arp_model::TurretState turretCmd;
@@ -53,6 +57,8 @@ BOOST_AUTO_TEST_CASE( UK_Turrets2Twist_Rotation_1 )
 BOOST_AUTO_TEST_CASE( UK_Turrets2Twist_Rotation_2 )
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
+
     arp_math::Twist2D inTwist;
     arp_math::Twist2D outTwist;
     arp_model::TurretState turretCmd;
@@ -76,6 +82,8 @@ BOOST_AUTO_TEST_CASE( UK_Turrets2Twist_Rotation_2 )
 BOOST_AUTO_TEST_CASE( UK_Turrets2Twist_Translation_1 )
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
+
     arp_math::Twist2D inTwist;
     arp_math::Twist2D outTwist;
     arp_model::TurretState turretCmd;
@@ -99,6 +107,8 @@ BOOST_AUTO_TEST_CASE( UK_Turrets2Twist_Translation_1 )
 BOOST_AUTO_TEST_CASE( UK_Turrets2Twist_Translation_2 )
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
+
     arp_math::Twist2D inTwist;
     arp_math::Twist2D outTwist;
     arp_model::TurretState turretCmd;
@@ -122,6 +132,8 @@ BOOST_AUTO_TEST_CASE( UK_Turrets2Twist_Translation_2 )
 BOOST_AUTO_TEST_CASE( UK_Turrets2Twist_Translation_3 )
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
+
     arp_math::Twist2D inTwist;
     arp_math::Twist2D outTwist;
     arp_model::TurretState turretCmd;
@@ -145,6 +157,8 @@ BOOST_AUTO_TEST_CASE( UK_Turrets2Twist_Translation_3 )
 BOOST_AUTO_TEST_CASE( UK_Turrets2Twist_Translation_4 )
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
+
     arp_math::Twist2D inTwist;
     arp_math::Twist2D outTwist;
     arp_model::TurretState turretCmd;
@@ -169,6 +183,8 @@ BOOST_AUTO_TEST_CASE( UK_Turrets2Twist_Translation_4 )
 BOOST_AUTO_TEST_CASE( UK_Turrets2Twist_Complet_1 )
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
+
     arp_math::Twist2D inTwist;
     arp_math::Twist2D outTwist;
     arp_model::TurretState turretCmd;
@@ -192,6 +208,8 @@ BOOST_AUTO_TEST_CASE( UK_Turrets2Twist_Complet_1 )
 BOOST_AUTO_TEST_CASE( UK_Turrets2Twist_Complet_2 )
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
+
     arp_math::Twist2D inTwist;
     arp_math::Twist2D outTwist;
     arp_model::TurretState turretCmd;

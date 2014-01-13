@@ -17,6 +17,8 @@
 BOOST_AUTO_TEST_CASE( UK_MotorTurret_ZeroToZeroTest )
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
+
     arp_model::MotorState motorsCmd;
     arp_model::TurretState turretCmd;
     arp_model::MotorState steeringMotorVelocities;
@@ -47,6 +49,8 @@ BOOST_AUTO_TEST_CASE( UK_MotorTurret_ZeroToZeroTest )
 BOOST_AUTO_TEST_CASE( UK_MotorTurret_turret2Motor_translationFromZero )
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
+
     arp_model::MotorState motorsCmd;
     arp_model::TurretState turretCmd;
     arp_model::MotorState motorsMeasure;
@@ -188,6 +192,8 @@ BOOST_AUTO_TEST_CASE( UK_MotorTurret_turret2Motor_translationFromZero )
 BOOST_AUTO_TEST_CASE( UK_MotorTurret_turret2Motor_translationFromPI2 )
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
+
     arp_model::MotorState motorsCmd;
     arp_model::TurretState turretCmd;
     arp_model::MotorState motorsMeasure;
@@ -352,6 +358,8 @@ BOOST_AUTO_TEST_CASE( UK_MotorTurret_turret2Motor_translationFromPI2 )
 BOOST_AUTO_TEST_CASE( UK_MotorTurret_turret2Motor_translationFrom3PI4 )
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
+
     arp_model::MotorState motorsCmd;
     arp_model::TurretState turretCmd;
     arp_model::MotorState motorsMeasure;
@@ -505,6 +513,8 @@ BOOST_AUTO_TEST_CASE( UK_MotorTurret_turret2Motor_translationFrom3PI4 )
 BOOST_AUTO_TEST_CASE( UK_MotorTurret_motor2Turret_translation )
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
+
     arp_model::TurretState turretMeasure;
     arp_model::MotorState motorsMeasure;
     bool success;

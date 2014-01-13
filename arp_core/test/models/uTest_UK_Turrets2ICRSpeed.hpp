@@ -17,6 +17,8 @@ using namespace arp_model;
 void check_twist2turrets2ICRSpeed2twist(double vx, double vy, double vh)
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
+
     arp_math::Twist2D inTwist;
     arp_math::Twist2D outTwist;
     arp_model::TurretState turretCmd;
@@ -24,6 +26,8 @@ void check_twist2turrets2ICRSpeed2twist(double vx, double vy, double vh)
     SlippageReport oSR;
 
     bool res;
+
+
 
     inTwist.vx(vx);
     inTwist.vy(vy);
@@ -47,9 +51,43 @@ void check_twist2turrets2ICRSpeed2twist(double vx, double vy, double vh)
     BOOST_CHECK_SMALL(outTwist.vh() - inTwist.vh(), 1.e-10);
 }
 
+
+void check_ICRSpeed2Motors2ICRSpeed(double ro, double phi, double delta)
+{
+    arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
+
+    ICRSpeed ICRSpeedRecto(ro,phi,delta);
+    arp_math::Twist2D twistRecto=ICRSpeedRecto.twist();
+
+    arp_model::MotorState motorStateIn;
+    arp_model::TurretState turretStateOut;
+    arp_model::MotorState motorStateOut;
+    arp_model::SlippageReport slipOut;
+
+    bool resRecto;
+    bool resVerso;
+
+    ICRSpeed ICRSpeedVerso;
+
+    resRecto=arp_model::UbiquityKinematics::ICRSpeed2Motors(ICRSpeedRecto, motorStateIn, turretStateOut,motorStateOut, params);
+    resVerso=arp_model::UbiquityKinematics::motors2ICRSpeed(motorStateOut,turretStateOut, ICRSpeedVerso, slipOut,params);
+    arp_math::Twist2D twistVerso=ICRSpeedVerso.twist();
+
+    BOOST_CHECK_EQUAL(resRecto, true);
+    BOOST_CHECK_EQUAL(resVerso, true);
+    BOOST_CHECK_SMALL(twistRecto.vx() - twistVerso.vx(), 1.e-10);
+    BOOST_CHECK_SMALL(twistRecto.vy() - twistVerso.vy(), 1.e-10);
+    BOOST_CHECK_SMALL(twistRecto.vh() - twistVerso.vh(), 1.e-10);
+
+
+
+}
+
 void check_noMotion(double vx, double vy, double vh)
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
 
     arp_math::Twist2D inTwist;
     arp_math::Twist2D inTwist_inv;
@@ -150,6 +188,23 @@ BOOST_AUTO_TEST_CASE( UK_Turrets2ICRSpeed_Motions )
     check_twist2turrets2ICRSpeed2twist(-4.212,0.7897,1.5456);
     check_twist2turrets2ICRSpeed2twist(-8.541,1.212,-9.121);
     check_twist2turrets2ICRSpeed2twist(-0.2654,5.21,0.0123);
+
+    check_ICRSpeed2Motors2ICRSpeed(0,0,0);
+
+    check_ICRSpeed2Motors2ICRSpeed(0,5.6,20.5);
+    check_ICRSpeed2Motors2ICRSpeed(0,-5.6,20.5);
+    check_ICRSpeed2Motors2ICRSpeed(0,5.6,-20.5);
+    check_ICRSpeed2Motors2ICRSpeed(0,-5.6,-20.5);
+
+    check_ICRSpeed2Motors2ICRSpeed(1.2,5.6,20.5);
+    check_ICRSpeed2Motors2ICRSpeed(1.2,-5.6,20.5);
+    check_ICRSpeed2Motors2ICRSpeed(1.2,5.6,-20.5);
+    check_ICRSpeed2Motors2ICRSpeed(1.2,-5.6,-20.5);
+
+    check_ICRSpeed2Motors2ICRSpeed(-3.2,5.6,20.5);
+    check_ICRSpeed2Motors2ICRSpeed(-3.2,-5.6,20.5);
+    check_ICRSpeed2Motors2ICRSpeed(-3.2,5.6,-20.5);
+    check_ICRSpeed2Motors2ICRSpeed(-3.2,-5.6,-20.5);
 }
 
 BOOST_AUTO_TEST_CASE( UK_Turrets2ICRSpeed_NoMotion)

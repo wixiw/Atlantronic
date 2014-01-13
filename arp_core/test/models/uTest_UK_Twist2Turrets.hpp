@@ -36,6 +36,8 @@ BOOST_AUTO_TEST_CASE( UK_Twist2Turrets_NormalizeAngle )
 BOOST_AUTO_TEST_CASE( UK_Twist2Turrets_ZeroToZeroTest )
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
+
     arp_math::Twist2D twist;
     arp_math::Twist2D twistZero;
     arp_model::TurretState turretCmd;
@@ -61,6 +63,8 @@ BOOST_AUTO_TEST_CASE( UK_Twist2Turrets_ZeroToZeroTest )
 BOOST_AUTO_TEST_CASE( UK_Twist2Turrets_InverseModel )
 {
     arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
+
     arp_math::Twist2D twist(7.3,0,0);
     arp_math::Twist2D twistZero;
     arp_model::TurretState turretCmd;

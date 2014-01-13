@@ -19,6 +19,8 @@ using namespace std;
 BOOST_AUTO_TEST_CASE( UbiquityKinematics_forward_motor2twist2motor )
 {
     UbiquityParams params;
+    params.fillWithFakeValues();
+
     TurretState turrets;
     MotorState curmotors;
     MotorState motors;
@@ -64,6 +66,8 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_forward_motor2twist2motor )
 BOOST_AUTO_TEST_CASE( UbiquityKinematics_nullspeed )
 {
     UbiquityParams params;
+    params.fillWithFakeValues();
+
     TurretState turrets;
     MotorState curmotors;
     MotorState motors;
@@ -171,6 +175,8 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_twist2motor2twist )
     cout << "Seed for rand number is : " << seed << endl;
 
     UbiquityParams params;
+    params.fillWithFakeValues();
+
     MotorState curmotors;
 
     params.setLeftTurretZero(0.0);
@@ -202,6 +208,8 @@ BOOST_AUTO_TEST_CASE( UbiquityKinematics_rotation_twist2motor2twist )
 //    cout << "" << endl;
 
     UbiquityParams params;
+    params.fillWithFakeValues();
+
     MotorState curmotors;
 
     params.setLeftTurretZero(1.0);
