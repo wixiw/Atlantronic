@@ -8,7 +8,7 @@ print("début déploiment arp_ods manual")
 Deployer:import("arp_ods");
 
 dofile("/opt/ard/arp_ods/script/orocos/deployment/components/kinematics_base_deployer.lua");
-dofile("/opt/ard/arp_ods/script/orocos/deployment/components/twist_teleop_deployer.lua");
+dofile("/opt/ard/arp_ods/script/orocos/deployment/components/icrspeed_teleop_deployer.lua");
 --dofile("/opt/ard/arp_ods/script/orocos/deployment/components/freewheel_deployer.lua");
 --dofile("/opt/ard/arp_ods/script/orocos/deployment/components/script_teleop_deployer.lua");
 dofile("/opt/ard/arp_ods/script/orocos/deployment/components/ods_monitor_deployer.lua");

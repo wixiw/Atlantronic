@@ -4,7 +4,7 @@ MotionControlDeployer = ComposantDeployer:new()
 local me = "MotionControl"
 
 function MotionControlDeployer:load()
-	Deployer:loadComponent(me,"arp_ods::TwistTeleop");
+	Deployer:loadComponent(me,"arp_ods::IcrSpeedTeleop");
 	Deployer:setMasterSlaveActivity("MotionScheduler", me)
 end
 
@@ -13,9 +13,9 @@ function MotionControlDeployer:connect()
 	Deployer:addPeer("HmlMonitor", me)
 	Deployer:addPeer(me,"HmlMonitor")
 	Deployer:addPeer("Reporting", me)
-	HmlMonitor:connect(me,"inXSpeed","Joystick","outX1");
-	HmlMonitor:connect(me,"inYSpeed","Joystick","outY1");
-	HmlMonitor:connect(me,"inThetaSpeed","Joystick","outX2");
+	HmlMonitor:connect(me,"inRoSpeedCmd","Joystick","outXY1Distance");
+	HmlMonitor:connect(me,"inPhiCmd","Joystick","outXY1Angle");
+	HmlMonitor:connect(me,"inDeltaCmd","Joystick","outX2");
 	HmlMonitor:connect(me,"inDeadMan","Joystick","outTrigger6");
 	HmlMonitor:connect(me,"inExpertMode","Joystick","outTrigger7");
 	Deployer:connect(me..".inParams","UbiquityParams.outParams",cp);
