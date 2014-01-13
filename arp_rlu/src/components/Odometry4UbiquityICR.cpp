@@ -8,6 +8,7 @@
 #include "Odometry4UbiquityICR.hpp"
 #include <rtt/Component.hpp>
 
+using namespace arp_core::log;
 using namespace arp_math;
 using namespace arp_model;
 using namespace arp_rlu;
@@ -20,6 +21,9 @@ Odometry4UbiquityICR::Odometry4UbiquityICR(const std::string& name):
     RluTaskContext(name)
 {
     createOrocosInterface();
+
+    //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
+    arp_model::Logger::InitFile("arp_model", WARN);
 }
 
 void Odometry4UbiquityICR::updateHook()
@@ -53,8 +57,7 @@ void Odometry4UbiquityICR::updateHook()
         computedICRSpeed = ICRSpeed();
     }
 
-    //TODO slippage detection
-    outSlippageDetected.write(false);
+    outSlippageDetected.write(report);
 
     //TODO calculer la covariance
     EstimatedICRSpeed measuredICRSpeed(computedICRSpeed);

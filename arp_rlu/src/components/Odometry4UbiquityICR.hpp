@@ -40,7 +40,7 @@ class Odometry4UbiquityICR: public RluTaskContext
         /** Computed Twist */
         RTT::OutputPort<arp_math::EstimatedICRSpeed> outICRSpeed;
         /** Slippage detected */
-        RTT::OutputPort<bool> outSlippageDetected;
+        RTT::OutputPort<arp_model::SlippageReport> outSlippageDetected;
 
         /**
          * Permet d'ajouter port/operations à l'interface Orocos.

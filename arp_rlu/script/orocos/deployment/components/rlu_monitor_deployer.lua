@@ -12,9 +12,9 @@ end
 
 
 function RluMonitorDeployer:addToMonitor(name)
-	OdsMonitor = assert( Deployer:getPeer(me) )
+	RluMonitor = assert( Deployer:getPeer(me) )
 	assert( Deployer:addPeer(me, name) )
-	assert( OdsMonitor:ooAddMonitoredPeer (name) )
+	assert( RluMonitor:ooAddMonitoredPeer (name) )
 	Deployer:removePeer (name)
 	return true
 end

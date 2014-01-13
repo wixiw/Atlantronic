@@ -26,7 +26,7 @@ LocFilterCpn::LocFilterCpn(const std::string& name)
 , initialized(false)
 {
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
-    arp_rlu::kfl::Logger::InitFile("KFL", DEBUG);
+    arp_rlu::kfl::Logger::InitFile("KFL", WARN);
 
     createOrocosInterface();
 }

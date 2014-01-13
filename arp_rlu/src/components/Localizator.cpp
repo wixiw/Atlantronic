@@ -71,8 +71,8 @@ Localizator::Localizator(const std::string& name)
 , currentVisibility(NONE)
 {
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
-    arp_rlu::lsl::Logger::InitFile("LSL", DEBUG);
-    arp_rlu::kfl::Logger::InitFile("KFL", INFO);
+    arp_rlu::lsl::Logger::InitFile("LSL", WARN);
+    arp_rlu::kfl::Logger::InitFile("KFL", WARN);
 
     createOrocosInterface();
 
