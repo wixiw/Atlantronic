@@ -104,17 +104,27 @@ namespace arp_hml
         /** Is true when the Homing sequence is finished. It has no sense when the motor is not in HOMING mode */
         OutputPort<bool> outHomingDone;
 
-        /**
-          * Read the motor measures from CAN and publish them to Orocos
-          * should be called early in the cycle
-          */
-         void updateHook();
-
          /**
           * Read the motor commands and send on CAN bus.
           * Should be called late in the cycle
           */
          void updateLateHook();
+
+         /**
+          * Overloaded to get PDO index value
+          */
+         virtual void preopHook();
+
+         /**
+          * Read the motor measures from CAN and publish them to Orocos
+          * should be called early in the cycle
+          */
+         virtual void operationalHook();
+
+         /**
+          * Overloaded to desactivate power
+          */
+         virtual void idleHook();
 
          /**
           * Calls the ArdMotorItf::init() function

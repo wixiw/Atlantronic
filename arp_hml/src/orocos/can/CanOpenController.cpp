@@ -28,15 +28,16 @@ CanOpenController::CanOpenController(const std::string& name) :
             propBusName("can0"), 
             propBaudRate("1000K"), 
             propNodeId(0),
-            propMasterMaxBootDelay(0.500), 
             propSyncPeriod(0.010),
             m_dispatcher(*this),
-            m_canPort(NULL)
+            m_canPort(NULL),
+            m_RunningState(UNKNOWN)
 {
     clock_gettime(CLOCK_MONOTONIC, &m_lastSyncTime);
-    propTimeReporting = true;
     m_timer.SetMaxBufferSize(3000);
     createOrocosInterface();
+
+    outBusConnected.write(false);
 }
 
 CanOpenController::~CanOpenController()
@@ -58,36 +59,7 @@ bool CanOpenController::configureHook()
     res &= initializeCanFestival();
     if (res)
     {
-        LOG(Info) << "CanFestival initialization succeed" << endlog();
-    }
-
-    //on donne propMasterMaxBootDelay ms aux devices pour booter
-    //à l'issue de ce temps on doit être passé en pre-op
-    if (res)
-    {
-        usleep(propMasterMaxBootDelay * 1E6);
-        inControllerNmtState.read(attrCurrentNMTState);
-        if (attrCurrentNMTState == Pre_operational)
-        {
-            LOG(Info) << propBusName
-                    << " NMT Master in Pre-Operationnal state" << endlog();
-        }
-        else
-        {
-            LOG(Error)
-                    << "****************    !!!!!       ************************"
-                    << endlog();
-            LOG(Error)
-                    << "failed to Configure : took too much time to transit into Pre-Operationnal state"
-                    << endlog();
-            LOG(Error)
-                    << "It is possible that you forgot to reset the AU button. For an unknown reason it is blocking everything under wenomai"
-                    << endlog();
-            LOG(Error)
-                    << "****************    !!!!!       ************************"
-                    << endlog();
-            res = false;
-        }
+        LOG(Info) << "CanOpenController initialization succeed" << endlog();
     }
 
     return res;
@@ -97,23 +69,26 @@ bool CanOpenController::startHook()
 {
     bool res = HmlTaskContext::startHook();
 
-    EnterMutex();
-    UNS8 cmdResult = setState(&CanARD_Data, Operational);
-    LeaveMutex();
+    //Open the propBusName CAN bus
+    res &= openCanBus();
+    if (res == false)
+    {
+        LOG(Error) << "failed to configure : openCanBus" << endlog();
+    }
 
+    m_RunningState = SETTING_UP_DEVICES;
+    LOG(Info) << "CanOpenController started." << endlog();
+
+    UNS8 cmdResult = setState(&CanARD_Data, Operational);
     if (cmdResult != Operational)
     {
         LOG(Error) << "startHook: failed to switch to Operationl state"
                 << endlog();
-        res = false;
+        res &= false;
     }
-    else
-    {
-        LOG(Info) << propBusName << " NMT Master in Operationnal state" << endlog();
-        //on laisse du temps parce qu'un reset node general a ete envoye et il faut leur laisser le temps de finir
-        //pour ne pas partir avec des devices en vrac
-        usleep(1.000 * 1E6);
-    }
+
+    //reset du bus.
+    ooResetCanBus();
 
     if( propTimeReporting )
     {
@@ -121,7 +96,6 @@ bool CanOpenController::startHook()
         m_timer.Stop();
         m_timer.ResetStat();
     }
-
 
     return res;
 }
@@ -152,6 +126,54 @@ void CanOpenController::updateHook()
     outPeriod.write(period);
     outClock.write(attrSyncTime);
 
+    switch (m_RunningState)
+    {
+        case SETTING_UP_DEVICES:
+            settingUpDeviceHook();
+            break;
+
+        case RUNNING:
+            runningHook();
+            break;
+
+        default:
+            LOG(Error) << "CanOpenController::updateHook(): unknown m_RunningState=" << m_RunningState << endlog();
+            break;
+    }
+
+    //tac
+    if( propTimeReporting )
+    {
+        m_timer.Stop();
+        //LOG(Info) << "Period = " << period*1000<< "ms" << endlog();
+    }
+}
+
+void CanOpenController::settingUpDeviceHook()
+{
+    bool res = true;
+
+    res &= m_dispatcher.configureAll();
+    res &= m_dispatcher.waitSlavesState(OPERATIONAL, 3.0);
+
+    if( res == false )
+    {
+        LOG(Error) << "CanOpenController settingUpDeviceHook failed." << endlog();
+        return;
+    }
+
+    //reactivate SYNC message
+    if( false == ooSetSyncPeriod(propSyncPeriod) )
+    {
+        return;
+    }
+
+    m_RunningState = RUNNING;
+    LOG(Info) << "CanOpenController settingUpDeviceHook success goigt into RUNNING state." << endlog();
+}
+
+void CanOpenController::runningHook()
+{
     //scheduling de tous les peers
     m_dispatcher.triggerAllRead();
 
@@ -160,17 +182,12 @@ void CanOpenController::updateHook()
 
     //envoit des PDO manuels de fin de cycle
     sendPDOevent(&CanARD_Data);
-
-    //tac
-    if( propTimeReporting )
-    {
-        m_timer.Stop();
-		LOG(Info) << "Period = " << period*1000<< "ms" << endlog();
-	}
 }
 
 void CanOpenController::stopHook()
 {
+    //desactivate SYNC msg
+    ooSetSyncPeriod(0);
 }
 
 
@@ -204,9 +221,6 @@ bool CanOpenController::initializeCanFestival()
         res &= false;
     }
 
-    // Initializes CANFestival timers
-    TimerInit();
-
     //Initializes CANFestival wrappers
     res &= initialiazeCanFestivalWrappers();
     if (res == false)
@@ -215,12 +229,10 @@ bool CanOpenController::initializeCanFestival()
                 << endlog();
     }
 
-    //Open the propBusName CAN bus
-    res &= openCanBus();
-    if (res == false)
-    {
-        LOG(Error) << "failed to configure : openCanBus" << endlog();
-    }
+    // Start periodic CANFestival Task, since now, every call to CanFestival stack should be surrounded by mutex locks
+    // Initializes CANFestival timers
+    TimerInit();
+    StartTimerLoop(startTimerLoopCallback);
 
     return res;
 }
@@ -240,8 +252,8 @@ bool CanOpenController::initialiazeCanFestivalDatas()
     CanARD_Data.post_TPDO = postTPDOCallback;
     CanARD_Data.post_emcy = postEmcy;
     CanARD_Data.post_SlaveBootup = postSlaveBootup;
-    //synchronization de la période can_festival et de la période du composant
-    ooSetSyncPeriod(propSyncPeriod);
+    //low frequency to initialise PDO tables => cracra mais c'est la faute à CanFestival
+    ooSetSyncPeriod(0);
 
     return res;
 }
@@ -300,7 +312,7 @@ bool CanOpenController::openCanBus()
     CAN_PORT canPort = canOpen(&canChannel, &CanARD_Data);
     if (canPort == NULL)
     {
-        LOG(Error) << "failed to configure :  canOpen("
+        LOG(Error) << "openCanBus() : failed to configure :  canOpen("
                 << canChannel.busname << "," << canChannel.baudrate
                 << ") failed." << endlog();
         TimerCleanup();
@@ -309,8 +321,16 @@ bool CanOpenController::openCanBus()
     else
     {
         m_canPort = canPort;
-        // Start periodic CANFestival Task, since now, every call to CanFestival stack should be surrounded by mutex locks
-        StartTimerLoop(startTimerLoopCallback);
+
+        EnterMutex();
+        UNS8 cmdResult = setState(&CanARD_Data, Initialisation);
+        LeaveMutex();
+
+        if( cmdResult != Initialisation && cmdResult != Pre_operational )
+        {
+            LOG(Error) << "openCanBus() : bus is not in init state. Current state=0x" << std::hex << (int) cmdResult << endlog();
+            res &= false;
+        }
     }
 
     return res;
@@ -332,7 +352,7 @@ bool CanOpenController::coWriteInLocalDico(CanDicoEntry dicoEntry)
         goto failed;
     }
 
-    LOG(Info) << "Write success in 0x" << std::hex << dicoEntry.index
+    LOG(Info) << "Write value=0x" << std::hex << dicoEntry.value << " successfully in 0x" << std::hex << dicoEntry.index
             << ":0x" << std::hex << dicoEntry.subindex << endlog();
     goto success;
 
@@ -481,6 +501,123 @@ bool CanOpenController::coReadInRemoteDico(CanDicoEntry dicoEntry,
     return res;
 }
 
+bool CanOpenController::coSendNmtCmd(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd)
+{
+    int cmdResult = 0;
+
+    if( nodeId < 0 || nodeId >= 0xFF )
+    {
+        LOG(Error) << "dispatchNmtState : Node 0x" <<  std::hex << nodeId  << " is out of Node ID bounds " << endlog();
+        goto failed;
+    }
+
+    if( nmtStateCmd == UnknownRequest )
+    {
+        LOG(Error) << "coSendNmtCmd :  failed you can not ask for the UnknownRequest" << endlog();
+        goto failed;
+    }
+
+    //send NMT cmd
+    EnterMutex();
+    cmdResult = masterSendNMTstateChange(&CanARD_Data, (UNS8) nodeId, (UNS8) nmtStateCmd);
+    LeaveMutex();
+    if( cmdResult )
+    {
+        LOG(Error) << "coSendNmtCmd : failed to send NMT command to node 0x" << std::hex << nodeId << "; for command " << nmtStateCmd << endlog();
+        goto failed;
+    }
+
+    //everything wnet ok
+    goto success;
+
+    failed:
+        return false;
+    success:
+        return true;
+}
+
+bool CanOpenController::coRequestNmtChange(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd, double timeout)
+{
+    int cmdResult = 0;
+    double chrono = 0;
+
+    //send NMT cmd
+    if( !coSendNmtCmd(nodeId,nmtStateCmd) )
+    {
+        LOG(Error) << "CanOpenController::coRequestNmtChange : failed to send NMT command " << nmtStateCmd  << " to node 0x" << std::hex << nodeId << endlog();
+        goto failed;
+    }
+
+    //send the NMT state request
+    EnterMutex();
+    cmdResult = masterRequestNodeState (&CanARD_Data, (UNS8) nodeId);
+    LeaveMutex();
+    if( cmdResult )
+    {
+        LOG(Error) << "CanOpenController::coRequestNmtChange : failed to send NMT state request " << nmtStateCmd  << " to node 0x" << std::hex << nodeId << endlog();
+        goto failed;
+    }
+
+   //polling on the NMT state because CAN Festival is not doing node guarding properly ...
+   //chrono is not reseted on purpose to continue the counting if we are reseting a node
+   whileTimeout( !isNmtStateChangeDone(nmtStateCmd, nodeId) , timeout, 0.010 )
+   //si le timeout est explosé c'est que ça a foiré
+   IfWhileTimeoutExpired(timeout)
+   {
+        LOG(Error) << "CanOpenController::coRequestNmtChange : timeout expired 0x" << std::hex << nodeId << " for command " << nmtStateCmd << endlog();
+        goto failed;
+   }
+
+   //here everything is OK.
+   goto success;
+
+    failed:
+        return false;
+    success:
+        return true;
+
+}
+
+bool CanOpenController::isNmtStateChangeDone(enum_DS301_nmtStateRequest nmtCmd, nodeID_t nodeId)
+{
+    bool res = false;
+    enum_nodeState nmtState;
+
+    EnterMutex();
+    nmtState = CanARD_Data.NMTable[nodeId];
+    LeaveMutex();
+
+    switch( nmtCmd )
+    {
+        case StartNode:
+            if( nmtState == ::Operational)
+                res = true;
+            break;
+        case StopNode:
+            if( nmtState == ::Stopped)
+                res = true;
+            break;
+        case EnterPreOp:
+            if( nmtState == ::Pre_operational)
+                res = true;
+            break;
+        case ResetNode:
+        case ResetComunication:
+            if( nmtState == ::Initialisation ||
+                nmtState == ::Disconnected ||
+                nmtState == ::Connecting ||
+                nmtState == ::Preparing ||
+                nmtState == ::Pre_operational
+                    )
+                res = true;
+            break;
+        case UnknownRequest:
+            break;
+    }
+
+    return res;
+}
+
 void CanOpenController::ooResetSdoBuffers()
 {
     EnterMutex();
@@ -490,9 +627,36 @@ void CanOpenController::ooResetSdoBuffers()
 
 bool CanOpenController::ooSetSyncPeriod(double period)
 {
-    //propSyncPeriod = period;
     CanDicoEntry dicoEntry(0xFF, 0x1006, 0x00, (int) (period * 1E6), 0, 4);
     return coWriteInLocalDico(dicoEntry);
+}
+
+void CanOpenController::ooResetCanBus()
+{
+    LOG(Info) << "CanOpen bus RESET request." << endlog();
+
+    //deactivate SYNC message
+    if( false == ooSetSyncPeriod(0) )
+    {
+        LOG(Error) << "CanOpenController::ooResetCanBus failed to mute sync" << endlog();
+        return;
+    }
+
+    if( false == coSendNmtCmd(0x0, ResetNode) )
+    {
+        LOG(Error) << "CanOpenController::ooResetCanBus failed to send reset cmd" << endlog();
+        return;
+    }
+
+    //TODO faire mieux pour attendre les bootups
+    sleep(2);
+
+    //changing state
+    m_RunningState = SETTING_UP_DEVICES;
+
+    LOG(Info) << "CanOpen bus reseted, will now configure nodes." << endlog();
+
+    update();
 }
 
 void CanOpenController::createOrocosInterface()
@@ -510,23 +674,21 @@ void CanOpenController::createOrocosInterface()
               "contains the baudrate of the attached bus (10K,250K,500K,1000K, ...)");
       addProperty("propNodeId", propNodeId) .doc(
               "contains the nodeID of the Controller node on the attached bus (in decimal)");
-      addProperty("propMasterMaxBootDelay", propMasterMaxBootDelay) .doc(
-              "defines the maximal allowed duration for master bootup (in ms)");
       addProperty("propSyncPeriod", propSyncPeriod) .doc(
               "delay between 2 SYNC messages in s ");
       addProperty("propTimeReporting",propTimeReporting).doc(""
               "Set this to true to activate timing reporting");
 
 
-
-      addPort("inControllerNmtState", inControllerNmtState) .doc(
-              "This port is connected to the CanFestival thread to populate attrCurrentNMTState");
-      addPort("inBootUpReceived", inBootUpReceived) .doc(
-              "his port is connected to the CanFestival thread to dispatch the boot event to registred Device Components");
-      addPort("outClock", outClock) .doc("");
-      addPort("outPeriod", outPeriod) .doc("");
       addEventPort("inSync", inSync) .doc(
               "wakes up the component on SYNC message");
+      addPort("inControllerNmtState", inControllerNmtState) .doc(
+              "This port is connected to the CanFestival thread to populate attrCurrentNMTState");
+      addEventPort("inBootUpReceived", inBootUpReceived) .doc(
+              "his port is connected to the CanFestival thread to dispatch the boot event to registred Device Components");
+      addPort("outClock", outClock) .doc("It contains the SYNC CAN message date");
+      addPort("outPeriod", outPeriod) .doc("Delay beetween inSync and last cycle inSync in s");
+      addPort("outBusConnected", outBusConnected) .doc("Is true when the bus is electronically up. Typically it's down when emergency stop is on");
 
       /**
        * Register/Unregister
@@ -565,15 +727,28 @@ void CanOpenController::createOrocosInterface()
               "a structure containing the information to read from the remote dictionnary. The result value is written in the dicoEntry.value entry.") .arg(
               "receivedData",
               "the value read from Can, it is the caller responsibility to conver it into the right format");
+      addOperation("coSendNmtCmd", &CanOpenController::coSendNmtCmd,
+              this, ClientThread) .doc("This operation allows anyone in the application to request a new slave node NMT state. Result is *NOT* checked")
+              .arg("nodeId","CanOpen ID of the targeted node")
+              .arg("requestedNmtState","target NMT state command");
+      addOperation("coRequestNmtChange", &CanOpenController::coRequestNmtChange,
+              this, ClientThread) .doc("This operation allows anyone in the application to request a new slave node NMT state. Result is checked.")
+              .arg("nodeId","CanOpen ID of the targeted node")
+              .arg("requestedNmtState","target NMT state command")
+              .arg("timeout","Delay to wait before considering the device did not transit");
+
       addOperation("ooResetSdoBuffers", &CanOpenController::ooResetSdoBuffers,
               this, OwnThread) .doc(
               "This operation allows to reset all the SDO emission lines. It should be use with care as it is a very intrusive behavior.");
+
       /**
-       * Others
+       * Can BUS management
        */
       addOperation("ooSetSyncPeriod", &CanOpenController::ooSetSyncPeriod, this,
               OwnThread) .doc("define a new period for SYNC object") .arg(
               "period", "in s.");
+      addOperation("ooResetCanBus", &CanOpenController::ooResetCanBus, this,
+              OwnThread) .doc("Restart the can bus and all connected devices.");
 
       /**
        * Debug Operations

@@ -61,24 +61,34 @@ bool WoodheadOut::configureHook()
 	    *m_outputs = 0;
 	}
 
-	 //recuperation de l'index du PDO transmit dans la table CanFestival
-	attrPdoIndex = CanARDDictionnaryAccessor::getTransmitPdoIndex(0x200 + propNodeId);
-    //si on est là, on n'a pas trouvé.
-    if( attrPdoIndex < 0)
-    {
-        LOG(Error) << "Failed to find Faulhaber Command PDO index among "
-                << CanARDDictionnaryAccessor::getTransmitPdoNumber()
-        << " tested index. Check your dictionnary." << endlog();
-        res = false;
-    }
-
 	return res;
 }
 
-void WoodheadOut::updateLateHook()
+void WoodheadOut::preopHook()
+{
+    //On ne cherche le numero de PDO que si on ne l'a jamais fait, sinon ça merde pendant le reset...
+    if( attrPdoIndex == -1 )
+    {
+        //recuperation de l'index du PDO transmit dans la table CanFestival
+       attrPdoIndex = CanARDDictionnaryAccessor::getTransmitPdoIndex(0x200 + propNodeId);
+       //si on est là, on n'a pas trouvé.
+       if( attrPdoIndex < 0)
+       {
+           LOG(Error) << "Failed to find WoodHeadOut Command PDO index among "
+                   << CanARDDictionnaryAccessor::getTransmitPdoNumber()
+           << " tested index. Check your dictionnary." << endlog();
+           m_RunningState = UNCONNECTED;
+           return;
+       }
+    }
+
+   CanOpenNode::preopHook();
+}
+
+void WoodheadOut::operationalHook()
 {
     //appel du parent car il log les bootUp
-    CanOpenNode::updateLateHook();
+    CanOpenNode::operationalHook();
 
     UNS8 inputs = 0;
     bool tmpRead;

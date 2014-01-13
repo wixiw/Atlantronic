@@ -26,13 +26,9 @@ bool initWrapper()
 void startTimerLoopCallback(CO_Data* d, UNS32 id)
 {
     //it seems there is a bug into the canFestival, d is always null... please do not use it
-
 #ifdef DEBUG_ON
     cerr << "CERR : [INFO] startTimerLoopCallback(" << d << " , " << id << " )" << endl;
 #endif
-
-    canFestival_outNMTState.write(Initialisation);
-    setState(&CanARD_Data, Initialisation);
 }
 
 void exitTimerLoopCallback(CO_Data* d, UNS32 id)
@@ -41,10 +37,12 @@ void exitTimerLoopCallback(CO_Data* d, UNS32 id)
     cerr << "CERR : [INFO] exitTimerLoopCallback(" << d << " , " << id << " )" << endl;
 #endif
 
+    EnterMutex();
     masterSendNMTstateChange(&CanARD_Data, *(CanARD_Data.bDeviceNodeId),
             NMT_Reset_Node);
     canFestival_outNMTState.write(Stopped);
     setState(&CanARD_Data, Stopped);
+    LeaveMutex();
 }
 
 void initialisationCallback(CO_Data* d)
@@ -54,7 +52,6 @@ void initialisationCallback(CO_Data* d)
 #endif
 
     canFestival_outNMTState.write(Initialisation);
-
     //this is automatically done by CanFestival, keep this line to remind
     //setState(&CanARD_Data, Pre_operational);
 }

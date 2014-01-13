@@ -34,6 +34,11 @@ namespace arp_hml
         virtual bool configureHook();
 
         /**
+         * Start all node except busses, then start busses
+         */
+        virtual bool startHook();
+
+        /**
          * Checks if all components are still running
          */
         virtual void updateHook();

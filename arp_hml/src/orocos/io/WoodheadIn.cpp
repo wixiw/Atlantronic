@@ -66,10 +66,10 @@ bool WoodheadIn::configureHook()
 	return res;
 }
 
-void WoodheadIn::updateHook()
+void WoodheadIn::operationalHook()
 {
     //appel du parent car il log les bootUp
-    CanOpenNode::updateHook();
+    CanOpenNode::operationalHook();
 
     EnterMutex();
     UNS8 outputs = *m_inputs;

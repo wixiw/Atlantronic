@@ -17,7 +17,7 @@
 namespace arp_hml
 {
 
-class Syncronizator: public arp_hml::HmlTaskContext
+class Syncronizator: public HmlTaskContext
 {
     public:
         Syncronizator(const std::string name);

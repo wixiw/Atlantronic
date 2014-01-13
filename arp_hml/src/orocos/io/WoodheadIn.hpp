@@ -35,7 +35,7 @@ namespace arp_hml
     	UNS8* m_inputs;
 
         bool configureHook();
-        void updateHook();
+        void operationalHook();
     	virtual bool checkInputsPorts();
 
     };

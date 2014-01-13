@@ -19,7 +19,7 @@ ORO_LIST_COMPONENT_TYPE( arp_hml::HmlMonitor )
 
 HmlMonitor::HmlMonitor(const std::string& name):
     Monitor(name),
-    propRequireCompleteHardware(false),
+    propRequireCompleteHardware(true),
     m_powerManager(*this),
     m_stateManager(*this)
 {
@@ -34,7 +34,7 @@ bool HmlMonitor::configureHook()
 {
     bool res = true ;
 
-    //configure and start bus monitored components
+    //configure  bus monitored components
     vector<TaskContext*>::iterator i;
     for ( i = m_monitoredBusList.begin() ; i != m_monitoredBusList.end() ; i++ )
     {
@@ -49,8 +49,6 @@ bool HmlMonitor::configureHook()
         {
             LOG(Info) << "Configuring " << tc->getName() << endlog();
             res &= tc->configure();
-            LOG(Info) << "Starting " << tc->getName() << endlog();
-            res &= tc->start();
         }
     }
 
@@ -80,6 +78,34 @@ bool HmlMonitor::configureHook()
         res &= getOperation("RightSteering",    "coReset",  m_coResetRightSteering);
     if( hasPeer("RearSteering") || propRequireCompleteHardware )
         res &= getOperation("RearSteering",     "coReset",  m_coResetRearSteering);
+
+    return res;
+}
+
+bool HmlMonitor::startHook()
+{
+    bool res = true ;
+
+    //start normal monitored components
+    res &= Monitor::startHook();
+
+    //start bus monitored components
+    vector<TaskContext*>::iterator i;
+    for ( i = m_monitoredBusList.begin() ; i != m_monitoredBusList.end() ; i++ )
+    {
+        TaskContext* tc = (*i);
+
+        if( tc == NULL )
+        {
+            LOG(Error) << "m_monitoredBusList should not contain null values ! (configure)" << endlog();
+            res = false;
+        }
+        else
+        {
+            LOG(Info) << "Starting " << tc->getName() << endlog();
+            res &= tc->start();
+        }
+    }
 
     return res;
 }

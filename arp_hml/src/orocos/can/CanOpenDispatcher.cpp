@@ -18,7 +18,7 @@ CanOpenDispatcher::CanOpenDispatcher(TaskContext& tc):
     m_registeredNodes(),
     m_parent(tc)
 {
-	setColog(tc.getOperation("coLog"));
+	setColog(tc.TaskContext::getOperation("coLog"));
 }
 
 void CanOpenDispatcher::setColog(OperationCaller<void(LoggerLevel,string)> colog)
@@ -36,6 +36,7 @@ CanOpenDispatcher::~CanOpenDispatcher()
         nodeRegistration_t* registration = (*it).second;
 
         registration->outBootUp.disconnect();
+        registration->inRunningState.disconnect();
 
         m_registeredNodes.erase(nodeId);
 
@@ -77,6 +78,14 @@ bool CanOpenDispatcher::ooRegisterNewNode(CanNodeIdCard node)
     {
     	s.str("");
 		s  <<  "ooRegisterNewNode failed to register : inBootUpFrame failed to connect to nodeRegistration->outBootUp node:0x" << std::hex << node.nodeId << endlog();
+        m_coLog(Error,s.str());
+        goto failedInsert;
+    }
+
+    if( !nodeRegistration->inRunningState.connectTo(node.outRunningState) )
+    {
+        s.str("");
+        s  <<  "ooRegisterNewNode failed to register : inRunningState failed to connect to node->outOperationnalState node:0x" << std::hex << node.nodeId << endlog();
         m_coLog(Error,s.str());
         goto failedInsert;
     }
@@ -175,6 +184,10 @@ void CanOpenDispatcher::dispatchBootUp(nodeID_t propNodeId, InputPort<nodeID_t>&
 				s  << "dispatchBootUpFrame : bootUp from nodeId 0x" << std::hex << nodeIDOfBootedDevice << endlog();
                 m_coLog(Debug,s.str());
                 (*itPort).second->outBootUp.write(true);
+                if( (*itPort).second->task != NULL )
+                {
+                    (*itPort).second->task->update();
+                }
             }
         }
     }
@@ -191,6 +204,43 @@ void CanOpenDispatcher::unRegisterAll()
 	{
 		ooUnregisterNode((*it).first);
 	}
+}
+
+bool CanOpenDispatcher::configureAll()
+{
+    map< nodeID_t, nodeRegistration_t* >::iterator it;
+
+    for ( it = m_registeredNodes.begin(); it!=m_registeredNodes.end(); ++it)
+    {
+        CanOpenNode* task = (*it).second->task;
+
+        //Check Task pointer
+        if( task == NULL )
+        {
+            stringstream s;
+            s << "CanOpenDispatcher::configureAll: slave 0x" << std::hex << (*it).first <<" is NULL " << endlog();
+            m_coLog(Error,s.str());
+            goto fail;
+        }
+
+        //Call the operation
+        if( task->ooEnterPreOp() == false )
+        {
+            stringstream s;
+            s << "CanOpenDispatcher::triggerAll: " <<  task->getName() << ".ooEnterPreOp failed." << endlog();
+            m_coLog(Error,s.str());
+            goto fail;
+        }
+    }
+
+    //everything went ok.
+    goto success;
+
+
+    fail:
+        return false;
+    success:
+       return true;
 }
 
 void CanOpenDispatcher::triggerAllRead()
@@ -230,6 +280,52 @@ void CanOpenDispatcher::triggerAllWrite()
     {
         (*it).second->task->updateLate();
     }
+}
+
+
+eRunningState CanOpenDispatcher::readStatePort(nodeRegistration_t* registration)
+{
+    eRunningState state = UNKNOWN;
+    if( registration == NULL )
+    {
+        stringstream s;
+        s << "CanOpenDispatcher::readStatePort provide a NULL pointer." << endlog();
+        m_coLog(Error,s.str());
+        return UNKNOWN;
+    }
+
+    registration->inRunningState.read(state);
+    return state;
+}
+
+
+bool CanOpenDispatcher::waitSlavesState(eRunningState expectedState, double timeout)
+{
+    map< nodeID_t, nodeRegistration_t* >::iterator it;
+
+    double chrono = 0;
+
+    for ( it = m_registeredNodes.begin(); it!=m_registeredNodes.end(); ++it)
+    {
+
+        //polling on the NMT state because CAN Festival is not doing node guarding properly ...
+        //chrono is not reseted on purpose to continue the counting if we are reseting a node
+        whileTimeout( readStatePort(it->second) != expectedState , timeout, 0.010 )
+        //si le timeout est explosé c'est que ça a foiré
+        IfWhileTimeoutExpired(timeout)
+        {
+             stringstream s;
+             s << "waitSlavesState("<< expectedState <<") : timeout expired." << endlog();
+             m_coLog(Error,s.str());
+             return false;
+        }
+    }
+
+    stringstream s;
+    s << "waitSlavesState("<< expectedState <<") : all received" << endlog();
+    m_coLog(Info,s.str());
+
+    return true;
 }
 
 void CanOpenDispatcher::ooPrintRegisteredNodes()

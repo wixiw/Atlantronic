@@ -170,6 +170,7 @@ int CanARDDictionnaryAccessor::getTransmitPdoIndex(const UNS16 pdoCobId)
 
     for( int i = 0 ; i< CanARDDictionnaryAccessor::getTransmitPdoNumber() ; i++ )
     {
+        //cout << "CanARDDictionnaryAccessor::getTransmitPdoIndex("<<pdoCobId<<") cobid = " << CanARD_Data.PDO_status[i].last_message.cob_id << endl;
         if( CanARD_Data.PDO_status[i].last_message.cob_id == pdoCobId )
         {
             pdoIndex = i;

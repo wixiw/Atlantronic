@@ -54,14 +54,7 @@ namespace arp_hml
         RTT::InputPort<bool> inRearSteeringEnable;
 
         /** CAN Connectivity */
-        RTT::InputPort<bool> inLeftDrivingConnected;
-        RTT::InputPort<bool> inRightDrivingConnected;
-        RTT::InputPort<bool> inRearDrivingConnected;
-        RTT::InputPort<bool> inLeftSteeringConnected;
-        RTT::InputPort<bool> inRightSteeringConnected;
-        RTT::InputPort<bool> inRearSteeringConnected;
-        RTT::InputPort<bool> inWoodheadInConnected;
-        RTT::InputPort<bool> inWoodheadOutConnected;
+        RTT::InputPort<bool> inCanBusConnected;
 
         /**PowerManagement synthesis */
         RTT::OutputPort<bool> outDrivingEnable;
@@ -113,7 +106,7 @@ namespace arp_hml
         /**
          * Read and merge information to detect the emergencyStop
          */
-        void readConnectivity();
+        void readCanStates();
 
         /**
          * Use this to connect local handlers to all peer component operations.

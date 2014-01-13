@@ -32,22 +32,8 @@ PowerManager::PowerManager(ARDTaskContext& owner):
             .doc("Rear steering soft enable state");
 
 
-    m_owner.addPort("inLeftDrivingConnected",inLeftDrivingConnected)
-            .doc("Left driveing connectivity");
-    m_owner.addPort("inRightDrivingConnected",inRightDrivingConnected)
-             .doc("Right driving connectivity");
-    m_owner.addPort("inRearDrivingConnected",inRearDrivingConnected)
-             .doc("Rear driving connectivity");
-    m_owner.addPort("inLeftSteeringConnected",inLeftSteeringConnected)
-            .doc("Left steering connectivity");
-    m_owner.addPort("inRightSteeringConnected",inRightSteeringConnected)
-             .doc("Right steering connectivity");
-    m_owner.addPort("inRearSteeringConnected",inRearSteeringConnected)
-             .doc("Rear steering connectivity");
-    m_owner.addPort("inWoodheadInConnected",inWoodheadInConnected)
-             .doc("Input Woodhead connectivity");
-    m_owner.addPort("inWoodheadOutConnected",inWoodheadOutConnected)
-             .doc("Output Woodhead connectivity");
+    m_owner.addPort("inCanBusConnected",inCanBusConnected)
+            .doc("Info about Can bus connectivity");
 
     m_owner.addPort("outDrivingEnable",outDrivingEnable)
             .doc("Driving soft enable state");
@@ -141,7 +127,7 @@ bool PowerManager::getPeersOperations()
 void PowerManager::updateHook()
 {
     readDriveEnable();
-    readConnectivity();
+    readCanStates();
 }
 
 void PowerManager::readDriveEnable()
@@ -171,31 +157,11 @@ void PowerManager::readDriveEnable()
     outEnable.write( outDrivingEnable.getLastWrittenValue() && outSteeringEnable.getLastWrittenValue() );
 }
 
-void PowerManager::readConnectivity()
+void PowerManager::readCanStates()
 {
-    bool leftDrivingConnectivity = false;
-    bool rightDrivingConnectivity = false;
-    bool rearDrivingConnectivity = false;
-    bool leftSteeringConnectivity = false;
-    bool rightSteeringConnectivity = false;
-    bool rearSteeringConnectivity = false;
-    bool woodheadOConnectivity = false;
-    bool woodheadIConnectivity = false;
-    bool emergency;
-
-    inLeftDrivingConnected.readNewest(leftDrivingConnectivity);
-    inRightDrivingConnected.readNewest(rightDrivingConnectivity);
-    inRearDrivingConnected.readNewest(rearDrivingConnectivity);
-    inLeftSteeringConnected.readNewest(leftSteeringConnectivity);
-    inRightSteeringConnected.readNewest(rightSteeringConnectivity);
-    inRearSteeringConnected.readNewest(rearSteeringConnectivity);
-    inWoodheadOutConnected.readNewest(woodheadOConnectivity);
-    inWoodheadInConnected.readNewest(woodheadIConnectivity);
-
-    emergency = !leftDrivingConnectivity && !rightDrivingConnectivity && !rearDrivingConnectivity
-                    && !leftSteeringConnectivity && !rightSteeringConnectivity && !rearSteeringConnectivity
-                    && !woodheadOConnectivity && !woodheadIConnectivity;
-    outEmergencyStop.write(emergency);
+    bool busConnected = false;
+    inCanBusConnected.readNewest(busConnected);
+    outEmergencyStop.write(busConnected);
 }
 
 //-----------------------------------------------------

@@ -17,25 +17,25 @@ using namespace arp_core;
 
 namespace arp_hml
 {
-    class CanOpenNode;
 
-    struct CanNodeIdCard
-    {
-        CanNodeIdCard():
-            nodeId(0),
-            task(NULL),
-            inBootUpFrame(NULL)
-            {}
+class CanOpenNode;
 
-        CanNodeIdCard(int nodeId, arp_hml::CanOpenNode* task, RTT::InputPort<bool>* inBootUpFrame):
-            nodeId(nodeId),
-            task(task),
-            inBootUpFrame(inBootUpFrame)
-            {}
+struct CanNodeIdCard
+{
+        CanNodeIdCard() :
+                nodeId(0), task(NULL), inBootUpFrame(NULL)
+        {
+        }
+
+        CanNodeIdCard(int nodeId, arp_hml::CanOpenNode* task, RTT::InputPort<bool>* inBootUpFrame) :
+                nodeId(nodeId), task(task), inBootUpFrame(inBootUpFrame)
+        {
+        }
 
         nodeID_t nodeId;
         arp_hml::CanOpenNode* task;
         RTT::InputPort<bool>* inBootUpFrame;
+        RTT::OutputPort<eRunningState>* outRunningState;
 
         /**
          * Use this function to check the data validity of the current CanNodeIdCard
@@ -44,21 +44,19 @@ namespace arp_hml
         {
             bool res = true;
 
-            if( nodeId < 0 || nodeId > 128 || nodeId == 0x00 || nodeId == 0x01 || nodeId == 0xFF)
+            if (nodeId < 0 || nodeId > 128 || nodeId == 0x00 || nodeId == 0x01 || nodeId == 0xFF)
                 res = false;
-            if( task == NULL )
+            if (task == NULL)
                 res = false;
-            if( inBootUpFrame == NULL )
+            if (inBootUpFrame == NULL)
                 res = false;
 
             return res;
         }
-    };
+};
 
-
-
-    class CanOpenNode: public HmlTaskContext
-    {
+class CanOpenNode: public HmlTaskContext
+{
     public:
         CanOpenNode(const std::string& name);
 
@@ -68,6 +66,12 @@ namespace arp_hml
          * It calls updateLateHook() when isRunning())==TRUE
          */
         void updateLate();
+
+        /**
+         * Switch to sub running state : PREOP
+         */
+        //TODO should be private, mais j'arrive pas a y acceder depuis CanDispatcher :( ca me soule donc je bourrine
+        bool ooEnterPreOp();
 
     protected:
         /** Last sync time received **/
@@ -80,9 +84,6 @@ namespace arp_hml
 
         /** Timeout before considering a node is not responding to a NMT request (in s) */
         double propNmtTimeout;
-
-        /** Time required to boot the device from a reset command (in s)*/
-        double propDeviceBootTime;
 
         /** name of the CanOpenController this component will connect*/
         std::string propCanOpenControllerName;
@@ -111,7 +112,7 @@ namespace arp_hml
         /**
          * This port is true when the component thinks the device is disconnected of the network
          */
-        OutputPort<bool> outConnected;
+        OutputPort<eRunningState> outOperationnalState;
 
         /**
          * handler on a CanOpenController operation to register
@@ -131,7 +132,15 @@ namespace arp_hml
         /**
          * handler on a CanOpenController operation to read from the node attrNodeId dictionnary
          */
-        OperationCaller<bool(CanDicoEntry,int*)> m_coReadInRemoteDico;
+        OperationCaller<bool(CanDicoEntry, int*)> m_coReadInRemoteDico;
+
+        /*
+         * handler on a CanOpenController operation to request an NMT state change
+         */
+        OperationCaller<bool(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd, double timeout)> m_coRequestNmtChange;
+
+        /** SubState of the CanOpencontroller in the Orocos Running State */
+        eRunningState m_RunningState;
 
         /**
          * Connect to the CanOpenController, reset the node and send CAN configuration SDO
@@ -144,14 +153,40 @@ namespace arp_hml
         virtual bool startHook();
 
         /**
-         * Handles Bootup : log a warning message
+         * Manage the running state machine
+         * concrete nodes should not have to override this
+         * prefer \see preopHook, \see operationalHook, \see idleHook
          */
         virtual void updateHook();
 
         /**
+         * Hook for running pre op state
+         */
+        virtual void preopHook();
+
+        /**
+         * Hook for running op state
+         * It switches to IDLE state if it receive a bootup msg
+         */
+        virtual void operationalHook();
+
+        /**
+         * Hook for running idle
+         */
+        virtual void idleHook();
+
+        /**
+         * Hook for running unconnected
+         */
+        virtual void unconnectedHook();
+
+        /**
          *
          */
-        virtual void updateLateHook(){};
+        virtual void updateLateHook()
+        {
+        }
+        ;
 
         /**
          * Put the node in stop mode
@@ -186,14 +221,14 @@ namespace arp_hml
 
         /**
          * Reset the node, this is a blocking call
+         * @param timeout : delay to wait between the reset cmd and the expected bootup frame
          */
-        bool resetNode();
+        bool resetNode(double timeout);
 
         /**
          * Send configuration SDO to node from a script
          */
         bool configureNode();
-
 
         /**
          * Use this operation to send a PDO.
@@ -203,35 +238,18 @@ namespace arp_hml
 
         /**
          * Use this operation to emit an NMT state change request for a node.
-         * This operation will do some polling on the NMT state with PDO request
-         * So don't use this operation in operationnal ! (only for booting and configuring).
-         * It's a blocking function.
-         * It will send 2 things :
-         * _ the NMT cmd request with OOO#cmd.nodeId
-         * _ an NMT state reques 700+nodeId#R
-         * and wait for the 700+nodeId#nmtState message to come.
-         * @param nodeId : node ID of the slave node to which we send the request
+         * This operation call CanOpenController::coRequestnmtChange()
          * @param nmtStateCmd : new NMT state in which we would like the node to be
-         * @param timeout : timeout on the polling
          */
-        bool coSendNmtCmd(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd, double timeout);
-
-        /**
-         * Compares an NMT state to a sended NMT command.
-         * The NMT state is get from CanARD_Data.NMTable[nodeId]
-         * @param nmtCmd : the NMT command sended to the slave node
-         * @param nodeId : Id of the node to whoch the command has been sended
-         * @return true is the NMT cmd has been processed
-         */
-        bool isNmtStateChangeDone(enum_DS301_nmtStateRequest nmtCmd, nodeID_t nodeId);
+        bool coRequestNmtChange(enum_DS301_nmtStateRequest nmtStateCmd);
 
     private:
         /**
          * Shared structure with CanOpenController
          */
         CanNodeIdCard m_nodeIdCard;
-    };
 
+};
 }
 
 #endif /* CANOPENNODE_HPP_ */

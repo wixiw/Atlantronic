@@ -9,8 +9,6 @@
 
 #include "orocos/can/CanOpenNode.hpp"
 #include <rtt/scripting/ProgramInterface.hpp>
-//pourle mlockall
-#include <sys/mman.h>
 #include <errno.h>
 
 using namespace arp_hml;
@@ -22,12 +20,12 @@ CanOpenNode::CanOpenNode(const std::string& name):
 	HmlTaskContext(name),
     propNodeId(int(0xFF)),
     propNmtTimeout(1.000),
-    propDeviceBootTime(0.6),
     propCanOpenControllerName("Can1"),
     propCanConfigurationScript(""),
-    propResetFirst(true),
+    propResetFirst(false),
     inMasterClock(),
-    inBootUpFrame()
+    inBootUpFrame(),
+    m_RunningState(arp_hml::UNKNOWN)
 {
     updateNodeIdCard();
 
@@ -38,8 +36,6 @@ CanOpenNode::CanOpenNode(const std::string& name):
         .doc("CAN adress of the node");
     addProperty("propNmtTimeout",propNmtTimeout)
         .doc("Timeout before considering a node is not responding to a NMT request (in s)");
-    addProperty("propDeviceBootTime",propDeviceBootTime)
-        .doc("Delay we wait during a reboot of the device (during a ResetNode for instance)");
     addProperty("propCanOpenControllerName",propCanOpenControllerName)
         .doc("name of the CanOpenController this component will connect");
     addProperty("propCanConfigurationScript",propCanConfigurationScript)
@@ -51,8 +47,11 @@ CanOpenNode::CanOpenNode(const std::string& name):
     		.doc("");
     addPort("inBootUpFrame",inBootUpFrame)
             .doc("port from which we receive the BootUp Frame of our node from a CanOpenController");
-    addPort("outConnected",outConnected)
-            .doc("This port is true when the component thinks the device is disconnected of the network");
+    addPort("outOperationnalState",outOperationnalState)
+            .doc("This port publish the internal sub states when running.");
+
+    addOperation("ooEnterPreOp", &CanOpenNode::ooEnterPreOp, this, OwnThread)
+            .doc("Switch to sub running state : PREOP");
 
     addOperation("coRegister", &CanOpenNode::coRegister, this, ClientThread)
     		.doc("use this operation in deployment to register the node into the CanOpenController");
@@ -61,10 +60,10 @@ CanOpenNode::CanOpenNode(const std::string& name):
             this, ClientThread) .doc("This operation allows anyone in the application to send a PDO. The PDO is automatically built from mapping information (you are so supposed to have updated the dico first).").arg(
             "pdoNumber","Number of the PDO in the dictionnay");
 
-    addOperation("coSendNmtCmd", &CanOpenNode::coSendNmtCmd,
+    addOperation("coRequestNmtChange", &CanOpenNode::coRequestNmtChange,
             this, ClientThread) .doc("This operation allows anyone in the application to request a new slave node NMT state. Take care it is a blocking operation, don't use in operationnal");
 
-    outConnected.write(false);
+    outOperationnalState.write(m_RunningState);
 }
 
 void CanOpenNode::updateNodeIdCard()
@@ -72,11 +71,12 @@ void CanOpenNode::updateNodeIdCard()
     m_nodeIdCard.nodeId = propNodeId;
     m_nodeIdCard.task = this;
     m_nodeIdCard.inBootUpFrame = &inBootUpFrame;
+    m_nodeIdCard.outRunningState = &outOperationnalState;
 }
 
 void CanOpenNode::updateLate()
 {
-    if( isRunning() )
+    if( isRunning() && m_RunningState == arp_hml::OPERATIONAL)
     {
         updateLateHook();
     }
@@ -170,24 +170,6 @@ bool CanOpenNode::configureHook()
         goto failedUnregister;
     }
 
-    //normalement tous les noeuds sont sensés être reset lors du démarrage du controlleur.
-    //en cas de doute, besoin de sécurité, de device ayant déjà réagit, ... il est possible de forcer un nouveau reset
-    if( propResetFirst )
-    {
-        if( !resetNode() )
-        {
-            LOG(Error)  << "failed to configure : impossible to reset the node" << endlog();
-            goto failedUnregister;
-        }
-    }
-
-    //on envoie les SDO de configuration
-    if( !configureNode() )
-    {
-        LOG(Error)  << "failed to configure : CAN configuration  failed" << endlog();
-    	goto failedUnregister;
-    }
-
     LOG(Info) << "CanOpenNode::configureHook : done" << endlog();
     goto success;
 
@@ -203,26 +185,11 @@ bool CanOpenNode::configureHook()
 bool CanOpenNode::startHook()
 {
     bool res = HmlTaskContext::startHook();
-    if ( res == false )
-        goto failed;
-
-    //envoit de la requête de start au noeud
-    if( coSendNmtCmd(propNodeId, StartNode, propNmtTimeout) == false )
-    {
-        LOG(Error)  << "startHook : timeout has expired, impossible to get into operational NMT state for node 0x"<< std::hex << propNodeId << endlog();
-        goto failed;
-    }
-
-    LOG(Info) << "CanOpenNode::startHook : done" << endlog();
-    outConnected.write(true);
-
-
-    return true;
-
-    failed:
-    return false;
+    m_RunningState = arp_hml::UNCONNECTED;
+    outOperationnalState.write(m_RunningState);
+    LOG(Info) << "CanOpenNode::startingHook : done" << endlog();
+    return res;
 }
-
 
 
 void CanOpenNode::updateHook()
@@ -233,19 +200,111 @@ void CanOpenNode::updateHook()
 
     HmlTaskContext::updateHook();
 
+    switch (m_RunningState)
+    {
+        case arp_hml::PREOP:
+            preopHook();
+            break;
+
+        case arp_hml::OPERATIONAL:
+            operationalHook();
+            break;
+
+        case arp_hml::IDLE:
+            idleHook();
+            break;
+
+        case arp_hml::UNCONNECTED:
+            unconnectedHook();
+            break;
+
+        default:
+            LOG(Error) << "CanOpenController::updateHook(): unknown m_RunningState=" << m_RunningState << endlog();
+            break;
+    }
+
+    outOperationnalState.write(m_RunningState);
+}
+
+void CanOpenNode::preopHook()
+{
+    LOG(Info)  << "CanOpenNode::preopHook : entering" << endlog();
+
+    //normalement tous les noeuds sont sensés être reset lors du démarrage du controlleur.
+    //en cas de doute, besoin de sécurité, de device ayant déjà réagit, ... il est possible de forcer un nouveau reset
+    if( propResetFirst )
+    {
+        LOG(Info)  << "CanOpenNode::preopHook : reset forced" << endlog();
+
+        //envoit de la requête de reset au noeud
+        if( coRequestNmtChange(ResetNode) == false )
+        {
+            LOG(Error) << "CanOpenNode::preopHook : Return to UNCONNECTED state." << endlog();
+            m_RunningState = arp_hml::UNCONNECTED;
+            outOperationnalState.write(m_RunningState);
+            return;
+        }
+
+        LOG(Info)  << "CanOpenNode::preopHook : reseted" << endlog();
+    }
+
+    //on envoie les SDO de configuration
+    if( !configureNode() )
+    {
+        LOG(Error)  << "preopHook : Node 0x" << std::hex << propNodeId << " failed to configure. Return to UNCONNECTED state" << endlog();
+        m_RunningState = arp_hml::UNCONNECTED;
+        outOperationnalState.write(m_RunningState);
+        return;
+    }
+    LOG(Info)  << "CanOpenNode::preopHook : configured" << endlog();
+
+    //envoit de la requête de start au noeud
+    if( coRequestNmtChange(StartNode) == false )
+    {
+        LOG(Error)  << "preopHook : timeout has expired, impossible to get into operational NMT state for node 0x"<< std::hex << propNodeId << ". Returning to UNCONNECTED state"<< endlog();
+        m_RunningState = arp_hml::UNCONNECTED;
+        outOperationnalState.write(m_RunningState);
+        return;
+    }
+
+    //everything is ok
+    m_RunningState = arp_hml::OPERATIONAL;
+    outOperationnalState.write(m_RunningState);
+    LOG(Info)  << "CanOpenNode::preopHook : going to Operationnal" << endlog();
+}
+
+void CanOpenNode::operationalHook()
+{
     //lecture des bootup
     bool dummy;
     if( inBootUpFrame.read(dummy) == NewData )
     {
-        stop();
-        LOG(Info) << "Node " << propNodeId << " has send a boot up frame." << endlog();
+        m_RunningState = arp_hml::IDLE;
+        outOperationnalState.write(m_RunningState);
+        LOG(Info) << "operationalHook: Node " << propNodeId << " has send a boot up frame. Returning to IDLE" << endlog();
+    }
+}
+
+void CanOpenNode::idleHook()
+{
+}
+
+void CanOpenNode::unconnectedHook()
+{
+    //lecture des bootup
+    bool dummy;
+    if( inBootUpFrame.read(dummy) == NewData )
+    {
+        m_RunningState = arp_hml::IDLE;
+        outOperationnalState.write(m_RunningState);
+        LOG(Info) << "unconnectedHook: Node " << propNodeId << " has send a boot up frame. Returning to IDLE" << endlog();
     }
 }
 
 void CanOpenNode::stopHook()
 {
     //envoit de la requête de stop au noeud
-    if( coSendNmtCmd(propNodeId, StopNode, propNmtTimeout) == false )
+    if( coRequestNmtChange(StopNode) == false )
     {
         LOG(Error)  << "stopHook : timeout has expired, impossible to get into operational NMT state for node 0x"<< std::hex << propNodeId << endlog();
         goto failed;
@@ -277,41 +336,10 @@ bool CanOpenNode::connectOperations()
     res &= getOperation(propCanOpenControllerName, "ooUnregisterNode",          m_ooUnregister);
     res &= getOperation(propCanOpenControllerName, "coWriteInRemoteDico",       m_coWriteInRemoteDico);
     res &= getOperation(propCanOpenControllerName, "coReadInRemoteDico",        m_coReadInRemoteDico);
+    res &= getOperation(propCanOpenControllerName, "coRequestNmtChange",        m_coRequestNmtChange);
+
 
     return res;
-}
-
-bool CanOpenNode::resetNode()
-{
-    bool bootUp;
-
-    LOG(Info) << "Sending a CAN reset to node 0x" << std::hex << propNodeId << endlog();
-
-    //vidange de la pile de bootUp
-    while( inBootUpFrame.read(bootUp) == NewData )
-    {
-        LOG(Warning)  << "resetNode : bootUp frame are pending, inBootUpFrame should be empty" << endlog();
-    };
-
-    //envoit de la requête de reset au noeud
-    if( coSendNmtCmd(propNodeId, ResetNode, propNmtTimeout) == false )
-    {
-        LOG(Error) << "resetNode : Node 0x" << std::hex << propNodeId << " failed to send the NMT change request" << endlog();
-        goto failed;
-    }
-
-    //attente du bootup
-    if ( inBootUpFrame.read(bootUp) != NewData )
-        LOG(Warning) << "resetNode : Node 0x" << std::hex << propNodeId << " is waiting for a bootUp frame ... anyway don't care, go on" << endlog();
-
-
-    LOG(Info) << "resetNode : success ! "  << endlog();
-    goto success;
-
-    failed:
-        return false;
-    success:
-        return true;
 }
 
 bool CanOpenNode::configureNode()
@@ -354,6 +382,22 @@ bool CanOpenNode::configureNode()
     	return true;
 }
 
+bool CanOpenNode::ooEnterPreOp()
+{
+    if( !isRunning() || m_RunningState != arp_hml::IDLE )
+    {
+        LOG(Error)  << "ooEnterPreOp : you are trying to switch to PreOp state but current state doesn't allow this (sub state=" << m_RunningState << ")." << endlog();
+        return false;
+    }
+
+    m_RunningState = arp_hml::PREOP;
+    outOperationnalState.write(m_RunningState);
+    LOG(Info)  << "ooEnterPreOp : go to PreOp." << endlog();
+
+    update();
+
+    return true;
+}
 
 bool CanOpenNode::coSendPdo(int pdoNumber)
 {
@@ -391,101 +435,32 @@ bool CanOpenNode::coSendPdo(int pdoNumber)
 }
 
 
-bool CanOpenNode::coSendNmtCmd(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd, double timeout)
+bool CanOpenNode::coRequestNmtChange(enum_DS301_nmtStateRequest nmtStateCmd)
 {
-    int cmdResult = 0;
-    double chrono = 0;
-    if( nodeId <= 0 || nodeId >= 0xFF )
+    bool bootUp;
+
+    //s'il s'agit d'un reset on vide le port d'ecoute du bootup
+    if( nmtStateCmd == NMT_Reset_Node ||  nmtStateCmd == NMT_Reset_Comunication )
     {
-        LOG(Error) << "dispatchNmtState : Node 0x" <<  std::hex << nodeId  << " is out of Node ID bounds " << endlog();
-        goto failed;
+        //vidange de la pile de bootUp
+        while( inBootUpFrame.read(bootUp) == NewData )
+        {
+            LOG(Warning)  << "CanOpenController::coRequestNmtChange : bootUp frame are pending, inBootUpFrame should be empty" << endlog();
+        };
     }
 
-    if( nmtStateCmd == UnknownRequest )
-    {
-        LOG(Error) << "coSendNmtCmd :  failed you can not ask for the UnknownRequest" << endlog();
-        goto failed;
-    }
 
     //send NMT cmd
-    EnterMutex();
-    cmdResult = masterSendNMTstateChange(&CanARD_Data, (UNS8) nodeId, (UNS8) nmtStateCmd);
-    LeaveMutex();
-    if( cmdResult )
+    if( !m_coRequestNmtChange(propNodeId,nmtStateCmd,propNmtTimeout) )
     {
-        LOG(Error) << "coSendNmtCmd : failed to send NMT command to node 0x" << std::hex << nodeId << "; for command " << nmtStateCmd << endlog();
+        LOG(Error) << "CanOpenController::coRequestNmtChange : failed to send NMT command." << endlog();
         goto failed;
     }
 
-    //on laisse le temps au device de booter si on a demandé un reset
-    if( nmtStateCmd == NMT_Reset_Node ||  nmtStateCmd == NMT_Reset_Comunication )
-        usleep(propDeviceBootTime*1E6);
-
-    //send the NMT state request
-    EnterMutex();
-    cmdResult = masterRequestNodeState (&CanARD_Data, (UNS8) nodeId);
-    LeaveMutex();
-    if( cmdResult )
-    {
-        LOG(Error) << "coSendNmtCmd : failed to send NMT state request 0x" << std::hex << nodeId << " for command " << nmtStateCmd << endlog();
-        goto failed;
-    }
-
-   //polling on the NMT state because CAN Festival is not doing node guarding properly ...
-   whileTimeout( !isNmtStateChangeDone(nmtStateCmd, nodeId) , timeout, 0.010 )
-   //si le timeout est explosé c'est que ça a foiré
-   IfWhileTimeoutExpired(timeout)
-   {
-        LOG(Error) << "coSendNmtCmd : timeout expired 0x" << std::hex << nodeId << " for command " << nmtStateCmd << endlog();
-        goto failed;
-   }
-
-   //here everything is OK.
-   goto success;
+    goto success;
 
     failed:
         return false;
     success:
         return true;
-
-}
-
-bool CanOpenNode::isNmtStateChangeDone(enum_DS301_nmtStateRequest nmtCmd, nodeID_t nodeId)
-{
-    bool res = false;
-    enum_nodeState nmtState;
-
-    EnterMutex();
-    nmtState = CanARD_Data.NMTable[nodeId];
-    LeaveMutex();
-
-    switch( nmtCmd )
-    {
-        case StartNode:
-            if( nmtState == ::Operational)
-                res = true;
-            break;
-        case StopNode:
-            if( nmtState == ::Stopped)
-                res = true;
-            break;
-        case EnterPreOp:
-            if( nmtState == ::Pre_operational)
-                res = true;
-            break;
-        case ResetNode:
-        case ResetComunication:
-            if( nmtState == ::Initialisation ||
-                nmtState == ::Disconnected ||
-                nmtState == ::Connecting ||
-                nmtState == ::Preparing ||
-                nmtState == ::Pre_operational
-                    )
-                res = true;
-            break;
-        case UnknownRequest:
-            break;
-    }
-
-    return res;
 }

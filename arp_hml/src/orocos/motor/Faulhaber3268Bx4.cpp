@@ -87,17 +87,6 @@ bool Faulhaber3268Bx4::configureHook()
     if( !CanOpenNode::configureHook() )
         goto fail;
 
-    //recuperation de l'index du PDO transmit dans la table CanFestival
-   attrFaulhaberCommandPdoIndex = CanARDDictionnaryAccessor::getTransmitPdoIndex(0x300 + propNodeId);
-   //si on est là, on n'a pas trouvé.
-   if( attrFaulhaberCommandPdoIndex < 0)
-   {
-       LOG(Error) << "Failed to find Faulhaber Command PDO index among "
-               << CanARDDictionnaryAccessor::getTransmitPdoNumber()
-       << " tested index. Check your dictionnary." << endlog();
-       goto fail;
-   }
-
     goto success;
 
     fail:
@@ -106,10 +95,31 @@ bool Faulhaber3268Bx4::configureHook()
 	    return true;
 }
 
-void Faulhaber3268Bx4::updateHook()
+void Faulhaber3268Bx4::preopHook()
 {
-    //appel du parent car il log les bootUp
-    CanOpenNode::updateHook();
+   //On ne cherche le numero de PDO que si on ne l'a jamais fait, sinon ça merde pendant le reset...
+   if( attrFaulhaberCommandPdoIndex == -1 )
+   {
+       //recuperation de l'index du PDO transmit dans la table CanFestival
+      attrFaulhaberCommandPdoIndex = CanARDDictionnaryAccessor::getTransmitPdoIndex(0x300 + propNodeId);
+      //si on est là, on n'a pas trouvé.
+      if( attrFaulhaberCommandPdoIndex < 0)
+      {
+          LOG(Error) << "Failed to find Faulhaber Command PDO index among "
+                  << CanARDDictionnaryAccessor::getTransmitPdoNumber()
+          << " tested index. Check your dictionnary." << endlog();
+          m_RunningState = UNCONNECTED;
+          return;
+      }
+   }
+
+  CanOpenNode::preopHook();
+}
+
+void Faulhaber3268Bx4::operationalHook()
+{
+    //appel du parent
+    CanOpenNode::operationalHook();
 
     //get measures
     readCaptors();
@@ -118,8 +128,19 @@ void Faulhaber3268Bx4::updateHook()
     setOutputs();
 }
 
+void Faulhaber3268Bx4::idleHook()
+{
+    disableDrive();
+}
+
 void Faulhaber3268Bx4::updateLateHook()
 {
+    if( !isRunning() && m_RunningState != arp_hml::OPERATIONAL )
+    {
+        LOG(Error) << "Faulhaber3268Bx4::updateLateHook() was called out of operationnal state, ignored." << endlog();
+        return;
+    }
+
     CanOpenNode::updateLateHook();
 
     //read inputs from Orocos interface
@@ -445,10 +466,19 @@ void Faulhaber3268Bx4::readCaptors()
 	double current = *m_measuredCurrent;
 	m_torqueMeasure = current/1000;
 
-    //lecture de la période (en ms) à enregistrer dans attribut en s
-	//ATTENTION : on passe outre le port inMasterPeriod
-	//TODO gerer le cas 0xFF
-    attrPeriod = (double)(*m_measuredPeriod)/1000.0;
+	//m_measured period nous donne le temps depuis la derniere requete au moteur
+	//par securite on gere le cas 0xFF qui nou dit que ça fait trop longtemps qu'on ne lui a rien demande.
+	if( *m_measuredPeriod == 0xFF )
+	{
+	    timespec time;
+	    inMasterClock.readNewest(time);
+	    attrPeriod = timespec2Double(time);
+	}
+	else
+	{
+	    attrPeriod = (double)(*m_measuredPeriod)/1000.0;
+	}
+
 	LeaveMutex();
 
 	//calcul de la vitesse
@@ -502,6 +532,8 @@ bool Faulhaber3268Bx4::ooLimitCurrent(double ampValue)
         LOG(Error) << "Failed to limitCurrent because the component is not running" << endlog();
         return false;
     }
+
+    LOG(Info) << "Limiting moteur current to " << ampValue << "A." << endlog();
 
     ArdMotorItf::setOperationMode(ArdMotorItf::OTHER);
     m_faulhaberScriptCommand = F_CMD_LPC;
@@ -707,7 +739,14 @@ void Faulhaber3268Bx4::disableDrive()
 
 bool Faulhaber3268Bx4::reset()
 {
-	return CanOpenNode::resetNode();
+    //envoit de la requête de reset au noeud
+    if( coRequestNmtChange(ResetNode) == false )
+    {
+        LOG(Error) << "Faulhaber3268Bx4::reset() : Node 0x" << std::hex << propNodeId << " failed to send the NMT change request" << endlog();
+        return false;
+    }
+
+	return true;
 }
 
 bool Faulhaber3268Bx4::getLimitSwitchStatus()

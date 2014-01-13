@@ -32,6 +32,12 @@ namespace arp_hml
         CanOpenController(const std::string& name);
         ~CanOpenController();
 
+        typedef enum{
+            UNKNOWN,
+            SETTING_UP_DEVICES,
+            RUNNING
+        }eRunningstate;
+
     protected:
         /** This attribute contains the current NMT status of the Controller node */
         e_nodeState attrCurrentNMTState;
@@ -48,8 +54,6 @@ namespace arp_hml
         std::string propBaudRate;
         /** This property contains the nodeID of the Controller node on the attached bus (in decimal)*/
         int propNodeId;
-        /** This property defines the maximal allowed duration of slaves nodes before considering they are not on the bus (in s)*/
-        double propMasterMaxBootDelay;
         /** Delay between 2 SYNC messgaes in s */
         double propSyncPeriod;
 
@@ -75,6 +79,8 @@ namespace arp_hml
         /** Delay beetween inSync and last cycle inSync in s*/
         OutputPort<double> outPeriod;
 
+        /** Is true when the bus is electronically up. Typically it's down when emergency stop is on*/
+        OutputPort<bool> outBusConnected;
 
         /**
          * The routing stuff is delegated to this class
@@ -96,6 +102,16 @@ namespace arp_hml
          * Overloaded to update the attrCurrentNMTState value
          */
         void updateHook();
+
+        /**
+         * Handling function of the SETTING_UP_DEVICES sub state of the updateHook()
+         */
+        void settingUpDeviceHook();
+
+        /**
+         * Handling function of the RUNNING sub state of the updateHook()
+         */
+        void runningHook();
 
         /**
          *
@@ -139,6 +155,35 @@ namespace arp_hml
         bool coReadInRemoteDico(CanDicoEntry dicoEntry, int* receivedData);
 
         /**
+         * This operation allows anyone to send an NMT command to a node.
+         * This command succeed if the NMT command is sent on the Can bus.
+         * You can't know with this if the device successfully received and interpret
+         * the command ! \see coRequestNmtChange for that.
+         * @param nodeID : CanOpen ID of the targeted node or 0x0 to broadcast
+         * @param nmtStateCmd : Requested state
+         */
+        bool coSendNmtCmd(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd);
+
+        /**
+         * This operation allows anyone to send an NMT command to a node and
+         * to check the node has transited into expected state.
+         *
+         * This operation will do some polling on the NMT state with PDO request
+         * So don't use this operation in operationnal ! (only for booting and configuring).
+         * It's a blocking function.
+         * It will send 2 things :
+         * _ the NMT cmd request with OOO#cmd.nodeId
+         * _ an NMT state reques 700+nodeId#R
+         * and wait for the 700+nodeId#nmtState message to come.
+         *
+         * @param nmtStateCmd : new NMT state in which we would like the node to be
+         * @param nodeID : CanOpen ID of the targeted node or 0x0 to broadcast
+         * @param nmtStateCmd : Requested state
+         * @param timeout : Delay to wait before considering the device did not transit.
+         */
+        bool coRequestNmtChange(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd, double timeout);
+
+        /**
          * This operation allows to reset all the SDO emission lines.
          * It should be use with care as it is a very intrusive behavior.
          */
@@ -149,6 +194,11 @@ namespace arp_hml
          * param : periode in s.
          */
         bool ooSetSyncPeriod(double period);
+
+        /**
+         * Restart the CAN bus and all connected devices
+         */
+        void ooResetCanBus();
 
         /**
          * Call this to initialize all the CanFestival related stuff (shared datas, wrappers, timers loop, loading drivers,...)
@@ -189,8 +239,22 @@ namespace arp_hml
         /** last Sync time to compute period */
         timespec m_lastSyncTime;
 
+        /** SubState of the CanOpencontroller in the Orocos Running State */
+        eRunningstate m_RunningState;
+
         /** Utility function to deport non functionnal code to the end of file */
         void createOrocosInterface();
+
+        /**
+         * Utility function to check NMT command result
+         *
+         * Compares an NMT state to a sended NMT command.
+         * The NMT state is get from CanARD_Data.NMTable[nodeId]
+         * @param nmtCmd : the NMT command sended to the slave node
+         * @param nodeId : Id of the node to whoch the command has been sended
+         * @return true is the NMT cmd has been processed
+         */
+        bool isNmtStateChangeDone(enum_DS301_nmtStateRequest nmtCmd, nodeID_t nodeId);
     };
 
 }

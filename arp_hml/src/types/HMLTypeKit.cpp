@@ -9,6 +9,7 @@
 
 #include "HMLTypeKit.hpp"
 #include "CanStateTypeInfo.hpp"
+#include "CanNodeRunningStateTypeInfo.hpp"
 #include "CanStateRequestTypeInfo.hpp"
 #include "DS402StateTypeInfo.hpp"
 #include "CanDicoEntryTypeInfo.hpp"
@@ -30,6 +31,7 @@ bool HMLTypeKit::loadTypes()
     res &= types::Types()->addType( new NMTStateRequestTypeInfo() );
     res &= types::Types()->addType( new DS402StateTypeInfo() );
     res &= types::Types()->addType( new CanDicoEntryTypeInfo() );
+    res &= types::Types()->addType( new CanNodeRunningStateTypeInfo() );
 
     return res;
 }

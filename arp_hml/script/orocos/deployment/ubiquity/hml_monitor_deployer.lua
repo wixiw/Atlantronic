@@ -13,7 +13,7 @@ end
 
 function HmlMonitorDeployer:connectOneMotor(name)
 	assert( Deployer:connect("HmlMonitor.in"..name.."Enable", name..".outDriveEnable",cp))
-	assert( Deployer:connect("HmlMonitor.in"..name.."Connected", name..".outConnected",cp))
+	assert(Deployer:connect("HmlMonitor.in"..name.."Blocked", name..".outMaxTorqueTimeout",cp))
 	return true
 end
 
@@ -46,20 +46,13 @@ function HmlMonitorDeployer:connect()
 	assert(HmlMonitorDeployer:connectOneMotor("LeftSteering"))
 	assert(HmlMonitorDeployer:connectOneMotor("RightSteering"))
 	assert(HmlMonitorDeployer:connectOneMotor("RearSteering"))
-
-	assert(Deployer:connect("HmlMonitor.inWoodheadInConnected", "WoodheadIn.outConnected",cp))
-	assert(Deployer:connect("HmlMonitor.inWoodheadOutConnected", "WoodheadOut.outConnected",cp))
 	
 	assert(Deployer:connect("HmlMonitor.inLeftSteeringHomingDone", "LeftSteering.outHomingDone",cp))
 	assert(Deployer:connect("HmlMonitor.inRightSteeringHomingDone", "RightSteering.outHomingDone",cp))
 	assert(Deployer:connect("HmlMonitor.inRearSteeringHomingDone", "RearSteering.outHomingDone",cp))
+	
+	assert(Deployer:connect("HmlMonitor.inCanBusConnected", "Can1.outBusConnected",cp))
 
-	assert(Deployer:connect("HmlMonitor.inLeftDrivingBlocked", "LeftDriving.outMaxTorqueTimeout",cp))
-	assert(Deployer:connect("HmlMonitor.inRightDrivingBlocked", "RightDriving.outMaxTorqueTimeout",cp))
-	assert(Deployer:connect("HmlMonitor.inRearDrivingBlocked", "RearDriving.outMaxTorqueTimeout",cp))
-	assert(Deployer:connect("HmlMonitor.inLeftSteeringBlocked", "LeftSteering.outMaxTorqueTimeout",cp))
-	assert(Deployer:connect("HmlMonitor.inRightSteeringBlocked", "RightSteering.outMaxTorqueTimeout",cp))
-	assert(Deployer:connect("HmlMonitor.inRearSteeringBlocked", "RearSteering.outMaxTorqueTimeout",cp))
 
 --ajout au monitor
 
@@ -88,32 +81,28 @@ function HmlMonitorDeployer:start()
 	assert(HmlMonitor:configure())
 	assert(HmlMonitor:start())
 
-	LeftDriving = assert(HmlMonitor:getPeer("LeftDriving"))
-	RightDriving = assert(HmlMonitor:getPeer("RightDriving"))
-	RearDriving = assert(HmlMonitor:getPeer("RearDriving"))
-	LeftSteering = assert(HmlMonitor:getPeer("LeftSteering"))
-	RightSteering = assert(HmlMonitor:getPeer("RightSteering"))
-	RearSteering = assert(HmlMonitor:getPeer("RearSteering"))
+--	Can1 = assert(HmlMonitor:getPeer("Can1"))
+--	LeftDriving = assert(HmlMonitor:getPeer("LeftDriving"))
+--	RightDriving = assert(HmlMonitor:getPeer("RightDriving"))
+--	RearDriving = assert(HmlMonitor:getPeer("RearDriving"))
+--	LeftSteering = assert(HmlMonitor:getPeer("LeftSteering"))
+--	RightSteering = assert(HmlMonitor:getPeer("RightSteering"))
+--	RearSteering = assert(HmlMonitor:getPeer("RearSteering"))
+--	WoodheadIn = assert(HmlMonitor:getPeer("WoodheadIn"))
+--	WoodheadOut = assert(HmlMonitor:getPeer("WoodheadOut"))
 
-	print("setting motor mode")
+--	print("configuring CanBus")
+--	Can1:ooConfigureDevices()
+--	print("starting CanBus")
+--	Can1:ooConfigureDevices()
 
-	assert(LeftDriving:ooSetOperationMode("other"))
-	assert(RightDriving:ooSetOperationMode("other"))
-	assert(RearDriving:ooSetOperationMode("other"))
-	assert(LeftSteering:ooSetOperationMode("other"))
-	assert(RightSteering:ooSetOperationMode("other"))
-	assert(RearSteering:ooSetOperationMode("other"))
-
-	print("setting torques")
-	LeftDriving:ooLimitCurrent(RearDriving:getProperty("propMaximalTorque"):get())
-	RightDriving:ooLimitCurrent(RearDriving:getProperty("propMaximalTorque"):get())
-	RearDriving:ooLimitCurrent(RearDriving:getProperty("propMaximalTorque"):get())
-	LeftSteering:ooLimitCurrent(RearSteering:getProperty("propMaximalTorque"):get())
-	RightSteering:ooLimitCurrent(RearSteering:getProperty("propMaximalTorque"):get())
-	RearSteering:ooLimitCurrent(RearSteering:getProperty("propMaximalTorque"):get())
-	print("sleep")
-	
-	RearDriving:ooSleep(1);
+--	print("setting torques")
+--	LeftDriving:ooLimitCurrent(RearDriving:getProperty("propMaximalTorque"):get())
+--	RightDriving:ooLimitCurrent(RearDriving:getProperty("propMaximalTorque"):get())
+--	RearDriving:ooLimitCurrent(RearDriving:getProperty("propMaximalTorque"):get())
+--	LeftSteering:ooLimitCurrent(RearSteering:getProperty("propMaximalTorque"):get())
+--	RightSteering:ooLimitCurrent(RearSteering:getProperty("propMaximalTorque"):get())
+--	RearSteering:ooLimitCurrent(RearSteering:getProperty("propMaximalTorque"):get())
 
 	-- il n'est pas necessaire de repasser dans les bons modes de pilotage 
 	-- puisqu'il faudrait faire un enable drive qui de toutes façons repassera tout le monde comme il faut

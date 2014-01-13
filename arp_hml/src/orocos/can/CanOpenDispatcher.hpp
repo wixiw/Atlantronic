@@ -78,6 +78,11 @@ namespace arp_hml
         void unRegisterAll();
 
         /**
+         * Configure (in CanOpen meaning) all registered nodes
+         */
+        bool configureAll();
+
+        /**
          * Trigger all registered nodes as slave peers (call update() )
          * This is the early cycle trigger
          */
@@ -88,6 +93,11 @@ namespace arp_hml
          * This is the late cycle trigger
          */
         void triggerAllWrite();
+
+        /**
+         * Poll on CanOpenNode.outOperationnalState of each slave and wait that all reach expectedState
+         */
+        bool waitSlavesState(eRunningState expectedState, double timeout);
 
         /**
          * DEBUG Purposes : this operation prints in the console the registred nodes.
@@ -102,6 +112,7 @@ namespace arp_hml
             public:
                 //nodeID_t nodeId;
                 RTT::OutputPort<bool> outBootUp;
+                RTT::InputPort<eRunningState> inRunningState;
                 CanOpenNode* task;
         };
 
@@ -120,6 +131,10 @@ namespace arp_hml
          * Handle on the logger
          */
         RTT::OperationCaller<void(RTT::LoggerLevel,std::string)> m_coLog;
+
+    private:
+        /** Utility function to help waitSlavesOperationnalState */
+        eRunningState readStatePort(nodeRegistration_t* registration);
     };
 
 }

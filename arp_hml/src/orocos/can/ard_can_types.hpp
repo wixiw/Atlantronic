@@ -15,6 +15,11 @@ namespace arp_hml
 {
 typedef int nodeID_t;
 
+enum eRunningState
+{
+    UNKNOWN, PREOP, OPERATIONAL, IDLE, UNCONNECTED
+} ;
+
 enum enum_DS301_nmtStateRequest
 {
     StartNode           = NMT_Start_Node,

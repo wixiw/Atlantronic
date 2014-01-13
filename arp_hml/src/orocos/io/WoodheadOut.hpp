@@ -38,15 +38,20 @@ namespace arp_hml
 
     	UNS8* m_outputs;
 
+    	/**
+    	 * Initialize outputs
+    	 */
+        virtual bool configureHook();
+
         /**
          * Get CanFestival pointer
          */
-        virtual bool configureHook();
+        virtual void preopHook();
 
         /**
          * Replace the normal updateHook as this device is a writter to be executed at the end of the loop
          */
-        virtual void updateLateHook();
+        virtual void operationalHook();
 
     	virtual bool checkInputsPorts();
 

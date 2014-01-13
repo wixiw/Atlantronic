@@ -51,6 +51,10 @@ propEventName("/dev/input/event0")
     addPort("outY1",outY1).doc("");
     addPort("outX2",outX2).doc("");
     addPort("outY2",outY2).doc("");
+    addPort("outXY1Distance",outXY1Distance).doc("");
+    addPort("outXY1Angle",outXY1Angle).doc("");
+    addPort("outXY2Distance",outXY2Distance).doc("");
+    addPort("outXY2Angle",outXY2Angle).doc("");
 
     outButton1.write(false);
     outButton2.write(false);
@@ -70,6 +74,10 @@ propEventName("/dev/input/event0")
     outY1.write(0.0);
     outX2.write(0.0);
     outY2.write(0.0);
+    outXY1Distance.write(0.0);
+    outXY1Angle.write(0.0);
+    outXY2Distance.write(0.0);
+    outXY2Angle.write(0.0);
 
     retry: //goto pour l'appel systeme specifique systeme, c'est comme ça que ça se fait
 
@@ -209,11 +217,20 @@ void GamepadPS1::updateHook()
 
     if( isJoystickAlive() )
     {
-		double lastX = outPadX.getLastWrittenValue();
-		double lastY = outPadY.getLastWrittenValue();
+		double lastPadX = outPadX.getLastWrittenValue();
+		double lastPadY = outPadY.getLastWrittenValue();
+		outPadXYDistance.write(max(fabs(lastPadX),fabs(lastPadY)));
+		outPadXYAngle.write(atan2(lastPadY,lastPadX));
 
-		outPadXYDistance.write(sqrt(lastX*lastX + lastY*lastY));
-		outPadXYAngle.write(atan2(lastY,lastX));
+        double lastX1 = outX1.getLastWrittenValue();
+        double lastY1 = outY1.getLastWrittenValue();
+        outXY1Distance.write(max(fabs(lastX1),fabs(lastY1)));
+        outXY1Angle.write(atan2(lastY1,lastX1));
+
+        double lastX2 = outX2.getLastWrittenValue();
+        double lastY2 = outY2.getLastWrittenValue();
+        outXY2Distance.write(max(fabs(lastX2),fabs(lastY2)));
+        outXY2Angle.write(atan2(lastY2,lastX2));
     }
     else
     {
@@ -232,7 +249,7 @@ void GamepadPS1::updateHook()
         env.fade_level = 0;
 
         ff_constant_effect effect;
-        effect.level = 0xFFFFFFFF;
+        effect.level = 0xFFFF;
         effect.envelope = env;
         ioctl(m_event_fd, EVIOCSFF, effect);
     }

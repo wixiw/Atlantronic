@@ -21,9 +21,6 @@ function HmlMonitorSimulDeployer:connect()
 	assert( Deployer:connect("HmlMonitor.inLeftSteeringHomingDone", "LeftSteering.outHomingDone",cp))
 	assert( Deployer:connect("HmlMonitor.inRightSteeringHomingDone", "RightSteering.outHomingDone",cp))
 	assert( Deployer:connect("HmlMonitor.inRearSteeringHomingDone", "RearSteering.outHomingDone",cp))
-	
-	assert( Deployer:connect("HmlMonitor.inWoodheadInConnected", "WoodheadIn.outConnected",cp))
-	assert( Deployer:connect("HmlMonitor.inWoodheadOutConnected", "WoodheadOut.outConnected",cp))
 
 --ajout au monitor
 	assert( HmlMonitorSimulDeployer:addToMonitor("Joystick"))
