@@ -312,9 +312,9 @@ bool UbiquityKinematics::ICRSpeed2Turrets(const arp_math::ICRSpeed& iICRs, Turre
     oTS.steering.rear.position = SpeedRear.phi();
 
     //recuperation des vitesses
-    oTS.driving.left.velocity = SpeedLeft.getTranslationSpeedNorm();
-    oTS.driving.right.velocity = SpeedRight.getTranslationSpeedNorm();
-    oTS.driving.rear.velocity = SpeedRear.getTranslationSpeedNorm();
+    oTS.driving.left.velocity = SpeedLeft.getTranslationSpeedNorm()*sign(SpeedLeft.ro());
+    oTS.driving.right.velocity = SpeedRight.getTranslationSpeedNorm()*sign(SpeedLeft.ro());
+    oTS.driving.rear.velocity = SpeedRear.getTranslationSpeedNorm()*sign(SpeedLeft.ro());
 
     //normalisation dans -PI/2 PI/2
     normalizeDirection(oTS);
