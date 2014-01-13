@@ -28,7 +28,6 @@ OmnidirectOrder2::OmnidirectOrder2(const OrderGoalConstPtr &goal, arp_math::Ubiq
     m_predictedAcc = 0;
     m_lastRo = 0;
 
-    UbiquityMotionState beginMotionState;
     UbiquityMotionState endMotionState;
     Pose2D end;
     Pose2D cpoint;
@@ -72,7 +71,10 @@ OmnidirectOrder2::OmnidirectOrder2(const OrderGoalConstPtr &goal, arp_math::Ubiq
     Log(DEBUG) << "tcurrentMotionState.position " << currentMotionState.position.toString();
     Log(DEBUG) << "end.distanceTo(currentMotionState.position) " << end.distanceTo(currentMotionState.position);
 
-    Log(DEBUG) << "timeout initialise a " << m_timeout;
+    Log(INFO) << getTypeString() << " from [" << ((Pose2D) (getBeginMotionState().getPosition())).toString()
+            << "] to [" << ((Pose2D) (getEndMotionState().getPosition())).toString()
+            << "] control_point=[" << cpoint.toString() << "]" << "pass = "
+            << m_pass << " @ " << m_passSpeed << " m/s";
 
 }
 
