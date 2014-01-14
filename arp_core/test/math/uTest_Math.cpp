@@ -16,6 +16,7 @@
 #include "uTest_Twist2D.hpp"
 #include "uTest_EstimatedTwist2D.hpp"
 #include "uTest_Math.hpp"
+#include "uTest_Math_Time.hpp"
 #include "uTest_Interpolator.hpp"
 #include "uTest_Stats.hpp"
 #include "uTest_ICRSpeed.hpp"

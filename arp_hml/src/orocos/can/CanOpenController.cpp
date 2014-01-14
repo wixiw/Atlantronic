@@ -33,7 +33,7 @@ CanOpenController::CanOpenController(const std::string& name) :
             m_canPort(NULL),
             m_RunningState(UNKNOWN)
 {
-    clock_gettime(CLOCK_MONOTONIC, &m_lastSyncTime);
+    clock_gettime(CLOCK_MONOTONIC, &attrLastSyncTime);
     m_timer.SetMaxBufferSize(3000);
     createOrocosInterface();
 
@@ -112,8 +112,8 @@ void CanOpenController::updateHook()
     //Récupération de la date du cycle CAN
     inSync.readNewest(attrSyncTime);
     //on se permet le double parce qu'on sait que la periode est petite.
-    double period = arp_math::delta_t(m_lastSyncTime, attrSyncTime);
-    m_lastSyncTime = attrSyncTime;
+    double period = arp_math::delta_t(attrLastSyncTime, attrSyncTime);
+    attrLastSyncTime = attrSyncTime;
 
     HmlTaskContext::updateHook();
 
@@ -664,6 +664,7 @@ void CanOpenController::createOrocosInterface()
     //TODO makes the "ls" in orocos deployer buggy, the typekit is certainly broken"
     //addAttribute("attrCurrentNMTState", attrCurrentNMTState);
       addAttribute("attrSyncTime", attrSyncTime);
+      addAttribute("attrLastSyncTime", attrLastSyncTime);
       addAttribute("sdo", attrTestingSdo);
 
       addProperty("propCanFestivalDriverName", propCanFestivalDriverName) .doc(

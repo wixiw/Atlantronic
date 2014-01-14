@@ -43,6 +43,8 @@ namespace arp_hml
         e_nodeState attrCurrentNMTState;
         /** Last sync time received */
         timespec attrSyncTime;
+        /** last Sync time to compute period */
+        timespec attrLastSyncTime;
         /** This is for test purposes only, when sending request to the can via the taskBrowser */
         CanDicoEntry attrTestingSdo;
 
@@ -235,9 +237,6 @@ namespace arp_hml
         char m_baurateLocalCopy[6];
         /** This is the handler on the attached can bus. It is populated by a call to the CanFestival "canOpen" function */
         CAN_PORT m_canPort;
-
-        /** last Sync time to compute period */
-        timespec m_lastSyncTime;
 
         /** SubState of the CanOpencontroller in the Orocos Running State */
         eRunningstate m_RunningState;

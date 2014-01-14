@@ -11,17 +11,14 @@ Telemetry =
 }
 
 -- Trace le position et la vitesse du robot en sortie du composant Localizator
--- [0] : x			[5] : vx
--- [1] : y			[6] : vy
--- [2] : theta		[7] : vtheta
+-- [0] : x			[5] : rho
+-- [1] : y			[6] : phi
+-- [2] : theta		[7] : delta
 -- [3] : date		[8] : date
 -- [4] : cov		
 function Telemetry:reportRobotState()	
     print("reporting pose ")
 	Reporting=Deployer:getPeer("Reporting")
-	Reporting:reportPort("Odometry","outICRSpeed")
-	Reporting:reportPort("Odometry","outKernelQuality")
-	Reporting:reportPort("Odometry","outTurretState")
 	Reporting:reportPort("Localizator","outPose")
 	Reporting:reportPort("Localizator","outICRSpeed")
 	Reporting:reportPort("Localizator","outLocalizationState")
@@ -29,6 +26,9 @@ function Telemetry:reportRobotState()
 	Reporting:reportPort("Localizator","outLocalizationQuality")
 	Reporting:reportPort("Localizator","outLocalizationVisibility")
     Reporting:reportPort("Localizator","outNbSeenBeacons")
+    --Reporting:reportPort("Odometry","outICRSpeed")
+	--Reporting:reportPort("Odometry","outKernelQuality")
+	--Reporting:reportPort("Odometry","outTurretState")
 	--Reporting:reportPort("LocFilter","outPose")
 end
 
@@ -116,7 +116,7 @@ function Telemetry:report()
 	--Telemetry:reportRobotState()
 	--Telemetry:reportMotorState()
 	--Telemetry:reportTiming()
-	Telemetry:reportOmnidirect()
+	--Telemetry:reportOmnidirect()
 	
 	
 	Reporting= assert(Deployer:getPeer("Reporting")) 
