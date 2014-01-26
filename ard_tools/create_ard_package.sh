@@ -47,7 +47,7 @@ create_orocos_project()
 	`rospack find ocl`/scripts/pkg/orocreate-pkg $package_name 1> /dev/null
 	#correction d'un bug orocos
 	sed -i "s/provides()/this/" $package_name/$package_name-service.cpp
-	sed -i "s/1.0.0/@project_version_major@.@project_version_minor@.@project_version_patch@/" $package_name/orocos-$package_name.pc.in
+	#sed -i "s/1.0.0/@project_version_major@.@project_version_minor@.@project_version_patch@/" $package_name/orocos-$package_name.pc.in
 }
 
 ###
@@ -181,7 +181,7 @@ create_scripts()
 {
 	echo "[*] Generating launching script ..."
 	echo "# ARD $package_name launch script file (auto generated file, you shouldn't edit)" > $package_name/run.sh
-	echo "rosrun ocl deployer-gnulinux -s script/deployment/deploy_$package_name.ops" > $package_name/run.sh
+	echo "rosrun ocl deployer-gnulinux -s script/orocos/deployment/deploy_$package_name.ops" > $package_name/run.sh
 	chmod +x $package_name/run.sh
 
 	echo "[*] Generating exploring documentation script ..."
