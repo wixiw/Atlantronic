@@ -1,0 +1,5 @@
+//version prises en charges par CMAKE
+#define ARP_XXX_VERSION_MAJOR @project_version_major@
+#define ARP_XXX_VERSION_MINOR @project_version_minor@
+#define ARP_XXX_VERSION_PATCH @project_version_patch@
+#define ARP_XXX_VERSION "@project_version_major@.@project_version_minor@.@project_version_patch@"

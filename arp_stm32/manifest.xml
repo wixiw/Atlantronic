@@ -1,0 +1,11 @@
+<package>
+	<description brief="arp_stm32">
+		arp_stm32 is the package to control the embedded stm32 low level hw control
+	</description>
+	<author>JB</author>
+	<license>BSD</license>
+	<review status="unreviewed" notes=""/>
+	<url>http://team-ard.com</url>
+	<depend package="rtt" />
+	<depend package="arp_core" />
+</package>

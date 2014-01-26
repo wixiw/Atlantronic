@@ -1,0 +1,4 @@
+<!-- ARD arp_stm32 main launch file -->
+<launch>
+\t<node name="" pkg="ocl" type="deployer-gnulinux" args="-s $(find )/script/orocos/deployment/deploy_arp_stm32.ops --" output="screen"/>
+</launch>
