@@ -687,4 +687,4 @@ BOOST_AUTO_TEST_CASE( UK_MotorTurret_velocity_decoupling )
     BOOST_CHECK_CLOSE( turretMeasure.driving.left.velocity,     params.getLeftWheelDiameter() / 2* params.getTurretRatio(), 1E-6  );
     BOOST_CHECK_CLOSE( turretMeasure.driving.right.velocity,    params.getLeftWheelDiameter() / 2* params.getTurretRatio(), 1E-6  );
     BOOST_CHECK_CLOSE( turretMeasure.driving.rear.velocity,     params.getLeftWheelDiameter() / 2* params.getTurretRatio(), 1E-6  );
-
+}

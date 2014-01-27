@@ -28,7 +28,7 @@ function Telemetry:reportRobotState()
     Reporting:reportPort("Localizator","outNbSeenBeacons")
     --Reporting:reportPort("Odometry","outICRSpeed")
 	--Reporting:reportPort("Odometry","outKernelQuality")
-	--Reporting:reportPort("Odometry","outTurretState")
+	Reporting:reportPort("Odometry","attrTurretState")
 	--Reporting:reportPort("LocFilter","outPose")
 end
 
@@ -65,13 +65,13 @@ end
 function Telemetry:reportTiming()
 	print("reporting Timings")
 	Reporting=Deployer:getPeer("Reporting")
-	Reporting:reportData("LeftSteering","attrPeriod")
-	Reporting:reportData("RightSteering","attrPeriod")
-	Reporting:reportData("RearSteering","attrPeriod")
-	Reporting:reportData("LeftDriving","attrPeriod")
-	Reporting:reportData("RightDriving","attrPeriod")
-	Reporting:reportData("RearDriving","attrPeriod")
 	Reporting:reportPort("Can1","outPeriod")
+	--Reporting:reportData("LeftSteering","attrPeriod")
+	--Reporting:reportData("RightSteering","attrPeriod")
+	--Reporting:reportData("RearSteering","attrPeriod")
+	--Reporting:reportData("LeftDriving","attrPeriod")
+	--Reporting:reportData("RightDriving","attrPeriod")
+	--Reporting:reportData("RearDriving","attrPeriod")
 end
 
 -- Trace le joystick
