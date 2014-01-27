@@ -664,3 +664,27 @@ BOOST_AUTO_TEST_CASE( UK_MotorTurret_motor2Turret_translation )
     BOOST_CHECK_EQUAL( turretMeasure.steering.rear.position,    M_PI_2 );
 }
 
+
+//test le couplage de vitesse
+BOOST_AUTO_TEST_CASE( UK_MotorTurret_velocity_decoupling )
+{
+    arp_model::UbiquityParams params;
+    params.fillWithFakeValues();
+
+    arp_model::TurretState turretMeasure;
+    arp_model::MotorState motorsMeasure;
+    bool success;
+
+    //marche avant traction
+    motorsMeasure.driving.left.velocity = 0;
+    motorsMeasure.driving.right.velocity = 0;
+    motorsMeasure.driving.rear.velocity = 0;
+    motorsMeasure.steering.left.velocity = 1;
+    motorsMeasure.steering.right.velocity = 1;
+    motorsMeasure.steering.rear.velocity = 1;
+    success = arp_model::UbiquityKinematics::motors2Turrets( motorsMeasure, turretMeasure, params);
+    BOOST_CHECK_EQUAL( success , true);
+    BOOST_CHECK_CLOSE( turretMeasure.driving.left.velocity,     params.getLeftWheelDiameter() / 2* params.getTurretRatio(), 1E-6  );
+    BOOST_CHECK_CLOSE( turretMeasure.driving.right.velocity,    params.getLeftWheelDiameter() / 2* params.getTurretRatio(), 1E-6  );
+    BOOST_CHECK_CLOSE( turretMeasure.driving.rear.velocity,     params.getLeftWheelDiameter() / 2* params.getTurretRatio(), 1E-6  );
+
