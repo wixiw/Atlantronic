@@ -25,6 +25,7 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         attrFaulhaberCommandPdoIndex(-1),
         attrHomingState(NOT_IN_HOMNG_MODE),
         attrHardNotify(false),
+        attrMotorPeriod(0.0),
 
         propInvertDriveDirection(false),
         propReductorValue(676.0 / 49.0),
@@ -466,25 +467,26 @@ void Faulhaber3268Bx4::readCaptors()
 	double current = *m_measuredCurrent;
 	m_torqueMeasure = current/1000;
 
+	//TODO on retourne sur la vitesse CAN
 	//m_measured period nous donne le temps depuis la derniere requete au moteur
 	//par securite on gere le cas 0xFF qui nou dit que ça fait trop longtemps qu'on ne lui a rien demande.
 	if( *m_measuredPeriod == 0xFF )
 	{
 	    timespec time;
 	    inMasterClock.readNewest(time);
-	    attrPeriod = timespec2Double(time);
+	    attrMotorPeriod = timespec2Double(time);
 	}
 	else
 	{
-	    attrPeriod = (double)(*m_measuredPeriod)/1000.0;
+	    attrMotorPeriod = (double)(*m_measuredPeriod)/1000.0;
 	}
 
 	LeaveMutex();
 
 	//calcul de la vitesse
-	if( attrPeriod > 0 )
+	if( attrMotorPeriod > 0 )
 	{
-	    m_speedMeasure = (m_positionMeasure - m_oldPositionMeasure)/attrPeriod;
+	    m_speedMeasure = (m_positionMeasure - m_oldPositionMeasure)/attrMotorPeriod;
 	}
 	else
 	{
@@ -496,7 +498,7 @@ void Faulhaber3268Bx4::readCaptors()
 	//on ne peut pas le dépasser.
 	if( fabs(ArdMotorItf::getTorqueMeasure()) >= propMaximalTorque*0.95 )
 	{
-	    attrBlockingDelay += attrPeriod;
+	    attrBlockingDelay += attrMotorPeriod;
 	    m_isMotorBlocked = true;
 	}
 	else
@@ -788,6 +790,7 @@ void Faulhaber3268Bx4::createOrocosInterface()
     addAttribute("attrIncrementalOdometer",attrIncrementalOdometer);
     addAttribute("attrFaulhaberCommandPdoIndex",attrFaulhaberCommandPdoIndex);
     addAttribute("attrHomingState",attrHomingState);
+    addAttribute("attrMotorPeriod",attrMotorPeriod);
 
     addProperty("propInvertDriveDirection",propInvertDriveDirection)
         .doc("Is true when you when to invert the speed command and feedback of the motor softly");

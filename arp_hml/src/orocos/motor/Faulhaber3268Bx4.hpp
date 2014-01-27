@@ -57,6 +57,8 @@ namespace arp_hml
         HomingState attrHomingState;
         /** is true when homing is finished */
         bool attrHardNotify;
+        /** value of the period between 2 CAN requests, computed by the motor*/
+        double attrMotorPeriod;
 
         /** Is true when you when to invert the speed command and feedback of the motor softly **/
         bool propInvertDriveDirection;
