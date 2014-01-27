@@ -92,7 +92,7 @@ void IcrSpeedTeleop::updateHook()
 
     //ajustement du range
     attrDelta = saturate(-pow(deltaCmd,5)*M_PI_2, -M_PI_2, M_PI_2);
-    attrRho = saturate(sqrt(pow(linSpeedCmd,2)+pow(deltaCmd,2)),-1,1);
+    attrRho = saturate(linSpeedCmd,-linVel,linVel);
 
     //on filtre les petits mouvements pour eviter de laisser les tourelles revenir à 0
     if( fabs(linSpeedCmd) >= 0.10 )
