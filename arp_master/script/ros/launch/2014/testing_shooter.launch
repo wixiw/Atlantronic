@@ -1,0 +1,3 @@
+<launch>
+	<node name="TestingShooterNode"   pkg="arp_master"  type="TestingShooter.py"     args="" output="screen"/>
+</launch>
