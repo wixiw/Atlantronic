@@ -9,6 +9,7 @@
 #define DISCOVERY_HPP_
 
 #include "Stm32TaskContext.hpp"
+#include "linux/tools/robot_interface.h"
 
 namespace arp_stm32
 {
@@ -21,7 +22,11 @@ class Discovery: public Stm32TaskContext
         void updateHook();
 
     protected:
+        static void robotItfCallbackWrapper(void* arg);
+        void robotItfUpdated();
+        RobotInterface m_robotItf;
         void createOrocosInterface();
+
 
 };
 

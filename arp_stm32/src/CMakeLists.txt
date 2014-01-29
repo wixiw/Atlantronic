@@ -9,7 +9,9 @@ configure_file(
 ###################################################################################################################
 #    EDIT BELOW THIS LINE AND UNTIL NEXT LINE FOR A NEW PROJECT
 
-
+include_directories("Atlantronic/include")
+include_directories("Atlantronic/include/discovery")
+include_directories("Atlantronic/src")
 add_subdirectory(components)
 
 ###################################################################################################################

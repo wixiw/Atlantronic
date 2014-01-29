@@ -25,6 +25,8 @@ bool Discovery::configureHook()
     if (!Stm32TaskContext::configureHook())
         return false;
 
+    m_robotItf.init("discovery", "/dev/discovery0", "/dev/discovery0", robotItfCallbackWrapper, this);
+
     return true;
 }
 
@@ -35,4 +37,16 @@ void Discovery::updateHook()
 
 void Discovery::createOrocosInterface()
 {
+    addAttribute("time", m_robotItf.current_time);
+}
+
+void Discovery::robotItfCallbackWrapper(void* arg)
+{
+    Discovery* discovery = (Discovery*) arg;
+    discovery->robotItfUpdated();
+}
+
+void Discovery::robotItfUpdated()
+{
+
 }
