@@ -4,7 +4,8 @@
 import roslib; roslib.load_manifest('arp_master')
 
 from arp_master import *
-from arp_master.actuators import *
+import smach
+import rospy
 
 ###########################  TEMPORAL BEHAVIOR
 

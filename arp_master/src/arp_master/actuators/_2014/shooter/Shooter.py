@@ -4,9 +4,6 @@
 import roslib; roslib.load_manifest('arp_master')
 from arp_master import *
 
-from Table2014 import *
-from Robot2014 import *
-
 
 class Shooter(PreemptiveStateMachine):
     def __init__(self):

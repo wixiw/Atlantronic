@@ -7,4 +7,5 @@ import rospy
 from arp_master.util import *
 from arp_master.fsmFramework import *
 from arp_master.commonStates import *
+from arp_master.strat_2014 import *
 from arp_master.actuators import *
