@@ -1,4 +1,4 @@
-#include <math/math.hpp>
+#include <math/math.hpp>#include <math/math.hpp>
 #include <math/Pose2D.hpp>
 #include <math/Pose2DNorm.hpp>
 #include <math/Twist2D.hpp>

@@ -17,6 +17,9 @@ project(arp_core)
 
 #configuration de ROS
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+#build config
+#set( ROS_BUILD_TYPE Debug )
+set (ROS_BUILD_TYPE MinSizeRel)
 rosbuild_init()
 
 #uncomment if you have defined messages

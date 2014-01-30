@@ -5,7 +5,7 @@ UbiquitySimulDeployer = ComposantDeployer:new()
 
 function UbiquitySimulDeployer:load()
 	assert( Deployer:loadComponent("UbiquitySimul","arp_hml::UbiquitySimul"))
-	assert( Deployer:setActivity("UbiquitySimul",0.010,40,1))
+	assert( Deployer:setActivity("UbiquitySimul",0.010,40,rtt.globals.ORO_SCHED_OTHER))
 	return true
 end
 

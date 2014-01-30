@@ -10,17 +10,17 @@ cmake_minimum_required(VERSION 2.6.3)
 #
 project(arp_stm32)
 
-
 ###
 # add ARD specific cmakes
 ###
 
 #configuration de ROS
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+#build config
+#set( ROS_BUILD_TYPE Debug )
+set (ROS_BUILD_TYPE MinSizeRel)
 rosbuild_init()
 
-#ARD generic configuration
-#set( ROS_BUILD_TYPE Debug )
 rosbuild_include(arp_core ARP_common_functions)
 configure_ard_project()
 

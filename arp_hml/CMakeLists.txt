@@ -22,7 +22,9 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 rosbuild_find_ros_package(actionlib_msgs)
 include(${actionlib_msgs_PACKAGE_PATH}/cmake/actionbuild.cmake)
 genaction()
-
+#build config
+#set( ROS_BUILD_TYPE Debug )
+set (ROS_BUILD_TYPE MinSizeRel)
 rosbuild_init()
      
 #uncomment if you have defined messages
@@ -31,7 +33,6 @@ rosbuild_genmsg()
 rosbuild_gensrv()
 
 #ARD generic configuration
-#set( ROS_BUILD_TYPE Debug )
 rosbuild_include(arp_core ARP_common_functions)
 configure_ard_project()
 
