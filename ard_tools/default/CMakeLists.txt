@@ -19,7 +19,7 @@ project(@PROJECT_NAME@)
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 #build config
 #set( ROS_BUILD_TYPE Debug )
-set (ROS_BUILD_TYPE MinSizeRel)
+set (ROS_BUILD_TYPE Release)
 rosbuild_init()
      
 #uncomment if you have defined messages

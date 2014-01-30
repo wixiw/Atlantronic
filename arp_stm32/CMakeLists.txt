@@ -18,7 +18,7 @@ project(arp_stm32)
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 #build config
 #set( ROS_BUILD_TYPE Debug )
-set (ROS_BUILD_TYPE MinSizeRel)
+set (ROS_BUILD_TYPE Release)
 rosbuild_init()
 
 rosbuild_include(arp_core ARP_common_functions)
