@@ -71,8 +71,8 @@ Localizator::Localizator(const std::string& name)
 , currentVisibility(NONE)
 {
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
-    arp_rlu::lsl::Logger::InitFile("LSL", WARN);
-    arp_rlu::kfl::Logger::InitFile("KFL", WARN);
+    //arp_rlu::lsl::Logger::InitFile("LSL", WARN);
+    //arp_rlu::kfl::Logger::InitFile("KFL", WARN);
 
     createOrocosInterface();
 
@@ -169,7 +169,7 @@ void Localizator::updateHook()
         propParams.iekfParams.defaultLaserRangeSigma = propLaserRangeSigmaSmooth;
         propParams.iekfParams.defaultLaserThetaSigma = propLaserThetaSigmaSmooth;
         kfloc.setParams( propParams.iekfParams );
-        LOG(Info) << "Switched to smooth mode (LaserRangeSigma: " << kfloc.getParams().iekfParams.defaultLaserRangeSigma << " - LaserThetaSigma: " << kfloc.getParams().iekfParams.defaultLaserThetaSigma << ")" << endlog();
+        //LOG(Info) << "Switched to smooth mode (LaserRangeSigma: " << kfloc.getParams().iekfParams.defaultLaserRangeSigma << " - LaserThetaSigma: " << kfloc.getParams().iekfParams.defaultLaserThetaSigma << ")" << endlog();
     }
     if( !smoothMode && (propParams.iekfParams.defaultLaserRangeSigma != propLaserRangeSigma ||
             propParams.iekfParams.defaultLaserThetaSigma != propLaserThetaSigma ) )
@@ -177,7 +177,7 @@ void Localizator::updateHook()
         propParams.iekfParams.defaultLaserRangeSigma = propLaserRangeSigma;
         propParams.iekfParams.defaultLaserThetaSigma = propLaserThetaSigma;
         kfloc.setParams( propParams.iekfParams );
-        LOG(Info) << "Switched to normal mode (LaserRangeSigma: " << kfloc.getParams().iekfParams.defaultLaserRangeSigma << " - LaserThetaSigma: " << kfloc.getParams().iekfParams.defaultLaserThetaSigma << ")" << endlog();
+        //LOG(Info) << "Switched to normal mode (LaserRangeSigma: " << kfloc.getParams().iekfParams.defaultLaserRangeSigma << " - LaserThetaSigma: " << kfloc.getParams().iekfParams.defaultLaserThetaSigma << ")" << endlog();
     }
 
     predictionOk = false;
@@ -312,6 +312,9 @@ void Localizator::createOrocosInterface()
 
     addPort("inOdo",inOdo)
     .doc("Estimation of T_odo_table_p_odo_r_odo : Twist of odo reference frame relative to table frame, reduced and expressed in odo reference frame.\n It is an EstimatedTwist2D, so it contains Twist, estimation date (in sec) and covariance matrix.");
+
+    addPort("inGyroAngle",inGyroAngle)
+    .doc("Angular position from the Gyrometer");
 
     addPort("inSmoothMode",inSmoothMode)
     .doc("When true, change settings to avoid jumps in estimate");

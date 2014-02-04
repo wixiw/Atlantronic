@@ -68,6 +68,7 @@ class Localizator: public RluTaskContext
         // Ports
         RTT::InputPort<sensor_msgs::LaserScan> inScan;
         RTT::InputPort<arp_math::EstimatedICRSpeed > inOdo;
+        RTT::InputPort<double> inGyroAngle;
         RTT::InputPort< bool > inSmoothMode;
 
 

@@ -21,5 +21,6 @@ then
 	fi
 else
 	cd src
+	echo "./configure --timers=$TIMERS --can=socket --enable-lss --enable-lss-fs --prefix=`rospack find can_festival` --debug=ERR"
 	./configure --timers=$TIMERS --can=socket --enable-lss --enable-lss-fs --prefix=`rospack find can_festival` --debug=ERR
 fi

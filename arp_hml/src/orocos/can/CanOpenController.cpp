@@ -115,6 +115,9 @@ void CanOpenController::updateHook()
     double period = arp_math::delta_t(attrLastSyncTime, attrSyncTime);
     attrLastSyncTime = attrSyncTime;
 
+    outPeriod.write(period);
+    outClock.write(attrSyncTime);
+
     HmlTaskContext::updateHook();
 
     //synchronize local attribute with CanFestival state
@@ -122,9 +125,6 @@ void CanOpenController::updateHook()
 
     //dispatch bootup frame to the rigth output port
     m_dispatcher.dispatchBootUp(propNodeId, inBootUpReceived);
-
-    outPeriod.write(period);
-    outClock.write(attrSyncTime);
 
     switch (m_RunningState)
     {

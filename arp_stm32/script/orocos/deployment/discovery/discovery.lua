@@ -6,7 +6,7 @@ me = "Discovery"
 
 function DiscoveryDeployer:load()
 	assert( Deployer:loadComponent(me,"arp_stm32::Discovery"))
-	assert( Deployer:setActivity(me,0.0,30,rtt.globals.ORO_SCHED_RT));
+	assert( Deployer:setActivity(me,0.0,20,rtt.globals.ORO_SCHED_RT));
 	return true
 end
 

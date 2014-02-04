@@ -27,8 +27,8 @@ LaserOnlyLocalizatorCpn::LaserOnlyLocalizatorCpn(const std::string& name)
 , lastSuccess(false)
 {
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
-    arp_rlu::lsl::Logger::InitFile("LSL", WARN);
-    arp_rlu::kfl::Logger::InitFile("KFL", WARN);
+    //arp_rlu::lsl::Logger::InitFile("LSL", WARN);
+    //arp_rlu::kfl::Logger::InitFile("KFL", WARN);
 
     createOrocosInterface();
 

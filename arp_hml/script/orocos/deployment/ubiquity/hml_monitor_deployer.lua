@@ -6,7 +6,7 @@ local me = "HmlMonitor"
 
 function HmlMonitorDeployer:load()
 	assert( Deployer:loadComponent(me, "arp_hml::HmlMonitor"))
-	assert( Deployer:setActivity(me, 0.100, 10, rtt.globals.ORO_SCHED_RT))
+	assert( Deployer:setActivity(me, 0.100, 0, rtt.globals.ORO_SCHED_OTHER))
 	return true
 end
 

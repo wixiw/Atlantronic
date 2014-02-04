@@ -38,7 +38,7 @@ FrontObstacleDetector::FrontObstacleDetector(const std::string& name)
 , H_hky_robot(Pose2D())
 {
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
-    arp_rlu::lsl::Logger::InitFile("LSL", WARN);
+    //arp_rlu::lsl::Logger::InitFile("LSL", WARN);
 
     createOrocosInterface();
     m_monotonicTimeToRealTime = ros::Time::now().toSec() - getTime();

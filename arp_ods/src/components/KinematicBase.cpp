@@ -24,7 +24,7 @@ KinematicBase::KinematicBase(const std::string& name) :
 {
     createOrocosInterface();
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
-    arp_model::Logger::InitFile("arp_model", INFO);
+    //arp_model::Logger::InitFile("arp_model", INFO);
 }
 
 void KinematicBase::updateHook()

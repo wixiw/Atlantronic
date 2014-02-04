@@ -24,7 +24,7 @@ RosOdsItf::RosOdsItf(std::string const name):
         m_actionServer("MotionControl", boost::bind(&RosOdsItf::newOrderCB, this, _1), false),
         m_blockTime(0.0)
 {
-    arp_ods::orders::Logger::InitFile("arp_ods", DEBUG);
+    //arp_ods::orders::Logger::InitFile("arp_ods", DEBUG);
 
     createOrocosInterface();
     createRosInterface();

@@ -9,13 +9,10 @@
     	../Atlantronic/src/kernel/math/vect_plan.cxx
     )  
     
-
-add_custom_target(
-    AtlantronicCheckout
-    COMMAND ${GIT_EXECUTABLE} clone https://github.com/jbtredez/Atlantronic.git $(PROJECT_SOURCE_DIR)/Atlantronic
-)
-add_dependencies(arp_stm32-components AtlantronicCheckout)
-
-
+include_directories("../Atlantronic/include")
+include_directories("../Atlantronic/include/discovery")
+include_directories("../Atlantronic/src")
+    
 orocos_component(arp_stm32-components ${source_files} )
+
 target_link_libraries(arp_stm32-components readline)

@@ -5,7 +5,7 @@ CanDeployer = ComposantDeployer:new();
 
 function CanDeployer:load()
 	assert( Deployer:loadComponent("Can1","arp_hml::CanOpenController"));
-	assert( Deployer:setActivity("Can1",0,45,rtt.globals.ORO_SCHED_RT));
+	assert( Deployer:setActivity("Can1",0,40,rtt.globals.ORO_SCHED_RT));
 	return true
 end
 

@@ -23,7 +23,7 @@ Odometry4UbiquityICR::Odometry4UbiquityICR(const std::string& name):
     createOrocosInterface();
 
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
-    arp_model::Logger::InitFile("arp_model", WARN);
+    //arp_model::Logger::InitFile("arp_model", WARN);
 }
 
 void Odometry4UbiquityICR::updateHook()
