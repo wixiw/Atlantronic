@@ -14,6 +14,26 @@
 namespace arp_stm32
 {
 
+class DiscoveryLock
+{
+    public:
+        DiscoveryLock(pthread_mutex_t* mutex);
+        ~DiscoveryLock();
+
+       enum eLockResult
+       {
+           SUCCEED = 0,
+           FAILED = 1
+       };
+
+        //lock is true if the lock failed
+       eLockResult lock();
+       void unlock();
+
+    private:
+        pthread_mutex_t* m_mutex;
+};
+
 class Discovery: public Stm32TaskContext
 {
     public:
@@ -25,13 +45,15 @@ class Discovery: public Stm32TaskContext
 
         /**
          * Ask the gyrometer to freeze its position and to start the calibration process
+         * returns true on success
          */
-        void ooStartCalibration();
+        bool ooStartCalibration();
 
         /**
          * Ask the gyrometer to stop the calibration process and to re-publish position datas
+         * returns true on success
          */
-        void ooStopCalibration();
+        bool ooStopCalibration();
 
         /**
          * Force a new gyrometer position, in rad

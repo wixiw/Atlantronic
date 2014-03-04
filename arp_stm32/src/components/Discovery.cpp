@@ -16,6 +16,36 @@ using namespace RTT;
 
 ORO_LIST_COMPONENT_TYPE( arp_stm32::Discovery)
 
+DiscoveryLock::DiscoveryLock(pthread_mutex_t* mutex):
+    m_mutex(mutex)
+{
+
+}
+
+DiscoveryLock:: ~DiscoveryLock()
+{
+    pthread_mutex_unlock(m_mutex);
+}
+
+DiscoveryLock::eLockResult DiscoveryLock::lock()
+{
+    if( pthread_mutex_lock(m_mutex) != 0 )
+    {
+        return FAILED;
+    }
+    else
+    {
+        return SUCCEED;
+    }
+}
+
+void DiscoveryLock::unlock()
+{
+    pthread_mutex_unlock(m_mutex);
+};
+
+
+
 Discovery::Discovery(const std::string& name) :
         Stm32TaskContext(name)
 {
@@ -27,8 +57,10 @@ bool Discovery::configureHook()
     if (!Stm32TaskContext::configureHook())
         return false;
 
-    if( m_robotItf.init("discovery", "/dev/discovery0", "/dev/discovery0", robotItfCallbackWrapper, this) )
+    int res = m_robotItf.init("discovery", "/dev/discovery", "/dev/discovery", robotItfCallbackWrapper, this);
+    if( res != 0 )
     {
+        LOG(Error) << "configureHook() : failed to init robot interface with errcode : " << res << endlog();
         return false;
     }
 
@@ -44,22 +76,21 @@ void Discovery::updateHook()
 {
     Stm32TaskContext::updateHook();
 
-    int res = pthread_mutex_lock(&(m_robotItf.mutex));
-    if(res)
-    {
-        LOG(Error) << "pthread_mutex_lock : " << res << endlog();
-    }
-    else
-    {
-        int id = m_robotItf.control_usb_data_count - 1;
-        if( id < 0)
-        {
-            id = 0;
-        }
+    DiscoveryLock mutex(&m_robotItf.mutex);
 
-        attrGyrometerAngle = betweenMinusPiAndPlusPi(m_robotItf.control_usb_data[id].pos_theta_gyro);
+    if( mutex.lock() == DiscoveryLock::FAILED)
+    {
+		LOG(Error) << "updateHook() : mutex.lock()" << endlog();
     }
-    pthread_mutex_unlock(&(m_robotItf.mutex));
+
+    int id = m_robotItf.control_usb_data_count - 1;
+    if( id < 0)
+    {
+        id = 0;
+    }
+
+    attrGyrometerAngle = betweenMinusPiAndPlusPi(m_robotItf.control_usb_data[id].pos_theta_gyro);
+    mutex.unlock();
 
     outGyrometerAngle.write(attrGyrometerAngle);
     //TODO
@@ -72,20 +103,41 @@ void Discovery::robotItfCallbackWrapper(void* arg)
     discovery->updateHook();
 }
 
-void Discovery::ooStartCalibration()
+bool Discovery::ooStartCalibration()
 {
-    LOG(Info) << "Starting gyrometer calibration." << endlog();
-    //TODO à implémenter
+    int res = m_robotItf.gyro_calibration(GYRO_CALIBRATION_START);
+    if( res <= 0 )
+    {
+        LOG(Error) << "Failed to start gyrometer calibration (Command result=" << res << ")." << endlog();
+        return false;
+    }
+    else
+    {
+        LOG(Info) << "Starting gyrometer calibration (Command result=" << res << ")." << endlog();
+        return true;
+    }
 }
 
-void Discovery::ooStopCalibration()
+bool Discovery::ooStopCalibration()
 {
-    LOG(Info) << "Stopping gyrometer calibration." << endlog();
-    //TODO à implémenter
+    int res = m_robotItf.gyro_calibration(GYRO_CALIBRATION_STOP);
+
+    if( res <= 0 )
+    {
+        LOG(Error) << "Failed to stop gyrometer calibration (Command result=" << res << ")." << endlog();
+        return false;
+    }
+    else
+    {
+        LOG(Info) << "Stopping gyrometer calibration (Command result=" << res << ")." << endlog();
+        return true;
+    }
 }
 
 void Discovery::ooSetPosition(double newAngle)
 {
+    DiscoveryLock mutex(&m_robotItf.mutex);
+
     LOG(Info) << "Setting a new position for the gyrometer : " << newAngle << " rad." << endlog();
     //TODO à implémenter
 }
