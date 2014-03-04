@@ -12,7 +12,6 @@
 #include <math/core>
 #include <boost/shared_ptr.hpp>
 #include "control/ICRSpeedBuffer.hpp"
-#include "control/OnlineTrajectoryGenerator.hpp"
 #include <arp_ods/OrderAction.h>
 
 using namespace arp_math;
@@ -144,7 +143,6 @@ class MotionOrder
          * set
          */
         void setICRSpeedBuffer(ICRSpeedBuffer twistBuffer);
-        void setOTG(OnlineTrajectoryGenerator * OTG_);
 
         /*
          * DEBUG
@@ -235,11 +233,6 @@ class MotionOrder
          * error at precedent turn
          */
         Pose2D m_error_old;
-
-        /*
-         *  a pointer to the profile computation library
-         */
-        OnlineTrajectoryGenerator * OTG;
 
         /*
          * ubiquity parameters, given at creation of the order

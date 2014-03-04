@@ -9,7 +9,6 @@
 #define OMNIDIRECTORDER2_HPP_
 
 #include "MotionOrder.hpp"
-#include "control/OnlineTrajectoryGenerator.hpp"
 
 #include "math/math.hpp"
 #include <boost/shared_ptr.hpp>
@@ -57,7 +56,6 @@ class OmnidirectOrder2: public MotionOrder
          * compute the usual "mode run" twist
          */
         ICRSpeed computeRunTwist(arp_math::Pose2DNorm currentPosition,ICRSpeed curICRSpeed,double dt);
-        double profileRo(double distance,ICRSpeed curICRSpeed);
         double profileRoJerking(double distance, ICRSpeed curICRSpeed, double roPass, double dt);
 
         /*  this little function creates the "cheat" on distance given to profile, to compensate for the delay in the loop

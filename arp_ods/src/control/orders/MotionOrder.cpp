@@ -46,7 +46,6 @@ MotionOrder::MotionOrder(const OrderGoalConstPtr &goal, arp_math::UbiquityMotion
 {
     m_smoothLocNeeded=false;
     m_error_old=Pose2D(0,0,0);
-    OTG=NULL;
 
     m_beginMotionState = UbiquityMotionState();
     m_endMotionState = UbiquityMotionState();
@@ -106,11 +105,6 @@ std::string MotionOrder::getTypeString() const
 void MotionOrder::setICRSpeedBuffer(ICRSpeedBuffer twistBuffer )
 {
     m_twistBuffer = twistBuffer;
-}
-
-void MotionOrder::setOTG(OnlineTrajectoryGenerator * OTG_)
-{
-    OTG = OTG_;
 }
 
 void MotionOrder::setVmax(double vmax)

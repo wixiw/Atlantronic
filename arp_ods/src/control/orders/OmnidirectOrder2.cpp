@@ -100,55 +100,6 @@ void OmnidirectOrder2::switchRun(arp_math::UbiquityMotionState currentMotionStat
 
 }
 
-double OmnidirectOrder2::profileRo(double distance, ICRSpeed curICRSpeed)
-{
-    //TODO attention cette partie na jamais ete retouche depuis la refactorisation decembre 2013. les parametre utilise pour nourrir reflexxes ne sont plus les bons.
-
-    PosVelAcc start;
-    start.position = 0;
-    start.velocity = curICRSpeed.ro();
-    //start.acceleration = (curICRSpeed.ro() - m_oldICRSpeed.ro()) / dt;
-    //mmm ca affole l'OTG cette acceleration. essayons sur le predit plutot que le realise. oh ! ca marche !
-    start.acceleration = m_predictedAcc;
-    PosVelAcc end;
-    end.position = distance;
-    end.velocity = 0;
-    end.acceleration = 0;
-    PosVelAcc next;
-    double ro;
-
-    if (OTG == NULL)
-    {
-        ro = 0;
-        Log(DEBUG) << "*** PB sur calcul RO : pointeur null sur OTG ****";
-    }
-
-    Log(DEBUG) << "*** computeNextStepCheap ****";
-    Log(DEBUG)
-            << "bool OTGres = OTG->computeNextStepCheap(start, end, m_conf.LIN_VEL_MAX, m_conf.LIN_DEC, m_conf.LIN_DEC * 5, next);";
-    Log(DEBUG) << "start.position" << start.position;
-    Log(DEBUG) << "start.velocity" << start.velocity;
-    Log(DEBUG) << "end.position" << end.position;
-    Log(DEBUG) << "m_conf.LIN_VEL_MAX" << m_params.getMaxRobotSpeed();
-    Log(DEBUG) << "m_conf.LIN_DEC" << m_params.getMaxRobotAccel();
-    bool OTGres = OTG->computeNextStepCheap(start, end, m_params.getMaxRobotSpeed(), m_params.getMaxRobotAccel(), m_params.getMaxRobotAccel() * 5, next);
-    Log(DEBUG) << "--->next.velocity" << next.velocity;
-
-    if (OTGres)
-    {
-        ro = next.velocity;
-    }
-    else
-    {
-        ro = 0;
-        Log(DEBUG) << "*** PB sur calcul RO: reflexxes a retourne false ****";
-    }
-
-    m_predictedAcc = next.acceleration;
-
-    return ro;
-}
-
 double OmnidirectOrder2::profileRoJerking(double distance, ICRSpeed curICRSpeed, double roPass, double dt)
 {
     //TODO brancher vitesse plutot que last ro
