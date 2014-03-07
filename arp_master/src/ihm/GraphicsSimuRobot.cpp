@@ -172,12 +172,12 @@ void GraphicsSimuRobot::paintCircle(wxPaintDC& dc, double sphereDirection) const
 
      dc.SetPen(*wxWHITE_PEN);
      dc.DrawLine(m_computedCanvasX, m_computedCanvasY, sphereX, sphereY);
-
+/*
      int orthoIcrX1 = m_computedCanvasX + ICR_SPHERE_RADIUS*cos(sphereDirection+M_PI_2);
      int orthoIcrY1 = m_computedCanvasY + ICR_SPHERE_RADIUS*sin(sphereDirection+M_PI_2);
      int orthoIcrX2 = m_computedCanvasX + ICR_SPHERE_RADIUS*cos(sphereDirection-M_PI_2);
      int orthoIcrY2 = m_computedCanvasY + ICR_SPHERE_RADIUS*sin(sphereDirection-M_PI_2);
-     dc.DrawLine(orthoIcrX1, orthoIcrY1, orthoIcrX2, orthoIcrY2);
+     dc.DrawLine(orthoIcrX1, orthoIcrY1, orthoIcrX2, orthoIcrY2);*/
 }
 
 void GraphicsSimuRobot::paintVector(wxPaintDC& dc, double direction, double size, wxColour colour) const
@@ -208,7 +208,7 @@ void GraphicsSimuRobot::paintIcrSphere(wxPaintDC& dc) const
 
     paintCircle(dc, sphereDirection);
     paintVector(dc, sphereDirection, m_computedSpeed.ro(), *wxWHITE);
-    paintVector(dc, sphereDirection+M_PI_2, 1 - fabs(m_computedSpeed.delta()/M_PI_2), *wxRED);
+    paintVector(dc, sphereDirection- sign(m_computedSpeed.delta())*M_PI_2, 1 - fabs(m_computedSpeed.delta()/M_PI_2) , *wxRED);
 }
 
 //void GraphicsSimuRobot::paintOneTurret(wxPaintDC& dc, int x, int y)
