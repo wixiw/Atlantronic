@@ -32,6 +32,7 @@ ICR::ICR(const ICR& icr)
 
 ICR::ICR(Vector3 speedVector)
 {
+    //TODO double equal
     //phi
     if (speedVector[0] != 0.0 or speedVector[1] != 0.0)
         m_phi = atan2(speedVector[1], speedVector[0]);

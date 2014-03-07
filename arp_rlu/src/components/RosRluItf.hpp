@@ -13,6 +13,7 @@
 #include <math/core>
 //rosmsg
 #include <arp_core/Pose.h>
+#include <arp_core/ICRSpeedMsg.h>
 #include <arp_core/OpponentsList.h>
 #include <arp_core/LocalizationState.h>
 
@@ -40,6 +41,7 @@ class RosRluItf: public arp_rlu::RluTaskContext
         RTT::InputPort<arp_math::EstimatedICRSpeed> inICRSpeed;
         RTT::InputPort< std::vector<arp_math::EstimatedPose2D> > inOpponents;
         RTT::OutputPort<arp_core::Pose> outPose;
+        RTT::OutputPort<arp_core::ICRSpeedMsg> outSpeed;
         RTT::OutputPort< arp_core::LocalizationState > outLocalizationState;
         RTT::OutputPort< arp_core::OpponentsList > outOpponents;
 

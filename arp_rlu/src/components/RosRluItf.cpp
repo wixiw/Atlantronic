@@ -28,6 +28,7 @@ RluTaskContext(name)
     addPort("inICRSpeed",inICRSpeed);
     addPort("inOpponents",inOpponents);
     addPort("outPose",outPose);
+    addPort("outSpeed",outSpeed);
     addPort("outOpponents",outOpponents);
     addPort("outLocalizationState",outLocalizationState);
     createRosInterface();
@@ -71,6 +72,14 @@ void RosRluItf::updateHook()
     pOut.vy = tIn.vy();
     pOut.vtheta = tIn.vh();
     outPose.write(pOut);
+
+
+    //speed
+    ICRSpeedMsg sOut;
+    sOut.ro = speedIn.ro();
+    sOut.phi = speedIn.phi();
+    sOut.delta = speedIn.delta();
+    outSpeed.write(sOut);
 
     LocalizationState stateOut;
     int locState = -1; //0; //STOPPED
