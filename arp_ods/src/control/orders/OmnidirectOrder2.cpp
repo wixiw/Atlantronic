@@ -114,7 +114,6 @@ void OmnidirectOrder2::switchRun(arp_math::UbiquityMotionState currentMotionStat
 
 double OmnidirectOrder2::profileRoNonJerking(double distance, ICRSpeed curICRSpeed, double roPass, double dt)
 {
-    //TODO attention cette partie na jamais ete retouche depuis la refactorisation decembre 2013. les parametre utilise pour nourrir reflexxes ne sont plus les bons.
 
     PosVelAcc start;
     start.position = 0;
@@ -379,10 +378,14 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
     Log(DEBUG) << "     speedlimitation factor                        " << getSpeedLimitationFactor(distanceICRMove);
     Log(DEBUG) << "     k_delta   apres limitation vitesse/ICRmove    " << k_delta;
 
+    double passSpeed;
     if (m_pass == false)
-        ro = profileRoJerking(k_delta, curICRSpeed, 0.0, dt);
+        passSpeed=0.0;
     else
-        ro = profileRoJerking(k_delta, curICRSpeed, m_passSpeed, dt);
+        passSpeed=  m_passSpeed;
+    //IF!!
+    ro = profileRoJerking(k_delta, curICRSpeed, 0.0, dt);
+
 
     Log(DEBUG) << "     ro            " << ro;
 
