@@ -147,7 +147,7 @@ class RandomMove(MotionState):
     def __init__(self):
         MotionState.__init__(self)
         #seed = random.randint(0, 1000)
-        seed=221
+        seed=497
         random.seed(seed)
         rospy.loginfo("------------MOTIONTESTING INIT----------------")
         rospy.loginfo("randomized with seed: %d" % (seed))
@@ -163,9 +163,10 @@ class RandomMove(MotionState):
         rospy.loginfo("x =%.3f y=%.3f theta=%.3f"%(self.x, self.y, self.theta))
         rospy.loginfo("vmax =%.3f"%(self.vmax))
 
-        if random.uniform(0, 1)< 0.2 :
+        if random.uniform(0, 1)< 1.0 :
             rospy.loginfo("Stop on point")
-            self.omnidirect2(self.x, self.y, self.theta, self.vmax)
+            #self.omnidirect2(self.x, self.y, self.theta, self.vmax)
+            self.omnidirect2(self.x, self.y, self.theta, 1)
         else:
             rospy.loginfo("Pass with v=%.3f"%(self.vpass))
             self.omnidirect2Pass(self.x, self.y, self.theta, self.vpass,self.vmax)

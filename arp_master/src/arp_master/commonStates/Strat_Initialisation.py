@@ -7,15 +7,38 @@ import roslib; roslib.load_manifest('arp_master')
 from arp_master import *
 import os
 from Waiting import *
+from MotorManagement import *
+
+
+class InitTurretZeros(smach.StateMachine):
+    def __init__(self):
+        smach.StateMachine.__init__(self,outcomes=['succeeded','problem'])
+        with self:
+            smach.StateMachine.add('SetSteeringPower',
+                      SetSteeringPower(),
+                      transitions={'succeeded':'FindSteeringZero', 'timeout':'problem'})
+            
+            smach.StateMachine.add('FindSteeringZero',
+                      FindSteeringZero(),
+                      transitions={'succeeded':'BackToPositionTurretMode', 'timeout':'problem'})
+            
+            smach.StateMachine.add('BackToPositionTurretMode',
+                      SetSteeringMotorModeState("position"),
+                      transitions={'succeeded':'SetDrivingPower', 'timeout':'problem'})
+            
+            smach.StateMachine.add('SetDrivingPower',
+                      SetDrivingPower(),
+                      transitions={'succeeded':'succeeded', 'timeout':'problem'})
 
 #
 # This is the default a0 level state in any strategy. 
 # _ It checks if the initial state is as expected
 # _ It waits for Orocos to be up
-# _ it waits for the start to be plugged in
+# _ It search for turrets zeros
+# _ It waits for the start to be plugged in
+# _ It reads the color plug
 #
 ##################################################
-
 class Initialisation(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['endInitialisation','failed'])
@@ -24,7 +47,10 @@ class Initialisation(smach.StateMachine):
                                    transitions={'initstateok':'WaitForOrocos','timeout':'Init'})
             smach.StateMachine.add('WaitForOrocos', 
                                    WaitForOrocos(),
-                                   transitions={'deployed':'WaitForStart','timeout':'WaitForOrocos'})
+                                   transitions={'deployed':'FindSteeringZeros','timeout':'WaitForOrocos'})
+            smach.StateMachine.add('FindSteeringZeros',
+                                   InitTurretZeros(), 
+                                   transitions={'succeeded':'WaitForStart', 'problem':'failed'})
             smach.StateMachine.add('WaitForStart', 
                                    WaitForStart(),
                                    transitions={'start':'SetColor','timeout':'WaitForStart'})

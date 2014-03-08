@@ -20,7 +20,7 @@ using namespace arp_math;
 ORO_LIST_COMPONENT_TYPE( arp_ods::MotionControl)
 
 MotionControl::MotionControl(const std::string& name) :
-        OdsTaskContext(name), attrVmax_asked(1.0), attrCurrentOrder("default"), m_ICRSpeedBuffer(), OTG(),m_norder(0)
+        OdsTaskContext(name), attrVmax_asked(1.0), attrCurrentOrder("default"), m_ICRSpeedBuffer(),m_norder(0)
 
 {
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
@@ -151,10 +151,9 @@ bool MotionControl::ooSetOrder(shared_ptr<MotionOrder> order)
     // mais je l'ai mis car le cassage des ordres se fait la bas
     // moralité refaire l'archi.
     attrOrder->setICRSpeedBuffer(m_ICRSpeedBuffer);
-    attrOrder->setOTG(&OTG);
 
     m_norder++;
-    outDEBUG10.write(((double)m_norder)/10.0);
+    outDEBUG8.write(((double)m_norder)/10.0);
     arp_ods::orders::Log(Info) << "-------------------- order number # ---------------------   >> " <<  m_norder  << endlog();
 
     return true;

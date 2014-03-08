@@ -165,13 +165,6 @@ class MotionControl: public OdsTaskContext
          * minimum speed for twist that is stored
          */
         static const double MIN_STORED_TWIST_SPEED=0.005;
-
-        /*
-         * library for trajectory computations
-         * must be instantiated at startup
-         *
-         */
-        OnlineTrajectoryGenerator OTG;
 };
 
 } /* namespace arp_ods */

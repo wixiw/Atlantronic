@@ -1,7 +1,8 @@
-#Wed May 16 02:12:09 CEST 2012
+#Sat Mar 08 01:00:41 CET 2014
 eclipse.preferences.version=1
 encoding//arp_core/src/tools/ksthelper.py=utf-8
 encoding//arp_master/src/arp_master=US-ASCII
+encoding//arp_master/src/arp_master/commonStates/Strat_StartSequence.py=UTF-8
 encoding//arp_master/src/ros=UTF-8
 encoding//arp_master/src/ros/SpeedReducer.py=US-ASCII
 encoding//arp_ods/test/temporal_planif/test_planif.py=utf-8

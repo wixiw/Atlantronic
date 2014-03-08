@@ -57,7 +57,7 @@ class OmnidirectOrder2: public MotionOrder
          * compute the usual "mode run" twist
          */
         ICRSpeed computeRunTwist(arp_math::Pose2DNorm currentPosition,ICRSpeed curICRSpeed,double dt);
-        double profileRo(double distance,ICRSpeed curICRSpeed);
+
         double profileRoJerking(double distance, ICRSpeed curICRSpeed, double roPass, double dt);
 
         /*  this little function creates the "cheat" on distance given to profile, to compensate for the delay in the loop
@@ -74,26 +74,6 @@ class OmnidirectOrder2: public MotionOrder
          */
         double distanceModifier(double realDistance, double distanceDelay);
 
-
-        /*
-         * twist of precedent turn
-         */
-        arp_math::Twist2D m_v_correction_old;
-        /*
-         * twist and error at moment we entered the approach zone
-         */
-        arp_math::Twist2D m_twist_approach;
-        arp_math::Pose2D m_error_approach;
-        arp_math::Pose2D m_pose_approach;
-        /*
-         * twist when we entered the reconfigurator
-         */
-        arp_math::Twist2D m_twist_init;
-        bool m_twist_init_registered;
-
-        double m_normalizedError;
-        double m_normalizedError_old;
-
         /*
          * the maximum speed for this order
          */
@@ -103,8 +83,6 @@ class OmnidirectOrder2: public MotionOrder
 
         //speed at last turn - used for acceleration computation
         ICRSpeed m_oldICRSpeed;
-        double m_predictedAcc;
-        double m_lastRo;
 
         //surcharges
         void switchInit(arp_math::UbiquityMotionState currentMotionState);
@@ -135,6 +113,7 @@ private:
     void decideSmoothNeeded(arp_math::Pose2D & currentPosition);
     Pose2DNorm getPositionInNormalRef(Pose2D currentPosition);
     double getParkinsonLimitationFactor(double distance);
+    double getSpeedLimitationFactor(double distanceICRMove);
 };
 
 }}

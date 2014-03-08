@@ -55,7 +55,7 @@ class WaitForMatch(CyclicState):
         CyclicState.__init__(self, outcomes=['start'])
     
     def executeIn(self):
-        os.system("beep -f 300 -l300 -r3") 
+        os.system("beep -f 300 -l300 -r3")
     
     def executeTransitions(self):
        if Inputs.getstart()==1:
@@ -64,3 +64,4 @@ class WaitForMatch(CyclicState):
     def executeOut(self):
         #je note le temps de debut de match
         Data.start_time=rospy.get_rostime()
+        self.stopGyroCalibration(); 
