@@ -12,6 +12,8 @@
 	<depend package="rtt" />
 	<depend package="arp_core" />
 	<export>
-		<cpp os="gnulinux" cflags="-I${prefix}/src -I${prefix}/src/Atlantronic/include -I${prefix}/src/Atlantronic/src" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -larp_stm32-gnulinux"/>
+		<cpp os="gnulinux" 
+		cflags="-I${prefix}/src -I${prefix}/src/Atlantronic/include -I${prefix}/src/Atlantronic/src" 
+		lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -L${prefix}/lib/orocos/gnulinux -larp_stm32-components-gnulinux"/>
 	</export>
 </package>
