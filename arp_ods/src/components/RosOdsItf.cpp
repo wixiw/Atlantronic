@@ -29,6 +29,8 @@ RosOdsItf::RosOdsItf(std::string const name):
     createOrocosInterface();
     createRosInterface();
 
+    OTG = OnlineTrajectoryGenerator();
+
     m_order = OrderFactory::createDefaultOrder();
 
 }
@@ -69,6 +71,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
     if (goal->move_type == "OMNIDIRECT2" or goal->move_type == "OPENLOOP" or goal->move_type == "REPLAY" or goal->move_type == "STAY")
     {
         m_order=OrderFactory::createOrder(goal, currentMotionState, params);
+        m_order->setOTG(&OTG);
         arp_ods::orders::Log(Info) << " New Order! " << goal->move_type<<endlog();
     }
     else

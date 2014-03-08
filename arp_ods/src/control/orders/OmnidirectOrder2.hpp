@@ -59,6 +59,7 @@ class OmnidirectOrder2: public MotionOrder
         ICRSpeed computeRunTwist(arp_math::Pose2DNorm currentPosition,ICRSpeed curICRSpeed,double dt);
 
         double profileRoJerking(double distance, ICRSpeed curICRSpeed, double roPass, double dt);
+        double profileRoNonJerking(double distance, ICRSpeed curICRSpeed, double roPass, double dt);
 
         /*  this little function creates the "cheat" on distance given to profile, to compensate for the delay in the loop
          *
@@ -82,7 +83,9 @@ class OmnidirectOrder2: public MotionOrder
 
 
         //speed at last turn - used for acceleration computation
-        ICRSpeed m_oldICRSpeed;
+        ICRSpeed m_ICRSpeed_N_1;
+        ICRSpeed m_ICRSpeed_N_2;
+        double m_dt_N_1;
 
         //surcharges
         void switchInit(arp_math::UbiquityMotionState currentMotionState);
@@ -105,7 +108,7 @@ class OmnidirectOrder2: public MotionOrder
         /*
          * deceleration to approach points
          */
-        static const double DECELERATION=2.0;
+        static const double DECELERATION=1.5;
 
 
 private:

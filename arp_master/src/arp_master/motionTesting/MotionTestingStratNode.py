@@ -49,7 +49,7 @@ class MainStateMachine(smach.StateMachine):
             
             smach.StateMachine.add('SetInitialPosition',
                       SetInitialPosition(0.750, 0, 0),
-                      transitions={'succeeded':'Move', 'timeout':'end'})
+                      transitions={'succeeded':'PASS1', 'timeout':'end'})
             
 
             
@@ -116,22 +116,22 @@ class MainStateMachine(smach.StateMachine):
             # SPECIFIC DEBUG TESTS ##########################
             
             smach.StateMachine.add('M1',
-                       AmbiOmniDirectOrder2(Pose2D( 0.950, 0, 0) ,
-                                           vmax = 1.0),
+                       AmbiOmniDirectOrder2Pass(Pose2D( 0.950, 0, 0) ,
+                                           vpasse=0.1,vmax = 0.3),
                       transitions={'succeeded':'waitM2', 'timeout':'end'})
              
             smach.StateMachine.add('waitM2',
-                      WaiterState(1),
+                      WaiterState(5),
                       transitions={'timeout':'M2'})
              
                         
             smach.StateMachine.add('M2',
-                       AmbiOmniDirectOrder2(Pose2D( 0.600, 0,pi/2) ,
+                       AmbiOmniDirectOrder2(Pose2D( 0.950, 0.3,0) ,
                                            vmax = 1.0),
                       transitions={'succeeded':'waitMove', 'timeout':'end'})            
             
             smach.StateMachine.add('waitMove',
-                      WaiterState(1),
+                      WaiterState(5),
                       transitions={'timeout':'Move'})
                         
             # TEST OF ALL RANDOM OMNIDIRECT ORDERS ##########################
@@ -139,7 +139,23 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('Move', RandomMove(),
                                    transitions={'succeeded':'Move', 'timeout':'end'}) 
 
-                        
+            # TEST OF PASS ##########################      
+            smach.StateMachine.add('PASS1',
+                       AmbiOmniDirectOrder2Pass(Pose2D( 1.050, 0.5, 0) ,
+                                           vpasse=0.3,vmax = 1),
+                      transitions={'succeeded':'PASS2', 'timeout':'end'})   
+            smach.StateMachine.add('PASS2',
+                       AmbiOmniDirectOrder2Pass(Pose2D( 0.750, 0.7, pi/2) ,
+                                           vpasse=0.3,vmax = 1),
+                      transitions={'succeeded':'PASS3', 'timeout':'end'})   
+            smach.StateMachine.add('PASS3',
+                       AmbiOmniDirectOrder2Pass(Pose2D( 0.450, 0, pi ) ,
+                                           vpasse=0.3,vmax = 1),
+                      transitions={'succeeded':'PASS4', 'timeout':'end'})   
+            smach.StateMachine.add('PASS4',
+                       AmbiOmniDirectOrder2(Pose2D( 0.750, 0, -pi) ,
+                                           vmax = 1),
+                      transitions={'succeeded':'end', 'timeout':'end'})     
        
 
 
@@ -147,7 +163,7 @@ class RandomMove(MotionState):
     def __init__(self):
         MotionState.__init__(self)
         #seed = random.randint(0, 1000)
-        seed=497
+        seed=581
         random.seed(seed)
         rospy.loginfo("------------MOTIONTESTING INIT----------------")
         rospy.loginfo("randomized with seed: %d" % (seed))
@@ -163,10 +179,10 @@ class RandomMove(MotionState):
         rospy.loginfo("x =%.3f y=%.3f theta=%.3f"%(self.x, self.y, self.theta))
         rospy.loginfo("vmax =%.3f"%(self.vmax))
 
-        if random.uniform(0, 1)< 1.0 :
+        if random.uniform(0, 1)< 0.0 :
             rospy.loginfo("Stop on point")
-            #self.omnidirect2(self.x, self.y, self.theta, self.vmax)
-            self.omnidirect2(self.x, self.y, self.theta, 1)
+            self.omnidirect2(self.x, self.y, self.theta, self.vmax)
+            #self.omnidirect2(self.x, self.y, self.theta, 1)
         else:
             rospy.loginfo("Pass with v=%.3f"%(self.vpass))
             self.omnidirect2Pass(self.x, self.y, self.theta, self.vpass,self.vmax)

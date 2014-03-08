@@ -22,7 +22,7 @@ OnlineTrajectoryGenerator::OnlineTrajectoryGenerator()
     // bon le probleme c'est que onlinetrajectorygenerator fait un boulot de classe statique
     // mais on est quand meme obligé de le construire avec le temps de cycle
 
-    m_dt = 0.02;
+    m_dt = 0.01;
 
     RML = new ReflexxesAPI(1, m_dt);
 
