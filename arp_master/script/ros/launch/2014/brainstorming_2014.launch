@@ -6,7 +6,10 @@
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
 	<include file="$(find arp_master)/script/ros/launch/rosparam.launch"/>
 	
-	<node name="StratNode_Brainstorming2014"   pkg="arp_master"  type="Brainstorming_2014.py"     args="" output="screen"/>
+	<node name="StratNode_Brainstorming2014"   pkg="arp_master"  type="Brainstorming_2014.py"
+		args="" output="screen"
+		respawn="true"
+	/>
 	<node 	name="ArpOrocos" 
 		pkg="ocl" 
 		type="deployer-corba-gnulinux" 

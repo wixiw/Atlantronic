@@ -1,3 +1,6 @@
 <launch>
-	<node name="TestingShooterNode"   pkg="arp_master"  type="TestingShooter.py"     args="" output="screen"/>
+	<node name="TestingShooterNode"   pkg="arp_master"  type="TestingShooter.py"     		
+		args="" output="screen"
+		respawn="true"
+	/>/>
 </launch>

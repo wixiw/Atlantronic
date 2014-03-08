@@ -6,7 +6,10 @@
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
 	<include file="$(find arp_master)/script/ros/launch/rosparam.launch"/>
 	
-	<node name="StratNode_Tanguy"   pkg="arp_master"  type="StratNode_Tanguy.py"     args="" output="screen"/>
+	<node name="StratNode_Tanguy"   pkg="arp_master"  type="StratNode_Tanguy.py"     
+		args="" output="screen"
+		respawn="true"
+	/>
 	<node 	name="ArpOrocos" 
 		pkg="ocl" 
 		type="deployer-corba-gnulinux" 
