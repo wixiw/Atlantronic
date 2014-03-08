@@ -50,6 +50,7 @@ Discovery::Discovery(const std::string& name) :
         Stm32TaskContext(name)
 {
     createOrocosInterface();
+    createRosInterface();
 }
 
 bool Discovery::configureHook()
@@ -106,7 +107,7 @@ void Discovery::robotItfCallbackWrapper(void* arg)
 bool Discovery::ooStartCalibration()
 {
     int res = m_robotItf.gyro_calibration(GYRO_CALIBRATION_START);
-    if( res <= 0 )
+    if( res < 0 )
     {
         LOG(Error) << "Failed to start gyrometer calibration (Command result=" << res << ")." << endlog();
         return false;
@@ -122,7 +123,7 @@ bool Discovery::ooStopCalibration()
 {
     int res = m_robotItf.gyro_calibration(GYRO_CALIBRATION_STOP);
 
-    if( res <= 0 )
+    if( res < 0 )
     {
         LOG(Error) << "Failed to stop gyrometer calibration (Command result=" << res << ")." << endlog();
         return false;
@@ -134,18 +135,61 @@ bool Discovery::ooStopCalibration()
     }
 }
 
-void Discovery::ooSetPosition(double newAngle)
+bool Discovery::ooSetPosition(double newAngle)
 {
-    DiscoveryLock mutex(&m_robotItf.mutex);
+    int res = m_robotItf.gyro_set_position(newAngle);
 
-    LOG(Info) << "Setting a new position for the gyrometer : " << newAngle << " rad." << endlog();
-    //TODO à implémenter
+    if( res < 0 )
+    {
+        LOG(Error) << "Failed to a new position to the gyro (err=" << res << ")." << endlog();
+        return false;
+    }
+    else
+    {
+        LOG(Info) << "New position set for the gyrometer : " << newAngle << " rad." << endlog();
+        return true;
+    }
+
 }
 
-void Discovery::ooReset()
+bool Discovery::ooReset()
 {
-    LOG(Info) << "Resetting the stm32 board." << endlog();
-    //TODO à implémenter
+    int res = m_robotItf.reboot();
+
+    if( res < 0 )
+    {
+        LOG(Error) << "Failed to reset the stm32 board." << endlog();
+        return false;
+    }
+    else
+    {
+        LOG(Info) << "Resetting the stm32 board." << endlog();
+        return true;
+    }
+}
+
+bool Discovery::srvStartGyroCalibration(StartGyroCalibration::Request& req, StartGyroCalibration::Response& res)
+{
+    res.success = ooStartCalibration();
+    return res.success;
+}
+
+bool Discovery::srvStopGyroCalibration(StopGyroCalibration::Request& req, StopGyroCalibration::Response& res)
+{
+    res.success = ooStopCalibration();
+    return res.success;
+}
+
+bool Discovery::srvSetGyroPosition(SetGyroPosition::Request& req, SetGyroPosition::Response& res)
+{
+    res.success = ooSetPosition(req.theta);
+    return res.success;
+}
+
+bool Discovery::srvResetStm32(ResetStm32::Request& req, ResetStm32::Response& res)
+{
+    res.success = ooReset();
+    return res.success;
 }
 
 void Discovery::createOrocosInterface()
@@ -167,4 +211,13 @@ void Discovery::createOrocosInterface()
      .doc("Force a new gyrometer position, in rad");
     addOperation("ooReset",&Discovery::ooReset, this, OwnThread)
      .doc("Reset the stm32 board.");
+}
+
+void Discovery::createRosInterface()
+{
+    ros::NodeHandle nh;
+    m_srvStartGyroCalibration   = nh.advertiseService("/Discovery/startGyroCalibration",    &Discovery::srvStartGyroCalibration, this);
+    m_srvStopGyroCalibration    = nh.advertiseService("/Discovery/stopGyroCalibration",   &Discovery::srvStopGyroCalibration, this);
+    m_srvSetGyroPosition        = nh.advertiseService("/Discovery/setGyroPosition",         &Discovery::srvSetGyroPosition, this);
+    m_srvResetStm32             = nh.advertiseService("/Discovery/resetStm32", &Discovery::srvResetStm32, this);
 }

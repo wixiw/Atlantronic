@@ -6,6 +6,9 @@
 	<license>BSD</license>
 	<review status="unreviewed" notes=""/>
 	<url>http://team-ard.com</url>
+    <depend package="roscpp"/>
+	<depend package="rospy"/>
+	<depend package="std_srvs" />
 	<depend package="rtt" />
 	<depend package="arp_core" />
 	<export>
