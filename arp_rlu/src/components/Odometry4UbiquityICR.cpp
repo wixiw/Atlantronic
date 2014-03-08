@@ -66,17 +66,17 @@ void Odometry4UbiquityICR::updateHook()
 
     outICRSpeed.write(measuredICRSpeed);
 
-//    Vector3 angularSpeeds;
-//    if( false == UbiquityKinematics::findAngularSpeedFromOdometry(attrTurretState, angularSpeeds, attrParams) )
-//    {
-//        LOG(Error) << "Failed to compute AngularCmds" << endlog();
-//    }
-//    else
-//    {
-//        outLRiOmega.write(angularSpeeds[0]);
-//        outRiReOmega.write(angularSpeeds[1]);
-//        outReLOmega.write(angularSpeeds[2]);
-//    }
+    Vector3 angularSpeeds;
+    if( false == UbiquityKinematics::findAngularSpeedFromOdometry(attrTurretState, angularSpeeds, attrParams) )
+    {
+        LOG(Error) << "Failed to compute AngularCmds" << endlog();
+    }
+    else
+    {
+        outLRiOmega.write(angularSpeeds[0]);
+        outRiReOmega.write(angularSpeeds[1]);
+        outReLOmega.write(angularSpeeds[2]);
+    }
 
 }
 
