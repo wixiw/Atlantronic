@@ -22,17 +22,14 @@ PeriodicClock::PeriodicClock(const std::string name):
     addPort("outPeriod",outPeriod);
     addPort("outTrigger",outTrigger);
 
-    m_absoluteTime.tv_nsec = 0;
-    m_absoluteTime.tv_sec = 0;
+    clock_gettime(CLOCK_MONOTONIC, &m_absoluteTime);
 }
 
 void PeriodicClock::updateHook()
 {
-    //incrementTime(m_absoluteTime, getPeriod());
-    //outClock.write(m_absoluteTime);
+    clock_gettime(CLOCK_MONOTONIC, &m_absoluteTime);
+
     outPeriod.write(getPeriod());
-    timespec now;
-    clock_gettime(CLOCK_MONOTONIC, &now);
-    outClock.write(now);
+    outClock.write(m_absoluteTime);
     outTrigger.write(0);
 }
