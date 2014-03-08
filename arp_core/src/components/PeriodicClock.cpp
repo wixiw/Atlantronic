@@ -25,11 +25,6 @@ PeriodicClock::PeriodicClock(const std::string name):
 
 void PeriodicClock::updateHook()
 {
-    timespec now;
-    clock_gettime(CLOCK_MONOTONIC, &now);
-    outClock.write(now);
-    double period = delta_t(m_oldTime,now);
-    m_oldTime = now;
-    outPeriod.write(period);
+    outPeriod.write(getPeriod());
     outTrigger.write(0);
 }
