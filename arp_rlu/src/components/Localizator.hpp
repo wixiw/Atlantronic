@@ -156,6 +156,9 @@ class Localizator: public RluTaskContext
         unsigned int propIEKFMaxIt;
         double propIEKFInnovationMin;
 
+        /** Activate or not the time reporting */
+        bool propTimeReporting;
+
         bool smoothMode;
         bool predictionOk;
         bool updateOk;
@@ -165,6 +168,8 @@ class Localizator: public RluTaskContext
         LocalizationMode currentMode;
         LocalizationQuality currentQuality;
         LocalizationVisibility currentVisibility;
+
+        arp_core::StatTimer m_timer;
 
 };
 

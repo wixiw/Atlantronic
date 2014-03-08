@@ -48,7 +48,7 @@ function MotorSimulDeployer:connect()
 	
 	MotionScheduler=assert( Deployer:getPeer("MotionScheduler"))
 	sched_order= assert( MotionScheduler:getProperty("sched_order"))
-	sched_order:get():resize(7)
+	sched_order:get():resize(8)
 	sched_order[0]="LeftSteering"
 	sched_order[1]="RightSteering"
 	sched_order[2]="RearSteering"
@@ -56,6 +56,7 @@ function MotorSimulDeployer:connect()
 	sched_order[4]="RightDriving"
 	sched_order[5]="RearDriving"
 	sched_order[6]="MotionScheduler"
+	sched_order[7]="UbiquitySimul"
 	
 	return true
 end

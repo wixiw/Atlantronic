@@ -21,9 +21,7 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 #set( ROS_BUILD_TYPE Debug )
 set (ROS_BUILD_TYPE Release)
 rosbuild_init()
-     
-#uncomment if you have defined messages
-rosbuild_genmsg()
+
 #uncomment if you have defined services
 rosbuild_gensrv()
 

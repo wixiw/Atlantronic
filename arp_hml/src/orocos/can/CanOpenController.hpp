@@ -48,6 +48,7 @@ namespace arp_hml
         /** This is for test purposes only, when sending request to the can via the taskBrowser */
         CanDicoEntry attrTestingSdo;
 
+
         /** This property contains the name of the can driver library that will be loaded dynamically */
         std::string propCanFestivalDriverName;
         /** This property contains the name of the bus attached to the CanController */
@@ -58,6 +59,8 @@ namespace arp_hml
         int propNodeId;
         /** Delay between 2 SYNC messgaes in s */
         double propSyncPeriod;
+        /** Activate or not the time reporting */
+        bool propTimeReporting;
 
         /**
          * This port is connected to the CanFestival thread to populate attrCurrentNMTState
@@ -203,6 +206,16 @@ namespace arp_hml
         void ooResetCanBus();
 
         /**
+          * Permet d'obtenir un rapport sur les timings
+          */
+         virtual void ooGetPerformanceReport();
+
+         /**
+          * Permet de regler la duree pendant laquelle les stats de performances temporelles sont faites
+          */
+         void ooSetMaxBufferSize(unsigned int size);
+
+        /**
          * Call this to initialize all the CanFestival related stuff (shared datas, wrappers, timers loop, loading drivers,...)
          * @return true if initialization succeed;
          */
@@ -240,6 +253,8 @@ namespace arp_hml
 
         /** SubState of the CanOpencontroller in the Orocos Running State */
         eRunningstate m_RunningState;
+
+        arp_core::StatTimer m_timer;
 
         /** Utility function to deport non functionnal code to the end of file */
         void createOrocosInterface();

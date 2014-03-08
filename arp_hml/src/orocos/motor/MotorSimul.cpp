@@ -120,7 +120,6 @@ void MotorSimul::getInputs()
 {
     //Récupération de la date du cycle CAN
     inClock.readNewest(m_syncTime);
-
     inBlockMotor.readNewest(m_blockMotor);
 
     //read last speed command

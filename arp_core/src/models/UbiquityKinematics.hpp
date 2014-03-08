@@ -153,6 +153,16 @@ class UbiquityKinematics
          * Idem que normalizeDirection(double& angle, double& speed) mais sur un ensemble de 3 tourelles
          */
         static void normalizeDirection(UbiquityKinematicState& state);
+
+        /**
+         * Take turret in pairs to compute the angular speed in 3 different ways.
+         * Turret are taken into account clockwise, writing cinematic equation on the
+         * center of the first turret of the pair, transporting the second one (thus
+         * introducing the angular speed). The projection is done on x uniquely because
+         * it *seems* to be enougth on Ubiquity.
+         */
+        static bool findAngularSpeedFromOdometry(const TurretState & iTS, arp_math::Vector3 & oAngularSpeeds, const UbiquityParams & iParams);
+
 };
 
 } /* namespace arp_model */

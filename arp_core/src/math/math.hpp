@@ -119,6 +119,7 @@ namespace arp_math
      * transforme un time spec en double
      */
     long double timespec2Double(const timespec &);
+    timespec double2Timespec(long double now);
 
     /**
      * Elapsed time between begin and now, using data type timespec.
@@ -127,6 +128,11 @@ namespace arp_math
     void delta_t(struct timespec *interval, struct timespec begin,
             struct timespec now);
     long double delta_t(struct timespec begin, struct timespec now);
+
+    /**
+     * Increment the time yourself by a step
+     */
+    void incrementTime(struct timespec& time, long double delta);
 
     /** return time **/
     long double getTime(void);

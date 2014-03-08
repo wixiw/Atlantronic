@@ -23,6 +23,7 @@ ORO_LIST_COMPONENT_TYPE( arp_rlu::LaserOnlyLocalizatorCpn )
 
 LaserOnlyLocalizatorCpn::LaserOnlyLocalizatorCpn(const std::string& name)
 : RluTaskContext(name)
+, propTimeReporting(false)
 , loloc()
 , lastSuccess(false)
 {
@@ -31,7 +32,7 @@ LaserOnlyLocalizatorCpn::LaserOnlyLocalizatorCpn(const std::string& name)
     //arp_rlu::kfl::Logger::InitFile("KFL", WARN);
 
     createOrocosInterface();
-
+    //TODO illegal time reference !!!
     m_monotonicTimeToRealTime = ros::Time::now().toSec() - getTime();
 
 
@@ -87,7 +88,7 @@ LaserOnlyLocalizatorCpn::LaserOnlyLocalizatorCpn(const std::string& name)
 void LaserOnlyLocalizatorCpn::createOrocosInterface()
 {
     addProperty("propParams",propParams);
-
+    addProperty("propTimeReporting", propTimeReporting);
 
     addPort("inScan",inScan)
     .doc("LaserScan from LRF");
@@ -213,7 +214,6 @@ void LaserOnlyLocalizatorCpn::ooGetPerformanceReport()
         cout << "Time Stats are disabled. The component must be in running state with propTimereporting=true." << endl;
     else
     {
-        cout << m_timer.GetReport() << endl;
         cout << loloc.getPerformanceReport() << endl;
     }
 }

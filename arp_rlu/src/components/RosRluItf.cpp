@@ -108,7 +108,8 @@ void RosRluItf::updateHook()
         opponentsOut.Opponents.push_back(pose);
     }
     opponentsOut.nbOpponents = opponentsIn.size();
-    opponentsOut.date = timespec2Double(attrUpdateTime);
+    //TODO illegal time reference !!! prefer a time from RTC as we can simulate it
+    opponentsOut.date = getTime();
     outOpponents.write(opponentsOut);
 }
 

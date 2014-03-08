@@ -128,11 +128,12 @@ void TwistTeleop::updateHook()
     vy = pow(vy,3);
     vtheta = pow(vtheta,3);
 
-
-    attrAngularCmd = firstDerivateLimitation(-vtheta*rotVel, attrOldAngularCmd, attrDt, -rotAcc, rotAcc);
+    //TODO HARDCODED period !!
+    attrAngularCmd = firstDerivateLimitation(-vtheta*rotVel, attrOldAngularCmd, 0.010, -rotAcc, rotAcc);
     attrOldAngularCmd = attrAngularCmd;
 
-    attrSpeedCmd = firstDerivateLimitation( linVel*max(fabs(vx),fabs(vy)), attrOldSpeedCmd, attrDt , -linAcc, linAcc);
+    //TODO HARDCODED period !!
+    attrSpeedCmd = firstDerivateLimitation( linVel*max(fabs(vx),fabs(vy)), attrOldSpeedCmd, 0.010 , -linAcc, linAcc);
     attrOldSpeedCmd = attrSpeedCmd;
 
     //si les vitesses sont trop petites atan n'a plus de sens

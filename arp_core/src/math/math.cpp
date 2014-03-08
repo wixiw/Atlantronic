@@ -271,12 +271,35 @@ long double timespec2Double(const timespec & now)
     return time;
 }
 
+timespec double2Timespec(long double now)
+{
+    timespec time;
+    time.tv_sec = (__time_t)now;
+    time.tv_nsec = (__time_t)((now-time.tv_sec)*1E9);
+    return time;
+}
+
 //on utilise un long double pour le calcul de temps pour des raisons de précision numérique
 long double delta_t(struct timespec begin, struct timespec now)
 {
     timespec delay;
     delta_t(&delay, begin, now);
     return timespec2Double(delay);
+}
+
+//on utilise un long double pour le calcul de temps pour des raisons de précision numérique
+void incrementTime(struct timespec& begin, long double delta)
+{
+    timespec increment = double2Timespec(delta);
+
+    begin.tv_nsec += increment.tv_nsec;
+    begin.tv_sec += increment.tv_sec;
+
+    if( begin.tv_nsec >= 1000000000 )
+    {
+        begin.tv_nsec -= 1000000000;
+        begin.tv_sec +=1;
+    }
 }
 
 //on utilise un long double pour le calcul de temps pour des raisons de précision numérique

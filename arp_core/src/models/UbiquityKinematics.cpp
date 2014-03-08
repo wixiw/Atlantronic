@@ -375,3 +375,40 @@ void UbiquityKinematics::normalizeDirection(double& angle, double& speed)
     }
 }
 
+bool UbiquityKinematics::findAngularSpeedFromOdometry(const TurretState & iTS, Vector3 & oAngularSpeeds, const UbiquityParams & iParams)
+{
+    double omegaLeftRigth;
+    double omegaRigthRear;
+    double omegaRearLeft;
+
+    if (!iParams.check())
+    {
+        Log(ERROR) << "UbiquityKinematics::findAngularSpeedFromOdometry failed when checking params";
+        return false;
+    }
+
+    Vector2 posRightToLeft =  iParams.getLeftTurretPosition().translation()  - iParams.getRightTurretPosition().translation();
+    Vector2 posRearToRight =  iParams.getRightTurretPosition().translation() - iParams.getRearTurretPosition().translation();
+    Vector2 posLeftToRear  =  iParams.getRearTurretPosition().translation()  - iParams.getLeftTurretPosition().translation();
+
+    if( posRightToLeft.x() == 0 || posRearToRight.x() == 0 || posLeftToRear.x() == 0 )
+    {
+        //this is a degenerated configuration that should not appear on our robot.
+       //It's highly possible that this won't work on other types of robot.
+        Log(ERROR) << "UbiquityKinematics::findAngularSpeedFromOdometry failed when checking non degenerated turret positions";
+        return false;
+    }
+
+    //cinematic equation, transporting the torsor of the second turret of the pair to the first turret, projecting on x() as it ensure no null term on Ubiquity
+    omegaLeftRigth = (-iTS.driving.left.velocity*cos(iTS.steering.left.position) + iTS.driving.right.velocity*cos(iTS.steering.right.position))/posRightToLeft.x();
+    omegaRigthRear = (-iTS.driving.right.velocity*cos(iTS.steering.right.position) + iTS.driving.rear.velocity*cos(iTS.steering.rear.position))/posRearToRight.x();
+    omegaRearLeft  = (-iTS.driving.rear.velocity*cos(iTS.steering.rear.position) + iTS.driving.left.velocity*cos(iTS.steering.left.position))/posLeftToRear.x();
+
+    oAngularSpeeds[0] = omegaLeftRigth;
+    oAngularSpeeds[1] = omegaRigthRear;
+    oAngularSpeeds[2] = omegaRearLeft;
+
+
+    return true;
+}
+

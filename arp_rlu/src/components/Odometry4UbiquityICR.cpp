@@ -65,6 +65,19 @@ void Odometry4UbiquityICR::updateHook()
     measuredICRSpeed.date( timespec2Double(attrTime) );
 
     outICRSpeed.write(measuredICRSpeed);
+
+//    Vector3 angularSpeeds;
+//    if( false == UbiquityKinematics::findAngularSpeedFromOdometry(attrTurretState, angularSpeeds, attrParams) )
+//    {
+//        LOG(Error) << "Failed to compute AngularCmds" << endlog();
+//    }
+//    else
+//    {
+//        outLRiOmega.write(angularSpeeds[0]);
+//        outRiReOmega.write(angularSpeeds[1]);
+//        outReLOmega.write(angularSpeeds[2]);
+//    }
+
 }
 
 
@@ -87,4 +100,8 @@ void Odometry4UbiquityICR::createOrocosInterface()
             .doc("T_robot_table_p_robot_r_robot : Twist of robot reference frame relative to table frame, reduced and expressed in robot reference frame.\n It is an EstimatedTwist, so it contains Twist, estimation date (in sec) and covariance matrix.");
     addPort("outSlippageDetected",outSlippageDetected)
         .doc("The computation has detection a slippage");
+
+    addPort("outLRiOmega",outLRiOmega).doc("Angular velocity computed from Left and Right turrets velocity measures");
+    addPort("outRiReOmega",outRiReOmega).doc("Angular velocity computed from Right and Rear turrets velocity measures");
+    addPort("outReLOmega",outReLOmega).doc("Angular velocity computed from Rear and Left turrets velocity measures");
 }
