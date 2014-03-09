@@ -23,6 +23,8 @@ OmnidirectOrder2::OmnidirectOrder2(const OrderGoalConstPtr &goal, arp_math::Ubiq
 
     m_ICRSpeed_N_1 = ICRSpeed();
     m_ICRSpeed_N_2 = ICRSpeed();
+    m_curAcc=0;
+
     //TODO mettre la valeur par defaut
     m_dt_N_1 = 0.01;
 
@@ -112,11 +114,18 @@ void OmnidirectOrder2::switchRun(arp_math::UbiquityMotionState currentMotionStat
 
 double OmnidirectOrder2::profileRoNonJerking(double distance, ICRSpeed curICRSpeed, double roPass, double dt)
 {
+    Log(DEBUG) << "     >>profileRoNonJerking";
 
     PosVelAcc start;
     start.position = 0;
     start.velocity = curICRSpeed.ro();
-    start.acceleration = (curICRSpeed.ro() - m_ICRSpeed_N_1.ro()) / dt;
+    // quand reflexxes me sort l'acceleration du tour suivant, il voit deja dans le futur !
+    //start.acceleration = (m_ICRSpeed_N_1.ro() - m_ICRSpeed_N_2.ro()) / dt;
+    start.acceleration=m_curAcc;
+
+    Log(DEBUG) << "          m_ICRSpeed_N_1.ro()          "<<m_ICRSpeed_N_1.ro();
+    Log(DEBUG) << "          m_ICRSpeed_N_2.ro()       "<<m_ICRSpeed_N_2.ro();
+    Log(DEBUG) << "          dt                        "<<dt;
 
     PosVelAcc end;
     end.position = distance;
@@ -126,7 +135,7 @@ double OmnidirectOrder2::profileRoNonJerking(double distance, ICRSpeed curICRSpe
     double ro_N=0;
     bool OTGres=false;
 
-    Log(DEBUG) << "     >>profileRoNonJerking";
+
 
 
     if (OTG == NULL)
@@ -143,7 +152,8 @@ double OmnidirectOrder2::profileRoNonJerking(double distance, ICRSpeed curICRSpe
     Log(DEBUG) << "          end.acceleration     "<<end.acceleration;
 
     OTGres = OTG->computeNextStep(start, end, m_params.getMaxRobotSpeed(), m_params.getMaxRobotAccel(),
-            m_params.getMaxRobotAccel() * 1, next);
+            m_params.getMaxRobotAccel() * 3, next);
+
     Log(DEBUG) << "          CALCUL REFLEXXES   ...";
     Log(DEBUG) << "          next.position         "<<next.position;
     Log(DEBUG) << "          next.velocity         "<<next.velocity;
@@ -154,10 +164,17 @@ double OmnidirectOrder2::profileRoNonJerking(double distance, ICRSpeed curICRSpe
     if (OTGres)
     {
         ro_N = next.velocity;
+
+        //attention ceci est tricky. comme des fois l'algo est nourri par des objectifs negatifs lors des changements de sens, i lfaut faire attention au moment de l'inversion de sens
+        if (next.velocity>0)
+            m_curAcc=next.acceleration;
+        else
+            m_curAcc=-next.acceleration;
     }
     else
     {
         ro_N = 0;
+        m_curAcc=0;
         Log(DEBUG) << "          *** PB sur calcul RO: reflexxes a retourne false ****";
     }
 
@@ -254,6 +271,7 @@ double OmnidirectOrder2::profileRoJerking(double distance, ICRSpeed curICRSpeed,
           //ross = min(ros, curRo + accStep);
         }
     }
+    m_curAcc=ro_N-ro_N_1;
 
     /*
      * fin de la construction du ro limite en vitesse
@@ -261,7 +279,7 @@ double OmnidirectOrder2::profileRoJerking(double distance, ICRSpeed curICRSpeed,
     Log(DEBUG) << "          ro_N limit acc      " << ro_N;
 
     /** SATURATION EN JERK **/
-
+/*
     double dt_N_mean = dt_N_1 / 2 + dt_N / 2;
     double jerkMax = 10;
     double acc_N = (ro_N - ro_N_1) / dt_N;
@@ -279,7 +297,7 @@ double OmnidirectOrder2::profileRoJerking(double distance, ICRSpeed curICRSpeed,
 
     Log(DEBUG) << "          jerkRequested      " << jerkRequested;
     Log(DEBUG) << "          jerkMax            " << jerkMax;
-
+*/
     /*
      * NB: cette limitation de jerk ne marche que dans un cas tres particulier: je suis en acceleration positiver ET je cherche a augmenter mon acceleration
      * en gors, un demarrage, vers une vitesse positive
@@ -310,7 +328,7 @@ double OmnidirectOrder2::profileRoJerking(double distance, ICRSpeed curICRSpeed,
 
 ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSpeed curICRSpeed, double dt)
 {
-    //TODO FOR TEST !!
+    //curICRspeed est toujours positif en ro
     curICRSpeed = m_ICRSpeed_N_1.getNormalizedRep();
 
     /*
@@ -399,7 +417,7 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
     }
     else
     {
-        ro = profileRoJerking(k_delta, curICRSpeed, 0.0, dt);
+        ro = profileRoNonJerking(k_delta, curICRSpeed, 0.0, dt);
     }
 
     Log(DEBUG) << "     ro            " << ro;

@@ -86,6 +86,7 @@ class OmnidirectOrder2: public MotionOrder
         ICRSpeed m_ICRSpeed_N_1;
         ICRSpeed m_ICRSpeed_N_2;
         double m_dt_N_1;
+        double m_curAcc;
 
         //surcharges
         void switchInit(arp_math::UbiquityMotionState currentMotionState);

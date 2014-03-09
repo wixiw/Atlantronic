@@ -12,7 +12,7 @@
 	<depend package="rtt_arp_core" />
 	<depend package="arp_hml" />
 	<depend package="nav_msgs" />
-	<depend package="reflexxes_typeII" />
+	<depend package="reflexxes_typeIV" />
 	<depend package="tf" />
 	<!--empeche le build local <rosdep name="eigen" />-->
 </package>
