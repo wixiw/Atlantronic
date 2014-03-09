@@ -23,19 +23,12 @@ RosOdsItf::RosOdsItf(std::string const name) :
         OdsTaskContext(name), m_actionServer("MotionControl", boost::bind(&RosOdsItf::newOrderCB, this, _1), false), m_blockTime(
                 0.0),OTG()
 {
-    arp_ods::orders::Log(Info) << ">>RosOdsItf::RosOdsItf ";
-    //arp_ods::orders::Logger::InitFile("arp_ods", DEBUG);
 
     createOrocosInterface();
     createRosInterface();
 
-    arp_ods::orders::Log(Info) << "OnlineTrajectoryGenerator() ";
-    //OTG = new OnlineTrajectoryGenerator();
-
-    arp_ods::orders::Log(Info) << "OrderFactory::createDefaultOrder ";
     m_order = OrderFactory::createDefaultOrder();
 
-    arp_ods::orders::Log(Info) << "<<RosOdsItf::RosOdsItf ";
 }
 
 bool RosOdsItf::configureHook()

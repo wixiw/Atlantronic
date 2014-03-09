@@ -106,10 +106,11 @@ class OmnidirectOrder2: public MotionOrder
          * distance at which we will switch from a v=k. sqrt(dist) to v = k. dist motion control. this allow removing the unstability due to the infinite derivative of sqrt around 0
          */
         static const double DISTANCE_LINEAR_ASSERV=0.030;
+
         /*
          * deceleration to approach points
          */
-        static const double DECELERATION=1.5;
+        static const double DECELERATION=2.0;
 
 
 private:
@@ -118,6 +119,11 @@ private:
     Pose2DNorm getPositionInNormalRef(Pose2D currentPosition);
     double getParkinsonLimitationFactor(double distance);
     double getSpeedLimitationFactor(double distanceICRMove);
+
+    double finalAsserv(double distance, ICRSpeed curICRSpeed, double roPass, double dt);
+    bool m_finalAsservCalled;
+    double m_speedFinalAsservEntry;
+
 };
 
 }}

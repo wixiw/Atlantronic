@@ -208,7 +208,7 @@ void GraphicsSimuRobot::paintIcrSphere(wxPaintDC& dc) const
 
     paintCircle(dc, sphereDirection);
     paintVector(dc, sphereDirection, m_computedSpeed.ro(), *wxWHITE);
-    paintVector(dc, sphereDirection- sign(m_computedSpeed.delta())*M_PI_2, 1 - fabs(m_computedSpeed.delta()/M_PI_2) , *wxRED);
+    paintVector(dc, sphereDirection- sign(m_computedSpeed.delta())*M_PI_2, 1 - fabs(pow(m_computedSpeed.delta(),2)/M_PI_2) , *wxRED);
 }
 
 //void GraphicsSimuRobot::paintOneTurret(wxPaintDC& dc, int x, int y)

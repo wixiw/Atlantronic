@@ -15,6 +15,6 @@
 		output="screen" launch-prefix="nice"/>
 	<node name="MotionTestingStratNode" pkg="arp_master" type="MotionTestingStratNode.py"
 		args="" output="screen"
-	respawn="true"
+	respawn="false"
 	/>
 </launch>

@@ -30,15 +30,11 @@ OnlineTrajectoryGenerator::OnlineTrajectoryGenerator():Flags()
 
     // Creating all relevant objects of the Type IV Reflexxes Motion Library
 
-    //arp_ods::orders::Log(INFO) << "  +++++ creation of IP ";
     IP = new RMLPositionInputParameters(1); //1 = number of DOF
-    //arp_ods::orders::Log(INFO) << "  IP                     "<<IP ;
-    //arp_ods::orders::Log(INFO) << "  IP->GetNumberOfDOFs()  "<<IP->GetNumberOfDOFs();
-
 
     OP = new RMLPositionOutputParameters(1); //1 = number of DOF
 
-    Flags.SynchronizationBehavior=RMLPositionFlags::NO_SYNCHRONIZATION;
+    //Flags.SynchronizationBehavior=RMLPositionFlags::NO_SYNCHRONIZATION;
 }
 
 OnlineTrajectoryGenerator::~OnlineTrajectoryGenerator()
@@ -53,7 +49,7 @@ bool OnlineTrajectoryGenerator::computeNextStep(const PosVelAcc & iStart, const 
         const double & iMaxVelocity, const double & iMaxAcceleration, const double & iMaxJerk, PosVelAcc & oNext)
 {
 
-    arp_ods::orders::Log(INFO) << "          >>computeNextStep";
+    arp_ods::orders::Log(DEBUG) << "          >>computeNextStep";
 
     // Variable declarations and definitions
 
@@ -84,7 +80,7 @@ bool OnlineTrajectoryGenerator::computeNextStep(const PosVelAcc & iStart, const 
 
     if (ResultValue < 0)
         {
-        arp_ods::orders::Log(INFO) << "               ERROR"<<ResultValue;
+        arp_ods::orders::Log(INFO) << "               ReflexxesAPI ERROR"<<ResultValue;
         if(ResultValue==ReflexxesAPI::RML_FINAL_STATE_REACHED) arp_ods::orders::Log(INFO) << "               RML_FINAL_STATE_REACHED";
         if(ResultValue==ReflexxesAPI::RML_ERROR_INVALID_INPUT_VALUES) arp_ods::orders::Log(INFO) << "               RML_ERROR_INVALID_INPUT_VALUES";
         if(ResultValue==ReflexxesAPI::RML_ERROR_EXECUTION_TIME_CALCULATION) arp_ods::orders::Log(INFO) << "               RML_ERROR_EXECUTION_TIME_CALCULATION";
@@ -95,7 +91,7 @@ bool OnlineTrajectoryGenerator::computeNextStep(const PosVelAcc & iStart, const 
         if(ResultValue==ReflexxesAPI::RML_ERROR_EXECUTION_TIME_TOO_BIG) arp_ods::orders::Log(INFO) << "               RML_ERROR_EXECUTION_TIME_TOO_BIG";
         //if(ResultValue==ReflexxesAPI::RML_ERROR_OVERRIDE_OUT_OF_RANGE) arp_ods::orders::Log(INFO) << "               RML_ERROR_OVERRIDE_OUT_OF_RANGE";
 
-        arp_ods::orders::Log(INFO) << "          <<computeNextStep";
+        arp_ods::orders::Log(DEBUG) << "          <<computeNextStep";
         return false; //there was an error
         }
 
@@ -103,7 +99,7 @@ bool OnlineTrajectoryGenerator::computeNextStep(const PosVelAcc & iStart, const 
     oNext.velocity = OP->NewVelocityVector->VecData[0];
     oNext.acceleration = OP->NewAccelerationVector->VecData[0];
 
-    arp_ods::orders::Log(INFO) << "          <<computeNextStep";
+    arp_ods::orders::Log(DEBUG) << "          <<computeNextStep";
     return true;
 }
 

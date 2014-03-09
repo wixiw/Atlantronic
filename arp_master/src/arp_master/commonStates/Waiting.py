@@ -34,7 +34,7 @@ class WaitForStart(CyclicState):
         CyclicState.__init__(self, outcomes=['start'])
     
     def executeIn(self):
-        os.system("beep -f 300 -l300 -r2") 
+        os.system("beep -f 200 -l200 -r2") 
     
     def executeTransitions(self):
        if Inputs.getstart()==0:

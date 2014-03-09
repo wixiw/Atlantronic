@@ -23,7 +23,7 @@ MotionControl::MotionControl(const std::string& name) :
 
 {
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
-    arp_ods::orders::Logger::InitFile("arp_ods", DEBUG);
+    arp_ods::orders::Logger::InitFile("arp_ods", INFO);
 
     attrOrder = OrderFactory::createDefaultOrder();
     createOrocosInterface();
