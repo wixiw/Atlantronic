@@ -23,32 +23,12 @@ class StartSequence(smach.StateMachine):
                       SetInitialPosition(x,y,theta),
                       transitions={'succeeded':'StartGyroCalibration', 'timeout':'problem'})
             #SetInitial position se charge aussi du gyro.
-                  
-            #
-            #
-            #
-            #BIIIIIG FAAAAT WAAARNING J'AI DEBRANCHE LE TIMEOUT
-            #
-            #
-            #
-            #
+
             smach.StateMachine.add('StartGyroCalibration',
                       StartGyroCalibrationState(),
                       transitions={'succeeded':'WaitForMatch', 'timeout':'WaitForMatch'})
                         
             smach.StateMachine.add('WaitForMatch', 
                       WaitForMatch(),
-                      transitions={'start':'StopGyroCalibration', 'timeout':'problem'})
+                      transitions={'start':'gogogo', 'timeout':'problem'})
             #calibration is stopped by WaitForMatch
-
-            #
-            #
-            #
-            #BIIIIIG FAAAAT WAAARNING J'AI DEBRANCHE LE TIMEOUT
-            #
-            #
-            #
-            #
-            smach.StateMachine.add('StopGyroCalibration', 
-                      StopGyroCalibrationState(),
-                      transitions={'succeeded':'gogogo', 'timeout':'gogogo'})
