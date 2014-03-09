@@ -94,8 +94,7 @@ void Discovery::updateHook()
     mutex.unlock();
 
     outGyrometerAngle.write(attrGyrometerAngle);
-    //TODO
-    //outGyrometerRawData.write();
+    outGyrometerAngleDegree.write(rad2deg(attrGyrometerAngle));
 }
 
 void Discovery::robotItfCallbackWrapper(void* arg)
@@ -200,8 +199,8 @@ void Discovery::createOrocosInterface()
 
     addPort("outGyrometerAngle", outGyrometerAngle)
         .doc("Angular position of the gyrometer in rad.");
-    addPort("outGyrometerRawData", outGyrometerRawData)
-        .doc("Unprocessed gyrometer data.");
+    addPort("outGyrometerAngleDegree", outGyrometerAngleDegree)
+        .doc("Angular position of the gyrometer in degree.");
 
     addOperation("ooStartCalibration",&Discovery::ooStartCalibration, this, OwnThread)
      .doc("Ask the gyrometer to freeze its position and to start the calibration process");

@@ -23,7 +23,7 @@ Odometry4UbiquityICR::Odometry4UbiquityICR(const std::string& name):
     createOrocosInterface();
 
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
-    //arp_model::Logger::InitFile("arp_model", WARN);
+    arp_model::Logger::InitFile("arp_model", WARN);
 }
 
 void Odometry4UbiquityICR::updateHook()
@@ -65,11 +65,15 @@ void Odometry4UbiquityICR::updateHook()
     measuredICRSpeed.date( timespec2Double(attrTime) );
 
     outICRSpeed.write(measuredICRSpeed);
+    outTwist.write(measuredICRSpeed.twist());
 
     Vector3 angularSpeeds;
     if( false == UbiquityKinematics::findAngularSpeedFromOdometry(attrTurretState, angularSpeeds, attrParams) )
     {
-        //LOG(Error) << "Failed to compute AngularCmds" << endlog();
+        LOG(Error) << "Failed to compute AngularCmds" << endlog();
+        outLRiOmega.write(0.0);
+        outRiReOmega.write(0.0);
+        outReLOmega.write(0.0);
     }
     else
     {
@@ -98,6 +102,8 @@ void Odometry4UbiquityICR::createOrocosInterface()
 
     addPort("outICRSpeed",outICRSpeed)
             .doc("T_robot_table_p_robot_r_robot : Twist of robot reference frame relative to table frame, reduced and expressed in robot reference frame.\n It is an EstimatedTwist, so it contains Twist, estimation date (in sec) and covariance matrix.");
+    addPort("outTwist",outTwist)
+        .doc("Conversion of the outICRSpeed value into a Twist for debug info.");
     addPort("outSlippageDetected",outSlippageDetected)
         .doc("The computation has detection a slippage");
 

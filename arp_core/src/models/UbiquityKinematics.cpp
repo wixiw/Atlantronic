@@ -391,18 +391,20 @@ bool UbiquityKinematics::findAngularSpeedFromOdometry(const TurretState & iTS, V
     Vector2 posRearToRight =  iParams.getRightTurretPosition().translation() - iParams.getRearTurretPosition().translation();
     Vector2 posLeftToRear  =  iParams.getRearTurretPosition().translation()  - iParams.getLeftTurretPosition().translation();
 
-    if( posRightToLeft.x() == 0 || posRearToRight.x() == 0 || posLeftToRear.x() == 0 )
+    if( posRightToLeft.y() == 0 || posRearToRight.y() == 0 || posLeftToRear.y() == 0 )
     {
         //this is a degenerated configuration that should not appear on our robot.
        //It's highly possible that this won't work on other types of robot.
         Log(ERROR) << "UbiquityKinematics::findAngularSpeedFromOdometry failed when checking non degenerated turret positions";
+        Log(ERROR) << "pRL:" << posRightToLeft << " pRR:" << posRightToLeft << " pLR:" << posLeftToRear;
         return false;
     }
 
-    //cinematic equation, transporting the torsor of the second turret of the pair to the first turret, projecting on x() as it ensure no null term on Ubiquity
-    omegaLeftRigth = (-iTS.driving.left.velocity*cos(iTS.steering.left.position) + iTS.driving.right.velocity*cos(iTS.steering.right.position))/posRightToLeft.x();
-    omegaRigthRear = (-iTS.driving.right.velocity*cos(iTS.steering.right.position) + iTS.driving.rear.velocity*cos(iTS.steering.rear.position))/posRearToRight.x();
-    omegaRearLeft  = (-iTS.driving.rear.velocity*cos(iTS.steering.rear.position) + iTS.driving.left.velocity*cos(iTS.steering.left.position))/posLeftToRear.x();
+    //cinematic equation, transporting the torsor of the second turret of the pair to the first turret, projecting on x as it ensure no null term on Ubiquity
+    //note : we need the y coordinate of intra turret vectors as its the result of a z^y cross product.
+    omegaLeftRigth = (-iTS.driving.left.velocity*cos(iTS.steering.left.position) + iTS.driving.right.velocity*cos(iTS.steering.right.position))/posRightToLeft.y();
+    omegaRigthRear = (-iTS.driving.right.velocity*cos(iTS.steering.right.position) + iTS.driving.rear.velocity*cos(iTS.steering.rear.position))/posRearToRight.y();
+    omegaRearLeft  = (-iTS.driving.rear.velocity*cos(iTS.steering.rear.position) + iTS.driving.left.velocity*cos(iTS.steering.left.position))/posLeftToRear.y();
 
     oAngularSpeeds[0] = omegaLeftRigth;
     oAngularSpeeds[1] = omegaRigthRear;

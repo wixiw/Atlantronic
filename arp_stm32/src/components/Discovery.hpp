@@ -126,8 +126,7 @@ class Discovery: public Stm32TaskContext
 
         //Gyrometer position in radian in [-pi;pi[
         RTT::OutputPort<double> outGyrometerAngle;
-        //unprocessed datas from the gyrometer
-        RTT::OutputPort<double> outGyrometerRawData;
+        RTT::OutputPort<double> outGyrometerAngleDegree;
 
 };
 

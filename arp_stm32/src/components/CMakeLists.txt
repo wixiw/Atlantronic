@@ -13,7 +13,7 @@ include_directories("../Atlantronic/include")
 include_directories("../Atlantronic/include/discovery")
 include_directories("../Atlantronic/src")
     
-add_definitions(-DVERSION='"da123485c6468e54de0d57e5f9a8f60b2c7a56e7"')
+add_definitions(-DVERSION='"3c626ef49aa10a1b5bf92766da5416f983695bcd"')
 orocos_component(arp_stm32-components ${source_files} )
 
 target_link_libraries(arp_stm32-components readline)

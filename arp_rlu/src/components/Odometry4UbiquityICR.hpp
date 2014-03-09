@@ -39,6 +39,7 @@ class Odometry4UbiquityICR: public RluTaskContext
         RTT::InputPort<arp_model::MotorState> inMotorState;
         /** Computed Twist */
         RTT::OutputPort<arp_math::EstimatedICRSpeed> outICRSpeed;
+        RTT::OutputPort<arp_math::Twist2D> outTwist;
         /** Slippage detected */
         RTT::OutputPort<arp_model::SlippageReport> outSlippageDetected;
         /** Angular speeds from 2 turret speeds */
