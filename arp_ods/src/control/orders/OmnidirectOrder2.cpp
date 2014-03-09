@@ -90,8 +90,6 @@ void OmnidirectOrder2::switchRun(arp_math::UbiquityMotionState currentMotionStat
 {
 
     Log(DEBUG) << ">>switchRun  ";
-    Log(DEBUG) << "     get blablabla norm()       "
-            << getPositionInNormalRef(currentMotionState.getPosition()).getTVector().norm();
 
     if (getPositionInNormalRef(currentMotionState.getPosition()).getTVector().norm() < RO_ACCURACY and m_pass == false)
     {
@@ -125,21 +123,33 @@ double OmnidirectOrder2::profileRoNonJerking(double distance, ICRSpeed curICRSpe
     end.velocity = roPass;
     end.acceleration = 0;
     PosVelAcc next;
-    double ro_N;
+    double ro_N=0;
+    bool OTGres=false;
 
     Log(DEBUG) << "     >>profileRoNonJerking";
+
 
     if (OTG == NULL)
     {
         ro_N = 0;
         Log(DEBUG) << "          *** PB sur calcul RO : pointeur null sur OTG ****";
+        return ro_N;
     }
+    Log(DEBUG) << "          start.position       "<<start.position;
+    Log(DEBUG) << "          start.velocity       "<<start.velocity;
+    Log(DEBUG) << "          start.acceleration   "<<start.acceleration;
+    Log(DEBUG) << "          end.position         "<<end.position;
+    Log(DEBUG) << "          end.velocity         "<<end.velocity;
+    Log(DEBUG) << "          end.acceleration     "<<end.acceleration;
+
+    OTGres = OTG->computeNextStep(start, end, m_params.getMaxRobotSpeed(), m_params.getMaxRobotAccel(),
+            m_params.getMaxRobotAccel() * 1, next);
+    Log(DEBUG) << "          CALCUL REFLEXXES   ...";
+    Log(DEBUG) << "          next.position         "<<next.position;
+    Log(DEBUG) << "          next.velocity         "<<next.velocity;
+    Log(DEBUG) << "          next.acceleration     "<<next.acceleration;
 
 
-
-    bool OTGres = OTG->computeNextStep(start, end, m_params.getMaxRobotSpeed(), m_params.getMaxRobotAccel(),
-            m_params.getMaxRobotAccel() * 5, next);
-    Log(DEBUG) << "          --->next.velocity" << next.velocity;
 
     if (OTGres)
     {
@@ -151,10 +161,9 @@ double OmnidirectOrder2::profileRoNonJerking(double distance, ICRSpeed curICRSpe
         Log(DEBUG) << "          *** PB sur calcul RO: reflexxes a retourne false ****";
     }
 
-    Log(DEBUG) << "     >>profileRoNonJerking";
+    Log(DEBUG) << "     <<profileRoNonJerking";
 
     return ro_N;
-
 
 }
 
@@ -380,12 +389,18 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
 
     double passSpeed;
     if (m_pass == false)
-        passSpeed=0.0;
+        passSpeed = 0.0;
     else
-        passSpeed=  m_passSpeed;
-    //IF!!
-    ro = profileRoJerking(k_delta, curICRSpeed, 0.0, dt);
+        passSpeed = m_passSpeed;
 
+    if (Cerr.norm() > DISTANCE_LINEAR_ASSERV)
+    {
+        ro = profileRoNonJerking(k_delta, curICRSpeed, 0.0, dt);
+    }
+    else
+    {
+        ro = profileRoJerking(k_delta, curICRSpeed, 0.0, dt);
+    }
 
     Log(DEBUG) << "     ro            " << ro;
 

@@ -7,6 +7,8 @@
 
 #include "OnlineTrajectoryGenerator.hpp"
 
+#include "orders/Logger.hpp"
+
 using namespace arp_core::log;
 using namespace arp_model;
 using namespace arp_math;
@@ -28,7 +30,11 @@ OnlineTrajectoryGenerator::OnlineTrajectoryGenerator()
 
     // Creating all relevant objects of the Type IV Reflexxes Motion Library
 
+    arp_ods::orders::Log(INFO) << "  +++++ creation of IP ";
     IP = new RMLPositionInputParameters(1); //1 = number of DOF
+    arp_ods::orders::Log(INFO) << "  IP                     "<<IP ;
+    arp_ods::orders::Log(INFO) << "  IP->GetNumberOfDOFs()  "<<IP->GetNumberOfDOFs();
+
 
     OP = new RMLPositionOutputParameters(1); //1 = number of DOF
 }
@@ -85,21 +91,5 @@ bool OnlineTrajectoryGenerator::computeNextStep(const PosVelAcc & iStart, const 
 bool OnlineTrajectoryGenerator::computeNextStepCheap(const PosVelAcc & iStart, const PosVelAcc & iEnd,
         const double & iMaxVelocity, const double & iMaxAcceleration, const double & iMaxJerk, PosVelAcc & oNext)
 {
-    double speed_decel = sqrt(2 * iMaxAcceleration) * sqrt2(iEnd.position - iStart.position);
-    double speed_vmax = saturate(speed_decel, -iMaxVelocity, iMaxVelocity);
-    double speed_accel;
-    if ((iEnd.position - iStart.position )> 0)
-    {
-        //cas nominal, je ne l'imite que l'accel
-        speed_accel = firstDerivateLimitation(speed_vmax, iStart.velocity, m_dt, -1000, iMaxAcceleration);
-    }
-    else
-    {
-        //on va en marche arriere
-        speed_accel = firstDerivateLimitation(speed_vmax, iStart.velocity, m_dt, -iMaxAcceleration, 1000);
-    }
-
-    oNext.velocity = speed_accel;
     return true;
-
 }

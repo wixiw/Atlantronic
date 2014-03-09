@@ -69,7 +69,7 @@ void Odometry4UbiquityICR::updateHook()
     Vector3 angularSpeeds;
     if( false == UbiquityKinematics::findAngularSpeedFromOdometry(attrTurretState, angularSpeeds, attrParams) )
     {
-        LOG(Error) << "Failed to compute AngularCmds" << endlog();
+        //LOG(Error) << "Failed to compute AngularCmds" << endlog();
     }
     else
     {

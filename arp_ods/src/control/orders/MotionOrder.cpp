@@ -44,20 +44,19 @@ std::ostream& operator<<(std::ostream& os, const Mode& mode)
 MotionOrder::MotionOrder(const OrderGoalConstPtr &goal, arp_math::UbiquityMotionState currentMotionState,
         UbiquityParams params)
 {
+    Log(DEBUG) << ">>MotionOrder::MotionOrder " ;
+
+
     m_smoothLocNeeded=false;
     m_error_old=Pose2D(0,0,0);
+
     OTG=NULL;
 
     m_beginMotionState = UbiquityMotionState();
     m_endMotionState = UbiquityMotionState();
     m_pass = false;
 
-    Log(DEBUG) << "m_currentMode " << m_currentMode;
-
     m_currentMode = MODE_INIT;
-
-    Log(DEBUG) << "m_currentMode  " << m_currentMode;
-
 
     // -1 is used to recognize non initialized time
     m_initTime = -1;
@@ -65,6 +64,8 @@ MotionOrder::MotionOrder(const OrderGoalConstPtr &goal, arp_math::UbiquityMotion
     m_timeout=-1;
 
     m_params=params;
+
+    Log(DEBUG) << "<<MotionOrder::MotionOrder " ;
 
 }
 
