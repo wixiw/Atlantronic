@@ -8,7 +8,7 @@
 	
 	<node name="StratNode_Tanguy"   pkg="arp_master"  type="StratNode_Tanguy.py"     
 		args="" output="screen"
-		respawn="true"
+		required="true"
 	/>
 	<node 	name="ArpOrocos" 
 		pkg="ocl" 

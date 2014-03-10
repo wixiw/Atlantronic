@@ -8,7 +8,7 @@
 	
 	<node name="StratNode_Brainstorming2014"   pkg="arp_master"  type="Brainstorming_2014.py"     
 		args="" output="screen"
-		respawn="true"
+		required="true"
 	/>
 	<node 	name="ArpOrocos" 
 		pkg="ocl" 

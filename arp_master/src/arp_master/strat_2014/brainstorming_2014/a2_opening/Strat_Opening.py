@@ -14,7 +14,7 @@ class Opening(PreemptiveStateMachine):
                                              transitions={'endMatch':'problem'})
             
             PreemptiveStateMachine.add('GotoMilieu',
-                      AmbiOmniDirectOrder(-0.500, 0.500,0),
+                      AmbiOmniDirectOrder2(Pose2D(-0.500, 0.500,0)),
                       transitions={'succeeded':'WaitBeforeNext', 'timeout':'Debloque'})
             
             self.setInitialState('GotoMilieu')

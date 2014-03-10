@@ -14,7 +14,7 @@
 		type="StratNode_Tanguy.py"     
 		args="" output="screen" 
 		launch-prefix="nice -n 19"
-		respawn="true"
+		required="true"
 	/>
 	
 	<node 	name="ArpOrocos" 

@@ -43,6 +43,11 @@ class MainStateMachine(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['end'])
         with self:
+            smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
+                                   transitions={'endInitialisation':'StartSequence', 'failed':'end'})
+            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(0, 0, 0),
+                                   transitions={'gogogo':'TestingShooter', 'problem':'end'})  
+            
             smach.StateMachine.add('TestingShooter', Shooter(),
                                    transitions={'end':'end','problem':'end'})
 
@@ -53,6 +58,12 @@ class MainStateMachine(smach.StateMachine):
 if __name__ == '__main__':
     try:
         TestingShooter()
+    except smach.InvalidTransitionError:
+        rospy.loginfo("handling smach.InvalidTransitionError ...")
+        rospy.loginfo("Exiting")
+        while True:
+            pass
+    
     except rospy.ROSInterruptException: 
         rospy.loginfo("handling rospy.ROSInterruptException ...")
         rospy.loginfo("Exiting")

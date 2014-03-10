@@ -6,6 +6,8 @@ from arp_master import *
 
 from Table2014 import *
 from Robot2014 import *
+from arp_master.commonStates.EndMatchPreempter import *
+from arp_master.commonStates.Waiting import *
 
 #This action stick frescos, as a total of 2.
 #In order to use this action you have to go to the entry point StickFrescosState.getEntryPoint()
