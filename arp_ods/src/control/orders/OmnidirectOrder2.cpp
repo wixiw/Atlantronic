@@ -157,7 +157,7 @@ double OmnidirectOrder2::profileRoNonJerking(double distance, ICRSpeed curICRSpe
     Log(DEBUG) << "          end.velocity         "<<end.velocity;
     Log(DEBUG) << "          end.acceleration     "<<end.acceleration;
 
-    OTGres = OTG->computeNextStep(start, end, m_params.getMaxRobotSpeed(), m_params.getMaxRobotAccel(),
+    OTGres = OTG->computeNextStep(start, end, m_vmax_order, m_params.getMaxRobotAccel(),
             m_params.getMaxRobotJerk(), next);
 
     Log(DEBUG) << "          CALCUL REFLEXXES   ...";
