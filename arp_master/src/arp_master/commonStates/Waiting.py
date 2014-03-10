@@ -45,6 +45,9 @@ class WaitForStartUnplug(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['startunplug'])
     
+    def executeIn(self):
+        os.system("beep -f 200 -l100 -r1") 
+        
     def executeTransitions(self):
        if Inputs.getstart()==1:
             return 'startunplug'

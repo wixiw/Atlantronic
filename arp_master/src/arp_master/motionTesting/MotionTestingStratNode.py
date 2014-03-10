@@ -49,7 +49,7 @@ class MainStateMachine(smach.StateMachine):
             
             smach.StateMachine.add('SetInitialPosition',
                       SetInitialPosition(0.750, 0, 0),
-                      transitions={'succeeded':'Move', 'timeout':'end'})
+                      transitions={'succeeded':'TestAccelFront', 'timeout':'end'})
             
 
             
@@ -187,6 +187,16 @@ class MainStateMachine(smach.StateMachine):
                                            vpasse=0.3,vmax = 0.3),
                       transitions={'succeeded':'RECAL0', 'timeout':'end'}) 
             
+            
+            #### Test Accel
+            smach.StateMachine.add('TestAccelFront',
+                       AmbiOmniDirectOrder2(Pose2D( 1.300, 0, 0) ,
+                                           vmax = 0.7),
+                      transitions={'succeeded':'TestAccelRear', 'timeout':'end'})   
+            smach.StateMachine.add('TestAccelRear',
+                       AmbiOmniDirectOrder2(Pose2D( 0.350, 0, 0) ,
+                                           vmax = 0.7),
+                      transitions={'succeeded':'TestAccelFront', 'timeout':'end'})   
 
 class RandomMove(MotionState):
     def __init__(self):
