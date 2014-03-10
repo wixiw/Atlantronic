@@ -49,7 +49,7 @@ class MainStateMachine(smach.StateMachine):
             
             smach.StateMachine.add('SetInitialPosition',
                       SetInitialPosition(0.750, 0, 0),
-                      transitions={'succeeded':'RECAL0', 'timeout':'end'})
+                      transitions={'succeeded':'Move', 'timeout':'end'})
             
 
             
@@ -192,7 +192,7 @@ class RandomMove(MotionState):
     def __init__(self):
         MotionState.__init__(self)
         seed = random.randint(0, 1000)
-        #seed=581
+        #seed=626
         random.seed(seed)
         rospy.loginfo("------------MOTIONTESTING INIT----------------")
         rospy.loginfo("randomized with seed: %d" % (seed))
@@ -208,7 +208,7 @@ class RandomMove(MotionState):
         rospy.loginfo("x =%.3f y=%.3f theta=%.3f"%(self.x, self.y, self.theta))
         rospy.loginfo("vmax =%.3f"%(self.vmax))
 
-        if random.uniform(0, 1)< 0.6 :
+        if random.uniform(0, 1)< 1.0 :
             rospy.loginfo("Stop on point")
             self.omnidirect2(self.x, self.y, self.theta, self.vmax)
             #self.omnidirect2(self.x, self.y, self.theta, 1)

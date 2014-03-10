@@ -50,13 +50,13 @@ class Initialisation(smach.StateMachine):
                                    transitions={'deployed':'WaitForStart','timeout':'WaitForOrocos'})
             smach.StateMachine.add('WaitForStart', 
                                    WaitForStart(),
-                                   transitions={'start':'WaitForStartUnplug','timeout':'WaitForStart'})
-            smach.StateMachine.add('WaitForStartUnplug', 
-                                   WaitForStartUnplug(),
-                                   transitions={'startunplug':'FindSteeringZeros','timeout':'WaitForStartUnplug'})
+                                   transitions={'start':'FindSteeringZeros','timeout':'WaitForStart'})
             smach.StateMachine.add('FindSteeringZeros',
                                    InitTurretZeros(), 
-                                   transitions={'succeeded':'WaitForStart2', 'problem':'failed'})
+                                   transitions={'succeeded':'WaitForStartUnplug', 'problem':'failed'})
+            smach.StateMachine.add('WaitForStartUnplug', 
+                                   WaitForStartUnplug(),
+                                   transitions={'startunplug':'WaitForStart2','timeout':'WaitForStartUnplug'})
             smach.StateMachine.add('WaitForStart2', 
                                    WaitForStart(),
                                    transitions={'start':'SetColor','timeout':'WaitForStart2'})
