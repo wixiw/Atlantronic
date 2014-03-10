@@ -38,6 +38,7 @@ using namespace RTT;
              a & make_nvp("maxSteeringTorque",        params.getMaxSteeringTorqueRef());
              a & make_nvp("maxRobotSpeed",      params.getMaxRobotSpeedRef());
              a & make_nvp("maxRobotAccel",        params.getMaxRobotAccelRef());
+             a & make_nvp("maxRobotJerk",        params.getMaxRobotJerkRef());
       }
     }
   }

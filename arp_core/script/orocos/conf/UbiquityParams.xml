@@ -45,5 +45,6 @@
      <simple name="maxSteeringTorque" type="double"><description>Part</description><value>-1</value></simple>
      <simple name="maxRobotSpeed" type="double"><description>Part</description><value>1</value></simple>
      <simple name="maxRobotAccel" type="double"><description>Part</description><value>2</value></simple>
+     <simple name="maxRobotJerk" type="double"><description>Part</description><value>10</value></simple>
   </struct>
 </properties>

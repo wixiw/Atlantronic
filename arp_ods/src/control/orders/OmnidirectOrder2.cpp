@@ -158,7 +158,7 @@ double OmnidirectOrder2::profileRoNonJerking(double distance, ICRSpeed curICRSpe
     Log(DEBUG) << "          end.acceleration     "<<end.acceleration;
 
     OTGres = OTG->computeNextStep(start, end, m_params.getMaxRobotSpeed(), m_params.getMaxRobotAccel(),
-            m_params.getMaxRobotAccel() * 5, next);
+            m_params.getMaxRobotJerk(), next);
 
     Log(DEBUG) << "          CALCUL REFLEXXES   ...";
     Log(DEBUG) << "          next.position         "<<next.position;
@@ -308,7 +308,10 @@ double OmnidirectOrder2::finalAsserv(double distance, ICRSpeed curICRSpeed, doub
 ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSpeed curICRSpeed, double dt)
 {
     //curICRspeed est toujours positif en ro
+    double vraiRo=curICRSpeed.ro();
     curICRSpeed = m_ICRSpeed_N_1.getNormalizedRep();
+    //curICRSpeed = ICRSpeed(vraiRo,m_ICRSpeed_N_1.phi(),m_ICRSpeed_N_1.delta());
+
 
     /*
      if (curICRSpeed.getICR().sphericalDistance(m_oldICRSpeed.getICR()) > PI )
@@ -425,6 +428,9 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
     outDEBUG2 = corICRSpeed.ro();
     outDEBUG3 = rad2deg(corICRSpeed.phi()) / 100.0;
     outDEBUG4 = rad2deg(corICRSpeed.delta()) / 100.0;
+
+    outDEBUG5=vraiRo;
+    outDEBUG6=curICRSpeed.ro();
 
     outDEBUG9 = dt * 1000;
 

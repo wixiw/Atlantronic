@@ -36,20 +36,23 @@ class UbiquityParams
         double getRightWheelDiameter() const;
         double getTractionRatio() const;
         double getTurretRatio() const;
+
+        //This values are link to HW capabilities
         double getMaxDrivingAcc() const;
         double getMaxDrivingSpeed() const;
         double getMaxDrivingTorque() const;
         double getMaxSteeringAcc() const;
         double getMaxSteeringSpeed() const;
         double getMaxSteeringTorque() const;
-
         double getMaxSteeringMotorAcc() const;
         double getMaxSteeringMotorSpeed() const;
         double getMaxDrivingMotorAcc() const;
         double getMaxDrivingMotorSpeed() const;
 
-        double getMaxRobotAccel() const;
+        //This value refers to MotionControl limitations
         double getMaxRobotSpeed() const;
+        double getMaxRobotAccel() const;
+        double getMaxRobotJerk() const;
 
         double& getLeftTurretZeroRef();
         double& getRearTurretZeroRef();
@@ -69,18 +72,17 @@ class UbiquityParams
         double& getMaxSteeringAccRef();
         double& getMaxSteeringSpeedRef();
         double& getMaxSteeringTorqueRef();
-        double& getMaxRobotAccelRef();
         double& getMaxRobotSpeedRef();
+        double& getMaxRobotAccelRef();
+        double& getMaxRobotJerkRef();
 
+        //setters are only provided for calibrated
         void setLeftTurretZero(double leftTurretZero);
         void setRearTurretZero(double rearTurretZero);
         void setRightTurretZero(double rightTurretZero);
         void setLeftWheelDiameter(double leftWheelDiameter);
         void setRearWheelDiameter(double rearWheelDiameter);
         void setRightWheelDiameter(double rightWheelDiameter);
-
-        void setMaxRobotAccel(double maxRobotAccel);
-        void setMaxRobotSpeed(double maxRobotSpeed);
 
     protected:
         /** Position du moteur de direction en rad lorsque le moteur est sur le top tour. ATTENTION : peut être en dehors de -PI/PI*/
@@ -136,6 +138,8 @@ class UbiquityParams
         double m_maxRobotSpeed;
         /** Acceleration maximale du robot, exprime en derivee de ro de l'ICRSpeed */
         double m_maxRobotAccel;
+        /** Acceleration maximale du robot, exprime en derivee de ro de l'ICRSpeed */
+        double m_maxRobotJerk;
 
 };
 
