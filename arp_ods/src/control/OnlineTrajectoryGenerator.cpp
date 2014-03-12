@@ -34,7 +34,7 @@ OnlineTrajectoryGenerator::OnlineTrajectoryGenerator():Flags()
 
     OP = new RMLPositionOutputParameters(1); //1 = number of DOF
 
-    //Flags.SynchronizationBehavior=RMLPositionFlags::NO_SYNCHRONIZATION;
+    Flags.SynchronizationBehavior=RMLPositionFlags::NO_SYNCHRONIZATION;
 }
 
 OnlineTrajectoryGenerator::~OnlineTrajectoryGenerator()
