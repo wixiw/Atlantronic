@@ -192,6 +192,17 @@ void UbiquityKinematics::simpleTurrets2Twist(const TurretState & iTS, Twist2D& o
 }
 
 
+
+bool UbiquityKinematics::motors2ICRSpeed(const MotorState & iMS, TurretState& oTS, ICRSpeed& oICRs, SlippageReport& oSR,
+        const UbiquityParams & iParams)
+{
+    bool res = true;
+    res &= motors2Turrets(iMS, oTS, iParams);
+    turrets2ICRspeed(oTS, oICRs, oSR, iParams);
+    return res;
+}
+
+
 bool UbiquityKinematics::turrets2ICRspeed(const TurretState & iTS, ICRSpeed& oICRs, SlippageReport& oSR,
         const UbiquityParams & iParams)
 {
@@ -202,11 +213,12 @@ bool UbiquityKinematics::turrets2ICRspeed(const TurretState & iTS, ICRSpeed& oIC
 bool UbiquityKinematics::simpleTurrets2ICRspeed(const TurretState & iTS, ICRSpeed& oICRs, SlippageReport& oSR,
         const UbiquityParams & iParams)
 {
-    //return simpleTurrets2ICRspeedWithICR(iTS, oICRs, oSR, iParams);
-    return simpleTurrets2ICRspeedWithTwist(iTS, oICRs, oSR, iParams);
+    //return simpleTurrets2ICRspeedWithICR(iTS, oICRs, oSR, iParams);  // by Willy
+    return turrets2ICRspeedViaTwistOrIntersections(iTS, oICRs, oSR, iParams);   // by Moulineau
+    //return turrets2ICRspeedViaTwist(iTS, oICRs, oSR, iParams);  // by Boris
 }
 
-bool UbiquityKinematics::simpleTurrets2ICRspeedWithTwist(const TurretState & iTS, ICRSpeed& oICRs,SlippageReport& oSR,
+bool UbiquityKinematics::turrets2ICRspeedViaTwistOrIntersections(const TurretState & iTS, ICRSpeed& oICRs,SlippageReport& oSR,
         const UbiquityParams & iParams)
 {
     //TODO faire un truc generique et mathematiquement propre a la boris
@@ -287,6 +299,107 @@ bool UbiquityKinematics::simpleTurrets2ICRspeedWithTwist(const TurretState & iTS
     return true;
 }
 
+bool UbiquityKinematics::turrets2ICRspeedViaTwist(const TurretState & iTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
+                        const UbiquityParams & iParams)
+{
+    if (!iParams.check())
+    {
+        Log(ERROR) << "UbiquityKinematics::turrets2ICRspeedViaTwist failed when checking params";
+        return false;
+    }
+
+    // On numérote les 3 tourelles afin d'avoir la tourelle 1 qui a la vitesse la plus grande.
+    Vector3 v(d_abs(iTS.driving.left.velocity), d_abs(iTS.driving.right.velocity), d_abs(iTS.driving.rear.velocity));
+    std::pair< Eigen::VectorXd, Eigen::VectorXi > sorted = bubbleSortIndices(v);
+
+    if(sorted.first[2] < iParams.getMinDrivingSpeed())  // la vitesse max est faible : on ne bouge pas
+    {
+        return turrets2ICRspeedViaTwistOrIntersections(iTS, oICRs, oSR, iParams);  // on calcule l'ICRSpeed via les intersections
+    }
+
+    double v1, v2, v3;
+    double a1, a2, a3;
+    double xT1, xT2, xT3;
+    double yT1, yT2, yT3;
+
+    switch(sorted.second[2])
+    {
+        case 0:
+            v1  = iTS.driving.left.velocity;
+            a1  = iTS.steering.left.position;
+            xT1 = iParams.getLeftTurretPosition().x();
+            yT1 = iParams.getLeftTurretPosition().y();
+
+            v2 = iTS.driving.right.velocity;
+            a2 = iTS.steering.right.position;
+            xT2 = iParams.getRightTurretPosition().x();
+            yT2 = iParams.getRightTurretPosition().y();
+
+            v3 = iTS.driving.rear.velocity;
+            a3 = iTS.steering.rear.position;
+            xT3 = iParams.getRearTurretPosition().x();
+            yT3 = iParams.getRearTurretPosition().y();
+            break;
+        case 1:
+            v1 = iTS.driving.right.velocity;
+            a1 = iTS.steering.right.position;
+            xT1 = iParams.getRightTurretPosition().x();
+            yT1 = iParams.getRightTurretPosition().y();
+
+            v2 = iTS.driving.left.velocity;
+            a2 = iTS.steering.left.position;
+            xT2 = iParams.getLeftTurretPosition().x();
+            yT2 = iParams.getLeftTurretPosition().y();
+
+            v3 = iTS.driving.rear.velocity;
+            a3 = iTS.steering.rear.position;
+            xT3 = iParams.getRearTurretPosition().x();
+            yT3 = iParams.getRearTurretPosition().y();
+            break;
+        case 2:
+        default:
+            v1 = iTS.driving.rear.velocity;
+            a1 = iTS.steering.rear.position;
+            xT1 = iParams.getRearTurretPosition().x();
+            yT1 = iParams.getRearTurretPosition().y();
+
+            v2 = iTS.driving.right.velocity;
+            a2 = iTS.steering.right.position;
+            xT2 = iParams.getRightTurretPosition().x();
+            yT2 = iParams.getRightTurretPosition().y();
+
+            v3 = iTS.driving.left.velocity;
+            a3 = iTS.steering.left.position;
+            xT3 = iParams.getLeftTurretPosition().x();
+            yT3 = iParams.getLeftTurretPosition().y();
+            break;
+    }
+
+    // On calcule oméga
+    double w = 0.;
+    w +=       v2 * (cos(a2) + sin(a2));
+    w +=       v3 * (cos(a3) + sin(a3));
+    w += - 2 * v1 * (cos(a1) + sin(a1));
+    w /= 2 * yT1 - 2 * xT1 - yT2 + xT2 - yT3 + xT3;
+
+    // On calcule v_x et v_y comme étant la médiane des v_x et v_y provenant des 3 tourelles.
+    Vector3 v_x = Vector3(v1 * cos(a1) + yT1 * w,
+                          v2 * cos(a2) + yT2 * w,
+                          v3 * cos(a3) + yT3 * w);
+    Vector3 v_y = Vector3(v1 * sin(a1) - xT1 * w,
+                          v2 * sin(a2) - xT2 * w,
+                          v3 * sin(a3) - xT3 * w);
+    Twist2D T;
+    T.vx( bubbleSort(v_x)[1] );
+    T.vy( bubbleSort(v_y)[1] );
+    T.vh( w );
+
+    // On convertit en ICRSpeed
+    oICRs = ICRSpeed(T);
+
+    return true;
+}
+
 bool UbiquityKinematics::simpleTurrets2ICRspeedWithICR(const TurretState & iTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
         const UbiquityParams & iParams)
 {
@@ -294,7 +407,7 @@ bool UbiquityKinematics::simpleTurrets2ICRspeedWithICR(const TurretState & iTS, 
 
     if (!iParams.check())
     {
-        Log(ERROR) << "UbiquityKinematics::twist2Turrets failed when checking params";
+        Log(ERROR) << "UbiquityKinematics::simpleTurrets2ICRspeedWithICR failed when checking params";
         return false;
     }
 
@@ -376,17 +489,6 @@ bool UbiquityKinematics::simpleTurrets2ICRspeedWithICR(const TurretState & iTS, 
 
     return true;
 }
-
-
-bool UbiquityKinematics::motors2ICRSpeed(const MotorState & iMS, TurretState& oTS, ICRSpeed& oICRs, SlippageReport& oSR,
-        const UbiquityParams & iParams)
-{
-    bool res = true;
-    res &= motors2Turrets(iMS, oTS, iParams);
-    turrets2ICRspeed(oTS, oICRs, oSR, iParams);
-    return res;
-}
-
 
 
 void UbiquityKinematics::normalizeDirection(UbiquityKinematicState& state)

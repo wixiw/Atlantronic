@@ -54,12 +54,20 @@ class UbiquityKinematics
          */
         static bool motors2Twist(const MotorState & iMS, TurretState& oTS, arp_math::Twist2D& oTw, SlippageReport& oSR,
                 const UbiquityParams & iParams);
-
         /**
          * Modèle cinématique direct de la base, version simpliste qui ne prend que 3 mesures pour faire le calcul des 3 coordonées du twist (avec une matrice inversible)
          * ne sert qu'au debug
          */
         static void simpleTurrets2Twist(const TurretState & iTS, arp_math::Twist2D& oTw, SlippageReport& oSR,
+                const UbiquityParams & iParams);
+
+
+        /*
+         * enchaine les modeles directs
+         * convertit l'etat des moteurs en un ICRSpeed.
+         * => Point d'entrée principal du modèle direct via ICRSpeed
+         */
+        static bool motors2ICRSpeed(const MotorState & iMS, TurretState& oTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
                 const UbiquityParams & iParams);
 
         /**
@@ -69,19 +77,15 @@ class UbiquityKinematics
          */
         static bool turrets2ICRspeed(const TurretState & iTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
                 const UbiquityParams & iParams);
-        static bool simpleTurrets2ICRspeedWithTwist(const TurretState & iTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
+        static bool turrets2ICRspeedViaTwistOrIntersections(const TurretState & iTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
                 const UbiquityParams & iParams);
+        static bool turrets2ICRspeedViaTwist(const TurretState & iTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
+                        const UbiquityParams & iParams);
         static bool simpleTurrets2ICRspeedWithICR(const TurretState & iTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
                 const UbiquityParams & iParams);
         static bool simpleTurrets2ICRspeed(const TurretState & iTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
                 const UbiquityParams & iParams);
 
-        /*
-         * enchaine les modeles directs
-         * convertit l'etat des moteurs en un ICRSpeed
-         */
-        static bool motors2ICRSpeed(const MotorState & iMS, TurretState& oTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
-                const UbiquityParams & iParams);
 
 
 

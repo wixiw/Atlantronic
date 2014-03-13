@@ -13,6 +13,10 @@ using namespace arp_math;
 using namespace Eigen;
 using namespace std;
 
+const double ICRSpeed::vx_min = 1E-6;
+const double ICRSpeed::vy_min = 1E-6;
+const double ICRSpeed::vh_min = 1E-6;
+
 std::ostream& arp_math::operator<<(std::ostream& flux, arp_math::ICRSpeed const& t)
 {
     return flux << t.toString();
@@ -50,7 +54,7 @@ ICRSpeed::ICRSpeed(const ICRSpeed& icrSpeed)
 void ICRSpeed::initFromTwist(const Twist2DNorm& twist)
 {
     // if twist is null, then ICRspeed cannot be defined. default ICRSpeed is used
-        if (twist.vx() == 0.0 and twist.vy() == 0.0 and twist.vh() == 0.0)
+        if (fabs(twist.vx()) < vx_min and fabs(twist.vy()) < vy_min and fabs(twist.vh()) < vh_min)
         {
             m_ro = 0;
             m_ICR = ICR(0, 0);

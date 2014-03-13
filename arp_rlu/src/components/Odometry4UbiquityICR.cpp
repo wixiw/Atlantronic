@@ -65,6 +65,8 @@ void Odometry4UbiquityICR::updateHook()
     measuredICRSpeed.date( timespec2Double(attrTime) );
 
     outICRSpeed.write(measuredICRSpeed);
+
+
 }
 
 
@@ -72,6 +74,7 @@ void Odometry4UbiquityICR::createOrocosInterface()
 {
     addAttribute("attrTurretState", attrTurretState);
     addAttribute("attrMotorState", attrMotorState);
+    addAttribute("attrPose", attrPose);
     addAttribute("attrParams", attrParams);
     addAttribute("attrTime", attrTime);
 
@@ -85,6 +88,8 @@ void Odometry4UbiquityICR::createOrocosInterface()
 
     addPort("outICRSpeed",outICRSpeed)
             .doc("T_robot_table_p_robot_r_robot : Twist of robot reference frame relative to table frame, reduced and expressed in robot reference frame.\n It is an EstimatedTwist, so it contains Twist, estimation date (in sec) and covariance matrix.");
+    addPort("outPose",outPose)
+                .doc("Pose estimated via integration of ICRSpedd and via external heading if available");
     addPort("outSlippageDetected",outSlippageDetected)
         .doc("The computation has detection a slippage");
 }

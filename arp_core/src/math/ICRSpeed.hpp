@@ -34,6 +34,10 @@ namespace arp_math
 
 class ICRSpeed
 {
+    private:
+        static const double vx_min;
+        static const double vy_min;
+        static const double vh_min;
     public:
 
         /** Constructeur principal.

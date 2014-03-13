@@ -13,6 +13,8 @@ using namespace arp_math;
 using namespace Eigen;
 using namespace std;
 
+const double ICR::epsilon = 1E-6;
+
 std::ostream &operator<<(std::ostream &flux, arp_math::ICR const& t)
 {
     return flux << t.toString();
@@ -33,7 +35,7 @@ ICR::ICR(const ICR& icr)
 ICR::ICR(Vector3 speedVector)
 {
     //phi
-    if (speedVector[0] != 0.0 or speedVector[1] != 0.0)
+    if ( d_abs(speedVector[0]) > epsilon or d_abs(speedVector[1]) > 0.0)
         m_phi = atan2(speedVector[1], speedVector[0]);
     else
         // pure rotation, phi not defined, but not a problem.
@@ -41,7 +43,7 @@ ICR::ICR(Vector3 speedVector)
 
     //delta
     double v = sqrt(speedVector[0] * speedVector[0] + speedVector[1] * speedVector[1]);
-    if (v != 0.0)
+    if (d_abs(v) > epsilon)
         m_delta = atan(speedVector[2] / v);
     else
         m_delta = sign(speedVector[2]) * PI / 2.0;

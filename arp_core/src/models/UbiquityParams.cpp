@@ -27,6 +27,7 @@ UbiquityParams::UbiquityParams():
         m_rearWheelDiameter(-1),
         m_tractionRatio(-1),
         m_turretRatio(-1),
+        m_minDrivingSpeed(-1),
         m_maxDrivingSpeed(-1),
         m_maxDrivingAcc(-1),
         m_maxDrivingTorque(-1),
@@ -52,6 +53,7 @@ void UbiquityParams::fillWithFakeValues(void)
     m_rearWheelDiameter=0.066;
     m_tractionRatio=1.0;
     m_turretRatio=0.25;
+    m_minDrivingSpeed=0.;
     m_maxDrivingSpeed=1;
     m_maxDrivingAcc=1;
     m_maxDrivingTorque=-1;
@@ -113,7 +115,14 @@ bool UbiquityParams::check() const
         res = false;
     }
 
-    //on verifie que les accelerations de traction on du sens
+    //on verifie que les vitesses min et max de traction ont du sens
+    if( m_minDrivingSpeed > m_maxDrivingSpeed )
+    {
+        Log( ERROR ) << "Min speed incorrect";
+        res = false;
+    }
+
+    //on verifie que les accelerations de traction ont du sens
     if( m_maxDrivingAcc <= 0 || m_maxDrivingAcc >= 11 )
     {
         cerr << "Max drivign acc incorrect" << endl;
@@ -207,6 +216,11 @@ double UbiquityParams::getTurretRatio() const
 double UbiquityParams::getMaxDrivingAcc() const
 {
     return m_maxDrivingAcc;
+}
+
+double UbiquityParams::getMinDrivingSpeed() const
+{
+    return m_minDrivingSpeed;
 }
 
 double UbiquityParams::getMaxDrivingSpeed() const
@@ -329,6 +343,10 @@ double& UbiquityParams::getMaxDrivingAccRef()
     return m_maxDrivingAcc;
 }
 
+double& UbiquityParams::getMinDrivingSpeedRef()
+{
+    return m_minDrivingSpeed;
+}
 
 double& UbiquityParams::getMaxDrivingSpeedRef()
 {

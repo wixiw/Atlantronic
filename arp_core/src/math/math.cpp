@@ -177,6 +177,13 @@ double smoothStep(const double x, const double startValue, const double startLim
 
 }
 
+double d_abs(const double x)
+{
+    if(x < 0.)
+        return -x;
+    return x;
+}
+
 double firstDerivateLimitation(const double input, const double lastOutput, const double period, const double dmin,
         const double dmax)
 {
