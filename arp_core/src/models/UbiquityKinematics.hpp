@@ -16,8 +16,7 @@ namespace arp_model
 {
 class UbiquityKinematics
 {
-    public:
-        UbiquityKinematics();
+    public: // Modèle direct
 
         /**
          * Modèle cinématique direct de tourelle
@@ -32,6 +31,61 @@ class UbiquityKinematics
          * @return : true if computation succeed, false otherwise (param inconsistent for instance)
          */
         static bool motors2Turrets(const MotorState & iMS, TurretState& oTS, const UbiquityParams & iParams);
+
+        /**
+         * Modèle cinématique direct de la base.
+         * Convertit l'état des tourelles en un Twist (Twist du repère de référence du chassis par rapport au sol projeté et réduit dans le
+         * repère de référence du chassis).\n
+         * En parrallèle, un rapport sur les glissements est publié.
+         * @remark : cette fonction correspond à la fonction d'odométrie.
+         * @param[in] iTS : Etat des tourelles ie positions des tourelles (traction et direction) exprimés en rad et rad/s.
+         *               Tient compte des 0 tourelle calibrés
+         * @param[out] oTw : Twist du repère de référence du chassis par rapport au sol projeté et réduit dans le repère de référence du chassis.
+         * @param[out] oSR : donne une information sur le taux de glissement du robot.
+         * @param[in] iParams : paramètres géométriques du robot
+         * @return : true if computation succeed, false otherwise (param inconsistent for instance)
+         */
+        static bool turrets2Twist(const TurretState & iTS, arp_math::Twist2D& oTw, SlippageReport& oSR,
+                const UbiquityParams & iParams);
+
+        /**
+         * Echainement des modèles direct de tourelle et cinématique
+         * @param oTS : [out] the intermediate computation of Turret State. Should be only used for debug or user feedback
+         */
+        static bool motors2Twist(const MotorState & iMS, TurretState& oTS, arp_math::Twist2D& oTw, SlippageReport& oSR,
+                const UbiquityParams & iParams);
+
+        /**
+         * Modèle cinématique direct de la base, version simpliste qui ne prend que 3 mesures pour faire le calcul des 3 coordonées du twist (avec une matrice inversible)
+         * ne sert qu'au debug
+         */
+        static void simpleTurrets2Twist(const TurretState & iTS, arp_math::Twist2D& oTw, SlippageReport& oSR,
+                const UbiquityParams & iParams);
+
+        /**
+         * Modèle cinématique direct de la base.
+         * Convertit l'état des tourelles en un ICRSpeed (mouvement du repère de référence du chassis par rapport au sol projeté et réduit dans le
+         * repère de référence du chassis).\n
+         */
+        static bool turrets2ICRspeed(const TurretState & iTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
+                const UbiquityParams & iParams);
+        static bool simpleTurrets2ICRspeedWithTwist(const TurretState & iTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
+                const UbiquityParams & iParams);
+        static bool simpleTurrets2ICRspeedWithICR(const TurretState & iTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
+                const UbiquityParams & iParams);
+        static bool simpleTurrets2ICRspeed(const TurretState & iTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
+                const UbiquityParams & iParams);
+
+        /*
+         * enchaine les modeles directs
+         * convertit l'etat des moteurs en un ICRSpeed
+         */
+        static bool motors2ICRSpeed(const MotorState & iMS, TurretState& oTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
+                const UbiquityParams & iParams);
+
+
+
+    public:  // Modèle inverse
 
         /**
          * Modèle cinématique inverse de tourelle
@@ -53,29 +107,6 @@ class UbiquityKinematics
                 const UbiquityParams & iParams);
 
         /**
-         * Modèle cinématique direct de la base.
-         * Convertit l'état des tourelles en un Twist (Twist du repère de référence du chassis par rapport au sol projeté et réduit dans le
-         * repère de référence du chassis).\n
-         * En parrallèle, un rapport sur les glissements est publié.
-         * @remark : cette fonction correspond à la fonction d'odométrie.
-         * @param[in] iTS : Etat des tourelles ie positions des tourelles (traction et direction) exprimés en rad et rad/s.
-         *               Tient compte des 0 tourelle calibrés
-         * @param[out] oTw : Twist du repère de référence du chassis par rapport au sol projeté et réduit dans le repère de référence du chassis.
-         * @param[out] oSR : donne une information sur le taux de glissement du robot.
-         * @param[in] iParams : paramètres géométriques du robot
-         * @return : true if computation succeed, false otherwise (param inconsistent for instance)
-         */
-        static bool turrets2Twist(const TurretState & iTS, arp_math::Twist2D& oTw, SlippageReport& oSR,
-                const UbiquityParams & iParams);
-
-        /**
-         * Modèle cinématique direct de la base, version simpliste qui ne prend que 3 mesures pour faire le calcul des 3 coordonées du twist (avec une matrice inversible)
-         * ne sert qu'au debug
-         */
-        static void simpleTurrets2Twist(const TurretState & iTS, arp_math::Twist2D& oTw, SlippageReport& oSR,
-                const UbiquityParams & iParams);
-
-        /**
          * Modèle cinématique indirect de la base
          * Convertit un Twist (Twist du repère de référence du chassis par rapport au sol projeté et réduit dans le repère de référence du chassis)
          * en consignes articulaires pour les tourelles.
@@ -90,12 +121,6 @@ class UbiquityKinematics
          */
         static bool twist2Turrets(const arp_math::Twist2D & iTw, TurretState& oTS, const UbiquityParams & iParams);
 
-        /**
-         * Echainement des modèles direct de tourelle et cinématique
-         * @param oTS : [out] the intermediate computation of Turret State. Should be only used for debug or user feedback
-         */
-        static bool motors2Twist(const MotorState & iMS, TurretState& oTS, arp_math::Twist2D& oTw, SlippageReport& oSR,
-                const UbiquityParams & iParams);
 
         /**
          * Enchainement des modèles indirects de tourelle et cinématique
@@ -104,20 +129,6 @@ class UbiquityKinematics
         static bool twist2Motors(const arp_math::Twist2D & iTw, const MotorState & iMS, TurretState& oTS,
                 MotorState& oMS, const UbiquityParams & iParams);
 
-
-        /**
-         * Modèle cinématique direct de la base.
-         * Convertit l'état des tourelles en un ICRSpeed (mouvement du repère de référence du chassis par rapport au sol projeté et réduit dans le
-         * repère de référence du chassis).\n
-         */
-        static bool turrets2ICRspeed(const TurretState & iTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
-                const UbiquityParams & iParams);
-        static bool simpleTurrets2ICRspeedWithTwist(const TurretState & iTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
-                const UbiquityParams & iParams);
-        static bool simpleTurrets2ICRspeedWithICR(const TurretState & iTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
-                const UbiquityParams & iParams);
-        static bool simpleTurrets2ICRspeed(const TurretState & iTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
-                const UbiquityParams & iParams);
 
         /**
          * Modèle cinématique indirect
@@ -134,13 +145,7 @@ class UbiquityKinematics
                 MotorState& oMS, const UbiquityParams & iParams);
 
 
-        /*
-         * enchaine les modeles directs
-         * convertit l'etat des moteurs en un ICRSpeed
-         */
-        static bool motors2ICRSpeed(const MotorState & iMS, TurretState& oTS, arp_math::ICRSpeed& oICRs, SlippageReport& oSR,
-                const UbiquityParams & iParams);
-
+    public:  // helpers (public for unittest needs)
         /**
          * Les tourelles permettent de recouvrir l'état de possibles de plusieurs façons lorsqu'elles sont pilotés en marche
          * AV et AR entre -PI et PI. Cette fonction permet de réduire ce recouvrement à un pilotage entre ]-PI/2;PI/2] puis marche AV/AR
