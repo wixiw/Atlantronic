@@ -23,8 +23,8 @@ rosbuild_find_ros_package(actionlib_msgs)
 include(${actionlib_msgs_PACKAGE_PATH}/cmake/actionbuild.cmake)
 genaction()
 #build config
-#set( ROS_BUILD_TYPE Debug )
-set (ROS_BUILD_TYPE Release)
+set( ROS_BUILD_TYPE Debug )
+#set (ROS_BUILD_TYPE Release)
 rosbuild_init()
      
 #uncomment if you have defined messages
