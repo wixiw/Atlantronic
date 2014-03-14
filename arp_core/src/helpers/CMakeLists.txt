@@ -4,10 +4,10 @@
     file(
     	GLOB_RECURSE
     	source_files
-    	*.c* 
+    	*.c*
     )  
 
-rosbuild_add_library(arp_core-filters ${source_files})
+rosbuild_add_library(arp_core-helpers ${source_files})
 
 
 

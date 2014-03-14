@@ -1,7 +1,7 @@
 /*
- * uTest_Filters.cpp
+ * uTest_Math.cpp
  *
- *  Created on: 5 mai 2012
+ *  Created on: 6 nov. 2010
  *      Author: ard
  */
 
@@ -10,5 +10,4 @@
 #include <boost/test/included/unit_test.hpp>
 #include <boost/bind.hpp>
 
-#include "uTest_TwistDerivativeSat.hpp"
-#include "uTest_RnLPButterworthFilter.hpp"
+#include "uTest_SimpsonIntegrator.hpp"

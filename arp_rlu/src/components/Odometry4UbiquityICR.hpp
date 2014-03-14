@@ -11,6 +11,7 @@
 #include "RluTaskContext.hpp"
 #include <math/core>
 #include <models/core>
+#include <helpers/SimpsonIntegrator.hpp>
 
 namespace arp_rlu
 {
@@ -23,17 +24,22 @@ class Odometry4UbiquityICR: public RluTaskContext
         /** Callback d'update.*/
         virtual void updateHook();
 
+        // Operation for reset
+        bool ooInitialize(double x, double y, double theta);
+
     protected:
         /**Internal model feedback, for debug info only */
         arp_model::TurretState attrTurretState;
         /** Buffer local pour les inMotorState */
         arp_model::MotorState attrMotorState;
         /** Buffer local pour la outPose */
+        double attrHeading;
+        /** Buffer local pour la outPose */
         arp_math::EstimatedPose2D attrPose;
         /** Buffer local pour les params */
         arp_model::UbiquityParams attrParams;
         /** Buffer local pour le temps */
-        timespec attrTime;
+        timespec attrLastTime;
 
         RTT::InputPort<timespec> inTime;
         RTT::InputPort<arp_model::UbiquityParams> inParams;
@@ -55,7 +61,9 @@ class Odometry4UbiquityICR: public RluTaskContext
         void createOrocosInterface();
 
     protected: // internal
-
+        arp_math::SimpsonIntegrator vxIntegrator;
+        arp_math::SimpsonIntegrator vyIntegrator;
+        arp_math::SimpsonIntegrator vhIntegrator;
 };
 
 } /* namespace arp_rlu */

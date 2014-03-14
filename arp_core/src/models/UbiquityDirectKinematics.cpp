@@ -214,8 +214,8 @@ bool UbiquityKinematics::simpleTurrets2ICRspeed(const TurretState & iTS, ICRSpee
         const UbiquityParams & iParams)
 {
     //return simpleTurrets2ICRspeedWithICR(iTS, oICRs, oSR, iParams);  // by Willy
-    return turrets2ICRspeedViaTwistOrIntersections(iTS, oICRs, oSR, iParams);   // by Moulineau
-    //return turrets2ICRspeedViaTwist(iTS, oICRs, oSR, iParams);  // by Boris
+    //return turrets2ICRspeedViaTwistOrIntersections(iTS, oICRs, oSR, iParams);   // by Moulineau
+    return turrets2ICRspeedViaTwist(iTS, oICRs, oSR, iParams);  // by Boris
 }
 
 bool UbiquityKinematics::turrets2ICRspeedViaTwistOrIntersections(const TurretState & iTS, ICRSpeed& oICRs,SlippageReport& oSR,

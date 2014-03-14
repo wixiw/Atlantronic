@@ -32,7 +32,8 @@ void Odometry4UbiquityICR::updateHook()
     ICRSpeed computedICRSpeed;
     SlippageReport report;
 
-    if( RTT::NewData != inTime.readNewest(attrTime))
+    timespec newTime;
+    if( RTT::NewData != inTime.readNewest(newTime))
     {
         LOG( Error ) << "No new data in inTime port : updateHook should not be externally trigger => return" << endlog();
         return;
@@ -62,11 +63,38 @@ void Odometry4UbiquityICR::updateHook()
     //TODO calculer la covariance
     EstimatedICRSpeed measuredICRSpeed(computedICRSpeed);
     //measuredICRSpeed.cov( covariance );
-    measuredICRSpeed.date( timespec2Double(attrTime) );
+    measuredICRSpeed.date( timespec2Double(newTime) );
 
     outICRSpeed.write(measuredICRSpeed);
 
+    // On estime la position par intégration de l'ICRSpeed courrant;
+    Twist2D twist = measuredICRSpeed.twist();
+    double dt = (double)(timespec2Double(newTime) - timespec2Double(attrLastTime));
+    attrLastTime = newTime;
+    vxIntegrator.set(dt, twist.vx());
+    vyIntegrator.set(dt, twist.vy());
+    vhIntegrator.set(dt, twist.vh());
 
+    // Si on a reçu un cap provenant de l'extérieur, alors on l'applique
+    if( RTT::NewData == inHeading.readNewest(attrHeading))
+    {
+        vhIntegrator.reset(attrHeading);
+    }
+
+    // On construit la Pose finale
+    EstimatedPose2D pose(Pose2D(vxIntegrator.get(), vyIntegrator.get(), vhIntegrator.get()));
+    //pose.cov( covariance ); //TODO calculer la covariance
+    pose.date( timespec2Double(newTime) );
+
+    outPose.write( pose );
+
+}
+
+bool Odometry4UbiquityICR::ooInitialize(double x, double y, double theta)
+{
+    vxIntegrator.reset(x);
+    vyIntegrator.reset(y);
+    vhIntegrator.reset(theta);
 }
 
 
@@ -74,9 +102,10 @@ void Odometry4UbiquityICR::createOrocosInterface()
 {
     addAttribute("attrTurretState", attrTurretState);
     addAttribute("attrMotorState", attrMotorState);
+    addAttribute("attrHeading", attrHeading);
     addAttribute("attrPose", attrPose);
     addAttribute("attrParams", attrParams);
-    addAttribute("attrTime", attrTime);
+    addAttribute("attrLastTime", attrLastTime);
 
     addPort("inTime",inTime)
             .doc("time in second.\n This port is used as trigger.\n This time is used as date of sensors data.");
@@ -92,4 +121,10 @@ void Odometry4UbiquityICR::createOrocosInterface()
                 .doc("Pose estimated via integration of ICRSpedd and via external heading if available");
     addPort("outSlippageDetected",outSlippageDetected)
         .doc("The computation has detection a slippage");
+
+    addOperation("ooInitialize",&Odometry4UbiquityICR::ooInitialize, this, OwnThread)
+        .doc("Initialisation de l'Odométrie")
+        .arg("x","m")
+        .arg("y","m")
+        .arg("theta","rad");
 }
