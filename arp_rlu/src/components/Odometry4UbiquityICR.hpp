@@ -45,8 +45,10 @@ class Odometry4UbiquityICR: public RluTaskContext
         RTT::InputPort<arp_model::UbiquityParams> inParams;
         /** Measures from HML */
         RTT::InputPort<arp_model::MotorState> inMotorState;
-        /** Heading from STM32 */
-        RTT::InputPort<double> inHeading;
+        /** Heading from external source */
+        RTT::InputPort<double> inTrueHeading;
+        /** Pose from external source */
+        RTT::InputPort<arp_math::Pose2D> inTruePose;
         /** Computed Twist */
         RTT::OutputPort<arp_math::EstimatedICRSpeed> outICRSpeed;
         RTT::OutputPort<arp_math::Twist2D> outTwist;

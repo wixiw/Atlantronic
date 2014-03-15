@@ -77,9 +77,18 @@ void Odometry4UbiquityICR::updateHook()
     vhIntegrator.set(dt, twist.vh());
 
     // Si on a reçu un cap provenant de l'extérieur, alors on l'applique
-    if( RTT::NewData == inHeading.readNewest(attrHeading))
+    if( RTT::NewData == inTrueHeading.readNewest(attrHeading))
     {
         vhIntegrator.reset(attrHeading);
+    }
+
+    // Si on a reçu un cap provenant de l'extérieur, alors on l'applique
+    Pose2D externalPose;
+    if( RTT::NewData == inTruePose.readNewest(externalPose))
+    {
+        vxIntegrator.reset(externalPose.x());
+        vyIntegrator.reset(externalPose.y());
+        vhIntegrator.reset(externalPose.h());
     }
 
     // On construit la Pose finale
@@ -132,19 +141,20 @@ void Odometry4UbiquityICR::createOrocosInterface()
     addPort("inMotorState",inMotorState)
             .doc("Measures from HML");
 
+    addPort("inTrueHeading",inTrueHeading)
+            .doc("Perfect external heading");
+
+    addPort("inTruePose",inTruePose)
+            .doc("Perfect external Pose");
+
     addPort("outICRSpeed",outICRSpeed)
             .doc("T_robot_table_p_robot_r_robot : Twist of robot reference frame relative to table frame, reduced and expressed in robot reference frame.\n It is an EstimatedTwist, so it contains Twist, estimation date (in sec) and covariance matrix.");
     addPort("outPose",outPose)
-                .doc("Pose estimated via integration of ICRSpedd and via external heading if available");
+                .doc("Pose estimated via integration of ICRSpeed and via external heading if available");
     addPort("outTwist",outTwist)
         .doc("Conversion of the outICRSpeed value into a Twist for debug info.");
     addPort("outSlippageDetected",outSlippageDetected)
         .doc("The computation has detection a slippage");
-    addOperation("ooInitialize",&Odometry4UbiquityICR::ooInitialize, this, OwnThread)
-        .doc("Initialisation de l'Odométrie")
-        .arg("x","m")
-        .arg("y","m")
-        .arg("theta","rad");
 
     addPort("outLRiOmega",outLRiOmega).doc("Angular velocity computed from Left and Right turrets velocity measures");
     addPort("outRiReOmega",outRiReOmega).doc("Angular velocity computed from Right and Rear turrets velocity measures");
