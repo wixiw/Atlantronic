@@ -13,7 +13,9 @@
 		pkg="arp_master"  
 		type="StratNode_Tanguy.py"     
 		args="" output="screen" 
-		launch-prefix="nice -n 19"/>
+		launch-prefix="nice -n 19"
+		required="true"
+	/>
 	
 	<node 	name="ArpOrocos" 
 		pkg="ocl" 

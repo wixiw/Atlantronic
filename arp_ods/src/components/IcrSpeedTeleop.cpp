@@ -100,7 +100,8 @@ void IcrSpeedTeleop::updateHook()
         attrPhi = betweenMinusPiAndPlusPi(-phiCmd-M_PI_2);
     }
 
-    attrRho = firstDerivateLimitation( attrRho, attrOldRho, attrDt , -linAcc, linAcc);
+    //TODO HARDCODED period !!
+    attrRho = firstDerivateLimitation( attrRho, attrOldRho, 0.010 , -linAcc, linAcc);
 
     if( deadMan == false )
     {

@@ -5,6 +5,8 @@ import roslib; roslib.load_manifest('arp_master')
 from arp_master import *
 
 from Table2014 import *
+from arp_master.commonStates.Strat_Initialisation import *
+from arp_master.commonStates.SetPosition import *
 
 ####################################################################################################################
 

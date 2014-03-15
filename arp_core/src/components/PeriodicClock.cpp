@@ -21,15 +21,15 @@ PeriodicClock::PeriodicClock(const std::string name):
     addPort("outClock",outClock);
     addPort("outPeriod",outPeriod);
     addPort("outTrigger",outTrigger);
+
+    clock_gettime(CLOCK_MONOTONIC, &m_absoluteTime);
 }
 
 void PeriodicClock::updateHook()
 {
-    timespec now;
-    clock_gettime(CLOCK_MONOTONIC, &now);
-    outClock.write(now);
-    double period = delta_t(m_oldTime,now);
-    m_oldTime = now;
-    outPeriod.write(period);
+    clock_gettime(CLOCK_MONOTONIC, &m_absoluteTime);
+
+    outPeriod.write(getPeriod());
+    outClock.write(m_absoluteTime);
     outTrigger.write(0);
 }

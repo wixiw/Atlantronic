@@ -36,6 +36,9 @@ class LaserOnlyLocalizatorCpn: public RluTaskContext
         // Params
         LaserOnlyLocalizatorParams propParams;
 
+        /** Activate or not the time reporting */
+        bool propTimeReporting;
+
         //*****************************************************
         // Ports
         RTT::InputPort<sensor_msgs::LaserScan> inScan;
@@ -92,6 +95,8 @@ class LaserOnlyLocalizatorCpn: public RluTaskContext
         long double m_monotonicTimeToRealTime;
         lsl::LaserScan lslScan;
         bool lastSuccess;
+
+
 
 
 };

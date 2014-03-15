@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( EstimatedPose2_Operator_trivial )
     EstimatedPose2D b = a * p;
     BOOST_CHECK_SMALL( b.x() - x, 1.e-8 );
     BOOST_CHECK_SMALL( b.y() - y, 1.e-8 );
-    BOOST_CHECK_SMALL( b.h() - h, 1.e-8 );
+    BOOST_CHECK_SMALL( betweenMinusPiAndPlusPi(b.h() - h), 1.e-8 );
     BOOST_CHECK( b.date() == date );
     BOOST_CHECK( b.cov() == cov );
 

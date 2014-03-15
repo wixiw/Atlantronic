@@ -125,8 +125,6 @@ class ARDTaskContext : public RTT::TaskContext
     std::string propAutoLoadScript;
     /** Nom de la machine à états à charger automatiquement, si vide on ne charge rien snas erreur */
     std::string propAutoLoadStateMachines;
-    /** Activate or not the time reporting */
-    bool propTimeReporting;
 
     /**Chemin vers le project */
     std::string attrProjectRootPath;
@@ -138,10 +136,6 @@ class ARDTaskContext : public RTT::TaskContext
     std::string attrStateMachinePath;
     /** Used by configuration programs to set a success flag */
     bool attrScriptRes;
-    /** cycle time*/
-    timespec attrUpdateTime;
-    /** cycle duration*/
-    double attrDt;
 
     /** Interface de scripting Orocos (ods,ops) */
     boost::shared_ptr<RTT::Scripting> scripting;
@@ -153,16 +147,8 @@ class ARDTaskContext : public RTT::TaskContext
     // TODO WLA OCL::logging::Category* logger;
     RTT::Logger::In logger;
 
-    arp_core::StatTimer m_timer;
-
     /** Callback de Configuration.*/
     virtual bool configureHook();
-    /** Callback de Démarrage */
-    virtual bool startHook();
-    /** Calcule le temps de cycle (attention au premier cycle la période est nulle */
-    virtual void updateHook();
-    /** Callback d'Arrêt */
-    virtual void stopHook();
     /** Callback de Déconfiguration */
     virtual void cleanupHook();
 
@@ -203,16 +189,6 @@ class ARDTaskContext : public RTT::TaskContext
 
     /** Permet de logger en script */
     void coLog(RTT::LoggerLevel level, std::string s);
-
-    /**
-     * Permet d'obtenir un rapport sur les timings
-     */
-    virtual void ooGetPerformanceReport();
-
-    /**
-     * Permet de regler la duree pendant laquelle les stats de performances temporelles sont faites
-     */
-    void ooSetMaxBufferSize(unsigned int size);
 };
 }
 

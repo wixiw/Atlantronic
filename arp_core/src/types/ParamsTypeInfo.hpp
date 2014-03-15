@@ -30,6 +30,7 @@ using namespace RTT;
              a & make_nvp("rearWheelDiameter",      params.getRearWheelDiameterRef());
              a & make_nvp("turretRatio",            params.getTurretRatioRef());
              a & make_nvp("tractionRatio",          params.getTractionRatioRef());
+             a & make_nvp("minDrivingSpeed",       params.getMinDrivingSpeedRef());
              a & make_nvp("maxDrivingSpeed",       params.getMaxDrivingSpeedRef());
              a & make_nvp("maxSteeringSpeed",         params.getMaxSteeringSpeedRef());
              a & make_nvp("maxDrivingAcc",         params.getMaxDrivingAccRef());
@@ -38,6 +39,7 @@ using namespace RTT;
              a & make_nvp("maxSteeringTorque",        params.getMaxSteeringTorqueRef());
              a & make_nvp("maxRobotSpeed",      params.getMaxRobotSpeedRef());
              a & make_nvp("maxRobotAccel",        params.getMaxRobotAccelRef());
+             a & make_nvp("maxRobotJerk",        params.getMaxRobotJerkRef());
       }
     }
   }

@@ -37,13 +37,14 @@
      <simple name="rearWheelDiameter" type="double"><description>Part</description><value>0.0655504076</value></simple>
      <simple name="turretRatio" type="double"><description>Part</description><value>0.2285714285714286</value></simple>
      <simple name="tractionRatio" type="double"><description>Part</description><value>1</value></simple>
-     <simple name="maxDrivingSpeed" type="double"><description>Part</description><value>1</value></simple>
+     <simple name="maxDrivingSpeed" type="double"><description>Part</description><value>1.1</value></simple>
      <simple name="maxSteeringSpeed" type="double"><description>Part</description><value>6</value></simple>
      <simple name="maxDrivingAcc" type="double"><description>Part</description><value>2</value></simple>
      <simple name="maxSteeringAcc" type="double"><description>Part</description><value>125</value></simple>
      <simple name="maxDrivingTorque" type="double"><description>Part</description><value>-1</value></simple>
      <simple name="maxSteeringTorque" type="double"><description>Part</description><value>-1</value></simple>
      <simple name="maxRobotSpeed" type="double"><description>Part</description><value>1</value></simple>
-     <simple name="maxRobotAccel" type="double"><description>Part</description><value>4</value></simple>
+     <simple name="maxRobotAccel" type="double"><description>Part</description><value>2</value></simple>
+     <simple name="maxRobotJerk" type="double"><description>Part</description><value>10</value></simple>
   </struct>
 </properties>

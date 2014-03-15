@@ -29,9 +29,11 @@ CanOpenController::CanOpenController(const std::string& name) :
             propBaudRate("1000K"), 
             propNodeId(0),
             propSyncPeriod(0.010),
+            propTimeReporting(false),
             m_dispatcher(*this),
             m_canPort(NULL),
-            m_RunningState(UNKNOWN)
+            m_RunningState(UNKNOWN),
+            m_timer(0)
 {
     clock_gettime(CLOCK_MONOTONIC, &attrLastSyncTime);
     m_timer.SetMaxBufferSize(3000);
@@ -659,6 +661,21 @@ void CanOpenController::ooResetCanBus()
     update();
 }
 
+
+void CanOpenController::ooGetPerformanceReport()
+{
+    if( !isRunning() || !propTimeReporting )
+        cout << "Time Stats are disabled. The component must be in running state with propTimereporting=true." << endl;
+    else
+        cout << m_timer.GetReport() << endl;
+}
+
+void CanOpenController::ooSetMaxBufferSize(unsigned int size)
+{
+    m_timer.SetMaxBufferSize(size);
+}
+
+
 void CanOpenController::createOrocosInterface()
 {
     //TODO makes the "ls" in orocos deployer buggy, the typekit is certainly broken"
@@ -758,5 +775,13 @@ void CanOpenController::createOrocosInterface()
               &CanOpenDispatcher::ooPrintRegisteredNodes, &m_dispatcher,
               OwnThread) .doc(
               "DEBUG purposes : this operation prints in the console the registred nodes.");
+
+
+      addOperation("ooGetPerformanceReport", &CanOpenController::ooGetPerformanceReport, this, OwnThread).doc("Get Performance report about timing, already formated in readable string");
+      addOperation("ooSetMaxBufferSize", &CanOpenController::ooSetMaxBufferSize, this, OwnThread)
+              .arg(
+                        "bufSize",
+                        "New number of period that will be logged.")
+              .doc("Change the timing log buffer size.");
 
 }

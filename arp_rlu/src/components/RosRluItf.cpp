@@ -28,6 +28,7 @@ RluTaskContext(name)
     addPort("inICRSpeed",inICRSpeed);
     addPort("inOpponents",inOpponents);
     addPort("outPose",outPose);
+    addPort("outSpeed",outSpeed);
     addPort("outOpponents",outOpponents);
     addPort("outLocalizationState",outLocalizationState);
     createRosInterface();
@@ -72,6 +73,14 @@ void RosRluItf::updateHook()
     pOut.vtheta = tIn.vh();
     outPose.write(pOut);
 
+
+    //speed
+    ICRSpeedMsg sOut;
+    sOut.ro = speedIn.ro();
+    sOut.phi = speedIn.phi();
+    sOut.delta = speedIn.delta();
+    outSpeed.write(sOut);
+
     LocalizationState stateOut;
     int locState = -1; //0; //STOPPED
     inLocalizationState.readNewest(locState);
@@ -99,7 +108,8 @@ void RosRluItf::updateHook()
         opponentsOut.Opponents.push_back(pose);
     }
     opponentsOut.nbOpponents = opponentsIn.size();
-    opponentsOut.date = timespec2Double(attrUpdateTime);
+    //TODO illegal time reference !!! prefer a time from RTC as we can simulate it
+    opponentsOut.date = getTime();
     outOpponents.write(opponentsOut);
 }
 

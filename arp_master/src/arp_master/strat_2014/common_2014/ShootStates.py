@@ -6,6 +6,8 @@ from arp_master import *
 
 from Table2014 import *
 from Robot2014 import *
+from arp_master.commonStates.EndMatchPreempter import *
+from arp_master.commonStates.Waiting import *
 
 # This action shoot 3 balls on each mammoths (so a total of 6 balls are shot).
 #In order to use this action you have to go to the entry point DoubleTargetShootState.getEntryPoint()

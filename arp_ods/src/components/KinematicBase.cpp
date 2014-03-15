@@ -51,29 +51,23 @@ void KinematicBase::run()
 {
     Log(DEBUG) << ">> KinematicBase::run()   -----------------------------";
 
-    //check robot blocked
+    //check robot blocked with new speeds and last commands
     checkRobotBlocked();
 
-    //filter the input command to get a reachable command that we are sure the hardware will be capable to do
-//    if (KinematicFilter::filterTwist(attrTwistCmd, attrCurrentTwist, attrMotorsCurrentState, attrParams, attrDt,
-//            propMinSpeed, attrAcceptableTwist, attrQuality) == false)
-//    {
-//        LOG(Error) << "Failed to filter desired twist to an acceptable twist" << endlog();
-//    }
-
-    //TODO WLA desactivation du filtre
-    attrAcceptableICRSpeed = attrICRSpeedCmd;
-
-    //compute the motor commands to do the filtered twist command
-    if (UbiquityKinematics::ICRSpeed2Motors(attrAcceptableICRSpeed, attrMotorsCurrentState, attrTurretState,
+    //compute the motor commands from ICRSpeed input
+    if (UbiquityKinematics::ICRSpeed2Motors(attrICRSpeedCmd, attrMotorsCurrentState, attrTurretState,
             attrMotorStateCommand, attrParams) == false)
     {
         LOG(Error) << "Failed to compute Turrets Cmd" << endlog();
     }
 
-    //Log(DEBUG) << "cur Twist=               " << attrCurrentICRSpeed.toString();
-    //Log(DEBUG) << "attrMotorsCurrentState=  " <<attrMotorsCurrentState.toString();
-   // Log(DEBUG) << "acceptable Twist=        " << attrAcceptableICRSpeed.toString();
+    //check if the command is reachable
+    //TODO TEMPS EN DUR !!!
+    double dt = 0.010;
+    if(false == KinematicFilter::isMotorStateReachable(attrMotorStateCommand,attrMotorsCurrentState,attrParams, dt))
+    {
+    //    LOG(Error) << "Commanded ICRSpeed is not reachable" << endlog();
+    }
 }
 
 void KinematicBase::checkRobotBlocked()
@@ -106,8 +100,11 @@ void KinematicBase::checkRobotBlocked()
 
 bool KinematicBase::consistencyMeasuredvsCommanded()
 {
+    //TODO a refaire
     // distance bewteen twist. thetap is given a coefficient 0.04=0.2² to represent the speed at a 20cm lever
-    double speederror = attrCurrentICRSpeed.distanceTo(attrAcceptableICRSpeed, 1.0, 0.2);
+
+
+    //double speederror = attrCurrentICRSpeed.distanceTo(attrAcceptableICRSpeed, 1.0, 0.2);
 
     //////////////////////
 //    Log(DEBUG) << ">> KinematicBase::consistencyMeasuredvsCommanded()";
@@ -118,7 +115,9 @@ bool KinematicBase::consistencyMeasuredvsCommanded()
     ////////////////////
 
     // 20 mm/s difference accepted
-    return speederror < propMaxSpeedDiff;
+    //return speederror < propMaxSpeedDiff;
+
+    return true;
 }
 
 void KinematicBase::setOutputs()
@@ -132,7 +131,7 @@ void KinematicBase::setOutputs()
     outRearSteeringPositionCmd.write(attrMotorStateCommand.steering.rear.position);
 
     outFiltrationFeedback.write(attrQuality);
-    outFilteredICRSpeed.write(attrAcceptableICRSpeed);
+    outFilteredICRSpeed.write(attrCurrentICRSpeed);
     outRobotBlocked.write(attrRobotBlockedTimeout);
 }
 
@@ -140,7 +139,6 @@ void KinematicBase::createOrocosInterface()
 {
     addAttribute("attrICRSpeedCmd", attrICRSpeedCmd);
     addAttribute("attrCurrentICRSpeed", attrCurrentICRSpeed);
-    addAttribute("attrAcceptableICRSpeed", attrAcceptableICRSpeed);
     addAttribute("attrTurretState", attrTurretState);
     addAttribute("attrMotorStateCommand", attrMotorStateCommand);
     addAttribute("attrMotorsCurrentState", attrMotorsCurrentState);

@@ -11,7 +11,7 @@ function DiscoveryDeployer:load()
 end
 
 function DiscoveryDeployer:connect()
-	
+	assert( Deployer:addPeer("Reporting", me) )
 	return true
 end
 

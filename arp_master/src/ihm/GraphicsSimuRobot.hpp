@@ -12,7 +12,10 @@
 #include <boost/shared_ptr.hpp>
 
 #include <arp_core/Pose.h>
+#include <arp_core/ICRSpeedMsg.h>
 #include <arp_master/SetPen.h>
+
+#include <math/core>
 
 #include <wx/wx.h>
 
@@ -70,7 +73,14 @@ namespace arp_master
          * plot robot
          * \param dc wx Device Controller for pen
          */
-        void paint(wxDC& dc);
+        void paint(wxPaintDC& dc);
+
+        /**
+         * plot the vertival projection of the ICR sphere
+         */
+        void paintCircle(wxPaintDC& dc, double sphereDirection) const;
+        void paintVector(wxPaintDC& dc, double sphereDirection, double size, wxColour colour) const;
+        void paintIcrSphere(wxPaintDC& dc) const;
 
     private:
         /**
@@ -79,6 +89,8 @@ namespace arp_master
         static const int DEFAULT_PEN_R = 0xb3;
         static const int DEFAULT_PEN_G = 0xb8;
         static const int DEFAULT_PEN_B = 0xff;
+
+        static const int ICR_SPHERE_RADIUS = 50;
 
         // Callbacks
         /**
@@ -90,6 +102,11 @@ namespace arp_master
          * called every time SimuRobot receives a Pose message
          */
         void computedPoseCallback(const arp_core::PoseConstPtr& c);
+
+        /**
+         * called every time SimuRobot receives an ICRSpeedMsg message
+         */
+        void icrSpeedCallback(const arp_core::ICRSpeedMsgPtr& p);
 
         /**
          * called every time SimuRobot receives a SetPen service call
@@ -120,6 +137,11 @@ namespace arp_master
          *
          */
         Rotation2 m_computedHeading;
+
+        /*
+         * Computed Speed in the ICRSpeed formalism
+         */
+        ICRSpeed m_computedSpeed;
 
 
         /**
@@ -195,6 +217,7 @@ namespace arp_master
 
         ros::Subscriber m_realPosSub;
         ros::Subscriber m_computedPosSub;
+        ros::Subscriber m_icrSpeedSub;
 
 
         /**

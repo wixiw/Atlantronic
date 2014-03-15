@@ -29,7 +29,6 @@ class KinematicBase: public OdsTaskContext
         double attrBlockTime;
         arp_math::ICRSpeed attrICRSpeedCmd;
         arp_math::ICRSpeed attrCurrentICRSpeed;
-        arp_math::ICRSpeed attrAcceptableICRSpeed;
         arp_model::MotorState attrMotorStateCommand;
         /**Internal model feedback, for debug info only */
         arp_model::TurretState attrTurretState;

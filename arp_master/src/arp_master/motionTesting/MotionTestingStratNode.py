@@ -5,7 +5,7 @@ import roslib; roslib.load_manifest('arp_master')
 import random
 
 from arp_master import *
-from arp_master.strat_2014 import *
+#from arp_master.strat_2014 import *
 
 ###########################  TEMPORAL BEHAVIOR
 
@@ -116,22 +116,22 @@ class MainStateMachine(smach.StateMachine):
             # SPECIFIC DEBUG TESTS ##########################
             
             smach.StateMachine.add('M1',
-                       AmbiOmniDirectOrder2(Pose2D( 0.950, 0, 0) ,
-                                           vmax = 1.0),
+                       AmbiOmniDirectOrder2Pass(Pose2D( 0.950, 0, 0) ,
+                                           vpasse=0.1,vmax = 0.3),
                       transitions={'succeeded':'waitM2', 'timeout':'end'})
              
             smach.StateMachine.add('waitM2',
-                      WaiterState(1),
+                      WaiterState(5),
                       transitions={'timeout':'M2'})
              
                         
             smach.StateMachine.add('M2',
-                       AmbiOmniDirectOrder2(Pose2D( 0.600, 0,pi/2) ,
+                       AmbiOmniDirectOrder2(Pose2D( 0.950, 0.3,0) ,
                                            vmax = 1.0),
                       transitions={'succeeded':'waitMove', 'timeout':'end'})            
             
             smach.StateMachine.add('waitMove',
-                      WaiterState(1),
+                      WaiterState(5),
                       transitions={'timeout':'Move'})
                         
             # TEST OF ALL RANDOM OMNIDIRECT ORDERS ##########################
@@ -139,15 +139,70 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('Move', RandomMove(),
                                    transitions={'succeeded':'Move', 'timeout':'end'}) 
 
-                        
+            # TEST OF PASS ##########################      
+            smach.StateMachine.add('PASS1',
+                       AmbiOmniDirectOrder2Pass(Pose2D( 1.050, 0.5, 0) ,
+                                           vpasse=0.3,vmax = 1),
+                      transitions={'succeeded':'PASS2', 'timeout':'end'})   
+            smach.StateMachine.add('PASS2',
+                       AmbiOmniDirectOrder2Pass(Pose2D( 0.750, 0.7, pi/2) ,
+                                           vpasse=0.3,vmax = 1),
+                      transitions={'succeeded':'PASS3', 'timeout':'end'})   
+            smach.StateMachine.add('PASS3',
+                       AmbiOmniDirectOrder2Pass(Pose2D( 0.450, 0, pi ) ,
+                                           vpasse=0.3,vmax = 1),
+                      transitions={'succeeded':'PASS4', 'timeout':'end'})   
+            smach.StateMachine.add('PASS4',
+                       AmbiOmniDirectOrder2(Pose2D( 0.750, 0, -pi) ,
+                                           vmax = 1),
+                      transitions={'succeeded':'end', 'timeout':'end'})     
        
+            # TEST OF RECAL ##########################  
 
+            smach.StateMachine.add('RECAL0',
+                       AmbiOmniDirectOrder2(Pose2D( 1.350, 0, 0) ,
+                                           vmax = 0.3),
+                      transitions={'succeeded':'RECAL1', 'timeout':'end'})     
+            
+            smach.StateMachine.add('RECAL1',
+                       RecalOnBorder('RIGHT'),
+                      transitions={'recaled':'RECAL3','non-recaled':'end' ,'problem':'end'})
+            
+            smach.StateMachine.add('RECAL3',
+                       AmbiOmniDirectOrder2Pass(Pose2D( 1.150, 0, pi/6) ,
+                                           vpasse=0.3,vmax = 0.3),
+                      transitions={'succeeded':'RECAL4', 'timeout':'end'})  
+            
+            smach.StateMachine.add('RECAL4',
+                       AmbiOmniDirectOrder2(Pose2D( 0.900, 0.900, pi/2) ,
+                                           vmax = 0.3),
+                      transitions={'succeeded':'RECAL5', 'timeout':'end'}) 
+            
+            smach.StateMachine.add('RECAL5',
+                       RecalOnBorder('UP'),
+                      transitions={'recaled':'RECAL6','non-recaled':'end' ,'problem':'end'})   
+                        
+            smach.StateMachine.add('RECAL6',
+                       AmbiOmniDirectOrder2Pass(Pose2D( 0.900, 0.700, pi/3) ,
+                                           vpasse=0.3,vmax = 0.3),
+                      transitions={'succeeded':'RECAL0', 'timeout':'end'}) 
+            
+            
+            #### Test Accel
+            smach.StateMachine.add('TestAccelFront',
+                       AmbiOmniDirectOrder2(Pose2D( 1.300, 0, 0) ,
+                                           vmax = 0.7),
+                      transitions={'succeeded':'TestAccelRear', 'timeout':'end'})   
+            smach.StateMachine.add('TestAccelRear',
+                       AmbiOmniDirectOrder2(Pose2D( 0.350, 0, 0) ,
+                                           vmax = 0.7),
+                      transitions={'succeeded':'TestAccelFront', 'timeout':'end'})   
 
 class RandomMove(MotionState):
     def __init__(self):
         MotionState.__init__(self)
-        #seed = random.randint(0, 1000)
-        seed=221
+        seed = random.randint(0, 1000)
+        #seed=626
         random.seed(seed)
         rospy.loginfo("------------MOTIONTESTING INIT----------------")
         rospy.loginfo("randomized with seed: %d" % (seed))
@@ -163,9 +218,10 @@ class RandomMove(MotionState):
         rospy.loginfo("x =%.3f y=%.3f theta=%.3f"%(self.x, self.y, self.theta))
         rospy.loginfo("vmax =%.3f"%(self.vmax))
 
-        if random.uniform(0, 1)< 0.2 :
+        if random.uniform(0, 1)< 1.0 :
             rospy.loginfo("Stop on point")
             self.omnidirect2(self.x, self.y, self.theta, self.vmax)
+            #self.omnidirect2(self.x, self.y, self.theta, 1)
         else:
             rospy.loginfo("Pass with v=%.3f"%(self.vpass))
             self.omnidirect2Pass(self.x, self.y, self.theta, self.vpass,self.vmax)
@@ -181,7 +237,8 @@ if __name__ == '__main__':
     except smach.InvalidTransitionError:
         rospy.loginfo("handling smach.InvalidTransitionError ...")
         rospy.loginfo("Exiting")
-        pass
+        while True:
+            pass
     
     except rospy.ROSInterruptException: 
         rospy.loginfo("handling rospy.ROSInterruptException ...")

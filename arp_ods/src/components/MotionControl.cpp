@@ -9,7 +9,6 @@
 #include <rtt/Component.hpp>
 #include "control/orders/Logger.hpp"
 
-
 using namespace arp_ods;
 using namespace orders;
 using namespace RTT;
@@ -20,15 +19,14 @@ using namespace arp_math;
 ORO_LIST_COMPONENT_TYPE( arp_ods::MotionControl)
 
 MotionControl::MotionControl(const std::string& name) :
-        OdsTaskContext(name), attrVmax_asked(1.0), attrCurrentOrder("default"), m_ICRSpeedBuffer(),m_norder(0)
+        OdsTaskContext(name), attrVmax_asked(1.0), attrCurrentOrder("default"), m_ICRSpeedBuffer(), m_norder(0)
 
 {
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
-     arp_ods::orders::Logger::InitFile("arp_ods", DEBUG);
+    arp_ods::orders::Logger::InitFile("arp_ods", INFO);
 
-    attrOrder=OrderFactory::createDefaultOrder();
+    attrOrder = OrderFactory::createDefaultOrder();
     createOrocosInterface();
-
 
 }
 
@@ -153,8 +151,9 @@ bool MotionControl::ooSetOrder(shared_ptr<MotionOrder> order)
     attrOrder->setICRSpeedBuffer(m_ICRSpeedBuffer);
 
     m_norder++;
-    outDEBUG10.write(((double)m_norder)/10.0);
-    arp_ods::orders::Log(Info) << "-------------------- order number # ---------------------   >> " <<  m_norder  << endlog();
+    outDEBUG8.write(((double) m_norder) / 10.0);
+    arp_ods::orders::Log(Info) << "-------------------- order number # ---------------------   >> " << m_norder
+            << endlog();
 
     return true;
     /* }

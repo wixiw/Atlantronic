@@ -104,7 +104,7 @@ void ObstacleManager::updateHook()
         {
             dist(i) = (obstacles[combs[i](0)] - obstacles[combs[i](1)]).norm();
         }
-        int iMin;
+        unsigned int iMin;
         double dmin = dist.minCoeff(&iMin);
         if( dmin < propMinProximity )
         {

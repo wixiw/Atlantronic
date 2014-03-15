@@ -61,6 +61,7 @@ Localizator::Localizator(const std::string& name)
 , propLaserThetaSigmaSmooth(1.0) //, propLaserThetaSigmaSmooth(1000)
 , propIEKFMaxIt(10)
 , propIEKFInnovationMin(0.0122474)
+, propTimeReporting(false)
 , smoothMode(false)
 , predictionOk(false)
 , updateOk(false)
@@ -69,6 +70,7 @@ Localizator::Localizator(const std::string& name)
 , currentMode(ODO_ONLY)
 , currentQuality(LOST)
 , currentVisibility(NONE)
+, m_timer(0)
 {
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
     //arp_rlu::lsl::Logger::InitFile("LSL", WARN);

@@ -9,6 +9,8 @@
 	<include file="$(find arp_hml)/script/ros/launch/arp_hml_ros_simul.launch"/>
 	<node name="GraphicsSimu" pkg="arp_master" type="GraphicsSimuNode" args="/Ubiquity/simuRealPose"
 		output="screen" launch-prefix="nice"/>
-	<node name="ManualStratNode" pkg="arp_master" type="ManualStratNode.py" args=""
-		output="screen"/>
+	<node name="ManualStratNode" pkg="arp_master" type="ManualStratNode.py" 		
+		args="" output="screen"
+		respawn="true"
+	/>
 </launch>

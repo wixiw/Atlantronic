@@ -10,14 +10,43 @@
 
 #include "Stm32TaskContext.hpp"
 #include "linux/tools/robot_interface.h"
+#include "ros/ros.h"
+
+#include <arp_stm32/StartGyroCalibration.h>
+#include <arp_stm32/StopGyroCalibration.h>
+#include <arp_stm32/SetGyroPosition.h>
+#include <arp_stm32/ResetStm32.h>
 
 namespace arp_stm32
 {
+
+class DiscoveryLock
+{
+    public:
+        DiscoveryLock(pthread_mutex_t* mutex);
+        ~DiscoveryLock();
+
+        enum eLockResult
+        {
+            SUCCEED = 0, FAILED = 1
+        };
+
+        //lock is true if the lock failed
+        eLockResult lock();
+        void unlock();
+
+    private:
+        pthread_mutex_t* m_mutex;
+};
 
 class Discovery: public Stm32TaskContext
 {
     public:
         Discovery(const std::string& name);
+
+/****************************************************************
+ * Interface Orocos
+ ****************************************************************/
 
         bool configureHook();
         void updateHook();
@@ -25,29 +54,70 @@ class Discovery: public Stm32TaskContext
 
         /**
          * Ask the gyrometer to freeze its position and to start the calibration process
+         * returns true on success
          */
-        void ooStartCalibration();
+        bool ooStartCalibration();
 
         /**
          * Ask the gyrometer to stop the calibration process and to re-publish position datas
+         * returns true on success
          */
-        void ooStopCalibration();
+        bool ooStopCalibration();
 
         /**
          * Force a new gyrometer position, in rad
          */
-        void ooSetPosition(double newAngle);
+        bool ooSetPosition(double newAngle);
 
         /**
          * Resets the Stm32 board
          */
-        void ooReset();
+        bool ooReset();
+
+/****************************************************************
+ * Interface ROS
+ ****************************************************************/
+
+        /** node handle to store the service advertiser srvStartGyroCalibration**/
+        ros::ServiceServer m_srvStartGyroCalibration;
+        /** node handle to store the service advertiser srvStopGyroCalibration**/
+        ros::ServiceServer m_srvStopGyroCalibration;
+        /** node handle to store the service advertiser srvSetGyroPosition**/
+        ros::ServiceServer m_srvSetGyroPosition;
+        /** node handle to store the service advertiser m_srvResetStm32**/
+        ros::ServiceServer m_srvResetStm32;
+
+        /**
+         * ROS wrapper on the HmlMonitor.ooStartCalibration operation
+         */
+        bool srvStartGyroCalibration(StartGyroCalibration::Request& req, StartGyroCalibration::Response& res);
+
+        /**
+         * ROS wrapper on the HmlMonitor.ooStopCalibration operation
+         */
+        bool srvStopGyroCalibration(StopGyroCalibration::Request& req, StopGyroCalibration::Response& res);
+
+        /**
+         * ROS wrapper on the HmlMonitor.ooSetPosition operation
+         */
+        bool srvSetGyroPosition(SetGyroPosition::Request& req, SetGyroPosition::Response& res);
+
+        /**
+         * ROS wrapper on the HmlMonitor.ooReset operation
+         */
+        bool srvResetStm32(ResetStm32::Request& req, ResetStm32::Response& res);
+
+
+
+
 
     protected:
         static void robotItfCallbackWrapper(void* arg);
         void robotItfUpdated();
-        RobotInterface m_robotItf;
         void createOrocosInterface();
+        void createRosInterface();
+
+        RobotInterface m_robotItf;
         double attrGyrometerAngle;
 
         /**
@@ -56,8 +126,7 @@ class Discovery: public Stm32TaskContext
 
         //Gyrometer position in radian in [-pi;pi[
         RTT::OutputPort<double> outGyrometerAngle;
-        //unprocessed datas from the gyrometer
-        RTT::OutputPort<double> outGyrometerRawData;
+        RTT::OutputPort<double> outGyrometerAngleDegree;
 
 };
 

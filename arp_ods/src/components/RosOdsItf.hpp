@@ -91,6 +91,11 @@ class RosOdsItf: public OdsTaskContext
          * time it has blocked
          */
         double m_blockTime;
+
+        /*
+         *  reflexxees trajectory generator used by the order
+         */
+        OnlineTrajectoryGenerator OTG;
 };
 
 } /* namespace arp_rlu */

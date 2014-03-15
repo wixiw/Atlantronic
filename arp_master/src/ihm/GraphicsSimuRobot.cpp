@@ -30,12 +30,12 @@ GraphicsSimuRobot::GraphicsSimuRobot(const ros::NodeHandle& nh,
     m_robotLight = wxBitmap(m_robotLightImage);
 
     // Suscribers
-    m_realPosSub = ros::NodeHandle().subscribe(topicName, 1,
-            &GraphicsSimuRobot::realPoseCallback, this);
-
-    // Suscribers
+//    m_realPosSub = ros::NodeHandle().subscribe("Localizator/pose", 1,
+//            &GraphicsSimuRobot::realPoseCallback, this);
     m_computedPosSub = ros::NodeHandle().subscribe("Localizator/pose", 1,
             &GraphicsSimuRobot::computedPoseCallback, this);
+    m_icrSpeedSub = ros::NodeHandle().subscribe("Odometry/speed", 1,
+            &GraphicsSimuRobot::icrSpeedCallback, this);
 
     // Services
     set_pen_srv_ = nh_.advertiseService("set_pen",
@@ -53,6 +53,16 @@ void GraphicsSimuRobot::computedPoseCallback(const arp_core::PoseConstPtr& p)
 {
     m_computedPosition = Vector2(p->x, p->y);
     m_computedHeading = Rotation2(p->theta);
+
+    //As our simulation is nearly perfect we link it to the computed pos
+    realPoseCallback(p);
+}
+
+void GraphicsSimuRobot::icrSpeedCallback(const arp_core::ICRSpeedMsgPtr& p)
+{
+    m_computedSpeed.ro(p->ro);
+    m_computedSpeed.phi(p->phi);
+    m_computedSpeed.delta(p->delta);
 }
 
 bool GraphicsSimuRobot::setPenCallback(SetPen::Request& req, SetPen::Response&)
@@ -150,13 +160,71 @@ void GraphicsSimuRobot::update(wxMemoryDC& path_dc, float canvas_width,
     old_canvas_y_ = m_realCanvasY;
 }
 
-void GraphicsSimuRobot::paint(wxDC& dc)
+void GraphicsSimuRobot::paintCircle(wxPaintDC& dc, double sphereDirection) const
+{
+     dc.SetBrush(*wxTRANSPARENT_BRUSH);
+     dc.SetPen(*wxWHITE_PEN);
+     dc.DrawCircle(m_computedCanvasX, m_computedCanvasY, ICR_SPHERE_RADIUS);
+
+     //the angle is inverted due to drawing axis
+     int sphereX = m_computedCanvasX + ICR_SPHERE_RADIUS*cos(sphereDirection);
+     int sphereY = m_computedCanvasY + ICR_SPHERE_RADIUS*sin(sphereDirection);
+
+     dc.SetPen(*wxWHITE_PEN);
+     dc.DrawLine(m_computedCanvasX, m_computedCanvasY, sphereX, sphereY);
+/*
+     int orthoIcrX1 = m_computedCanvasX + ICR_SPHERE_RADIUS*cos(sphereDirection+M_PI_2);
+     int orthoIcrY1 = m_computedCanvasY + ICR_SPHERE_RADIUS*sin(sphereDirection+M_PI_2);
+     int orthoIcrX2 = m_computedCanvasX + ICR_SPHERE_RADIUS*cos(sphereDirection-M_PI_2);
+     int orthoIcrY2 = m_computedCanvasY + ICR_SPHERE_RADIUS*sin(sphereDirection-M_PI_2);
+     dc.DrawLine(orthoIcrX1, orthoIcrY1, orthoIcrX2, orthoIcrY2);*/
+}
+
+void GraphicsSimuRobot::paintVector(wxPaintDC& dc, double direction, double size, wxColour colour) const
+{
+    //the angle is inverted due to drawing axis
+    int icrX = m_computedCanvasX + size*ICR_SPHERE_RADIUS*cos(direction);
+    int icrY = m_computedCanvasY + size*ICR_SPHERE_RADIUS*sin(direction);
+
+    wxPen icrPen;
+    wxBrush icrBrush;
+    icrPen.SetWidth(2);
+    icrPen.SetColour(colour);
+    icrBrush.SetColour(colour);
+
+    dc.SetPen(icrPen);
+    dc.SetBrush(icrBrush);
+
+    dc.DrawLine(m_computedCanvasX, m_computedCanvasY, icrX, icrY);
+    dc.SetPen(*wxBLACK_PEN);
+    dc.DrawCircle(icrX, icrY, 4);
+}
+
+
+
+void GraphicsSimuRobot::paintIcrSphere(wxPaintDC& dc) const
+{
+    double sphereDirection = -m_computedSpeed.phi() -m_computedHeading.angle();
+
+    paintCircle(dc, sphereDirection);
+    paintVector(dc, sphereDirection, m_computedSpeed.ro(), *wxWHITE);
+    paintVector(dc, sphereDirection- sign(m_computedSpeed.delta())*M_PI_2, 1 - fabs(pow(m_computedSpeed.delta(),2)/M_PI_2) , *wxRED);
+}
+
+//void GraphicsSimuRobot::paintOneTurret(wxPaintDC& dc, int x, int y)
+//{
+//
+//}
+
+void GraphicsSimuRobot::paint(wxPaintDC& dc)
 {
     dc.DrawBitmap(m_robotLight, m_computedCanvasX - (m_robotLight.GetWidth() / 2),
             m_computedCanvasY - (m_robotLight.GetHeight() / 2), true);
 
     dc.DrawBitmap(robot_, m_realCanvasX - (robot_.GetWidth() / 2),
             m_realCanvasY - (robot_.GetHeight() / 2), true);
+
+    paintIcrSphere(dc);
 
 }
 

@@ -17,14 +17,12 @@ using namespace orders;
 using namespace RTT;
 using namespace std;
 
-ORO_LIST_COMPONENT_TYPE( arp_ods::RosOdsItf )
+ORO_LIST_COMPONENT_TYPE( arp_ods::RosOdsItf)
 
-RosOdsItf::RosOdsItf(std::string const name):
-        OdsTaskContext(name),
-        m_actionServer("MotionControl", boost::bind(&RosOdsItf::newOrderCB, this, _1), false),
-        m_blockTime(0.0)
+RosOdsItf::RosOdsItf(std::string const name) :
+        OdsTaskContext(name), m_actionServer("MotionControl", boost::bind(&RosOdsItf::newOrderCB, this, _1), false), m_blockTime(
+                0.0),OTG()
 {
-    //arp_ods::orders::Logger::InitFile("arp_ods", DEBUG);
 
     createOrocosInterface();
     createRosInterface();
@@ -36,8 +34,8 @@ RosOdsItf::RosOdsItf(std::string const name):
 bool RosOdsItf::configureHook()
 {
     bool res = OdsTaskContext::configureHook();
-    res &= getOperation("MotionControl",      "ooSetOrder",  m_ooSetOrder);
-    res &= getOperation("MotionControl",      "ooSetVMax",  m_ooSetVMax);
+    res &= getOperation("MotionControl", "ooSetOrder", m_ooSetOrder);
+    res &= getOperation("MotionControl", "ooSetVMax", m_ooSetVMax);
     return res;
 }
 
@@ -64,12 +62,14 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
 
     arp_ods::orders::Log(Info) << " humhum **********params.getMaxRobotSpeed() " << params.getMaxRobotSpeed();
 
-    UbiquityMotionState currentMotionState(pose,speed);
-    
-    if (goal->move_type == "OMNIDIRECT2" or goal->move_type == "OPENLOOP" or goal->move_type == "REPLAY" or goal->move_type == "STAY")
+    UbiquityMotionState currentMotionState(pose, speed);
+
+    if (goal->move_type == "OMNIDIRECT2" or goal->move_type == "OPENLOOP" or goal->move_type == "REPLAY"
+            or goal->move_type == "STAY")
     {
-        m_order=OrderFactory::createOrder(goal, currentMotionState, params);
-        arp_ods::orders::Log(Info) << " New Order! " << goal->move_type<<endlog();
+        m_order = OrderFactory::createOrder(goal, currentMotionState, params);
+        m_order->setOTG(&OTG);
+        arp_ods::orders::Log(Info) << " New Order! " << goal->move_type << endlog();
     }
     else
     {
@@ -77,7 +77,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         goto abort;
     }
 
-    if( m_ooSetOrder(m_order) == false )
+    if (m_ooSetOrder(m_order) == false)
     {
         goto abort;
     }
@@ -98,11 +98,11 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
 
         //If order is in error something went wrong
         bool inError;
-        if( inCurrentOrderIsInError.readNewest(inError) != NewData )
+        if (inCurrentOrderIsInError.readNewest(inError) != NewData)
         {
             inError = false;
         }
-        if ( inError )
+        if (inError)
         {
             arp_ods::orders::Log(Error) << goal->move_type.c_str() << ": not processed due to MODE_ERROR" << endlog();
             goto abort;
@@ -110,18 +110,19 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
 
         //robot is blocked ?
         bool blocked;
-        double time=getTime();
+        double time = getTime();
         inRobotBlocked.readNewest(blocked);
-        if(blocked and time-m_blockTime>1.0) //1 of occultation, to allow the beginning of the new motion
+        if (blocked and time - m_blockTime > 1.0) //1 of occultation, to allow the beginning of the new motion
         {
-            arp_ods::orders::Log(Error) << goal->move_type.c_str() << ": not processed due to Robot Blockage detection" << endlog();
-            m_blockTime= time;
+            arp_ods::orders::Log(Error) << goal->move_type.c_str() << ": not processed due to Robot Blockage detection"
+                    << endlog();
+            m_blockTime = time;
             goto abort;
         }
 
         r.sleep();
 
-        if( inCurrentOrderIsFinished.readNewest(finished) != NewData )
+        if (inCurrentOrderIsFinished.readNewest(finished) != NewData)
         {
             finished = false;
         }
@@ -129,28 +130,25 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
     //if we are here it's because an order has been interrupt and the robot is halted
     goto success;
 
-    abort:
-        inPose.readNewest(pose);
-        result.x_end = pose.x();
-        result.y_end = pose.y();
-        result.theta_end = pose.h();
-        m_order = OrderFactory::createStayOrder(currentMotionState, params);
-        m_ooSetOrder(m_order);
-        m_actionServer.setAborted(result);
-        return;
-    success:
-        ROS_INFO("%s: Finished", goal->move_type.c_str());
-        inPose.readNewest(pose);
-        result.x_end = pose.x();
-        result.y_end = pose.y();
-        result.theta_end = pose.h();
-        m_actionServer.setSucceeded(result);
-        return;
-    preempted:
-        m_order = OrderFactory::createStayOrder(currentMotionState, params);
-        m_ooSetOrder(m_order);
-        m_actionServer.setPreempted();
-        return;
+    abort: inPose.readNewest(pose);
+    result.x_end = pose.x();
+    result.y_end = pose.y();
+    result.theta_end = pose.h();
+    m_order = OrderFactory::createStayOrder(currentMotionState, params);
+    m_ooSetOrder(m_order);
+    m_actionServer.setAborted(result);
+    return;
+    success: ROS_INFO("%s: Finished", goal->move_type.c_str());
+    inPose.readNewest(pose);
+    result.x_end = pose.x();
+    result.y_end = pose.y();
+    result.theta_end = pose.h();
+    m_actionServer.setSucceeded(result);
+    return;
+    preempted: m_order = OrderFactory::createStayOrder(currentMotionState, params);
+    m_ooSetOrder(m_order);
+    m_actionServer.setPreempted();
+    return;
 }
 
 bool RosOdsItf::setVMaxCallback(SetVMax::Request& req, SetVMax::Response& res)
@@ -158,15 +156,14 @@ bool RosOdsItf::setVMaxCallback(SetVMax::Request& req, SetVMax::Response& res)
     return m_ooSetVMax(req.vMax);
 }
 
-
 void RosOdsItf::createOrocosInterface()
 {
-    addPort("inPose",inPose);
-    addPort("inSpeed",inSpeed);
-    addPort("inParams",inParams);
-    addPort("inCurrentOrderIsFinished",inCurrentOrderIsFinished);
-    addPort("inCurrentOrderIsInError",inCurrentOrderIsInError);
-    addPort("inRobotBlocked",inRobotBlocked);
+    addPort("inPose", inPose);
+    addPort("inSpeed", inSpeed);
+    addPort("inParams", inParams);
+    addPort("inCurrentOrderIsFinished", inCurrentOrderIsFinished);
+    addPort("inCurrentOrderIsInError", inCurrentOrderIsInError);
+    addPort("inRobotBlocked", inRobotBlocked);
 
 }
 
@@ -175,5 +172,4 @@ void RosOdsItf::createRosInterface()
     ros::NodeHandle nh;
     m_srvSetVMax = nh.advertiseService("/MotionControl/setVMax", &RosOdsItf::setVMaxCallback, this);
 }
-
 

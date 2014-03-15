@@ -49,10 +49,17 @@ class Odometry4UbiquityICR: public RluTaskContext
         RTT::InputPort<double> inHeading;
         /** Computed Twist */
         RTT::OutputPort<arp_math::EstimatedICRSpeed> outICRSpeed;
+        RTT::OutputPort<arp_math::Twist2D> outTwist;
         /** Slippage detected */
         RTT::OutputPort<arp_model::SlippageReport> outSlippageDetected;
         /** Estimated Pose */
         RTT::OutputPort<arp_math::EstimatedPose2D> outPose;
+
+        /** Angular speeds from 2 turret speeds */
+        RTT::OutputPort<double> outLRiOmega;
+        RTT::OutputPort<double> outRiReOmega;
+        RTT::OutputPort<double> outReLOmega;
+
 
         /**
          * Permet d'ajouter port/operations à l'interface Orocos.

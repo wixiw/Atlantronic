@@ -35,7 +35,8 @@ UbiquityParams::UbiquityParams():
         m_maxSteeringAcc(-1),
         m_maxSteeringTorque(-1),
         m_maxRobotSpeed(-1),
-        m_maxRobotAccel(-1)
+        m_maxRobotAccel(-1),
+        m_maxRobotJerk(-1)
 {
 }
 
@@ -62,6 +63,7 @@ void UbiquityParams::fillWithFakeValues(void)
     m_maxSteeringTorque=-1;
     m_maxRobotSpeed=1.0;
     m_maxRobotAccel=4.0;
+    m_maxRobotJerk=20.0;
 }
 
 
@@ -143,14 +145,19 @@ bool UbiquityParams::check() const
         res = false;
     }
 
-    if( m_maxRobotSpeed <= 0.0 )
+    if( m_maxRobotSpeed <= 0.1 || m_maxRobotSpeed > 2)
     {
-        Log( ERROR ) << "max Robot speed is negative";
+        Log( ERROR ) << "max Robot speed is out of ]0.1;2]";
         res = false;
     }
-    if( m_maxRobotAccel <= 0.0 )
+    if( m_maxRobotAccel <= 0.1 || m_maxRobotAccel > 10)
     {
-        Log( ERROR ) << "max Robot accel is negative";
+        Log( ERROR ) << "max Robot accel is out of ]0.1;10] m/s2";
+        res = false;
+    }
+    if( m_maxRobotJerk < 1 || m_maxRobotJerk > 100)
+    {
+        Log( ERROR ) << "max Robot jerk is out of [1;100] m/s3";
         res = false;
     }
 
@@ -271,15 +278,21 @@ Pose2D UbiquityParams::getChassisCenter() const
     return m_chassisCenter;
 }
 
+double UbiquityParams::getMaxRobotSpeed() const
+{
+    return m_maxRobotSpeed;
+}
+
 double UbiquityParams::getMaxRobotAccel() const
 {
     return m_maxRobotAccel;
 }
 
-double UbiquityParams::getMaxRobotSpeed() const
+double UbiquityParams::getMaxRobotJerk() const
 {
-    return m_maxRobotSpeed;
+    return m_maxRobotJerk;
 }
+
 
 
 
@@ -378,21 +391,20 @@ Pose2D& UbiquityParams::getChassisCenterRef()
     return m_chassisCenter;
 }
 
-double& UbiquityParams::getMaxRobotAccelRef()
-{
-    return m_maxRobotAccel;
-}
-
 double& UbiquityParams::getMaxRobotSpeedRef()
 {
     return m_maxRobotSpeed;
 }
 
+double& UbiquityParams::getMaxRobotAccelRef()
+{
+    return m_maxRobotAccel;
+}
 
-
-
-
-
+double& UbiquityParams::getMaxRobotJerkRef()
+{
+    return m_maxRobotJerk;
+}
 
 void UbiquityParams::setLeftTurretZero(double leftTurretZero)
 {
@@ -422,16 +434,6 @@ void UbiquityParams::setRearWheelDiameter(double rearWheelDiameter)
 void UbiquityParams::setRightWheelDiameter(double rightWheelDiameter)
 {
     m_rightWheelDiameter = rightWheelDiameter;
-}
-
-void UbiquityParams::setMaxRobotAccel(double maxRobotAccel)
-{
-    m_maxRobotAccel = maxRobotAccel;
-}
-
-void UbiquityParams::setMaxRobotSpeed(double maxRobotSpeed)
-{
-    m_maxRobotSpeed = maxRobotSpeed;
 }
 
 
