@@ -24,9 +24,6 @@ class Odometry4UbiquityICR: public RluTaskContext
         /** Callback d'update.*/
         virtual void updateHook();
 
-        // Operation for reset
-        bool ooInitialize(double x, double y, double theta);
-
     protected:
         /**Internal model feedback, for debug info only */
         arp_model::TurretState attrTurretState;
