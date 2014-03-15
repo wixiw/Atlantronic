@@ -6,6 +6,7 @@ local me = "LaserOnlyLocalizator"
 
 function LaserOnlyLocalizatorDeployer:load()
 	assert( Deployer:loadComponent(me, "arp_rlu::LaserOnlyLocalizatorCpn") )
+	assert( Deployer:addPeer("DotGraph",me))
 	assert( Deployer:setActivity(me,0.0,0,rtt.globals.ORO_SCHED_OTHER) )
 	return true
 end

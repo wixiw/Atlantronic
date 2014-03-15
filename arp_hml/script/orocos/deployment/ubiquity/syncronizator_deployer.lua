@@ -6,6 +6,7 @@ local me = "Syncronizator"
 
 function Syncronizator:load()
 	assert( Deployer:loadComponent(me,"arp_hml::Syncronizator"))
+	assert( Deployer:addPeer("DotGraph",me))
 	assert( Deployer:setMasterSlaveActivity("MotionScheduler", me))
 	
 	return true

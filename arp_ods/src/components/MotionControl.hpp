@@ -165,8 +165,6 @@ class MotionControl: public OdsTaskContext
          * minimum speed for twist that is stored
          */
         static const double MIN_STORED_TWIST_SPEED=0.005;
-
-
 };
 
 } /* namespace arp_ods */

@@ -6,6 +6,7 @@ local me = "Localizator"
 
 function LocalizatorDeployer:load()
 	Deployer:loadComponent(me, "arp_rlu::Localizator")
+	assert( Deployer:addPeer("DotGraph",me))
 	Deployer:setMasterSlaveActivity("MotionScheduler", me)
 	return true
 end

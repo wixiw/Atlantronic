@@ -5,6 +5,7 @@ local me = "KinematicBase"
 
 function KinematicBaseDeployer:load()
 	Deployer:loadComponent(me,"arp_ods::KinematicBase");
+	assert( Deployer:addPeer("DotGraph",me))
 	Deployer:setMasterSlaveActivity("MotionScheduler", me)
 end
 

@@ -5,9 +5,11 @@ IoSimulDeployer = ComposantDeployer:new()
 
 function IoSimulDeployer:load()
 	assert( Deployer:loadComponent("WoodheadIn","arp_hml::WoodheadSimul"))
+	assert( Deployer:addPeer("DotGraph","WoodheadIn"))
 	assert( Deployer:setMasterSlaveActivity("Can1", "WoodheadIn"))
 
 	assert( Deployer:loadComponent("WoodheadOut","arp_hml::WoodheadSimul"))
+	assert( Deployer:addPeer("DotGraph","WoodheadOut"))
 	assert( Deployer:setMasterSlaveActivity("Can1", "WoodheadOut"))
 	
 	return true

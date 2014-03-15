@@ -6,6 +6,7 @@ local me = "LocalizatorFilter"
 
 function LocalizatorFilterDeployer:load()
 	assert( Deployer:loadComponent(me, "arp_rlu::LocFilterCpn"))
+	assert( Deployer:addPeer("DotGraph",me))
 	assert( Deployer:setMasterSlaveActivity("MotionScheduler", me))
 	return true
 end

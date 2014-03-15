@@ -5,6 +5,7 @@ RosHmlItfDeployer = ComposantDeployer:new()
 
 function RosHmlItfDeployer:load()
 	assert( Deployer:loadComponent("RosHmlItf","arp_hml::RosHmlItf"))
+	assert( Deployer:addPeer("DotGraph","RosHmlItf"))
 	assert( Deployer:setActivity("RosHmlItf",0.050,0,rtt.globals.ORO_SCHED_OTHER))
 	return true
 end
