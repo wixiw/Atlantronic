@@ -6,6 +6,7 @@ local me = "Odometry"
 
 function OdometryDeployer:load()
 	assert( Deployer:loadComponent(me, "arp_rlu::Odometry4UbiquityICR") )
+	assert( Deployer:addPeer("DotGraph",me))
 	assert( Deployer:setMasterSlaveActivity("MotionScheduler", me) )
 	return true
 end

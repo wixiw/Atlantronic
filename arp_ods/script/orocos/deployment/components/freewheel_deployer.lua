@@ -4,7 +4,8 @@ MotionControlDeployer = ComposantDeployer:new()
 local me = "MotionControl"
 
 function MotionControlDeployer:load()
-	Deployer:loadComponent(me,"arp_ods::FreeWheel");
+	Deployer:loadComponent(me,"arp_ods::FreeWheel")
+	assert( Deployer:addPeer("DotGraph",me))
 	Deployer:setMasterSlaveActivity("MotionScheduler", me)
 end
 

@@ -6,6 +6,7 @@ local me = "FrontObstacleDetector"
 
 function FrontObstacleDetector:load()
 	assert( Deployer:loadComponent(me, "arp_rlu::FrontObstacleDetector"))
+	assert( Deployer:addPeer("DotGraph",me))
 	assert( Deployer:setActivity(me, 0, 0, rtt.globals.ORO_SCHED_OTHER) )
 	return true
 end

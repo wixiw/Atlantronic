@@ -6,6 +6,7 @@ MotorDeployer = ComposantDeployer:new()
 function MotorDeployer:loadMotor(name)
 	--sched_type 1 = RT 
 	assert( Deployer:loadComponent(name,"arp_hml::Faulhaber3268Bx4"))
+	assert( Deployer:addPeer("DotGraph",name))
 	assert( Deployer:setMasterSlaveActivity("Can1", name))
 	return true
 end

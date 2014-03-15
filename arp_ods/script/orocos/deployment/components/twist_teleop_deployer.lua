@@ -5,6 +5,7 @@ local me = "MotionControl"
 
 function MotionControlDeployer:load()
 	Deployer:loadComponent(me,"arp_ods::TwistTeleop");
+	assert( Deployer:addPeer("DotGraph",me))
 	Deployer:setMasterSlaveActivity("MotionScheduler", me)
 end
 

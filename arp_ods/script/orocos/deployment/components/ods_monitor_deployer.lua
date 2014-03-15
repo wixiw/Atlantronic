@@ -6,6 +6,7 @@ local me = "OdsMonitor"
 
 function OdsMonitorDeployer:load()
 	Deployer:loadComponent(me, "arp_core::Monitor")
+	assert( Deployer:addPeer("DotGraph",me))
 	Deployer:setActivity(me, 0.100, 10, 1)
 end
 

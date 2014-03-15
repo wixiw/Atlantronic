@@ -5,6 +5,7 @@ local me = "RosOdsItf"
 
 function RosOdsItfDeployer:load()
 	Deployer:loadComponent(me,"arp_ods::RosOdsItf");
+	assert( Deployer:addPeer("DotGraph",me))
 	Deployer:setActivity(me, 0.050, 10, 1)
 end
 

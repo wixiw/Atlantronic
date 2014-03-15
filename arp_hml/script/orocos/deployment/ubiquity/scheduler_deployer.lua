@@ -6,6 +6,7 @@ local me = "MotionScheduler"
 
 function SchedulerDeployer:load()
 	assert( Deployer:loadComponent(me,"arp_core::MotionScheduler"))
+	assert( Deployer:addPeer("DotGraph",me))
 	assert( Deployer:setMasterSlaveActivity("Can1", me))
 	return true
 end

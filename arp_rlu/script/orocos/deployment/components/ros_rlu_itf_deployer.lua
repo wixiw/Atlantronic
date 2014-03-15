@@ -6,6 +6,7 @@ local me = "RosRluItf"
 
 function RosRluItfDeployer:load()
 	assert( Deployer:loadComponent(me, "arp_rlu::RosRluItf") )
+	assert( Deployer:addPeer("DotGraph",me))
 	assert( Deployer:setActivity(me, 0.050, 10, 1) )
 	return true
 end
