@@ -41,6 +41,8 @@
 									<listOptionValue builtIn="false" value="/opt/ros_addons/laser_drivers/hokuyo_node/include"/>
 									<listOptionValue builtIn="false" value="/usr/lib/xenomai"/>
 									<listOptionValue builtIn="false" value="/usr/include/eigen3/"/>
+									<listOptionValue builtIn="false" value="/usr/include/wx-2.8"/>
+									<listOptionValue builtIn="false" value="/opt/ros_addons-electric/reflexxes_typeII/ReflexxesTypeII/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1393136034" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -59,6 +61,8 @@
 									<listOptionValue builtIn="false" value="/opt/ros_addons/laser_drivers/hokuyo_node/include"/>
 									<listOptionValue builtIn="false" value="/usr/lib/xenomai"/>
 									<listOptionValue builtIn="false" value="/usr/include/eigen3/"/>
+									<listOptionValue builtIn="false" value="/usr/include/wx-2.8"/>
+									<listOptionValue builtIn="false" value="/opt/ros_addons-electric/reflexxes_typeII/ReflexxesTypeII/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.399882191" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -84,6 +88,8 @@
 									<listOptionValue builtIn="false" value="/opt/ros_addons/laser_drivers/hokuyo_node/include"/>
 									<listOptionValue builtIn="false" value="/usr/lib/xenomai"/>
 									<listOptionValue builtIn="false" value="/usr/include/eigen3/"/>
+									<listOptionValue builtIn="false" value="/usr/include/wx-2.8"/>
+									<listOptionValue builtIn="false" value="/opt/ros_addons-electric/reflexxes_typeII/ReflexxesTypeII/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.2146203453" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -171,6 +177,74 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<folderInfo id="cdt.managedbuild.toolchain.gnu.base.281472934.759533393" name="/" resourcePath="arp_stm32">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.base.120853429" name="cdt.managedbuild.toolchain.gnu.base" superClass="cdt.managedbuild.toolchain.gnu.base" unusedChildren="">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.target.gnu.platform.base" name="Debug Platform" osList="linux,hpux,aix,qnx" superClass="cdt.managedbuild.target.gnu.platform.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1759459471" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.130284372"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.2124431460" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base.640232574">
+								<option id="gnu.cpp.compiler.option.include.paths.216907544" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/messages/std_msgs/include/std_msgs"/>
+									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/clients/cpp/roscpp/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/geometry_msgs/msg_gen/cpp/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/sensor_msgs/msg_gen/cpp/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/nav_msgs/msg_gen/cpp/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros/geometry/tf/include/tf"/>
+									<listOptionValue builtIn="false" value="/opt/ros/driver_common/driver_base/include"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ard_electric/arp_core/msg_gen/cpp/include}&quot;"/>
+									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/messages/std_msgs/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros_addons/orocos_toolchain/install/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros_addons/laser_drivers/hokuyo_node/include"/>
+									<listOptionValue builtIn="false" value="/usr/lib/xenomai"/>
+									<listOptionValue builtIn="false" value="/usr/include/eigen3/"/>
+									<listOptionValue builtIn="false" value="/usr/include/wx-2.8"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ard_trunk/arp_stm32/srv_gen/cpp/include}&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1065084432" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.200420532" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base.1829666111">
+								<option id="gnu.c.compiler.option.include.paths.902094149" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/messages/std_msgs/include/std_msgs"/>
+									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/clients/cpp/roscpp/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/geometry_msgs/msg_gen/cpp/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/sensor_msgs/msg_gen/cpp/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/nav_msgs/msg_gen/cpp/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros/geometry/tf/include/tf"/>
+									<listOptionValue builtIn="false" value="/opt/ros/driver_common/driver_base/include"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ard_electric/arp_core/msg_gen/cpp/include}&quot;"/>
+									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/messages/std_msgs/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros_addons/orocos_toolchain/install/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros_addons/laser_drivers/hokuyo_node/include"/>
+									<listOptionValue builtIn="false" value="/usr/lib/xenomai"/>
+									<listOptionValue builtIn="false" value="/usr/include/eigen3/"/>
+									<listOptionValue builtIn="false" value="/usr/include/wx-2.8"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ard_trunk/arp_stm32/srv_gen/cpp/include}&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.648836184" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.1632319750" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base.854010566"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.base.2091956823" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base.767283542"/>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.base.1514873612" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base.491831498">
+								<option id="gnu.both.asm.option.include.paths.2137400025" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/messages/std_msgs/include/std_msgs"/>
+									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/clients/cpp/roscpp/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/geometry_msgs/msg_gen/cpp/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/sensor_msgs/msg_gen/cpp/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros/common_msgs/nav_msgs/msg_gen/cpp/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros/geometry/tf/include/tf"/>
+									<listOptionValue builtIn="false" value="/opt/ros/driver_common/driver_base/include"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ard_electric/arp_core/msg_gen/cpp/include}&quot;"/>
+									<listOptionValue builtIn="false" value="/opt/ros/ros_comm/messages/std_msgs/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros_addons/orocos_toolchain/install/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros_addons/laser_drivers/hokuyo_node/include"/>
+									<listOptionValue builtIn="false" value="/usr/lib/xenomai"/>
+									<listOptionValue builtIn="false" value="/usr/include/eigen3/"/>
+									<listOptionValue builtIn="false" value="/usr/include/wx-2.8"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ard_trunk/arp_stm32/srv_gen/cpp/include}&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1076869805" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
 						<entry excluding="KFLocalizator|ReLocalizator" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
@@ -186,27 +260,6 @@
 	</storageModule>
 	<storageModule moduleId="refreshScope" versionNumber="1">
 		<resource resourceType="PROJECT" workspacePath="/ard"/>
-	</storageModule>
-	<storageModule moduleId="scannerConfiguration">
-		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.2102803918;cdt.managedbuild.tool.gnu.cpp.compiler.base.1956915137;cdt.managedbuild.tool.gnu.cpp.compiler.input.916184697">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.228070318;cdt.managedbuild.tool.gnu.c.compiler.base.1829666111;cdt.managedbuild.tool.gnu.c.compiler.input.399882191">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.1014738129;cdt.managedbuild.tool.gnu.cpp.compiler.base.93061302;cdt.managedbuild.tool.gnu.cpp.compiler.input.410649785">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.1014738129;cdt.managedbuild.tool.gnu.c.compiler.base.674158016;cdt.managedbuild.tool.gnu.c.compiler.input.531509558">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.2102803918;cdt.managedbuild.tool.gnu.c.compiler.base.1756728366;cdt.managedbuild.tool.gnu.c.compiler.input.295243193">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.228070318;cdt.managedbuild.tool.gnu.cpp.compiler.base.640232574;cdt.managedbuild.tool.gnu.cpp.compiler.input.1393136034">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
-		</scannerConfigBuildInfo>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
@@ -357,5 +410,32 @@
 				<runAllBuilders>false</runAllBuilders>
 			</target>
 		</buildTargets>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.1014738129;cdt.managedbuild.tool.gnu.c.compiler.base.674158016;cdt.managedbuild.tool.gnu.c.compiler.input.531509558">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.1014738129;cdt.managedbuild.tool.gnu.cpp.compiler.base.93061302;cdt.managedbuild.tool.gnu.cpp.compiler.input.410649785">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.759533393;cdt.managedbuild.tool.gnu.cpp.compiler.base.2124431460;cdt.managedbuild.tool.gnu.cpp.compiler.input.1065084432">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.759533393;cdt.managedbuild.tool.gnu.c.compiler.base.200420532;cdt.managedbuild.tool.gnu.c.compiler.input.648836184">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.2102803918;cdt.managedbuild.tool.gnu.cpp.compiler.base.1956915137;cdt.managedbuild.tool.gnu.cpp.compiler.input.916184697">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.228070318;cdt.managedbuild.tool.gnu.cpp.compiler.base.640232574;cdt.managedbuild.tool.gnu.cpp.compiler.input.1393136034">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.2102803918;cdt.managedbuild.tool.gnu.c.compiler.base.1756728366;cdt.managedbuild.tool.gnu.c.compiler.input.295243193">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.281472934;cdt.managedbuild.toolchain.gnu.base.281472934.228070318;cdt.managedbuild.tool.gnu.c.compiler.base.1829666111;cdt.managedbuild.tool.gnu.c.compiler.input.399882191">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
 	</storageModule>
 </cproject>
