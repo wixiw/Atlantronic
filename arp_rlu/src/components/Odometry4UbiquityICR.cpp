@@ -116,7 +116,6 @@ void Odometry4UbiquityICR::updateHook()
 
 }
 
-
 void Odometry4UbiquityICR::createOrocosInterface()
 {
     addAttribute("attrTurretState", attrTurretState);

@@ -24,6 +24,9 @@ OnlineTrajectoryGenerator::OnlineTrajectoryGenerator():Flags()
     // bon le probleme c'est que onlinetrajectorygenerator fait un boulot de classe statique
     // mais on est quand meme obligé de le construire avec le temps de cycle
 
+    //=> c'est normal c'est une anticipation du futur que t'es sensé faire, donc tu mets le temps théorique.
+    //faut juste le passer en construteur de OTG.
+
     m_dt = 0.01;
 
     RML = new ReflexxesAPI(1, m_dt);
