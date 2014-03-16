@@ -116,13 +116,6 @@ void Odometry4UbiquityICR::updateHook()
 
 }
 
-bool Odometry4UbiquityICR::ooInitialize(double x, double y, double theta)
-{
-    vxIntegrator.reset(x);
-    vyIntegrator.reset(y);
-    vhIntegrator.reset(theta);
-}
-
 
 void Odometry4UbiquityICR::createOrocosInterface()
 {
