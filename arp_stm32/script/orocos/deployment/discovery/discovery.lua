@@ -18,8 +18,8 @@ end
 
 function DiscoveryDeployer:start()
 	Discovery = assert(Deployer:getPeer(me))
-	--assert(Discovery:configure())
-	--assert(Discovery:start())
+	assert(Discovery:configure())
+	assert(Discovery:start())
 	return true
 end
 
