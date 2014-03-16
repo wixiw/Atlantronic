@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE( MathFactory_Pose2D )
         Pose2D p = MathFactory::createPose2D(Vector2(x,y), Rotation2(h));
         BOOST_CHECK_EQUAL( p.x() , x );
         BOOST_CHECK_EQUAL( p.y() , y );
-        BOOST_CHECK_EQUAL( p.h() , h );
+        BOOST_CHECK_EQUAL( p.h() , betweenMinusPiAndPlusPi(h) );
     }
 }
 
@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE( MathFactory_EstimatedPose2D_1 )
         EstimatedPose2D p = MathFactory::createEstimatedPose2D(Vector2(x,y), Rotation2(h), date, cov);
         BOOST_CHECK_EQUAL( p.x() , x );
         BOOST_CHECK_EQUAL( p.y() , y );
-        BOOST_CHECK_EQUAL( p.h() , h );
+        BOOST_CHECK_EQUAL( p.h() , betweenMinusPiAndPlusPi(h)  );
         BOOST_CHECK_EQUAL( p.date() , date );
         BOOST_CHECK_EQUAL( p.cov() , cov );
     }
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE( MathFactory_EstimatedPose2D_2 )
         EstimatedPose2D p = MathFactory::createEstimatedPose2D(x, y, h, date, cov);
         BOOST_CHECK_EQUAL( p.x() , x );
         BOOST_CHECK_EQUAL( p.y() , y );
-        BOOST_CHECK_EQUAL( p.h() , h );
+        BOOST_CHECK_EQUAL( p.h() , betweenMinusPiAndPlusPi(h)  );
         BOOST_CHECK_EQUAL( p.date() , date );
         BOOST_CHECK_EQUAL( p.cov() , cov );
     }

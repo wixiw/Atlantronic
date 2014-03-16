@@ -27,7 +27,7 @@ IcrSpeedTeleop::IcrSpeedTeleop(const std::string& name):
         attrPhi(0.0),
         attrDelta(0.0),
         attrVelocityCmdCdg(),
-        //TODO preriode hardcodee
+        //TODO periode hardcodee
         m_ovg(0.010),
         m_state()
 
@@ -39,8 +39,6 @@ bool IcrSpeedTeleop::configureHook()
 {
     bool res = OdsTaskContext::configureHook();
 
-    //res &= getOperation("HmlMonitor", "ooSetMotorPower", m_coSetMotorPower);
-
     return res;
 }
 
@@ -51,7 +49,7 @@ void IcrSpeedTeleop::updateHook()
     UbiquityParams params;
     double rhoSpeedCmd,phiCmd,deltaCmd;
     double rhoMax = 0.0;
-    bool deadMan,power,expert, rotation;
+    bool deadMan,power,expert;
     std_msgs::Bool ready;
 
     //on ne commence pas tant que la strat n'a pas fini son boulot, sinon y'a interférence.
@@ -63,8 +61,6 @@ void IcrSpeedTeleop::updateHook()
         power = false;
     if( inDeadMan.readNewest(deadMan) == NoData )
         deadMan = false;
-    if( inRotationMode.readNewest(rotation) == NoData )
-        rotation = false;
 
     inRoSpeedCmd.readNewest(rhoSpeedCmd);
     inPhiCmd.readNewest(phiCmd);
@@ -92,14 +88,21 @@ void IcrSpeedTeleop::updateHook()
     //filtrage puissance sur les entrees pour adoucir le début de la course joystick
     rhoSpeedCmd = rhoMax*pow(rhoSpeedCmd,5);
 
-    //ajustement du range
-    attrDelta = saturate(-pow(deltaCmd,5)*M_PI_2, -M_PI_2, M_PI_2);
-    attrRho = saturate(rhoSpeedCmd,-rhoMax,rhoMax);
-
-    //on filtre les petits mouvements pour eviter de laisser les tourelles revenir à 0
+    //on applique une commande d'angle aux tourelles que si le robot a suffisamment de vitesse
     if( fabs(rhoSpeedCmd) >= 0.10 )
     {
+        attrRho = saturate(rhoSpeedCmd,-rhoMax,rhoMax);
         attrPhi = betweenMinusPiAndPlusPi(-phiCmd-M_PI_2);
+        attrDelta = -deadZone(deltaCmd, 0.1, M_PI_2*0.6, 0.1, 0.9);
+
+    }
+    //si on ne bouge pas alors il y a rotation pure si le joystick de droite est activé
+    else
+    {
+        attrRho = fabs(saturate(rhoSpeedCmd,-rhoMax,rhoMax));
+        attrPhi = -M_PI_2;
+        attrDelta = -sign(deltaCmd)*M_PI_2;
+
     }
 
     if( deadMan == false )
@@ -112,13 +115,6 @@ void IcrSpeedTeleop::updateHook()
     //m_ovg.computeNextStep(attrRho, m_state, reachableRho);
     //attrRho = reachableRho.velocity;
     m_state = reachableRho;
-
-
-    if( rotation ) // on est dans le mode rotation qui permet de piloter le signe de la rotation sans avoir à tourner les tourelles
-    {
-        attrPhi = 0.; // en rotation on s'en fout de phi
-        attrDelta = sign(attrRho) * M_PI_2;
-    }
 
     attrVelocityCmdCdg = ICRSpeed(attrRho,attrPhi,attrDelta);
     //mais le robot se pilote au centre des tourelles :(
@@ -144,8 +140,6 @@ void IcrSpeedTeleop::createOrocosItf()
     addPort("inPhiCmd",inPhiCmd)
             .doc("");
     addPort("inDeltaCmd",inDeltaCmd)
-            .doc("");
-    addPort("inRotationMode",inRotationMode)
             .doc("");
     addPort("inParams",inParams)
             .doc("");

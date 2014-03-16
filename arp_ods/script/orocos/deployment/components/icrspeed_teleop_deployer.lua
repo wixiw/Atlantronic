@@ -20,7 +20,6 @@ function MotionControlDeployer:connect()
 	HmlMonitor:connect(me,"inDeadMan","Joystick","outTrigger6");
 	HmlMonitor:connect(me,"inExpertMode","Joystick","outTrigger7");
 	HmlMonitor:connect(me,"inRotationMode","Joystick","outTrigger5");
-	HmlMonitor:connect(me,"inThetaSpeed","Joystick","outY1");
 	Deployer:connect(me..".inParams","UbiquityParams.outParams",cp);
 	Deployer:connect(me..".inPower","HmlMonitor.outEnable",cp);
 	Deployer:stream(me..".inBootUpDone",ros:topic("/Strat/go"))

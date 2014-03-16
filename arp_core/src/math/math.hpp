@@ -96,6 +96,22 @@ namespace arp_math
             const double endValue, const double endLimit);
 
     /**
+     * f(x)=
+     * max value             _____________________
+     *                |    / endValue
+     * min value      |   /
+     * -------------|--|--|----------------------------
+     *             /   |  deadzone
+     *  __________/    |
+     *                 |
+     *
+     * f is symetrical, parameters are given for the positive area
+     *
+     */
+    double deadZone(double x, double minValue, double maxValue, double deadZone, double endValue);
+
+
+    /**
      * Limite la dérivée première d'une fonction
      */
     double firstDerivateLimitation(const double input, const double lastOutput, const double period, const double dmin, const double dmax);
