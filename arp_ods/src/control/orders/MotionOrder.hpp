@@ -222,10 +222,7 @@ class MotionOrder
 
         /** type of the current order */
         OrderType m_type;
-        /** twist in case of openloop */
-        Twist2D m_openloop_twist;
-        /** duration of the command in case of openloop */
-        double m_openloop_duration;
+
         /*
          * buffer of twist for replaying backward
          */

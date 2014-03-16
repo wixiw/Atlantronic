@@ -55,6 +55,11 @@ UbiquityParams params);
 
 
         static const double MAX_OPENLOOP_TIME=5.0;
+        
+        /** twist in case of openloop */
+        Twist2D m_openloop_twist;
+        /** duration of the command in case of openloop */
+        double m_openloop_duration;
 };
 
 }}

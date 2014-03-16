@@ -58,8 +58,8 @@ class OmnidirectOrder2: public MotionOrder
          */
         ICRSpeed computeRunTwist(arp_math::Pose2DNorm currentPosition,ICRSpeed curICRSpeed,double dt);
 
-        double profileRoJerking(double distance, ICRSpeed curICRSpeed, double roPass, double dt);
-        double profileRoNonJerking(double distance, ICRSpeed curICRSpeed, double roPass, double dt);
+        double profileRoJerking(double distance, ICRSpeed curICRSpeed, double vmax, double roPass, double dt);
+        double profileRoNonJerking(double distance, ICRSpeed curICRSpeed,double vmax,  double roPass, double dt);
 
         /*  this little function creates the "cheat" on distance given to profile, to compensate for the delay in the loop
          *
@@ -120,9 +120,11 @@ private:
     double getParkinsonLimitationFactor(double distance);
     double getSpeedLimitationFactor(double distanceICRMove);
 
-    double finalAsserv(double distance, ICRSpeed curICRSpeed, double roPass, double dt);
+    double finalAsserv(double distance, ICRSpeed curICRSpeed, double vmax, double roPass, double dt);
     bool m_finalAsservCalled;
     double m_speedFinalAsservEntry;
+
+    double m_orderTime;
 
 };
 
