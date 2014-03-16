@@ -5,14 +5,14 @@
  *      Author: Boris
  */
 
-#include "control/orders/Logger.hpp"
+#include "Logger.hpp"
 
 #include <iostream>
 #include <ostream>
 
 using namespace std;
 
-namespace arp_ods { namespace orders {
+namespace arp_ods {
 
 
 // Global static pointer used to ensure a single instance of the class.
@@ -89,8 +89,8 @@ arp_core::log::Category& Logger::Category()
 
 arp_core::log::CategoryStream Log(arp_core::log::Priority::Value priority)
 {
-    return arp_ods::orders::Logger::Category() << priority;
+    return arp_ods::Logger::Category() << priority;
 }
 
 
-}}
+}

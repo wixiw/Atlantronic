@@ -8,7 +8,7 @@
 #ifndef ORDERFACTORY_H_
 #define ORDERFACTORY_H_
 
-#include "control/orders/orders.h"
+#include "orders.h"
 #include <models/core>
 #include <math/core>
 #include <boost/shared_ptr.hpp>

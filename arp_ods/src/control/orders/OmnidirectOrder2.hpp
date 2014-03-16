@@ -9,7 +9,7 @@
 #define OMNIDIRECTORDER2_HPP_
 
 #include "MotionOrder.hpp"
-#include "control/OnlineTrajectoryGenerator.hpp"
+#include "../planners/OnlineTrajectoryGenerator.hpp"
 
 #include "math/math.hpp"
 #include <boost/shared_ptr.hpp>

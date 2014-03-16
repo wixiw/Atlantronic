@@ -7,7 +7,7 @@
 
 #include "MotionControl.hpp"
 #include <rtt/Component.hpp>
-#include "control/orders/Logger.hpp"
+#include "ods_logger/Logger.hpp"
 
 using namespace arp_ods;
 using namespace orders;
@@ -23,7 +23,7 @@ MotionControl::MotionControl(const std::string& name) :
 
 {
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
-    arp_ods::orders::Logger::InitFile("arp_ods", INFO);
+    arp_ods::Logger::InitFile("arp_ods", INFO);
 
     attrOrder = OrderFactory::createDefaultOrder();
     createOrocosInterface();
@@ -152,7 +152,7 @@ bool MotionControl::ooSetOrder(shared_ptr<MotionOrder> order)
 
     m_norder++;
     outDEBUG8.write(((double) m_norder) / 10.0);
-    arp_ods::orders::Log(Info) << "-------------------- order number # ---------------------   >> " << m_norder
+    arp_ods::Log(Info) << "-------------------- order number # ---------------------   >> " << m_norder
             << endlog();
 
     return true;

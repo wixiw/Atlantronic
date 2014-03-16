@@ -8,7 +8,7 @@
 #include "KinematicBase.hpp"
 #include <rtt/Component.hpp>
 #include <models/core>
-#include "control/KinematicFilter.hpp"
+#include "../control/planners/KinematicFilter.hpp"
 
 using namespace arp_core::log;
 using namespace arp_model;

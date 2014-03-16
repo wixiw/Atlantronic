@@ -14,21 +14,12 @@
 #include <RMLPositionFlags.h>
 #include <RMLPositionInputParameters.h>
 #include <RMLPositionOutputParameters.h>
+#include "PosVelAcc.hpp"
 
 using namespace arp_core::log;
 using namespace arp_model;
 using namespace arp_math;
 using namespace std;
-
-namespace arp_ods
-{
-
-struct PosVelAcc
-{
-double position;
-double velocity;
-double acceleration;
-};
 
 /****************
  * This is a wrapper for the calls to Reflexxes
@@ -40,24 +31,27 @@ double acceleration;
  * while ensuring the limits of speed, acceleration and jerk
  */
 
-class OnlineTrajectoryGenerator
+namespace arp_ods
 {
-    public:
-        OnlineTrajectoryGenerator();
-        ~OnlineTrajectoryGenerator();
+    class OnlineTrajectoryGenerator
+    {
+        public:
+            OnlineTrajectoryGenerator();
+            ~OnlineTrajectoryGenerator();
 
-        ReflexxesAPI *RML ;
-        bool computeNextStep(const PosVelAcc & iStart, const PosVelAcc & iEnd, const double & iMaxVelocity,const double & iMaxAcceleration,const double & iMaxJerk,  PosVelAcc & oNext);
-        bool computeNextStepCheap(const PosVelAcc & iStart, const PosVelAcc & iEnd, const double & iMaxVelocity,const double & iMaxAcceleration,const double & iMaxJerk,  PosVelAcc & oNext);
+            ReflexxesAPI *RML ;
+            bool computeNextStep(const PosVelAcc & iStart, const PosVelAcc & iEnd, const double & iMaxVelocity,const double & iMaxAcceleration,const double & iMaxJerk,  PosVelAcc & oNext);
+            bool computeNextStepCheap(const PosVelAcc & iStart, const PosVelAcc & iEnd, const double & iMaxVelocity,const double & iMaxAcceleration,const double & iMaxJerk,  PosVelAcc & oNext);
 
-        RMLPositionInputParameters  *IP                        ;
+            RMLPositionInputParameters  *IP                        ;
 
-        RMLPositionOutputParameters *OP                         ;
+            RMLPositionOutputParameters *OP                         ;
 
-        RMLPositionFlags            Flags                                   ;
+            RMLPositionFlags            Flags                                   ;
 
-        double m_dt;
-};
+            double m_dt;
+    };
+
 
 }
 #endif /* ONLINETRAJECTORYGENERATOR_HPP_ */

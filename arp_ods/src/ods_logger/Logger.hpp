@@ -13,9 +13,6 @@
 namespace arp_ods
 {
 
-namespace orders
-{
-
 /*!
  *  \addtogroup kfl
  *  @{
@@ -93,7 +90,6 @@ class Logger
 
 /*! @} End of Doxygen Groups*/
 
-}
 }
 
 #endif //_ARP_RLU_KFL_LOGGER_HPP_

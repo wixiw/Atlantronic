@@ -11,7 +11,7 @@
 #include "taskcontexts/OdsTaskContext.hpp"
 #include "control/orders/orders.h"
 #include "control/orders/OrderFactory.hpp"
-#include "control/ICRSpeedBuffer.hpp"
+#include "control/replay_buffers/ICRSpeedBuffer.hpp"
 #include <math/core>
 
 namespace arp_ods
