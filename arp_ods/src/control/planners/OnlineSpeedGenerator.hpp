@@ -37,8 +37,7 @@ class OnlineSpeedGenerator
         void setDynamicLimitations(double vMax, double accMax, double jerkMax);
 
         /** Compute the next speed to apply toward targetSpeed ensuring dynamic limitations are fitted. Returns false on failure*/
-        bool computeNextStep(double targetSpeed, PosVelAcc currentState, PosVelAcc& reachableState);
-
+        bool computeNextStep(double targetSpeed, const PosVelAcc & iCurrentState, PosVelAcc & oReachableState);
     protected:
         static const int DOF = 1;
         ReflexxesAPI m_RML;

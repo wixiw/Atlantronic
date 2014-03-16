@@ -89,7 +89,7 @@ void IcrSpeedTeleop::updateHook()
     rhoSpeedCmd = rhoMax*pow(rhoSpeedCmd,5);
 
     //on applique une commande d'angle aux tourelles que si le robot a suffisamment de vitesse
-    if( fabs(rhoSpeedCmd) >= 0.10 )
+    if( fabs(rhoSpeedCmd) >= 0.001 )
     {
         attrRho = saturate(rhoSpeedCmd,-rhoMax,rhoMax);
         attrPhi = betweenMinusPiAndPlusPi(-phiCmd-M_PI_2);
@@ -97,12 +97,19 @@ void IcrSpeedTeleop::updateHook()
 
     }
     //si on ne bouge pas alors il y a rotation pure si le joystick de droite est activé
-    else
+    else if( fabs(deltaCmd) >= 0.001 )
     {
         attrRho = fabs(saturate(rhoSpeedCmd,-rhoMax,rhoMax));
         attrPhi = -M_PI_2;
         attrDelta = -sign(deltaCmd)*M_PI_2;
 
+    }
+    //si tout est a 0 on garde ce qu'on avait
+    else
+    {
+        attrRho = 0;
+        attrPhi = attrVelocityCmdCdg.phi();
+        attrDelta = attrVelocityCmdCdg.delta();
     }
 
     if( deadMan == false )
@@ -112,7 +119,7 @@ void IcrSpeedTeleop::updateHook()
     }
 
     PosVelAcc reachableRho;
-    //m_ovg.computeNextStep(attrRho, m_state, reachableRho);
+    m_ovg.computeNextStep(attrRho, m_state, reachableRho);
     //attrRho = reachableRho.velocity;
     m_state = reachableRho;
 

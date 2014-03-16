@@ -52,7 +52,7 @@ void OnlineSpeedGenerator::setDynamicLimitations(double vMax, double accMax, dou
     setMaxJerk(jerkMax);
 }
 
-bool OnlineSpeedGenerator::computeNextStep(double targetSpeed, PosVelAcc currentState, PosVelAcc& reachableState)
+bool OnlineSpeedGenerator::computeNextStep(double targetSpeed, const PosVelAcc & iCurrentState, PosVelAcc & oReachableState)
 {
     bool res = false;
     RMLVelocityInputParameters  IP(DOF);
@@ -65,20 +65,20 @@ bool OnlineSpeedGenerator::computeNextStep(double targetSpeed, PosVelAcc current
         targetSpeed = arp_math::sign(targetSpeed)*m_maxSpeed;
     }
 
-    IP.CurrentPositionVector->VecData      [DOF] = currentState.position;
-    IP.CurrentVelocityVector->VecData      [DOF] = currentState.velocity;
-    IP.CurrentAccelerationVector->VecData  [DOF] = currentState.acceleration;
-    IP.MaxAccelerationVector->VecData      [DOF] = m_maxAcc;
-    IP.MaxJerkVector->VecData              [DOF] = m_maxJerk;
-    IP.TargetVelocityVector->VecData       [DOF] = targetSpeed;
-    IP.SelectionVector->VecData            [DOF] = true;
+    IP.CurrentPositionVector->VecData      [DOF-1] = iCurrentState.position;
+    IP.CurrentVelocityVector->VecData      [DOF-1] = iCurrentState.velocity;
+    IP.CurrentAccelerationVector->VecData  [DOF-1] = iCurrentState.acceleration;
+    IP.MaxAccelerationVector->VecData      [DOF-1] = m_maxAcc;
+    IP.MaxJerkVector->VecData              [DOF-1] = m_maxJerk;
+    IP.TargetVelocityVector->VecData       [DOF-1] = targetSpeed;
+    IP.SelectionVector->VecData            [DOF-1] = true;
 
     // Calling the Reflexxes OTG algorithm
     res =  0 > m_RML.RMLVelocity(IP, &OP, m_flags);
 
-    reachableState.position     = OP.NewPositionVector->VecData[DOF];
-    reachableState.velocity     = OP.NewVelocityVector->VecData[DOF];
-    reachableState.acceleration = OP.NewAccelerationVector->VecData[DOF];
+    oReachableState.position     = OP.NewPositionVector->VecData[DOF];
+    oReachableState.velocity     = OP.NewVelocityVector->VecData[DOF];
+    oReachableState.acceleration = OP.NewAccelerationVector->VecData[DOF];
 
     return res;
 }

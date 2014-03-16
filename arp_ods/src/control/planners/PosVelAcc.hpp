@@ -16,6 +16,13 @@ struct PosVelAcc
 double position;        //m
 double velocity;        //m/s
 double acceleration;    //m/s2
+
+PosVelAcc(double p = 0., double v = 0., double a = 0.)
+{
+    position = p;
+    velocity = v;
+    acceleration = a;
+}
 };
 
 }
