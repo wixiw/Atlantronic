@@ -25,6 +25,9 @@ SimpsonState * simpson_construct_state()
 
 void simpson_reset(SimpsonState * pstate, scalar val)
 {
+  pstate->xk    = 0.;
+  pstate->xkm1  = 0.;
+  pstate->xkm2  = 0.;
   pstate->yk   = val;
   pstate->ykm1 = val;
   pstate->ykm2 = val;

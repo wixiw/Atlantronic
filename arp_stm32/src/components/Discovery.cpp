@@ -95,8 +95,6 @@ void Discovery::updateHook()
     attrGyrometerVelocity = m_robotItf.control_usb_data[id].omega_gyro;
     mutex.unlock();
 
-    LOG(Info) << "attrGyrometerVelocity = " << attrGyrometerVelocity << endlog();
-
     attrGyrometerAngleEulerDegree = rad2deg(attrGyrometerAngleEuler);
     attrGyrometerAngleSimpsonDegree = rad2deg(attrGyrometerAngleSimpson);
     attrGyrometerVelocityDegree = rad2deg(attrGyrometerVelocity);
