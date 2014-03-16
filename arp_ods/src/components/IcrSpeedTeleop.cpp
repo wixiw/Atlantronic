@@ -107,12 +107,12 @@ void IcrSpeedTeleop::updateHook()
         attrRho = 0;
         m_ovg.setDynamicLimitations(0.0,3,100);
     }
-    else
-    {
-        PosVelAcc reachableRho;
-        m_ovg.computeNextStep(attrRho, m_state, reachableRho);
-        m_state = reachableRho;
-    }
+
+    PosVelAcc reachableRho;
+    //m_ovg.computeNextStep(attrRho, m_state, reachableRho);
+    //attrRho = reachableRho.velocity;
+    m_state = reachableRho;
+
 
     if( rotation ) // on est dans le mode rotation qui permet de piloter le signe de la rotation sans avoir à tourner les tourelles
     {
