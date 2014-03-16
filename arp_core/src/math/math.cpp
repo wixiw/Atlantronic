@@ -187,28 +187,19 @@ double d_abs(const double x)
 double firstDerivateLimitation(const double input, const double lastOutput, const double period, const double dmin,
         const double dmax)
 {
-    double output = 0;
     double derivate = 0;
 
     if (period > 0 && dmin < dmax)
     {
         //calcul de la derivée
         derivate = (input - lastOutput) / period;
-
-        //filtrage
-        if (derivate > fabs(dmax))
-            output = lastOutput + fabs(dmax) * period;
-        else if (derivate < -fabs(dmin))
-            output = lastOutput - fabs(dmin) * period;
-        else
-            output = input;
+        // saturation de la dérivée
+        derivate = min(derivate, dmax);
+        derivate = max(derivate, dmin);
+        // construction de la sortie
+        return lastOutput + derivate * period;
     }
-    else
-    {
-        output = lastOutput;
-    }
-
-    return output;
+    return lastOutput;
 }
 
 std::vector<Eigen::VectorXi> combinaisons( const Eigen::VectorXi & v, const unsigned int n )
