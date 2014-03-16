@@ -104,7 +104,7 @@ void Discovery::updateHook()
     outGyrometerAngleSimpson.write(attrGyrometerAngleSimpson);
     outGyrometerAngleSimpsonDegree.write(attrGyrometerAngleSimpsonDegree);
     outGyrometerVelocity.write(attrGyrometerVelocity);
-    outGyrometerVelocity.write(attrGyrometerVelocityDegree);
+    outGyrometerVelocityDegree.write(attrGyrometerVelocityDegree);
 }
 
 void Discovery::robotItfCallbackWrapper(void* arg)
@@ -159,6 +159,22 @@ bool Discovery::ooSetPosition(double newAngle)
         return true;
     }
 
+}
+
+bool Discovery::ooSetCalibrationValues(double scale, double bias, double dead_zone)
+{
+    int res = m_robotItf.gyro_set_calibration_values(scale, bias, dead_zone);
+
+        if( res < 0 )
+        {
+            LOG(Error) << "Failed to force new calib (err=" << res << ")." << endlog();
+            return false;
+        }
+        else
+        {
+            LOG(Info) << "New calib forced : scale=" << scale << "    bias=" << bias << "  dead_zone=" << dead_zone << endlog();
+            return true;
+        }
 }
 
 bool Discovery::ooReset()
@@ -231,6 +247,8 @@ void Discovery::createOrocosInterface()
      .doc("Ask the gyrometer to stop the calibration process and to re-publish position datas");
     addOperation("ooSetPosition",&Discovery::ooSetPosition, this, OwnThread)
      .doc("Force a new gyrometer position, in rad");
+    addOperation("ooSetCalibrationValues",&Discovery::ooSetCalibrationValues, this, OwnThread)
+     .doc("Force new calib params");
     addOperation("ooReset",&Discovery::ooReset, this, OwnThread)
      .doc("Reset the stm32 board.");
 }

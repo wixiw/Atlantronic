@@ -109,8 +109,17 @@ BOOST_AUTO_TEST_CASE(SimpsonIntegrator_integrate_linear)
     si.set( 0.5, 2.);
     BOOST_CHECK_CLOSE(si.get(), 6.0, 0.0001);
 
+    si.reset( 1.0 );
+    BOOST_CHECK_CLOSE(si.get(), 1.0, 0.0001);
+
     si.set( 0.5, 2.);
-    BOOST_CHECK_CLOSE(si.get(), 7.0, 0.0001);
+    BOOST_CHECK_CLOSE(si.get(), 2.0, 0.0001);
+
+    si.reset( 1.0 );
+    BOOST_CHECK_CLOSE(si.get(), 1.0, 0.0001);
+
+    si.set( 0.5, 2.);
+    BOOST_CHECK_CLOSE(si.get(), 2.0, 0.0001);
   }
 }
 

@@ -70,6 +70,11 @@ class Discovery: public Stm32TaskContext
         bool ooSetPosition(double newAngle);
 
         /**
+         * Force new calib
+         */
+        bool ooSetCalibrationValues(double scale, double bias, double dead_zone);
+
+        /**
          * Resets the Stm32 board
          */
         bool ooReset();
