@@ -4,7 +4,7 @@
     	*.c* 
     )  
     
-orocos_library(arp_ods-orders ${source_files})
+orocos_component(arp_ods-orders ${source_files})
 target_link_libraries(arp_ods-orders arp_core-math)
 target_link_libraries(arp_ods-orders arp_ods-logger)
 target_link_libraries(arp_ods-orders arp_ods-orders)

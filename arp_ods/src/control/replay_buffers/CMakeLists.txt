@@ -5,6 +5,6 @@
     	*.c* 
     )  
     
-orocos_library(arp_ods-replay_buffers ${source_files})
+orocos_component(arp_ods-replay_buffers ${source_files})
 target_link_libraries(arp_ods-replay_buffers arp_ods-logger)
 target_link_libraries(arp_ods-replay_buffers arp_core-models)
