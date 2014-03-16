@@ -267,34 +267,39 @@ bool UbiquityKinematics::turrets2ICRspeedViaTwistOrIntersections(const TurretSta
     //if we have a speed then use the standard case
     Twist2D oTw;
     simpleTurrets2Twist(iTS, oTw, oSR, iParams);
+//    std::cout << "compute twist from TurretState : oTw=" << oTw.toString()  << std::endl;
     if (abs(oTw.vx()) > 0.001 or abs(oTw.vy()) > 0.001 or abs(oTw.vh()) > 0.001)
     {
         oICRs = ICRSpeed(oTw);
+//        std::cout << "speed is not almost nul => return ICRSpeed(oTw) : " << oICRs.toString() << std::endl;
+        return true;
     }
-    else
+
+    if (colLeftRight) // front turrets are colinear
     {
-        if (colLeftRight) // front turrets are colinear
+//        std::cout << "front turrets are colinear" << std::endl;
+        if (parLeftRear) // the third is parralel also
         {
-            if (parLeftRear) // the third is parralel also
-            {
-                oICRs = ICRSpeed::createIdleFromTranslation(iTS.steering.rear.position + PI / 2);
+//            std::cout << "the third is parralel also" << std::endl;
+            oICRs = ICRSpeed::createIdleFromTranslation(iTS.steering.rear.position + PI / 2);
 
-            }
-            else // the third turret is not parralel: we are turning around a point on the front turrets line
-            {
-                oICRs = ICRSpeed::createIdleFromICRPosition(ICRRightRear);
-
-            }
         }
-        else if (parLeftRight) // front turrets are parralel but not colinear, the robot is in translation
+        else // the third turret is not parralel: we are turning around a point on the front turrets line
         {
-            oICRs = ICRSpeed::createIdleFromTranslation(iTS.steering.left.position + PI / 2);
-        }
+//            std::cout << "the third turret is not parralel: we are turning around a point on the front turrets line" << std::endl;
+            oICRs = ICRSpeed::createIdleFromICRPosition(ICRRightRear);
 
-        else // standard case: the front turrets are crossing
-        {
-            oICRs = ICRSpeed::createIdleFromICRPosition(ICRLeftRight);
         }
+    }
+    else if (parLeftRight) // front turrets are parralel but not colinear, the robot is in translation
+    {
+//        std::cout << "front turrets are parralel but not colinear, the robot is in translation" << std::endl;
+        oICRs = ICRSpeed::createIdleFromTranslation(iTS.steering.left.position + PI / 2);
+    }
+    else // standard case: the front turrets are crossing somewhere
+    {
+//        std::cout << "standard case: the front turrets are crossing somewhere" << std::endl;
+        oICRs = ICRSpeed::createIdleFromICRPosition(ICRLeftRight);
     }
     return true;
 }
@@ -308,12 +313,16 @@ bool UbiquityKinematics::turrets2ICRspeedViaTwist(const TurretState & iTS, arp_m
         return false;
     }
 
+//    std::cout << "turrets2ICRspeedViaTwist : iTS : " << iTS.toString() << std::endl;
+
     // On numérote les 3 tourelles afin d'avoir la tourelle 1 qui a la vitesse la plus grande.
     Vector3 v(d_abs(iTS.driving.left.velocity), d_abs(iTS.driving.right.velocity), d_abs(iTS.driving.rear.velocity));
     std::pair< Eigen::VectorXd, Eigen::VectorXi > sorted = bubbleSortIndices(v);
 
+
     if(sorted.first[2] < iParams.getMinDrivingSpeed())  // la vitesse max est faible : on ne bouge pas
     {
+//        std::cout << "turrets2ICRspeedViaTwist : on est a l'arrêt ou presque => turrets2ICRspeedViaTwistOrIntersections" << iTS.toString() << std::endl;
         return turrets2ICRspeedViaTwistOrIntersections(iTS, oICRs, oSR, iParams);  // on calcule l'ICRSpeed via les intersections
     }
 
@@ -322,77 +331,71 @@ bool UbiquityKinematics::turrets2ICRspeedViaTwist(const TurretState & iTS, arp_m
     double xT1, xT2, xT3;
     double yT1, yT2, yT3;
 
-    switch(sorted.second[2])
+    v1  = iTS.driving.left.velocity;
+    a1  = iTS.steering.left.position;
+    xT1 = iParams.getLeftTurretPosition().x();
+    yT1 = iParams.getLeftTurretPosition().y();
+
+    v2 = iTS.driving.right.velocity;
+    a2 = iTS.steering.right.position;
+    xT2 = iParams.getRightTurretPosition().x();
+    yT2 = iParams.getRightTurretPosition().y();
+
+    v3 = iTS.driving.rear.velocity;
+    a3 = iTS.steering.rear.position;
+    xT3 = iParams.getRearTurretPosition().x();
+    yT3 = iParams.getRearTurretPosition().y();
+
+    // On calcule 3 candidats oméga, chacun à partir d'un couple de tourelles
+    Vector3 w;
+    if( findAngularSpeedFromOdometry(iTS, w, iParams) == false )
     {
+        return false;
+    }
+
+    // on estime omega à partir des 3 candidats
+    //double w = w_candidates.mean();d
+    std::pair< Eigen::VectorXd, Eigen::VectorXi > w_sortedCanditates = bubbleSortIndices(w);
+    //on reserve l'indice de l'omega median
+    int iMedianW = w_sortedCanditates.second[1];
+
+    // On calcule v_x et v_y comme étant la moyenne des v_x et v_y provenant de 2 tourelles adjacentes.
+    double v_x_a, v_x_b, v_y_a, v_y_b;
+    switch( iMedianW )
+    {
+        //tourelles gauche et droite
         case 0:
-            v1  = iTS.driving.left.velocity;
-            a1  = iTS.steering.left.position;
-            xT1 = iParams.getLeftTurretPosition().x();
-            yT1 = iParams.getLeftTurretPosition().y();
-
-            v2 = iTS.driving.right.velocity;
-            a2 = iTS.steering.right.position;
-            xT2 = iParams.getRightTurretPosition().x();
-            yT2 = iParams.getRightTurretPosition().y();
-
-            v3 = iTS.driving.rear.velocity;
-            a3 = iTS.steering.rear.position;
-            xT3 = iParams.getRearTurretPosition().x();
-            yT3 = iParams.getRearTurretPosition().y();
+            v_x_a = v1 * cos(a1) + yT1 * w[0];
+            v_x_b = v2 * cos(a2) + yT2 * w[0];
+            v_y_a = v1 * sin(a1) - xT1 * w[0];
+            v_y_b = v2 * sin(a2) - xT2 * w[0];
             break;
+
+        //tourelles droite et arrière
         case 1:
-            v1 = iTS.driving.right.velocity;
-            a1 = iTS.steering.right.position;
-            xT1 = iParams.getRightTurretPosition().x();
-            yT1 = iParams.getRightTurretPosition().y();
-
-            v2 = iTS.driving.left.velocity;
-            a2 = iTS.steering.left.position;
-            xT2 = iParams.getLeftTurretPosition().x();
-            yT2 = iParams.getLeftTurretPosition().y();
-
-            v3 = iTS.driving.rear.velocity;
-            a3 = iTS.steering.rear.position;
-            xT3 = iParams.getRearTurretPosition().x();
-            yT3 = iParams.getRearTurretPosition().y();
+            v_x_a = v2 * cos(a2) + yT2 * w[1];
+            v_x_b = v3 * cos(a3) + yT3 * w[1];
+            v_y_a = v2 * sin(a2) - xT2 * w[1];
+            v_y_b = v3 * sin(a3) - xT3 * w[1];
             break;
+
+        //tourelles arrière et gauche
         case 2:
+            v_x_a = v3 * cos(a3) + yT3 * w[2];
+            v_x_b = v1 * cos(a1) + yT1 * w[2];
+            v_y_a = v3 * sin(a3) - xT3 * w[2];
+            v_y_b = v1 * sin(a1) - xT1 * w[2];
+            break;
+
         default:
-            v1 = iTS.driving.rear.velocity;
-            a1 = iTS.steering.rear.position;
-            xT1 = iParams.getRearTurretPosition().x();
-            yT1 = iParams.getRearTurretPosition().y();
-
-            v2 = iTS.driving.right.velocity;
-            a2 = iTS.steering.right.position;
-            xT2 = iParams.getRightTurretPosition().x();
-            yT2 = iParams.getRightTurretPosition().y();
-
-            v3 = iTS.driving.left.velocity;
-            a3 = iTS.steering.left.position;
-            xT3 = iParams.getLeftTurretPosition().x();
-            yT3 = iParams.getLeftTurretPosition().y();
+            return false;
             break;
     }
 
-    // On calcule oméga
-    double w = 0.;
-    w +=       v2 * (cos(a2) + sin(a2));
-    w +=       v3 * (cos(a3) + sin(a3));
-    w += - 2 * v1 * (cos(a1) + sin(a1));
-    w /= 2 * yT1 - 2 * xT1 - yT2 + xT2 - yT3 + xT3;
-
-    // On calcule v_x et v_y comme étant la médiane des v_x et v_y provenant des 3 tourelles.
-    Vector3 v_x = Vector3(v1 * cos(a1) + yT1 * w,
-                          v2 * cos(a2) + yT2 * w,
-                          v3 * cos(a3) + yT3 * w);
-    Vector3 v_y = Vector3(v1 * sin(a1) - xT1 * w,
-                          v2 * sin(a2) - xT2 * w,
-                          v3 * sin(a3) - xT3 * w);
     Twist2D T;
-    T.vx( bubbleSort(v_x)[1] );
-    T.vy( bubbleSort(v_y)[1] );
-    T.vh( w );
+    T.vx( (v_x_a + v_x_b)/2 );
+    T.vy( (v_y_a + v_y_b)/2 );
+    T.vh( w[iMedianW] );
 
     // On convertit en ICRSpeed
     oICRs = ICRSpeed(T);

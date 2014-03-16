@@ -54,7 +54,7 @@ void UbiquityParams::fillWithFakeValues(void)
     m_rearWheelDiameter=0.066;
     m_tractionRatio=1.0;
     m_turretRatio=0.25;
-    m_minDrivingSpeed=0.;
+    m_minDrivingSpeed=0.001;
     m_maxDrivingSpeed=1;
     m_maxDrivingAcc=1;
     m_maxDrivingTorque=-1;

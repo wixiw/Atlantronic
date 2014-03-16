@@ -2,10 +2,13 @@
 
 #libraries for ROS
 import roslib; roslib.load_manifest('arp_master')
+from std_srvs.srv import *
 import random
 
 from arp_master import *
 #from arp_master.strat_2014 import *
+
+INIT_POS=Pose2D(0.750,0,0)
 
 ###########################  TEMPORAL BEHAVIOR
 
@@ -44,11 +47,11 @@ class MainStateMachine(smach.StateMachine):
         with self:
             smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
                                    transitions={'endInitialisation':'StartSequence', 'failed':'end'})
-            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(0, 0, 0),
+            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(INIT_POS.x, INIT_POS.y, INIT_POS.theta),
                                    transitions={'gogogo':'SetInitialPosition', 'problem':'end'})  
             
             smach.StateMachine.add('SetInitialPosition',
-                      SetInitialPosition(0.750, 0, 0),
+                      SetInitialPosition(INIT_POS.x, INIT_POS.y, INIT_POS.theta),
                       transitions={'succeeded':'Move', 'timeout':'end'})
             
 
@@ -137,7 +140,27 @@ class MainStateMachine(smach.StateMachine):
             # TEST OF ALL RANDOM OMNIDIRECT ORDERS ##########################
                         
             smach.StateMachine.add('Move', RandomMove(),
-                                   transitions={'succeeded':'Move', 'timeout':'end'}) 
+                                   transitions={'succeeded':'Move', 'gotozero':'GotoZero','timeout':'end'}) 
+            
+            smach.StateMachine.add('GotoZero',
+                       AmbiOmniDirectOrder2(Pose2D(INIT_POS.x, INIT_POS.y, INIT_POS.theta) ,
+                                           vmax = 0.3),
+                      transitions={'succeeded':'StopParkinson', 'timeout':'end'}) 
+            
+            smach.StateMachine.add('StopParkinson',
+                                   OpenLoopOrder(vx = 0.005, 
+                                           vy = 0, 
+                                           vh = 0, 
+                                           duration=0.1),
+                                   transitions={'succeeded':'WaitUserAck', 'timeout':'end'})    
+            
+            smach.StateMachine.add('WaitUserAck',
+                       WaitForStart(),
+                       transitions={'start':'WaitUserAck2','timeout':'end'})
+            
+            smach.StateMachine.add('WaitUserAck2',
+                       WaitForStartUnplug(),
+                       transitions={'startunplug':'Move','timeout':'end'})
 
             # TEST OF PASS ##########################      
             smach.StateMachine.add('PASS1',
@@ -198,15 +221,30 @@ class MainStateMachine(smach.StateMachine):
                                            vmax = 0.7),
                       transitions={'succeeded':'TestAccelFront', 'timeout':'end'})   
 
+
+
 class RandomMove(MotionState):
     def __init__(self):
-        MotionState.__init__(self)
-        seed = random.randint(0, 1000)
-        #seed=626
+        outcomes = ['gotozero']
+        MotionState.__init__(self, outcomes)
+        #seed = random.randint(0, 1000)
+        seed=100
         random.seed(seed)
+        rospy.Service('/MotionTestingStratNode/gotoZero', Empty, self.gotoZeroSrvCallback)
+        self.gotoZero = False
         rospy.loginfo("------------MOTIONTESTING INIT----------------")
         rospy.loginfo("randomized with seed: %d" % (seed))
         rospy.loginfo("----------------------------------------------")
+
+    def gotoZeroSrvCallback(self,req):
+        self.gotoZero = True
+        rospy.loginfo("8=====>")
+        rospy.loginfo("8=====> -")
+        rospy.loginfo("8=====>   -")
+        rospy.loginfo("8=====>      -")
+        rospy.loginfo("8=====>         -")
+        rospy.loginfo("8=====>            -")
+        return EmptyResponse()
 
     def createAction(self):
         self.x = random.uniform(0.4, 1.1)
@@ -226,6 +264,12 @@ class RandomMove(MotionState):
             rospy.loginfo("Pass with v=%.3f"%(self.vpass))
             self.omnidirect2Pass(self.x, self.y, self.theta, self.vpass,self.vmax)
 
+    def execute(self,userdata):
+        if self.gotoZero is True:
+            self.gotoZero = False
+            return "gotozero"
+        else:
+            return MotionState.execute(self,userdata)
             
             
 ########################## EXECUTABLE 
