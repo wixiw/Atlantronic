@@ -15,10 +15,11 @@ assert(Deployer:loadComponent("DotGraph","TaskContext"))
 DotGraph = Deployer:getPeer("DotGraph")
 assert(Deployer:import("rtt_dot_service"))
 assert(Deployer:loadService("DotGraph","dot"))
-assert(assert(DotGraph:provides("dot")):getProperty("dot_file"):set("/tmp/ard_graph.dot"))
-assert(assert(DotGraph:provides("dot")):getProperty("comp_args"):set("style=filled,width=10,height=3.5,"))
-assert(assert(DotGraph:provides("dot")):getProperty("conn_args"):set(""))
-assert(assert(DotGraph:provides("dot")):getProperty("chan_args"):set(""))
+-- a patch is requiered on orocos 2.5 version. It should be present in 2.7
+--assert(assert(DotGraph:provides("dot")):getProperty("dot_file"):set("/tmp/ard_graph.dot"))
+--assert(assert(DotGraph:provides("dot")):getProperty("comp_args"):set("style=filled,width=10,height=3.5,"))
+--assert(assert(DotGraph:provides("dot")):getProperty("conn_args"):set(""))
+--assert(assert(DotGraph:provides("dot")):getProperty("chan_args"):set(""))
 assert( DotGraph:configure(), "Failed to configure DotGraph")
 
 -- chargement du composant de reporting
