@@ -12,7 +12,7 @@
 	<!-- pas besoin pour le moment <include file="$(find arp_rlu)/script/ros/launch/arp_rlu_ros.launch"/>
 		-->
 	<node name="MotionTestingStratNode" pkg="arp_master" type="MotionTestingStratNode.py"
-		args="" output="screen" launch-prefix="xterm -e"
+		args="" output="screen"
 	respawn="true"
 	/>
 </launch>

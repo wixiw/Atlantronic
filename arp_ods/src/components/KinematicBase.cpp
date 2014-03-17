@@ -133,6 +133,7 @@ void KinematicBase::setOutputs()
     outFiltrationFeedback.write(attrQuality);
     outFilteredICRSpeed.write(attrCurrentICRSpeed);
     outRobotBlocked.write(attrRobotBlockedTimeout);
+    outTwistCmd.write(attrICRSpeedCmd.twist());
 }
 
 void KinematicBase::createOrocosInterface()
@@ -163,4 +164,5 @@ void KinematicBase::createOrocosInterface()
     addPort("outRightSteeringPositionCmd", outRightSteeringPositionCmd).doc("");
     addPort("outRearSteeringPositionCmd", outRearSteeringPositionCmd).doc("");
     addPort("outRobotBlocked", outRobotBlocked).doc("");
+    addPort("outTwistCmd",outTwistCmd).doc("");
 }

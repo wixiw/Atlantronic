@@ -66,6 +66,7 @@ class KinematicBase: public OdsTaskContext
         RTT::OutputPort<double> outFiltrationFeedback;
         RTT::OutputPort<arp_math::ICRSpeed> outFilteredICRSpeed;
         RTT::OutputPort<bool> outRobotBlocked;
+        RTT::OutputPort<arp_math::Twist2D> outTwistCmd;
 
         /**
          * Utility functions to help the developper te separate :
