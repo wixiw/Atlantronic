@@ -156,6 +156,11 @@ double sqrt2(const double value)
 double smoothStep(const double x, const double startValue, const double startLimit, const double endValue,
         const double endLimit)
 {
+    if( startLimit > endLimit)
+    {
+        return -666;
+    }
+
     //il s'agit d'une fonction toute simple qui permet de trouver la valeur intermediaire entre deux valeurs corresponsdant à des modes de calculs différents
 
     if (x <= startLimit)
@@ -175,6 +180,47 @@ double smoothStep(const double x, const double startValue, const double startLim
     // ne devrait jamais arriver
     return -666;
 
+}
+
+//TODO a tester
+double deadZone(double x, double minValue, double maxValue, double deadZone, double endValue)
+{
+    if( minValue > maxValue || deadZone > endValue || endValue < 0 || deadZone < 0)
+    {
+        return 0;
+    }
+
+    //x is little => we are in the dead zone, no output
+    if(fabs(x) < deadZone)
+    {
+        return 0;
+    }
+
+    //x is out of scope => saturated value
+    if( fabs(x) >= endValue )
+    {
+        return sign(x)*maxValue;
+    }
+
+    if( x > 0 )
+    {
+        return smoothStep(x,minValue, deadZone, endValue, maxValue );
+    }
+    else
+    {
+        return smoothStep(x, -maxValue, -endValue, -minValue, -deadZone);
+    }
+
+    return 0;
+}
+
+
+
+double d_abs(const double x)
+{
+    if(x < 0.)
+        return -x;
+    return x;
 }
 
 double firstDerivateLimitation(const double input, const double lastOutput, const double period, const double dmin,

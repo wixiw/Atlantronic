@@ -7,8 +7,8 @@
 
 #include "math/math.hpp"
 #include "MotionOrder.hpp"
-#include "control/orders/orders.h"
-#include "control/orders/Logger.hpp"
+#include "orders.h"
+#include "ods_logger/Logger.hpp"
 
 
 using namespace arp_core::log;

@@ -32,7 +32,7 @@ class Twist2DNorm: public Twist2D
 
         Twist2D getTwist() const;
 
-        static double dmax;
+        static const double dmax;
 };
 
 std::ostream &operator<<( std::ostream &flux, arp_math::Twist2DNorm const& t);

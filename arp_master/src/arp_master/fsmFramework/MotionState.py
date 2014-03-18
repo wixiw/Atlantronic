@@ -17,8 +17,9 @@ from math import *
 # Prefer the use of class from MotionStateCollection
 class MotionState(CyclicActionState):
     
-    def __init__(self):
-        CyclicState.__init__(self,outcomes=['succeeded','timeout'])
+    def __init__(self, outcomes = []):
+        outcomes.extend(['succeeded','timeout'])
+        CyclicState.__init__(self,outcomes)
         self.timeout = 10
         self.lastStart=None
         

@@ -10,6 +10,6 @@ then
 	exit 0
 else
 	echo "Atlantronic is not present yet."
-	git clone https://github.com/jbtredez/Atlantronic.git
+	git clone https://github.com/wixiw/Atlantronic.git
 	exit 0
 fi

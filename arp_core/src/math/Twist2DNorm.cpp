@@ -11,12 +11,12 @@
 
 using namespace arp_math;
 
+const double Twist2DNorm::dmax = Pose2DNorm::dmax;
+
 std::ostream &operator<<(std::ostream &flux, arp_math::Twist2DNorm const& t)
 {
     return flux << t.toString();
 }
-
-double Twist2DNorm::dmax= Pose2DNorm::dmax;
 
 Twist2DNorm::Twist2DNorm(double _vx, double _vy, double _vh) :
         Twist2D(_vx, _vy, _vh)

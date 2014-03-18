@@ -11,8 +11,8 @@
 #include <models/core>
 #include <math/core>
 #include <boost/shared_ptr.hpp>
-#include "control/ICRSpeedBuffer.hpp"
-#include "control/OnlineTrajectoryGenerator.hpp"
+#include "../replay_buffers/ICRSpeedBuffer.hpp"
+#include "../planners/OnlineTrajectoryGenerator.hpp"
 #include <arp_ods/OrderAction.h>
 
 using namespace arp_math;

@@ -8,7 +8,7 @@
 #include "KinematicBase.hpp"
 #include <rtt/Component.hpp>
 #include <models/core>
-#include "control/KinematicFilter.hpp"
+#include "../control/planners/KinematicFilter.hpp"
 
 using namespace arp_core::log;
 using namespace arp_model;
@@ -133,6 +133,7 @@ void KinematicBase::setOutputs()
     outFiltrationFeedback.write(attrQuality);
     outFilteredICRSpeed.write(attrCurrentICRSpeed);
     outRobotBlocked.write(attrRobotBlockedTimeout);
+    outTwistCmd.write(attrICRSpeedCmd.twist());
 }
 
 void KinematicBase::createOrocosInterface()
@@ -163,4 +164,5 @@ void KinematicBase::createOrocosInterface()
     addPort("outRightSteeringPositionCmd", outRightSteeringPositionCmd).doc("");
     addPort("outRearSteeringPositionCmd", outRearSteeringPositionCmd).doc("");
     addPort("outRobotBlocked", outRobotBlocked).doc("");
+    addPort("outTwistCmd",outTwistCmd).doc("");
 }

@@ -25,4 +25,5 @@ BOOST_AUTO_TEST_CASE( testdummy )
 BOOST_AUTO_TEST_SUITE_END()
 
 //#include "uTest_KinematicFilter.hpp"
+#include "uTest_OVG.hpp"
 //#include "uTest_OnlineTrajectoryGenerator.hpp""

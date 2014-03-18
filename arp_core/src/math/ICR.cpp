@@ -34,7 +34,7 @@ ICR::ICR(Vector3 speedVector)
 {
     //TODO double equal
     //phi
-    if (speedVector[0] != 0.0 or speedVector[1] != 0.0)
+    if ( d_abs(speedVector[0]) > epsilon or d_abs(speedVector[1]) > 0.0)
         m_phi = atan2(speedVector[1], speedVector[0]);
     else
         // pure rotation, phi not defined, but not a problem.
@@ -42,7 +42,7 @@ ICR::ICR(Vector3 speedVector)
 
     //delta
     double v = sqrt(speedVector[0] * speedVector[0] + speedVector[1] * speedVector[1]);
-    if (v != 0.0)
+    if (d_abs(v) > epsilon)
         m_delta = atan(speedVector[2] / v);
     else
         m_delta = sign(speedVector[2]) * PI / 2.0;

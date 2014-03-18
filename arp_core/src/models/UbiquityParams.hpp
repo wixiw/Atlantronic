@@ -39,6 +39,7 @@ class UbiquityParams
 
         //This values are link to HW capabilities
         double getMaxDrivingAcc() const;
+        double getMinDrivingSpeed() const;
         double getMaxDrivingSpeed() const;
         double getMaxDrivingTorque() const;
         double getMaxSteeringAcc() const;
@@ -67,6 +68,7 @@ class UbiquityParams
         double& getTractionRatioRef();
         double& getTurretRatioRef();
         double& getMaxDrivingAccRef();
+        double& getMinDrivingSpeedRef();
         double& getMaxDrivingSpeedRef();
         double& getMaxDrivingTorqueRef();
         double& getMaxSteeringAccRef();
@@ -117,6 +119,8 @@ class UbiquityParams
          * Note : on ne peut pas exprimer les limitations cinématiques autrement que sur les moteurs pour la direction à cause
          * du couplage avec les vitesses de directions qui nous font dépendre du temps.
          */
+        /** Vitesse minimale en m/s qu'une roue peut fournir au sol */
+        double m_minDrivingSpeed;
         /** Vitesse maximale en m/s qu'une roue peut fournir au sol */
         double m_maxDrivingSpeed;
         /** Acceleration maximale en m/s2 qu'une roue peut fournir au sol */

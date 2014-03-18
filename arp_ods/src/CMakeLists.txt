@@ -11,22 +11,9 @@ configure_file(
 
 add_subdirectory(control)
 add_subdirectory(components)
+add_subdirectory(ods_logger)
 add_subdirectory(manual)
 add_subdirectory(taskcontexts)
 add_subdirectory(types)
-
-#### old protokrot pour les tests RMO
-
-#add_subdirectory(command)
-
-#rosbuild_add_library(motionControl 
- #           orders/ModeSelector.cpp
-  #          orders/MotionOrder.cpp 
-   #        orders/StayInPosition.cpp
-    #        orders/FantomOrder.cpp
-     #      orders/RotationOrder.cpp)
-            
-            
-
 
 ###################################################################################################################

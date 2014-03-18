@@ -310,5 +310,42 @@ BOOST_AUTO_TEST_CASE( Math_angleBetweenVectors )
 }
 
 
+BOOST_AUTO_TEST_CASE( Math_smoothStep )
+{
+    double x,xs,ys,xe,ye;
+
+    xs=10;
+    ys=0;
+    xe=0;
+    ye=0;
+    for( x=-1; x < 1 ; x+=0.1)
+    {
+        BOOST_CHECK_EQUAL(smoothStep(x, ys, xs, ye, xe), -666.0);
+    }
+
+    xs=0;
+    ys=0;
+    xe=0;
+    ye=0;
+    for( x=-1; x < 1 ; x+=0.1)
+    {
+        BOOST_CHECK_SMALL(smoothStep(x, ys, xs, ye, xe), 1e-6);
+    }
+
+    xs=0;
+    ys=-1;
+    xe=0.5;
+    ye=1;
+    for( x=-1; x < 0 ; x+=0.1)
+    {
+        BOOST_CHECK_EQUAL(smoothStep(x, ys, xs, ye, xe), -1);
+    }
+    for( x=0.5; x < 1 ; x+=0.1)
+    {
+        BOOST_CHECK_EQUAL(smoothStep(x, ys, xs, ye, xe), 1);
+    }
+    x=0.25;
+    BOOST_CHECK_SMALL(smoothStep(x, ys, xs, ye, xe), 1e-6);
+}
 
 #endif /* UTEST_MATH_HPP_ */

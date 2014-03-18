@@ -7,7 +7,7 @@
 
 #include "RosOdsItf.hpp"
 #include <rtt/Component.hpp>
-#include "control/orders/Logger.hpp"
+#include "ods_logger/Logger.hpp"
 
 #include <iostream>
 
@@ -60,7 +60,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
     inSpeed.readNewest(speed);
     inParams.readNewest(params);
 
-    arp_ods::orders::Log(Info) << " humhum **********params.getMaxRobotSpeed() " << params.getMaxRobotSpeed();
+    arp_ods::Log(Info) << " humhum **********params.getMaxRobotSpeed() " << params.getMaxRobotSpeed();
 
     UbiquityMotionState currentMotionState(pose, speed);
 
@@ -69,11 +69,11 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
     {
         m_order = OrderFactory::createOrder(goal, currentMotionState, params);
         m_order->setOTG(&OTG);
-        arp_ods::orders::Log(Info) << " New Order! " << goal->move_type << endlog();
+        arp_ods::Log(Info) << " New Order! " << goal->move_type << endlog();
     }
     else
     {
-        arp_ods::orders::Log(Error) << "order " << goal->move_type.c_str() << "is not possible" << endlog();
+        arp_ods::Log(Error) << "order " << goal->move_type.c_str() << "is not possible" << endlog();
         goto abort;
     }
 
@@ -91,7 +91,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         //An interrupt has been requested
         if (m_actionServer.isPreemptRequested() || !ros::ok())
         {
-            arp_ods::orders::Log(Error) << goal->move_type.c_str() << " Preempted" << endlog();
+            arp_ods::Log(Error) << goal->move_type.c_str() << " Preempted" << endlog();
             //TODO faudrait peut être l'envoyer à LittleSexControl
             goto preempted;
         }
@@ -104,7 +104,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         }
         if (inError)
         {
-            arp_ods::orders::Log(Error) << goal->move_type.c_str() << ": not processed due to MODE_ERROR" << endlog();
+            arp_ods::Log(Error) << goal->move_type.c_str() << ": not processed due to MODE_ERROR" << endlog();
             goto abort;
         }
 
@@ -114,7 +114,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
         inRobotBlocked.readNewest(blocked);
         if (blocked and time - m_blockTime > 1.0) //1 of occultation, to allow the beginning of the new motion
         {
-            arp_ods::orders::Log(Error) << goal->move_type.c_str() << ": not processed due to Robot Blockage detection"
+            arp_ods::Log(Error) << goal->move_type.c_str() << ": not processed due to Robot Blockage detection"
                     << endlog();
             m_blockTime = time;
             goto abort;

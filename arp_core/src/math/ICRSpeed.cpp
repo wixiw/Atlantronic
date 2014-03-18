@@ -50,7 +50,7 @@ ICRSpeed::ICRSpeed(const ICRSpeed& icrSpeed)
 void ICRSpeed::initFromTwist(const Twist2DNorm& twist)
 {
     // if twist is null, then ICRspeed cannot be defined. default ICRSpeed is used
-        if (twist.vx() == 0.0 and twist.vy() == 0.0 and twist.vh() == 0.0)
+        if (fabs(twist.vx()) < vx_min and fabs(twist.vy()) < vy_min and fabs(twist.vh()) < vh_min)
         {
             m_ro = 0;
             m_ICR = ICR(0, 0);

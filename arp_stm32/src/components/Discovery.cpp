@@ -90,11 +90,21 @@ void Discovery::updateHook()
         id = 0;
     }
 
-    attrGyrometerAngle = betweenMinusPiAndPlusPi(m_robotItf.control_usb_data[id].pos_theta_gyro);
+    attrGyrometerAngleEuler = betweenMinusPiAndPlusPi(m_robotItf.control_usb_data[id].pos_theta_gyro_euler);
+    attrGyrometerAngleSimpson = betweenMinusPiAndPlusPi(m_robotItf.control_usb_data[id].pos_theta_gyro_simpson);
+    attrGyrometerVelocity = m_robotItf.control_usb_data[id].omega_gyro;
     mutex.unlock();
 
-    outGyrometerAngle.write(attrGyrometerAngle);
-    outGyrometerAngleDegree.write(rad2deg(attrGyrometerAngle));
+    attrGyrometerAngleEulerDegree = rad2deg(attrGyrometerAngleEuler);
+    attrGyrometerAngleSimpsonDegree = rad2deg(attrGyrometerAngleSimpson);
+    attrGyrometerVelocityDegree = rad2deg(attrGyrometerVelocity);
+
+    outGyrometerAngleEuler.write(attrGyrometerAngleEuler);
+    outGyrometerAngleEulerDegree.write(attrGyrometerAngleEulerDegree);
+    outGyrometerAngleSimpson.write(attrGyrometerAngleSimpson);
+    outGyrometerAngleSimpsonDegree.write(attrGyrometerAngleSimpsonDegree);
+    outGyrometerVelocity.write(attrGyrometerVelocity);
+    outGyrometerVelocityDegree.write(attrGyrometerVelocityDegree);
 }
 
 void Discovery::robotItfCallbackWrapper(void* arg)
@@ -151,6 +161,22 @@ bool Discovery::ooSetPosition(double newAngle)
 
 }
 
+bool Discovery::ooSetCalibrationValues(double scale, double bias, double dead_zone)
+{
+    int res = m_robotItf.gyro_set_calibration_values(scale, bias, dead_zone);
+
+        if( res < 0 )
+        {
+            LOG(Error) << "Failed to force new calib (err=" << res << ")." << endlog();
+            return false;
+        }
+        else
+        {
+            LOG(Info) << "New calib forced : scale=" << scale << "    bias=" << bias << "  dead_zone=" << dead_zone << endlog();
+            return true;
+        }
+}
+
 bool Discovery::ooReset()
 {
     int res = m_robotItf.reboot();
@@ -194,13 +220,26 @@ bool Discovery::srvResetStm32(ResetStm32::Request& req, ResetStm32::Response& re
 void Discovery::createOrocosInterface()
 {
     addAttribute("attrStm32Time", m_robotItf.current_time);
-    addAttribute("attrGyrometerAngle", attrGyrometerAngle);
+    addAttribute("attrGyrometerVelocity", attrGyrometerVelocity);
+    addAttribute("attrGyrometerVelocityDegree", attrGyrometerVelocityDegree);
+    addAttribute("attrGyrometerAngleEuler", attrGyrometerAngleEuler);
+    addAttribute("attrGyrometerAngleEulerDegree", attrGyrometerAngleEulerDegree);
+    addAttribute("attrGyrometerAngleSimpson", attrGyrometerAngleSimpson);
+    addAttribute("attrGyrometerAngleSimpsonDegree", attrGyrometerAngleSimpsonDegree);
 
 
-    addPort("outGyrometerAngle", outGyrometerAngle)
-        .doc("Angular position of the gyrometer in rad.");
-    addPort("outGyrometerAngleDegree", outGyrometerAngleDegree)
-        .doc("Angular position of the gyrometer in degree.");
+    addPort("outGyrometerAngleEuler", outGyrometerAngleEuler)
+        .doc("Angular position of the gyrometer in rad, integrated with Euler explicit integration scheme");
+    addPort("outGyrometerAngleEulerDegree", outGyrometerAngleEulerDegree)
+        .doc("Angular position of the gyrometer in degree, integrated with Euler explicit integration scheme");
+    addPort("outGyrometerAngleSimpson", outGyrometerAngleSimpson)
+        .doc("Angular position of the gyrometer in rad, integrated with Simpson integration scheme");
+    addPort("outGyrometerAngleSimpsonDegree", outGyrometerAngleSimpsonDegree)
+        .doc("Angular position of the gyrometer in degree, integrated with Simpson integration scheme");
+    addPort("outGyrometerVelocity", outGyrometerVelocity)
+        .doc("Angular velocity of the gyrometer in rad/sec");
+    addPort("outGyrometerVelocityDegree", outGyrometerVelocityDegree)
+        .doc("Angular velocity of the gyrometer in degree/sec");
 
     addOperation("ooStartCalibration",&Discovery::ooStartCalibration, this, OwnThread)
      .doc("Ask the gyrometer to freeze its position and to start the calibration process");
@@ -208,6 +247,8 @@ void Discovery::createOrocosInterface()
      .doc("Ask the gyrometer to stop the calibration process and to re-publish position datas");
     addOperation("ooSetPosition",&Discovery::ooSetPosition, this, OwnThread)
      .doc("Force a new gyrometer position, in rad");
+    addOperation("ooSetCalibrationValues",&Discovery::ooSetCalibrationValues, this, OwnThread)
+     .doc("Force new calib params");
     addOperation("ooReset",&Discovery::ooReset, this, OwnThread)
      .doc("Reset the stm32 board.");
 }

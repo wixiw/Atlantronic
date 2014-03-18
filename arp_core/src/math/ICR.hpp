@@ -26,6 +26,8 @@ namespace arp_math
 
 class ICR
 {
+    static const double epsilon = 1E-6;
+
     public:
 
         /** Constructeur principal.

@@ -13,6 +13,7 @@
 
 using namespace arp_math;
 using namespace arp_model;
+using namespace std;
 
 void check_twist2turrets2ICRSpeed2twist(double vx, double vy, double vh)
 {
@@ -118,15 +119,15 @@ void check_noMotion(double vx, double vy, double vh)
 
     //et la je calcule le twix
     arp_model::UbiquityKinematics::turrets2ICRspeed(turretCmd, twixObtenu, oSR, params);
-    /*
-     cout << "-----------TEST----------" << endl;
-     cout << "inTwist" << inTwist.toString() << endl;
-     cout << "inTwist_inv" << inTwist_inv.toString() << endl;
-     cout << "twixDesire" << twixDesire.toString() << endl;
-     cout << "twixDesire_inv" << twixDesire_inv.toString() << endl;
-     cout << "turretCmd" << turretCmd.toString() << endl;
-     cout << "twixObtenu" << twixObtenu.toString() << endl;
-     */
+
+//     cout << "-----------TEST----------" << endl;
+//     cout << "inTwist" << inTwist.toString() << endl;
+//     cout << "inTwist_inv" << inTwist_inv.toString() << endl;
+//     cout << "twixDesire" << twixDesire.toString() << endl;
+//     cout << "twixDesire_inv" << twixDesire_inv.toString() << endl;
+//     cout << "turretCmd" << turretCmd.toString() << endl;
+//     cout << "twixObtenu" << twixObtenu.toString() << endl;
+
     BOOST_CHECK_SMALL(twixObtenu.ro() - 0, 1.e-10);
     BOOST_CHECK_SMALL(twixDesire.ro() - 0, 1.e-10);
     BOOST_CHECK_SMALL(twixDesire_inv.ro() - 0, 1.e-10);
@@ -135,41 +136,41 @@ void check_noMotion(double vx, double vy, double vh)
     bool deltaLikeNormal = abs(twixObtenu.delta() - twixDesire.delta()) < 1.e-10;
     bool phiLikeNormal = abs(twixObtenu.phi() - twixDesire.phi()) < 1.e-10;
     bool carePhi = twixDesire.delta() < PI / 2 - 1.e-5 and twixDesire.delta() > -PI / 2 + 1.e-5;
-    /*
-     cout << "---"<< endl;
-     cout <<"deltaLikeNormal"<<deltaLikeNormal<<endl;
-     cout <<"phiLikeNormal"<<phiLikeNormal<<endl;
-     cout <<"carePhi"<<carePhi<<endl;
-     cout << "---"<< endl;
-     */
+
+//     cout << "---"<< endl;
+//     cout <<"deltaLikeNormal"<<deltaLikeNormal<<endl;
+//     cout <<"phiLikeNormal"<<phiLikeNormal<<endl;
+//     cout <<"carePhi"<<carePhi<<endl;
+//     cout << "---"<< endl;
+
     if (deltaLikeNormal and (phiLikeNormal or !carePhi))
     {
         // soit c'est le twix normal
-        //cout << "je checke  twix normal" << endl;
+//        cout << "je checke  twix normal" << endl;
         if (twixDesire.delta() < PI / 2 - 1.e-5 and twixDesire.delta() > -PI / 2 + 1.e-5) //aux poles on se tape de phi
         {
-            //cout << "je checke  phi" << endl;
+//            cout << "je checke  phi" << endl;
             BOOST_CHECK_SMALL(betweenMinusPiAndPlusPi(twixObtenu.phi() - twixDesire.phi()), 1.e-10);
         }
         else
         {
-            //cout << "je checke pas phi" << endl;
+//            cout << "je checke pas phi" << endl;
 
         }
         BOOST_CHECK_SMALL(twixObtenu.delta() - twixDesire.delta(), 1.e-10);
     }
     else
     {
-        //cout << "je checke  twix inverse" << endl;
+//        cout << "je checke  twix inverse" << endl;
         //soit le twix antipode
         if (twixDesire_inv.delta() < PI / 2 - 1.e-5 and twixDesire_inv.delta() > -PI / 2 + 1.e-5) //aux poles on se tape de phi
         {
-            //cout << "je checke  phi" << endl;
+//            cout << "je checke  phi" << endl;
             BOOST_CHECK_SMALL(betweenMinusPiAndPlusPi(twixObtenu.phi() - twixDesire_inv.phi()), 1.e-10);
         }
         else
         {
-            //cout << "je checke pas phi" << endl;
+//            cout << "je checke pas phi" << endl;
 
         }
         BOOST_CHECK_SMALL(twixObtenu.delta() - twixDesire_inv.delta(), 1.e-10);

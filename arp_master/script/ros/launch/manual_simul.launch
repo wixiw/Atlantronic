@@ -1,7 +1,7 @@
 <launch>
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
 	<include file="$(find arp_master)/script/ros/launch/rosparam.launch"/>
-	<node name="ArpOrocos" pkg="ocl" type="deployer-corba" args="-s $(find arp_master)/script/orocos/deployment/deploy_arp_master_manual_simul.ops
+	<node name="ArpOrocos" pkg="ocl" type="deployer-corba-gnulinux" args="-s $(find arp_master)/script/orocos/deployment/deploy_arp_master_manual_simul.ops
 		--" output="screen"
 		respawn="false"
 		required="true"

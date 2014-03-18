@@ -70,6 +70,11 @@ class Discovery: public Stm32TaskContext
         bool ooSetPosition(double newAngle);
 
         /**
+         * Force new calib
+         */
+        bool ooSetCalibrationValues(double scale, double bias, double dead_zone);
+
+        /**
          * Resets the Stm32 board
          */
         bool ooReset();
@@ -118,15 +123,25 @@ class Discovery: public Stm32TaskContext
         void createRosInterface();
 
         RobotInterface m_robotItf;
-        double attrGyrometerAngle;
+        int attrGyrometerRawData;
+        double attrGyrometerVelocity;
+        double attrGyrometerVelocityDegree;
+        double attrGyrometerAngleEuler;
+        double attrGyrometerAngleEulerDegree;
+        double attrGyrometerAngleSimpson;
+        double attrGyrometerAngleSimpsonDegree;
 
         /**
          * Orocos Interface
          */
 
         //Gyrometer position in radian in [-pi;pi[
-        RTT::OutputPort<double> outGyrometerAngle;
-        RTT::OutputPort<double> outGyrometerAngleDegree;
+        RTT::OutputPort<double> outGyrometerVelocity;
+        RTT::OutputPort<double> outGyrometerVelocityDegree;
+        RTT::OutputPort<double> outGyrometerAngleEuler;
+        RTT::OutputPort<double> outGyrometerAngleEulerDegree;
+        RTT::OutputPort<double> outGyrometerAngleSimpson;
+        RTT::OutputPort<double> outGyrometerAngleSimpsonDegree;
 
 };
 

@@ -20,7 +20,7 @@ execute_process(
 execute_process(
      COMMAND git rev-parse HEAD
      WORKING_DIRECTORY ${ATLANTRONIC_GIT_DIR}
-     OUTPUT_VARIABLE ATLANTRONIC_VERSION
+     OUTPUT_VARIABLE ATLANTRONIC_VERSION 
      OUTPUT_STRIP_TRAILING_WHITESPACE
      )
 message("Atlantronic version is ${ATLANTRONIC_VERSION}")
@@ -29,6 +29,7 @@ include_directories("${ATLANTRONIC_GIT_DIR}/include")
 include_directories("${ATLANTRONIC_GIT_DIR}/include/discovery")
 include_directories("${ATLANTRONIC_GIT_DIR}/src")
 add_definitions(-DVERSION='"${ATLANTRONIC_VERSION}"')
+#add_definitions(-DVERSION='"bc2cf58cc3bce55e951981a0b4ed2af702d9eb39"')
 
 orocos_component(arp_stm32-components ${source_files} )
 target_link_libraries(arp_stm32-components readline)

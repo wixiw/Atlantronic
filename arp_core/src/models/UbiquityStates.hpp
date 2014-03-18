@@ -219,6 +219,13 @@ class UbiquityKinematicState
 class SlippageReport
 {
     public:
+        SlippageReport()
+        : coherency1(0.)
+        , coherency2(0.)
+        , coherency3(0.)
+        {
+        }
+
         double coherency1;
         double coherency2;
         double coherency3;

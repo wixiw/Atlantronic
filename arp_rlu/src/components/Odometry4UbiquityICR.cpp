@@ -32,7 +32,8 @@ void Odometry4UbiquityICR::updateHook()
     ICRSpeed computedICRSpeed;
     SlippageReport report;
 
-    if( RTT::NewData != inTime.readNewest(attrTime))
+    timespec newTime;
+    if( RTT::NewData != inTime.readNewest(newTime))
     {
         LOG( Error ) << "No new data in inTime port : updateHook should not be externally trigger => return" << endlog();
         return;
@@ -62,10 +63,41 @@ void Odometry4UbiquityICR::updateHook()
     //TODO calculer la covariance
     EstimatedICRSpeed measuredICRSpeed(computedICRSpeed);
     //measuredICRSpeed.cov( covariance );
-    measuredICRSpeed.date( timespec2Double(attrTime) );
+    measuredICRSpeed.date( timespec2Double(newTime) );
 
     outICRSpeed.write(measuredICRSpeed);
     outTwist.write(measuredICRSpeed.twist());
+    
+        // On estime la position par intégration de l'ICRSpeed courrant;
+    Twist2D twist = measuredICRSpeed.twist();
+    double dt = (double)(timespec2Double(newTime) - timespec2Double(attrLastTime));
+    attrLastTime = newTime;
+    vxIntegrator.set(dt, twist.vx());
+    vyIntegrator.set(dt, twist.vy());
+    vhIntegrator.set(dt, twist.vh());
+
+    // Si on a reçu un cap provenant de l'extérieur, alors on l'applique
+    if( RTT::NewData == inTrueHeading.readNewest(attrHeading))
+    {
+        vhIntegrator.reset(attrHeading);
+    }
+
+    // Si on a reçu un cap provenant de l'extérieur, alors on l'applique
+    Pose2D externalPose;
+    if( RTT::NewData == inTruePose.readNewest(externalPose))
+    {
+        vxIntegrator.reset(externalPose.x());
+        vyIntegrator.reset(externalPose.y());
+        vhIntegrator.reset(externalPose.h());
+    }
+
+    // On construit la Pose finale
+    EstimatedPose2D pose(Pose2D(vxIntegrator.get(), vyIntegrator.get(), vhIntegrator.get()));
+    //pose.cov( covariance ); //TODO calculer la covariance
+    pose.date( timespec2Double(newTime) );
+
+    outPose.write( pose );
+    
 
     Vector3 angularSpeeds;
     if( false == UbiquityKinematics::findAngularSpeedFromOdometry(attrTurretState, angularSpeeds, attrParams) )
@@ -84,13 +116,14 @@ void Odometry4UbiquityICR::updateHook()
 
 }
 
-
 void Odometry4UbiquityICR::createOrocosInterface()
 {
     addAttribute("attrTurretState", attrTurretState);
     addAttribute("attrMotorState", attrMotorState);
+    addAttribute("attrHeading", attrHeading);
+    addAttribute("attrPose", attrPose);
     addAttribute("attrParams", attrParams);
-    addAttribute("attrTime", attrTime);
+    addAttribute("attrLastTime", attrLastTime);
 
     addPort("inTime",inTime)
             .doc("time in second.\n This port is used as trigger.\n This time is used as date of sensors data.");
@@ -100,8 +133,16 @@ void Odometry4UbiquityICR::createOrocosInterface()
     addPort("inMotorState",inMotorState)
             .doc("Measures from HML");
 
+    addPort("inTrueHeading",inTrueHeading)
+            .doc("Perfect external heading");
+
+    addPort("inTruePose",inTruePose)
+            .doc("Perfect external Pose");
+
     addPort("outICRSpeed",outICRSpeed)
             .doc("T_robot_table_p_robot_r_robot : Twist of robot reference frame relative to table frame, reduced and expressed in robot reference frame.\n It is an EstimatedTwist, so it contains Twist, estimation date (in sec) and covariance matrix.");
+    addPort("outPose",outPose)
+                .doc("Pose estimated via integration of ICRSpeed and via external heading if available");
     addPort("outTwist",outTwist)
         .doc("Conversion of the outICRSpeed value into a Twist for debug info.");
     addPort("outSlippageDetected",outSlippageDetected)
