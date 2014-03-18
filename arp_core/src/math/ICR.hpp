@@ -10,7 +10,7 @@
 
 #include "math/math.hpp"
 #include "math/Pose2D.hpp"
-#include "math/Twist2D.hpp"
+#include "math/Twist2DNorm.hpp"
 #include <string.h>
 
 namespace arp_math
@@ -46,7 +46,10 @@ class ICR
         Vector3 getCartesianVector() const;
         /** returns an ICR, on the great circle between me and ICR2, that is at a distance s from me*/
         ICR getIntermediate(const ICR& ICR2, double s) const;
-
+        /** Transport the ICR coordinate to a new reference. p is the position of the new reference is the current coordinates*/
+        ICR transport(const Pose2D & p) const;
+        /** Same as previous but publish internal computations */ //TODO this params must have a physical sense... but which one ?
+        ICR transport(const Pose2D & p, double& a, double &b, double& c) const;
 
         double phi() const;
         double delta() const;

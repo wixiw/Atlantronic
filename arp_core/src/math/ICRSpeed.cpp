@@ -175,21 +175,9 @@ ICRSpeed ICRSpeed::createIdleFromTranslation(double angle)
 
 ICRSpeed ICRSpeed::transport(const Pose2D & p) const
 {
-    ICRSpeed transportedSpeed;
-
-    double a = cos(delta()) * cos(phi()) - p.y()/Twist2DNorm::dmax * sin(delta());
-    double b = cos(delta()) * sin(phi()) + p.x()/Twist2DNorm::dmax * sin(delta());
-    double c = sin(delta());
-
-    double a2 = a*a;
-    double b2 = b*b;
-    double c2 = c*c;
-
-    transportedSpeed.ro( ro() * sqrt(a2 + b2 + c2) );
-    transportedSpeed.phi( atan2(b,a) - p.angle() );
-    transportedSpeed.delta( atan(c/sqrt(a2 + b2)) );
-
-    return transportedSpeed;
+    double a,b,c;
+    ICR tranportedIcr = getICR().transport(p,a,b,c);
+    return ICRSpeed(ro() * sqrt(a*a + b*b + c*c), tranportedIcr);
 }
 
 //TODO les coeff n'ont plus de sens, ils sont portés par position norm

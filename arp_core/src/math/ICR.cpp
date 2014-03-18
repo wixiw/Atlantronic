@@ -137,6 +137,30 @@ void ICR::delta(double delta)
     m_delta = betweenMinusPiAndPlusPi(delta);
 }
 
+ICR ICR::transport(const Pose2D & p) const
+{
+    double a,b,c;
+    transport(p, a, b, c);
+}
+
+ICR ICR::transport(const Pose2D & p, double& a, double &b, double& c) const
+{
+    ICR transportedIcr;
+
+    a = cos(delta()) * cos(phi()) - p.y()/Twist2DNorm::dmax * sin(delta());
+    b = cos(delta()) * sin(phi()) + p.x()/Twist2DNorm::dmax * sin(delta());
+    c = sin(delta());
+
+    transportedIcr.phi( atan2(b,a) - p.angle() );
+    transportedIcr.delta( atan2(c,sqrt(a*a + b*b)) );
+    cout << "a=" << a << " b=" << b << " c=" << c << endl;
+    cout << "p= " << p.toString() << endl;
+    cout << "atan2=" << atan2(b,a) << " p.angle=" << p.angle() <<endl;
+    cout << "transportedIcr=" << transportedIcr.toString() <<endl;
+    return transportedIcr;
+}
+
+
 std::string ICR::toString() const
 {
     std::ostringstream s;
