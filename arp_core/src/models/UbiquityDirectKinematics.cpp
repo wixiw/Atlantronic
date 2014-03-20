@@ -556,3 +556,70 @@ bool UbiquityKinematics::findAngularSpeedFromOdometry(const TurretState & iTS, V
     return true;
 }
 
+void UbiquityKinematics::findICRfromTurretAngles(const TurretState & iTS, ICR & oIcrPosition,
+        double firstTurretAngle, Pose2D firstTurretPosition,
+        double secondTurretAngle, Pose2D secondTurretPosition)
+{
+    if( fabs(betweenMinusPi2AndPlusPi2(firstTurretAngle - secondTurretAngle)) <= 1E-9 )
+    {
+        oIcrPosition.phi(firstTurretAngle);
+        oIcrPosition.delta(0);
+        //cout << "angle equal (" << firstTurretAngle << ";" << secondTurretAngle << ")" << endl;
+        return;
+    }
+
+    //as it is a simple matrix we already have inverted it 1/A*det(A) = AInv
+    Eigen::Matrix<double,2,2> AInv;
+    {
+        AInv(0,0) = cos(secondTurretAngle);
+        AInv(0,1) = sin(secondTurretAngle);
+        AInv(1,0) = cos(firstTurretAngle);
+        AInv(1,1) = sin(firstTurretAngle);
+    }
+
+    Vector2 B;
+    {
+        B(0) = secondTurretPosition.x() - firstTurretPosition.x();
+        B(1) = secondTurretPosition.y() - firstTurretPosition.y();
+    }
+
+
+    double invDet = 1/sin(secondTurretAngle - firstTurretAngle);
+    Vector2 icrDistances = invDet*(AInv*B);
+
+    //TODO si le CIR est sous une tourelle faut prendre l'autre ... ah bon ?
+    ICR firstIcr;
+    ICR secondIcr;
+
+    firstIcr.phi(firstTurretAngle);
+    secondIcr.phi(secondTurretAngle);
+
+    firstIcr.delta( atan2(Pose2DNorm::dmax, icrDistances[0]) );
+    secondIcr.delta( atan2(Pose2DNorm::dmax, icrDistances[1]) );
+
+    ICR candidate1 = firstIcr.transport(firstTurretPosition.opposite());
+    ICR candidate2 = secondIcr.transport(secondTurretPosition.opposite());
+
+    if(candidate1.phi()*candidate2.phi() < 0 )
+    {
+        candidate2 = candidate2.getAntipodICR();
+    }
+
+    oIcrPosition.phi((candidate1.phi()+candidate2.phi())/2);
+    oIcrPosition.delta((candidate1.delta()+candidate2.delta())/2);
+
+//    cout << "invDet =\t"<< invDet << endl;
+//    cout << "B[0] =\t"<< B[0] << endl;
+//    cout << "B[1] =\t" << B[1] << endl;
+//    cout << "phi1 =\t"<< rad2deg(firstTurretAngle) << endl;
+//    cout << "phi2 =\t" << rad2deg(secondTurretAngle) << endl;
+//    cout << "distance1 =\t" << icrDistances[0] << endl;
+//    cout << "distance2 =\t" << icrDistances[1] << endl;
+//    cout << "firstIcr  =\t" << firstIcr.toString() << endl;
+//    cout << "secondIcr =\t" << secondIcr.toString() << endl;
+//    cout << "candidate1 =\t" << candidate1.toString() << endl;
+//    cout << "candidate2 =\t" << candidate2.toString() << endl;
+//    cout << "oIcrPosition =\t" << oIcrPosition.toString() << endl;
+}
+
+
