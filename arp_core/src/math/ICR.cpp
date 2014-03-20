@@ -18,16 +18,16 @@ std::ostream &operator<<(std::ostream &flux, arp_math::ICR const& t)
     return flux << t.toString();
 }
 
-ICR::ICR(double phi, double delta)
+ICR::ICR(double _phi, double _delta)
 {
-    m_phi = betweenMinusPiAndPlusPi(phi);
-    m_delta = betweenMinusPiAndPlusPi(delta);
+    phi(_phi);
+    delta(_delta);
 }
 
 ICR::ICR(const ICR& icr)
 {
-    m_phi = icr.phi();
-    m_delta = icr.delta();
+    phi(icr.phi());
+    delta(icr.delta());
 }
 
 ICR::ICR(Vector3 speedVector)
@@ -35,23 +35,24 @@ ICR::ICR(Vector3 speedVector)
     //TODO double equal
     //phi
     if ( d_abs(speedVector[0]) > epsilon or d_abs(speedVector[1]) > 0.0)
-        m_phi = atan2(speedVector[1], speedVector[0]);
+        phi(atan2(speedVector[1], speedVector[0]));
     else
         // pure rotation, phi not defined, but not a problem.
-        m_phi = 0.0;
+        phi(0.0);
 
     //delta
     double v = sqrt(speedVector[0] * speedVector[0] + speedVector[1] * speedVector[1]);
     if (d_abs(v) > epsilon)
-        m_delta = atan(speedVector[2] / v);
+        delta(atan(speedVector[2] / v));
     else
-        m_delta = sign(speedVector[2]) * PI / 2.0;
+        delta(sign(speedVector[2]) * PI / 2.0);
 
 }
 
 ICR ICR::getAntipodICR() const
 {
-    double phi = betweenMinusPiAndPlusPi(m_phi + PI);
+    //le module est fait par le constructeur
+    double phi = m_phi + PI;
     double delta = -m_delta;
 
     return ICR(phi, delta);
@@ -134,13 +135,13 @@ void ICR::phi(double phi)
 
 void ICR::delta(double delta)
 {
-    m_delta = betweenMinusPiAndPlusPi(delta);
+    m_delta = betweenMinusPi2AndPlusPi2(delta);
 }
 
 ICR ICR::transport(const Pose2D & p) const
 {
     double a,b,c;
-    transport(p, a, b, c);
+    return transport(p, a, b, c);
 }
 
 ICR ICR::transport(const Pose2D & p, double& a, double &b, double& c) const
@@ -153,10 +154,10 @@ ICR ICR::transport(const Pose2D & p, double& a, double &b, double& c) const
 
     transportedIcr.phi( atan2(b,a) - p.angle() );
     transportedIcr.delta( atan2(c,sqrt(a*a + b*b)) );
-    cout << "a=" << a << " b=" << b << " c=" << c << endl;
-    cout << "p= " << p.toString() << endl;
-    cout << "atan2=" << atan2(b,a) << " p.angle=" << p.angle() <<endl;
-    cout << "transportedIcr=" << transportedIcr.toString() <<endl;
+//    cout << "a=" << a << " b=" << b << " c=" << c << endl;
+//    cout << "p= " << p.toString() << endl;
+//    cout << "atan2=" << atan2(b,a) << " p.angle=" << p.angle() <<endl;
+//    cout << "transportedIcr=" << transportedIcr.toString() <<endl;
     return transportedIcr;
 }
 

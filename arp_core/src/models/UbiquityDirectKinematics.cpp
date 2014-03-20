@@ -600,7 +600,7 @@ void UbiquityKinematics::findICRfromTurretAngles(const TurretState & iTS, ICR & 
     ICR candidate1 = firstIcr.transport(firstTurretPosition.opposite());
     ICR candidate2 = secondIcr.transport(secondTurretPosition.opposite());
 
-    if(candidate1.phi()*candidate2.phi() < 0 )
+    if(candidate1.delta()*candidate2.delta() < 0 )
     {
         candidate2 = candidate2.getAntipodICR();
     }
@@ -608,18 +608,18 @@ void UbiquityKinematics::findICRfromTurretAngles(const TurretState & iTS, ICR & 
     oIcrPosition.phi((candidate1.phi()+candidate2.phi())/2);
     oIcrPosition.delta((candidate1.delta()+candidate2.delta())/2);
 
-//    cout << "invDet =\t"<< invDet << endl;
-//    cout << "B[0] =\t"<< B[0] << endl;
-//    cout << "B[1] =\t" << B[1] << endl;
-//    cout << "phi1 =\t"<< rad2deg(firstTurretAngle) << endl;
-//    cout << "phi2 =\t" << rad2deg(secondTurretAngle) << endl;
-//    cout << "distance1 =\t" << icrDistances[0] << endl;
-//    cout << "distance2 =\t" << icrDistances[1] << endl;
-//    cout << "firstIcr  =\t" << firstIcr.toString() << endl;
-//    cout << "secondIcr =\t" << secondIcr.toString() << endl;
-//    cout << "candidate1 =\t" << candidate1.toString() << endl;
-//    cout << "candidate2 =\t" << candidate2.toString() << endl;
-//    cout << "oIcrPosition =\t" << oIcrPosition.toString() << endl;
+    cout << "invDet =\t"<< invDet << endl;
+    cout << "B[0] =\t"<< B[0] << endl;
+    cout << "B[1] =\t" << B[1] << endl;
+    cout << "phi1 =\t"<< rad2deg(firstTurretAngle) << endl;
+    cout << "phi2 =\t" << rad2deg(secondTurretAngle) << endl;
+    cout << "distance1 =\t" << icrDistances[0] << endl;
+    cout << "distance2 =\t" << icrDistances[1] << endl;
+    cout << "firstIcr  =\t" << firstIcr.toString() << endl;
+    cout << "secondIcr =\t" << secondIcr.toString() << endl;
+    cout << "candidate1 =\t" << candidate1.toString() << endl;
+    cout << "candidate2 =\t" << candidate2.toString() << endl;
+    cout << "oIcrPosition =\t" << oIcrPosition.toString() << endl;
 }
 
 
