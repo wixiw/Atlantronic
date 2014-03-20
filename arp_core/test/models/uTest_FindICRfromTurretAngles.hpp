@@ -15,7 +15,7 @@ BOOST_AUTO_TEST_CASE( UK_findICR_DegeneratedCases)
     ICR icrPos;
 
     //Cas particulier des tourelles parralèles
-    UbiquityKinematics::findICRfromTurretAngles(iTS, icrPos,
+    UbiquityKinematics::findICRFromTurretPairAngles(icrPos,
             iTS.steering.left.position, params.getLeftTurretPosition(),
             iTS.steering.right.position, params.getRightTurretPosition());
     BOOST_CHECK_SMALL(icrPos.phi(), 1E-5);
@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE( UK_findICR_DegeneratedCases)
     //Cas particulier des tourelles alignées
     iTS.steering.left.position = +M_PI_2;
     iTS.steering.right.position = -M_PI_2;
-    UbiquityKinematics::findICRfromTurretAngles(iTS, icrPos,
+    UbiquityKinematics::findICRFromTurretPairAngles(icrPos,
             iTS.steering.left.position, params.getLeftTurretPosition(),
             iTS.steering.right.position, params.getRightTurretPosition());
     BOOST_CHECK_CLOSE(icrPos.phi(), M_PI_2, 1E-5);
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE( UK_findICR_DegeneratedCases)
     //Cas particulier des tourelles alignées
     iTS.steering.left.position = -M_PI_2;
     iTS.steering.right.position = +M_PI_2;
-    UbiquityKinematics::findICRfromTurretAngles(iTS, icrPos,
+    UbiquityKinematics::findICRFromTurretPairAngles(icrPos,
             iTS.steering.left.position, params.getLeftTurretPosition(),
             iTS.steering.right.position, params.getRightTurretPosition());
     BOOST_CHECK_CLOSE(icrPos.phi(), -M_PI_2, 1E-5);
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE( UK_findICR_DegeneratedCases)
     //Cas particulier des tourelles alignées
     iTS.steering.left.position = +M_PI_2;
     iTS.steering.right.position = +M_PI_2;
-    UbiquityKinematics::findICRfromTurretAngles(iTS, icrPos,
+    UbiquityKinematics::findICRFromTurretPairAngles(icrPos,
             iTS.steering.left.position, params.getLeftTurretPosition(),
             iTS.steering.right.position, params.getRightTurretPosition());
     BOOST_CHECK_CLOSE(icrPos.phi(), M_PI_2, 1E-5);
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE( UK_findICR_DegeneratedCases)
     //Cas particulier des tourelles alignées
     iTS.steering.left.position = -M_PI_2;
     iTS.steering.right.position = -M_PI_2;
-    UbiquityKinematics::findICRfromTurretAngles(iTS, icrPos,
+    UbiquityKinematics::findICRFromTurretPairAngles(icrPos,
             iTS.steering.left.position, params.getLeftTurretPosition(),
             iTS.steering.right.position, params.getRightTurretPosition());
     BOOST_CHECK_CLOSE(icrPos.phi(), -M_PI_2, 1E-5);
@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE( UK_findICR_DegeneratedCases)
     //Sur la tourelle de gauche
     iTS.steering.left.position = 0.;
     iTS.steering.right.position = M_PI_2;
-    UbiquityKinematics::findICRfromTurretAngles(iTS, icrPos,
+    UbiquityKinematics::findICRFromTurretPairAngles(icrPos,
             iTS.steering.left.position, params.getLeftTurretPosition(),
             iTS.steering.right.position, params.getRightTurretPosition());
     BOOST_CHECK_SMALL(icrPos.phi(), 1E-5);
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE( UK_findICR_TranslationTests)
     phi = M_PI_2;
     iTS.steering.left.position = phi;
     iTS.steering.right.position = phi;
-    UbiquityKinematics::findICRfromTurretAngles(iTS, icrPos,
+    UbiquityKinematics::findICRFromTurretPairAngles(icrPos,
             iTS.steering.left.position, params.getLeftTurretPosition(),
             iTS.steering.right.position, params.getRightTurretPosition());
     BOOST_CHECK_CLOSE(icrPos.phi(), phi, 1E-5);
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE( UK_findICR_TranslationTests)
     phi = -M_PI_2;
     iTS.steering.left.position = phi;
     iTS.steering.right.position = phi;
-    UbiquityKinematics::findICRfromTurretAngles(iTS, icrPos,
+    UbiquityKinematics::findICRFromTurretPairAngles(icrPos,
             iTS.steering.left.position, params.getLeftTurretPosition(),
             iTS.steering.right.position, params.getRightTurretPosition());
     BOOST_CHECK_CLOSE(icrPos.phi(), phi, 1E-5);
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE( UK_findICR_TranslationTests)
     phi = -3*M_PI_4;
     iTS.steering.left.position = phi;
     iTS.steering.right.position = phi;
-    UbiquityKinematics::findICRfromTurretAngles(iTS, icrPos,
+    UbiquityKinematics::findICRFromTurretPairAngles(icrPos,
             iTS.steering.left.position, params.getLeftTurretPosition(),
             iTS.steering.right.position, params.getRightTurretPosition());
     BOOST_CHECK_CLOSE(icrPos.phi(), phi, 1E-5);
@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE( UK_findICR_TranslationTests)
     phi = -3*M_PI_4;
     iTS.steering.left.position = phi;
     iTS.steering.right.position = phi;
-    UbiquityKinematics::findICRfromTurretAngles(iTS, icrPos,
+    UbiquityKinematics::findICRFromTurretPairAngles(icrPos,
             iTS.steering.left.position, params.getLeftTurretPosition(),
             iTS.steering.right.position, params.getRightTurretPosition());
     BOOST_CHECK_CLOSE(icrPos.phi(), phi, 1E-5);
@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE( UK_findICR_VTets)
     phi = 1E-2;
     iTS.steering.left.position = +phi;
     iTS.steering.right.position = -phi;
-    UbiquityKinematics::findICRfromTurretAngles(iTS, icrPos,
+    UbiquityKinematics::findICRFromTurretPairAngles(icrPos,
             iTS.steering.left.position, params.getLeftTurretPosition(),
             iTS.steering.right.position, params.getRightTurretPosition());
     //phi can be whatever it wants.
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE( UK_findICR_VTets)
     phi = 1E-2;
     iTS.steering.left.position = -phi;
     iTS.steering.right.position = +phi;
-    UbiquityKinematics::findICRfromTurretAngles(iTS, icrPos,
+    UbiquityKinematics::findICRFromTurretPairAngles(icrPos,
             iTS.steering.left.position, params.getLeftTurretPosition(),
             iTS.steering.right.position, params.getRightTurretPosition());
     //phi can be whatever it wants.
@@ -147,7 +147,7 @@ BOOST_AUTO_TEST_CASE( UK_findICR_VTets)
     phi = M_PI_4;
     iTS.steering.left.position = +phi;
     iTS.steering.right.position = -phi;
-    UbiquityKinematics::findICRfromTurretAngles(iTS, icrPos,
+    UbiquityKinematics::findICRFromTurretPairAngles(icrPos,
             iTS.steering.left.position, params.getLeftTurretPosition(),
             iTS.steering.right.position, params.getRightTurretPosition());
     BOOST_CHECK_CLOSE(icrPos.phi(), M_PI_2, 0.5);
@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE( UK_findICR_VTets)
     phi = -M_PI_4;
     iTS.steering.left.position = +phi;
     iTS.steering.right.position = -phi;
-    UbiquityKinematics::findICRfromTurretAngles(iTS, icrPos,
+    UbiquityKinematics::findICRFromTurretPairAngles(icrPos,
             iTS.steering.left.position, params.getLeftTurretPosition(),
             iTS.steering.right.position, params.getRightTurretPosition());
     BOOST_CHECK_CLOSE(icrPos.phi(), -M_PI_2, 0.5);

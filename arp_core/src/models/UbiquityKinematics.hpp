@@ -172,11 +172,20 @@ class UbiquityKinematics
          * Idem que normalizeDirection(double& angle, double& speed) mais sur un ensemble de 3 tourelles
          */
         static void normalizeDirection(UbiquityKinematicState& state);
-        //TODO WLA : commenter
-        //TODO debug a faire
-        static void findICRfromTurretAngles(const TurretState & iTS, arp_math::ICR & oIcrPosition,
+
+        /**
+         * Compute the ICR position from the direction of 2 given turrets
+         * This is an internal function, you should prefer findICRFromTurretAngles
+         */
+        static void findICRFromTurretPairAngles(arp_math::ICR & oIcrPosition,
                 double firstTurretAngle, arp_math::Pose2D firstTurretPosition,
                 double secondTurretAngle, arp_math::Pose2D secondTurretPosition);
+
+        /**
+         * Compute a vector of 3 ICR positions from different turret pairs
+         */
+        static void findICRFromTurretAngles(const TurretState & iTS,
+                std::vector<arp_math::ICR> & oICRs, const UbiquityParams & iParams);
 };
 
 } /* namespace arp_model */
