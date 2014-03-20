@@ -35,7 +35,7 @@ double stddev(const Eigen::VectorXd & v)
     {
         double m = arp_math::mean(v);
         double s = 0.;
-        for (unsigned int i = 0; i < v.size(); i++)
+        for (int i = 0; i < v.size(); i++)
         {
             s += (m - v(i)) * (m - v(i));
         }
@@ -46,14 +46,14 @@ double stddev(const Eigen::VectorXd & v)
 double median(const Eigen::VectorXd & v)
 {
     Eigen::VectorXd m = arp_math::bubbleSort(v);
-    unsigned int n = m.size();
+    int n = m.size();
     if( n == 0 )
         return 0.;
 
     if( n == 1 )
         return m(0);
 
-    return m((unsigned int)((n-1) / 2));
+    return m((int)((n-1) / 2));
 }
 
 }

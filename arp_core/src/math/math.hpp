@@ -124,12 +124,12 @@ namespace arp_math
     /**
      * Permet d'énumérer les combinaisons (au sens de la combinatoire)de n éléments parmi le vecteur v
      */
-    std::vector<Eigen::VectorXi> combinaisons( const Eigen::VectorXi & v, const unsigned int n );
+    std::vector<Eigen::VectorXi> combinaisons( const Eigen::VectorXi & v, const int n );
 
     /**
      * Permet d'énumérer les combinaisons (au sens de la combinatoire)de n éléments parmi le vecteur v
      */
-    std::vector<Eigen::VectorXi> combinaisons( const unsigned int p, const unsigned int n );
+    std::vector<Eigen::VectorXi> combinaisons( const int p, const int n );
 
     /**
      * transforme un time spec en double

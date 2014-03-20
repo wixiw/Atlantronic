@@ -55,7 +55,7 @@ Eigen::VectorXd Interpolator::transInterp(Eigen::VectorXd  tt,
     }
 
     Eigen::VectorXd ret = Eigen::VectorXd(tt.size());
-    for(unsigned int i = 0 ; i<tt.size() ; i++)
+    for(int i = 0 ; i<tt.size() ; i++)
     {
         int index = indices[i];
         if(index < 0)
@@ -115,7 +115,7 @@ Eigen::VectorXd Interpolator::rotInterp(Eigen::VectorXd tt,
     }
 
     Eigen::VectorXd ret = Eigen::VectorXd(tt.size());
-    for(unsigned int i = 0 ; i<tt.size() ; i++)
+    for(int i = 0 ; i<tt.size() ; i++)
     {
         int index = indices[i];
         if(index < 0)
@@ -158,7 +158,7 @@ Eigen::Array< Eigen::Matrix3d, Dynamic, 1 > Interpolator::covInterp(Eigen::Vecto
     if(ttc.size() == 1)
     {
         Eigen::Array< Eigen::Matrix3d, Dynamic, 1 > ret(tt.size());
-        for(unsigned int k = 0 ; k<tt.size() ; k++)
+        for(int k = 0 ; k<tt.size() ; k++)
         {
             ret(k) = covc(0);
         }
@@ -183,7 +183,7 @@ Eigen::Array< Eigen::Matrix3d, Dynamic, 1 > Interpolator::covInterp(Eigen::Vecto
     }
 
     Eigen::Array< Eigen::Matrix3d, Dynamic, 1 > ret(tt.size());
-    for(unsigned int k = 0 ; k<tt.size() ; k++)
+    for(int k = 0 ; k<tt.size() ; k++)
     {
         int index = indices[k];
         if(index < 0)
@@ -248,7 +248,7 @@ int Interpolator::find(double t, Eigen::VectorXd ttc)
     {
         return -1;
     }
-    for(unsigned int i = 0 ; i < ttc.size()-1 ; i++)
+    for(int i = 0 ; i < ttc.size()-1 ; i++)
     {
         if(ttc[i] <= t && t < ttc[i+1] )
         {
@@ -271,7 +271,7 @@ Eigen::VectorXi Interpolator::find(Eigen::VectorXd tt, Eigen::VectorXd ttc)
 
     if( ttc.size() == 1)
     {
-        for(unsigned int i = 0 ; i < tt.size() ; i++)
+        for(int i = 0 ; i < tt.size() ; i++)
         {
             if( tt[i] >= ttc[0] )
             {
@@ -281,8 +281,8 @@ Eigen::VectorXi Interpolator::find(Eigen::VectorXd tt, Eigen::VectorXd ttc)
         return out;
     }
 
-    unsigned int i = 0;
-    unsigned int ic = 0;
+    int i = 0;
+    int ic = 0;
     while(i < tt.size())
     {
         if( ic == 0)

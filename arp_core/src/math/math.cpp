@@ -250,20 +250,20 @@ double firstDerivateLimitation(const double input, const double lastOutput, cons
     return output;
 }
 
-std::vector<Eigen::VectorXi> combinaisons( const Eigen::VectorXi & v, const unsigned int n )
+std::vector<Eigen::VectorXi> combinaisons( const Eigen::VectorXi & v, const int n )
 {
     std::vector<Eigen::VectorXi> out;
     if(n < 1)
         return out;
     if(n == 1)
     {
-        for(unsigned int i = 0 ; i < v.size() ; i++)
+        for(int i = 0 ; i < v.size() ; i++)
         {
             out.push_back( Eigen::VectorXi::Ones(1) * v(i) );
         }
         return out;
     }
-    unsigned int m = v.size();
+    int m = v.size();
     if( m < n )
         return out;
     if( m == n )
@@ -272,7 +272,7 @@ std::vector<Eigen::VectorXi> combinaisons( const Eigen::VectorXi & v, const unsi
         return out;
     }
 
-    for(unsigned int i = 0 ; i < m-n+1 ; i++)
+    for( int i = 0 ; i < m-n+1 ; i++)
     {
         std::vector<Eigen::VectorXi> combs = combinaisons( v.tail(m-i-1) , n-1);
         for( unsigned int k = 0 ; k < combs.size() ; k++)
@@ -286,10 +286,10 @@ std::vector<Eigen::VectorXi> combinaisons( const Eigen::VectorXi & v, const unsi
     return out;
 }
 
-std::vector<Eigen::VectorXi> combinaisons( const unsigned int p, const unsigned int n )
+std::vector<Eigen::VectorXi> combinaisons( const int p, const int n )
 {
     Eigen::VectorXi indices(p);
-        for(unsigned int i = 0 ; i < p ; i++)
+        for(int i = 0 ; i < p ; i++)
         {
             indices(i) = i;
         }
