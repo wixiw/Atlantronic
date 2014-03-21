@@ -621,7 +621,7 @@ void UbiquityKinematics::findICRFromTurretPairAngles(ICR & oIcrPosition,
 //    cout << "oIcrPosition =\t" << oIcrPosition.toString() << endl;
 }
 
-void UbiquityKinematics::findICRFromTurretAngles(const TurretState & iTS, vector<ICR> & oICRs, const UbiquityParams & iParams)
+void UbiquityKinematics::findICRFromTurretAngles(const TurretState & iTS, vector<ICR> & oICRs, double& perimeter, const UbiquityParams & iParams)
 {
     findICRFromTurretPairAngles(oICRs[0],
             iTS.steering.left.position, iParams.getLeftTurretPosition(),
@@ -634,5 +634,9 @@ void UbiquityKinematics::findICRFromTurretAngles(const TurretState & iTS, vector
     findICRFromTurretPairAngles(oICRs[2],
             iTS.steering.rear.position, iParams.getRearTurretPosition(),
             iTS.steering.left.position, iParams.getLeftTurretPosition());
+
+    perimeter = oICRs[0].sphericalDistance(oICRs[1])
+            + oICRs[1].sphericalDistance(oICRs[2])
+            + oICRs[2].sphericalDistance(oICRs[0]);
 }
 

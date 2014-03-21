@@ -183,9 +183,10 @@ class UbiquityKinematics
 
         /**
          * Compute a vector of 3 ICR positions from different turret pairs
+         * @param perimeter returns the spherical perimeter of the triangle formed by the 3 ICRs
          */
         static void findICRFromTurretAngles(const TurretState & iTS,
-                std::vector<arp_math::ICR> & oICRs, const UbiquityParams & iParams);
+                std::vector<arp_math::ICR> & oICRs, double& perimeter, const UbiquityParams & iParams);
 };
 
 } /* namespace arp_model */

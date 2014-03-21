@@ -59,6 +59,7 @@ class Odometry4UbiquityICR: public RluTaskContext
         RTT::OutputPort<double> outRiReOmega;
         RTT::OutputPort<double> outReLOmega;
 
+        RTT::OutputPort<double> outICRSphericalPerimeter;
 
         /**
          * Permet d'ajouter port/operations à l'interface Orocos.

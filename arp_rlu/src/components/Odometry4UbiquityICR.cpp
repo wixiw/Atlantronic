@@ -114,6 +114,10 @@ void Odometry4UbiquityICR::updateHook()
         outReLOmega.write(angularSpeeds[2]);
     }
 
+    double perimeter;
+    vector<ICR> icrs;
+    //UbiquityKinematics::findICRFromTurretAngles(attrTurretState, icrs, perimeter,attrParams);
+    outICRSphericalPerimeter.write(perimeter);
 }
 
 void Odometry4UbiquityICR::createOrocosInterface()
@@ -151,4 +155,5 @@ void Odometry4UbiquityICR::createOrocosInterface()
     addPort("outLRiOmega",outLRiOmega).doc("Angular velocity computed from Left and Right turrets velocity measures");
     addPort("outRiReOmega",outRiReOmega).doc("Angular velocity computed from Right and Rear turrets velocity measures");
     addPort("outReLOmega",outReLOmega).doc("Angular velocity computed from Rear and Left turrets velocity measures");
+    addPort("outICRSphericalPerimeter",outICRSphericalPerimeter).doc("This value represents the spherical perimeter of the ICR computed from 3 turrets pairs.");
 }
