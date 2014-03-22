@@ -92,9 +92,6 @@ MotorSimul::MotorSimul(const std::string& name):
     addOperation("ooSetOperationMode", &MotorSimul::ooSetOperationMode,this, OwnThread )
         .doc("")
         .arg("mode"," string = speed,position,torque,homing,faulhaber");
-    addOperation("ooSleep", &MotorSimul::ooSleep,this, ClientThread )
-           .doc("Permet d'attendre pour bloquer le script de déploiement")
-           .arg("dt"," temps à dormir en s");
     addOperation("coWaitEnable", &MotorSimul::coWaitEnable,this, ClientThread )
         .doc("")
         .arg("timeout","in s");
@@ -187,11 +184,6 @@ bool MotorSimul::ooLimitCurrent(double ampValue)
 void MotorSimul::ooFaulhaberCmd(int cmd, int param)
 {
     ArdMotorItf::setOperationMode(ArdMotorItf::OTHER);
-}
-
-void MotorSimul::ooSleep(int dt)
-{
-    sleep(dt);
 }
 
 bool MotorSimul::ooSetOperationMode(std::string mode)

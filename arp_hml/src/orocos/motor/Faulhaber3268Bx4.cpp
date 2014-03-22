@@ -552,11 +552,6 @@ void Faulhaber3268Bx4::ooFaulhaberCmd(int cmd, int param)
 	m_faulhaberCommandTodo = true;
 }
 
-void Faulhaber3268Bx4::ooSleep(int dt)
-{
-    sleep(dt);
-}
-
 bool Faulhaber3268Bx4::ooSetOperationMode(std::string mode)
 {
 	bool res = false;
@@ -852,9 +847,6 @@ void Faulhaber3268Bx4::createOrocosInterface()
     addOperation("ooSetOperationMode", &Faulhaber3268Bx4::ooSetOperationMode,this, OwnThread )
         .doc("")
         .arg("mode"," string = speed,position,torque,homing,faulhaber");
-    addOperation("ooSleep", &Faulhaber3268Bx4::ooSleep,this, ClientThread )
-           .doc("Permet d'attendre pour bloquer le script de déploiement")
-           .arg("dt"," temps à dormir en s");
     addOperation("coWaitEnable", &Faulhaber3268Bx4::coWaitEnable,this, ClientThread )
         .doc("")
         .arg("timeout","in s");

@@ -9,11 +9,10 @@ configure_file(
 ###################################################################################################################
 #    EDIT BELOW THIS LINE AND UNTIL NEXT LINE FOR A NEW PROJECT
 
+add_subdirectory(types)
 add_subdirectory(KFLocalizator)
-
 add_subdirectory(KFL)
 add_subdirectory(LSL)
-
 add_subdirectory(components)
 add_subdirectory(nodes)
 

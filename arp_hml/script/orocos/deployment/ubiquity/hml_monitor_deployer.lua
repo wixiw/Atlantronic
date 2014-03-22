@@ -82,6 +82,7 @@ function HmlMonitorDeployer:start()
 	assert(HmlMonitor:configure())
 	assert(HmlMonitor:start())
 
+--TODO a remettre
 --	Can1 = assert(HmlMonitor:getPeer("Can1"))
 --	LeftDriving = assert(HmlMonitor:getPeer("LeftDriving"))
 --	RightDriving = assert(HmlMonitor:getPeer("RightDriving"))

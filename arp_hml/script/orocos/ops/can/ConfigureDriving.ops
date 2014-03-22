@@ -47,7 +47,7 @@ sdo = CanDicoEntry(propNodeId,0x2303,2, 4,0,1);
 attrScriptRes = Can1.coWriteInRemoteDico(sdo);
 if (attrScriptRes==false) then return;
 
-
+//TODO a remettre
 //necessite requestes NMT ...
 ////configure Node Guarding of motor 
 //print.log(Info, "configure Node Guarding");
