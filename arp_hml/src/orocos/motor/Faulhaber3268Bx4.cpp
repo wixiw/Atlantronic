@@ -152,6 +152,10 @@ void Faulhaber3268Bx4::updateLateHook()
 
     //notification pour envoit du PDO operationnel de commande
     CanARD_Data.PDO_status[attrFaulhaberCommandPdoIndex].last_message.cob_id = 0;
+
+//    EnterMutex();
+//    masterRequestNodeState (&CanARD_Data, (UNS8) propNodeId);
+//    LeaveMutex();
 }
 
 void Faulhaber3268Bx4::getInputs()
@@ -253,16 +257,6 @@ void Faulhaber3268Bx4::runSpeed()
         *m_faulhaberCommand = F_CMD_V;
         *m_faulhaberCommandParameter = speed;
         LeaveMutex();
-
-    /*
-        usleep(500);
-
-        //TODO gain de conversion...
-        UNS32 torque = m_torqueCommand/propReductorValue*NM_TO_A*1000;
-        EnterMutex();
-        *m_faulhaberCommand = F_CMD_LPC;
-        *m_faulhaberCommandParameter = torque;
-        LeaveMutex();*/
     }
 }
 

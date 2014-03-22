@@ -49,7 +49,7 @@ if (attrScriptRes==false) then return;
 
 //TODO a remettre
 //necessite requestes NMT ...
-////configure Node Guarding of motor 
+//configure Node Guarding of motor 
 //print.log(Info, "configure Node Guarding");
 //var int32 period = Can1.propSyncPeriod*10;
 //sdo = CanDicoEntry(propNodeId,0x100C,0,period,0,2);

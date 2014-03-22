@@ -138,7 +138,8 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
     m_ooSetOrder(m_order);
     m_actionServer.setAborted(result);
     return;
-    success: inPose.readNewest(pose);
+    success: ROS_INFO("%s: Finished", goal->move_type.c_str());
+    inPose.readNewest(pose);
     result.x_end = pose.x();
     result.y_end = pose.y();
     result.theta_end = pose.h();

@@ -17,7 +17,7 @@ print("... connect components")
 assert( DiscoveryDeployer:connect(), 			"Failed to connect Discovery")
 
 print("... start components")
-assert( DiscoveryDeployer:start(), "Failed to start Discovery")
+--assert( DiscoveryDeployer:start(), "Failed to start Discovery")
 
 print("fin déploiment arp_stm32")
 print("====================")
