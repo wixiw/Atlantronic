@@ -3,6 +3,7 @@
 
 add_subdirectory(can)
 add_subdirectory(cpu)
+#add_subdirectory(hokuyo)
 add_subdirectory(io)
 add_subdirectory(joystick)
 add_subdirectory(mockups)
