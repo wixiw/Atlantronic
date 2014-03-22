@@ -115,8 +115,8 @@ void Odometry4UbiquityICR::updateHook()
     }
 
     double perimeter;
-    vector<ICR> icrs;
-    //UbiquityKinematics::findICRFromTurretAngles(attrTurretState, icrs, perimeter,attrParams);
+    vector<ICR> icrs(3);
+    UbiquityKinematics::findICRFromTurretAngles(attrTurretState, icrs, perimeter,attrParams);
     outICRSphericalPerimeter.write(perimeter);
 }
 

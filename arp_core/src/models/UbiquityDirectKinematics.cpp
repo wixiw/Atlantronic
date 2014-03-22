@@ -635,8 +635,16 @@ void UbiquityKinematics::findICRFromTurretAngles(const TurretState & iTS, vector
             iTS.steering.rear.position, iParams.getRearTurretPosition(),
             iTS.steering.left.position, iParams.getLeftTurretPosition());
 
-    perimeter = oICRs[0].sphericalDistance(oICRs[1])
-            + oICRs[1].sphericalDistance(oICRs[2])
-            + oICRs[2].sphericalDistance(oICRs[0]);
+
+    double d0 = oICRs[0].sphericalDistance(oICRs[1]);
+    double d1 = oICRs[1].sphericalDistance(oICRs[2]);
+    double d2 = oICRs[2].sphericalDistance(oICRs[0]);
+
+    double d0_opp = oICRs[0].sphericalDistance(oICRs[1].getAntipodICR());
+    double d1_opp = oICRs[1].sphericalDistance(oICRs[2].getAntipodICR());
+    double d2_opp = oICRs[2].sphericalDistance(oICRs[0].getAntipodICR());
+
+    perimeter = min(d0,d0_opp) + min(d1,d1_opp) + min(d2,d2_opp);
+
 }
 
