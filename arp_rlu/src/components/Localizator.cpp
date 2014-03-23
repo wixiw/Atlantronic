@@ -23,31 +23,6 @@ using namespace std;
 
 ORO_LIST_COMPONENT_TYPE( arp_rlu::Localizator )
 
-const char * LocalizationStateNames[2] = {
-        "_STOPPED_",
-        "_RUNNING_"
-};
-
-const char * LocalizationModeNames[3] = {
-        "_ODO_ONLY_",
-        "__SMOOTH__",
-        "__FUSION__"
-};
-
-const char * LocalizationQualityNames[3] = {
-        "_LOST_",
-        "_BAD__",
-        "_GOOD_",
-};
-
-const char * LocalizationVisibilityNames[4] = {
-        "___NONE___",
-        "_OCCULTED_",
-        "_SEGMENT__",
-        "_TRIANGLE_",
-};
-
-
 Localizator::Localizator(const std::string& name)
 : RluTaskContext(name)
 , kfloc()

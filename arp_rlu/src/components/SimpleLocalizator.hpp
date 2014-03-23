@@ -12,44 +12,51 @@
 #include <math/core>
 
 #include <sensor_msgs/LaserScan.h>
-#include "types/LocalizatorTypes.hpp"
+#include "LocalizatorTypes.hpp"
+#include <helpers/SimpsonIntegrator.hpp>
 
 namespace arp_rlu
 {
 
-typedef kfl::KFLocalizator::Params LocalizatorParams;
-    
 class SimpleLocalizator: public RluTaskContext
 {
 
     public:
         SimpleLocalizator(const std::string& name);
-        bool ooInitialize(double x, double y, double theta);
-        void setParams(LocalizatorParams params);
-        std::string printParams();
         bool configureHook();
         void updateHook();
 
     protected:
         
         //*****************************************************
+        // Attributes
+
+        /** Buffer local pour le temps */
+        timespec attrLastTime;
+
+        //*****************************************************
+        // Properties
+
+        double propMaxReliableBadOdoTransStddev;
+        double propMaxReliableBadOdoRotStddev;
+
+        //*****************************************************
         // Ports
-        RTT::InputPort<arp_math::EstimatedICRSpeed > inOdo;
+
+        RTT::InputPort<timespec> inTime;
+        RTT::InputPort<arp_math::EstimatedTwist2D > inTwistOdo;
         RTT::InputPort<double> inGyroAngle;
-        RTT::InputPort< bool > inSmoothMode;
+
+        /** Heading from external source (for instance initialisation)*/
+        RTT::InputPort<double> inTrueHeading;
+        /** Pose from external source (for instance initialisation)*/
+        RTT::InputPort<arp_math::Pose2D> inTruePose;
 
         /**
          * Contient la dernière estimée de position.\n
          * Il s'agit de H_robot_table
          */
         RTT::OutputPort<arp_math::EstimatedPose2D> outPose;
-
-        /**
-         * Contient la dernière estimée de vitesse.\n
-         * Il s'agit de T_robot_table_p_robot_r_robot c'est à dire le Twist du robot
-         * par rapport à la table, projeté ET réduit dans le repère du robot.
-         */
-        RTT::OutputPort<arp_math::EstimatedICRSpeed> outICRSpeed;
 
         /**
          * Indique l'état de la localization.\n
@@ -65,12 +72,6 @@ class SimpleLocalizator: public RluTaskContext
          * Indique la qualité de l'estimation.\n
          */
         RTT::OutputPort<int> outLocalizationQuality;
-
-        /**
-         * Contient la position d'obstacles détectés sur la table.\n
-         * Ces obstacles ne sont pas filtrés temporellement.
-         */
-        RTT::OutputPort< std::vector< arp_math::Vector2 > > outObstacles;
 
         //*****************************************************
         // Operations
@@ -96,21 +97,17 @@ class SimpleLocalizator: public RluTaskContext
         // Internal objects
         long double m_monotonicTimeToRealTime;
 
-        double propMaxReliableBadOdoTransStddev;
-        double propMaxReliableBadOdoRotStddev;
-        double propMaxReliableLostTransStddev;
-        double propMaxReliableLostRotStddev;
-
-        unsigned int propIEKFMaxIt;
-        double propIEKFInnovationMin;
-
-        bool smoothMode;
-        bool predictionOk;
-        bool updateOk;
-
+        /** Localizator anyway computing but will only publish in RUNNING state.
+         The only way to do it is to initialize it with a true position */
         LocalizationState currentState;
         LocalizationMode currentMode;
         LocalizationQuality currentQuality;
+
+        arp_math::SimpsonIntegrator vxIntegrator;
+        arp_math::SimpsonIntegrator vyIntegrator;
+        arp_math::SimpsonIntegrator vhIntegrator;
+
+        const arp_math::Covariance3 m_defaultInitCovariance;
 };
 
 } /* namespace arp_rlu */
