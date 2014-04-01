@@ -64,6 +64,25 @@ class Initialisation(smach.StateMachine):
                                    SetColor(),
                                    transitions={'done':'endInitialisation','timeout':'SetColor'})
     
+class UnSecureInitialisation(smach.StateMachine):
+    def __init__(self):
+        smach.StateMachine.__init__(self,outcomes=['endInitialisation','failed'])
+        with self:
+            smach.StateMachine.add('Init', Init(),
+                                   transitions={'initstateok':'WaitForOrocos','timeout':'Init'})
+            smach.StateMachine.add('WaitForOrocos', 
+                                   WaitForOrocos(),
+                                   transitions={'deployed':'FindSteeringZeros','timeout':'WaitForOrocos'})
+            smach.StateMachine.add('FindSteeringZeros',
+                                   InitTurretZeros(), 
+                                   transitions={'succeeded':'WaitForStart', 'problem':'failed'})
+            smach.StateMachine.add('WaitForStart', 
+                                   WaitForStart(),
+                                   transitions={'start':'SetColor','timeout':'WaitForStart'})
+            smach.StateMachine.add('SetColor', 
+                                   SetColor(),
+                                   transitions={'done':'endInitialisation','timeout':'SetColor'})
+    
     
 #the first state: only to wait for the start to be unpluged 
 class Init(CyclicState):

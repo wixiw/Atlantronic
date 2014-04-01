@@ -116,10 +116,6 @@ class Inputs:
     @staticmethod
     def getOpponents():
         return Opponents(Inputs.opponentsInput.data, Point(Inputs.getx(), Inputs.gety()) )
-
-    @staticmethod
-    def getRearObstacle():
-        return False
     
     @staticmethod
     def getx():

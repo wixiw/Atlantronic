@@ -145,7 +145,7 @@ class AmbiTurnOrder(MotionState):
     def createAction(self):
         self.cap( AmbiCapYellow(self.h,Data.color).angle )      
    
-#You should only use this if you have color dependent stuuf to do           
+#You should only use this if you have color dependent stuff to do           
 class TurnOrder(MotionState):
     def __init__(self,h):
         MotionState.__init__(self)

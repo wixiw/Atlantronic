@@ -82,25 +82,12 @@ class CyclicActionState(CyclicState):
         if state==actionlib.GoalStatus.SUCCEEDED:
             return 'succeeded'
         
-        if state==actionlib.GoalStatus.ABORTED or state==actionlib.GoalStatus.REJECTED or state==actionlib.GoalStatus.LOST or state==actionlib.GoalStatus.PREEMPTED or self.isFrontObstacle() or self.isRearObstacle():
+        if state==actionlib.GoalStatus.ABORTED or state==actionlib.GoalStatus.REJECTED or state==actionlib.GoalStatus.LOST or state==actionlib.GoalStatus.PREEMPTED:
             self.client.cancel_all_goals()
             return 'timeout'  
         #all others are considered "waiting"
         #Possible States Are: PENDING, ACTIVE, RECALLED, REJECTED, PREEMPTED, ABORTED, SUCCEEDED, LOST
     
-    #check for obstacles
-    def isFrontObstacle(self):
-        if Inputs.getObstacle()==1 and rospy.get_rostime().secs-Data.timeObstacleInAction>self.blinding_period and Inputs.getLinearVelocity()>0.010:
-            Data.timeObstacleInAction=rospy.get_rostime().secs
-            return True
-        else:
-            return False
-    def isRearObstacle(self):    
-        if Inputs.getRearObstacle()==1 and rospy.get_rostime().secs-Data.timeRearObstacleInAction>self.blinding_period and Inputs.getLinearVelocity()<-0.010:
-            Data.timeRearObstacleInAction=rospy.get_rostime().secs
-            return True
-        else:
-            return False     
              
     # generic motioncontrol action creator.
     def createMotionControlAction(self,x,y,theta,move_type,passe,passe_speed,max_speed):

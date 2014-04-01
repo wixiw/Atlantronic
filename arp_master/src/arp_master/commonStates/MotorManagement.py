@@ -90,6 +90,18 @@ class SetDrivingPower(CyclicState):
         else:
             return 'timeout' 
         
+class DisableDrivingPower(CyclicState):
+    def __init__(self):
+        CyclicState.__init__(self, outcomes=['succeeded','timeout'])
+    
+    def executeIn(self):
+        self.result = self.disableDrivingPower()
+    
+    def executeTransitions(self):
+        if self.result == True:
+            return 'succeeded'   
+        else:
+            return 'timeout'         
         
         
                

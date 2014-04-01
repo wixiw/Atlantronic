@@ -89,7 +89,7 @@ class MotionState(CyclicActionState):
             if state==actionlib.GoalStatus.SUCCEEDED:
                 return 'succeeded'
             
-            if state==actionlib.GoalStatus.ABORTED or state==actionlib.GoalStatus.REJECTED or state==actionlib.GoalStatus.LOST or state==actionlib.GoalStatus.PREEMPTED or self.isFrontObstacle() or self.isRearObstacle():
+            if state==actionlib.GoalStatus.ABORTED or state==actionlib.GoalStatus.REJECTED or state==actionlib.GoalStatus.LOST or state==actionlib.GoalStatus.PREEMPTED:
                 self.client.cancel_all_goals()
                 return 'timeout'
             

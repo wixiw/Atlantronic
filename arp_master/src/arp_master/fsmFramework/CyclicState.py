@@ -122,7 +122,7 @@ class CyclicState(smach.StateMachine):
         except rospy.ServiceException, e:
             rospy.logerr("CyclicState could not enable Driving MotorPower")
             return False
-    def DrivingPowerdisableDrive(self):
+    def disableDrivingPower(self):
         try:
             self.setDrivingMotorPower_srv(False)
             return True;
