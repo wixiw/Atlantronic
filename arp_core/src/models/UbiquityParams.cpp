@@ -15,18 +15,18 @@ using namespace std;
 
 UbiquityParams::UbiquityParams():
 
+        m_leftTurretZero(-1),
+        m_rightTurretZero(-1),
+        m_rearTurretZero(-1),
         m_leftTurretPosition(-1,-1,-1),
         m_rightTurretPosition(-1,-1,-1),
         m_rearTurretPosition(-1,-1,-1),
         m_chassisCenter(-1,-1,-1),
-        m_leftTurretZero(-1),
-        m_rightTurretZero(-1),
-        m_rearTurretZero(-1),
         m_leftWheelDiameter(-1),
         m_rightWheelDiameter(-1),
         m_rearWheelDiameter(-1),
-        m_tractionRatio(-1),
         m_turretRatio(-1),
+        m_tractionRatio(-1),
         m_minDrivingSpeed(-1),
         m_maxDrivingSpeed(-1),
         m_maxDrivingAcc(-1),
@@ -42,18 +42,18 @@ UbiquityParams::UbiquityParams():
 
 void UbiquityParams::fillWithFakeValues(void)
 {
+    m_leftTurretZero=0;
+    m_rightTurretZero=0;
+    m_rearTurretZero=0;
     m_leftTurretPosition=Pose2D(0.000, 0.155, 0);
     m_rightTurretPosition=Pose2D(0.000, -0.155, 0);
     m_rearTurretPosition=Pose2D(-0.175, 0.000, 0);
     m_chassisCenter=Pose2D(-0.058, 0.000, 0);
-    m_leftTurretZero=0;
-    m_rightTurretZero=0;
-    m_rearTurretZero=0;
     m_leftWheelDiameter=0.066;
     m_rightWheelDiameter=0.066;
     m_rearWheelDiameter=0.066;
-    m_tractionRatio=1.0;
     m_turretRatio=0.25;
+    m_tractionRatio=1.0;
     m_minDrivingSpeed=0.001;
     m_maxDrivingSpeed=1;
     m_maxDrivingAcc=1;
