@@ -47,9 +47,6 @@ void simpson_compute(SimpsonState * p)
   scalar tk;
   scalar tkm1;
 
-  scalar a, b, c;
-  scalar res;
-
   tk   = p->dtk;
   tkm1 = p->dtkm1;
 
@@ -68,6 +65,8 @@ void simpson_compute(SimpsonState * p)
     p->yk += p->ykm2;
 
       // details
+    //scalar a, b, c;
+    //scalar res;
       /*a  =   1 / (tkm1*tkm1 + tk*tkm1) * p->xkm2;
       a += - 1 / (tk*tkm1)             * p->xkm1;
       a +=   1 / (tk*tk + tk*tkm1)     * p->xk;
