@@ -93,6 +93,7 @@ void Discovery::updateHook()
     attrGyrometerAngleEuler = betweenMinusPiAndPlusPi(m_robotItf.control_usb_data[id].pos_theta_gyro_euler);
     attrGyrometerAngleSimpson = betweenMinusPiAndPlusPi(m_robotItf.control_usb_data[id].pos_theta_gyro_simpson);
     attrGyrometerVelocity = m_robotItf.control_usb_data[id].omega_gyro;
+    attrGyrometerRawData = m_robotItf.control_usb_data[id].raw_data_gyro;
     mutex.unlock();
 
     attrGyrometerAngleEulerDegree = rad2deg(attrGyrometerAngleEuler);
@@ -105,6 +106,7 @@ void Discovery::updateHook()
     outGyrometerAngleSimpsonDegree.write(attrGyrometerAngleSimpsonDegree);
     outGyrometerVelocity.write(attrGyrometerVelocity);
     outGyrometerVelocityDegree.write(attrGyrometerVelocityDegree);
+    outGyrometerRawData.write(attrGyrometerRawData);
 }
 
 void Discovery::robotItfCallbackWrapper(void* arg)
@@ -220,6 +222,7 @@ bool Discovery::srvResetStm32(ResetStm32::Request& req, ResetStm32::Response& re
 void Discovery::createOrocosInterface()
 {
     addAttribute("attrStm32Time", m_robotItf.current_time);
+    addAttribute("attrGyrometerRawData",attrGyrometerRawData);
     addAttribute("attrGyrometerVelocity", attrGyrometerVelocity);
     addAttribute("attrGyrometerVelocityDegree", attrGyrometerVelocityDegree);
     addAttribute("attrGyrometerAngleEuler", attrGyrometerAngleEuler);
@@ -240,6 +243,9 @@ void Discovery::createOrocosInterface()
         .doc("Angular velocity of the gyrometer in rad/sec");
     addPort("outGyrometerVelocityDegree", outGyrometerVelocityDegree)
         .doc("Angular velocity of the gyrometer in degree/sec");
+    addPort("outGyrometerRawData", outGyrometerRawData)
+           .doc("Angular velocity of the gyrometer in LSB");
+
 
     addOperation("ooStartCalibration",&Discovery::ooStartCalibration, this, OwnThread)
      .doc("Ask the gyrometer to freeze its position and to start the calibration process");

@@ -142,7 +142,7 @@ class Discovery: public Stm32TaskContext
         RTT::OutputPort<double> outGyrometerAngleEulerDegree;
         RTT::OutputPort<double> outGyrometerAngleSimpson;
         RTT::OutputPort<double> outGyrometerAngleSimpsonDegree;
-
+        RTT::OutputPort<double> outGyrometerRawData;
 };
 
 } /* namespace arp_stm32 */
