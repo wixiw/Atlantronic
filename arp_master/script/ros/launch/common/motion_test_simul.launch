@@ -14,7 +14,7 @@
 	<node name="GraphicsSimu" pkg="arp_master" type="GraphicsSimuNode" args="/Ubiquity/simuRealPose"
 		output="screen" launch-prefix="nice"/>
 	<node name="MotionTestingStratNode" pkg="arp_master" type="MotionTestingStratNode.py"
-		args="" output="screen" 
+		args="" output="screen" launch-prefix="xterm -e"
 	respawn="false"
 	required="true"
 	/>
