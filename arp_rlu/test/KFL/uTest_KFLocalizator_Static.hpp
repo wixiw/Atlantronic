@@ -302,9 +302,9 @@ namespace unittest_KFLocalizator_Static
             BOOST_CHECK_CLOSE( time , docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "t")), 1.f );
 
             double groundTrueT = docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "t"));
-            double groundTrueX = docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "x"));
-            double groundTrueY = docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "y"));
-            double groundTrueH = docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "h"));
+//            double groundTrueX = docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "x"));
+//            double groundTrueY = docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "y"));
+//            double groundTrueH = docScanEstim.getFloatData( docScanEstim.getChild( docScanEstim.root(), "h"));
             BOOST_CHECK_CLOSE( postScanEstim_H_hky_table.date() , groundTrueT, 1.f);
             //            BOOST_CHECK_SMALL( postScanEstim.x() - groundTrueX, transPrecision);
             //            BOOST_CHECK_SMALL( postScanEstim.y() - groundTrueY, transPrecision);

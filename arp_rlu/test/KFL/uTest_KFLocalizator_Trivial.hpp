@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE( test_Static )
 
     const double transPrecisionAgainstGroundTruth = 0.001;
     const double rotPrecisionAgainstGroundTruth = deg2rad(0.1);
-    const double covPrecision = 9.e-3;
+    //const double covPrecision = 9.e-3;
 
 
     //*******************************************
@@ -229,7 +229,7 @@ BOOST_AUTO_TEST_CASE( test_Bad_InitTime )
 
     const double transPrecisionAgainstGroundTruth = 0.001;
     const double rotPrecisionAgainstGroundTruth = deg2rad(0.1);
-    const double covPrecision = 9.e-3;
+//    const double covPrecision = 9.e-3;
 
 
     //*******************************************
@@ -397,7 +397,7 @@ BOOST_AUTO_TEST_CASE( test_V_constante )
 
     const double transPrecisionAgainstGroundTruth = 1.e-8;
     const double rotPrecisionAgainstGroundTruth = deg2rad(1.e-6);
-    const double covPrecision = 9.e-6;
+//    const double covPrecision = 9.e-6;
 
 
     //*******************************************
@@ -603,7 +603,7 @@ BOOST_AUTO_TEST_CASE( test_acc )
 
     const double transPrecisionAgainstGroundTruth = 0.001;
     const double rotPrecisionAgainstGroundTruth = deg2rad(0.1);
-    const double covPrecision = 9.e-3;
+//    const double covPrecision = 9.e-3;
 
 
     //*******************************************
