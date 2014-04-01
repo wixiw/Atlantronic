@@ -1,0 +1,14 @@
+/opt/ros/orocos.log {
+	rotate 1
+	size=10000k
+	nocompress
+	create 777
+}
+
+/opt/ros/reports.dat {
+	rotate 1
+	size=10000k
+	nocompress
+	create 777
+}
+

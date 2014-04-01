@@ -12,6 +12,7 @@
 #include <math/core>
 
 #include <sensor_msgs/LaserScan.h>
+#include "time/ArdTime.hpp"
 
 #include <LSL/LaserScan.hpp>
 #include <LSL/objects/Circle.hpp>
@@ -132,7 +133,7 @@ class FrontObstacleDetector: public RluTaskContext
     std::vector< arp_math::Vector2 > detectedObstacles;
 
 
-    long double m_monotonicTimeToRealTime;
+    arp_time::ArdTimeDelta m_monotonicTimeToRealTime;
 
     arp_core::StatTimer mfTimer;
     arp_core::StatTimer pcTimer;

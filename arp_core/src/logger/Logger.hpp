@@ -40,7 +40,8 @@
 #include <iostream>
 #include <fstream>
 
-#include <math/math.hpp>
+#include "time/ArdTime.hpp"
+#include "math/math.hpp"
 
 //#ifdef ERROR
 //#undef ERROR
@@ -209,9 +210,8 @@ class SimpleStreamCategory : public Category
         {
             if( p <= logLevel)
             {
-                timespec now;
-                clock_gettime(CLOCK_MONOTONIC, &now);
-                os << arp_math::toStrMaxDecimals(arp_math::timespec2Double(now),3) << "s " << name << "(" << priorityLevelNames[p] << ") - " << m << std::endl;
+                arp_time::ArdAbsoluteTime now = arp_time::getAbsoluteTime();
+                os << arp_math::toStrMaxDecimals(now,3) << "s " << name << "(" << priorityLevelNames[p] << ") - " << m << std::endl;
             }
         }
 
@@ -251,9 +251,8 @@ class ColorStreamCategory : public SimpleStreamCategory
         {
             if( p <= logLevel)
             {
-                timespec now;
-                clock_gettime(CLOCK_MONOTONIC, &now);
-                os << now.tv_sec << "s " << priorityLevelColors[p] << name << "(" << priorityLevelNames[p] << ") - " << m << "\033[0m" << std::endl;
+                arp_time::ArdAbsoluteTime now = arp_time::getAbsoluteTime();
+                os << arp_math::toStrMaxDecimals(now,3) << "s " << priorityLevelColors[p] << name << "(" << priorityLevelNames[p] << ") - " << m << "\033[0m" << std::endl;
             }
         }
 };

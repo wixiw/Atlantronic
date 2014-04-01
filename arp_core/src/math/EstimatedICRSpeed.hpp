@@ -11,6 +11,7 @@
 #include <math/math.hpp>
 #include <math/ICRSpeed.hpp>
 #include <math/EstimatedTwist2D.hpp>
+#include "time/ArdTime.hpp"
 
 namespace arp_math
 {
@@ -23,11 +24,11 @@ class EstimatedICRSpeed: public ICRSpeed
         EstimatedICRSpeed(const ICRSpeed & t = ICRSpeed());
 
         Covariance3 cov() const;
-        long double date() const;
-        long double& dateRef();
+        arp_time::ArdAbsoluteTime date() const;
+        arp_time::ArdAbsoluteTime& dateRef();
 
         void cov(const Covariance3 &) ;
-        void date(const long double &);
+        void date(const arp_time::ArdAbsoluteTime &);
 
         EstimatedTwist2D twist() const ;
 
@@ -53,7 +54,7 @@ class EstimatedICRSpeed: public ICRSpeed
 
     private:
     Covariance3 covariance;
-    long double estimationDate;
+    arp_time::ArdAbsoluteTime estimationDate;
 };
 
 } /* namespace arp_math */

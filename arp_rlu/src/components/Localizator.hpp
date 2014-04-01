@@ -14,6 +14,7 @@
 #include <sensor_msgs/LaserScan.h>
 #include "LocalizatorTypes.hpp"
 #include "KFL/KFLocalizator.hpp"
+#include "time/ArdTime.hpp"
 
 namespace arp_rlu
 {
@@ -112,7 +113,7 @@ class Localizator: public RluTaskContext
         //*****************************************************
         // Internal objects
         kfl::KFLocalizator kfloc;
-        long double m_monotonicTimeToRealTime;
+        arp_time::ArdTimeDelta m_monotonicTimeToRealTime;
 
         double propMaxReliableBadOdoTransStddev;
         double propMaxReliableBadOdoRotStddev;

@@ -23,7 +23,7 @@
 #include <LSL/identificators/TrioCircleIdentif.hpp>
 #include <LSL/identificators/DuoCircleIdentif.hpp>
 
-#include <timer/StatTimer.hpp>
+#include <time/StatTimer.hpp>
 
 namespace arp_rlu
 {

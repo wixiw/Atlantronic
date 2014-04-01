@@ -13,6 +13,7 @@
 #include "orocos/taskcontexts/HmlTaskContext.hpp"
 #include <models/UbiquityKinematics.hpp>
 #include <boost/thread.hpp>
+#include "time/ArdTime.hpp"
 
 namespace arp_hml
 {
@@ -28,21 +29,21 @@ class Syncronizator: public HmlTaskContext
         /** Ce port est publié à la fin de la syncronisation, des composants qui sont connectés aux ports de données peuvent
          * se trigger en eventPort sur outClock. Il contient la date des mesures sur le CAN (date de l'envoit du message SYNC)
          */
-        OutputPort<timespec> outClock;
+        OutputPort<arp_time::ArdAbsoluteTime> outClock;
 
         /**
          * Ce port contient un condensé de toutes les mesures Hml a une date identique pour tous les moteurs.
          */
         OutputPort<arp_model::MotorState> outMotorMeasures;
 
-        InputPort<timespec> inCanSync;
+        InputPort<arp_time::ArdAbsoluteTime> inCanSync;
 
-        InputPort<timespec> inLeftDrivingClock;
-        InputPort<timespec> inRightDrivingClock;
-        InputPort<timespec> inRearDrivingClock;
-        InputPort<timespec> inLeftSteeringClock;
-        InputPort<timespec> inRightSteeringClock;
-        InputPort<timespec> inRearSteeringClock;
+        InputPort<arp_time::ArdAbsoluteTime> inLeftDrivingClock;
+        InputPort<arp_time::ArdAbsoluteTime> inRightDrivingClock;
+        InputPort<arp_time::ArdAbsoluteTime> inRearDrivingClock;
+        InputPort<arp_time::ArdAbsoluteTime> inLeftSteeringClock;
+        InputPort<arp_time::ArdAbsoluteTime> inRightSteeringClock;
+        InputPort<arp_time::ArdAbsoluteTime> inRearSteeringClock;
 
         InputPort<double> inLeftDrivingVelocity;
         InputPort<double> inRightDrivingVelocity;
@@ -74,7 +75,7 @@ class Syncronizator: public HmlTaskContext
         void createOrocosInterface();
 
         /** contient la date de l'horloge principale */
-        timespec m_syncTime;
+        arp_time::ArdAbsoluteTime m_syncTime;
 };
 
 } /* namespace arp_hml */

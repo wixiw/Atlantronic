@@ -13,7 +13,7 @@
 #include "LSL/filters/ParamsInterface.hpp"
 #include "LSL/LaserScan.hpp"
 
-#include <timer/StatTimer.hpp>
+#include <time/StatTimer.hpp>
 
 namespace arp_rlu
 {

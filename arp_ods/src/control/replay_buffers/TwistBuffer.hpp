@@ -10,11 +10,7 @@
 
 #include <math/core>
 #include <models/core>
-
-using namespace arp_core::log;
-using namespace arp_model;
-using namespace arp_math;
-using namespace std;
+#include "time/ArdTime.hpp"
 
 namespace arp_ods
 {
@@ -25,13 +21,13 @@ class TwistBuffer
         TwistBuffer();
         virtual ~TwistBuffer();
 
-        void addTwist(Twist2D twist, double dt);
-        void removeTwist(Twist2D & twist, double & dt);
+        void addTwist(arp_math::Twist2D twist, arp_time::ArdTimeDelta dt);
+        void removeTwist(arp_math::Twist2D & twist, arp_time::ArdTimeDelta & dt);
 
     protected:
         static const int BUFFERSIZE=512;
-        Twist2D m_twistList[BUFFERSIZE];
-        double m_dtList[BUFFERSIZE];
+        arp_math::Twist2D m_twistList[BUFFERSIZE];
+        arp_time::ArdTimeDelta m_dtList[BUFFERSIZE];
         int m_curIndex;
 
 

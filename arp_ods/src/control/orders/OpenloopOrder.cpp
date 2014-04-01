@@ -10,6 +10,7 @@
 
 using namespace arp_math;
 using namespace arp_ods;
+using namespace arp_time;
 using namespace orders;
 using namespace std;
 
@@ -43,8 +44,8 @@ void OpenloopOrder::switchRun(UbiquityMotionState currentMotionState)
 
     // test for DONE
 
-    double t = getTime();
-    double time_elapsed = t - m_initTime;
+    ArdAbsoluteTime t = getAbsoluteTime();
+    ArdTimeDelta time_elapsed = getTimeDelta(m_initTime,t);
 
     if (m_initTime != -1 and time_elapsed > m_openloop_duration)
     {
@@ -57,7 +58,7 @@ void OpenloopOrder::switchRun(UbiquityMotionState currentMotionState)
 
 }
 
-ICRSpeed OpenloopOrder::computeSpeed(UbiquityMotionState currentMotionState, double dt)
+ICRSpeed OpenloopOrder::computeSpeed(UbiquityMotionState currentMotionState, ArdTimeDelta dt)
 {
     m_smoothLocNeeded = false;
 
@@ -69,12 +70,13 @@ ICRSpeed OpenloopOrder::computeSpeed(UbiquityMotionState currentMotionState, dou
     v_correction_ref_init = m_openloop_twist.transport(m_cpoint.inverse());
 
     // time to target
-    double t_left = (m_initTime + m_openloop_duration) - getTime();
+    ArdTimeDelta endDate = addTimeAndDelta(m_initTime,m_openloop_duration);
+    ArdTimeDelta t_left = getTimeDelta(getAbsoluteTime(), endDate);
 
     //find the time when to begin deceleration
-    double deceleration_time_lin = v_correction_ref_init.speedNorm() / m_params.getMaxRobotAccel();
-    double deceleration_time_rot = fabs(v_correction_ref_init.vh()) / m_params.getMaxRobotAccel();
-    double deceleration_time = max(deceleration_time_lin, deceleration_time_rot);
+    ArdTimeDelta deceleration_time_lin = v_correction_ref_init.speedNorm() / m_params.getMaxRobotAccel();
+    ArdTimeDelta deceleration_time_rot = fabs(v_correction_ref_init.vh()) / m_params.getMaxRobotAccel();
+    ArdTimeDelta deceleration_time = max(deceleration_time_lin, deceleration_time_rot);
 
     //is the twist the nominal one or is it reduced because approaching end time ?
     Twist2D v_correction_ref;

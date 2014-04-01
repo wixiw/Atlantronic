@@ -11,6 +11,8 @@
 #include "RluTaskContext.hpp"
 #include <math/core>
 #include <models/core>
+#include <helpers/SimpsonIntegrator.hpp>
+#include "time/ArdTime.hpp"
 
 namespace arp_rlu
 {
@@ -23,6 +25,9 @@ class Odometry4UbiquityICR: public RluTaskContext
         /** Callback d'update.*/
         virtual void updateHook();
 
+        /** Reset turret distance counts*/
+        void ooResetDistanceRun();
+
     protected:
         /**Internal model feedback, for debug info only */
         arp_model::TurretState attrTurretState;
@@ -31,12 +36,20 @@ class Odometry4UbiquityICR: public RluTaskContext
         /** Buffer local pour les params */
         arp_model::UbiquityParams attrParams;
         /** Buffer local pour le temps */
-        timespec attrLastTime;
+        arp_time::ArdAbsoluteTime attrLastTime;
+        /** Total distance run on each turrets, usefull for calibration */
+        double attrTotalDistanceRunLeft;
+        double attrTotalDistanceRunRight;
+        double attrTotalDistanceRunRear;
 
-        RTT::InputPort<timespec> inTime;
+        RTT::InputPort<arp_time::ArdAbsoluteTime> inTime;
         RTT::InputPort<arp_model::UbiquityParams> inParams;
         /** Measures from HML */
         RTT::InputPort<arp_model::MotorState> inMotorState;
+        /** Heading from external source */
+        RTT::InputPort<double> inTrueHeading;
+        /** Pose from external source */
+        RTT::InputPort<arp_math::Pose2D> inTruePose;
         /** Computed Twist */
         RTT::OutputPort<arp_math::EstimatedICRSpeed> outICRSpeed;
         RTT::OutputPort<arp_math::Twist2D> outTwist;
@@ -57,6 +70,11 @@ class Odometry4UbiquityICR: public RluTaskContext
          * Utile afin d'éviter un gros bloc de code non fonctionnel en debut de fichier.
          */
         void createOrocosInterface();
+
+    protected: // internal
+        arp_math::SimpsonIntegrator vxIntegrator;
+        arp_math::SimpsonIntegrator vyIntegrator;
+        arp_math::SimpsonIntegrator vhIntegrator;
 };
 
 } /* namespace arp_rlu */

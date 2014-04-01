@@ -18,6 +18,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "time/ArdTime.hpp"
+
 namespace arp_hml
 {
 	/**
@@ -59,7 +61,7 @@ namespace arp_hml
         /** Minimal driver version on which this code is working */
         int propMinimalDriverVersion;
         /** Maximal delay when no event is received to put the component in safe mode in the isJoystickAlive method */
-        double propMaxNoEventDelay;
+        arp_time::ArdTimeDelta propMaxNoEventDelay;
 
         /** Returns the joystick name as reading from USB manufacturer information */
         std::string getJoystickName();
@@ -109,7 +111,7 @@ namespace arp_hml
         /** check if the linux driver version is more than propMinimalDriverVersion */
         bool checkDriverVersion();
         /** Records the last event date for isJoystickAlive computation */
-        timespec lastEventTime;
+        arp_time::ArdAbsoluteTime lastEventTime;
 
 
     };

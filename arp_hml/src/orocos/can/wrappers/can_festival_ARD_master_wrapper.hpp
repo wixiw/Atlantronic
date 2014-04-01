@@ -9,11 +9,12 @@
 #include <rtt/Port.hpp>
 #include "orocos/can/dictionnary/CanARD.h"
 #include "orocos/can/ard_can_types.hpp"
+#include "time/ArdTime.hpp"
 
 extern std::string canFestivalWrapperName;
 extern RTT::OutputPort<e_nodeState> canFestival_outNMTState;
 extern RTT::OutputPort<arp_hml::nodeID_t> canFestival_outBootUpReceived;
-extern RTT::OutputPort<timespec> canFestival_outSyncSent;
+extern RTT::OutputPort<arp_time::ArdAbsoluteTime> canFestival_outSyncSent;
 
 bool initWrapper();
 void startTimerLoopCallback(CO_Data* d, UNS32 id);

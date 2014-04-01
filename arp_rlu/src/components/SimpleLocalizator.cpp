@@ -12,6 +12,7 @@
 
 using namespace arp_rlu;
 using namespace arp_math;
+using namespace arp_time;
 using namespace RTT;
 using namespace std;
 
@@ -24,6 +25,7 @@ SimpleLocalizator::SimpleLocalizator(const std::string& name) :
                 m_defaultInitCovariance(Vector3(0.020 * 0.020, 0.020 * 0.020, deg2rad(1.) * deg2rad(1.)).asDiagonal())
 {
     createOrocosInterface();
+    attrLastTime = getAbsoluteTime();
 }
 
 bool SimpleLocalizator::configureHook()
@@ -36,7 +38,7 @@ bool SimpleLocalizator::configureHook()
 
 void SimpleLocalizator::updateHook()
 {
-    timespec newTime;
+    ArdAbsoluteTime newTime;
     if (RTT::NewData != inTime.readNewest(newTime))
     {
         LOG( Error ) << "No new data in inTime port : updateHook should not be externally trigger => return"
@@ -56,7 +58,7 @@ void SimpleLocalizator::updateHook()
     // Si on a reçu un cap provenant de l'extérieur, alors on l'applique
 
     // On estime la position par intégration de l'ICRSpeed courrant;
-    double dt = (long double) (timespec2Double(newTime) - timespec2Double(attrLastTime));
+    ArdTimeDelta dt = getTimeDelta(attrLastTime, newTime);
     attrLastTime = newTime;
     vxIntegrator.set(dt, T_odo_table_p_odo_r_odo.vx());
     vyIntegrator.set(dt, T_odo_table_p_odo_r_odo.vy());
@@ -86,7 +88,7 @@ void SimpleLocalizator::updateHook()
                             vxIntegrator.get(),
                             vyIntegrator.get(),
                             vhIntegrator.get(),
-                            timespec2Double(newTime),
+                            newTime,
                             m_defaultInitCovariance //TODO calculer la  vraie covariance
                             );
 

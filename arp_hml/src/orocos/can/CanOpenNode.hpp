@@ -75,15 +75,15 @@ class CanOpenNode: public HmlTaskContext
 
     protected:
         /** Last sync time received **/
-        timespec attrSyncTime;
+        arp_time::ArdAbsoluteTime attrSyncTime;
         /** Period between attrSyncTime and last attrSyncTime*/
-        double attrPeriod;
+        arp_time::ArdTimeDelta attrPeriod;
 
         /** CAN adress of the node */
         nodeID_t propNodeId;
 
         /** Timeout before considering a node is not responding to a NMT request (in s) */
-        double propNmtTimeout;
+        arp_time::ArdTimeDelta propNmtTimeout;
 
         /** name of the CanOpenController this component will connect*/
         std::string propCanOpenControllerName;
@@ -97,12 +97,12 @@ class CanOpenNode: public HmlTaskContext
         /**
          * Clock port which trigger our activity
          */
-        InputPort<timespec> inMasterClock;
+        InputPort<arp_time::ArdAbsoluteTime> inMasterClock;
 
         /**
          * Period related to inMasterClock date
          */
-        InputPort<double> inMasterPeriod;
+        InputPort<arp_time::ArdTimeDelta> inMasterPeriod;
 
         /**
          * port from which we receive the bootUp frame of our node from a CanOpenController
@@ -223,7 +223,7 @@ class CanOpenNode: public HmlTaskContext
          * Reset the node, this is a blocking call
          * @param timeout : delay to wait between the reset cmd and the expected bootup frame
          */
-        bool resetNode(double timeout);
+        bool resetNode(arp_time::ArdTimeDelta timeout);
 
         /**
          * Send configuration SDO to node from a script

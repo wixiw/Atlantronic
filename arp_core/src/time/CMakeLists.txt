@@ -1,6 +1,12 @@
 ###################################################################################################################
 #    EDIT BELOW THIS LINE AND UNTIL NEXT LINE FOR A NEW PROJECT
 
-rosbuild_add_library(arp_core-timer Timer.cpp StatTimer.cpp )
+    file(
+    	GLOB_RECURSE
+    	source_files
+    	*.c* 
+    )  
+    
+rosbuild_add_library(arp_core-time ${source_files})
 
 ###################################################################################################################

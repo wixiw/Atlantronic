@@ -21,7 +21,7 @@
 #include <rtt/Port.hpp>
 #include <rtt/Logger.hpp>
 
-#include <timer/StatTimer.hpp>
+#include <time/StatTimer.hpp>
 
 namespace arp_core
 {

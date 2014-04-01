@@ -11,6 +11,7 @@
 #include <rtt/Component.hpp>
 
 using namespace arp_hml;
+using namespace arp_time;
 using namespace arp_core;
 using namespace RTT;
 using namespace std;
@@ -38,7 +39,7 @@ Joystick::Joystick(const std::string& name) :
     addAttribute("attrIsIdentityOk" , attrIsIdentityOk);
     addAttribute("attrFileDescriptor", m_fd);
 
-    clock_gettime(CLOCK_MONOTONIC, &lastEventTime);
+    lastEventTime = getAbsoluteTime();
 }
 
 Joystick::~Joystick()
@@ -87,7 +88,7 @@ void Joystick::updateHook()
         struct js_event js;
         while (read(m_fd, &js, sizeof(struct js_event)) == sizeof(struct js_event))
         {
-        	clock_gettime(CLOCK_MONOTONIC, &lastEventTime);
+            lastEventTime = getAbsoluteTime();
             switch ( js.type )
             {
                 case JS_EVENT_INIT:
@@ -271,11 +272,10 @@ void Joystick::initEvent( struct js_event js )
 bool Joystick::isJoystickAlive()
 {
 	bool res = false;
-	timespec now;
-	double duration;
+	ArdAbsoluteTime now = getAbsoluteTime();
+	ArdTimeDelta duration;
 
-	clock_gettime(CLOCK_MONOTONIC, &now);
-	duration = arp_math::delta_t(lastEventTime,now);
+	duration = getTimeDelta(lastEventTime,now);
 
 	if( duration > propMaxNoEventDelay )
 		res = false;

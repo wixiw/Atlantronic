@@ -8,10 +8,11 @@
 #include "RosOdsItf.hpp"
 #include <rtt/Component.hpp>
 #include "ods_logger/Logger.hpp"
-
+#include "time/ArdTime.hpp"
 #include <iostream>
 
 using namespace arp_math;
+using namespace arp_time;
 using namespace arp_ods;
 using namespace orders;
 using namespace RTT;
@@ -73,12 +74,13 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
     }
     else
     {
-        arp_ods::Log(Error) << "order " << goal->move_type.c_str() << "is not possible" << endlog();
+        arp_ods::Log(Error) << "order " << goal->move_type.c_str() << " is not possible" << endlog();
         goto abort;
     }
 
     if (m_ooSetOrder(m_order) == false)
     {
+        arp_ods::Log(Error) << "order " << goal->move_type.c_str() << " failed to call m_ooSetOrder" << endlog();
         goto abort;
     }
 
@@ -110,7 +112,7 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
 
         //robot is blocked ?
         bool blocked;
-        double time = getTime();
+        ArdAbsoluteTime time = getAbsoluteTime();
         inRobotBlocked.readNewest(blocked);
         if (blocked and time - m_blockTime > 1.0) //1 of occultation, to allow the beginning of the new motion
         {

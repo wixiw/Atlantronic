@@ -8,5 +8,7 @@
     )  
     
 rosbuild_add_library( arp_core-models ${source_files} )
-target_link_libraries( arp_core-models arp_core-math arp_core-logger)
+target_link_libraries( arp_core-models arp_core-math)
+target_link_libraries( arp_core-models arp_core-logger)
+target_link_libraries( arp_core-models arp_core-time)
 ###################################################################################################################

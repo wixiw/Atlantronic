@@ -11,6 +11,7 @@
 #include "taskcontexts/OdsTaskContext.hpp"
 #include <math/core>
 #include <models/core>
+#include "time/ArdTime.hpp"
 
 namespace arp_ods
 {
@@ -26,7 +27,7 @@ class KinematicBase: public OdsTaskContext
         /** define if robot has been blocked for timeout time*/
         bool attrRobotBlockedTimeout;
         /** time I began to block */
-        double attrBlockTime;
+        arp_time::ArdAbsoluteTime attrBlockTime;
         arp_math::ICRSpeed attrICRSpeedCmd;
         arp_math::ICRSpeed attrCurrentICRSpeed;
         arp_model::MotorState attrMotorStateCommand;
@@ -37,7 +38,7 @@ class KinematicBase: public OdsTaskContext
         double attrQuality;
 
         /** timeout for the robot to be considered blocked */
-        double propRobotBlockedTimeout;
+        arp_time::ArdTimeDelta propRobotBlockedTimeout;
         /** Distance maximale du twist mesuré au twist commandé en m/s avant de détecter un blocage*/
         double propMaxSpeedDiff;
 

@@ -10,6 +10,7 @@
 
 using namespace arp_core;
 using namespace arp_model;
+using namespace arp_time;
 using namespace arp_hml;
 using namespace Eigen;
 

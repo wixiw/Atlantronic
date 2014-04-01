@@ -14,6 +14,7 @@
 #include "../replay_buffers/ICRSpeedBuffer.hpp"
 #include "../planners/OnlineTrajectoryGenerator.hpp"
 #include <arp_ods/OrderAction.h>
+#include "time/ArdTime.hpp"
 
 using namespace arp_math;
 
@@ -188,13 +189,13 @@ class MotionOrder
         Mode m_currentMode;
 
         /** Date at which we entered the INIT Mode **/
-        long double m_initTime;
+        arp_time::ArdAbsoluteTime m_initTime;
 
         /** Date at which we entered the run mode **/
-        long double m_runTime;
+        arp_time::ArdAbsoluteTime m_runTime;
 
         /** date at which the order shall stop */
-        double m_timeout;
+        arp_time::ArdTimeDelta m_timeout;
 
         /**
          * This function is called by switchMode when m_currentMode==MODE_INIT
@@ -215,9 +216,6 @@ class MotionOrder
          * This function is called by switchMode when m_currentMode==MODE_ERROR
          */
         virtual void switchError(arp_math::UbiquityMotionState currentMotionState);
-
-
-
 
 
         /** type of the current order */

@@ -18,6 +18,7 @@
 using namespace arp_core::log;
 using namespace arp_rlu;
 using namespace arp_math;
+using namespace arp_time;
 using namespace RTT;
 using namespace std;
 
@@ -53,7 +54,7 @@ Localizator::Localizator(const std::string& name)
 
     createOrocosInterface();
 
-    m_monotonicTimeToRealTime = ros::Time::now().toSec() - getTime();
+    m_monotonicTimeToRealTime = ros::Time::now().toSec() - getAbsoluteTime();
 
     propParams.defaultInitCovariance = Vector3(0.020 * 0.020, 0.020 * 0.020, deg2rad(1.) * deg2rad(1.)).asDiagonal();
 
@@ -218,7 +219,7 @@ void Localizator::updateHook()
 bool Localizator::ooInitialize(double x, double y, double theta)
 {
 
-    long double initDate = arp_math::getTime();
+    ArdAbsoluteTime initDate = getAbsoluteTime();
     EstimatedPose2D pose = MathFactory::createEstimatedPose2D(x,y,theta, initDate, propParams.defaultInitCovariance);
 
     propParams.iekfParams.iekfInnovationMin = propIEKFInnovationMin;

@@ -10,6 +10,7 @@
 #include <math/math.hpp>
 
 using namespace arp_hml;
+using namespace arp_time;
 using namespace std;
 
 ORO_LIST_COMPONENT_TYPE( arp_hml::MotorSimul )
@@ -127,7 +128,7 @@ void MotorSimul::getInputs()
         m_oldSpeedCommandTime = m_syncTime;
     }
     //if we did not get a speed command since a time, we assume a 0 cmd for security reasons
-    else if( arp_math::delta_t(m_oldSpeedCommandTime,m_syncTime) > propInputsTimeout)
+    else if( getTimeDelta(m_oldSpeedCommandTime,m_syncTime) > propInputsTimeout)
     {
         ArdMotorItf::setSpeedCmd(0);
     }
@@ -147,7 +148,7 @@ void MotorSimul::getInputs()
         m_oldTorqueCommandTime = m_syncTime;
     }
     //if we did not get a speed command since a time, we assume a 0 cmd for security reasons
-    else if( arp_math::delta_t(m_oldTorqueCommandTime, m_syncTime ) > propInputsTimeout)
+    else if( getTimeDelta(m_oldTorqueCommandTime, m_syncTime ) > propInputsTimeout)
     {
         ArdMotorItf::setTorqueCmd(0);
     }
@@ -213,9 +214,9 @@ bool MotorSimul::ooSetOperationMode(std::string mode)
     return res;
 }
 
-bool MotorSimul::coWaitEnable(double timeout)
+bool MotorSimul::coWaitEnable(ArdTimeDelta timeout)
 {
-    double chrono = 0;
+    ArdTimeDelta chrono = 0;
     bool res = false;
 
     //This operation is only accessible when the component is running

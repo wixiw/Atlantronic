@@ -131,28 +131,6 @@ namespace arp_math
      */
     std::vector<Eigen::VectorXi> combinaisons( const int p, const int n );
 
-    /**
-     * transforme un time spec en double
-     */
-    long double timespec2Double(const timespec &);
-    timespec double2Timespec(long double now);
-
-    /**
-     * Elapsed time between begin and now, using data type timespec.
-     * Return values simply to indicate return point
-     */
-    void delta_t(struct timespec *interval, struct timespec begin,
-            struct timespec now);
-    long double delta_t(struct timespec begin, struct timespec now);
-
-    /**
-     * Increment the time yourself by a step
-     */
-    void incrementTime(struct timespec& time, long double delta);
-
-    /** return time **/
-    long double getTime(void);
-
     /** computes the point of intersection of 2 lines
      * @param[in] p1 :first point of first line
      * @param[in] p2 :second point of first line

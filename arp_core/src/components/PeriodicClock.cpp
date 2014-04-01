@@ -12,6 +12,7 @@
 
 using namespace arp_math;
 using namespace arp_core;
+using namespace arp_time;
 
 ORO_LIST_COMPONENT_TYPE( arp_core::PeriodicClock )
 
@@ -21,15 +22,25 @@ PeriodicClock::PeriodicClock(const std::string name):
     addPort("outClock",outClock);
     addPort("outPeriod",outPeriod);
     addPort("outTrigger",outTrigger);
+}
 
-    clock_gettime(CLOCK_MONOTONIC, &m_absoluteTime);
+bool PeriodicClock::startHook()
+{
+    m_lastTime = getAbsoluteTime();
+    return true;
 }
 
 void PeriodicClock::updateHook()
 {
-    clock_gettime(CLOCK_MONOTONIC, &m_absoluteTime);
+    ArdAbsoluteTime now = getAbsoluteTime();
+    ArdTimeDelta period = getTimeDelta(m_lastTime, now);
+    m_lastTime = now;
 
-    outPeriod.write(getPeriod());
-    outClock.write(m_absoluteTime);
+    outClock.write(now);
+    outPeriod.write(period);
     outTrigger.write(0);
 }
+
+
+
+

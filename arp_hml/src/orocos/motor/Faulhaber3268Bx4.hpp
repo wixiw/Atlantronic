@@ -18,6 +18,7 @@
 #include "orocos/motor/FaulhaberStates.h"
 #include "orocos/can/ard_can_types.hpp"
 #include <sys/time.h>
+#include "time/ArdTime.hpp"
 
 namespace arp_hml
 {
@@ -47,7 +48,7 @@ namespace arp_hml
         OutputPort<int> outStateBrut;
 
         /** time for which the propMaximalTorque has been reached */
-        double attrBlockingDelay;
+        arp_time::ArdTimeDelta attrBlockingDelay;
         /** brut value of the odometer */
         int attrIncrementalOdometer;
         /** index of the Faulhaber Command PDO */
@@ -58,7 +59,7 @@ namespace arp_hml
         /** is true when homing is finished */
         bool attrHardNotify;
         /** value of the period between 2 CAN requests, computed by the motor*/
-        double attrMotorPeriod;
+        arp_time::ArdTimeDelta attrMotorPeriod;
 
         /** Is true when you when to invert the speed command and feedback of the motor softly **/
         bool propInvertDriveDirection;
@@ -69,11 +70,11 @@ namespace arp_hml
         /** Maximal Torque allowed in Amps*/
         double propMaximalTorque;
         /** Maximal delay beetween 2 commands to consider someone is still giving coherent orders*/
-        double propInputsTimeout;
+        arp_time::ArdTimeDelta propInputsTimeout;
         /** Homing speed in rad/s on the reductor output */
         double propHomingSpeed;
         /** Timeout before thinking a wheel is blocked */
-        double propBlockingTorqueTimeout;
+        arp_time::ArdTimeDelta propBlockingTorqueTimeout;
 
         /** Command to be used in position mode. It must be provided in rad on the reductor's output.
          * It is not available yet. */
@@ -86,7 +87,7 @@ namespace arp_hml
         /** Provides the measured position of the encoder from CAN. It is converted in rad on the reductor's output's axe. **/
         OutputPort<double> outPosition;
         /** Sync time of the position mesure*/
-        OutputPort<timespec> outClock;
+        OutputPort<arp_time::ArdAbsoluteTime> outClock;
         /** Provides the torque measured from CAN. In Amps**/
         OutputPort<double> outTorque;
         /** Provides a computed speed from the encoder position. In rad/s on the reductor's output's axe. */
@@ -163,7 +164,7 @@ namespace arp_hml
          * param timeout : maximal blocking time in s.
          * return true is the drive is enable, false if the tiemout has expired
          */
-        bool coWaitEnable(double timeout);
+        bool coWaitEnable(arp_time::ArdTimeDelta timeout);
 
         /**
          * Utility function to hide the long orocos interface declaration outside of the constructor
@@ -307,11 +308,11 @@ namespace arp_hml
         /** Last used position for speed computation */
         double m_oldPositionMeasure;
         /** Time of last speed computation */
-        timespec m_oldPositionMeasureTime;
+        arp_time::ArdAbsoluteTime m_oldPositionMeasureTime;
         /** Last speed command received */
-        timespec m_oldSpeedCommandTime;
+        arp_time::ArdAbsoluteTime m_oldSpeedCommandTime;
         /** Last torque command received */
-        timespec m_oldTorqueCommandTime;
+        arp_time::ArdAbsoluteTime m_oldTorqueCommandTime;
         /** is motor blocked */
         bool m_isMotorBlocked;
 

@@ -10,6 +10,7 @@
 
 #include <math/math.hpp>
 #include <math/Pose2D.hpp>
+#include "time/ArdTime.hpp"
 
 namespace arp_math
 {
@@ -21,11 +22,11 @@ class EstimatedPose2D: public Pose2D
 
         Covariance3 cov() const;
         Covariance3& covRef();
-        long double date() const;
-        long double& dateRef();
+        arp_time::ArdAbsoluteTime date() const;
+        arp_time::ArdAbsoluteTime& dateRef();
 
         void cov(const Covariance3 &);
-        void date(const long double &);
+        void date(const arp_time::ArdAbsoluteTime&);
 
         /**
          * Il s'agit du même opérateur que celui de Pose2D mais cette version déplace aussi la covariance de l'EstimatedPose2D.
@@ -47,7 +48,7 @@ class EstimatedPose2D: public Pose2D
         std::string toString() const;
 
     private:
-        long double estimationDate;
+        arp_time::ArdAbsoluteTime estimationDate;
         Covariance3 covariance;
 
 };

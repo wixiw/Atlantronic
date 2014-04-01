@@ -9,7 +9,8 @@
 #define MOTIONSCHEDULER_HPP_
 
 #include <fbsched/fbsched.hpp>
-#include <timer/StatTimer.hpp>
+#include <time/StatTimer.hpp>
+#include <time/ArdTime.hpp>
 
 namespace arp_core
 {
@@ -43,7 +44,7 @@ class MotionScheduler: public FBSched
         bool propTimeReporting;
         double attrLastPeriod;
         double attrLastComputationTime;
-        RTT::InputPort<timespec> inClock;
+        RTT::InputPort<arp_time::ArdAbsoluteTime> inClock;
         arp_core::StatTimer m_timer;
 
         void ooGetPerformanceReport();

@@ -3,6 +3,6 @@
 
 rosbuild_add_boost_directories()
 rosbuild_add_executable(uTest_Core_Models.ard  uTest_Models.cpp)
+target_link_libraries( uTest_Core_Models.ard arp_core-time)
 target_link_libraries( uTest_Core_Models.ard arp_core-models )
-
 ###################################################################################################################

@@ -13,6 +13,7 @@
 
 using namespace arp_core::log;
 using namespace arp_math;
+using namespace arp_time;
 using namespace arp_ods;
 using namespace orders;
 
@@ -126,10 +127,10 @@ else
 void MotionOrder::switchInit(UbiquityMotionState currentMotionState)
 {
     // as init is left as soon as it is entered, I allow to put the last init time into m_initTime
-    m_initTime = getTime();
+    m_initTime = getAbsoluteTime();
     testTimeout();
     m_currentMode = MODE_RUN;
-    m_runTime = getTime();
+    m_runTime = getAbsoluteTime();
 
     Log(INFO) << "[" << m_endMotionState.toString()<< "] entered MODE_INIT at time " << m_initTime;
 }
@@ -250,7 +251,7 @@ void MotionOrder::setCpoint(Pose2D cpoint)
 
 void MotionOrder::testTimeout()
 {
-    double t = getTime();
+    double t = getAbsoluteTime();
     double time_elapsed = t - m_initTime;
 
     if (m_initTime != -1 and time_elapsed > m_timeout)

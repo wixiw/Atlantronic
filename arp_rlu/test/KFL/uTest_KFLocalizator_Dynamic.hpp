@@ -9,8 +9,10 @@
 
 #include "LSL/tools/JsonScanParser.hpp"
 #include "KFL/Logger.hpp"
+#include "time/ArdTime.hpp"
 
 using namespace arp_math;
+using namespace arp_time;
 using namespace arp_rlu;
 using namespace std;
 using namespace kfl;
@@ -208,7 +210,7 @@ namespace unittest_KFLocalizator_Dynamic
             doLrfs(k) = docTimeline.getFloatData( docTimeline.getChild( docTimeline.getChild( docTimeline.root(), "doLrf"), k ) );
         }
 
-        double startTime = arp_math::getTime();
+//        ArdAbsoluteTime startTime = getAbsoluteTime();
         //*******************************************
         //********          Start           *********
         //*******************************************

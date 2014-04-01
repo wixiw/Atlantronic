@@ -12,6 +12,7 @@
 
 using namespace arp_core::log;
 using namespace arp_model;
+using namespace arp_time;
 using namespace arp_math;
 using namespace arp_ods;
 using namespace RTT;
@@ -79,11 +80,11 @@ void KinematicBase::checkRobotBlocked()
     {
         if (attrBlockTime == 0)
         {
-            attrBlockTime = getTime();
+            attrBlockTime = getAbsoluteTime();
         }
         else
         {
-            double delay = getTime() - attrBlockTime;
+            ArdTimeDelta delay = getTimeDelta(attrBlockTime, getAbsoluteTime());
             if (delay < 0 || delay > propRobotBlockedTimeout)
             {
                 Log(INFO) << "Kinematic base detected robot blocage";

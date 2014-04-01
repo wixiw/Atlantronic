@@ -14,6 +14,7 @@
 
 using namespace arp_hml;
 using namespace arp_core;
+using namespace arp_time;
 using namespace std;
 using namespace Eigen;
 
@@ -35,8 +36,8 @@ CanOpenController::CanOpenController(const std::string& name) :
             m_RunningState(UNKNOWN),
             m_timer(0)
 {
-    clock_gettime(CLOCK_MONOTONIC, &attrLastSyncTime);
-    m_timer.SetMaxBufferSize(3000);
+    attrLastSyncTime = getAbsoluteTime();
+    attrSyncTime = getAbsoluteTime();
     createOrocosInterface();
 
     outBusConnected.write(false);
@@ -114,7 +115,7 @@ void CanOpenController::updateHook()
     //Récupération de la date du cycle CAN
     inSync.readNewest(attrSyncTime);
     //on se permet le double parce qu'on sait que la periode est petite.
-    double period = arp_math::delta_t(attrLastSyncTime, attrSyncTime);
+    ArdTimeDelta period = getTimeDelta(attrLastSyncTime, attrSyncTime);
     attrLastSyncTime = attrSyncTime;
 
     outPeriod.write(period);
@@ -416,8 +417,8 @@ bool CanOpenController::coWriteInRemoteDico(CanDicoEntry dicoEntry)
         //check received SDO
         UNS32 abortCode;
         EnterMutex();
-        timespec begin, end;
-        clock_gettime(CLOCK_MONOTONIC, &begin);
+        ArdAbsoluteTime begin, end;
+        begin = getAbsoluteTime();
         writeResult = getWriteResultNetworkDict(&CanARD_Data, dicoEntry.nodeId,
                 &abortCode);
         LeaveMutex();
@@ -435,7 +436,7 @@ bool CanOpenController::coWriteInRemoteDico(CanDicoEntry dicoEntry)
             /* Finalise last SDO transfer with this node */
             EnterMutex();
             closeSDOtransfer(&CanARD_Data, dicoEntry.nodeId, SDO_CLIENT);
-            clock_gettime(CLOCK_MONOTONIC, &end);
+            end = getAbsoluteTime();
             LeaveMutex();
         }
         else
@@ -538,10 +539,10 @@ bool CanOpenController::coSendNmtCmd(nodeID_t nodeId, enum_DS301_nmtStateRequest
         return true;
 }
 
-bool CanOpenController::coRequestNmtChange(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd, double timeout)
+bool CanOpenController::coRequestNmtChange(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd, ArdTimeDelta timeout)
 {
     int cmdResult = 0;
-    double chrono = 0;
+    ArdTimeDelta chrono = 0;
 
     //send NMT cmd
     if( !coSendNmtCmd(nodeId,nmtStateCmd) )
@@ -627,7 +628,7 @@ void CanOpenController::ooResetSdoBuffers()
     LeaveMutex();
 }
 
-bool CanOpenController::ooSetSyncPeriod(double period)
+bool CanOpenController::ooSetSyncPeriod(ArdTimeDelta period)
 {
     CanDicoEntry dicoEntry(0xFF, 0x1006, 0x00, (int) (period * 1E6), 0, 4);
     return coWriteInLocalDico(dicoEntry);

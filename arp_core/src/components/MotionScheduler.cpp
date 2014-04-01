@@ -16,6 +16,7 @@
 
 using namespace arp_core;
 using namespace arp_math;
+using namespace arp_time;
 using namespace RTT;
 using namespace base;
 using namespace std;

@@ -296,65 +296,6 @@ std::vector<Eigen::VectorXi> combinaisons( const int p, const int n )
     return combinaisons(indices, n);
 }
 
-void delta_t(struct timespec *interval, struct timespec begin, struct timespec now)
-{
-    interval->tv_nsec = now.tv_nsec - begin.tv_nsec; /* Subtract 'decimal fraction' first */
-    if (interval->tv_nsec < 0)
-    {
-        interval->tv_nsec += 1000000000; /* Borrow 1sec from 'tv_sec' if subtraction -ve */
-        interval->tv_sec = now.tv_sec - begin.tv_sec - 1; /* Subtract whole number of seconds and return 1 */
-    }
-    else
-    {
-        interval->tv_sec = now.tv_sec - begin.tv_sec; /* Subtract whole number of seconds and return 0 */
-    }
-}
-
-//on utilise un long double pour le calcul de temps pour des raisons de précision numérique
-long double timespec2Double(const timespec & now)
-{
-    long double time = now.tv_sec + (long double) (now.tv_nsec) / 1E9;
-    return time;
-}
-
-timespec double2Timespec(long double now)
-{
-    timespec time;
-    time.tv_sec = (__time_t)now;
-    time.tv_nsec = (__time_t)((now-time.tv_sec)*1E9);
-    return time;
-}
-
-//on utilise un long double pour le calcul de temps pour des raisons de précision numérique
-long double delta_t(struct timespec begin, struct timespec now)
-{
-    timespec delay;
-    delta_t(&delay, begin, now);
-    return timespec2Double(delay);
-}
-
-//on utilise un long double pour le calcul de temps pour des raisons de précision numérique
-void incrementTime(struct timespec& begin, long double delta)
-{
-    timespec increment = double2Timespec(delta);
-
-    begin.tv_nsec += increment.tv_nsec;
-    begin.tv_sec += increment.tv_sec;
-
-    if( begin.tv_nsec >= 1000000000 )
-    {
-        begin.tv_nsec -= 1000000000;
-        begin.tv_sec +=1;
-    }
-}
-
-//on utilise un long double pour le calcul de temps pour des raisons de précision numérique
-long double getTime(void)
-{
-    timespec now;
-    clock_gettime(CLOCK_MONOTONIC, &now);
-    return timespec2Double(now);
-}
 
 void linesIntersection(const Vector2 & p1, const Vector2 & p2, const Vector2 & p3, const Vector2 & p4, const double & epsilon, Vector2 & result,
         bool & parralel,bool & colinear)
@@ -412,7 +353,6 @@ if (number>=0.0)
         return 1.0;
     else
         return -1.0;
-
 }
 
 double angleBetweenVectors(Vector3 M1, Vector3 M2)

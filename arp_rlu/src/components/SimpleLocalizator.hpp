@@ -14,6 +14,7 @@
 #include <sensor_msgs/LaserScan.h>
 #include "LocalizatorTypes.hpp"
 #include <helpers/SimpsonIntegrator.hpp>
+#include "time/ArdTime.hpp"
 
 namespace arp_rlu
 {
@@ -32,7 +33,7 @@ class SimpleLocalizator: public RluTaskContext
         // Attributes
 
         /** Buffer local pour le temps */
-        timespec attrLastTime;
+        arp_time::ArdAbsoluteTime attrLastTime;
 
         //*****************************************************
         // Properties
@@ -43,7 +44,7 @@ class SimpleLocalizator: public RluTaskContext
         //*****************************************************
         // Ports
 
-        RTT::InputPort<timespec> inTime;
+        RTT::InputPort<arp_time::ArdAbsoluteTime> inTime;
         RTT::InputPort<arp_math::EstimatedTwist2D > inTwistOdo;
         RTT::InputPort<double> inGyroAngle;
 
@@ -95,7 +96,7 @@ class SimpleLocalizator: public RluTaskContext
 
         //*****************************************************
         // Internal objects
-        long double m_monotonicTimeToRealTime;
+        arp_time::ArdTimeDelta m_monotonicTimeToRealTime;
 
         /** Localizator anyway computing but will only publish in RUNNING state.
          The only way to do it is to initialize it with a true position */

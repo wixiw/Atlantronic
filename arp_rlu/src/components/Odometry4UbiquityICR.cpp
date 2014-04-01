@@ -10,6 +10,7 @@
 
 using namespace arp_core::log;
 using namespace arp_math;
+using namespace arp_time;
 using namespace arp_model;
 using namespace arp_rlu;
 using namespace RTT;
@@ -18,7 +19,10 @@ using namespace std;
 ORO_LIST_COMPONENT_TYPE( arp_rlu::Odometry4UbiquityICR )
 
 Odometry4UbiquityICR::Odometry4UbiquityICR(const std::string& name):
-    RluTaskContext(name)
+    RluTaskContext(name),
+    attrTotalDistanceRunLeft(0.0),
+    attrTotalDistanceRunRight(0.0),
+    attrTotalDistanceRunRear(0.0)
 {
     createOrocosInterface();
 
@@ -32,7 +36,7 @@ void Odometry4UbiquityICR::updateHook()
     ICRSpeed computedICRSpeed;
     SlippageReport report;
 
-    timespec newTime;
+    ArdAbsoluteTime newTime;
     if( RTT::NewData != inTime.readNewest(newTime))
     {
         LOG( Error ) << "No new data in inTime port : updateHook should not be externally trigger => return" << endlog();
@@ -63,10 +67,42 @@ void Odometry4UbiquityICR::updateHook()
     //TODO calculer la covariance
     EstimatedICRSpeed measuredICRSpeed(computedICRSpeed);
     //measuredICRSpeed.cov( covariance );
-    measuredICRSpeed.date( timespec2Double(newTime) );
+    measuredICRSpeed.date( newTime );
 
     outICRSpeed.write(measuredICRSpeed);
     outTwist.write(measuredICRSpeed.twist());
+    
+        // On estime la position par intégration de l'ICRSpeed courrant;
+    Twist2D twist = measuredICRSpeed.twist();
+    ArdTimeDelta dt = getTimeDelta(attrLastTime, newTime);
+    attrLastTime = newTime;
+    vxIntegrator.set(dt, twist.vx());
+    vyIntegrator.set(dt, twist.vy());
+    vhIntegrator.set(dt, twist.vh());
+
+    // Si on a reçu un cap provenant de l'extérieur, alors on l'applique
+    double trueHeading;
+    if( RTT::NewData == inTrueHeading.readNewest(trueHeading))
+    {
+        vhIntegrator.reset(trueHeading);
+    }
+
+    // Si on a reçu un cap provenant de l'extérieur, alors on l'applique
+    Pose2D externalPose;
+    if( RTT::NewData == inTruePose.readNewest(externalPose))
+    {
+        vxIntegrator.reset(externalPose.x());
+        vyIntegrator.reset(externalPose.y());
+        vhIntegrator.reset(externalPose.h());
+    }
+
+    // On construit la Pose finale
+    EstimatedPose2D pose(Pose2D(vxIntegrator.get(), vyIntegrator.get(), vhIntegrator.get()));
+    //pose.cov( covariance ); //TODO calculer la covariance
+    pose.date( newTime );
+
+    outPose.write( pose );
+    
 
     Vector3 angularSpeeds;
     if( false == UbiquityKinematics::findAngularSpeedFromOdometry(attrTurretState, angularSpeeds, attrParams) )
@@ -87,6 +123,18 @@ void Odometry4UbiquityICR::updateHook()
     vector<ICR> icrs(3);
     UbiquityKinematics::findICRFromTurretAngles(attrTurretState, icrs, perimeter,attrParams);
     outICRSphericalPerimeter.write(perimeter);
+
+    //compute total run distance for calibration
+    attrTotalDistanceRunLeft += attrTurretState.driving.left.velocity*dt;
+    attrTotalDistanceRunRight += attrTurretState.driving.right.velocity*dt;
+    attrTotalDistanceRunRear += attrTurretState.driving.rear.velocity*dt;
+}
+
+void Odometry4UbiquityICR::ooResetDistanceRun()
+{
+    attrTotalDistanceRunLeft = 0;
+    attrTotalDistanceRunRight = 0;
+    attrTotalDistanceRunRear = 0;
 }
 
 void Odometry4UbiquityICR::createOrocosInterface()
@@ -95,6 +143,9 @@ void Odometry4UbiquityICR::createOrocosInterface()
     addAttribute("attrMotorState", attrMotorState);
     addAttribute("attrParams", attrParams);
     addAttribute("attrLastTime", attrLastTime);
+    addAttribute("attrTotalDistanceRunLeft", attrTotalDistanceRunLeft);
+    addAttribute("attrTotalDistanceRunRight", attrTotalDistanceRunRight);
+    addAttribute("attrTotalDistanceRunRear", attrTotalDistanceRunRear);
 
     addPort("inTime",inTime)
             .doc("time in second.\n This port is used as trigger.\n This time is used as date of sensors data.");
@@ -103,6 +154,12 @@ void Odometry4UbiquityICR::createOrocosInterface()
 
     addPort("inMotorState",inMotorState)
             .doc("Measures from HML");
+
+    addPort("inTrueHeading",inTrueHeading)
+            .doc("Perfect external heading");
+
+    addPort("inTruePose",inTruePose)
+            .doc("Perfect external Pose");
 
     addPort("outICRSpeed",outICRSpeed)
             .doc("T_robot_table_p_robot_r_robot : Twist of robot reference frame relative to table frame, reduced and expressed in robot reference frame.\n It is an EstimatedTwist, so it contains Twist, estimation date (in sec) and covariance matrix.");
@@ -117,4 +174,6 @@ void Odometry4UbiquityICR::createOrocosInterface()
     addPort("outRiReOmega",outRiReOmega).doc("Angular velocity computed from Right and Rear turrets velocity measures");
     addPort("outReLOmega",outReLOmega).doc("Angular velocity computed from Rear and Left turrets velocity measures");
     addPort("outICRSphericalPerimeter",outICRSphericalPerimeter).doc("This value represents the spherical perimeter of the ICR computed from 3 turrets pairs.");
+
+    addOperation("ooResetDistanceRun", &Odometry4UbiquityICR::ooResetDistanceRun, this, OwnThread);
 }

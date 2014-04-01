@@ -16,6 +16,7 @@
 
 using namespace arp_core::log;
 using namespace arp_rlu;
+using namespace arp_time;
 using namespace lsl;
 using namespace arp_math;
 using namespace std;
@@ -41,7 +42,7 @@ FrontObstacleDetector::FrontObstacleDetector(const std::string& name)
     //arp_rlu::lsl::Logger::InitFile("LSL", WARN);
 
     createOrocosInterface();
-    m_monotonicTimeToRealTime = ros::Time::now().toSec() - getTime();
+    m_monotonicTimeToRealTime = ros::Time::now().toSec() - getAbsoluteTime();
 
     mfp.width = 3;
 
@@ -99,7 +100,7 @@ void FrontObstacleDetector::updateHook()
         //LOG( Info ) << "FrontObstacleDetector - No data on inScan port" << endlog();
         return;
     }
-    double dateBeg = rosScan.header.stamp.toSec() - m_monotonicTimeToRealTime;
+    ArdTimeDelta dateBeg = rosScan.header.stamp.toSec() - m_monotonicTimeToRealTime;
     LaserScan lslScan;
     Eigen::MatrixXd polarData(3, rosScan.ranges.size());
     for (unsigned int i = 0; i != rosScan.ranges.size(); i++)

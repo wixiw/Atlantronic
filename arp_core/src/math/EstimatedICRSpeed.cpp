@@ -9,6 +9,8 @@
 #include <math/MathFactory.hpp>
 #include <iostream>
 
+using namespace arp_time;
+
 namespace arp_math
 {
 
@@ -28,12 +30,12 @@ Covariance3 EstimatedICRSpeed::cov() const
     return covariance;
 }
 
-long double EstimatedICRSpeed::date() const
+ArdAbsoluteTime EstimatedICRSpeed::date() const
 {
     return estimationDate;
 }
 
-long double& EstimatedICRSpeed::dateRef()
+ArdAbsoluteTime& EstimatedICRSpeed::dateRef()
 {
     return estimationDate;
 }
@@ -43,7 +45,7 @@ void EstimatedICRSpeed::cov(const Covariance3 & _cov)
     covariance = _cov;
 }
 
-void EstimatedICRSpeed::date(const long double & _date)
+void EstimatedICRSpeed::date(const ArdAbsoluteTime & _date)
 {
     estimationDate = _date;
 }

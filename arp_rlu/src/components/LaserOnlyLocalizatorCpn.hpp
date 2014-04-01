@@ -10,7 +10,7 @@
 
 #include "RluTaskContext.hpp"
 #include <math/core>
-
+#include "time/ArdTime.hpp"
 #include <sensor_msgs/LaserScan.h>
 
 #include "KFL/LaserOnlyLocalizator.hpp"
@@ -92,7 +92,7 @@ class LaserOnlyLocalizatorCpn: public RluTaskContext
         //*****************************************************
         // Internal objects
         kfl::LaserOnlyLocalizator loloc;
-        long double m_monotonicTimeToRealTime;
+        arp_time::ArdTimeDelta m_monotonicTimeToRealTime;
         lsl::LaserScan lslScan;
         bool lastSuccess;
 

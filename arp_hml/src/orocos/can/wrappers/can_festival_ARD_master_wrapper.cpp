@@ -7,6 +7,7 @@
 
 using namespace std;
 using namespace arp_hml;
+using namespace arp_time;
 
 //#define DEBUG_ON
 
@@ -14,7 +15,7 @@ using namespace arp_hml;
 string canFestivalWrapperName;
 RTT::OutputPort<e_nodeState> canFestival_outNMTState;
 RTT::OutputPort<nodeID_t> canFestival_outBootUpReceived;
-RTT::OutputPort<timespec> canFestival_outSyncSent;
+RTT::OutputPort<ArdAbsoluteTime> canFestival_outSyncSent;
 
 bool initWrapper()
 {
@@ -92,9 +93,7 @@ void heartbeatErrorCallback(CO_Data* d, UNS8 heartbeatID)
 
 void postSyncCallback(CO_Data* d)
 {
-    timespec now;
-    clock_gettime(CLOCK_MONOTONIC, &now);
-    canFestival_outSyncSent.write(now);
+    canFestival_outSyncSent.write(getAbsoluteTime());
 #ifdef DEBUG_ON
     cerr << "CERR : [INFO] postSyncCallback(" << d << ") " << now.tv_sec << "s " << now.tv_nsec << "ns"<< endl;
 #endif
@@ -103,9 +102,8 @@ void postSyncCallback(CO_Data* d)
 void postTPDOCallback(CO_Data* d)
 {
 #ifdef DEBUG_ON
-    timespec now;
-    clock_gettime(CLOCK_MONOTONIC, &now);
-    cerr << "CERR : [INFO] postTPDOCallback(" << d << ") " << now.tv_sec << "s " << now.tv_nsec << "ns"<< endl;
+    ArdAbsoluteTime now = getAbsoluteTime();
+    cerr << "CERR : [INFO] postTPDOCallback(" << d << ") " << now. << "s."<< endl;
 #endif
 }
 

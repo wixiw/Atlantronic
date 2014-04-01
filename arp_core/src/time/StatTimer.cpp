@@ -13,11 +13,12 @@
 #include <sstream>
 
 using namespace arp_core;
+using namespace arp_time;
 
 StatTimer::StatTimer( int nMax ) :
-Timer(),
 maxBufferSize( nMax )
 {
+    ResetTime();
     ResetStat();
 }
 
@@ -28,16 +29,16 @@ StatTimer::~StatTimer()
 
 void StatTimer::Start()
 {
-    long double t =  this->ResetTime();
-    refreshTimeVector.push_back( t );
+    ArdTimeDelta dt =  this->ResetTime();
+    refreshTimeVector.push_back( dt );
     while( refreshTimeVector.size() > maxBufferSize )
         refreshTimeVector.erase( refreshTimeVector.begin() );
 }
 
 void StatTimer::Stop()
 {
-    double t = this->GetTime();
-    elapsedTimeVector.push_back( t );
+    ArdTimeDelta dt = this->GetTime();
+    elapsedTimeVector.push_back( dt );
     while( elapsedTimeVector.size() > maxBufferSize )
         elapsedTimeVector.erase( elapsedTimeVector.begin() );
 }
@@ -62,12 +63,12 @@ unsigned int StatTimer::GetMaxBufferSize() const
     return maxBufferSize;
 }
 
-std::vector<long double> StatTimer::GetRawElapsedTime() const
+std::vector<ArdTimeDelta> StatTimer::GetRawElapsedTime() const
 {
     return elapsedTimeVector;
 }
 
-double StatTimer::GetLastElapsedTime() const
+ArdTimeDelta StatTimer::GetLastElapsedTime() const
 {
     if( elapsedTimeVector.empty() )
         return 0.0;
@@ -75,7 +76,7 @@ double StatTimer::GetLastElapsedTime() const
         return elapsedTimeVector.back();
 }
 
-double StatTimer::GetMeanElapsedTime() const
+ArdTimeDelta StatTimer::GetMeanElapsedTime() const
 {
     if( elapsedTimeVector.empty() )
         return 0.0;
@@ -84,39 +85,39 @@ double StatTimer::GetMeanElapsedTime() const
     return sum / (double)elapsedTimeVector.size();
 }
 
-double StatTimer::GetStdDevElapsedTime() const
+ArdTimeDelta StatTimer::GetStdDevElapsedTime() const
 {
     if( elapsedTimeVector.empty() )
         return 0.0;
 
     double mean = this->GetMeanElapsedTime();
-    std::vector<long double> diff;
-    for(std::vector<long double>::const_iterator it = elapsedTimeVector.begin(); it != elapsedTimeVector.end(); ++it)
+    std::vector<ArdTimeDelta> diff;
+    for(std::vector<ArdTimeDelta>::const_iterator it = elapsedTimeVector.begin(); it != elapsedTimeVector.end(); ++it)
         diff.push_back( (*it) - mean );
 
     return std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0) / (double)elapsedTimeVector.size();
 }
 
-double StatTimer::GetMinElapsedTime() const
+ArdTimeDelta StatTimer::GetMinElapsedTime() const
 {
     if( elapsedTimeVector.empty() )
         return 0.0;
     return *(std::min_element(elapsedTimeVector.begin(), elapsedTimeVector.end() ));
 }
 
-double StatTimer::GetMaxElapsedTime() const
+ArdTimeDelta StatTimer::GetMaxElapsedTime() const
 {
     if( elapsedTimeVector.empty() )
         return 0.0;
     return *(std::max_element(elapsedTimeVector.begin(), elapsedTimeVector.end() ));
 }
 
-std::vector<long double> StatTimer::GetRawRefreshTime() const
+std::vector<ArdTimeDelta> StatTimer::GetRawRefreshTime() const
 {
     return refreshTimeVector;
 }
 
-double StatTimer::GetLastRefreshTime() const
+ArdTimeDelta StatTimer::GetLastRefreshTime() const
 {
     if( refreshTimeVector.empty() )
         return 0.0;
@@ -124,36 +125,36 @@ double StatTimer::GetLastRefreshTime() const
         return refreshTimeVector.back();
 }
 
-double StatTimer::GetMeanRefreshTime() const
+ArdTimeDelta StatTimer::GetMeanRefreshTime() const
 {
     if( refreshTimeVector.empty() )
         return 0.0;
 
-    double sum = std::accumulate(refreshTimeVector.begin(), refreshTimeVector.end(), 0.0 );
+    ArdTimeDelta sum = std::accumulate(refreshTimeVector.begin(), refreshTimeVector.end(), 0.0 );
     return sum / (double)refreshTimeVector.size();
 }
 
-double StatTimer::GetStdDevRefreshTime() const
+ArdTimeDelta StatTimer::GetStdDevRefreshTime() const
 {
     if( refreshTimeVector.empty() )
         return 0.0;
 
-    double mean = this->GetMeanRefreshTime();
-    std::vector<long double> diff;
-    for(std::vector<long double>::const_iterator it = refreshTimeVector.begin(); it != refreshTimeVector.end(); ++it)
+    ArdTimeDelta mean = this->GetMeanRefreshTime();
+    std::vector<ArdTimeDelta> diff;
+    for(std::vector<ArdTimeDelta>::const_iterator it = refreshTimeVector.begin(); it != refreshTimeVector.end(); ++it)
         diff.push_back( (*it) - mean );
 
     return std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0) / (double)refreshTimeVector.size();
 }
 
-double StatTimer::GetMinRefreshTime() const
+ArdTimeDelta StatTimer::GetMinRefreshTime() const
 {
     if( refreshTimeVector.empty() )
         return 0.0;
     return *(std::min_element(refreshTimeVector.begin(), refreshTimeVector.end() ));
 }
 
-double StatTimer::GetMaxRefreshTime() const
+ArdTimeDelta StatTimer::GetMaxRefreshTime() const
 {
     if( refreshTimeVector.empty() )
         return 0.0;
@@ -187,4 +188,17 @@ std::string StatTimer::GetReport() const
      info << " )" << std::endl; */
 
     return info.str();
+}
+
+ArdAbsoluteTime StatTimer::GetTime()
+{
+    return getAbsoluteTime() - t0;
+}
+
+ArdTimeDelta StatTimer::ResetTime()
+{
+    ArdAbsoluteTime now = getAbsoluteTime();
+    ArdTimeDelta delay = now - t0;
+    t0 = now;
+    return delay;
 }

@@ -11,7 +11,8 @@
 #include "orocos/taskcontexts/HmlTaskContext.hpp"
 #include "orocos/can/ard_can_types.hpp"
 #include "orocos/can/CanOpenDispatcher.hpp"
-#include <timer/StatTimer.hpp>
+#include <time/StatTimer.hpp>
+#include "time/ArdTime.hpp"
 
 namespace arp_hml
 {
@@ -42,9 +43,9 @@ namespace arp_hml
         /** This attribute contains the current NMT status of the Controller node */
         e_nodeState attrCurrentNMTState;
         /** Last sync time received */
-        timespec attrSyncTime;
+        arp_time::ArdAbsoluteTime attrSyncTime;
         /** last Sync time to compute period */
-        timespec attrLastSyncTime;
+        arp_time::ArdAbsoluteTime attrLastSyncTime;
         /** This is for test purposes only, when sending request to the can via the taskBrowser */
         CanDicoEntry attrTestingSdo;
 
@@ -58,7 +59,7 @@ namespace arp_hml
         /** This property contains the nodeID of the Controller node on the attached bus (in decimal)*/
         int propNodeId;
         /** Delay between 2 SYNC messgaes in s */
-        double propSyncPeriod;
+        arp_time::ArdTimeDelta propSyncPeriod;
         /** Activate or not the time reporting */
         bool propTimeReporting;
 
@@ -73,16 +74,16 @@ namespace arp_hml
         /**
          * In Sync. Contains the date of the sync object
          */
-        InputPort<timespec> inSync;
+        InputPort<arp_time::ArdAbsoluteTime> inSync;
 
         /**
          * clock port, each node must listed this port to execute
          * It contains the SYNC CAN message date
          */
-        OutputPort<timespec> outClock;
+        OutputPort<arp_time::ArdAbsoluteTime> outClock;
 
         /** Delay beetween inSync and last cycle inSync in s*/
-        OutputPort<double> outPeriod;
+        OutputPort<arp_time::ArdTimeDelta> outPeriod;
 
         /** Is true when the bus is electronically up. Typically it's down when emergency stop is on*/
         OutputPort<bool> outBusConnected;
@@ -186,7 +187,7 @@ namespace arp_hml
          * @param nmtStateCmd : Requested state
          * @param timeout : Delay to wait before considering the device did not transit.
          */
-        bool coRequestNmtChange(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd, double timeout);
+        bool coRequestNmtChange(nodeID_t nodeId, enum_DS301_nmtStateRequest nmtStateCmd, arp_time::ArdTimeDelta timeout);
 
         /**
          * This operation allows to reset all the SDO emission lines.
@@ -198,7 +199,7 @@ namespace arp_hml
          * define a new period for SYNC object
          * param : periode in s.
          */
-        bool ooSetSyncPeriod(double period);
+        bool ooSetSyncPeriod(arp_time::ArdTimeDelta period);
 
         /**
          * Restart the CAN bus and all connected devices

@@ -10,6 +10,7 @@
 
 using namespace arp_rlu;
 using namespace arp_math;
+using namespace arp_time;
 using namespace RTT;
 using namespace std;
 using namespace arp_core;
@@ -108,8 +109,7 @@ void RosRluItf::updateHook()
         opponentsOut.Opponents.push_back(pose);
     }
     opponentsOut.nbOpponents = opponentsIn.size();
-    //TODO illegal time reference !!! prefer a time from RTC as we can simulate it
-    opponentsOut.date = getTime();
+    opponentsOut.date = getAbsoluteTime();
     outOpponents.write(opponentsOut);
 }
 

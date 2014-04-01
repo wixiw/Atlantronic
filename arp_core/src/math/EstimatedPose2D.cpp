@@ -10,6 +10,7 @@
 #include <math/MathFactory.hpp>
 
 using namespace arp_math;
+using namespace arp_time;
 
 EstimatedPose2D::EstimatedPose2D(const Pose2D & _p)
 : Pose2D(_p)
@@ -37,12 +38,12 @@ Covariance3& EstimatedPose2D::covRef()
     return covariance;
 }
 
-long double EstimatedPose2D::date() const
+ArdAbsoluteTime EstimatedPose2D::date() const
 {
     return estimationDate;
 }
 
-long double& EstimatedPose2D::dateRef()
+ArdAbsoluteTime& EstimatedPose2D::dateRef()
 {
     return estimationDate;
 }
@@ -52,7 +53,7 @@ void EstimatedPose2D::cov(const Covariance3 & _cov)
     covariance = _cov;
 }
 
-void EstimatedPose2D::date(const long double & _date)
+void EstimatedPose2D::date(const ArdAbsoluteTime & _date)
 {
     estimationDate = _date;
 }

@@ -11,6 +11,7 @@
 #include <iostream>
 
 using namespace arp_math;
+using namespace arp_time;
 
 EstimatedTwist2D::EstimatedTwist2D(const Twist2D & _t)
 : Twist2D(_t)
@@ -25,12 +26,12 @@ Covariance3 EstimatedTwist2D::cov() const
     return covariance;
 }
 
-long double EstimatedTwist2D::date() const
+ArdAbsoluteTime EstimatedTwist2D::date() const
 {
     return estimationDate;
 }
 
-long double& EstimatedTwist2D::dateRef()
+ArdAbsoluteTime& EstimatedTwist2D::dateRef()
 {
     return estimationDate;
 }
@@ -40,7 +41,7 @@ void EstimatedTwist2D::cov(const Covariance3 & _cov)
     covariance = _cov;
 }
 
-void EstimatedTwist2D::date(const long double & _date)
+void EstimatedTwist2D::date(const ArdAbsoluteTime & _date)
 {
     estimationDate = _date;
 }

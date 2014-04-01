@@ -16,6 +16,7 @@
 using namespace arp_core::log;
 using namespace arp_rlu;
 using namespace arp_math;
+using namespace arp_time;
 using namespace RTT;
 using namespace std;
 
@@ -32,8 +33,7 @@ LaserOnlyLocalizatorCpn::LaserOnlyLocalizatorCpn(const std::string& name)
     //arp_rlu::kfl::Logger::InitFile("KFL", WARN);
 
     createOrocosInterface();
-    //TODO illegal time reference !!!
-    m_monotonicTimeToRealTime = ros::Time::now().toSec() - getTime();
+    m_monotonicTimeToRealTime = ros::Time::now().toSec() - getAbsoluteTime();
 
 
     propParams.mfp.width = 0;
@@ -157,7 +157,7 @@ bool LaserOnlyLocalizatorCpn::ooDo()
     sensor_msgs::LaserScan rosScan;
     if( RTT::NewData == inScan.read(rosScan) )
     {
-        double dateBeg = rosScan.header.stamp.toSec() - m_monotonicTimeToRealTime;
+        ArdTimeDelta dateBeg = rosScan.header.stamp.toSec() - m_monotonicTimeToRealTime;
 
         Eigen::MatrixXd polarData(3, rosScan.ranges.size());
         for (unsigned int i = 0; i != rosScan.ranges.size(); i++)

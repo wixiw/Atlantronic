@@ -13,8 +13,10 @@
 #include <sys/mman.h>
 #include <iostream>
 #include <math/core>
+#include <time/ArdTime.hpp>
 using namespace std;
 using namespace arp_math;
+using namespace arp_time;
 
 std::string propBusName("can0");
 std::string propBaudRate("1000K");
@@ -35,20 +37,19 @@ int MY_PRIORITY;
                                    guaranteed safe to access without
                                    faulting */
 
-timespec last;
+ArdAbsoluteTime last;
 double max_period = 0;
 bool first_time = true;
 
 void postSyncCallback(CO_Data* d)
 {
-    timespec now;
-    clock_gettime(CLOCK_MONOTONIC, &now);
+    ArdAbsoluteTime now = getAbsoluteTime();
     if( first_time )
     {
         first_time = false;
         last = now;
     }
-    double period = delta_t(last,now);
+    ArdTimeDelta period = getTimeDelta(last,now);
     if( period > max_period)
     {
         max_period = period;

@@ -10,6 +10,7 @@
 
 #include <math/math.hpp>
 #include <math/Twist2D.hpp>
+#include "time/ArdTime.hpp"
 
 namespace arp_math
 {
@@ -19,11 +20,11 @@ class EstimatedTwist2D : public Twist2D
     EstimatedTwist2D(const Twist2D & t = Twist2D());
 
     Covariance3 cov() const;
-    long double date() const;
-    long double& dateRef();
+    arp_time::ArdAbsoluteTime date() const;
+    arp_time::ArdAbsoluteTime& dateRef();
 
     void cov(const Covariance3 &) ;
-    void date(const long double &);
+    void date(const arp_time::ArdAbsoluteTime &);
 
     /**
      * Transporte et réduit le EstimatedTwist2D courant dans le nouveau repère
@@ -47,7 +48,7 @@ class EstimatedTwist2D : public Twist2D
 
     private:
     Covariance3 covariance;
-    long double estimationDate;
+    arp_time::ArdAbsoluteTime estimationDate;
 };
 }
 

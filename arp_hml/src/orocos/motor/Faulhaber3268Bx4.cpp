@@ -12,6 +12,7 @@
 
 using namespace arp_hml;
 using namespace arp_core;
+using namespace arp_time;
 using namespace arp_math;
 using namespace std;
 
@@ -52,7 +53,7 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
 
     ArdMotorItf::setOperationMode(ArdMotorItf::SPEED_CONTROL);
     outDriveEnable.write(false);
-    clock_gettime(CLOCK_MONOTONIC, &m_oldPositionMeasureTime);
+    m_oldPositionMeasureTime = getAbsoluteTime();
 }
 
 bool Faulhaber3268Bx4::checkProperties()
@@ -168,7 +169,7 @@ void Faulhaber3268Bx4::getInputs()
     	m_oldSpeedCommandTime = attrSyncTime;
     }
     //if we did not get a speed command since a time, we assume a 0 cmd for security reasons
-    else if(arp_math::delta_t(m_oldSpeedCommandTime,attrSyncTime) > propInputsTimeout)
+    else if(getTimeDelta(m_oldSpeedCommandTime,attrSyncTime) > propInputsTimeout)
     {
         ArdMotorItf::setSpeedCmd(0);
     }
@@ -188,7 +189,7 @@ void Faulhaber3268Bx4::getInputs()
     	m_oldTorqueCommandTime = attrSyncTime;
     }
     //if we did not get a speed command since a time, we assume a 0 cmd for security reasons
-    else if(arp_math::delta_t(m_oldTorqueCommandTime,attrSyncTime) > propInputsTimeout)
+    else if(getTimeDelta(m_oldTorqueCommandTime,attrSyncTime) > propInputsTimeout)
     {
         ArdMotorItf::setTorqueCmd(0);
     }
@@ -466,13 +467,11 @@ void Faulhaber3268Bx4::readCaptors()
 	//par securite on gere le cas 0xFF qui nou dit que ça fait trop longtemps qu'on ne lui a rien demande.
 	if( *m_measuredPeriod == 0xFF )
 	{
-	    timespec time;
-	    inMasterClock.readNewest(time);
-	    attrMotorPeriod = timespec2Double(time);
+	    attrMotorPeriod = 0;
 	}
 	else
 	{
-	    attrMotorPeriod = (double)(*m_measuredPeriod)/1000.0;
+	    attrMotorPeriod = (ArdTimeDelta)(*m_measuredPeriod)/1000.0;
 	}
 
 	LeaveMutex();
@@ -573,9 +572,9 @@ bool Faulhaber3268Bx4::ooSetOperationMode(std::string mode)
 	return res;
 }
 
-bool Faulhaber3268Bx4::coWaitEnable(double timeout)
+bool Faulhaber3268Bx4::coWaitEnable(ArdTimeDelta timeout)
 {
-	double chrono = 0;
+    ArdTimeDelta chrono = 0;
 	bool res = false;
 
 	//This operation is only accessible when the component is running

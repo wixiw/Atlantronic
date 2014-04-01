@@ -54,12 +54,12 @@ UbiquityParams params);
         void switchRun(UbiquityMotionState currentMotionState);
 
 
-        static const double MAX_OPENLOOP_TIME=5.0;
+        static const arp_time::ArdTimeDelta MAX_OPENLOOP_TIME=5.0;
         
         /** twist in case of openloop */
         Twist2D m_openloop_twist;
         /** duration of the command in case of openloop */
-        double m_openloop_duration;
+        arp_time::ArdTimeDelta m_openloop_duration;
 };
 
 }}
