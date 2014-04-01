@@ -14,6 +14,7 @@ end
 function MotorSimulDeployer:load()
 	assert( Deployer:loadComponent("Can1","arp_core::PeriodicClock"));
 	assert( Deployer:addPeer("DotGraph","Can1"))
+	assert( Deployer:addPeer("Reporting", "Can1"));
 	assert( Deployer:setActivity("Can1",0.010,60,rtt.globals.ORO_SCHED_RT));
 	
 	assert( Deployer:loadComponent("MockSched","FBSched"));

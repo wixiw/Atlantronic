@@ -16,6 +16,7 @@
 #include <rtt/types/TemplateConstructor.hpp>
 
 #include "CoreTypeKit.hpp"
+#include "ArdAbsoluteTimeTypeInfo.hpp"
 #include "Pose2DTypeInfo.hpp"
 #include "Twist2DTypeInfo.hpp"
 #include "ICRSpeedTypeInfo.hpp"
@@ -39,6 +40,7 @@ bool CoreTypeKit::loadTypes()
 
     // Tell the RTT the name and type of this struct
     res &= types::Types()->addType( new RTT::types::TemplateTypeInfo< Eigen::Matrix<double, 3, 3> > ("Matrix3d") );
+    res &= types::Types()->addType( new ArdAbsoluteTimeTypeInfo() );
     res &= types::Types()->addType( new Pose2DTypeInfo() );
     res &= types::Types()->addType( new Twist2DTypeInfo() );
     res &= types::Types()->addType( new ICRSpeedTypeInfo() );

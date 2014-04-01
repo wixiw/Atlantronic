@@ -8,6 +8,8 @@
 #ifndef ARDTIME_HPP_
 #define ARDTIME_HPP_
 
+#include <sstream>
+
 namespace arp_time
 {
 
@@ -42,16 +44,7 @@ ArdAbsoluteTime addTimeAndDelta(ArdAbsoluteTime time, ArdTimeDelta delta);
 //--------------------------------------------------------------------
 //--- CONVERT
 
-//
-///**
-// * Convert a linux time to our time format
-// */
-//ArdAbsoluteTime convertTimeFromTimeSpec(const timespec & now);
-//
-///**
-// * Convert our time format to linux time
-// */
-//timespec convertTimeSpecFromTime(ArdAbsoluteTime now);
+std::string ArdAbsoluteTimeToStr(ArdAbsoluteTime time);
 
 } /* namespace arp_core */
 #endif /* ARDTIME_HPP_ */

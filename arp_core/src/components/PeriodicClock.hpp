@@ -23,11 +23,13 @@ class PeriodicClock: public ARDTaskContext
 
     protected:
         RTT::OutputPort<arp_time::ArdAbsoluteTime> outClock;
+        RTT::OutputPort<double> outClockReporting; //workaround as typekit is segfaulting with ArdAbsolutetime
         RTT::OutputPort<arp_time::ArdTimeDelta> outPeriod;
         RTT::OutputPort<int> outTrigger;
 
         RTT::os::TimeService* m_ts;
         arp_time::ArdAbsoluteTime m_lastTime;
+        arp_time::ArdAbsoluteTime m_startTime;
 
 };
 
