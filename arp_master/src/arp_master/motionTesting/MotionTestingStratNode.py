@@ -52,7 +52,7 @@ class MainStateMachine(smach.StateMachine):
             
             smach.StateMachine.add('SetInitialPosition',
                       SetInitialPosition(INIT_POS.x, INIT_POS.y, INIT_POS.theta),
-                      transitions={'succeeded':'Move', 'timeout':'end'})
+                      transitions={'succeeded':'M1', 'timeout':'end'})
             
 
             
@@ -119,17 +119,17 @@ class MainStateMachine(smach.StateMachine):
             # SPECIFIC DEBUG TESTS ##########################
             
             smach.StateMachine.add('M1',
-                       AmbiOmniDirectOrder2Pass(Pose2D( 0.950, 0, 0) ,
-                                           vpasse=0.1,vmax = 0.3),
-                      transitions={'succeeded':'waitM2', 'timeout':'end'})
-             
-            smach.StateMachine.add('waitM2',
-                      WaiterState(5),
-                      transitions={'timeout':'M2'})
-             
+                       AmbiOmniDirectOrder2(Pose2D( INIT_POS.x, INIT_POS.y, -pi) ,
+                                           vmax = 1.0),
+                      transitions={'succeeded':'M2', 'timeout':'end'})
                         
             smach.StateMachine.add('M2',
-                       AmbiOmniDirectOrder2(Pose2D( 0.950, 0.3,0) ,
+                       AmbiOmniDirectOrder2Pass(Pose2D( INIT_POS.x-0.350, INIT_POS.y, -pi) ,
+                                           vpasse=0.5,vmax = 1.0),
+                      transitions={'succeeded':'M3', 'timeout':'end'})
+                                    
+            smach.StateMachine.add('M3',
+                       AmbiOmniDirectOrder2(Pose2D(INIT_POS.x-0.750, INIT_POS.y, -pi/2) ,
                                            vmax = 1.0),
                       transitions={'succeeded':'waitMove', 'timeout':'end'})            
             
@@ -245,6 +245,7 @@ class RandomMove(MotionState):
         rospy.loginfo("8=====>         -")
         rospy.loginfo("8=====>            -")
         return EmptyResponse()
+#j'adore ton style willy
 
     def createAction(self):
         self.x = random.uniform(0.4, 1.1)

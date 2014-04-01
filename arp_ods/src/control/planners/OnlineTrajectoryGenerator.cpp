@@ -33,7 +33,10 @@ OnlineTrajectoryGenerator::OnlineTrajectoryGenerator():Flags()
 
     OP = new RMLPositionOutputParameters(1); //1 = number of DOF
 
-    Flags.SynchronizationBehavior=RMLPositionFlags::NO_SYNCHRONIZATION;
+    // this flag is not well understood. it has strong effect on the behavior of the function... even in 1 dof !
+    // with nothing, sometimes it returns "synchronization failure"
+    // and with no sync, it seems to be late sometimes
+    Flags.SynchronizationBehavior=RMLPositionFlags::ONLY_TIME_SYNCHRONIZATION;
 }
 
 OnlineTrajectoryGenerator::~OnlineTrajectoryGenerator()

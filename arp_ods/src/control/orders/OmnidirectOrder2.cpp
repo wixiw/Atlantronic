@@ -84,8 +84,15 @@ OmnidirectOrder2::OmnidirectOrder2(const OrderGoalConstPtr &goal, arp_math::Ubiq
 
 void OmnidirectOrder2::switchInit(arp_math::UbiquityMotionState currentMotionState)
 {
-    m_ICRSpeed_N_1 = currentMotionState.getSpeed();
-    m_ICRSpeed_N_2 = currentMotionState.getSpeed();
+    Pose2D currentPosition = currentMotionState.getPosition();
+    ICRSpeed curICRSpeed = currentMotionState.getSpeed();
+
+    //attention curICRspeed doit s'exprimer dans le bon repere
+    //TODO mettre ca d'equerre car un calcul identique est fait plus loin !
+    curICRSpeed.phi(curICRSpeed.phi() - m_endMotionState.getPosition().h() + currentPosition.h());
+
+    m_ICRSpeed_N_1 = curICRSpeed;
+    m_ICRSpeed_N_2 = curICRSpeed;
     //TODO mettre la valeur par defaut
     m_dt_N_1 = 0.01;
 
@@ -168,6 +175,15 @@ double OmnidirectOrder2::profileRoNonJerking(double distance, ICRSpeed curICRSpe
     Log(DEBUG) << "          maxAcc               " << maxAcc;
     Log(DEBUG) << "          maxJerk              " << maxJerk;
 
+
+
+
+    //outDEBUG5 = end.position;
+    //outDEBUG6 = start.velocity;
+    //outDEBUG9 = start.acceleration;
+    //outDEBUG4 = maxSpeed;
+
+
     OTGres = OTG->computeNextStep(start, end, maxSpeed, maxAcc, maxJerk, next);
 
     Log(DEBUG) << "          CALCUL REFLEXXES   ...";
@@ -184,6 +200,7 @@ double OmnidirectOrder2::profileRoNonJerking(double distance, ICRSpeed curICRSpe
             m_curAcc = next.acceleration;
         else
             m_curAcc = -next.acceleration;
+
     }
     else
     {
@@ -298,11 +315,14 @@ double OmnidirectOrder2::profileRoJerking(double distance, ICRSpeed curICRSpeed,
 
 }
 
-double OmnidirectOrder2::finalAsserv(double distance, ICRSpeed curICRSpeed, double roPass, double vmax, double dt)
+double OmnidirectOrder2::finalAsserv(double distance, ICRSpeed curICRSpeed, double vmax, double roPass, double dt)
 {
 
     Log(DEBUG) << "     << finalAsserv";
     Log(DEBUG) << "          m_finalAsservCalled " << m_finalAsservCalled;
+    Log(DEBUG) << "          roPass              " << roPass;
+    Log(DEBUG) << "          vmax                " << vmax;
+
     if (m_finalAsservCalled == false)
     {
         m_speedFinalAsservEntry = curICRSpeed.ro();
@@ -315,12 +335,21 @@ double OmnidirectOrder2::finalAsserv(double distance, ICRSpeed curICRSpeed, doub
     else
         ro_N = m_speedFinalAsservEntry;
 
+    Log(DEBUG) << "          ro_N                 " << ro_N;
     Log(DEBUG) << "     >> finalAsserv";
     return ro_N;
 }
 
 ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSpeed curICRSpeed, double dt)
 {
+    m_orderTime += dt;
+
+    Log(DEBUG) << ">>computeRunTwist  ";
+    Log(DEBUG) << "     m_orderTime =  " << m_orderTime;
+    Log(DEBUG) << "     dt donne =  " << dt;
+
+    Log(DEBUG) << "     curICRSpeed a la base    " << curICRSpeed.toString();
+
     //curICRspeed est toujours positif en ro
     double vraiRo = curICRSpeed.ro();
     curICRSpeed = m_ICRSpeed_N_1.getNormalizedRep();
@@ -331,14 +360,10 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
      curICRSpeed = curICRSpeed.getOppositeRep();
      */
 
-    m_orderTime += dt;
 
-    Log(DEBUG) << ">>computeRunTwist  ";
-    Log(DEBUG) << "     m_orderTime =  " << m_orderTime;
-    Log(DEBUG) << "     dt donne =  " << dt;
 
     Log(DEBUG) << "     currentPositionNorm  " << currentPositionNorm.toString();
-    Log(DEBUG) << "     curICRSpeed  " << curICRSpeed.toString();
+    Log(DEBUG) << "     curICRSpeed apres modif  " << curICRSpeed.toString();
 
     ICRSpeed corICRSpeed;
 
@@ -358,7 +383,9 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
     //ICR curICR = m_oldICRSpeed.getICR();
 
     // gestion du parkinson final
-    double s_max = 5 * dt * getParkinsonLimitationFactor(Cerr.norm());
+    //double s_max = 5 * dt * getParkinsonLimitationFactor(Cerr.norm());
+
+    double s_max=5*dt;
 
     Log(DEBUG) << "     Cerr.norm()                               " << Cerr.norm();
     //Log(DEBUG) << "     getParkinsonLimitationFactor(Cerr.norm()) " << getParkinsonLimitationFactor(Cerr.norm());
@@ -379,12 +406,12 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
         Log(DEBUG) << "     il etait du bon coté     ";
     }
     distanceICRMove = ICR_perfect.sphericalDistance(curICR);
-    //Log(DEBUG) << "     distanceICRMove                           " << distanceICRMove;
+    Log(DEBUG) << "     distanceICRMove                           " << distanceICRMove;
 
     ICR ICR_possible = curICR.getIntermediate(ICR_perfect, s_max);
 
-    //Log(DEBUG) << "     curICR             " << curICR.toString();
-    //Log(DEBUG) << "     ICR_possible       " << ICR_possible.toString();
+    Log(DEBUG) << "     curICR             " << curICR.toString();
+    Log(DEBUG) << "     ICR_possible       " << ICR_possible.toString();
 
     //corICRSpeed = ICRSpeed(1.0, ICR_possible);
 
@@ -398,7 +425,8 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
      */
     Log(DEBUG) << "     k_delta       " << k_delta;
 
-    double vmax = getSpeedLimitationFactor(distanceICRMove) * m_params.getMaxRobotAccel();
+    double vmax = getSpeedLimitationFactor(distanceICRMove) * m_params.getMaxRobotSpeed();
+    //double vmax = 1.0* m_params.getMaxRobotSpeed();
 
     Log(DEBUG) << "     speedlimitation factor                        " << getSpeedLimitationFactor(distanceICRMove);
     Log(DEBUG) << "     vmax    " << vmax;
@@ -419,7 +447,7 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
     }
     else
     {
-        ro = finalAsserv(k_delta, curICRSpeed, vmax, passSpeed, dt);
+        ro = profileRoJerking(k_delta, curICRSpeed, vmax, passSpeed, dt);
     }
 
     Log(DEBUG) << "     ro            " << ro;
@@ -445,12 +473,10 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
     outDEBUG3 = rad2deg(corICRSpeed.phi()) / 100.0;
     outDEBUG4 = rad2deg(corICRSpeed.delta()) / 100.0;
 
-    outDEBUG5 = vraiRo;
-    outDEBUG6 = curICRSpeed.ro();
 
     outDEBUG7 = m_orderTime;
 
-    outDEBUG9 = dt * 1000;
+
 
     return corICRSpeed;
 }
