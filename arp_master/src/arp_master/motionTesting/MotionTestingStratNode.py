@@ -238,14 +238,9 @@ class RandomMove(MotionState):
 
     def gotoZeroSrvCallback(self,req):
         self.gotoZero = True
-        rospy.loginfo("8=====>")
-        rospy.loginfo("8=====> -")
-        rospy.loginfo("8=====>   -")
-        rospy.loginfo("8=====>      -")
-        rospy.loginfo("8=====>         -")
-        rospy.loginfo("8=====>            -")
+        rospy.loginfo("Goto Zero received")
         return EmptyResponse()
-#j'adore ton style willy
+
 
     def createAction(self):
         self.x = random.uniform(0.4, 1.1)
