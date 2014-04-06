@@ -23,12 +23,7 @@ class Table2014(TableVierge):
     #
     objectOneEmpty = False
 
-    recallWalls={'RIGHT':(1.500-RobotVierge.FRONT_SIDE.x,"FREE",0),
-                 'LEFT':(-1.500+RobotVierge.FRONT_SIDE.x,"FREE",-pi),
-                 'UP':("FREE",1.000-RobotVierge.FRONT_SIDE.x,pi/2),
-                 'DOWN':("FREE",-1.000+RobotVierge.FRONT_SIDE.x,-pi/2),
-                 'FRUITBASKET':("FREE",0.700-RobotVierge.FRONT_SIDE.x,pi/2)
-                 }
+    
     
     @staticmethod
     def printStratInfo():

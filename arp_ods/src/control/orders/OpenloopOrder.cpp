@@ -35,9 +35,8 @@ OpenloopOrder::OpenloopOrder(const OrderGoalConstPtr &goal, arp_math::UbiquityMo
     else
         m_openloop_duration = MAX_OPENLOOP_TIME;
 
-    m_timeout=m_openloop_duration+1.0;
+    m_timeout = m_openloop_duration + 1.0;
 }
-
 
 void OpenloopOrder::switchRun(UbiquityMotionState currentMotionState)
 {
@@ -45,7 +44,7 @@ void OpenloopOrder::switchRun(UbiquityMotionState currentMotionState)
     // test for DONE
 
     ArdAbsoluteTime t = getAbsoluteTime();
-    ArdTimeDelta time_elapsed = getTimeDelta(m_initTime,t);
+    ArdTimeDelta time_elapsed = getTimeDelta(m_initTime, t);
 
     if (m_initTime != -1 and time_elapsed > m_openloop_duration)
     {
@@ -70,7 +69,7 @@ ICRSpeed OpenloopOrder::computeSpeed(UbiquityMotionState currentMotionState, Ard
     v_correction_ref_init = m_openloop_twist.transport(m_cpoint.inverse());
 
     // time to target
-    ArdTimeDelta endDate = addTimeAndDelta(m_initTime,m_openloop_duration);
+    ArdTimeDelta endDate = addTimeAndDelta(m_initTime, m_openloop_duration);
     ArdTimeDelta t_left = getTimeDelta(getAbsoluteTime(), endDate);
 
     //find the time when to begin deceleration
@@ -124,9 +123,36 @@ ICRSpeed OpenloopOrder::computeSpeed(UbiquityMotionState currentMotionState, Ard
     //application of the saturation
     v_correction_saturated = v_correction_ref * (1 / sat);
 
+    //ne l'appliquer que si mon ICR est bien dirige d'abord
+    ICRSpeed ICRSpeedPerfect = ICRSpeed(v_correction_saturated);
+
+    /*
+    ICR ICRPerfect = ICRSpeedPerfect.getICR();
+
+    // ac c'est le code pique de omnidirect. a reutiliser si on veut avoir des mouvements d'icr avant appliquer la commande
+
+    double s_max = 5 * dt;
+    double distanceICRMove = ICR_perfect.sphericalDistance(curICR);
+    if (distanceICRMove > PI / 2)
+    {
+        Log(DEBUG) << "     !!!c'etait plus cours de rejoindre l'antipode alors je pars en marche arriere     ";
+        ICR_perfect = ICR_perfect.getAntipodICR();
+    }
+    else
+    {
+        Log(DEBUG) << "     il etait du bon coté     ";
+    }
+    distanceICRMove = ICR_perfect.sphericalDistance(curICR);
+    Log(DEBUG) << "     distanceICRMove                           " << distanceICRMove;
+
+    ICR ICR_possible = curICR.getIntermediate(ICR_perfect, s_max);
+
     m_v_correction_old = v_correction_saturated;
 
-    return ICRSpeed(v_correction_saturated);
+    */
+
+
+    return ICRSpeedPerfect;
 
 }
 

@@ -5,6 +5,8 @@ import roslib; roslib.load_manifest('arp_master')
 
 from arp_master import *
 
+from arp_master.fsmFramework import *
+
 # 
 # These states are usefull to set or disable the power on motors
 #

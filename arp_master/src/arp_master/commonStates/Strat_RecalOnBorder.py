@@ -4,11 +4,14 @@
 #libraries for ROS
 import roslib; roslib.load_manifest('arp_master')
 
+print "-----arrivee dans stratrecalon border"
+
+
 from arp_master import *
 import os
 from SetPosition import *
 
-from arp_master.strat_2014.common_2014.Table2014 import *
+from arp_master.fsmFramework import *
 
 
 #
@@ -16,19 +19,38 @@ from arp_master.strat_2014.common_2014.Table2014 import *
 #
 ##################################################
 
+print "-----DEFINITION AmbiRecalOnBorderYellow"
 
-class RecalOnBorder(smach.StateMachine):
-    def __init__(self,borderName):
+class AmbiRecalOnBorderYellow(smach.StateMachine):
+    def __init__(self,borderName,color):
+        
+        recallWalls={'RIGHT':(1.500-RobotVierge.FRONT_SIDE.x,"FREE",0),
+                 'LEFT':(-1.500+RobotVierge.FRONT_SIDE.x,"FREE",-pi),
+                 'UP':("FREE",1.000-RobotVierge.FRONT_SIDE.x,pi/2),
+                 'DOWN':("FREE",-1.000+RobotVierge.FRONT_SIDE.x,-pi/2),
+                 'FRUITBASKET':("FREE",0.700-RobotVierge.FRONT_SIDE.x,pi/2)
+                 }
+        
         smach.StateMachine.__init__(self,outcomes=['recaled','non-recaled','problem'])
+        
+        if color=='yellow':
+            pass
+        elif color=='red':
+            if borderName=="LEFT":
+                borderName="RIGHT"
+            if borderName=="RIGHT":
+                borderName="LEFT"            
+        else:
+            rospy.logerr("AmbiRecalOnBorderYellow : default case : color not defined !!")
+        
         with self:
             smach.StateMachine.add('ForwardOrder',
-                                   OpenLoopOrder(vx = 0.05, 
-                                           vy = 0, 
-                                           vh = 0, 
-                                           duration=3.0),
-                                   transitions={'succeeded':'setPosition', 'timeout':'problem'}) 
+                                   ForwardOrder(dist=0.200,vmax=0.1),
+                                   transitions={'succeeded':'setPosition', 'timeout':'setPosition'}) 
+            #TODO le succeded devrait etre un probleme ! on doit toujours bloquer. mais si je fas ca la simul va merder
             smach.StateMachine.add('setPosition',
-                                   SetPositionState(*Table2014.recallWalls[borderName]),
+                                   SetPositionState(*recallWalls[borderName]),
                                    transitions={'succeeded':'recaled', 'timeout':'problem'})
-          
+            
+       
 

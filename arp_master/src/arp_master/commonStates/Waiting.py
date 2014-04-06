@@ -5,6 +5,7 @@ import roslib; roslib.load_manifest('arp_master')
 
 from arp_master import *
 import os
+from arp_master.fsmFramework import *
 
 #
 # Those states allows the robot to wait for something.

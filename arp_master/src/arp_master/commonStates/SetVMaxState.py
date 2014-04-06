@@ -6,6 +6,8 @@ import roslib; roslib.load_manifest('arp_master')
 from arp_master import *
 import math
 
+from arp_master.fsmFramework import *
+
 # 
 # These states are usefull to set the speed of the robot
 #

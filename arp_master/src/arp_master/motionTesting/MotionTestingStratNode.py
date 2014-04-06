@@ -5,13 +5,21 @@ import roslib; roslib.load_manifest('arp_master')
 from std_srvs.srv import *
 import random
 
-from arp_master import *
+#from arp_master import *
 #from arp_master.strat_2014 import *
+from arp_master.util import *
+from arp_master.fsmFramework import *
+from arp_master.commonStates import *
 
 INIT_POS=Pose2D(0.750,0,0)
 
 ###########################  TEMPORAL BEHAVIOR
 
+print "-----DEFINITION MotionTestingStratNode"
+
+#for name in dir():
+#           print ">>>>> " , name
+            
 class MotionTestingStratNode():
     
     def __init__(self):
@@ -94,16 +102,16 @@ class MainStateMachine(smach.StateMachine):
                       transitions={'succeeded':'ForwardOrder', 'timeout':'end'}) 
          
             smach.StateMachine.add('ForwardOrder',
-                       ForwardOrder(dist = 0.15),
+                       ForwardOrder(dist = 0.15,vmax=0.3),
                       transitions={'succeeded':'BackwardOrder', 'timeout':'end'}) 
             smach.StateMachine.add('BackwardOrder',
-                       BackwardOrder(dist = 0.15),
+                       BackwardOrder(dist = 0.15,vmax=0.3),
                       transitions={'succeeded':'LeftwardOrder', 'timeout':'end'}) 
             smach.StateMachine.add('LeftwardOrder',
-                       LeftwardOrder(dist = 0.15),
+                       LeftwardOrder(dist = 0.15,vmax=0.3),
                       transitions={'succeeded':'RightwardOrder', 'timeout':'end'}) 
             smach.StateMachine.add('RightwardOrder',
-                       RightwardOrder(dist = 0.15),
+                       RightwardOrder(dist = 0.15,vmax=0.3),
                       transitions={'succeeded':'AmbiTurnOrder', 'timeout':'end'}) 
             
             smach.StateMachine.add('AmbiTurnOrder',
@@ -188,7 +196,7 @@ class MainStateMachine(smach.StateMachine):
                       transitions={'succeeded':'RECAL1', 'timeout':'end'})     
             
             smach.StateMachine.add('RECAL1',
-                       RecalOnBorder('RIGHT'),
+                       AmbiRecalOnBorderYellow('RIGHT',"yellow"),
                       transitions={'recaled':'RECAL3','non-recaled':'end' ,'problem':'end'})
             
             smach.StateMachine.add('RECAL3',
@@ -202,7 +210,7 @@ class MainStateMachine(smach.StateMachine):
                       transitions={'succeeded':'RECAL5', 'timeout':'end'}) 
             
             smach.StateMachine.add('RECAL5',
-                       RecalOnBorder('UP'),
+                       AmbiRecalOnBorderYellow('UP',"yellow"),
                       transitions={'recaled':'RECAL6','non-recaled':'end' ,'problem':'end'})   
                         
             smach.StateMachine.add('RECAL6',

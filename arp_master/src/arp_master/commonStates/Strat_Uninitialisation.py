@@ -5,6 +5,7 @@ import roslib; roslib.load_manifest('arp_master')
 
 from arp_master import *
 import os
+from arp_master.fsmFramework import *
 
 #
 # This is the default a5 level state for any strategy

@@ -2,18 +2,34 @@
 
 #libraries for ROS
 import roslib; roslib.load_manifest('arp_master')
+
+print "-----arrivee dans inittstaes"
+
+
 from arp_master import *
 
 from Table2014 import *
-from arp_master.commonStates.Strat_Initialisation import *
-from arp_master.commonStates.SetPosition import *
+
+from arp_master.util import *
+from arp_master.fsmFramework import *
+from arp_master.commonStates import *
+
+#from arp_master.commonStates.Strat_Initialisation import *
+#from arp_master.commonStates.Strat_RecalOnBorder import *
+#from arp_master.commonStates.SetPosition import *
 
 ####################################################################################################################
-
-
+print "-----DEFINITION StartSequence2014"
+#for name in dir():
+#            print ">>>>> " , name
+            
 class StartSequence2014(smach.StateMachine):
     def __init__(self,x,y,theta):
         smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
+        
+        for name in dir():
+            print name
+        
         with self:
             smach.StateMachine.add('InitTurretZeros',
                       InitTurretZeros(), 
@@ -28,14 +44,20 @@ class StartSequence2014(smach.StateMachine):
                       transitions={'startunplug':'RecalX', 'timeout':'problem'})
             
             #todo faire un etat recalage
+            
+            
+            #smach.StateMachine.add('RecalX',
+            #          AmbiOpenLoopOrder(0.1,0.0,0,2.0),
+            #          transitions={'succeeded':'SetRecalXPosition', 'timeout':'SetRecalXPosition'})
+
             smach.StateMachine.add('RecalX',
-                      AmbiOpenLoopOrder(0.1,0.0,0,2.0),
-                      transitions={'succeeded':'SetRecalXPosition', 'timeout':'SetRecalXPosition'})
+                      AmbiRecalOnBorderYellow("RIGHT",Data.color),
+                      transitions={'recaled':'Debug1', 'non-recaled':'problem','problem':'problem'})
             
             #TODO : mettre la valeur de la distance 1500-face avant
-            smach.StateMachine.add('SetRecalXPosition',
-                      SetInitialPosition(1.450,0.500,0),
-                      transitions={'succeeded':'Debug1', 'timeout':'problem'})
+            #smach.StateMachine.add('SetRecalXPosition',
+            #          SetInitialPosition(1.450,0.500,0),
+            #          transitions={'succeeded':'Debug1', 'timeout':'problem'})
             
             smach.StateMachine.add('Debug1', 
                        WaitForStart(),
@@ -53,14 +75,22 @@ class StartSequence2014(smach.StateMachine):
                       transitions={'succeeded':'RecalY', 'timeout':'problem'})
             
             #todo faire un etat recalage
+           # smach.StateMachine.add('RecalY',
+           #           AmbiOpenLoopOrder(0.1,0.0,0,2.0),
+           #           transitions={'succeeded':'SetRecalYPosition', 'timeout':'SetRecalYPosition'})
+            
             smach.StateMachine.add('RecalY',
-                      AmbiOpenLoopOrder(0.1,0.0,0,2.0),
-                      transitions={'succeeded':'SetRecalYPosition', 'timeout':'SetRecalYPosition'})
+                      AmbiRecalOnBorderYellow("FRUITBASKET",Data.color),
+                      transitions={'recaled':'EscapeRecalY', 'non-recaled':'problem','problem':'problem'})
+            
             
             #TODO : mettre la valeur de la distance 1500-face avant
-            smach.StateMachine.add('SetRecalYPosition',
-                      SetInitialPosition(0.900,0.650,pi/2),
-                      transitions={'succeeded':'EscapeRecalY', 'timeout':'problem'})
+           # smach.StateMachine.add('SetRecalYPosition',
+           #           SetInitialPosition(0.900,0.650,pi/2),
+           #           transitions={'succeeded':'EscapeRecalY', 'timeout':'problem'})
+            
+            
+            
             
             smach.StateMachine.add('EscapeRecalY',
                       AmbiOpenLoopOrder(-0.1,0.0,0,0.5),

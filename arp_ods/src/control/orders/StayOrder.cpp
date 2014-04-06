@@ -24,7 +24,7 @@ StayOrder::StayOrder(const OrderGoalConstPtr &goal,UbiquityMotionState currentMo
 ICRSpeed StayOrder::computeSpeed(UbiquityMotionState currentMotionState, double dt)
 {
     m_smoothLocNeeded = false;
-    return ICRSpeed(0,0,0);
+    return ICRSpeed(0,currentMotionState.speed.getICR());
 }
 
 
