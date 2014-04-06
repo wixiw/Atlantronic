@@ -21,18 +21,28 @@ BOOST_AUTO_TEST_CASE( ReflexxesTrajectory1 )
     double maxSpeed;
     double maxAcc;
     double maxJerk;
+/*
+    start.position=0.0262057;
+    start.velocity=-0.0387513;
+    start.acceleration=-1.94073;
+
+    end.position=0.308722;
+    end.velocity=1;
+    end.acceleration=0;
+*/
 
     start.position=0;
-    start.velocity=0.1926;
-    start.acceleration=0;
+    start.velocity=+0.0387513;
+    start.acceleration=+1.94073;
 
-    end.position=0.2;
-    end.velocity=0.49;
+    end.position=-(0.308722-0.0262057);
+    end.velocity=-1;
     end.acceleration=0;
 
-    maxSpeed=0.49;
+
+    maxSpeed=1;
     maxAcc=2;
-    maxJerk=1;
+    maxJerk=10;
 
     bool OTGres=false;
 
