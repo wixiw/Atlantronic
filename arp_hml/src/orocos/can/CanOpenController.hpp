@@ -82,6 +82,9 @@ namespace arp_hml
          */
         OutputPort<arp_time::ArdAbsoluteTime> outClock;
 
+        //workaround as typekit is segfaulting with ArdAbsolutetime
+        RTT::OutputPort<double> outClockReporting;
+
         /** Delay beetween inSync and last cycle inSync in s*/
         OutputPort<arp_time::ArdTimeDelta> outPeriod;
 
@@ -256,6 +259,9 @@ namespace arp_hml
         eRunningstate m_RunningState;
 
         arp_core::StatTimer m_timer;
+
+        //date at which we started the component
+        arp_time::ArdAbsoluteTime m_startTime;
 
         /** Utility function to deport non functionnal code to the end of file */
         void createOrocosInterface();

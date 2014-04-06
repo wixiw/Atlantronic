@@ -1,3 +1,5 @@
 rosbuild_add_boost_directories()
 rosbuild_add_executable(uTest_orders.ard  uTest_orders.cpp)
-target_link_libraries(uTest_orders.ard motionControl)
+target_link_libraries(uTest_orders.ard arp_ods-orders)
+target_link_libraries(uTest_orders.ard arp_ods-planners)
+target_link_libraries(uTest_orders.ard arp_ods-replay_buffers)

@@ -100,6 +100,8 @@ bool CanOpenController::startHook()
         m_timer.ResetStat();
     }
 
+    m_startTime = getAbsoluteTime();
+
     return res;
 }
 
@@ -120,6 +122,7 @@ void CanOpenController::updateHook()
 
     outPeriod.write(period);
     outClock.write(attrSyncTime);
+    outClockReporting.write(attrSyncTime-m_startTime);
 
     HmlTaskContext::updateHook();
 
@@ -706,6 +709,7 @@ void CanOpenController::createOrocosInterface()
       addEventPort("inBootUpReceived", inBootUpReceived) .doc(
               "his port is connected to the CanFestival thread to dispatch the boot event to registred Device Components");
       addPort("outClock", outClock) .doc("It contains the SYNC CAN message date");
+      addPort("outClockReporting",outClockReporting);
       addPort("outPeriod", outPeriod) .doc("Delay beetween inSync and last cycle inSync in s");
       addPort("outBusConnected", outBusConnected) .doc("Is true when the bus is electronically up. Typically it's down when emergency stop is on");
 

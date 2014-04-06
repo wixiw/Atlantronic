@@ -126,7 +126,7 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('M2',
                        AmbiOmniDirectOrder2Pass(Pose2D( INIT_POS.x-0.350, INIT_POS.y, -pi) ,
                                            vpasse=0.5,vmax = 1.0),
-                      transitions={'succeeded':'M3', 'timeout':'end'})
+                      transitions={'succeeded':'Move', 'timeout':'end'})
                                     
             smach.StateMachine.add('M3',
                        AmbiOmniDirectOrder2(Pose2D(INIT_POS.x-0.750, INIT_POS.y, -pi/2) ,

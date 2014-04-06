@@ -4,7 +4,7 @@
     
 	<node 	name="ArpHml" 
 			pkg="ocl" 
-			type="cdeployer-gnulinux" 
+			type="deployer" 
 			args="-s $(find arp_hml)/script/orocos/deployment/deploy_ubiquity.ops --" 
 			output="screen"
 			respawn="false"

@@ -12,6 +12,9 @@ using namespace boost;
 using namespace boost::unit_test;
 using namespace boost::unit_test::framework;
 
-#include "uTest_ModeSelector.hpp"
-#include "uTest_MotionOrder.hpp"
-#include "uTest_FantomOrder.hpp"
+//TODO reactiver les tests
+//#include "uTest_ModeSelector.hpp"
+//#include "uTest_MotionOrder.hpp"
+//#include "uTest_FantomOrder.hpp"
+#include "uTest_Reflexxes.hpp"
+

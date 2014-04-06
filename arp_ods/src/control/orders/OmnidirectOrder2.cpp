@@ -178,10 +178,7 @@ double OmnidirectOrder2::profileRoNonJerking(double distance, ICRSpeed curICRSpe
 
 
 
-    //outDEBUG5 = end.position;
-    //outDEBUG6 = start.velocity;
-    //outDEBUG9 = start.acceleration;
-    //outDEBUG4 = maxSpeed;
+
 
 
     OTGres = OTG->computeNextStep(start, end, maxSpeed, maxAcc, maxJerk, next);
@@ -190,6 +187,15 @@ double OmnidirectOrder2::profileRoNonJerking(double distance, ICRSpeed curICRSpe
     Log(DEBUG) << "          next.position         " << next.position;
     Log(DEBUG) << "          next.velocity         " << next.velocity;
     Log(DEBUG) << "          next.acceleration     " << next.acceleration;
+
+
+    outDEBUG1 = start.velocity;
+    outDEBUG2 = start.acceleration;
+    outDEBUG3 = end.position;
+    outDEBUG4 = end.velocity;
+    outDEBUG5 = maxSpeed;
+    outDEBUG6=next.acceleration;
+
 
     if (OTGres)
     {
@@ -442,7 +448,11 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
      *
      */
     if (Cerr.norm() > DISTANCE_LINEAR_ASSERV)
-    {
+    {/*
+        if (k_delta>=0)
+            ro = profileRoNonJerking(k_delta, curICRSpeed, vmax, passSpeed, dt);
+        else
+            ro = profileRoNonJerking(k_delta, curICRSpeed, vmax, -passSpeed, dt);*/
         ro = profileRoNonJerking(k_delta, curICRSpeed, vmax, passSpeed, dt);
     }
     else
@@ -468,10 +478,11 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
     m_dt_N_1 = dt;
 
     //for debug
-    outDEBUG1 = Cerr.norm();
-    outDEBUG2 = corICRSpeed.ro();
-    outDEBUG3 = rad2deg(corICRSpeed.phi()) / 100.0;
-    outDEBUG4 = rad2deg(corICRSpeed.delta()) / 100.0;
+
+    //outDEBUG1 = Cerr.norm();
+    //outDEBUG2 = corICRSpeed.ro();
+    //outDEBUG3 = rad2deg(corICRSpeed.phi()) / 100.0;
+    //outDEBUG4 = rad2deg(corICRSpeed.delta()) / 100.0;
 
 
     outDEBUG7 = m_orderTime;
