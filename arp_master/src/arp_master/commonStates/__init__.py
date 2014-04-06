@@ -1,4 +1,4 @@
-print("Importing commonStates module BIIIIIITE")
+print("Importing commonStates module")
 
 from EndMatchPreempter import *
 from MotorManagement import *

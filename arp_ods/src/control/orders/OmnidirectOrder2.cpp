@@ -90,6 +90,11 @@ void OmnidirectOrder2::switchInit(arp_math::UbiquityMotionState currentMotionSta
     //TODO mettre la valeur par defaut
     m_dt_N_1 = 0.01;
 
+    m_last_PosVelAcc_computation.position=0;
+    m_last_PosVelAcc_computation.velocity=curICRSpeed.ro();
+    m_last_PosVelAcc_computation.acceleration=0;
+
+
     Log(DEBUG) << "---curICRSpeed initialise " << m_ICRSpeed_N_1.toString();
     MotionOrder::switchInit(currentMotionState);
 }

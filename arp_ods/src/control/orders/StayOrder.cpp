@@ -15,8 +15,12 @@ using namespace arp_core::log;
 StayOrder::StayOrder(const OrderGoalConstPtr &goal,UbiquityMotionState currentMotionState, UbiquityParams params ) :
     MotionOrder(goal,currentMotionState,params)
 {
+    Log(DEBUG) << ">>    creation d'un StayOrder    ";
+
     m_type = STAY;
     m_timeout=1000;
+
+    Log(DEBUG) << "<<    creation d'un StayOrder    ";
 }
 
 
@@ -24,6 +28,7 @@ StayOrder::StayOrder(const OrderGoalConstPtr &goal,UbiquityMotionState currentMo
 ICRSpeed StayOrder::computeSpeed(UbiquityMotionState currentMotionState, double dt)
 {
     m_smoothLocNeeded = false;
+
     return ICRSpeed(0,currentMotionState.speed.getICR());
 }
 
