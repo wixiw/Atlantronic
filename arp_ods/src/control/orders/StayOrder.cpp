@@ -23,13 +23,19 @@ StayOrder::StayOrder(const OrderGoalConstPtr &goal,UbiquityMotionState currentMo
     Log(DEBUG) << "<<    creation d'un StayOrder    ";
 }
 
+void StayOrder::switchInit(arp_math::UbiquityMotionState currentMotionState)
+{
+    m_initialICRSpeed = currentMotionState.getSpeed();
+
+    MotionOrder::switchInit(currentMotionState);
+}
 
 
 ICRSpeed StayOrder::computeSpeed(UbiquityMotionState currentMotionState, double dt)
 {
     m_smoothLocNeeded = false;
 
-    return ICRSpeed(0,currentMotionState.speed.getICR());
+    return ICRSpeed(0,m_initialICRSpeed.getICR());
 }
 
 

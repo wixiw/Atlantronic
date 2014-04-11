@@ -34,7 +34,9 @@ class StayOrder: public MotionOrder
          *
          */
         virtual arp_math::ICRSpeed computeSpeed(UbiquityMotionState currentMotionState, double dt);
+        virtual void switchInit(arp_math::UbiquityMotionState currentMotionState);
 
+        ICRSpeed m_initialICRSpeed;
 
 };
 
