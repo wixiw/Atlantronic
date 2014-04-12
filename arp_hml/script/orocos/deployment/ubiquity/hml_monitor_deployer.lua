@@ -66,8 +66,6 @@ function HmlMonitorDeployer:connect()
 	assert(HmlMonitorDeployer:addToMonitor("RightSteering"))
 	assert(HmlMonitorDeployer:addToMonitor("RearSteering"))
 
-	assert(HmlMonitorDeployer:addToMonitor("WoodheadIn"))
-	assert(HmlMonitorDeployer:addToMonitor("WoodheadOut"))
 	assert(HmlMonitorDeployer:addToMonitor("Joystick"))
 	assert(HmlMonitorDeployer:addToMonitor("Syncronizator"))
 

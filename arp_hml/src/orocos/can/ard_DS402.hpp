@@ -8,6 +8,13 @@
 #ifndef ARP_DS402_H_
 #define ARP_DS402_H_
 
+#include <iostream>
+
+#define ENUM_LIST(name) \
+            case name:\
+                   return "name";\
+            break;
+
 struct ArdDs402
 {
     enum enum_DS402_state
@@ -76,6 +83,24 @@ struct ArdDs402
         return state;
 
 
+    }
+
+    static std::string toString(enum_DS402_state state)
+    {
+        switch(state)
+        {
+            ENUM_LIST(NotReadyToSwitchOn);
+            ENUM_LIST(SwitchOnDisabled);
+            ENUM_LIST(ReadyToSwitchOn);
+            ENUM_LIST(SwitchedOn);
+            ENUM_LIST(OperationEnable);
+            ENUM_LIST(QuickStopActive);
+            ENUM_LIST(FaultReactionActive);
+            ENUM_LIST(Fault);
+            ENUM_LIST(UnknownDs402State);
+            default:
+                    return"unknown";
+        }
     }
 };
 #endif /* ARP_DS402_H_ */

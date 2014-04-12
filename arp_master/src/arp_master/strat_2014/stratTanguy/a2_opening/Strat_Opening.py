@@ -14,14 +14,14 @@ class Opening(PreemptiveStateMachine):
                                              transitions={'endMatch':'problem'})
             
             PreemptiveStateMachine.add('EscapeStartArea',
-                      AmbiOmniDirectOrder2Pass( Pose2D(1.100, 0.400, pi) , 1.0 ),
+                      AmbiOmniDirectOrder2Pass( Pose2D(1.100, 0.400, pi) , 0.2 ),
                       transitions={'succeeded':'GoToYFT', 'timeout':'problem'})
 
             self.setInitialState('EscapeStartArea')
             
 # Go to Yellow Fire Top
             PreemptiveStateMachine.add('GoToYFT',
-                      AmbiOmniDirectOrder2Pass( Pose2D(0.600 + Robot2014.FRONT_SIDE.x, 0.400, pi), vpasse=1.0),
+                      AmbiOmniDirectOrder2Pass( Pose2D(0.600 + Robot2014.FRONT_SIDE.x, 0.400, pi), vpasse=0.2),
                       transitions={'succeeded':'PickYFT', 'timeout':'problem'})
 
 # Pick Yellow Fire Top            

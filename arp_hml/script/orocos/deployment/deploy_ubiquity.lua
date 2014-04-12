@@ -11,7 +11,6 @@ print("début déploiment arp_hml")
 Deployer:import("arp_hml");
 
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/can_deployer.lua");
-dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/io_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/joystick_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/ros_hml_itf_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/hml_monitor_deployer.lua");
@@ -22,7 +21,6 @@ dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/scheduler_deployer.lu
 print("... load components")
 assert( CanDeployer:load(), 		"Failed to load Can")
 assert( SchedulerDeployer:load(), 	"Failed to load Scheduler")
-assert( IoDeployer:load(), 			"Failed to load IoDeployer")
 assert( MotorDeployer:load(), 		"Failed to load Motors")
 assert( Syncronizator:load(), 		"Failed to load Syncronizator")
 assert( JoystickDeployer:load(), 	"Failed to load Joystick")
@@ -33,7 +31,6 @@ assert( HmlMonitorDeployer:load(), 	"Failed to load HmlMonitor")
 print("... connect components")
 assert( CanDeployer:connect(), 			"Failed to connect Can")
 assert( SchedulerDeployer:connect() , 	"Failed to connect Scheduler")
-assert( IoDeployer:connect() , 		"Failed to connect IoDeployer")
 assert( MotorDeployer:connect() , 		"Failed to connect Motors")
 assert( Syncronizator:connect() , 		"Failed to connect Syncronizator")
 assert( JoystickDeployer:connect() , 	"Failed to connect Joystick")

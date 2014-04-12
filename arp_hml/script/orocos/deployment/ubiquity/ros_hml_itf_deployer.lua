@@ -29,13 +29,6 @@ function RosHmlItfDeployer:connect()
 	assert( RosHmlItfDeployer:connectOneMotor("RightSteering"))
 	assert( RosHmlItfDeployer:connectOneMotor("RearSteering"))
 	
-
-	assert( Deployer:connect("RosHmlItf.inIoStart", "WoodheadIn.outBit1",cp))
-	assert( Deployer:connect("RosHmlItf.inIoStartColor", "WoodheadIn.outBit3",cp))
-	assert( Deployer:connect("RosHmlItf.inIoFrontLeftObstacle", "WoodheadIn.outBit4",cp))
-	assert( Deployer:connect("RosHmlItf.inIoFrontRightObstacle", "WoodheadIn.outBit7",cp))
-	assert( Deployer:connect("RosHmlItf.inIoRearObstacle", "WoodheadIn.outBit8",cp))
-	
 	assert( Deployer:connect("RosHmlItf.inIsHomingDone", "HmlMonitor.outHomingDone",cp))
 	
 	assert( Deployer:connect("RosHmlItf.inButton1", "Joystick.outButton1",cp))

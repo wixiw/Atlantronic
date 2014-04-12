@@ -14,6 +14,8 @@ from arp_master.util.Data import Data
 #import module for ros services
 from arp_core.srv import SetPosition
 from arp_core.srv import SetColor
+from arp_core.srv import EmptyWithSuccess
+from arp_stm32.srv import SetGyroPosition
 from arp_hml.srv import SetMotorPower
 from arp_hml.srv import SetMotorMode
 from arp_ods.srv import SetVMax
@@ -85,8 +87,8 @@ class CyclicState(smach.StateMachine):
         self.setSteeringMotorPower_srv=rospy.ServiceProxy("Ubiquity/setSteeringMotorPower",SetMotorPower)
         self.setDrivingMotorOperationMode_srv=rospy.ServiceProxy("Ubiquity/setDrivingOperationMode",SetMotorMode)
         self.setSteeringMotorOperationMode_srv=rospy.ServiceProxy("Ubiquity/setSteeringOperationMode",SetMotorMode)
-        self.startGyroCalibration_srv=rospy.ServiceProxy("Discovery/startGyroCalibration",StartGyroCalibration)
-        self.stopGyroCalibration_srv=rospy.ServiceProxy("Discovery/stopGyroCalibration",StopGyroCalibration)
+        self.startGyroCalibration_srv=rospy.ServiceProxy("Discovery/startGyroCalibration",EmptyWithSuccess)
+        self.stopGyroCalibration_srv=rospy.ServiceProxy("Discovery/stopGyroCalibration",SetGyroPosition)
         self.setGyroPosition_srv=rospy.ServiceProxy("Discovery/setGyroPosition",SetGyroPosition)
         
     def setPosition(self,x,y,theta):

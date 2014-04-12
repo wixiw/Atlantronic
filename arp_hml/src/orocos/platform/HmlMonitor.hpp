@@ -96,10 +96,6 @@ namespace arp_hml
         RTT::OutputPort<bool> outAllSteeringAreBlocked;
 
 
-        /** Pointer in the Woodhead 8 out coReset Operation**/
-        RTT::OperationCaller<bool(void)> m_coResetWoodheadOut;
-        /** Pointer in the Woodhead 8 in coReset Operation**/
-        RTT::OperationCaller<bool(void)> m_coResetWoodheadIn;
         /** Pointer in the LeftDriving coReset Operation **/
         RTT::OperationCaller<bool(void)> m_coResetLeftDriving;
         /** Pointer in the RightDriving coReset Operation **/

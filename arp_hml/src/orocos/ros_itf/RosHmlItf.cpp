@@ -56,7 +56,7 @@ void RosHmlItf::updateHook()
 {
 	HmlTaskContext::updateHook();
 
-    //lecture des Io du woodhead
+    //lecture des Io
     readIo();
 
     //lecture de enable
@@ -95,44 +95,27 @@ void RosHmlItf::updateHook()
 
 void RosHmlItf::readIo()
 {
-	bool io = false;
-	Start start;
-	if(NewData==inIoStart.readNewest(io))
-	{
-	    start.go = !io;
-	    outIoStart.write(start);
-	}
+	//bool io = false;
+//	Start start;
+	//TODO no more publish start
+//	if(NewData==inIoStart.readNewest(io))
+//	{
+//	    start.go = !io;
+//	    outIoStart.write(start);
+//	}
 
+	//TODO force color to yellow
     StartColor startColor;
-    if(NewData==inIoStartColor.readNewest(io))
-    {
-        if( io )
-            startColor.color = "red";
-        else
-            startColor.color = "yellow";
-        outIoStartColor.write(startColor);
-    }
-
-    Obstacle frontLeftObstacle;
-    if(NewData==inIoFrontLeftObstacle.readNewest(io))
-    {
-        frontLeftObstacle.detected = io;
-        outFrontLeftObstacle.write(frontLeftObstacle);
-    }
-
-    Obstacle frontRightObstacle;
-    if(NewData==inIoFrontRightObstacle.readNewest(io))
-    {
-        frontRightObstacle.detected = io;
-        outFrontRightObstacle.write(frontRightObstacle);
-    }
-
-    Obstacle rearObstacle;
-    if(NewData==inIoRearObstacle.readNewest(io))
-    {
-        rearObstacle.detected = io;
-        outRearObstacle.write(rearObstacle);
-    }
+//    if(NewData==inIoStartColor.readNewest(io))
+//    {
+//        if( io )
+//            startColor.color = "red";
+//        else
+//            startColor.color = "yellow";
+//        outIoStartColor.write(startColor);
+//    }
+    startColor.color = "yellow";
+    outIoStartColor.write(startColor);
 }
 
 void RosHmlItf::readDriveEnable()
@@ -324,12 +307,6 @@ void RosHmlItf::createOrocosInterface()
     addPort("inIoStart",inIoStart)
             .doc("HW value of the start switch. It is true when the start is in");
     addPort("inIoStartColor",inIoStartColor)
-            .doc("");
-    addPort("inIoFrontLeftObstacle",inIoFrontLeftObstacle)
-            .doc("");
-    addPort("inIoFrontRightObstacle",inIoFrontRightObstacle)
-            .doc("");
-    addPort("inIoRearObstacle",inIoRearObstacle)
             .doc("");
     addPort("inRealPosition",inRealPosition)
             .doc("Position calculated by simulation");

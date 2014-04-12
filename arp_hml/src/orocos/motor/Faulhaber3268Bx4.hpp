@@ -267,6 +267,10 @@ namespace arp_hml
 
         static const int F_CMD_HN = 0x76;
 
+        //configure Voltage discrimination between high/low data :
+        static const int F_CMD_SETPLC = 0x51; //  0-7V => low ; 12,5 and sup => high
+        static const int F_CMD_SETTTL = 0x52; //0-0.5V => low ; 3.5  and sup => high
+
         /*
          * Faulhaber return codes should be clear
          */

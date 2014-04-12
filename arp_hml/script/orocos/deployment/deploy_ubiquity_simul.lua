@@ -15,14 +15,12 @@ dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/ros_hml_itf_deployer.
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity_simul/hml_monitor_simul_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/syncronizator_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity_simul/motor_simul_deployer.lua");
-dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity_simul/io_simul_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/scheduler_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity_simul/ubiquity_simul_deployer.lua");
 
 -- chargement de l'interface HML
 print("... load components")
 assert( MotorSimulDeployer:load() , 		"Failed to load MotorSimul")
-assert( IoSimulDeployer:load() , 			"Failed to load IoSimulDeployer")
 assert( SchedulerDeployer:load() , 			"Failed to load Scheduler")
 assert( Syncronizator:load() , 				"Failed to load Syncronizator")
 assert( JoystickDeployer:load() , 			"Failed to load Joystick")
@@ -32,7 +30,6 @@ assert( HmlMonitorSimulDeployer:load() , 	"Failed to load HmlMonitorSimul")
 
 print("... connect components")
 assert( MotorSimulDeployer:connect() , 		"Failed to connect MotorSimul" )
-assert( IoSimulDeployer:connect() , 		"Failed to connect IoSimulDeployer")
 assert( SchedulerDeployer:connect() , 		"Failed to connect Scheduler" )
 assert( Syncronizator:connect() , 			"Failed to connect Syncronizator" )
 assert( JoystickDeployer:connect() , 		"Failed to connect Joystick" )

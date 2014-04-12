@@ -304,6 +304,21 @@ void Faulhaber3268Bx4::runHoming()
     if( outDriveEnable.getLastWrittenValue() )
     {
         switch (attrHomingState) {
+            case ASK_CONFIGURE_TTL:
+                if( !m_faulhaberCommandTodo )
+                {
+                    m_faulhaberScriptCommand = (UNS8) F_CMD_SETTTL;
+                    m_faulhaberScriptCommandParam = (UNS32) 0;
+                    m_faulhaberCommandTodo = true;
+                    attrHomingState = WAIT_CONFIGURE_TTL;
+                }
+                break;
+            case WAIT_CONFIGURE_TTL:
+                if( !m_faulhaberCommandTodo )
+                 {
+                     attrHomingState = ASK_CONFIGURE_EDGE;
+                 }
+                break;
             case ASK_CONFIGURE_EDGE:
                 if( !m_faulhaberCommandTodo )
                 {
@@ -625,14 +640,16 @@ bool Faulhaber3268Bx4::setOperationMode(ArdMotorItf::operationMode_t operationMo
 		    //initialisation de l'état homing
 		    if( ArdMotorItf::HOMING == operationMode )
 		    {
-		        attrHomingState = ASK_CONFIGURE_EDGE;
+		        attrHomingState = ASK_CONFIGURE_TTL;
 		        attrHardNotify = false;
+		        m_faulhaberCommandTodo = false;
 		    }
 		    //desinit de l'état homing
 		    else
 		    {
 		        attrHomingState = NOT_IN_HOMNG_MODE;
 		        attrHardNotify = false;
+		        m_faulhaberCommandTodo = false;
 		    }
 
 			ArdMotorItf::setOperationMode(operationMode);

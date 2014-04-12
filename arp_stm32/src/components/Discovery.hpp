@@ -16,6 +16,10 @@
 #include <arp_stm32/StopGyroCalibration.h>
 #include <arp_stm32/SetGyroPosition.h>
 #include <arp_stm32/ResetStm32.h>
+#include <arp_core/Start.h>
+#include <arp_core/StartColor.h>
+
+#include <arp_core/EmptyWithSuccess.h>
 
 namespace arp_stm32
 {
@@ -62,7 +66,7 @@ class Discovery: public Stm32TaskContext
          * Ask the gyrometer to stop the calibration process and to re-publish position datas
          * returns true on success
          */
-        bool ooStopCalibration();
+        bool ooStopCalibration(double newAngle);
 
         /**
          * Force a new gyrometer position, in rad
@@ -79,6 +83,11 @@ class Discovery: public Stm32TaskContext
          */
         bool ooReset();
 
+        /**
+         * Informs the stm32 that the next start withdraw sill be the match begining
+         */
+        bool ooEnableStart();
+
 /****************************************************************
  * Interface ROS
  ****************************************************************/
@@ -91,16 +100,18 @@ class Discovery: public Stm32TaskContext
         ros::ServiceServer m_srvSetGyroPosition;
         /** node handle to store the service advertiser m_srvResetStm32**/
         ros::ServiceServer m_srvResetStm32;
+        /** node handle to store the service advertiser m_srvResetStm32**/
+        ros::ServiceServer m_srvEnableStart;
 
         /**
          * ROS wrapper on the HmlMonitor.ooStartCalibration operation
          */
-        bool srvStartGyroCalibration(StartGyroCalibration::Request& req, StartGyroCalibration::Response& res);
+        bool srvStartGyroCalibration(arp_core::EmptyWithSuccess::Request& req, arp_core::EmptyWithSuccess::Response& res);
 
         /**
          * ROS wrapper on the HmlMonitor.ooStopCalibration operation
          */
-        bool srvStopGyroCalibration(StopGyroCalibration::Request& req, StopGyroCalibration::Response& res);
+        bool srvStopGyroCalibration(SetGyroPosition::Request& req, SetGyroPosition::Response& res);
 
         /**
          * ROS wrapper on the HmlMonitor.ooSetPosition operation
@@ -110,9 +121,12 @@ class Discovery: public Stm32TaskContext
         /**
          * ROS wrapper on the HmlMonitor.ooReset operation
          */
-        bool srvResetStm32(ResetStm32::Request& req, ResetStm32::Response& res);
+        bool srvResetStm32(arp_core::EmptyWithSuccess::Request& req, arp_core::EmptyWithSuccess::Response& res);
 
-
+        /**
+         * ROS wrapper on the HmlMonitor.oo operation
+         */
+        bool srvEnableStart(arp_core::EmptyWithSuccess::Request& req, arp_core::EmptyWithSuccess::Response& res);
 
 
 
@@ -130,6 +144,7 @@ class Discovery: public Stm32TaskContext
         double attrGyrometerAngleEulerDegree;
         double attrGyrometerAngleSimpson;
         double attrGyrometerAngleSimpsonDegree;
+        bool attrStartPlugged;
 
         /**
          * Orocos Interface
@@ -143,6 +158,13 @@ class Discovery: public Stm32TaskContext
         RTT::OutputPort<double> outGyrometerAngleSimpson;
         RTT::OutputPort<double> outGyrometerAngleSimpsonDegree;
         RTT::OutputPort<double> outGyrometerRawData;
+
+        //Start/Color
+        /** Value of the start. GO is true when it is not in, go is false when the start is in **/
+        RTT::OutputPort<arp_core::Start> outIoStart;
+        /** Value of the color switch. true when ?? **/
+        RTT::OutputPort<arp_core::StartColor> outIoStartColor;
+
 };
 
 } /* namespace arp_stm32 */

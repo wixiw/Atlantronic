@@ -12,6 +12,8 @@ namespace arp_hml
 {
         enum HomingState
         {
+            ASK_CONFIGURE_TTL,
+            WAIT_CONFIGURE_TTL,
             ASK_CONFIGURE_EDGE,
             WAIT_CONFIGURE_EDGE,
             ASK_CONFIGURE_SWITCH1,

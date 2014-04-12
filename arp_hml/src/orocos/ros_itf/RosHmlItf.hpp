@@ -176,10 +176,6 @@ namespace arp_hml
         InputPort<bool> inIoStart;
         /** HW value of the color switch. It is true when color is red **/
         InputPort<bool> inIoStartColor;
-        /** Obstacles */
-        InputPort<bool> inIoFrontLeftObstacle;
-        InputPort<bool> inIoFrontRightObstacle;
-        InputPort<bool> inIoRearObstacle;
 
         /** Real Position of the robot, given by the simulation */
         InputPort<Pose2D> inRealPosition;

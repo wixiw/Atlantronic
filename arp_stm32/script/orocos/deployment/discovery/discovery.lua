@@ -13,6 +13,7 @@ end
 
 function DiscoveryDeployer:connect()
 	assert( Deployer:addPeer("Reporting", me) )
+	assert( Deployer:stream("Discovery.outIoStart",ros:topic("/Ubiquity/start")))
 	return true
 end
 

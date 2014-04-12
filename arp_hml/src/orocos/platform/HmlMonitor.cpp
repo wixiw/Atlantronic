@@ -62,10 +62,6 @@ bool HmlMonitor::configureHook()
 
 
     //get operation to reset hml
-    if( hasPeer("WoodheadOut") || propRequireCompleteHardware )
-        res &= getOperation("WoodheadOut",      "coReset",  m_coResetWoodheadOut);
-    if( hasPeer("WoodheadIn") || propRequireCompleteHardware )
-        res &= getOperation("WoodheadIn",       "coReset",  m_coResetWoodheadIn);
     if( hasPeer("LeftDriving") || propRequireCompleteHardware )
         res &= getOperation("LeftDriving",      "coReset",  m_coResetLeftDriving);
     if( hasPeer("RightDriving") || propRequireCompleteHardware )
@@ -275,8 +271,6 @@ string HmlMonitor::coGetHmlVersion()
 bool HmlMonitor::coResetHml()
 {
     bool res = true;
-    res &= m_coResetWoodheadOut();
-    res &= m_coResetWoodheadIn();
     res &= m_coResetLeftDriving();
     res &= m_coResetRightDriving();
     res &= m_coResetRearDriving();

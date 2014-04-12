@@ -11,6 +11,7 @@
 
 using namespace arp_math;
 using namespace arp_stm32;
+using namespace arp_core;
 using namespace std;
 using namespace RTT;
 
@@ -47,7 +48,8 @@ void DiscoveryLock::unlock()
 
 
 Discovery::Discovery(const std::string& name) :
-        Stm32TaskContext(name)
+        Stm32TaskContext(name),
+        attrStartPlugged(false)
 {
     createOrocosInterface();
     createRosInterface();
@@ -76,6 +78,7 @@ void Discovery::cleanupHook()
 void Discovery::updateHook()
 {
     Stm32TaskContext::updateHook();
+    Start start;
 
     DiscoveryLock mutex(&m_robotItf.mutex);
 
@@ -94,6 +97,7 @@ void Discovery::updateHook()
     attrGyrometerAngleSimpson = betweenMinusPiAndPlusPi(m_robotItf.control_usb_data[id].pos_theta_gyro_simpson);
     attrGyrometerVelocity = m_robotItf.control_usb_data[id].omega_gyro;
     attrGyrometerRawData = m_robotItf.control_usb_data[id].raw_data_gyro;
+    attrStartPlugged = m_robotItf.get_gpio(GPIO_IN_GO);
     mutex.unlock();
 
     attrGyrometerAngleEulerDegree = rad2deg(attrGyrometerAngleEuler);
@@ -107,6 +111,9 @@ void Discovery::updateHook()
     outGyrometerVelocity.write(attrGyrometerVelocity);
     outGyrometerVelocityDegree.write(attrGyrometerVelocityDegree);
     outGyrometerRawData.write(attrGyrometerRawData);
+
+    start.go = attrStartPlugged;
+    outIoStart.write(start);
 }
 
 void Discovery::robotItfCallbackWrapper(void* arg)
@@ -130,8 +137,9 @@ bool Discovery::ooStartCalibration()
     }
 }
 
-bool Discovery::ooStopCalibration()
+bool Discovery::ooStopCalibration(double newAngle)
 {
+    //TODO et le new angle ?
     int res = m_robotItf.gyro_calibration(GYRO_CALIBRATION_STOP);
 
     if( res < 0 )
@@ -195,15 +203,31 @@ bool Discovery::ooReset()
     }
 }
 
-bool Discovery::srvStartGyroCalibration(StartGyroCalibration::Request& req, StartGyroCalibration::Response& res)
+bool Discovery::ooEnableStart()
+{
+    int res = m_robotItf.go_enable();
+
+    if( res < 0 )
+    {
+        LOG(Error) << "Failed to enable the start in the stm32 board." << endlog();
+        return false;
+    }
+    else
+    {
+        LOG(Info) << "Start enabled in the stm32 board." << endlog();
+        return true;
+    }
+}
+
+bool Discovery::srvStartGyroCalibration(EmptyWithSuccess::Request& req, EmptyWithSuccess::Response& res)
 {
     res.success = ooStartCalibration();
     return res.success;
 }
 
-bool Discovery::srvStopGyroCalibration(StopGyroCalibration::Request& req, StopGyroCalibration::Response& res)
+bool Discovery::srvStopGyroCalibration(SetGyroPosition::Request& req, SetGyroPosition::Response& res)
 {
-    res.success = ooStopCalibration();
+    res.success = ooStopCalibration(req.theta);
     return res.success;
 }
 
@@ -213,9 +237,15 @@ bool Discovery::srvSetGyroPosition(SetGyroPosition::Request& req, SetGyroPositio
     return res.success;
 }
 
-bool Discovery::srvResetStm32(ResetStm32::Request& req, ResetStm32::Response& res)
+bool Discovery::srvResetStm32(EmptyWithSuccess::Request& req, EmptyWithSuccess::Response& res)
 {
     res.success = ooReset();
+    return res.success;
+}
+
+bool Discovery::srvEnableStart(EmptyWithSuccess::Request& req, EmptyWithSuccess::Response& res)
+{
+    res.success = ooEnableStart();
     return res.success;
 }
 
@@ -229,7 +259,7 @@ void Discovery::createOrocosInterface()
     addAttribute("attrGyrometerAngleEulerDegree", attrGyrometerAngleEulerDegree);
     addAttribute("attrGyrometerAngleSimpson", attrGyrometerAngleSimpson);
     addAttribute("attrGyrometerAngleSimpsonDegree", attrGyrometerAngleSimpsonDegree);
-
+    addAttribute("attrStartPlugged", attrStartPlugged);
 
     addPort("outGyrometerAngleEuler", outGyrometerAngleEuler)
         .doc("Angular position of the gyrometer in rad, integrated with Euler explicit integration scheme");
@@ -246,6 +276,10 @@ void Discovery::createOrocosInterface()
     addPort("outGyrometerRawData", outGyrometerRawData)
            .doc("Angular velocity of the gyrometer in LSB");
 
+    addPort("outIoStart",outIoStart)
+        .doc("Value of the start. GO is true when it is not in, go is false when the start is in");
+    addPort("outIoStartColor",outIoStartColor)
+        .doc("Value of the color switch");
 
     addOperation("ooStartCalibration",&Discovery::ooStartCalibration, this, OwnThread)
      .doc("Ask the gyrometer to freeze its position and to start the calibration process");
@@ -257,6 +291,8 @@ void Discovery::createOrocosInterface()
      .doc("Force new calib params");
     addOperation("ooReset",&Discovery::ooReset, this, OwnThread)
      .doc("Reset the stm32 board.");
+    addOperation("ooEnableStart",&Discovery::ooEnableStart, this, OwnThread)
+     .doc("Informs the stm32 that the next start withdraw sill be the match begining.");
 }
 
 void Discovery::createRosInterface()
@@ -266,4 +302,5 @@ void Discovery::createRosInterface()
     m_srvStopGyroCalibration    = nh.advertiseService("/Discovery/stopGyroCalibration",   &Discovery::srvStopGyroCalibration, this);
     m_srvSetGyroPosition        = nh.advertiseService("/Discovery/setGyroPosition",         &Discovery::srvSetGyroPosition, this);
     m_srvResetStm32             = nh.advertiseService("/Discovery/resetStm32", &Discovery::srvResetStm32, this);
+    m_srvEnableStart            = nh.advertiseService("/Discovery/enableStart", &Discovery::srvEnableStart, this);
 }

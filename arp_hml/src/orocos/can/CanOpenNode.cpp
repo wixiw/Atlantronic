@@ -29,7 +29,7 @@ CanOpenNode::CanOpenNode(const std::string& name):
 {
     updateNodeIdCard();
 
-    addAttribute("attrSyncTime", attrSyncTime);
+//    addAttribute("attrSyncTime", attrSyncTime);
     addAttribute("attrPeriod",attrPeriod);
 
     addProperty("propNodeId",propNodeId)
