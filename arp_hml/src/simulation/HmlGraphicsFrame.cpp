@@ -97,7 +97,7 @@ void HmlGraphicsFrame::onPaint(wxPaintEvent& evt)
     dc.DrawRectangle(125,20,180,30);
 
 	//dessin du start
-    if( !m_start.go )
+    if( m_start.go )
     {
     	dc.SetBrush(*wxBLACK_BRUSH);
     	distance = 0;

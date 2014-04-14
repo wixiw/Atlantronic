@@ -56,13 +56,6 @@ using namespace arp_hml;
       return os << name;
   }
 
-  // Reading :
-  std::istream& operator>>(std::istream& is, ArdDs402::enum_DS402_state& cd) {
-     return is >> cd;
-  }
-
-
-
   // The RTT helper class which uses the above function behind the scenes:
 struct DS402StateTypeInfo: public RTT::types::StructTypeInfo<ArdDs402::enum_DS402_state,false>
 {
@@ -71,5 +64,19 @@ struct DS402StateTypeInfo: public RTT::types::StructTypeInfo<ArdDs402::enum_DS40
     {
 
     }
+
+    //TODO WLA : je ne sais pas pourquoi ça ne marche pas avec true pour les ostream. Ca me casse les couilles j'ai pas que ça a faire
+    //du coup c'est fait a la warrior.
+    virtual std::ostream& write(std::ostream& os, base::DataSourceBase::shared_ptr in ) const
+    {
+//        internal::DataSource<ArdDs402::enum_DS402_state>::shared_ptr data = boost::dynamic_pointer_cast< internal::DataSource<ArdDs402::enum_DS402_state> >( in );
+//        data->reset();
+//        data->evaluate();
+//        ArdDs402::enum_DS402_state state;
+//        state = data->get();
+//        return os << ArdDs402::toString(state) << " seconds";
+        return os;
+    }
 };
+
 

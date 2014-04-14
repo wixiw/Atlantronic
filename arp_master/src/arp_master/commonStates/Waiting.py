@@ -38,7 +38,7 @@ class WaitForStart(CyclicState):
         os.system("beep -f 200 -l200 -r2") 
     
     def executeTransitions(self):
-       if Inputs.getstart()==0:
+       if Inputs.getstart()==1:
             return 'start'
         
 #the state that will wait for the start to be unpluged (before the match or for tests)
@@ -50,7 +50,7 @@ class WaitForStartUnplug(CyclicState):
         os.system("beep -f 200 -l100 -r1") 
         
     def executeTransitions(self):
-       if Inputs.getstart()==1:
+       if Inputs.getstart()==0:
             return 'startunplug'
         
 #wait for start to be plugged out
@@ -62,7 +62,7 @@ class WaitForMatch(CyclicState):
         os.system("beep -f 300 -l300 -r3")
     
     def executeTransitions(self):
-       if Inputs.getstart()==1:
+       if Inputs.getstart()==0:
             return 'start'
         
     def executeOut(self):
@@ -79,7 +79,7 @@ class WaitForMatch(CyclicState):
         os.system("beep -f 300 -l300 -r3")
     
     def executeTransitions(self):
-       if Inputs.getstart()==1:
+       if Inputs.getstart()==0:
             return 'start'
         
     def executeOut(self):

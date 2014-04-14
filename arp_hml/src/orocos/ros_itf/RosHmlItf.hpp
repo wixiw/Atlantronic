@@ -135,15 +135,6 @@ namespace arp_hml
  *  Interface with OUTSIDE (master, ODS, RLU)
  *****************************************************************/
 
-        /** Value of the start. GO is true when it is not in, go is false when the start is in **/
-        OutputPort<arp_core::Start> outIoStart;
-        /** Value of the color switch. true when ?? **/
-        OutputPort<arp_core::StartColor> outIoStartColor;
-
-        OutputPort<arp_core::Obstacle> outFrontLeftObstacle;
-        OutputPort<arp_core::Obstacle> outFrontRightObstacle;
-        OutputPort<arp_core::Obstacle> outRearObstacle;
-
         /** Is true when HML thinks the emergency stop button is active **/
         OutputPort<std_msgs::Bool> outEmergencyStop;
 
@@ -171,11 +162,6 @@ namespace arp_hml
 /*****************************************************************
  *  Interface with the INSIDE (hml !)
  *****************************************************************/
-
-        /** HW value of the start switch. It is true when the start is in **/
-        InputPort<bool> inIoStart;
-        /** HW value of the color switch. It is true when color is red **/
-        InputPort<bool> inIoStartColor;
 
         /** Real Position of the robot, given by the simulation */
         InputPort<Pose2D> inRealPosition;
@@ -250,11 +236,6 @@ protected:
         OperationCaller<bool(arp_math::Pose2D)> m_ooSetPosition;
         /** Pointer on the HmlMonitor coGetVersion Operation**/
         OperationCaller<std::string(void)> m_coGetVersion;
-
-        /**
-         * Read Io fro woodhead and publish a go to the outside.
-         */
-        void readIo();
 
         /**
          * Read the drive enable value from HmlMonitor and publish them to Ros

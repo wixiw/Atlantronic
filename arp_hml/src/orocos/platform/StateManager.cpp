@@ -132,7 +132,7 @@ bool StateManager::ooSetSteeringOperationMode(const string state)
         goto failed;
     }
 
-    LOGS(Info) << "ooSetSteeringOperationMode : Motors mode of operation is " << state << " properly." << endlog();
+    LOGS(Info) << "ooSetSteeringOperationMode : Motors mode of operation has switched to " << state << " properly." << endlog();
     goto success;
 
     failed:

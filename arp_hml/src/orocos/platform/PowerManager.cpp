@@ -174,12 +174,14 @@ bool PowerManager::coSetDrivingMotorPower(bool powerOn)
     bool rearDrivingEnableTmp;
     bool enable = outDrivingEnable.getLastWrittenValue();
 
+    LOGS(Info) << "coSetDrivingMotorPower(" << powerOn << ") requested."  << endlog();
+
     //Envoit de la commande d'enable
     if( powerOn )
     {
         if( enable )
         {
-            LOGS(Info) << "ooSetDrivingMotorPower : you are trying to power the drive but they are already powered !" << endlog();
+            LOGS(Info) << "coSetDrivingMotorPower : you are trying to power the drive but they are already powered !" << endlog();
             goto success;
         }
         else
@@ -199,7 +201,7 @@ bool PowerManager::coSetDrivingMotorPower(bool powerOn)
         }
         else
         {
-            LOGS(Info) << "ooSetDrivingMotorPower : you are trying to unpower the drive but they are already unpowered !" << endlog();
+            LOGS(Info) << "coSetDrivingMotorPower : you are trying to unpower the drive but they are already unpowered !" << endlog();
             goto success;
         }
     }
@@ -212,11 +214,11 @@ bool PowerManager::coSetDrivingMotorPower(bool powerOn)
             , propCanRequestTimeout, 0.001);
     IfWhileTimeoutExpired(propCanRequestTimeout)
     {
-        LOGS(Error) << "ooSetDrivingMotorPower : motor didn't switch power as required, timeout is over." << endlog();
+        LOGS(Error) << "coSetDrivingMotorPower : motor didn't switch power as required, timeout is over." << endlog();
         goto failed;
     }
 
-    LOGS(Info) << "ooSetDrivingMotorPower : returning to speed mode" << endlog();
+    LOGS(Info) << "coSetDrivingMotorPower : returning to speed mode" << endlog();
 
     //remise en mode vitesse des moteurs
     if( m_ooSetDrivingOperationMode("speed") == false )
@@ -241,12 +243,14 @@ bool PowerManager::coSetSteeringMotorPower(bool powerOn)
     bool rearSteeringEnableTmp;
     bool enable = outSteeringEnable.getLastWrittenValue();
 
+    LOGS(Info) << "coSetSteeringMotorPower(" << powerOn << ") requested." << endlog();
+
     //Envoit de la commande d'enable
     if( powerOn )
     {
         if( enable )
         {
-            LOGS(Info) << "ooSetSteeringMotorPower : you are trying to power the drive but they are already powered !" << endlog();
+            LOGS(Info) << "coSetSteeringMotorPower : you are trying to power the drive but they are already powered !" << endlog();
         }
         else
         {
@@ -265,7 +269,7 @@ bool PowerManager::coSetSteeringMotorPower(bool powerOn)
         }
         else
         {
-            LOGS(Info) << "ooSetSteeringMotorPower : you are trying to unpower the drive but they are already unpowered !" << endlog();
+            LOGS(Info) << "coSetSteeringMotorPower : you are trying to unpower the drive but they are already unpowered !" << endlog();
         }
     }
 
@@ -277,20 +281,20 @@ bool PowerManager::coSetSteeringMotorPower(bool powerOn)
             , propCanRequestTimeout, 0.001);
     IfWhileTimeoutExpired(propCanRequestTimeout)
     {
-        LOGS(Error) << "ooSetSteeringMotorPower : motor didn't switch power as required, timeout is over." << endlog();
+        LOGS(Error) << "coSetSteeringMotorPower : motor didn't switch power as required, timeout is over." << endlog();
         goto failed;
     }
 
-    LOGS(Info) << "ooSetSteeringMotorPower : returning to position mode" << endlog();
+    LOGS(Info) << "coSetSteeringMotorPower : returning to position mode" << endlog();
 
     //remise ne mode position des moteurs
     if( m_ooSetSteeringOperationMode("position") == false )
     {
-        LOGS(Error) << "ooSetSteeringMotorPower : could not switch back to position mode." << endlog();
+        LOGS(Error) << "coSetSteeringMotorPower : could not switch back to position mode." << endlog();
         goto failed;
     }
 
-    LOGS(Info) << "ooSetSteeringMotorPower : POWER=" << powerOn << endlog();
+    LOGS(Info) << "coSetSteeringMotorPower : POWER=" << powerOn << endlog();
     goto success;
 
     failed:

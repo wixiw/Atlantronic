@@ -307,7 +307,7 @@ namespace arp_hml
         UNS32 m_faulhaberScriptCommandParam;
 
         /** Is set to true when a new command has arrived and has to be executed */
-        bool m_faulhaberCommandTodo;
+        bool attrFaulhaberCommandTodo;
 
         /** Last used position for speed computation */
         double m_oldPositionMeasure;

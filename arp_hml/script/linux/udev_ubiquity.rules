@@ -1,5 +1,0 @@
-KERNEL=="ttyACM[0-9]*", ATTRS{manufacturer}=="Hokuyo Data Flex for USB", ATTRS{product}=="URG-Series USB Driver", PROGRAM=="/opt/ros_addons/laser_drivers/hokuyo_node/bin/getID %N q", SYMLINK+="hokuyo_%c", MODE="0666"
-KERNEL=="ttyUSB[0-9]*", ATTRS{manufacturer}=="FTDI", ATTRS{product}=="FT232R USB UART", SYMLINK+="usb2dynamixel", MODE="0666"
-KERNEL=="js[0-9]*", ATTRS{manufacturer}=="Logitech" SYMLINK+="gamepadPs2", MODE="0666"
-KERNEL=="discovery[0-9]*", ATTRS{manufacturer}=="Atlantronic" SYMLINK+="discovery", MODE="0666"
-KERNEL=="tty[1-9][0-9]", RUN="/bin/rm /dev/%k", OPTIONS+="ignore_device"

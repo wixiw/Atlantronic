@@ -56,9 +56,6 @@ void RosHmlItf::updateHook()
 {
 	HmlTaskContext::updateHook();
 
-    //lecture des Io
-    readIo();
-
     //lecture de enable
     readDriveEnable();
 
@@ -91,31 +88,6 @@ void RosHmlItf::updateHook()
         outRealPosition.write(poseOut);
     }
 
-}
-
-void RosHmlItf::readIo()
-{
-	//bool io = false;
-//	Start start;
-	//TODO no more publish start
-//	if(NewData==inIoStart.readNewest(io))
-//	{
-//	    start.go = !io;
-//	    outIoStart.write(start);
-//	}
-
-	//TODO force color to yellow
-    StartColor startColor;
-//    if(NewData==inIoStartColor.readNewest(io))
-//    {
-//        if( io )
-//            startColor.color = "red";
-//        else
-//            startColor.color = "yellow";
-//        outIoStartColor.write(startColor);
-//    }
-    startColor.color = "yellow";
-    outIoStartColor.write(startColor);
 }
 
 void RosHmlItf::readDriveEnable()
@@ -212,30 +184,35 @@ void RosHmlItf::readJoystick()
 
 bool RosHmlItf::srvSetMotorPower(SetMotorPower::Request& req, SetMotorPower::Response& res)
 {
+    LOG(Info) << "srvSetMotorPower(xxx) requested." << endlog();
     res.success = m_coSetMotorPower(req.powerOn);
     return res.success;
 }
 
 bool RosHmlItf::srvSetDrivingMotorPower(SetMotorPower::Request& req, SetMotorPower::Response& res)
 {
+    LOG(Info) << "srvSetDrivingMotorPower(xxx) requested." << endlog();
     res.success = m_coSetDrivingMotorPower(req.powerOn);
     return res.success;
 }
 
 bool RosHmlItf::srvSetSteeringMotorPower(SetMotorPower::Request& req, SetMotorPower::Response& res)
 {
+    LOG(Info) << "srvSetSteeringMotorPower(xxx) requested." << endlog();
     res.success = m_coSetSteeringMotorPower(req.powerOn);
     return res.success;
 }
 
 bool RosHmlItf::srvSetDrivingOperationMode(SetMotorMode::Request& req, SetMotorMode::Response& res)
 {
+    LOG(Info) << "srvSetDrivingOperationMode(xxx) requested." << endlog();
     res.success = m_ooSetDrivingOperationMode(req.mode);
     return res.success;
 }
 
 bool RosHmlItf::srvSetSteeringOperationMode(SetMotorMode::Request& req, SetMotorMode::Response& res)
 {
+    LOG(Info) << "srvSetSteeringOperationMode(xxx) requested." << endlog();
     res.success = m_ooSetSteeringOperationMode(req.mode);
     return res.success;
 }
@@ -248,6 +225,7 @@ bool RosHmlItf::srvGetVersion(GetVersion::Request& req, GetVersion::Response& re
 
 bool RosHmlItf::srvSetRealSimulPosition(SetPosition::Request& req, SetPosition::Response& res)
 {
+    LOG(Info) << "srvSetRealSimulPosition(xxx) requested." << endlog();
     if( getPeer("UbiquitySimul") != NULL )
     {
         Pose2D p(req.x,req.y,req.theta);
@@ -263,6 +241,7 @@ bool RosHmlItf::srvSetRealSimulPosition(SetPosition::Request& req, SetPosition::
 
 bool RosHmlItf::srvResetHml(ResetHml::Request& req, ResetHml::Response& res)
 {
+    LOG(Info) << "srvResetHml() requested." << endlog();
     res.success = m_coResetHml();
     return res.success;
 }
@@ -272,17 +251,6 @@ bool RosHmlItf::srvResetHml(ResetHml::Request& req, ResetHml::Response& res)
 void RosHmlItf::createOrocosInterface()
 {
     /** Interface with OUTSIDE (master, ODS, RLU) **/
-    addPort("outIoStart",outIoStart)
-        .doc("Value of the start. GO is true when it is not in, go is false when the start is in");
-    addPort("outIoStartColor",outIoStartColor)
-        .doc("Value of the color switch");
-    addPort("outFrontLeftObstacle",outFrontLeftObstacle)
-        .doc("Value of the front left obstacle detector");
-    addPort("outFrontRightObstacle",outFrontRightObstacle)
-        .doc("Value of the front right obstacle detector");
-    addPort("outRearObstacle",outRearObstacle)
-        .doc("Value of the rear obstacle detector");
-
     addPort("outEmergencyStop",outEmergencyStop)
         .doc("Is true when HML thinks the emergency stop button is active");
     addPort("outDrivingMotorsEnable",outDrivingMotorsEnable)
@@ -304,10 +272,6 @@ void RosHmlItf::createOrocosInterface()
             .doc("Is true when in simulation someone is asking to arbitrary block the wheels");
 
     /** Interface with INSIDE (hml !) **/
-    addPort("inIoStart",inIoStart)
-            .doc("HW value of the start switch. It is true when the start is in");
-    addPort("inIoStartColor",inIoStartColor)
-            .doc("");
     addPort("inRealPosition",inRealPosition)
             .doc("Position calculated by simulation");
     addPort("inMotorMeasures",inMotorMeasures)

@@ -277,12 +277,13 @@ void CanOpenNode::operationalHook()
 {
     //lecture des bootup
     bool dummy;
-    if( inBootUpFrame.read(dummy) == NewData )
-    {
-        m_RunningState = arp_hml::IDLE;
-        outOperationnalState.write(m_RunningState);
-        LOG(Info) << "operationalHook: Node " << propNodeId << " has send a boot up frame. Returning to IDLE" << endlog();
-    }
+    //TODO pour debug panique, ca devrait marcher
+//    if( inBootUpFrame.read(dummy) == NewData )
+//    {
+//        m_RunningState = arp_hml::IDLE;
+//        outOperationnalState.write(m_RunningState);
+//        LOG(Info) << "operationalHook: Node " << propNodeId << " has send a boot up frame. Returning to IDLE" << endlog();
+//    }
 }
 
 void CanOpenNode::idleHook()

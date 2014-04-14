@@ -145,6 +145,7 @@ class Discovery: public Stm32TaskContext
         double attrGyrometerAngleSimpson;
         double attrGyrometerAngleSimpsonDegree;
         bool attrStartPlugged;
+        bool attrStartColor;
 
         /**
          * Orocos Interface

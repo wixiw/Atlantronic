@@ -79,6 +79,7 @@ void Discovery::updateHook()
 {
     Stm32TaskContext::updateHook();
     Start start;
+    StartColor color;
 
     DiscoveryLock mutex(&m_robotItf.mutex);
 
@@ -98,6 +99,7 @@ void Discovery::updateHook()
     attrGyrometerVelocity = m_robotItf.control_usb_data[id].omega_gyro;
     attrGyrometerRawData = m_robotItf.control_usb_data[id].raw_data_gyro;
     attrStartPlugged = m_robotItf.get_gpio(GPIO_IN_GO);
+    attrStartColor = m_robotItf.get_gpio(GPIO_COLOR);
     mutex.unlock();
 
     attrGyrometerAngleEulerDegree = rad2deg(attrGyrometerAngleEuler);
@@ -114,6 +116,19 @@ void Discovery::updateHook()
 
     start.go = attrStartPlugged;
     outIoStart.write(start);
+
+    switch(attrStartColor)
+    {
+        case COLOR_RED:
+            color.color = "red";
+            break;
+        case COLOR_YELLOW:
+        default:
+            color.color = "yellow";
+            break;
+    }
+    outIoStartColor.write(color);
+
 }
 
 void Discovery::robotItfCallbackWrapper(void* arg)
@@ -260,6 +275,7 @@ void Discovery::createOrocosInterface()
     addAttribute("attrGyrometerAngleSimpson", attrGyrometerAngleSimpson);
     addAttribute("attrGyrometerAngleSimpsonDegree", attrGyrometerAngleSimpsonDegree);
     addAttribute("attrStartPlugged", attrStartPlugged);
+    addAttribute("attrStartColor", attrStartColor);
 
     addPort("outGyrometerAngleEuler", outGyrometerAngleEuler)
         .doc("Angular position of the gyrometer in rad, integrated with Euler explicit integration scheme");

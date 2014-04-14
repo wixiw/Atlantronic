@@ -31,10 +31,6 @@ class StartSequence2014(smach.StateMachine):
             print name
         
         with self:
-            smach.StateMachine.add('InitTurretZeros',
-                      InitTurretZeros(), 
-                      transitions={'succeeded':'SetInitialPosition', 'problem':'problem'})
-            
             smach.StateMachine.add('SetInitialPosition',
                       SetInitialPosition(1.350,0.500,0),
                       transitions={'succeeded':'WaitForStartUnPlug', 'timeout':'problem'})
@@ -42,30 +38,11 @@ class StartSequence2014(smach.StateMachine):
             smach.StateMachine.add('WaitForStartUnPlug',
                       WaitForStartUnplug(),
                       transitions={'startunplug':'RecalX', 'timeout':'problem'})
-            
-            #todo faire un etat recalage
-            
-            
-            #smach.StateMachine.add('RecalX',
-            #          AmbiOpenLoopOrder(0.1,0.0,0,2.0),
-            #          transitions={'succeeded':'SetRecalXPosition', 'timeout':'SetRecalXPosition'})
 
             smach.StateMachine.add('RecalX',
                       AmbiRecalOnBorderYellow("RIGHT",Data.color),
-                      transitions={'recaled':'Debug1', 'non-recaled':'problem','problem':'problem'})
+                      transitions={'recaled':'EscapeRecalX', 'non-recaled':'problem','problem':'problem'})
             
-            #TODO : mettre la valeur de la distance 1500-face avant
-            #smach.StateMachine.add('SetRecalXPosition',
-            #          SetInitialPosition(1.450,0.500,0),
-            #          transitions={'succeeded':'Debug1', 'timeout':'problem'})
-            
-            smach.StateMachine.add('Debug1', 
-                       WaitForStart(),
-                       transitions={'start':'Debug2','timeout':'WaitForStart'})
-            smach.StateMachine.add('Debug2',
-                      WaitForStartUnplug(),
-                      transitions={'startunplug':'EscapeRecalX', 'timeout':'problem'})
-                        
             smach.StateMachine.add('EscapeRecalX',
                       AmbiOpenLoopOrder(-0.1,0.0,0,0.5),
                       transitions={'succeeded':'PrepareRecalY', 'timeout':'PrepareRecalY'})
@@ -74,23 +51,9 @@ class StartSequence2014(smach.StateMachine):
                       AmbiOmniDirectOrder2(Pose2D(0.900,0.500,pi/2), vmax = 0.3),
                       transitions={'succeeded':'RecalY', 'timeout':'problem'})
             
-            #todo faire un etat recalage
-           # smach.StateMachine.add('RecalY',
-           #           AmbiOpenLoopOrder(0.1,0.0,0,2.0),
-           #           transitions={'succeeded':'SetRecalYPosition', 'timeout':'SetRecalYPosition'})
-            
             smach.StateMachine.add('RecalY',
                       AmbiRecalOnBorderYellow("FRUITBASKET",Data.color),
-                      transitions={'recaled':'EscapeRecalY', 'non-recaled':'problem','problem':'problem'})
-            
-            
-            #TODO : mettre la valeur de la distance 1500-face avant
-           # smach.StateMachine.add('SetRecalYPosition',
-           #           SetInitialPosition(0.900,0.650,pi/2),
-           #           transitions={'succeeded':'EscapeRecalY', 'timeout':'problem'})
-            
-            
-            
+                      transitions={'recaled':'EscapeRecalY', 'non-recaled':'problem','problem':'problem'})   
             
             smach.StateMachine.add('EscapeRecalY',
                       AmbiOpenLoopOrder(-0.1,0.0,0,0.5),

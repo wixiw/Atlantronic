@@ -49,11 +49,6 @@ function RosHmlItfDeployer:connect()
 	
 	assert( Deployer:stream("RosHmlItf.outEmergencyStop",ros:topic("/Ubiquity/emergency_stop")))
 	assert( Deployer:stream("RosHmlItf.outIsHomingDone",ros:topic("/Ubiquity/homing_done")))
-	assert( Deployer:stream("RosHmlItf.outIoStart",ros:topic("/Ubiquity/start")))
-	assert( Deployer:stream("RosHmlItf.outIoStartColor",ros:topic("/Ubiquity/color")))
-	assert( Deployer:stream("RosHmlItf.outFrontLeftObstacle",ros:topic("/Ubiquity/front_left_obstacle")))
-	assert( Deployer:stream("RosHmlItf.outFrontRightObstacle",ros:topic("/Ubiquity/front_right_obstacle")))
-	assert( Deployer:stream("RosHmlItf.outRearObstacle",ros:topic("/Ubiquity/rear_obstacle")))
 	assert( Deployer:stream("RosHmlItf.outJoystickButton",ros:topic("/Ubiquity/manual_button")))
 	
 	return true

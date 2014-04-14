@@ -35,7 +35,7 @@ Faulhaber3268Bx4::Faulhaber3268Bx4(const std::string& name) :
         propInputsTimeout(1.0),
         propHomingSpeed(4),
         propBlockingTorqueTimeout(0.500),
-        m_faulhaberCommandTodo(false),
+        attrFaulhaberCommandTodo(false),
         m_oldPositionMeasure(0),
         m_isMotorBlocked(false)
 {
@@ -154,6 +154,7 @@ void Faulhaber3268Bx4::updateLateHook()
     //notification pour envoit du PDO operationnel de commande
     CanARD_Data.PDO_status[attrFaulhaberCommandPdoIndex].last_message.cob_id = 0;
 
+//Trying nodeguarding
 //    EnterMutex();
 //    masterRequestNodeState (&CanARD_Data, (UNS8) propNodeId);
 //    LeaveMutex();
@@ -303,103 +304,105 @@ void Faulhaber3268Bx4::runHoming()
     // The submodes are not called is the motor is not powered
     if( outDriveEnable.getLastWrittenValue() )
     {
+        //LOG(Debug) << "runHoming in state : "  << attrHomingState;
+
         switch (attrHomingState) {
             case ASK_CONFIGURE_TTL:
-                if( !m_faulhaberCommandTodo )
+                if( !attrFaulhaberCommandTodo )
                 {
                     m_faulhaberScriptCommand = (UNS8) F_CMD_SETTTL;
                     m_faulhaberScriptCommandParam = (UNS32) 0;
-                    m_faulhaberCommandTodo = true;
+                    attrFaulhaberCommandTodo = true;
                     attrHomingState = WAIT_CONFIGURE_TTL;
                 }
                 break;
             case WAIT_CONFIGURE_TTL:
-                if( !m_faulhaberCommandTodo )
+                if( !attrFaulhaberCommandTodo )
                  {
                      attrHomingState = ASK_CONFIGURE_EDGE;
                  }
                 break;
             case ASK_CONFIGURE_EDGE:
-                if( !m_faulhaberCommandTodo )
+                if( !attrFaulhaberCommandTodo )
                 {
                     m_faulhaberScriptCommand = (UNS8) F_CMD_HP;
                     m_faulhaberScriptCommandParam = (UNS32) F_CMD_HP_FAILING_EDGE;
-                    m_faulhaberCommandTodo = true;
+                    attrFaulhaberCommandTodo = true;
                     attrHomingState = WAIT_CONFIGURE_EDGE;
                 }
                 break;
             case WAIT_CONFIGURE_EDGE:
-                if( !m_faulhaberCommandTodo )
+                if( !attrFaulhaberCommandTodo )
                  {
                      attrHomingState = ASK_CONFIGURE_SWITCH1;
                  }
                 break;
             case ASK_CONFIGURE_SWITCH1:
-                if( !m_faulhaberCommandTodo )
+                if( !attrFaulhaberCommandTodo )
                 {
                     m_faulhaberScriptCommand = (UNS8) F_CMD_SHL;
                     m_faulhaberScriptCommandParam = F_ANALOG_SWICTH_MASK;
-                    m_faulhaberCommandTodo = true;
+                    attrFaulhaberCommandTodo = true;
                     attrHomingState = WAIT_CONFIGURE_SWITCH1;
                 }
                 break;
             case WAIT_CONFIGURE_SWITCH1:
-                if( !m_faulhaberCommandTodo )
+                if( !attrFaulhaberCommandTodo )
                  {
                      attrHomingState = ASK_CONFIGURE_SWITCH2;
                  }
                 break;
             case ASK_CONFIGURE_SWITCH2:
-                if( !m_faulhaberCommandTodo )
+                if( !attrFaulhaberCommandTodo )
                 {
                     m_faulhaberScriptCommand = (UNS8) F_CMD_SHN;
                     m_faulhaberScriptCommandParam = F_ANALOG_SWICTH_MASK;
-                    m_faulhaberCommandTodo = true;
+                    attrFaulhaberCommandTodo = true;
                     attrHomingState = WAIT_CONFIGURE_SWITCH2;
                 }
                 break;
             case WAIT_CONFIGURE_SWITCH2:
-                if( !m_faulhaberCommandTodo )
+                if( !attrFaulhaberCommandTodo )
                  {
                      attrHomingState = ASK_CONFIGURE_SWITCH3;
                  }
                 break;
             case ASK_CONFIGURE_SWITCH3:
-                if( !m_faulhaberCommandTodo )
+                if( !attrFaulhaberCommandTodo )
                 {
                     m_faulhaberScriptCommand = (UNS8) F_CMD_SHA;
                     m_faulhaberScriptCommandParam = F_ANALOG_SWICTH_MASK;
-                    m_faulhaberCommandTodo = true;
+                    attrFaulhaberCommandTodo = true;
                     attrHomingState = WAIT_CONFIGURE_SWITCH3;
                 }
                 break;
             case WAIT_CONFIGURE_SWITCH3:
-                if( !m_faulhaberCommandTodo )
+                if( !attrFaulhaberCommandTodo )
                  {
                      attrHomingState = ASK_CONFIGURE_SPEED;
                  }
                 break;
             case ASK_CONFIGURE_SPEED:
-                if( !m_faulhaberCommandTodo )
+                if( !attrFaulhaberCommandTodo )
                 {
                     m_faulhaberScriptCommand = (UNS8) F_CMD_HOSP;
                     m_faulhaberScriptCommandParam = (UNS32) (propHomingSpeed*propReductorValue*RAD_S_TO_RPM);
-                    m_faulhaberCommandTodo = true;
+                    attrFaulhaberCommandTodo = true;
                     attrHomingState = WAIT_CONFIGURE_SPEED;
                 }
                 break;
             case WAIT_CONFIGURE_SPEED:
-                if( !m_faulhaberCommandTodo )
+                if( !attrFaulhaberCommandTodo )
                  {
                      attrHomingState = ASK_HOMING;
                  }
                 break;
             case ASK_HOMING:
-                if( !m_faulhaberCommandTodo )
+                if( !attrFaulhaberCommandTodo )
                 {
                     m_faulhaberScriptCommand = (UNS8) F_CMD_GOHOSEQ;
                     m_faulhaberScriptCommandParam = (UNS32) 0;
-                    m_faulhaberCommandTodo = true;
+                    attrFaulhaberCommandTodo = true;
                     attrHomingState = WAIT_HOMING;
                 }
                 break;
@@ -408,12 +411,12 @@ void Faulhaber3268Bx4::runHoming()
                 {
                     m_faulhaberScriptCommand = (UNS8) F_CMD_V;
                     m_faulhaberScriptCommandParam = (UNS32) 0;
-                    m_faulhaberCommandTodo = true;
+                    attrFaulhaberCommandTodo = true;
                     attrHomingState = SET_NULL_SPEED;
                 }
                 break;
             case SET_NULL_SPEED:
-                if( !m_faulhaberCommandTodo )
+                if( !attrFaulhaberCommandTodo )
                 {
                     attrHomingState = HOMING_DONE;
                 }
@@ -433,7 +436,7 @@ void Faulhaber3268Bx4::runHoming()
 
 void Faulhaber3268Bx4::runOther()
 {
-	if( m_faulhaberCommandTodo )
+	if( attrFaulhaberCommandTodo )
 	{
 		EnterMutex();
 		*m_faulhaberCommand = m_faulhaberScriptCommand;
@@ -451,7 +454,7 @@ void Faulhaber3268Bx4::runOther()
 		else
 		{
 			LOG(Info) << "faulhaber 0x"  << std::hex <<  (int) m_faulhaberScriptCommand << " command succeed with return " << std::hex << outLastSentCommandReturn.getLastWrittenValue() << endlog();
-			m_faulhaberCommandTodo = false;
+			attrFaulhaberCommandTodo = false;
 		}
 	}
 }
@@ -548,7 +551,7 @@ bool Faulhaber3268Bx4::ooLimitCurrent(double ampValue)
     ArdMotorItf::setOperationMode(ArdMotorItf::OTHER);
     m_faulhaberScriptCommand = F_CMD_LPC;
     m_faulhaberScriptCommandParam = (UNS32) ampValue*1000;
-    m_faulhaberCommandTodo = true;
+    attrFaulhaberCommandTodo = true;
     return true;
 }
 
@@ -557,7 +560,7 @@ void Faulhaber3268Bx4::ooFaulhaberCmd(int cmd, int param)
 	ArdMotorItf::setOperationMode(ArdMotorItf::OTHER);
 	m_faulhaberScriptCommand = (UNS8) cmd;
 	m_faulhaberScriptCommandParam = (UNS32) param;
-	m_faulhaberCommandTodo = true;
+	attrFaulhaberCommandTodo = true;
 }
 
 bool Faulhaber3268Bx4::ooSetOperationMode(std::string mode)
@@ -569,7 +572,7 @@ bool Faulhaber3268Bx4::ooSetOperationMode(std::string mode)
 	{
 		if( setOperationMode(getModeFromString(mode)) )
 		{
-			LOG(Info) << "switch to " << mode <<" mode" << endlog();
+			LOG(Info) << "ooSetOperationMode : switch to " << mode <<" mode" << endlog();
 			res = true;
 		}
 		else
@@ -591,6 +594,8 @@ bool Faulhaber3268Bx4::coWaitEnable(ArdTimeDelta timeout)
 {
     ArdTimeDelta chrono = 0;
 	bool res = false;
+
+	LOG(Info) << "Wait enabled state request received" << endlog();
 
 	//This operation is only accessible when the component is running
 	if( isRunning() )
@@ -642,14 +647,12 @@ bool Faulhaber3268Bx4::setOperationMode(ArdMotorItf::operationMode_t operationMo
 		    {
 		        attrHomingState = ASK_CONFIGURE_TTL;
 		        attrHardNotify = false;
-		        m_faulhaberCommandTodo = false;
 		    }
 		    //desinit de l'état homing
 		    else
 		    {
 		        attrHomingState = NOT_IN_HOMNG_MODE;
 		        attrHardNotify = false;
-		        m_faulhaberCommandTodo = false;
 		    }
 
 			ArdMotorItf::setOperationMode(operationMode);
@@ -722,10 +725,11 @@ void Faulhaber3268Bx4::enableDrive()
     }
     else
     {
+        LOG(Info) << "Enable drive request received" << endlog();
         ArdMotorItf::setOperationMode(ArdMotorItf::OTHER);
         m_faulhaberScriptCommand = F_CMD_EN;
         m_faulhaberScriptCommandParam = 0;
-        m_faulhaberCommandTodo = true;
+        attrFaulhaberCommandTodo = true;
     }
 }
 
@@ -737,10 +741,11 @@ void Faulhaber3268Bx4::disableDrive()
     }
     else
     {
+        LOG(Info) << "Disable drive request received" << endlog();
         ArdMotorItf::setOperationMode(ArdMotorItf::OTHER);
         m_faulhaberScriptCommand = F_CMD_DI;
         m_faulhaberScriptCommandParam = 0;
-        m_faulhaberCommandTodo = true;
+        attrFaulhaberCommandTodo = true;
     }
 }
 
@@ -796,6 +801,8 @@ void Faulhaber3268Bx4::createOrocosInterface()
     addAttribute("attrFaulhaberCommandPdoIndex",attrFaulhaberCommandPdoIndex);
     addAttribute("attrHomingState",attrHomingState);
     addAttribute("attrMotorPeriod",attrMotorPeriod);
+    addAttribute("attrHardNotify",attrHardNotify);
+    addAttribute("attrFaulhaberCommandTodo",attrFaulhaberCommandTodo);
 
     addProperty("propInvertDriveDirection",propInvertDriveDirection)
         .doc("Is true when you when to invert the speed command and feedback of the motor softly");
