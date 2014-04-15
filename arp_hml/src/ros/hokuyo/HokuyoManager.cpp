@@ -56,12 +56,12 @@ void HokuyoManager::shutDown()
 {
 }
 
-HokuyoManager * m;
+HokuyoManager * node;
 
 void quit(int sig)
 {
     ROS_INFO("Ctrl C catched => Shuting down HokuyoManager");
-    m->shutDown();
+    node->shutDown();
     ros::shutdown();
     exit(0);
 }
@@ -71,10 +71,10 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "HokuyoManager");
 
     ros::NodeHandle nh("HokuyoManager");
-    m = new HokuyoManager(nh);
+    node = new HokuyoManager(nh);
     signal(SIGINT, quit);
 
-    m->spin();
+    node->spin();
     ros::shutdown();
     exit(0);
 

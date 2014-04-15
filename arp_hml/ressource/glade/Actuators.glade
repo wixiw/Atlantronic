@@ -12,7 +12,7 @@
         <property name="n_rows">6</property>
         <property name="n_columns">3</property>
         <child>
-          <object class="GtkImage" id="image3">
+          <object class="GtkImage" id="LeftBallBot">
             <property name="visible">True</property>
             <property name="pixbuf">ball.png</property>
           </object>
@@ -22,7 +22,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkImage" id="image1">
+          <object class="GtkImage" id="LeftBallMid">
             <property name="visible">True</property>
             <property name="pixbuf">ball.png</property>
           </object>
@@ -32,7 +32,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkImage" id="image2">
+          <object class="GtkImage" id="LeftBallTop">
             <property name="visible">True</property>
             <property name="pixbuf">ball.png</property>
           </object>
@@ -42,7 +42,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkImage" id="image6">
+          <object class="GtkImage" id="RightBallTop">
             <property name="visible">True</property>
             <property name="pixbuf">ball.png</property>
           </object>
@@ -54,7 +54,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkImage" id="image5">
+          <object class="GtkImage" id="RightBallMid">
             <property name="visible">True</property>
             <property name="pixbuf">ball.png</property>
           </object>
@@ -66,7 +66,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkImage" id="image4">
+          <object class="GtkImage" id="RightBallBot">
             <property name="visible">True</property>
             <property name="pixbuf">ball.png</property>
           </object>
@@ -140,22 +140,72 @@
           </packing>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkImage" id="LeftStocker">
+            <property name="visible">True</property>
+            <property name="pixbuf">stock_loading.png</property>
+          </object>
+          <packing>
+            <property name="top_attach">4</property>
+            <property name="bottom_attach">5</property>
+          </packing>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkImage" id="RightStocker">
+            <property name="visible">True</property>
+            <property name="pixbuf">stock_loading.png</property>
+          </object>
+          <packing>
+            <property name="left_attach">2</property>
+            <property name="right_attach">3</property>
+            <property name="top_attach">4</property>
+            <property name="bottom_attach">5</property>
+          </packing>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkImage" id="LeftFinger">
+            <property name="visible">True</property>
+            <property name="pixbuf">doigt_bas.png</property>
+          </object>
+          <packing>
+            <property name="top_attach">5</property>
+            <property name="bottom_attach">6</property>
+          </packing>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkImage" id="RightFinger">
+            <property name="visible">True</property>
+            <property name="pixbuf">doigt_bas.png</property>
+          </object>
+          <packing>
+            <property name="left_attach">2</property>
+            <property name="right_attach">3</property>
+            <property name="top_attach">5</property>
+            <property name="bottom_attach">6</property>
+          </packing>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkVSeparator" id="vseparator5">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+            <property name="top_attach">5</property>
+            <property name="bottom_attach">6</property>
+          </packing>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkVSeparator" id="vseparator6">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+            <property name="top_attach">4</property>
+            <property name="bottom_attach">5</property>
+          </packing>
         </child>
       </object>
     </child>
