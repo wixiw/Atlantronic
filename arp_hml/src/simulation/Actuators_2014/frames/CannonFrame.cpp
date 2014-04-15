@@ -5,11 +5,11 @@
  *      Author: ard
  */
 
-#include "ActuatorsFrameGlade_2014.hpp"
+#include "CannonFrame.hpp"
 
 using namespace arp_hml;
 
-ActuatorsFrameGlade_2014::ActuatorsFrameGlade_2014()
+CannonFrame::CannonFrame()
 {
     m_Balls[LEFT]=
     {   NULL,NULL,NULL};
@@ -17,11 +17,11 @@ ActuatorsFrameGlade_2014::ActuatorsFrameGlade_2014()
     {   NULL,NULL,NULL};
 }
 
-ActuatorsFrameGlade_2014::~ActuatorsFrameGlade_2014()
+CannonFrame::~CannonFrame()
 {
 }
 
-bool ActuatorsFrameGlade_2014::init(int argc, char **argv)
+bool CannonFrame::init(int argc, char **argv)
 {
     GtkBuilder *builder = NULL;
     GtkWidget *window = NULL;
@@ -78,7 +78,7 @@ bool ActuatorsFrameGlade_2014::init(int argc, char **argv)
     return true;
 }
 
-bool ActuatorsFrameGlade_2014::initCannon(eCanonSide side, GtkBuilder *builder)
+bool CannonFrame::initCannon(eCanonSide side, GtkBuilder *builder)
 {
     if (side == LEFT)
     {
@@ -106,16 +106,16 @@ bool ActuatorsFrameGlade_2014::initCannon(eCanonSide side, GtkBuilder *builder)
     return true;
 }
 
-bool ActuatorsFrameGlade_2014::spin()
+bool CannonFrame::spin()
 {
     return gtk_main_iteration_do(false);
 }
 
-void ActuatorsFrameGlade_2014::shutDown()
+void CannonFrame::shutDown()
 {
 }
 
-void ActuatorsFrameGlade_2014::setNumberOfBallsInCanon(eCanonSide side, int nbBalls)
+void CannonFrame::setNumberOfBallsInCanon(eCanonSide side, int nbBalls)
 {
     switch (nbBalls)
     {
@@ -147,7 +147,7 @@ void ActuatorsFrameGlade_2014::setNumberOfBallsInCanon(eCanonSide side, int nbBa
     }
 }
 
-void ActuatorsFrameGlade_2014::setStockerPosition(eCanonSide side, enum eStockerPosition pos)
+void CannonFrame::setStockerPosition(eCanonSide side, enum eStockerPosition pos)
 {
     switch (pos)
     {
@@ -166,7 +166,7 @@ void ActuatorsFrameGlade_2014::setStockerPosition(eCanonSide side, enum eStocker
     }
 }
 
-void ActuatorsFrameGlade_2014::setFingerPosition(eCanonSide side, enum eFingerPosition pos)
+void CannonFrame::setFingerPosition(eCanonSide side, enum eFingerPosition pos)
 {
     switch (pos)
     {

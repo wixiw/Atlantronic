@@ -13,7 +13,7 @@
 namespace arp_hml
 {
 
-class ActuatorsFrameGlade_2014
+class CannonFrame
 {
     public:
         enum eCanonSide
@@ -37,8 +37,8 @@ class ActuatorsFrameGlade_2014
             SHOOTING
         };
 
-        ActuatorsFrameGlade_2014();
-        ~ActuatorsFrameGlade_2014();
+        CannonFrame();
+        ~CannonFrame();
 
         bool init(int argc, char **argv);
         bool spin();

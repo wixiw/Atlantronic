@@ -8,9 +8,9 @@
 #include <boost/thread.hpp>
 #include <iostream>
 #include <arp_core/CannonState.h>
-#include "ActuatorsFrameGlade_2014.hpp"
+#include "frames/CannonFrame.hpp"
 
-arp_hml::ActuatorsFrameGlade_2014 frame;
+arp_hml::CannonFrame frame;
 
 void quit(int sig)
 {
@@ -20,52 +20,52 @@ void quit(int sig)
     exit(0);
 }
 
-arp_hml::ActuatorsFrameGlade_2014::eFingerPosition findFingerPosition(double pos)
+arp_hml::CannonFrame::eFingerPosition findFingerPosition(double pos)
 {
     //TODO
     //0 is the shooting position full read
     if( fabs(pos) <= 0.4 )
     {
-        return arp_hml::ActuatorsFrameGlade_2014::SHOOTING;
+        return arp_hml::CannonFrame::SHOOTING;
     }
     if( pos >= 0.4 && pos <= M_PI_2 - 0.4 )
     {
-        return arp_hml::ActuatorsFrameGlade_2014::ARMED;
+        return arp_hml::CannonFrame::ARMED;
     }
     if( pos >= M_PI_2 - 0.4 )
     {
-        return arp_hml::ActuatorsFrameGlade_2014::UP;
+        return arp_hml::CannonFrame::UP;
     }
 
-    return arp_hml::ActuatorsFrameGlade_2014::DOWN;
+    return arp_hml::CannonFrame::DOWN;
 }
 
-arp_hml::ActuatorsFrameGlade_2014::eStockerPosition findStockerPosition(double pos)
+arp_hml::CannonFrame::eStockerPosition findStockerPosition(double pos)
 {
     //TODO
     //0 is the IDLE position
     if( fabs(pos) <= 0.4 )
     {
-        return arp_hml::ActuatorsFrameGlade_2014::IDLE;
+        return arp_hml::CannonFrame::IDLE;
     }
     if( pos >= 0.4 )
     {
-        return arp_hml::ActuatorsFrameGlade_2014::LOADING;
+        return arp_hml::CannonFrame::LOADING;
     }
 
-    return arp_hml::ActuatorsFrameGlade_2014::UNLOADING;
+    return arp_hml::CannonFrame::UNLOADING;
 }
 
 
 void cannonStateCB(const arp_core::CannonStateConstPtr state)
 {
-   frame.setNumberOfBallsInCanon(arp_hml::ActuatorsFrameGlade_2014::LEFT,  state->nbBallsInLeftStock);
-   frame.setNumberOfBallsInCanon(arp_hml::ActuatorsFrameGlade_2014::RIGHT, state->nbBallsInRightStock);
+   frame.setNumberOfBallsInCanon(arp_hml::CannonFrame::LEFT,  state->nbBallsInLeftStock);
+   frame.setNumberOfBallsInCanon(arp_hml::CannonFrame::RIGHT, state->nbBallsInRightStock);
 
-   frame.setFingerPosition(arp_hml::ActuatorsFrameGlade_2014::LEFT, findFingerPosition(state->leftFingerPosition));
-   frame.setFingerPosition(arp_hml::ActuatorsFrameGlade_2014::RIGHT, findFingerPosition(state->rightFingerPosition));
-   frame.setStockerPosition(arp_hml::ActuatorsFrameGlade_2014::LEFT, findStockerPosition(state->leftStockerPosition));
-   frame.setStockerPosition(arp_hml::ActuatorsFrameGlade_2014::RIGHT, findStockerPosition(state->rightStockerPosition));
+   frame.setFingerPosition(arp_hml::CannonFrame::LEFT, findFingerPosition(state->leftFingerPosition));
+   frame.setFingerPosition(arp_hml::CannonFrame::RIGHT, findFingerPosition(state->rightFingerPosition));
+   frame.setStockerPosition(arp_hml::CannonFrame::LEFT, findStockerPosition(state->leftStockerPosition));
+   frame.setStockerPosition(arp_hml::CannonFrame::RIGHT, findStockerPosition(state->rightStockerPosition));
 }
 
 int main(int argc, char **argv)
