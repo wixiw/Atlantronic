@@ -4,9 +4,9 @@ KinematicBaseDeployer = ComposantDeployer:new()
 local me = "KinematicBase"
 
 function KinematicBaseDeployer:load()
-	Deployer:loadComponent(me,"arp_ods::KinematicBase");
+	assert( Deployer:loadComponent(me,"arp_ods::KinematicBase"));
 	assert( Deployer:addPeer("DotGraph",me))
-	Deployer:setMasterSlaveActivity("MotionScheduler", me)
+	assert( Deployer:setMasterSlaveActivity("MotionScheduler", me))
 end
 
 
@@ -16,21 +16,22 @@ function KinematicBaseDeployer:connect()
 	
 	--on s'ajoute en peer a HmlMonitor pour pouvoir faire les connections
 	HmlMonitor = Deployer:getPeer("HmlMonitor");
-	Deployer:addPeer("HmlMonitor", me)
-	HmlMonitor:connect(me,"inMotorState","Syncronizator","outMotorMeasures");
-	Deployer:connect(me..".inParams","UbiquityParams.outParams",cp);
-	Deployer:connect(me..".inICRSpeedCmd","MotionControl.outICRSpeedCmd",cp);
-	HmlMonitor:connect("LeftDriving","inSpeedCmd",me,"outLeftDrivingVelocityCmd");
-	HmlMonitor:connect("RightDriving","inSpeedCmd",me,"outRightDrivingVelocityCmd");
-	HmlMonitor:connect("RearDriving","inSpeedCmd",me,"outRearDrivingVelocityCmd");
-	HmlMonitor:connect("LeftSteering","inPositionCmd",me,"outLeftSteeringPositionCmd");
-	HmlMonitor:connect("RightSteering","inPositionCmd",me,"outRightSteeringPositionCmd");
-	HmlMonitor:connect("RearSteering","inPositionCmd",me,"outRearSteeringPositionCmd");
+	assert(Deployer:addPeer("HmlMonitor", me))
+	assert(HmlMonitor:connect(me,"inMotorState","Syncronizator","outMotorMeasures"));
+	assert(Deployer:connect(me..".inHwBlocked","HmlMonitor.outOneDrivingIsBlocked",cp));
+	assert(Deployer:connect(me..".inParams","UbiquityParams.outParams",cp));
+	assert(Deployer:connect(me..".inICRSpeedCmd","MotionControl.outICRSpeedCmd",cp));
+	assert(HmlMonitor:connect("LeftDriving","inSpeedCmd",me,"outLeftDrivingVelocityCmd"));
+	assert(HmlMonitor:connect("RightDriving","inSpeedCmd",me,"outRightDrivingVelocityCmd"));
+	assert(HmlMonitor:connect("RearDriving","inSpeedCmd",me,"outRearDrivingVelocityCmd"));
+	assert(HmlMonitor:connect("LeftSteering","inPositionCmd",me,"outLeftSteeringPositionCmd"));
+	assert(HmlMonitor:connect("RightSteering","inPositionCmd",me,"outRightSteeringPositionCmd"));
+	assert(HmlMonitor:connect("RearSteering","inPositionCmd",me,"outRearSteeringPositionCmd"));
 	
 	--on s'ajoute en peer a HmlMonitor pour pouvoir faire les connections
 	RluMonitor = Deployer:getPeer("RluMonitor");
-	Deployer:addPeer("RluMonitor", me)
-	RluMonitor:connect(me,"inCurrentICRSpeed","Localizator","outICRSpeed");
+	assert(Deployer:addPeer("RluMonitor", me))
+	assert(RluMonitor:connect(me,"inCurrentICRSpeed","Localizator","outICRSpeed"));
 end
 
 

@@ -45,11 +45,14 @@ class AmbiRecalOnBorderYellow(smach.StateMachine):
         
         with self:
             smach.StateMachine.add('ForwardOrder',
-                                   ForwardOrder(dist=0.200,vmax=0.1),
+                                   ForwardOrder(dist=0.200,vmax=0.2),
                                    transitions={'succeeded':'setPosition', 'timeout':'setPosition'}) 
             #TODO le succeded devrait etre un probleme ! on doit toujours bloquer. mais si je fas ca la simul va merder
             smach.StateMachine.add('setPosition',
                                    SetPositionState(*recallWalls[borderName]),
+                                   transitions={'succeeded':'BackwardOrder', 'timeout':'problem'})
+            smach.StateMachine.add('BackwardOrder',
+                                   BackwardOrder(dist=0.100,vmax=0.3),
                                    transitions={'succeeded':'recaled', 'timeout':'problem'})
             
        

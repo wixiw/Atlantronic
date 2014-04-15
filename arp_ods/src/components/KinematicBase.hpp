@@ -55,6 +55,8 @@ class KinematicBase: public OdsTaskContext
         RTT::InputPort<arp_model::MotorState> inMotorState;
         /** Ubiquity parameters */
         RTT::InputPort<arp_model::UbiquityParams> inParams;
+        /** Get information from HML to know if motors are blocked*/
+        RTT::InputPort<bool> inHwBlocked;
 
         RTT::OutputPort<double> outLeftDrivingVelocityCmd;
         RTT::OutputPort<double> outRightDrivingVelocityCmd;
@@ -68,6 +70,9 @@ class KinematicBase: public OdsTaskContext
         RTT::OutputPort<arp_math::ICRSpeed> outFilteredICRSpeed;
         RTT::OutputPort<bool> outRobotBlocked;
         RTT::OutputPort<arp_math::Twist2D> outTwistCmd;
+
+        //this port is provided as an information as we suppose that wrong commands may have an impact on odometry
+        RTT::OutputPort<bool> outOrderNotReachable;
 
         /**
          * Utility functions to help the developper te separate :

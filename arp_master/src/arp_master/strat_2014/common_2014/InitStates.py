@@ -41,11 +41,7 @@ class StartSequence2014(smach.StateMachine):
 
             smach.StateMachine.add('RecalX',
                       AmbiRecalOnBorderYellow("RIGHT",Data.color),
-                      transitions={'recaled':'EscapeRecalX', 'non-recaled':'problem','problem':'problem'})
-            
-            smach.StateMachine.add('EscapeRecalX',
-                      AmbiOpenLoopOrder(-0.1,0.0,0,0.5),
-                      transitions={'succeeded':'PrepareRecalY', 'timeout':'PrepareRecalY'})
+                      transitions={'recaled':'PrepareRecalY', 'non-recaled':'problem','problem':'problem'})
             
             smach.StateMachine.add('PrepareRecalY',
                       AmbiOmniDirectOrder2(Pose2D(0.900,0.500,pi/2), vmax = 0.3),
@@ -53,11 +49,7 @@ class StartSequence2014(smach.StateMachine):
             
             smach.StateMachine.add('RecalY',
                       AmbiRecalOnBorderYellow("FRUITBASKET",Data.color),
-                      transitions={'recaled':'EscapeRecalY', 'non-recaled':'problem','problem':'problem'})   
-            
-            smach.StateMachine.add('EscapeRecalY',
-                      AmbiOpenLoopOrder(-0.1,0.0,0,0.5),
-                      transitions={'succeeded':'ShowReady', 'timeout':'ShowReady'})
+                      transitions={'recaled':'ShowReady', 'non-recaled':'problem','problem':'problem'})   
             
             smach.StateMachine.add('ShowReady',
                       AmbiOmniDirectOrder2(Pose2D(1.100,0.350,-pi/2), vmax = 0.3),
@@ -68,6 +60,18 @@ class StartSequence2014(smach.StateMachine):
                       transitions={'timeout':'GoHome'})
             
             smach.StateMachine.add('GoHome',
+                      AmbiOmniDirectOrder2(Pose2D(x,y,theta), vmax = 0.3),
+                      transitions={'succeeded':'WaitAbit', 'timeout':'problem'})
+            
+            smach.StateMachine.add('WaitAbit',
+                      WaiterState(1.0),
+                      transitions={'timeout':'You'})
+            
+            smach.StateMachine.add('You',
+                      AmbiOmniDirectOrder2( Pose2D(1.100, 0.400, pi), vmax = 0.3),
+                      transitions={'succeeded':'Hou', 'timeout':'problem'})
+                        
+            smach.StateMachine.add('Hou',
                       AmbiOmniDirectOrder2(Pose2D(x,y,theta), vmax = 0.3),
                       transitions={'succeeded':'WaitForStart', 'timeout':'WaitForStart'})
             

@@ -68,7 +68,7 @@ class Opening(PreemptiveStateMachine):
             
 # Action Fire Yellow Mobile Torch     
             PreemptiveStateMachine.add('ActionFireYellowMobileTorch',
-                      WaiterState(10.0),
+                      WaiterState(3.0),
                       transitions={'timeout':'TurnEmptyYellowMobileTorch'})
 
 # Turn around Yellow Mobile Torch

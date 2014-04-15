@@ -45,7 +45,7 @@ void KinematicBase::getInputs()
     inCurrentICRSpeed.readNewest(inICRSpeed);
     attrCurrentICRSpeed = (ICRSpeed) inICRSpeed;
     inParams.readNewest(attrParams);
-
+    inHwBlocked.readNewest(attrRobotBlockedTimeout);
 }
 
 void KinematicBase::run()
@@ -65,10 +65,7 @@ void KinematicBase::run()
     //check if the command is reachable
     //TODO TEMPS EN DUR !!!
     double dt = 0.010;
-    if(false == KinematicFilter::isMotorStateReachable(attrMotorStateCommand,attrMotorsCurrentState,attrParams, dt))
-    {
-    //    LOG(Error) << "Commanded ICRSpeed is not reachable" << endlog();
-    }
+    outOrderNotReachable.write(!KinematicFilter::isMotorStateReachable(attrMotorStateCommand,attrMotorsCurrentState,attrParams, dt));
 }
 
 void KinematicBase::checkRobotBlocked()
@@ -76,27 +73,27 @@ void KinematicBase::checkRobotBlocked()
     //comparison of measured twist to the commanded twist. if they are not consistent then the robot is not able to perform its motion - there is a problem..
 
     //if robot is blocked and timer is 0 then we just began to block
-    if (!consistencyMeasuredvsCommanded())
-    {
-        if (attrBlockTime == 0)
-        {
-            attrBlockTime = getAbsoluteTime();
-        }
-        else
-        {
-            ArdTimeDelta delay = getTimeDelta(attrBlockTime, getAbsoluteTime());
-            if (delay < 0 || delay > propRobotBlockedTimeout)
-            {
-                Log(INFO) << "Kinematic base detected robot blocage";
-                attrRobotBlockedTimeout = true;
-            }
-        }
-    }
-    else
-    {
-        attrBlockTime = 0;
-        attrRobotBlockedTimeout = false;
-    }
+//    if (!consistencyMeasuredvsCommanded())
+//    {
+//        if (attrBlockTime == 0)
+//        {
+//            attrBlockTime = getAbsoluteTime();
+//        }
+//        else
+//        {
+//            ArdTimeDelta delay = getTimeDelta(attrBlockTime, getAbsoluteTime());
+//            if (delay < 0 || delay > propRobotBlockedTimeout)
+//            {
+//                Log(INFO) << "Kinematic base detected robot blocage";
+//                attrRobotBlockedTimeout = true;
+//            }
+//        }
+//    }
+//    else
+//    {
+//        attrBlockTime = 0;
+//        attrRobotBlockedTimeout = false;
+//    }
 }
 
 bool KinematicBase::consistencyMeasuredvsCommanded()
@@ -118,7 +115,7 @@ bool KinematicBase::consistencyMeasuredvsCommanded()
     // 20 mm/s difference accepted
     //return speederror < propMaxSpeedDiff;
 
-    return true;
+//    return !blocked;
 }
 
 void KinematicBase::setOutputs()
@@ -147,7 +144,7 @@ void KinematicBase::createOrocosInterface()
     addAttribute("attrParams", attrParams);
     addAttribute("attrQuality", attrQuality);
     addAttribute("attrRobotBlockedTimeout", attrRobotBlockedTimeout);
-    addAttribute("attrBlockTime", attrBlockTime);
+    //addAttribute("attrBlockTime", attrBlockTime);
 
     addProperty("propRobotBlockedTimeout", propRobotBlockedTimeout).doc("");
     addProperty("propMaxSpeedDiff", propMaxSpeedDiff).doc(
@@ -157,6 +154,7 @@ void KinematicBase::createOrocosInterface()
     addPort("inCurrentICRSpeed", inCurrentICRSpeed).doc("");
     addPort("inMotorState", inMotorState).doc("");
     addPort("inParams", inParams).doc("");
+    addPort("inHwBlocked",inHwBlocked).doc("");
 
     addPort("outLeftDrivingVelocityCmd", outLeftDrivingVelocityCmd).doc("");
     addPort("outRightDrivingVelocityCmd", outRightDrivingVelocityCmd).doc("");
@@ -166,4 +164,5 @@ void KinematicBase::createOrocosInterface()
     addPort("outRearSteeringPositionCmd", outRearSteeringPositionCmd).doc("");
     addPort("outRobotBlocked", outRobotBlocked).doc("");
     addPort("outTwistCmd",outTwistCmd).doc("");
+    addPort("outOrderNotReachable",outOrderNotReachable).doc("");
 }
