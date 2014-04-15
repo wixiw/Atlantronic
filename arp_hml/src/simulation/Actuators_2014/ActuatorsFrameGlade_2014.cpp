@@ -108,15 +108,6 @@ bool ActuatorsFrameGlade_2014::initCannon(eCanonSide side, GtkBuilder *builder)
 
 bool ActuatorsFrameGlade_2014::spin()
 {
-    bool truc = false;
-//    /* Start main loop */
-//    if (truc)
-//        gtk_image_set_from_file(m_leftCanonBall, "ressource/glade/noball.png");
-//    else
-//        gtk_image_set_from_file(m_leftCanonBall, "ressource/glade/ball.png");
-//
-//    truc = !truc;
-
     return gtk_main_iteration_do(false);
 }
 

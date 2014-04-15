@@ -1,0 +1,6 @@
+uint8 nbBallsInLeftStock
+uint8 nbBallsInRightStock
+float64 leftStockerPosition
+float64 rightStockerPosition
+float64 leftFingerPosition
+float64 rightFingerPosition
