@@ -18,7 +18,7 @@ function KinematicBaseDeployer:connect()
 	HmlMonitor = Deployer:getPeer("HmlMonitor");
 	assert(Deployer:addPeer("HmlMonitor", me))
 	assert(HmlMonitor:connect(me,"inMotorState","Syncronizator","outMotorMeasures"));
-	assert(Deployer:connect(me..".inHwBlocked","HmlMonitor.outOneDrivingIsBlocked",cp));
+	assert(Deployer:connect(me..".inHwBlocked","HmlMonitor.outAllDrivingAreBlocked",cp));
 	assert(Deployer:connect(me..".inParams","UbiquityParams.outParams",cp));
 	assert(Deployer:connect(me..".inICRSpeedCmd","MotionControl.outICRSpeedCmd",cp));
 	assert(HmlMonitor:connect("LeftDriving","inSpeedCmd",me,"outLeftDrivingVelocityCmd"));

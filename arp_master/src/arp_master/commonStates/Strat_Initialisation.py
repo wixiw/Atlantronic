@@ -55,13 +55,7 @@ class Initialisation(smach.StateMachine):
                                    transitions={'start':'FindSteeringZeros','timeout':'WaitForStart'})
             smach.StateMachine.add('FindSteeringZeros',
                                    InitTurretZeros(), 
-                                   transitions={'succeeded':'WaitForStartUnplug', 'problem':'failed'})
-            smach.StateMachine.add('WaitForStartUnplug', 
-                                   WaitForStartUnplug(),
-                                   transitions={'startunplug':'WaitForStart2','timeout':'WaitForStartUnplug'})
-            smach.StateMachine.add('WaitForStart2', 
-                                   WaitForStart(),
-                                   transitions={'start':'SetColor','timeout':'WaitForStart2'})
+                                   transitions={'succeeded':'SetColor', 'problem':'failed'})
             smach.StateMachine.add('SetColor', 
                                    SetColor(),
                                    transitions={'done':'endInitialisation','timeout':'SetColor'})
@@ -77,10 +71,7 @@ class UnSecureInitialisation(smach.StateMachine):
                                    transitions={'deployed':'FindSteeringZeros','timeout':'WaitForOrocos'})
             smach.StateMachine.add('FindSteeringZeros',
                                    InitTurretZeros(), 
-                                   transitions={'succeeded':'WaitForStart', 'problem':'failed'})
-            smach.StateMachine.add('WaitForStart', 
-                                   WaitForStart(),
-                                   transitions={'start':'SetColor','timeout':'WaitForStart'})
+                                   transitions={'succeeded':'SetColor', 'problem':'failed'})
             smach.StateMachine.add('SetColor', 
                                    SetColor(),
                                    transitions={'done':'endInitialisation','timeout':'SetColor'})
@@ -120,7 +111,7 @@ class SetColor(CyclicState):
             Data.adv_color='yellow'
         else:
             Data.adv_color='red'
-        rospy.loginfo("Start plugged")
+        
        
     
     def executeTransitions(self):

@@ -26,6 +26,7 @@ class KinematicBase: public OdsTaskContext
     protected:
         /** define if robot has been blocked for timeout time*/
         bool attrRobotBlockedTimeout;
+        bool attrHwBlocked;
         /** time I began to block */
         arp_time::ArdAbsoluteTime attrBlockTime;
         arp_math::ICRSpeed attrICRSpeedCmd;
@@ -35,7 +36,7 @@ class KinematicBase: public OdsTaskContext
         arp_model::TurretState attrTurretState;
         arp_model::MotorState attrMotorsCurrentState;
         arp_model::UbiquityParams attrParams;
-        double attrQuality;
+        double attrSpeedError;
 
         /** timeout for the robot to be considered blocked */
         arp_time::ArdTimeDelta propRobotBlockedTimeout;
@@ -66,8 +67,6 @@ class KinematicBase: public OdsTaskContext
         RTT::OutputPort<double> outRightSteeringPositionCmd;
         RTT::OutputPort<double> outRearSteeringPositionCmd;
 
-        RTT::OutputPort<double> outFiltrationFeedback;
-        RTT::OutputPort<arp_math::ICRSpeed> outFilteredICRSpeed;
         RTT::OutputPort<bool> outRobotBlocked;
         RTT::OutputPort<arp_math::Twist2D> outTwistCmd;
 

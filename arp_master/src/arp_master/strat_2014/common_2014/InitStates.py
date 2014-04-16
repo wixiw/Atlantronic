@@ -48,7 +48,7 @@ class StartSequence2014(smach.StateMachine):
             
             smach.StateMachine.add('ShowReady',
                       AmbiOmniDirectOrder2(Pose2D(1.100,0.350,-pi/2), vmax = 0.3),
-                      transitions={'succeeded':'WaitForLoc2', 'timeout':'problem'})
+                      transitions={'succeeded':'WaitForLoc2', 'timeout':'WaitForLoc2'})
             
             smach.StateMachine.add('WaitForLoc2',
                       WaiterState(2.0),
@@ -56,7 +56,7 @@ class StartSequence2014(smach.StateMachine):
             
             smach.StateMachine.add('GoHome',
                       AmbiOmniDirectOrder2(Pose2D(x,y,theta), vmax = 0.3),
-                      transitions={'succeeded':'WaitAbit', 'timeout':'problem'})
+                      transitions={'succeeded':'WaitAbit', 'timeout':'WaitAbit'})
             
             smach.StateMachine.add('WaitAbit',
                       WaiterState(1.0),
@@ -64,7 +64,7 @@ class StartSequence2014(smach.StateMachine):
             
             smach.StateMachine.add('You',
                       AmbiOmniDirectOrder2( Pose2D(1.100, 0.400, pi), vmax = 0.3),
-                      transitions={'succeeded':'Hou', 'timeout':'problem'})
+                      transitions={'succeeded':'Hou', 'timeout':'Hou'})
                         
             smach.StateMachine.add('Hou',
                       AmbiOmniDirectOrder2(Pose2D(x,y,theta), vmax = 0.3),

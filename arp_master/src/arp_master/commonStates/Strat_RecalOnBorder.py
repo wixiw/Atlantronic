@@ -10,7 +10,7 @@ import os
 from SetPosition import *
 
 from arp_master.fsmFramework import *
-
+from MotorManagement import *
 
 #
 # This is the default a1 level state for any strategy. Except for testing purpose it should be overided in any strategy
@@ -41,15 +41,22 @@ class AmbiRecalOnBorderYellow(smach.StateMachine):
             rospy.logerr("AmbiRecalOnBorderYellow : default case : color not defined !!")
         
         with self:
+            smach.StateMachine.add('AlignTurrets',
+                                   OpenLoopOrder(0.1,0.0,0.0, 
+                                                 duration=0.1),
+                                   transitions={'succeeded':'ForwardOrder', 'timeout':'problem'})
+
             smach.StateMachine.add('ForwardOrder',
-                                   ForwardOrder(dist=0.200,vmax=0.2),
-                                   transitions={'succeeded':'setPosition', 'timeout':'setPosition'}) 
+                                   ForwardOrder(dist=0.500,vmax=0.2),
+                                   transitions={'succeeded':'non-recaled', 'timeout':'setPosition'}) 
             #TODO le succeded devrait etre un probleme ! on doit toujours bloquer. mais si je fas ca la simul va merder
             smach.StateMachine.add('setPosition',
                                    SetPositionState(*recallWalls[borderName]),
                                    transitions={'succeeded':'BackwardOrder', 'timeout':'problem'})
+            
             smach.StateMachine.add('BackwardOrder',
-                                   BackwardOrder(dist=0.100,vmax=0.3),
+                                   OpenLoopOrder(-1,0.0,0.0, 
+                                                 duration=5.00),
                                    transitions={'succeeded':'recaled', 'timeout':'problem'})
             
        

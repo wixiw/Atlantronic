@@ -45,7 +45,7 @@ void KinematicBase::getInputs()
     inCurrentICRSpeed.readNewest(inICRSpeed);
     attrCurrentICRSpeed = (ICRSpeed) inICRSpeed;
     inParams.readNewest(attrParams);
-    inHwBlocked.readNewest(attrRobotBlockedTimeout);
+    inHwBlocked.readNewest(attrHwBlocked);
 }
 
 void KinematicBase::run()
@@ -73,49 +73,35 @@ void KinematicBase::checkRobotBlocked()
     //comparison of measured twist to the commanded twist. if they are not consistent then the robot is not able to perform its motion - there is a problem..
 
     //if robot is blocked and timer is 0 then we just began to block
-//    if (!consistencyMeasuredvsCommanded())
-//    {
-//        if (attrBlockTime == 0)
-//        {
-//            attrBlockTime = getAbsoluteTime();
-//        }
-//        else
-//        {
-//            ArdTimeDelta delay = getTimeDelta(attrBlockTime, getAbsoluteTime());
-//            if (delay < 0 || delay > propRobotBlockedTimeout)
-//            {
-//                Log(INFO) << "Kinematic base detected robot blocage";
-//                attrRobotBlockedTimeout = true;
-//            }
-//        }
-//    }
-//    else
-//    {
-//        attrBlockTime = 0;
-//        attrRobotBlockedTimeout = false;
-//    }
+    if (!consistencyMeasuredvsCommanded())
+    {
+        if (attrBlockTime == 0)
+        {
+            attrBlockTime = getAbsoluteTime();
+        }
+        else
+        {
+            ArdTimeDelta delay = getTimeDelta(attrBlockTime, getAbsoluteTime());
+            if (delay < 0 || delay > propRobotBlockedTimeout)
+            {
+                Log(INFO) << "Kinematic base detected robot blocage";
+                attrRobotBlockedTimeout = true;
+            }
+        }
+    }
+    else
+    {
+        attrBlockTime = 0;
+        attrRobotBlockedTimeout = false;
+    }
 }
 
 bool KinematicBase::consistencyMeasuredvsCommanded()
 {
-    //TODO a refaire
-    // distance bewteen twist. thetap is given a coefficient 0.04=0.2² to represent the speed at a 20cm lever
-
-
-    //double speederror = attrCurrentICRSpeed.distanceTo(attrAcceptableICRSpeed, 1.0, 0.2);
-
-    //////////////////////
-//    Log(DEBUG) << ">> KinematicBase::consistencyMeasuredvsCommanded()";
-//    Log(DEBUG) << "command  : "<<attrAcceptableTwist.toString();
-//    Log(DEBUG) << "measure  : "<<attrCurrentTwist.toString();
-//    Log(DEBUG) << "error    : "<<speederror;
-//    Log(DEBUG) << "<< KinematicBase::consistencyMeasuredvsCommanded()";
-    ////////////////////
+    attrSpeedError = fabs(attrCurrentICRSpeed.ro() - attrICRSpeedCmd.ro());
 
     // 20 mm/s difference accepted
-    //return speederror < propMaxSpeedDiff;
-
-//    return !blocked;
+    return attrSpeedError < propMaxSpeedDiff;
 }
 
 void KinematicBase::setOutputs()
@@ -128,8 +114,6 @@ void KinematicBase::setOutputs()
     outRightSteeringPositionCmd.write(attrMotorStateCommand.steering.right.position);
     outRearSteeringPositionCmd.write(attrMotorStateCommand.steering.rear.position);
 
-    outFiltrationFeedback.write(attrQuality);
-    outFilteredICRSpeed.write(attrCurrentICRSpeed);
     outRobotBlocked.write(attrRobotBlockedTimeout);
     outTwistCmd.write(attrICRSpeedCmd.twist());
 }
@@ -142,8 +126,9 @@ void KinematicBase::createOrocosInterface()
     addAttribute("attrMotorStateCommand", attrMotorStateCommand);
     addAttribute("attrMotorsCurrentState", attrMotorsCurrentState);
     addAttribute("attrParams", attrParams);
-    addAttribute("attrQuality", attrQuality);
     addAttribute("attrRobotBlockedTimeout", attrRobotBlockedTimeout);
+    addAttribute("attrSpeedError",attrSpeedError);
+    addAttribute("attrHwBlocked",attrHwBlocked);
     //addAttribute("attrBlockTime", attrBlockTime);
 
     addProperty("propRobotBlockedTimeout", propRobotBlockedTimeout).doc("");
