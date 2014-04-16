@@ -59,8 +59,8 @@ class MainStateMachine(smach.StateMachine):
                                    transitions={'gogogo':'SetInitialPosition', 'problem':'end'})  
             
             smach.StateMachine.add('SetInitialPosition',
-                      SetInitialPosition(INIT_POS.x, INIT_POS.y, INIT_POS.theta),
-                      transitions={'succeeded':'M1', 'timeout':'end'})
+                      SetPositionState(INIT_POS.x, INIT_POS.y, INIT_POS.theta),
+                      transitions={'succeeded':'Move', 'timeout':'end'})
             
 
             

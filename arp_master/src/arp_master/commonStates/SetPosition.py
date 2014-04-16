@@ -11,41 +11,10 @@ from arp_master.fsmFramework import *
 # 
 # These states are usefull to set the position of the robot
 #
-##################################################
-
-class SetPositionState(CyclicState):
-    def __init__(self,x,y,theta):
-        CyclicState.__init__(self, outcomes=['succeeded'])
-
-        self.xi = x
-        self.yi = y
-        self.thetai = theta
-            
-    def executeIn(self):
-        if self.xi=="FREE":
-            xi=Inputs.getx()
-        else:
-            xi=self.xi
-        if self.yi=="FREE":
-            yi=Inputs.gety()
-        else:
-            yi=self.yi
-        if self.thetai=="FREE":
-            thetai=Inputs.gettheta()
-        else:
-            thetai=self.thetai     
-            
-        self.setPosition(xi,yi,thetai)
-        self.result = True;
-    
-    def executeTransitions(self):
-        if self.result == True:
-            return 'succeeded'   
-        else:
-            return 'timeout'    
+################################################## 
         
 
-class SetInitialPosition(CyclicState):
+class SetPositionState(CyclicState):
     def __init__(self,x,y,theta):
         CyclicState.__init__(self, outcomes=['succeeded'])
         self.xi = x
@@ -55,11 +24,33 @@ class SetInitialPosition(CyclicState):
     
     def executeIn(self):
         self.result = False;
-        if math.fabs(self.xi) > 2 or math.fabs(self.yi) > 2 or math.fabs(self.thetai) > 4 :
-            rospy.logerr("SetInitialPosition is done with incorrect range values, check units %f %f %f", self.xi, self.yi, self.thetai)
+        
+        if self.xi=="FREE":
+            xi=0
+        else:
+            xi=self.xi
+        if self.yi=="FREE":
+            yi=0
+        else:
+            yi=self.yi
+        if self.thetai=="FREE":
+            thetai=0
+        else:
+            thetai=self.thetai  
+            
+        if math.fabs(xi) > 2 or math.fabs(yi) > 2 or math.fabs(thetai) > 4 :
+            rospy.logerr("SetPosition is done with incorrect range values, check units %f %f %f", xi, yi, thetai)
             self.result = False;
         else:
-            poseDepart=AmbiPoseYellow(self.xi,self.yi,self.thetai,Data.color)
+            poseDepart=AmbiPoseYellow(xi,yi,thetai,Data.color)
+            
+            if self.xi=="FREE":
+                poseDepart.x=Inputs.getx()
+            if self.yi=="FREE":
+                poseDepart.y=Inputs.gety()
+            if self.thetai=="FREE":
+                poseDepart.theta=Inputs.gettheta()            
+            
             self.setPosition(poseDepart.x,poseDepart.y,poseDepart.theta)
             self.setGyroPosition(poseDepart.theta);
             self.result = True;

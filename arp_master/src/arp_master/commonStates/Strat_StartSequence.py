@@ -21,7 +21,7 @@ class StartSequence(smach.StateMachine):
         smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
         with self:
             smach.StateMachine.add('SetInitialPosition',
-                      SetInitialPosition(x,y,theta),
+                      SetPositionState(x,y,theta),
                       transitions={'succeeded':'StartGyroCalibration', 'timeout':'problem'})
             #SetInitial position se charge aussi du gyro.
 

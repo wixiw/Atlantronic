@@ -3,8 +3,6 @@
 #libraries for ROS
 import roslib; roslib.load_manifest('arp_master')
 
-print "-----arrivee dans inittstaes"
-
 
 from arp_master import *
 
@@ -19,9 +17,6 @@ from arp_master.commonStates import *
 #from arp_master.commonStates.SetPosition import *
 
 ####################################################################################################################
-print "-----DEFINITION StartSequence2014"
-#for name in dir():
-#            print ">>>>> " , name
             
 class StartSequence2014(smach.StateMachine):
     def __init__(self,x,y,theta):
@@ -32,7 +27,7 @@ class StartSequence2014(smach.StateMachine):
         
         with self:
             smach.StateMachine.add('SetInitialPosition',
-                      SetInitialPosition(1.350,0.500,0),
+                      SetPositionState(1.350,0.500,0),
                       transitions={'succeeded':'WaitForStartUnPlug', 'timeout':'problem'})
             
             smach.StateMachine.add('WaitForStartUnPlug',

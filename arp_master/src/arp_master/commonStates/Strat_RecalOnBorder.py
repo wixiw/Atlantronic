@@ -4,8 +4,6 @@
 #libraries for ROS
 import roslib; roslib.load_manifest('arp_master')
 
-print "-----arrivee dans stratrecalon border"
-
 
 from arp_master import *
 import os
@@ -19,7 +17,6 @@ from arp_master.fsmFramework import *
 #
 ##################################################
 
-print "-----DEFINITION AmbiRecalOnBorderYellow"
 
 class AmbiRecalOnBorderYellow(smach.StateMachine):
     def __init__(self,borderName,color):
