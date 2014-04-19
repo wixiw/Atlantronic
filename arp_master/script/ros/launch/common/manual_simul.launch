@@ -2,11 +2,12 @@
 	<include file="$(find arp_master)/script/ros/include/common_includes_simul.xml"/>
 
 	<node 
-		name="StratNode_Tanguy"   
-		pkg="arp_master"  
-		type="StratNode_Tanguy.py"     
-		args="" output="screen"
-		required="true"
+		name="ManualStratNode" 
+		pkg="arp_master" 
+		type="ManualStratNode.py" 		
+		args="" 
+		output="screen"
+		respawn="true"
 		launch-prefix="nice -n 19"
 	/>
 </launch>

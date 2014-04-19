@@ -2,11 +2,12 @@
 	<include file="$(find arp_master)/script/ros/include/common_includes.xml"/>
 
 	<node 
-		name="StratNode_Brainstorming2014"   
-		pkg="arp_master"  
-		type="Brainstorming_2014.py"
-		args="" output="screen"
-		required="true"
+		name="ManualStratNode" 
+		pkg="arp_master" 
+		type="ManualStratNode.py"
+		args="" 
+		output="screen"
+		respawn="true"
 		launch-prefix="nice -n 19"
 	/>
 </launch>

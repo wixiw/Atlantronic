@@ -2,7 +2,6 @@
 <launch>
 	
   	<param name="/match_duration" value="89.5" /> 
-  	<param name="/blinding_period" value="2." /> 
 	<!--Distance between center of robot and back -->
     <param name="/Ubiquity/DIST_BACK" value="0.053"/>  
     <!--horizontal wall position -->

@@ -1,0 +1,8 @@
+<launch>
+	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
+	<include file="$(find arp_hml)/script/ros/launch/arp_hml_ros_simul.launch"/>
+	<include file="$(find arp_music)/script/ros/launch/arp_music.launch"/>
+	<include file="$(find arp_master)/script/ros/include/rosparam.xml"/>
+	<include file="$(find arp_master)/script/ros/include/graphic_simul.xml"/>
+	<include file="$(find arp_master)/script/ros/include/orocos_simul.xml"/>
+</launch>

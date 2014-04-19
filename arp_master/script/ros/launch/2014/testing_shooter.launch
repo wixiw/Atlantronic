@@ -1,11 +1,13 @@
 <launch>
-	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
-	<include file="$(find arp_master)/script/ros/launch/rosparam.launch"/>
-	<include file="$(find arp_hml)/script/ros/launch/arp_hml_ros.launch"/>
-	<include file="$(find arp_master)/script/ros/launch/arp_master_ros.launch"/>
-		
-	<node name="TestingShooterNode"   pkg="arp_master"  type="TestingShooter.py"     		
-		args="" output="screen"
+	<include file="$(find arp_master)/script/ros/include/common_includes.xml"/>
+
+	<node 
+		name="TestingShooterNode"   
+		pkg="arp_master"  
+		type="TestingShooter.py"     		
+		args="" 
+		output="screen"
 		required="true"
-	/>/>
+		launch-prefix="nice -n 19"
+	/>
 </launch>
