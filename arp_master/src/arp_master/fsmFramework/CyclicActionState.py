@@ -22,11 +22,6 @@ class CyclicActionState(CyclicState):
         self.timeout = 10
         self.lastStart=None
         self.motionTargetPublisher = rospy.Publisher('Master/motionTarget', MotionTarget)
-        try:
-            self.blinding_period=rospy.get_param("/blinding_period")
-        except KeyError:
-            rospy.logerr("Failed to find a rosparam : /blinding_period") 
-            self.blinding_period=0
    
     
     # the main execute function
