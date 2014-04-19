@@ -19,7 +19,7 @@ using namespace std;
 using namespace Eigen;
 
 ORO_CREATE_COMPONENT_LIBRARY()
-ORO_LIST_COMPONENT_TYPE( arp_hml::CanOpenController)
+ORO_LIST_COMPONENT_TYPE( arp_hml::CanOpenController )
 
 CanOpenController::CanOpenController(const std::string& name) :
             HmlTaskContext(name),

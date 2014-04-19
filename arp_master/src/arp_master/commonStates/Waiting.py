@@ -4,8 +4,8 @@
 import roslib; roslib.load_manifest('arp_master')
 
 from arp_master import *
-import os
 from arp_master.fsmFramework import *
+from arp_core.msg import Beep
 
 #
 # Those states allows the robot to wait for something.
@@ -33,9 +33,10 @@ class WaiterState(CyclicState):
 class WaitForStart(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['start'])
+        self.pub = rospy.Publisher('/Master/beep', Beep)
     
     def executeIn(self):
-        os.system("beep -f 200 -l200 -r2") 
+        self.pub.publish(Beep(200,0.2,2))
     
     def executeTransitions(self):
        if Inputs.getstart()==1:
@@ -45,9 +46,10 @@ class WaitForStart(CyclicState):
 class WaitForStartUnplug(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['startunplug'])
+        self.pub = rospy.Publisher('/Master/beep', Beep)
     
     def executeIn(self):
-        os.system("beep -f 200 -l100 -r1") 
+        self.pub.publish(Beep(200,0.1,1))
         
     def executeTransitions(self):
        if Inputs.getstart()==0:
@@ -57,9 +59,10 @@ class WaitForStartUnplug(CyclicState):
 class WaitForMatch(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['start'])
+        self.pub = rospy.Publisher('/Master/beep', Beep)
     
     def executeIn(self):
-        os.system("beep -f 300 -l300 -r3")
+        self.pub.publish(Beep(300,0.3,3))
     
     def executeTransitions(self):
        if Inputs.getstart()==0:
@@ -70,24 +73,7 @@ class WaitForMatch(CyclicState):
         Data.start_time=rospy.get_rostime()
         self.stopGyroCalibration(); 
 
-#wait for start to be plugged out
-class WaitForMatch(CyclicState):
-    def __init__(self):
-        CyclicState.__init__(self, outcomes=['start'])
-    
-    def executeIn(self):
-        os.system("beep -f 300 -l300 -r3")
-    
-    def executeTransitions(self):
-       if Inputs.getstart()==0:
-            return 'start'
-        
-    def executeOut(self):
-        #je note le temps de debut de match
-        Data.start_time=rospy.get_rostime()
-        self.stopGyroCalibration(); 
-
-#wait for start to be plugged out
+#Log a text
 class LoggerState(CyclicState):
     def __init__(self,text):
         self.text = text

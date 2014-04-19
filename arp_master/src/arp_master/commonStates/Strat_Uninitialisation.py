@@ -6,6 +6,7 @@ import roslib; roslib.load_manifest('arp_master')
 from arp_master import *
 import os
 from arp_master.fsmFramework import *
+from arp_core.msg import Beep
 
 #
 # This is the default a5 level state for any strategy
@@ -23,10 +24,11 @@ class Uninitialisation(smach.StateMachine):
 class UninitialisationState(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['ok'])
+        self.pub = rospy.Publisher('/Master/beep', Beep)
 
     def executeIn(self):
         self.result = self.disablePower()
-        os.system("beep -f 300 -l3000") 
+        self.pub.publish(Beep(300,3,1))
         os.system("sh /opt/ard/arp_core/script/linux/match_finished.sh")
         
     def executeTransitions(self):
