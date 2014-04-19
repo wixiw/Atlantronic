@@ -234,6 +234,38 @@ bool Discovery::ooEnableStart()
     }
 }
 
+bool Discovery::ooScanDynamixel24F()
+{
+    int res = m_robotItf.dynamixel_scan(24);
+
+    if( res < 0 )
+    {
+        LOG(Error) << "Failed to scan RX24F." << endlog();
+        return false;
+    }
+    else
+    {
+        LOG(Info) << "ScanRX24F success." << endlog();
+        return true;
+    }
+}
+
+bool Discovery::ooDynamixel24FSetPosition(int id, double position)
+{
+    int res = m_robotItf.dynamixel_set_goal_position(24, id, position);
+
+    if( res < 0 )
+    {
+        LOG(Error) << "Failed to set position to dynamixel with ID=" << id << "." << endlog();
+        return false;
+    }
+    else
+    {
+        LOG(Info) << "Dynamixel position set successfully." << endlog();
+        return true;
+    }
+}
+
 bool Discovery::srvStartGyroCalibration(EmptyWithSuccess::Request& req, EmptyWithSuccess::Response& res)
 {
     res.success = ooStartCalibration();
@@ -309,6 +341,11 @@ void Discovery::createOrocosInterface()
      .doc("Reset the stm32 board.");
     addOperation("ooEnableStart",&Discovery::ooEnableStart, this, OwnThread)
      .doc("Informs the stm32 that the next start withdraw sill be the match begining.");
+    addOperation("ooScanDynamixel24F",&Discovery::ooScanDynamixel24F, this, OwnThread)
+     .doc("Scan dynamixels of type RX24F.");
+    addOperation("ooDynamixel24FSetPosition",&Discovery::ooDynamixel24FSetPosition, this, OwnThread)
+     .doc("Set target of dynamixels of type RX24F.");
+
 }
 
 void Discovery::createRosInterface()

@@ -88,6 +88,16 @@ class Discovery: public Stm32TaskContext
          */
         bool ooEnableStart();
 
+        /**
+         * Scan dynamixels of type rx24F
+         */
+        bool ooScanDynamixel24F();
+
+        /**
+         * Set the target of dynamixel with id to go to position
+         */
+        bool ooDynamixel24FSetPosition(int id, double position);
+
 /****************************************************************
  * Interface ROS
  ****************************************************************/
