@@ -13,12 +13,7 @@ class EndGame(PreemptiveStateMachine):
                                              EndMatchPreempter(0),
                                              transitions={'endMatch':'endEndGame'})
             
-            PreemptiveStateMachine.add('FinalDrop',
-                      FinalDrop(),
-                      transitions={'succeeded':'endEndGame','timeout':'FinalDrop'})
-            self.setInitialState('FinalDrop')
-
-class FinalDrop(CyclicActionState):
-    def createAction(self):
-        self.cap(pi/2)
-            
+            PreemptiveStateMachine.add('DropAll',
+                      WaiterState(1.5),
+                      transitions={'timeout':'endEndGame'})
+            self.setInitialState('DropAll')

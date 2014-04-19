@@ -21,11 +21,11 @@ from MotorManagement import *
 class AmbiRecalOnBorderYellow(smach.StateMachine):
     def __init__(self,borderName,color):
         
-        recallWalls={'RIGHT':(1.500-RobotVierge.FRONT_SIDE.x,"FREE",0),
-                 'LEFT':(-1.500+RobotVierge.FRONT_SIDE.x,"FREE",-pi),
-                 'UP':("FREE",1.000-RobotVierge.FRONT_SIDE.x,pi/2),
-                 'DOWN':("FREE",-1.000+RobotVierge.FRONT_SIDE.x,-pi/2),
-                 'FRUITBASKET':("FREE",0.700-RobotVierge.FRONT_SIDE.x,pi/2)
+        recallWalls={'RIGHT':Pose2D(1.500-RobotVierge.FRONT_SIDE.x,"FREE",0),
+                 'LEFT':Pose2D(-1.500+RobotVierge.FRONT_SIDE.x,"FREE",-pi),
+                 'UP':Pose2D("FREE",1.000-RobotVierge.FRONT_SIDE.x,pi/2),
+                 'DOWN':Pose2D("FREE",-1.000+RobotVierge.FRONT_SIDE.x,-pi/2),
+                 'FRUITBASKET':Pose2D("FREE",0.700-RobotVierge.FRONT_SIDE.x,pi/2)
                  }
         
         smach.StateMachine.__init__(self,outcomes=['recaled','non-recaled','problem'])
@@ -51,12 +51,12 @@ class AmbiRecalOnBorderYellow(smach.StateMachine):
                                    transitions={'succeeded':'non-recaled', 'timeout':'setPosition'}) 
             #TODO le succeded devrait etre un probleme ! on doit toujours bloquer. mais si je fas ca la simul va merder
             smach.StateMachine.add('setPosition',
-                                   SetPositionState(*recallWalls[borderName]),
+                                   SetPositionState(recallWalls[borderName]),
                                    transitions={'succeeded':'BackwardOrder', 'timeout':'problem'})
             
             smach.StateMachine.add('BackwardOrder',
                                    OpenLoopOrder(-1,0.0,0.0, 
-                                                 duration=5.00),
+                                                 duration=6.00),
                                    transitions={'succeeded':'recaled', 'timeout':'problem'})
             
        

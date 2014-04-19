@@ -14,33 +14,22 @@ class Opening(PreemptiveStateMachine):
                                              transitions={'endMatch':'problem'})
             
             PreemptiveStateMachine.add('EscapeStartArea',
-                      AmbiOmniDirectOrder2Pass( Pose2D(1.100, 0.400, pi) , 0.2 ),
+                      AmbiOmniDirectOrder2( Pose2D(1.100, 0.400, -5*pi/6)),
                       transitions={'succeeded':'GoToYFT', 'timeout':'problem'})
 
             self.setInitialState('EscapeStartArea')
             
 # Go to Yellow Fire Top
             PreemptiveStateMachine.add('GoToYFT',
-                      AmbiOmniDirectOrder2Pass( Pose2D(0.600 + Robot2014.FRONT_SIDE.x, 0.400, pi), vpasse=0.2),
-                      transitions={'succeeded':'PickYFT', 'timeout':'problem'})
-
-# Pick Yellow Fire Top            
-            PreemptiveStateMachine.add('PickYFT',
-                      WaiterState(0.1),
-                      transitions={'timeout':'GayCamping'})
-
+                      AmbiOmniDirectOrder2Pass( Pose2D(0.600 + Robot2014.FRONT_SIDE.x, 0.400, -5*pi/6), vpasse=1),
+                      transitions={'succeeded':'PrepareFrescos', 'timeout':'problem'})
 
 # Go to Gay Camping point, align for ShootStates
-            PreemptiveStateMachine.add('GayCamping',
-                      AmbiOmniDirectOrder2(DoubleTargetShootState.getEntryYellowPose()),
-                      transitions={'succeeded':'ShootBalls', 'timeout':'problem'})
+            PreemptiveStateMachine.add('PrepareFrescos',
+                      AmbiOmniDirectOrder2(Pose2D(0.300, 0.400, -5*pi/6)),
+                      transitions={'succeeded':'StickFrescos', 'timeout':'problem'})
 
-#Shoot Balls
-            PreemptiveStateMachine.add('ShootBalls',
-                      DoubleTargetShootState(),
-                      transitions={'endShoot':'StickFrescos', 'problem':'problem'})
-
-#Go to stick to frescos entry point no requiered as it is the same as DoubleTargetShootState     
+#Go to stick to frescos entry point not requiered as it is the same as DoubleTargetShootState     
 #Stick Frescos
             PreemptiveStateMachine.add('StickFrescos',
                       StickFrescosState(),
@@ -68,8 +57,17 @@ class Opening(PreemptiveStateMachine):
             
 # Action Fire Yellow Mobile Torch     
             PreemptiveStateMachine.add('ActionFireYellowMobileTorch',
-                      WaiterState(3.0),
-                      transitions={'timeout':'TurnEmptyYellowMobileTorch'})
+                      WaiterState(2.0),
+                      transitions={'timeout':'PrepareRecalY'})
+
+
+
+
+
+
+
+
+
 
 # Turn around Yellow Mobile Torch
             PreemptiveStateMachine.add('TurnEmptyYellowMobileTorch',
@@ -110,39 +108,58 @@ class Opening(PreemptiveStateMachine):
 # Pick Yellow Fire Bot            
             PreemptiveStateMachine.add('PickYFB',
                       WaiterState(1.5),
-                      transitions={'timeout':'GoToStartArea'})
+                      transitions={'timeout':'PrepareRecalY'})
 
-# Go to Start Area
-            PreemptiveStateMachine.add('GoToStartArea',
-                      AmbiOmniDirectOrder2Pass(Pose2D(0.900, 0.400, pi/3), vpasse=1.0),
-                      transitions={'succeeded':'EnterStartArea', 'timeout':'problem'})
+
+
+
+
+
+
+
+
+#Saut de strat pour tester les ordres de recalage.
+
+
+            PreemptiveStateMachine.add('PrepareRecalY',
+                      AmbiOmniDirectOrder2(Pose2D(0.800,0.500,pi/2)),
+                      transitions={'succeeded':'RecalY', 'timeout':'problem'})
+            
+            PreemptiveStateMachine.add('RecalY',
+                      AmbiRecalOnBorderYellow("FRUITBASKET",Data.color),
+                      transitions={'recaled':'EscapeRecalY', 'non-recaled':'problem','problem':'problem'})  
+
+            PreemptiveStateMachine.add('EscapeRecalY',
+                      AmbiOmniDirectOrder2(Pose2D(1.200,0.400,pi/4)),
+                      transitions={'succeeded':'PrepareRecalX', 'timeout':'problem'})
+             
+            PreemptiveStateMachine.add('PrepareRecalX',
+                      AmbiOmniDirectOrder2(Pose2D(1.350,0.550,0), vmax=0.3),
+                      transitions={'succeeded':'RecalX', 'timeout':'problem'})
+            
+            PreemptiveStateMachine.add('RecalX',
+                      AmbiRecalOnBorderYellow("RIGHT",Data.color),
+                      transitions={'recaled':'PrepareUnloadFireInStartArea', 'non-recaled':'problem','problem':'problem'})
+
             
 # Enter Start Area
-            PreemptiveStateMachine.add('EnterStartArea',
-                      AmbiOmniDirectOrder2(Pose2D(1.300 + Robot2014.RIGHT_SIDE.x, 0.550, pi/3)),
+            PreemptiveStateMachine.add('PrepareUnloadFireInStartArea',
+                      AmbiOmniDirectOrder2(Pose2D(1.225, 0.525, pi/3), vmax=0.3),
                       transitions={'succeeded':'DropFiresStartArea', 'timeout':'problem'})
 
 # Drop Fires in stock in Start area       
             PreemptiveStateMachine.add('DropFiresStartArea',
                       WaiterState(2.5),
-                      transitions={'timeout':'CleanZone'})
-#
-# WARNING BUG
-#
+                      transitions={'timeout':'ExitStartArea'})
 
-# Clean zone before relocate Robot2014.LEFT_SIDE.x
-            PreemptiveStateMachine.add('CleanZone',
-                      AmbiOmniDirectOrder2(Pose2D(0.600, 0.700 - 0.212, 0)),
-                      transitions={'succeeded':'Relocation', 'timeout':'problem'})
-
-# Relocation
-            PreemptiveStateMachine.add('Relocation',
-                      AmbiOmniDirectOrder2(Pose2D(0.700, 0.700 + Robot2014.FRONT_SIDE.x, pi/2)),
-                      transitions={'succeeded':'TimerRelocation', 'timeout':'problem'})
-
-# Timer Relocation            
-            PreemptiveStateMachine.add('TimerRelocation',
-                      WaiterState(1.5),
+# Exit Start Area
+            PreemptiveStateMachine.add('ExitStartArea',
+                      AmbiOmniDirectOrder2(Pose2D(0.900, 0.000, pi/3)),
+                      transitions={'succeeded':'Timer', 'timeout':'problem'})
+            
+# Timer             
+            PreemptiveStateMachine.add('Timer',
+                      WaiterState(15),
                       transitions={'timeout':'GoToYFM'})
                                                            
 # Go to Yellow Fire Mid
@@ -167,7 +184,7 @@ class Opening(PreemptiveStateMachine):
 
 # Tree avoidance
             PreemptiveStateMachine.add('TreeAvoidance',
-                      AmbiOmniDirectOrder2Pass(Pose2D(1.200, -0.300, 0),vpasse=1.0),
+                      AmbiOmniDirectOrder2Pass(Pose2D(1.200, -0.300, 0), vpasse=1.0),
                       transitions={'succeeded':'GoToHeatBot', 'timeout':'problem'})
             
 # Go to Heat Bot

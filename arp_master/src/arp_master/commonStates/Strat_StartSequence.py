@@ -17,11 +17,11 @@ from arp_master.fsmFramework import *
 
 
 class StartSequence(smach.StateMachine):
-    def __init__(self,x,y,theta):
+    def __init__(self,startPosition):
         smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
         with self:
             smach.StateMachine.add('SetInitialPosition',
-                      SetPositionState(x,y,theta),
+                      SetPositionState(startPosition),
                       transitions={'succeeded':'StartGyroCalibration', 'timeout':'problem'})
             #SetInitial position se charge aussi du gyro.
 

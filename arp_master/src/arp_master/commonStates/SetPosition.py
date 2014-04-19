@@ -15,11 +15,11 @@ from arp_master.fsmFramework import *
         
 
 class SetPositionState(CyclicState):
-    def __init__(self,x,y,theta):
+    def __init__(self,startPosition):
         CyclicState.__init__(self, outcomes=['succeeded'])
-        self.xi = x
-        self.yi = y
-        self.thetai = theta
+        self.xi = startPosition.x
+        self.yi = startPosition.y
+        self.thetai = startPosition.theta
             
     
     def executeIn(self):

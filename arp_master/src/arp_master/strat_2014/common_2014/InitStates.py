@@ -19,7 +19,7 @@ from arp_master.commonStates import *
 ####################################################################################################################
             
 class StartSequence2014(smach.StateMachine):
-    def __init__(self,x,y,theta):
+    def __init__(self,startPosition):
         smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
         
         for name in dir():
@@ -27,7 +27,7 @@ class StartSequence2014(smach.StateMachine):
         
         with self:
             smach.StateMachine.add('SetInitialPosition',
-                      SetPositionState(1.350,0.500,0),
+                      SetPositionState(Pose2D(1.350,0.500,0)),
                       transitions={'succeeded':'WaitForStartUnPlug', 'timeout':'problem'})
             
             smach.StateMachine.add('WaitForStartUnPlug',
@@ -44,18 +44,14 @@ class StartSequence2014(smach.StateMachine):
             
             smach.StateMachine.add('RecalY',
                       AmbiRecalOnBorderYellow("FRUITBASKET",Data.color),
-                      transitions={'recaled':'ShowReady', 'non-recaled':'problem','problem':'problem'})   
+                      transitions={'recaled':'PrepareGoHome', 'non-recaled':'problem','problem':'problem'})   
             
-            smach.StateMachine.add('ShowReady',
-                      AmbiOmniDirectOrder2(Pose2D(1.100,0.350,-pi/2), vmax = 0.3),
-                      transitions={'succeeded':'WaitForLoc2', 'timeout':'WaitForLoc2'})
-            
-            smach.StateMachine.add('WaitForLoc2',
-                      WaiterState(2.0),
-                      transitions={'timeout':'GoHome'})
+            smach.StateMachine.add('PrepareGoHome',
+                      AmbiOmniDirectOrder2(Pose2D(1.100,0.350,-3*pi/4), vmax = 0.3),
+                      transitions={'succeeded':'GoHome', 'timeout':'GoHome'})
             
             smach.StateMachine.add('GoHome',
-                      AmbiOmniDirectOrder2(Pose2D(x,y,theta), vmax = 0.3),
+                      AmbiOmniDirectOrder2(startPosition, vmax = 0.3),
                       transitions={'succeeded':'WaitAbit', 'timeout':'WaitAbit'})
             
             smach.StateMachine.add('WaitAbit',
@@ -67,7 +63,7 @@ class StartSequence2014(smach.StateMachine):
                       transitions={'succeeded':'Hou', 'timeout':'Hou'})
                         
             smach.StateMachine.add('Hou',
-                      AmbiOmniDirectOrder2(Pose2D(x,y,theta), vmax = 0.3),
+                      AmbiOmniDirectOrder2(startPosition, vmax = 0.3),
                       transitions={'succeeded':'WaitForStart', 'timeout':'WaitForStart'})
             
             smach.StateMachine.add('WaitForStart', 

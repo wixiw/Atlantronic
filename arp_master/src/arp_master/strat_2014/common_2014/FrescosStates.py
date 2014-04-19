@@ -31,21 +31,20 @@ class StickFrescosState(PreemptiveStateMachine):
             
             # Approach Fresco
             PreemptiveStateMachine.add('GoToFresco',
-                      AmbiOmniDirectOrder2(Pose2D(0.120, 1.000 + Robot2014.REAR_SIDE.x, -pi/2),vmax=0.3),
+                      AmbiOmniDirectOrder2(Pose2D(0.000, 1.000 - 0.214 - 0.050, pi+0.428)),
                       transitions={'succeeded':'StickFrescos', 'timeout':'problem'})
             
             self.setInitialState('GoToFresco')
             
             #Utiliser un ordre d'approche pour gerer la collision avec le mur (peut venir du timeout precedent)
-            
-            
-            # Stick Fresco (tempo 3s)
+                        
+            # Stick Fresco
             PreemptiveStateMachine.add('StickFrescos',
-                      WaiterState(3.0),
-                      transitions={'timeout':'QuitFresco'})
+                      AmbiOmniDirectOrder2(Pose2D(0.000, 1.000 - 0.214 + 0.200, pi+0.428),vmax=0.3),
+                      transitions={'succeeded':'problem', 'timeout':'QuitFresco'})
 
             # Quit Fresco
             PreemptiveStateMachine.add('QuitFresco',
-                      AmbiOmniDirectOrder2(self.getEntryYellowPose(),vmax=0.3),
+                      AmbiOmniDirectOrder2(self.getEntryYellowPose()),
                       transitions={'succeeded':'endFrescos', 'timeout':'problem'})
             

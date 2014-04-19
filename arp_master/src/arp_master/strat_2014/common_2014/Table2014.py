@@ -12,11 +12,12 @@ from arp_master.util.RobotVierge import *
 class Table2014(TableVierge):
     #
     # Points d'interet
-    #     les points sont defini cote rouge comme toujours
+    #     les points sont defini cote jaune comme toujours
     
     #bouteilles
     #P_BOTTLE_CLOSE      = Point(0.860,-0.900)
 
+    P_START_POS         = Pose2D(1.260, 0.550, -5*pi/6)
     
     # 
     # Memoire des actions
