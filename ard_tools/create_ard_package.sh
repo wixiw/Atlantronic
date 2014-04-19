@@ -59,7 +59,7 @@ create_folder_structure()
 	mkdir $package_name/cmake $package_name/doc $package_name/test $package_name/ressource $package_name/src $package_name/script $package_name/bin
 	mkdir $package_name/script/orocos $package_name/script/linux $package_name/script/ros
 	mkdir $package_name/script/orocos/deployment $package_name/script/orocos/conf $package_name/script/orocos/ops $package_name/script/orocos/osd
-	mkdir $package_name/script/ros/launch $package_name/srv $package_name/script/msg
+	mkdir $package_name/script/ros/launch $package_name/srv $package_name/msg
 	echo "[*] Moving default sources into src folder ..."
 	mv $package_name/*.?pp $package_name/src
 
@@ -102,9 +102,6 @@ edit_cmakelists()
 ###
 configure_ros()
 {
-	echo "[*] Editing env.sh ..."
-	echo "ROS_PACKAGE_PATH=\$ROS_PACKAGE_PATH:\`rosstack find ard\`/$package_name" >> env.sh
-
 	echo "[*] Editing manifest.xml ..."
 	cp ard_tools/default/manifest.xml $package_name
 	sed -i "/^PACKAGE_NAME /s/=/= $package_name/" $package_name/manifest.xml
