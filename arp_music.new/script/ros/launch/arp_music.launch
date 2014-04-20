@@ -1,0 +1,7 @@
+<launch>
+	<node 	
+		name="BeepMachine" 
+		pkg="arp_music" 
+		type="BeepMachine.py"
+		launch-prefix="nice -n 19"/>
+</launch>
