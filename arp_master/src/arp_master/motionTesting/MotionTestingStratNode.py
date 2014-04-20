@@ -55,11 +55,11 @@ class MainStateMachine(smach.StateMachine):
         with self:
             smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
                                    transitions={'endInitialisation':'StartSequence', 'failed':'end'})
-            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(INIT_POS.x, INIT_POS.y, INIT_POS.theta),
+            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(Pose2D(INIT_POS.x, INIT_POS.y, INIT_POS.theta)),
                                    transitions={'gogogo':'SetInitialPosition', 'problem':'end'})  
             
             smach.StateMachine.add('SetInitialPosition',
-                      SetPositionState(INIT_POS.x, INIT_POS.y, INIT_POS.theta),
+                      SetPositionState(Pose2D(INIT_POS.x, INIT_POS.y, INIT_POS.theta)),
                       transitions={'succeeded':'Move', 'timeout':'end'})
             
 

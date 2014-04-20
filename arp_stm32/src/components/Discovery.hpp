@@ -91,12 +91,52 @@ class Discovery: public Stm32TaskContext
         /**
          * Scan dynamixels of type rx24F
          */
-        bool ooScanDynamixel24F();
+        bool ooScanDynamixelRX24F();
+
+        /**
+         * Scan dynamixels of type rx24F
+         */
+        bool ooScanDynamixelAX12();
+
+        /**
+         * Set new ID for dynamixel of type rx24F
+         */
+        bool ooDynamixelSetIdRX24F(int oldId, int newId);
+
+        /**
+         * Set new ID for dynamixel of type AX12
+         */
+        bool ooDynamixelSetIdAX12(int oldId, int newId);
 
         /**
          * Set the target of dynamixel with id to go to position
          */
-        bool ooDynamixel24FSetPosition(int id, double position);
+        bool ooDynamixelSetPositionRX24F(int id, double position);
+
+        /**
+         * Set the target of dynamixel with id to go to position
+         */
+        bool ooDynamixelSetPositionAX12(int id, double position);
+
+        /**
+         * Set the max torque of dynamixel named id
+         */
+        bool ooDynamixelSetTorqueRX24F(int id, int percentage);
+
+        /**
+         * Set the max torque of dynamixel named id
+         */
+        bool ooDynamixelSetTorqueAX12(int id, int percentage);
+
+        /**
+         * Set the precision of dynamixel named id
+         */
+        bool ooDynamixelSetPrecisionRX24F(int id, double precision);
+
+        /**
+         * Set the precision of dynamixel named id
+         */
+        bool ooDynamixelSetPrecisionAX12(int id, double precision);
 
 /****************************************************************
  * Interface ROS
@@ -156,6 +196,10 @@ class Discovery: public Stm32TaskContext
         double attrGyrometerAngleSimpsonDegree;
         bool attrStartPlugged;
         bool attrStartColor;
+        std::vector<bool> attrDynamixelTargetReachedRX24F;
+        std::vector<bool> attrDynamixelTargetReachedAX12;
+        std::vector<double> attrDynamixelPositionRX24F;
+        std::vector<double> attrDynamixelPositionAX12;
 
         /**
          * Orocos Interface
@@ -169,6 +213,10 @@ class Discovery: public Stm32TaskContext
         RTT::OutputPort<double> outGyrometerAngleSimpson;
         RTT::OutputPort<double> outGyrometerAngleSimpsonDegree;
         RTT::OutputPort<double> outGyrometerRawData;
+        RTT::OutputPort<bool> outRightCannonFingerTargetReached;
+        RTT::OutputPort<bool> outRightCannonStockerTargetReached;
+        RTT::OutputPort<double> outRightCannonFingerPosition;
+        RTT::OutputPort<double> outRightCannonStockerPosition;
 
         //Start/Color
         /** Value of the start. GO is true when it is not in, go is false when the start is in **/

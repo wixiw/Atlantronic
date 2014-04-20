@@ -51,20 +51,3 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('TestingShooter', Shooter(),
                                    transitions={'end':'end','problem':'end'})
 
-   
-########################## EXECUTABLE 
-#shall be always at the end ! so that every function is defined before
-# this main function is the one called by ros
-if __name__ == '__main__':
-    try:
-        TestingShooter()
-    except smach.InvalidTransitionError:
-        rospy.loginfo("handling smach.InvalidTransitionError ...")
-        rospy.loginfo("Exiting")
-        while True:
-            pass
-    
-    except rospy.ROSInterruptException: 
-        rospy.loginfo("handling rospy.ROSInterruptException ...")
-        rospy.loginfo("Exiting")
-        pass
