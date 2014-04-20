@@ -93,7 +93,7 @@ void heartbeatErrorCallback(CO_Data* d, UNS8 heartbeatID)
 
 void postSyncCallback(CO_Data* d)
 {
-    //canFestival_outSyncSent.write(getAbsoluteTime());
+    canFestival_outSyncSent.write(getAbsoluteTime());
 #ifdef DEBUG_ON
     cerr << "CERR : [INFO] postSyncCallback(" << d << ") " << now.tv_sec << "s " << now.tv_nsec << "ns"<< endl;
 #endif

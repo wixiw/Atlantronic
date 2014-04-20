@@ -10,7 +10,6 @@ print("début déploiment arp_hml")
 -- chargement des librairies contenants les composants d'arp_hml
 Deployer:import("arp_hml");
 
-dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/clock_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/can_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/joystick_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/ros_hml_itf_deployer.lua");
@@ -20,7 +19,6 @@ dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/motor_deployer.lua");
 dofile("/opt/ard/arp_hml/script/orocos/deployment/ubiquity/scheduler_deployer.lua");
 
 print("... load components")
-assert( ClockDeployer:load(), 		"Failed to load Clock")
 assert( CanDeployer:load(), 		"Failed to load Can")
 assert( SchedulerDeployer:load(), 	"Failed to load Scheduler")
 assert( MotorDeployer:load(), 		"Failed to load Motors")
@@ -31,7 +29,6 @@ assert( HmlMonitorDeployer:load(), 	"Failed to load HmlMonitor")
 
 
 print("... connect components")
-assert( ClockDeployer:connect(), 		"Failed to connect ClockDeployer")
 assert( CanDeployer:connect(), 			"Failed to connect Can")
 assert( SchedulerDeployer:connect() , 	"Failed to connect Scheduler")
 assert( MotorDeployer:connect() , 		"Failed to connect Motors")
@@ -42,7 +39,6 @@ assert( HmlMonitorDeployer:connect() , "Failed to connect HmlMonitor")
 
 print("... start components")
 assert( HmlMonitorDeployer:start(), "Failed to start HmlMonitor")
-assert( ClockDeployer:start(), "Failed to start RTC")
 
 print("fin déploiment arp_hml")
 print("====================")
