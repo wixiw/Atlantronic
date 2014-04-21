@@ -7,7 +7,6 @@
 		type="MotionTestingStratNode.py"
 		args="" 
 		output="screen" 
-		launch-prefix="nice"
 		respawn="false"
 		required="true"
 		launch-prefix="nice -n 19"
