@@ -1,1 +1,1 @@
-from Shooter import *
+from Finger import *

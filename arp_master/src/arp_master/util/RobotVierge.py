@@ -7,7 +7,7 @@ from UtilARD import *
 #il faut voir ca comme un namespace
 class RobotVierge:
 
-#x est vers l'avant, y vers la droite
+#x est vers l'avant, y vers la gauche
 
 
     #position du CDG dans le reperere du robot

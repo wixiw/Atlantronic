@@ -20,20 +20,25 @@ class ShooterMainStateMachine(PreemptiveStateMachine):
     def __init__(self):
         PreemptiveStateMachine.__init__(self,outcomes=['end','problem'])
         with self:      
-            PreemptiveStateMachine.add('Init',
-                      ShooterInit(),
-                      transitions={'succeeded':'end', 'timeout':'problem'})
 
+#Remplacer UserDebugTrigger par vraie etat une fois fini
+            
+            PreemptiveStateMachine.add('ReadyToShoot',
+                      UserDebugTrigger("Pret a tirer"),
+                      transitions={'continue':'EmptyCannon'})
 
+            PreemptiveStateMachine.add('EmptyCannon',
+                      UserDebugTrigger("Canon est vide"),
+                      transitions={'continue':'WaitTrigger'})
 
-class ShooterInit(CyclicState):
-    def __init__(self):
-        CyclicState.__init__(self, outcomes=['succeeded','timeout'])
-    
-    def executeIn(self):
-        rospy.loginfo("Shooter Init execute")
-    
-    def executeTransitions(self):
-        rospy.loginfo("ShooterInit transit")
-        return 'succeeded'   
-                    
+            PreemptiveStateMachine.add('WaitTrigger',
+                      UserDebugTrigger("Attendre Gachette"),
+                      transitions={'continue':'TriggerArmed'})
+            
+            PreemptiveStateMachine.add('TriggerArmed',
+                      UserDebugTrigger("Gachette armee"),
+                      transitions={'continue':'WaitForBall'})
+
+            PreemptiveStateMachine.add('WaitForBall',
+                      UserDebugTrigger("Attendre chute balle"),
+                      transitions={'continue':'ReadyToShoot'})
