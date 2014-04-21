@@ -13,6 +13,8 @@ end
 
 function MatchDataDeployer:connect()
 	assert( Deployer:addPeer("Reporting", me) )
+	assert( Deployer:stream(me..".outIoStart",ros:topic("/Ubiquity/start")))
+	assert( Deployer:stream(me..".outIoStartColor",ros:topic("/Ubiquity/color")))
 	return true
 end
 
