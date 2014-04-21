@@ -11,6 +11,7 @@
 	<depend package="std_srvs" />
 	<depend package="rtt" />
 	<depend package="arp_core" />
+	<depend package="fbsched" />
 	<export>
 		<cpp os="gnulinux" 
 		cflags="-I${prefix}/src -I${prefix}/src/Atlantronic/include -I${prefix}/src/Atlantronic/src" 

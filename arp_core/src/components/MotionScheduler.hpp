@@ -18,7 +18,7 @@ namespace arp_core
 class MotionScheduler: public FBSched
 {
     public:
-        MotionScheduler(const std::string& name);
+        MotionScheduler(const std::string& name,const std::string& packageName);
         virtual ~MotionScheduler();
 
         /**
@@ -42,10 +42,9 @@ class MotionScheduler: public FBSched
 
     protected:
         bool propTimeReporting;
-        double attrLastPeriod;
-        double attrLastComputationTime;
         RTT::InputPort<arp_time::ArdAbsoluteTime> inClock;
         arp_core::StatTimer m_timer;
+        std::string m_packageName;
 
         void ooGetPerformanceReport();
         void ooSetMaxBufferSize(unsigned int size);

@@ -1,26 +1,24 @@
 /*
- * Discovery.hpp
+ * Gpio.hpp
  *
- *  Created on: 26 Jan 2014
+ *  Created on: 20 April 2014
  *      Author: wla
  */
 
-#ifndef DISCOVERY_HPP_
-#define DISCOVERY_HPP_
+#ifndef GPIO_HPP_
+#define GPIO_HPP_
 
 #include "Stm32TaskContext.hpp"
-#include <components/MotionScheduler.hpp>
 #include "linux/tools/robot_interface.h"
 #include "ros/ros.h"
-
 
 namespace arp_stm32
 {
 
-class Discovery: public arp_core::MotionScheduler
+class Gpio: public Stm32TaskContext
 {
     public:
-        Discovery(const std::string& name);
+        Gpio(const std::string& name);
 
 /****************************************************************
  * Interface Orocos
@@ -28,20 +26,17 @@ class Discovery: public arp_core::MotionScheduler
 
         bool configureHook();
         void updateHook();
-        void cleanupHook();
 
 /****************************************************************
  * Interface ROS
  ****************************************************************/
 
     protected:
-        static void robotItfCallbackWrapper(void* arg);
         void createOrocosInterface();
         void createRosInterface();
 
         RobotInterface& m_robotItf;
-
 };
 
 } /* namespace arp_stm32 */
-#endif /* DISCOVERY_HPP_ */
+#endif /* GPIO_HPP_ */

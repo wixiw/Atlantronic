@@ -1,26 +1,24 @@
 /*
- * Discovery.hpp
+ * PumpManager.hpp
  *
- *  Created on: 26 Jan 2014
+ *  Created on: 20 April 2014
  *      Author: wla
  */
 
-#ifndef DISCOVERY_HPP_
-#define DISCOVERY_HPP_
+#ifndef PUMPMANAGER_HPP_
+#define PUMPMANAGER_HPP_
 
 #include "Stm32TaskContext.hpp"
-#include <components/MotionScheduler.hpp>
 #include "linux/tools/robot_interface.h"
 #include "ros/ros.h"
-
 
 namespace arp_stm32
 {
 
-class Discovery: public arp_core::MotionScheduler
+class PumpManager: public Stm32TaskContext
 {
     public:
-        Discovery(const std::string& name);
+        PumpManager(const std::string& name);
 
 /****************************************************************
  * Interface Orocos
@@ -28,14 +26,13 @@ class Discovery: public arp_core::MotionScheduler
 
         bool configureHook();
         void updateHook();
-        void cleanupHook();
 
 /****************************************************************
  * Interface ROS
  ****************************************************************/
 
+
     protected:
-        static void robotItfCallbackWrapper(void* arg);
         void createOrocosInterface();
         void createRosInterface();
 
@@ -44,4 +41,4 @@ class Discovery: public arp_core::MotionScheduler
 };
 
 } /* namespace arp_stm32 */
-#endif /* DISCOVERY_HPP_ */
+#endif /* PUMPMANAGER_HPP_ */

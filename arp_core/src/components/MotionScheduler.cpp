@@ -23,10 +23,11 @@ using namespace std;
 
 ORO_LIST_COMPONENT_TYPE( arp_core::MotionScheduler )
 
-MotionScheduler::MotionScheduler(const std::string& name):
+MotionScheduler::MotionScheduler(const std::string& name, const std::string& packageName = "arp_core"):
         FBSched(name),
         propTimeReporting(false),
-        m_timer(3000)
+        m_timer(3000),
+        m_packageName(packageName)
 {
     addProperty("propTimeReporting",propTimeReporting);
     addPort("inClock",inClock);
@@ -47,7 +48,7 @@ bool MotionScheduler::configureHook()
 
     if( marshalling != NULL)
     {
-        string fileName = ros::package::getPath("arp_hml") + "/script/orocos/conf/" + getName() + ".xml";
+        string fileName = ros::package::getPath(m_packageName) + "/script/orocos/conf/" + getName() + ".xml";
 
         if( std::ifstream( fileName.c_str() ) )
         {
