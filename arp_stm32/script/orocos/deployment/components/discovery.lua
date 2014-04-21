@@ -2,7 +2,7 @@ dofile("/opt/ard/arp_core/script/orocos/deployment/component_deployer_object.lua
 
 
 DiscoveryDeployer = ComposantDeployer:new()
-me = "Discovery"
+local me = "Discovery"
 
 function DiscoveryDeployer:load()
 	assert( Deployer:loadComponent(me,"arp_stm32::Discovery"))
@@ -13,8 +13,6 @@ end
 
 function DiscoveryDeployer:connect()
 	assert( Deployer:addPeer("Reporting", me) )
-	assert( Deployer:stream("Discovery.outIoStart",ros:topic("/Ubiquity/start")))
-	assert( Deployer:stream("Discovery.outIoStartColor",ros:topic("/Ubiquity/color")))
 	return true
 end
 

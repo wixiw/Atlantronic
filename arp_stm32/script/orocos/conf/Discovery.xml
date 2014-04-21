@@ -3,10 +3,6 @@
 <properties>
   <struct name="sched_order" type="string[]">
      <description>Partial order in which peers are executed. Unmentioned peers come last.</description>
-     <simple name="Element0" type="string"><description>Sequence Element</description><value>Gyrometer</value></simple>
-     <simple name="Element1" type="string"><description>Sequence Element</description><value>MatchData</value></simple>
-     <simple name="Element2" type="string"><description>Sequence Element</description><value>DynamixelManager</value></simple>
-     <simple name="Element2" type="string"><description>Sequence Element</description><value>PumpManager</value></simple>
-     <simple name="Element2" type="string"><description>Sequence Element</description><value>Gpio</value></simple>
+     <simple name="Element0" type="string"><description>Sequence Element</description><value>MatchData</value></simple>
   </struct>
 </properties>
