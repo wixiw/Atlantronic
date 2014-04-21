@@ -2,24 +2,30 @@
 
 #libraries for ROS
 import roslib; roslib.load_manifest('arp_master')
-from arp_master import *
+
 from arp_master.strat_2014.common_2014.Robot2014 import *
 
-class Shooter(PreemptiveStateMachine):
+from arp_master.util import *
+from arp_master.fsmFramework import *
+from arp_master.commonStates import *
+from arp_master.strat_2014 import *
+from arp_master.actuators import *
+
+#TODO
+##
+##
+## Remettre le preemptive
+
+class ShooterMainStateMachine(PreemptiveStateMachine):
     def __init__(self):
         PreemptiveStateMachine.__init__(self,outcomes=['end','problem'])
         with self:      
-            PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
-                                             EndMatchPreempter(-Robot2014.SWITCH_TO_EOG_DELAY),
-                                             transitions={'endMatch':'end'})
-            
             PreemptiveStateMachine.add('Init',
                       ShooterInit(),
                       transitions={'succeeded':'end', 'timeout':'problem'})
 
 
 
-#Driving power management       
 class ShooterInit(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['succeeded','timeout'])

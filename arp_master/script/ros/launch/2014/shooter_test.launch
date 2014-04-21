@@ -2,9 +2,9 @@
 	<include file="$(find arp_master)/script/ros/include/common_includes.xml"/>
 
 	<node 
-		name="TestingShooterNode"   
+		name="ShooterNode"   
 		pkg="arp_master"  
-		type="TestingShooter.py"     		
+		type="ShooterNode.py"     		
 		args="" 
 		output="screen"
 		required="true"
