@@ -12,7 +12,6 @@
 #include "linux/tools/robot_interface.h"
 #include "ros/ros.h"
 
-#include <arp_stm32/ResetStm32.h>
 #include <arp_core/Start.h>
 #include <arp_core/StartColor.h>
 #include <arp_core/EmptyWithSuccess.h>
