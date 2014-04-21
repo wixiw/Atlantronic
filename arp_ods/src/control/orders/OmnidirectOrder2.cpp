@@ -493,6 +493,8 @@ ICRSpeed OmnidirectOrder2::computeSpeed(UbiquityMotionState currentMotionState, 
         return ICRSpeed(0, curICRSpeed.getICR());
     }
 
+    outDEBUG5 = m_currentMode ;
+
     if (m_currentMode == MODE_DONE)
     {
         ICRSpeed corICRSpeed;
@@ -513,8 +515,6 @@ ICRSpeed OmnidirectOrder2::computeSpeed(UbiquityMotionState currentMotionState, 
         outDEBUG2 = corICRSpeed.ro();
         outDEBUG3 = rad2deg(corICRSpeed.phi()) / 100.0;
         outDEBUG4 = rad2deg(corICRSpeed.delta()) / 100.0;
-
-        outDEBUG9 = dt * 1000;
 
         return corICRSpeed;
 
