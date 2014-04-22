@@ -66,20 +66,29 @@ void SuctionPump::updateHook()
 
 void SuctionPump::setSuctionPower(int power)
 {
-    //TODO JB stm32 ITF
-//    int errorCode = m_robotItf.XXX;
-//    if (errorCode < 0)
-//    {
-//        LOG(Error) << "Failed to set suction power on pump with ID=" << propPumpId << "." << endlog();
-//        return false;
-//    }
-//    return true;
+    if( propPumpId < 0 )
+    {
+        LOG(Error) << "propPumpId invalid ID=" << propPumpId << "." << endlog();
+    }
+    else
+    {
+        int errorCode = m_robotItf.pump(propPumpId, power);
+        if (errorCode < 0)
+        {
+            LOG(Error) << "Failed to set suction power on pump with ID=" << propPumpId << "." << endlog();
+        }
+    }
 }
 
 bool SuctionPump::getObjectPresent()
 {
-    //TODO JB stm32 ITF
-    return false;
+    if( propPumpId < 0 )
+    {
+        LOG(Error) << "propPumpId invalid ID=" << propPumpId << "." << endlog();
+        return false;
+    }
+
+    return m_robotItf.pump_is_blocked(propPumpId);
 }
 
 void SuctionPump::createOrocosInterface()

@@ -150,8 +150,22 @@ bool Dynamixel::getTargetReached()
 
 bool Dynamixel::getStucked()
 {
-    //TODO JB stm32 ITF
-    return false;
+    bool stuck = false;
+    switch( propDynamixelFamily )
+    {
+        case DYNAMIXEL_TYPE_AX12:
+            stuck = ( (m_robotItf.ax12[propId].flags & DYNAMIXEL_FLAG_STUCK ) != 0 );
+            break;
+
+        case DYNAMIXEL_TYPE_RX24:
+            stuck = ( (m_robotItf.rx24[propId].flags & DYNAMIXEL_FLAG_STUCK ) != 0 );
+            break;
+
+        default:
+            stuck = false;
+            break;
+    }
+    return stuck;
 }
 
 double Dynamixel::getPosition()
