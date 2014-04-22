@@ -44,6 +44,7 @@ class Tor: public Stm32TaskContext
         bool attrSignal;
 
         bool propInvertSignal;
+        int propTorId;
 };
 
 } /* namespace arp_stm32 */
