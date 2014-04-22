@@ -25,7 +25,6 @@ Hmi::Hmi(const std::string& name) :
         m_robotItf(DiscoveryMutex::robotItf)
 {
     createOrocosInterface();
-    createRosInterface();
 }
 
 bool Hmi::configureHook()
@@ -74,7 +73,3 @@ void Hmi::createOrocosInterface()
     addAttribute("attrStm32Time", m_robotItf.current_time);
 }
 
-void Hmi::createRosInterface()
-{
-    ros::NodeHandle nh;
-}

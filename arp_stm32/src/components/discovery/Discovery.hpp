@@ -12,6 +12,7 @@
 #include "linux/tools/robot_interface.h"
 #include "ros/ros.h"
 #include "linux/tools/qemu.h"
+#include <arp_core/EmptyWithSuccess.h>
 
 namespace arp_stm32
 {
@@ -29,9 +30,20 @@ class Discovery: public arp_core::MotionScheduler
         void updateHook();
         void cleanupHook();
 
+        /**
+         * Resets the Stm32 board
+         */
+        bool ooReset();
+
 /****************************************************************
  * Interface ROS
  ****************************************************************/
+
+        /**
+         * ROS wrapper on the HmlMonitor.ooReset operation
+         */
+        bool srvResetStm32(arp_core::EmptyWithSuccess::Request& req, arp_core::EmptyWithSuccess::Response& res);
+
 
     protected:
         static void robotItfCallbackWrapper(void* arg);

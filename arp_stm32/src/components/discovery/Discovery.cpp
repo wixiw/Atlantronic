@@ -79,12 +79,32 @@ void Discovery::robotItfCallbackWrapper(void* arg)
     discovery->updateHook();
 }
 
+bool Discovery::ooReset()
+{
+    int res = m_robotItf.reboot();
+
+    if (res < 0)
+    {
+        return false;
+    }
+    return true;
+}
+
+bool Discovery::srvResetStm32(EmptyWithSuccess::Request& req, EmptyWithSuccess::Response& res)
+{
+    res.success = ooReset();
+    return res.success;
+}
+
 void Discovery::createOrocosInterface()
 {
     addAttribute("attrStm32Time", m_robotItf.current_time);
+
+    addOperation("ooReset", &Discovery::ooReset, this, OwnThread).doc("Reset the stm32 board.");
 }
 
 void Discovery::createRosInterface()
 {
     ros::NodeHandle nh;
+    nh.advertiseService("/MatchData/resetStm32", &Discovery::srvResetStm32, this);
 }

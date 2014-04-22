@@ -8,7 +8,7 @@
 #ifndef DYNAMIXEL_HPP_
 #define DYNAMIXEL_HPP_
 
-#include "Stm32TaskContext.hpp"
+#include "components/taskcontexts/Stm32TaskContext.hpp"
 #include "linux/tools/robot_interface.h"
 #include "ros/ros.h"
 
@@ -19,10 +19,6 @@ class Dynamixel: public Stm32TaskContext
 {
     public:
         Dynamixel(const std::string& name);
-
-/****************************************************************
- * Interface Orocos
- ****************************************************************/
 
         bool configureHook();
         void updateHook();
@@ -63,18 +59,22 @@ class Dynamixel: public Stm32TaskContext
         RobotInterface& m_robotItf;
 
         bool attrTargetReached;
-        bool attrStuck;
-        std::vector<double> attrDynamixelPositionRX24F;
-        std::vector<double> attrDynamixelPositionAX12;
+        bool attrStucked;
+        double attrPosition;
 
-        /**
-         * Orocos Interface
-         */
+        double propPrecision;
+        int propMaxTorque;
+        int propId;
+        int propDynamixelFamily;
 
-        RTT::OutputPort<bool> outRightCannonFingerTargetReached;
-        RTT::OutputPort<bool> outRightCannonStockerTargetReached;
-        RTT::OutputPort<double> outRightCannonFingerPosition;
-        RTT::OutputPort<double> outRightCannonStockerPosition;
+
+        void sendPositionCmd(double position);
+        void sendMaxTorqueCmd(int percentage);
+        void sendPrecisionCmd(double precision);
+
+        bool getTargetReached();
+        bool getStucked();
+        double getPosition();
 };
 
 } /* namespace arp_stm32 */

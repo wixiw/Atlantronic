@@ -1,24 +1,24 @@
 /*
- * Gpio.hpp
+ * Tor.hpp
  *
  *  Created on: 20 April 2014
  *      Author: wla
  */
 
-#ifndef GPIO_HPP_
-#define GPIO_HPP_
+#ifndef TOR_HPP_
+#define TOR_HPP_
 
-#include "Stm32TaskContext.hpp"
+#include "components/taskcontexts/Stm32TaskContext.hpp"
 #include "linux/tools/robot_interface.h"
 #include "ros/ros.h"
 
 namespace arp_stm32
 {
 
-class Gpio: public Stm32TaskContext
+class Tor: public Stm32TaskContext
 {
     public:
-        Gpio(const std::string& name);
+        Tor(const std::string& name);
 
 /****************************************************************
  * Interface Orocos
@@ -27,16 +27,24 @@ class Gpio: public Stm32TaskContext
         bool configureHook();
         void updateHook();
 
+        RTT::OutputPort<bool> outObjectPresent;
+
 /****************************************************************
  * Interface ROS
  ****************************************************************/
 
     protected:
         void createOrocosInterface();
-        void createRosInterface();
+
+        /** Read concretely to robot_interface. the mutex has to be previously taken. Returns the value */
+        bool getGpioValue();
 
         RobotInterface& m_robotItf;
+
+        bool attrSignal;
+
+        bool propInvertSignal;
 };
 
 } /* namespace arp_stm32 */
-#endif /* GPIO_HPP_ */
+#endif /* TOR_HPP_ */

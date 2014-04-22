@@ -21,23 +21,14 @@ namespace arp_stm32
         public:
             Hmi(const std::string& name);
 
-            /****************************************************************
-            * Interface Orocos
-            ****************************************************************/
-
             bool configureHook();
             void updateHook();
             void cleanupHook();
-
-            /****************************************************************
-            * Interface ROS
-            ****************************************************************/
 
         protected:
             static void robotItfCallbackWrapper(void* arg);
             static void* task_wrapper(void* arg);
             void createOrocosInterface();
-            void createRosInterface();
 
             RobotInterface& m_robotItf;
     };

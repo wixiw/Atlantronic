@@ -8,7 +8,7 @@
 #ifndef GYROMETER_HPP_
 #define GYROMETER_HPP_
 
-#include "Stm32TaskContext.hpp"
+#include "components/taskcontexts/Stm32TaskContext.hpp"
 #include "linux/tools/robot_interface.h"
 #include "ros/ros.h"
 
@@ -56,27 +56,20 @@ class Gyrometer: public Stm32TaskContext
  * Interface ROS
  ****************************************************************/
 
-        /** node handle to store the service advertiser srvStartGyroCalibration**/
-        ros::ServiceServer m_srvStartGyroCalibration;
-        /** node handle to store the service advertiser srvStopGyroCalibration**/
-        ros::ServiceServer m_srvStopGyroCalibration;
-        /** node handle to store the service advertiser srvSetGyroPosition**/
-        ros::ServiceServer m_srvSetGyroPosition;
-
         /**
          * ROS wrapper on the HmlMonitor.ooStartCalibration operation
          */
-        bool srvStartGyroCalibration(arp_core::EmptyWithSuccess::Request& req, arp_core::EmptyWithSuccess::Response& res);
+        bool srvStartCalibration(arp_core::EmptyWithSuccess::Request& req, arp_core::EmptyWithSuccess::Response& res);
 
         /**
          * ROS wrapper on the HmlMonitor.ooStopCalibration operation
          */
-        bool srvStopGyroCalibration(SetGyroPosition::Request& req, SetGyroPosition::Response& res);
+        bool srvStopCalibration(SetGyroPosition::Request& req, SetGyroPosition::Response& res);
 
         /**
          * ROS wrapper on the HmlMonitor.ooSetPosition operation
          */
-        bool srvSetGyroPosition(SetGyroPosition::Request& req, SetGyroPosition::Response& res);
+        bool srvSetPosition(SetGyroPosition::Request& req, SetGyroPosition::Response& res);
 
 
     protected:
@@ -84,26 +77,28 @@ class Gyrometer: public Stm32TaskContext
         void createRosInterface();
 
         RobotInterface& m_robotItf;
-        int attrGyrometerRawData;
-        double attrGyrometerVelocity;
-        double attrGyrometerVelocityDegree;
-        double attrGyrometerAngleEuler;
-        double attrGyrometerAngleEulerDegree;
-        double attrGyrometerAngleSimpson;
-        double attrGyrometerAngleSimpsonDegree;
 
-        /**
-         * Orocos Interface
-         */
+        int         attrRawData;
+        double      attrVelocity;
+        double      attrVelocityDegree;
+        double      attrAngleEuler;
+        double      attrAngleEulerDegree;
+        double      attrAngleSimpson;
+        double      attrAngleSimpsonDegree;
+
+        //TODO comments !!
+        double      propCalibratedBiais;
+        double      propCalibratedScale;
+        double      propDeadZone;
 
         //Gyrometer position in radian in [-pi;pi[
-        RTT::OutputPort<double> outGyrometerVelocity;
-        RTT::OutputPort<double> outGyrometerVelocityDegree;
-        RTT::OutputPort<double> outGyrometerAngleEuler;
-        RTT::OutputPort<double> outGyrometerAngleEulerDegree;
-        RTT::OutputPort<double> outGyrometerAngleSimpson;
-        RTT::OutputPort<double> outGyrometerAngleSimpsonDegree;
-        RTT::OutputPort<double> outGyrometerRawData;
+        RTT::OutputPort<double> outVelocity;
+        RTT::OutputPort<double> outVelocityDegree;
+        RTT::OutputPort<double> outAngleEuler;
+        RTT::OutputPort<double> outAngleEulerDegree;
+        RTT::OutputPort<double> outAngleSimpson;
+        RTT::OutputPort<double> outAngleSimpsonDegree;
+        RTT::OutputPort<double> outRawData;
 };
 
 } /* namespace arp_stm32 */

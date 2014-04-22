@@ -32,11 +32,6 @@ class MatchData: public Stm32TaskContext
         void updateHook();
 
         /**
-         * Resets the Stm32 board
-         */
-        bool ooReset();
-
-        /**
          * Informs the stm32 that the next start withdraw sill be the match begining
          */
         bool ooEnableStart();
@@ -45,22 +40,10 @@ class MatchData: public Stm32TaskContext
  * Interface ROS
  ****************************************************************/
 
-        /** node handle to store the service advertiser m_srvResetStm32**/
-        ros::ServiceServer m_srvResetStm32;
-        /** node handle to store the service advertiser m_srvResetStm32**/
-        ros::ServiceServer m_srvEnableStart;
-
-        /**
-         * ROS wrapper on the HmlMonitor.ooReset operation
-         */
-        bool srvResetStm32(arp_core::EmptyWithSuccess::Request& req, arp_core::EmptyWithSuccess::Response& res);
-
         /**
          * ROS wrapper on the HmlMonitor.oo operation
          */
         bool srvEnableStart(arp_core::EmptyWithSuccess::Request& req, arp_core::EmptyWithSuccess::Response& res);
-
-
 
     protected:
         void createOrocosInterface();

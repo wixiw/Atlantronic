@@ -127,11 +127,11 @@ function Telemetry:report()
 	--Telemetry:reportRobotState()
 	--Telemetry:reportMotorState()
 	--Telemetry:reportTiming()
-	--Telemetry:reportOmnidirect()
+	Telemetry:reportOmnidirect()
 	
 	
 	Reporting= assert(Deployer:getPeer("Reporting")) 
-	assert( Reporting:start() )
+	--assert( Reporting:start() )
 	print("====================")
 	return true
 end
