@@ -42,7 +42,7 @@ include_directories("${ATLANTRONIC_GIT_DIR}/include")
 include_directories("${ATLANTRONIC_GIT_DIR}/include/discovery")
 include_directories("${ATLANTRONIC_GIT_DIR}/src")
 #add_definitions(-DVERSION='"${ATLANTRONIC_VERSION}"')
-add_definitions(-DVERSION='"f7d8df9414e2cd9259224e6bb309dc949ab1f4e6"')
+add_definitions(-DVERSION='"9d0df8613f61e185526226fbffb9390ffe9e23d8"')
 add_definitions(-DOLD_GTK)
 add_definitions(${GTK_CFLAGS})
 

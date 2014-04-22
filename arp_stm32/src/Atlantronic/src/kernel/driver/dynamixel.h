@@ -93,6 +93,8 @@ enum
 #define DYNAMIXEL_POS_TO_RD          (150 * M_PI / (0x1ff * 180.0f))
 #define DYNAMIXEL_RD_TO_POS          (0x1ff * 180 / (150 * M_PI))
 
+#define DYNAMIXEL_MAX_MOVING_SPEED_RD      11.938f       // 114 rpm
+
 struct dynamixel_error
 {
 	//!< bit 7 à 4 : ERR_DYNAMIXEL_SEND_CHECK, ERR_DYNAMIXEL_PROTO ou ERR_DYNAMIXEL_CHECKSUM
@@ -110,7 +112,7 @@ struct Dynamixel
 	uint16_t pos;                             //!< position actuelle
 	uint16_t target_reached_threshold;        //!< tolerance pour target reached
 	uint16_t flags;                           //!< flags - champ de bit ( DYNAMIXEL_FLAG_TARGET_REACHED, DYNAMIXEL_FLAG_STUCK)
-	uint16_t timeStartMoving_ms;              //!< temps en ms du debut du mouvement
+	uint32_t timeStartMoving_ms;              //!< temps en ms du debut du mouvement
 	struct dynamixel_error last_error;        //!< derniere erreur
 };
 
