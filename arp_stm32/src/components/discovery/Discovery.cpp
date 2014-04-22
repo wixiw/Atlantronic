@@ -8,12 +8,10 @@
 #include "Discovery.hpp"
 #include "DiscoveryMutex.hpp"
 #include <rtt/Component.hpp>
-#include <math/math.hpp>
 #include <ros/package.h>
 
-using namespace arp_math;
-using namespace arp_stm32;
 using namespace arp_core;
+using namespace arp_stm32;
 using namespace std;
 using namespace RTT;
 
@@ -21,7 +19,8 @@ ORO_LIST_COMPONENT_TYPE( arp_stm32::Discovery)
 
 Discovery::Discovery(const std::string& name) :
         MotionScheduler(name, "arp_stm32"),
-        m_robotItf(DiscoveryMutex::robotItf)
+        m_robotItf(DiscoveryMutex::robotItf),
+        propDeviceName("/dev/discovery")
 {
     createOrocosInterface();
     createRosInterface();
@@ -29,35 +28,14 @@ Discovery::Discovery(const std::string& name) :
 
 bool Discovery::configureHook()
 {
-    int simu = 0; // TODO 0 ou 1 selon deploiement
-    string atlantronicPath = ros::package::getPath("arp_stm32") + "/src/Atlantronic/";
-    string prog_stm = atlantronicPath + "bin/discovery/baz";
-    string qemu_path = atlantronicPath + "qemu/arm-softmmu/qemu-system-arm";
-    int gdb_port = 0;
-    const char* file_stm_read = "/dev/discovery";
-    const char* file_stm_write = "/dev/discovery";
+    if (!MotionScheduler::configureHook())
+        return false;
 
-    if(simu)
-    {
-        int res = qemu.init(qemu_path.c_str(), prog_stm.c_str(), gdb_port);
-        if( res )
-        {
-            fprintf(stderr, "qemu_init : error");
-            return -1;
-        }
-
-        file_stm_read = qemu.file_board_read;
-        file_stm_write = qemu.file_board_write;
-    }
-
-    int res = m_robotItf.init("discovery", file_stm_read, file_stm_write, robotItfCallbackWrapper, this);
+    int res = m_robotItf.init("discovery", propDeviceName.c_str(), propDeviceName.c_str(), robotItfCallbackWrapper, this);
     if (res != 0)
     {
         return false;
     }
-
-    if (!MotionScheduler::configureHook())
-        return false;
 
     return true;
 }
@@ -99,6 +77,8 @@ bool Discovery::srvResetStm32(EmptyWithSuccess::Request& req, EmptyWithSuccess::
 void Discovery::createOrocosInterface()
 {
     addAttribute("attrStm32Time", m_robotItf.current_time);
+
+    addProperty("propDeviceName", propDeviceName);
 
     addOperation("ooReset", &Discovery::ooReset, this, OwnThread).doc("Reset the stm32 board.");
 }

@@ -51,7 +51,8 @@ class Discovery: public arp_core::MotionScheduler
         void createRosInterface();
 
         RobotInterface& m_robotItf;
-        Qemu qemu;
+
+        std::string propDeviceName;
 };
 
 } /* namespace arp_stm32 */

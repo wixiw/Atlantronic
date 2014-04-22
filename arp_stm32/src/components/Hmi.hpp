@@ -9,14 +9,12 @@
 #define HMI_HPP_
 
 #include "components/taskcontexts/Stm32TaskContext.hpp"
-#include <components/MotionScheduler.hpp>
 #include "linux/tools/robot_interface.h"
-#include "ros/ros.h"
 
 namespace arp_stm32
 {
 
-    class Hmi: public arp_core::MotionScheduler
+    class Hmi: public Stm32TaskContext
     {
         public:
             Hmi(const std::string& name);
@@ -26,7 +24,6 @@ namespace arp_stm32
             void cleanupHook();
 
         protected:
-            static void robotItfCallbackWrapper(void* arg);
             static void* task_wrapper(void* arg);
             void createOrocosInterface();
 

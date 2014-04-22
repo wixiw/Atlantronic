@@ -12,16 +12,14 @@
 #include <ros/package.h>
 #include "linux/tools/glplot.h"
 
-using namespace arp_math;
 using namespace arp_stm32;
-using namespace arp_core;
 using namespace std;
 using namespace RTT;
 
 ORO_LIST_COMPONENT_TYPE( arp_stm32::Hmi)
 
 Hmi::Hmi(const std::string& name) :
-        MotionScheduler(name, "arp_stm32"),
+        Stm32TaskContext(name),
         m_robotItf(DiscoveryMutex::robotItf)
 {
     createOrocosInterface();
@@ -36,7 +34,7 @@ bool Hmi::configureHook()
         return false;
     }
 
-    if (!MotionScheduler::configureHook())
+    if (!Stm32TaskContext::configureHook())
         return false;
 
     return true;
@@ -45,12 +43,12 @@ bool Hmi::configureHook()
 void Hmi::cleanupHook()
 {
     m_robotItf.destroy();
-    MotionScheduler::cleanupHook();
+    Stm32TaskContext::cleanupHook();
 }
 
 void Hmi::updateHook()
 {
-    MotionScheduler::updateHook();
+    Stm32TaskContext::updateHook();
     glplot_update();
 }
 
@@ -60,12 +58,6 @@ void* Hmi::task_wrapper(void* arg)
     string path = ros::package::getPath("arp_stm32") + "/src/Atlantronic/";
     glplot_main(path.c_str(), 0, NULL, &hmi->m_robotItf);
     return NULL;
-}
-
-void Hmi::robotItfCallbackWrapper(void* arg)
-{
-    Hmi* hmi = (Hmi*) arg;
-    hmi->updateHook();
 }
 
 void Hmi::createOrocosInterface()
