@@ -32,6 +32,12 @@ bool Tor::configureHook()
     if (!Stm32TaskContext::configureHook())
         return false;
 
+    if( propTorId <= 0 )
+    {
+        LOG(Error) << "configureHook : propTorId is out of range, shall be strictly positive." << endlog();
+        return false;
+    }
+
     return true;
 }
 

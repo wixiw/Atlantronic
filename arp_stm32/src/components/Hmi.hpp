@@ -10,6 +10,8 @@
 
 #include "components/taskcontexts/Stm32TaskContext.hpp"
 #include "linux/tools/robot_interface.h"
+#include "math/core"
+
 
 namespace arp_stm32
 {
@@ -22,6 +24,8 @@ namespace arp_stm32
             bool configureHook();
             void updateHook();
             void cleanupHook();
+
+            RTT::InputPort<arp_math::EstimatedPose2D> inEstimatedPose;
 
         protected:
             static void* task_wrapper(void* arg);

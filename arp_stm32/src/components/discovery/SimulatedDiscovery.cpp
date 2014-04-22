@@ -4,14 +4,16 @@
  *  Created on: 26 Jan 2014
  *      Author: wla
  */
-
 #include "SimulatedDiscovery.hpp"
 #include <ros/package.h>
 #include <rtt/Component.hpp>
+#include <boost/filesystem.hpp>
 
 using namespace arp_stm32;
 using namespace std;
 using namespace RTT;
+
+#define LOG(level) RTT::log(level)<<"["<<getName()<<"] "
 
 ORO_LIST_COMPONENT_TYPE( arp_stm32::SimulatedDiscovery )
 
@@ -20,6 +22,8 @@ SimulatedDiscovery::SimulatedDiscovery(const std::string& name) :
         propStm32ExecutableName("baz_small")
 {
 }
+
+
 
 bool SimulatedDiscovery::configureHook()
 {
@@ -31,11 +35,24 @@ bool SimulatedDiscovery::configureHook()
     string qemu_path = atlantronicPath + "qemu/arm-softmmu/qemu-system-arm";
     int gdb_port = 0;
 
+    if( boost::filesystem::exists(qemu_path.c_str()) == false )
+    {
+        LOG(Error) << "configureHook() : qemu exec was not found." << endlog();
+        return false;
+    }
+
+    if( boost::filesystem::exists(prog_stm.c_str()) == false )
+    {
+        LOG(Error) << "configureHook() : stm32 binary was not found." << endlog();
+        return false;
+    }
+
     int res = m_qemu.init(qemu_path.c_str(), prog_stm.c_str(), gdb_port);
     if (res)
     {
-        fprintf(stderr, "qemu_init : error");
-        return -1;
+        //TODO LOG
+        //qemu_init : error
+        return false;
     }
 
     res = m_robotItf.init("discovery", m_qemu.file_board_read, m_qemu.file_board_write, robotItfCallbackWrapper, this);

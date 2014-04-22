@@ -39,8 +39,22 @@ bool Dynamixel::configureHook()
     if (!Stm32TaskContext::configureHook())
         return false;
 
-    //TODO checker les retours
-    LOG(Error) << "Return code not checked !! ######" << endlog();
+    //TODO
+//    if( propDynamixelFamily != DYNAMIXEL_TYPE_AX12 && propDynamixelFamily != DYNAMIXEL_TYPE_RX24 )
+//    {
+//        LOG(Error) << "configureHook() : propDynamixelFamily shall be equal to 12 (ax12) or 24 (rx24f) and nothing else. I read type=" << propDynamixelFamily << endlog();
+//        return false;
+//    }
+//
+//    if( propId <= 1 /* not configured */
+//            || (propDynamixelFamily == DYNAMIXEL_TYPE_AX12 && AX12_MAX_ID)
+//            || (propDynamixelFamily == DYNAMIXEL_TYPE_RX24 && RX24_MAX_ID)
+//            )
+//    {
+//        LOG(Error) << "configureHook() : propId is out of range ]1,max_id]" << endlog();
+//        return false;
+//    }
+
     sendMaxTorqueCmd(propMaxTorque);
     sendPrecisionCmd(propPrecision);
 

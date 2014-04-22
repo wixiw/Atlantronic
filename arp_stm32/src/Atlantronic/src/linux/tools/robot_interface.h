@@ -12,6 +12,7 @@
 #include "kernel/driver/gyro.h"
 #include "kernel/error_codes.h"
 #include "kernel/fault.h"
+#include "kernel/pump.h"
 #include "kernel/math/polyline.h"
 #include "kernel/driver/usb.h"
 #include "kernel/driver/dynamixel.h"

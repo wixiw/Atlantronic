@@ -13,6 +13,7 @@
 #include "linux/tools/glplot.h"
 
 using namespace arp_stm32;
+using namespace arp_math;
 using namespace std;
 using namespace RTT;
 
@@ -31,6 +32,7 @@ bool Hmi::configureHook()
     int res = pthread_create(&tid, NULL, Hmi::task_wrapper, this);
     if (res != 0)
     {
+        LOG(Error) << "Failed to spawn HMI thread" << endlog();
         return false;
     }
 
@@ -49,6 +51,19 @@ void Hmi::cleanupHook()
 void Hmi::updateHook()
 {
     Stm32TaskContext::updateHook();
+
+    EstimatedPose2D pose;
+    if( inEstimatedPose.read(pose) == NewData )
+    {
+        VectPlan vp = VectPlan(pose.x(), pose.y(), pose.h());
+        int errorCode = m_robotItf.set_position(vp);
+        if( errorCode  < 0 )
+        {
+            LOG(Error) << "Failed to set position." << endlog();
+        }
+
+    }
+
     glplot_update();
 }
 
@@ -63,5 +78,6 @@ void* Hmi::task_wrapper(void* arg)
 void Hmi::createOrocosInterface()
 {
     addAttribute("attrStm32Time", m_robotItf.current_time);
+    addPort("inEstimatedPose",inEstimatedPose);
 }
 

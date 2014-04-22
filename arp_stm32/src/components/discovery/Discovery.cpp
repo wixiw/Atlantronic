@@ -15,6 +15,8 @@ using namespace arp_stm32;
 using namespace std;
 using namespace RTT;
 
+#define LOG(level) RTT::log(level)<<"["<<getName()<<"] "
+
 ORO_LIST_COMPONENT_TYPE( arp_stm32::Discovery)
 
 Discovery::Discovery(const std::string& name) :
@@ -34,6 +36,7 @@ bool Discovery::configureHook()
     int res = m_robotItf.init("discovery", propDeviceName.c_str(), propDeviceName.c_str(), robotItfCallbackWrapper, this);
     if (res != 0)
     {
+        LOG(Error) << "configureHook() : failed to init robot_itf with error code : " << res << endlog();
         return false;
     }
 
@@ -63,6 +66,7 @@ bool Discovery::ooReset()
 
     if (res < 0)
     {
+        LOG(Error) << "ooReset() : failed to reboot with error code : " << res << endlog();
         return false;
     }
     return true;

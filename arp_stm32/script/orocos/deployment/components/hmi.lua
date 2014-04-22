@@ -13,6 +13,8 @@ end
 
 function HmiDeployer:connect()
 	assert( Deployer:addPeer("Reporting", me) )
+	Deployer:addPeer("RluMonitor", me);
+	RluMonitor:connect(me,"inPose","Localizator","outPose");
 	return true
 end
 
