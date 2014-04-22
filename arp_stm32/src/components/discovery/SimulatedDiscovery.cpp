@@ -17,7 +17,7 @@ ORO_LIST_COMPONENT_TYPE( arp_stm32::SimulatedDiscovery )
 
 SimulatedDiscovery::SimulatedDiscovery(const std::string& name) :
         Discovery(name),
-        propStm32ExecutableName("baz-small")
+        propStm32ExecutableName("baz_small")
 {
 }
 
