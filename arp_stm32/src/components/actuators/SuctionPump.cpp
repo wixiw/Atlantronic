@@ -14,6 +14,7 @@ using namespace arp_math;
 using namespace arp_stm32;
 using namespace arp_core;
 using namespace std;
+using namespace std_msgs;
 using namespace RTT;
 
 ORO_LIST_COMPONENT_TYPE( arp_stm32::SuctionPump)
@@ -21,7 +22,6 @@ ORO_LIST_COMPONENT_TYPE( arp_stm32::SuctionPump)
 SuctionPump::SuctionPump(const std::string& name) :
         Stm32TaskContext(name),
         m_robotItf(DiscoveryMutex::robotItf),
-        attrObjectPresent(false),
         propPumpId(-1)
 {
     createOrocosInterface();
@@ -38,7 +38,6 @@ bool SuctionPump::configureHook()
         return false;
     }
 
-
     return true;
 }
 
@@ -51,29 +50,25 @@ void SuctionPump::updateHook()
     {
         LOG(Error) << "updateHook() : mutex.lock()" << endlog();
     }
-    attrObjectPresent = getObjectPresent();
+    attrObjectPresent.data = getObjectPresent();
     mutex.unlock();
 
     outObjectPresent.write(attrObjectPresent);
 
-    double suctionPower;
+    UInt8 suctionPower;
     if( RTT::NewData == inSuctionPowerCmd.read(suctionPower) )
     {
-        if( 100 < suctionPower)
+        if( 100 < suctionPower.data)
         {
-            suctionPower = 100;
-        }
-        if( suctionPower < 0 )
-        {
-            suctionPower = 0;
+            suctionPower.data = 100;
         }
         setSuctionPower(suctionPower);
     }
 }
 
-void SuctionPump::setSuctionPower(int power)
+void SuctionPump::setSuctionPower(UInt8 power)
 {
-    int errorCode = m_robotItf.pump(propPumpId, power);
+    int errorCode = m_robotItf.pump(propPumpId, power.data);
     if (errorCode < 0)
     {
         LOG(Error) << "Failed to set suction power on pump with ID=" << propPumpId << "." << endlog();
@@ -91,4 +86,7 @@ void SuctionPump::createOrocosInterface()
     addAttribute("attrObjectPresent", attrObjectPresent);
 
     addProperty("propPumpId", propPumpId);
+
+    addPort("outObjectPresent", outObjectPresent);
+    addPort("inSuctionPowerCmd", inSuctionPowerCmd);
 }

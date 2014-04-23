@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "cpf.dtd">
+<properties>
+  <simple name="propPrecision" type="double"><value>0.17</value></simple>
+  <simple name="propMaxTorque" type="long"><value>20</value></simple>
+  <simple name="propId" type="long"><value>3</value></simple>
+  <simple name="propDynamixelFamily" type="long"><value>24</value></simple>
+</properties>

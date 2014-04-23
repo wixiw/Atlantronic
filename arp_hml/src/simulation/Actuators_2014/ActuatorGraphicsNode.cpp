@@ -78,9 +78,11 @@ int main(int argc, char **argv)
 
     if( false == frame.init(argc, argv) )
     {
-        ROS_ERROR("Failed to init GraphicNode");
+        ROS_ERROR("Failed to init ActuatorGraphicNode");
         return -1;
     }
+    ROS_INFO("ActuatorGraphicNode spawned");
+
 
     ros::Rate r(10);
 

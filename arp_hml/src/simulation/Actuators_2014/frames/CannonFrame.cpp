@@ -6,6 +6,7 @@
  */
 
 #include "CannonFrame.hpp"
+#include <ros/package.h>
 
 using namespace arp_hml;
 
@@ -15,6 +16,18 @@ CannonFrame::CannonFrame()
     {   NULL,NULL,NULL};
     m_Balls[RIGHT]=
     {   NULL,NULL,NULL};
+
+    m_PackagePath = ros::package::getPath("arp_hml");
+
+    m_ImagesPath[IMG_NO_BALL]               = m_PackagePath + std::string("/ressource/glade/noball.png");
+    m_ImagesPath[IMG_BALL]                  = m_PackagePath + std::string("/ressource/glade/ball.png");
+    m_ImagesPath[IMG_STOCKER_LOADING]       = m_PackagePath + std::string("/ressource/glade/stock_loading.png");
+    m_ImagesPath[IMG_STOCKER_IDLE]          = m_PackagePath + std::string("/ressource/glade/stock_idle.png");
+    m_ImagesPath[IMG_STOCKER_UNLOADING]     = m_PackagePath + std::string("/ressource/glade/stock_unloading.png");
+    m_ImagesPath[IMG_FINGER_DOWN]           = m_PackagePath + std::string("/ressource/glade/doigt_bas.png");
+    m_ImagesPath[IMG_FINGER_UP]             = m_PackagePath + std::string("/ressource/glade/doigt_haut.png");
+    m_ImagesPath[IMG_FINGER_ARMED]          = m_PackagePath + std::string("/ressource/glade/doigt_arme.png");
+    m_ImagesPath[IMG_SHOOTING]              = m_PackagePath + std::string("/ressource/glade/doigt_shoot.png");
 }
 
 CannonFrame::~CannonFrame()
@@ -39,7 +52,8 @@ bool CannonFrame::init(int argc, char **argv)
 
     /* Load UI from file. If error occurs, report it and quit application.
      * Replace "tut.glade" with your saved project. */
-    if (!gtk_builder_add_from_file(builder, "ressource/glade/Actuators.glade", &error))
+    std::string gladeDescriptionPath = m_PackagePath + "/ressource/glade/Actuators.glade";
+    if (!gtk_builder_add_from_file(builder, gladeDescriptionPath.c_str(), &error))
     {
         g_warning("%s", error->message);
         g_free(error);
@@ -121,27 +135,27 @@ void CannonFrame::setNumberOfBallsInCanon(eCanonSide side, int nbBalls)
     {
         case 0:
         default:
-            gtk_image_set_from_file(m_Balls[side][0], "ressource/glade/noball.png");
-            gtk_image_set_from_file(m_Balls[side][1], "ressource/glade/noball.png");
-            gtk_image_set_from_file(m_Balls[side][2], "ressource/glade/noball.png");
+            gtk_image_set_from_file(m_Balls[side][0], m_ImagesPath[IMG_NO_BALL].c_str());
+            gtk_image_set_from_file(m_Balls[side][1], m_ImagesPath[IMG_NO_BALL].c_str());
+            gtk_image_set_from_file(m_Balls[side][2], m_ImagesPath[IMG_NO_BALL].c_str());
             break;
 
         case 1:
-            gtk_image_set_from_file(m_Balls[side][0], "ressource/glade/ball.png");
-            gtk_image_set_from_file(m_Balls[side][1], "ressource/glade/noball.png");
-            gtk_image_set_from_file(m_Balls[side][2], "ressource/glade/noball.png");
+            gtk_image_set_from_file(m_Balls[side][0], m_ImagesPath[IMG_BALL].c_str());
+            gtk_image_set_from_file(m_Balls[side][1], m_ImagesPath[IMG_NO_BALL].c_str());
+            gtk_image_set_from_file(m_Balls[side][2], m_ImagesPath[IMG_NO_BALL].c_str());
             break;
 
         case 2:
-            gtk_image_set_from_file(m_Balls[side][0], "ressource/glade/ball.png");
-            gtk_image_set_from_file(m_Balls[side][1], "ressource/glade/ball.png");
-            gtk_image_set_from_file(m_Balls[side][2], "ressource/glade/noball.png");
+            gtk_image_set_from_file(m_Balls[side][0], m_ImagesPath[IMG_BALL].c_str());
+            gtk_image_set_from_file(m_Balls[side][1], m_ImagesPath[IMG_BALL].c_str());
+            gtk_image_set_from_file(m_Balls[side][2], m_ImagesPath[IMG_NO_BALL].c_str());
             break;
 
         case 3:
-            gtk_image_set_from_file(m_Balls[side][0], "ressource/glade/ball.png");
-            gtk_image_set_from_file(m_Balls[side][1], "ressource/glade/ball.png");
-            gtk_image_set_from_file(m_Balls[side][2], "ressource/glade/ball.png");
+            gtk_image_set_from_file(m_Balls[side][0], m_ImagesPath[IMG_BALL].c_str());
+            gtk_image_set_from_file(m_Balls[side][1], m_ImagesPath[IMG_BALL].c_str());
+            gtk_image_set_from_file(m_Balls[side][2], m_ImagesPath[IMG_BALL].c_str());
             break;
 
     }
@@ -153,15 +167,15 @@ void CannonFrame::setStockerPosition(eCanonSide side, enum eStockerPosition pos)
     {
         case LOADING:
         default:
-            gtk_image_set_from_file(m_Stockers[side], "ressource/glade/stock_loading.png");
+            gtk_image_set_from_file(m_Stockers[side], m_ImagesPath[IMG_STOCKER_LOADING].c_str());
             break;
 
         case IDLE:
-            gtk_image_set_from_file(m_Stockers[side], "ressource/glade/stock_idle.png");
+            gtk_image_set_from_file(m_Stockers[side], m_ImagesPath[IMG_STOCKER_IDLE].c_str());
             break;
 
         case UNLOADING:
-            gtk_image_set_from_file(m_Stockers[side], "ressource/glade/stock_unloading.png");
+            gtk_image_set_from_file(m_Stockers[side], m_ImagesPath[IMG_STOCKER_UNLOADING].c_str());
             break;
     }
 }
@@ -172,19 +186,19 @@ void CannonFrame::setFingerPosition(eCanonSide side, enum eFingerPosition pos)
     {
         case DOWN:
         default:
-            gtk_image_set_from_file(m_Fingers[side], "ressource/glade/doigt_bas.png");
+            gtk_image_set_from_file(m_Fingers[side], m_ImagesPath[IMG_FINGER_DOWN].c_str());
             break;
 
         case UP:
-            gtk_image_set_from_file(m_Fingers[side], "ressource/glade/doigt_haut.png");
+            gtk_image_set_from_file(m_Fingers[side], m_ImagesPath[IMG_FINGER_UP].c_str());
             break;
 
         case ARMED:
-            gtk_image_set_from_file(m_Fingers[side], "ressource/glade/doigt_arme.png");
+            gtk_image_set_from_file(m_Fingers[side], m_ImagesPath[IMG_FINGER_ARMED].c_str());
             break;
 
         case SHOOTING:
-            gtk_image_set_from_file(m_Fingers[side], "ressource/glade/doigt_shoot.png");
+            gtk_image_set_from_file(m_Fingers[side], m_ImagesPath[IMG_FINGER_ARMED].c_str());
             break;
     }
 }

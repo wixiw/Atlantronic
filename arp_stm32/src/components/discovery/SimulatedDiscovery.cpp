@@ -5,7 +5,6 @@
  *      Author: wla
  */
 #include "SimulatedDiscovery.hpp"
-#include <ros/package.h>
 #include <rtt/Component.hpp>
 #include <boost/filesystem.hpp>
 

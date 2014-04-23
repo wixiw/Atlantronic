@@ -44,6 +44,7 @@
 									<listOptionValue builtIn="false" value="/usr/include/wx-2.8"/>
 									<listOptionValue builtIn="false" value="/opt/ros_addons-electric/reflexxes_typeII/ReflexxesTypeII/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros_addons/reflexxes_typeIV/Linux/ReflexxesExampleProjects/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros-electric/ros_comm/messages/std_msgs/msg_gen/cpp/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1393136034" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -65,6 +66,7 @@
 									<listOptionValue builtIn="false" value="/usr/include/wx-2.8"/>
 									<listOptionValue builtIn="false" value="/opt/ros_addons-electric/reflexxes_typeII/ReflexxesTypeII/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros_addons/reflexxes_typeIV/Linux/ReflexxesExampleProjects/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros-electric/ros_comm/messages/std_msgs/msg_gen/cpp/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.399882191" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -93,6 +95,7 @@
 									<listOptionValue builtIn="false" value="/usr/include/wx-2.8"/>
 									<listOptionValue builtIn="false" value="/opt/ros_addons-electric/reflexxes_typeII/ReflexxesTypeII/include"/>
 									<listOptionValue builtIn="false" value="/opt/ros_addons/reflexxes_typeIV/Linux/ReflexxesExampleProjects/include"/>
+									<listOptionValue builtIn="false" value="/opt/ros-electric/ros_comm/messages/std_msgs/msg_gen/cpp/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.2146203453" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>

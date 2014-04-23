@@ -11,6 +11,8 @@
 #include "components/taskcontexts/Stm32TaskContext.hpp"
 #include "linux/tools/robot_interface.h"
 #include "ros/ros.h"
+#include <std_msgs/Bool.h>
+#include <std_msgs/UInt8.h>
 
 namespace arp_stm32
 {
@@ -26,25 +28,25 @@ class SuctionPump: public Stm32TaskContext
         /**
          * Set the suction power of the pump in % of max value
          */
-        RTT::InputPort<double> inSuctionPowerCmd;
+        RTT::InputPort<std_msgs::UInt8> inSuctionPowerCmd;
 
         /**
          * Inform if an object is present in the suction cup (detected by current overload)
          */
-        RTT::OutputPort<bool> outObjectPresent;
+        RTT::OutputPort<std_msgs::Bool> outObjectPresent;
 
     protected:
         void createOrocosInterface();
 
         RobotInterface& m_robotItf;
 
-        bool attrObjectPresent;
+        std_msgs::Bool attrObjectPresent;
 
         /** Unique identificator of the pump in RobotInterface*/
         int propPumpId;
 
         /** Write concretely to robot_interface. Returns true on success */
-        void setSuctionPower(int power);
+        void setSuctionPower(std_msgs::UInt8 power);
 
         /** Read concretely to robot_interface. the mutex has to be previously taken. Returns the value */
         bool getObjectPresent();

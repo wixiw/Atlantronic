@@ -29,7 +29,7 @@ include_directories("${ATLANTRONIC_GIT_DIR}/src")
 include_directories(${GTK_INCLUDE_DIRS})
 include_directories(${GTKGLEXT_INCLUDE_DIRS})
 
-add_definitions(-DVERSION='"9d0df8613f61e185526226fbffb9390ffe9e23d8"')
+add_definitions(-DVERSION='"7917a5fadc77939d21d8d7bee635045ece0b2181"')
 add_definitions(-DOLD_GTK)
 add_definitions(${GTK_DEFINITIONS})
 add_definitions(${GTKGLEXT_DEFINITIONS})

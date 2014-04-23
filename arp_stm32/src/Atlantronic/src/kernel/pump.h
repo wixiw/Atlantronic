@@ -17,10 +17,10 @@
 
 enum
 {
-	PUMP_1,
-	PUMP_2,
-	PUMP_3,
-	PUMP_4,
+	PUMP_ARM = 1,
+	PUMP_LEFT_FINGER = 2,
+	PUMP_RIGHT_FINGER = 3,
+	PUMP_4 = 4,
 	PUMP_MAX
 };
 

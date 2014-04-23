@@ -10,5 +10,5 @@ add_definitions (${GTK2_CFLAGS_OTHER})
     	*.c* 
     )  
     
-rosbuild_add_executable(ActuatorGraphics  ${source_files})
-target_link_libraries(ActuatorGraphics ${GTK2_LIBRARIES})
+rosbuild_add_executable(ActuatorGraphicsNode  ${source_files})
+target_link_libraries(ActuatorGraphicsNode ${GTK2_LIBRARIES})

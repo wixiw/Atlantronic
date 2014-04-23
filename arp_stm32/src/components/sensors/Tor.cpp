@@ -13,6 +13,7 @@
 using namespace arp_math;
 using namespace arp_stm32;
 using namespace arp_core;
+using namespace std_msgs;
 using namespace std;
 using namespace RTT;
 
@@ -52,10 +53,10 @@ void Tor::updateHook()
         LOG(Error) << "updateHook() : mutex.lock()" << endlog();
     }
 
-    attrSignal = getGpioValue();
+    attrSignal.data = getGpioValue();
     if( propInvertSignal )
     {
-        attrSignal = !attrSignal;
+        attrSignal.data = !attrSignal.data;
     }
 
     mutex.unlock();
@@ -75,5 +76,7 @@ void Tor::createOrocosInterface()
 
     addProperty("propInvertSignal", propInvertSignal);
     addProperty("propTorId", propTorId);
+
+    addPort("outObjectPresent", outObjectPresent);
 }
 

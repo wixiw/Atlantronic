@@ -1,22 +1,22 @@
 dofile("/opt/ard/arp_core/script/orocos/deployment/component_deployer_object.lua")
 
 
-DiscoveryDeployer = ComposantDeployer:new()
+SimulatedDiscoveryDeployer = ComposantDeployer:new()
 local me = "Discovery"
 
-function DiscoveryDeployer:load()
-	assert( Deployer:loadComponent(me,"arp_stm32::Discovery"))
+function SimulatedDiscoveryDeployer:load()
+	assert( Deployer:loadComponent(me,"arp_stm32::SimulatedDiscovery"))
 	assert( Deployer:addPeer("DotGraph",me))
 	assert( Deployer:setActivity(me,0.0,20,rtt.globals.ORO_SCHED_RT));
 	return true
 end
 
-function DiscoveryDeployer:connect()
+function SimulatedDiscoveryDeployer:connect()
 	assert( Deployer:addPeer("Reporting", me) )
 	return true
 end
 
-function DiscoveryDeployer:start()
+function SimulatedDiscoveryDeployer:start()
 	Discovery = assert(Deployer:getPeer(me))
 	assert(Discovery:configure())
 	assert(Discovery:start())

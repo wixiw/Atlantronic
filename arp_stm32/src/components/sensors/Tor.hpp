@@ -12,6 +12,8 @@
 #include "linux/tools/robot_interface.h"
 #include "ros/ros.h"
 
+#include <std_msgs/Bool.h>
+
 namespace arp_stm32
 {
 
@@ -27,7 +29,7 @@ class Tor: public Stm32TaskContext
         bool configureHook();
         void updateHook();
 
-        RTT::OutputPort<bool> outObjectPresent;
+        RTT::OutputPort<std_msgs::Bool> outObjectPresent;
 
 /****************************************************************
  * Interface ROS
@@ -41,7 +43,7 @@ class Tor: public Stm32TaskContext
 
         RobotInterface& m_robotItf;
 
-        bool attrSignal;
+        std_msgs::Bool attrSignal;
 
         bool propInvertSignal;
         int propTorId;
