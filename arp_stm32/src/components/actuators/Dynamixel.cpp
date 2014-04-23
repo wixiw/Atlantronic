@@ -80,7 +80,7 @@ void Dynamixel::updateHook()
 
     outPosition.write(attrPosition);
     outTargetReached.write(attrTargetReached);
-    outStuck.write(false);
+    outStucked.write(false);
 
     double positionCmd;
     if( RTT::NewData == inPositionCmd.read(positionCmd) )
@@ -219,6 +219,6 @@ void Dynamixel::createOrocosInterface()
 
     addPort("outPosition", outPosition);
     addPort("outTargetReached", outTargetReached);
-    addPort("outStuck", outStuck);
+    addPort("outStucked", outStucked);
 }
 }

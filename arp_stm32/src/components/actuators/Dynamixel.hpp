@@ -51,7 +51,7 @@ class Dynamixel: public Stm32TaskContext
         /**
          * Inform if the dynamixel is stucked and can't reach the goal
          */
-        RTT::OutputPort<bool> outStuck;
+        RTT::OutputPort<bool> outStucked;
 
     protected:
         void createOrocosInterface();
