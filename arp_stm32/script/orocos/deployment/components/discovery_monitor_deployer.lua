@@ -42,9 +42,9 @@ function DiscoveryMonitorDeployer:connect()
 	DiscoveryMonitorDeployer:addToMonitor("LeftRecalOmron")
 	DiscoveryMonitorDeployer:addToMonitor("RightRecalOmron")
 	
---	DiscoveryMonitorDeployer:addToMonitor("LeftFingerPump")
---	DiscoveryMonitorDeployer:addToMonitor("RightFingerPump")
---	DiscoveryMonitorDeployer:addToMonitor("ArmPump")
+	DiscoveryMonitorDeployer:addToMonitor("LeftFingerPump")
+	DiscoveryMonitorDeployer:addToMonitor("RightFingerPump")
+	DiscoveryMonitorDeployer:addToMonitor("ArmPump")
 	
 	DiscoveryMonitorDeployer:addToMonitor("Gyrometer")
 	DiscoveryMonitorDeployer:addToMonitor("MatchData")

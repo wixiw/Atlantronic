@@ -31,18 +31,7 @@ function SuctionPumpsDeployer:connect()
 end
 
 function SuctionPumpsDeployer:start()
-	LeftFinger = assert(Deployer:getPeer(leftFinger))
-	RightFinger = assert(Deployer:getPeer(rightFinger))
-	Arm = assert(Deployer:getPeer(arm))
-	
-	assert(LeftFinger:configure())
-	assert(RightFinger:configure())
-	assert(Arm:configure())
-	
-	assert(LeftFinger:start())
-	assert(RightFinger:start())
-	assert(Arm:start())
-	
+	--nothing to do as we are added in a monitor
 	return true
 end
 
