@@ -18,6 +18,7 @@ class SimulatedDiscovery: public Discovery
 {
     public:
         SimulatedDiscovery(const std::string& name);
+        ~SimulatedDiscovery();
 
         bool configureHook();
 

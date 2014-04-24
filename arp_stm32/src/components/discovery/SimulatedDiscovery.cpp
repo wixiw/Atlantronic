@@ -7,6 +7,7 @@
 #include "SimulatedDiscovery.hpp"
 #include <rtt/Component.hpp>
 #include <boost/filesystem.hpp>
+#include <ros/package.h>
 
 using namespace arp_stm32;
 using namespace std;
@@ -20,6 +21,11 @@ SimulatedDiscovery::SimulatedDiscovery(const std::string& name) :
         Discovery(name),
         propStm32ExecutableName("baz_small")
 {
+}
+
+SimulatedDiscovery::~SimulatedDiscovery()
+{
+    m_qemu.destroy();
 }
 
 

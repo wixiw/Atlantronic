@@ -21,6 +21,7 @@ class Discovery: public arp_core::MotionScheduler
 {
     public:
         Discovery(const std::string& name);
+        ~Discovery();
 
 /****************************************************************
  * Interface Orocos

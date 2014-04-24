@@ -28,6 +28,11 @@ Discovery::Discovery(const std::string& name) :
     createRosInterface();
 }
 
+Discovery::~Discovery()
+{
+    m_robotItf.destroy();
+}
+
 bool Discovery::configureHook()
 {
     if (!MotionScheduler::configureHook())
