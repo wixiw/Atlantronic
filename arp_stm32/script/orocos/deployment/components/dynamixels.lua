@@ -69,57 +69,7 @@ function DynamixelsDeployer:connect()
 end
 
 function DynamixelsDeployer:start()
-	DynamixelBus 		= assert(Deployer:getPeer(dynamixelBus))
-	
-	LeftCannonFinger 	= assert(Deployer:getPeer(leftCannonFinger))
-	RightCannonFinger 	= assert(Deployer:getPeer(rightCannonFinger))
-	LeftCannonStocker 	= assert(Deployer:getPeer(leftCannonStocker))
-	RightCannonStocker 	= assert(Deployer:getPeer(rightCannonStocker))
-	
-	LeftFinger 			= assert(Deployer:getPeer(leftFinger))
-	RightFinger 		= assert(Deployer:getPeer(rightFinger))
-	
-	ArmSlider	 		= assert(Deployer:getPeer(armSlider))
-	ArmShoulder 		= assert(Deployer:getPeer(armShoulder))
-	ArmShoulderElbow 	= assert(Deployer:getPeer(armShoulderElbow))
-	ArmWristElbow 		= assert(Deployer:getPeer(armWristElbow))
-	ArmWrist 			= assert(Deployer:getPeer(armWrist))
-	
-	assert(DynamixelBus:configure())
-	
-	assert(LeftCannonFinger:configure())
-	assert(RightCannonFinger:configure())
-	assert(LeftCannonStocker:configure())
-	assert(RightCannonStocker:configure())
-	
-	assert(LeftFinger:configure())
-	assert(RightFinger:configure())
-	
-	assert(ArmSlider:configure())
-	assert(ArmShoulder:configure())
-	assert(ArmShoulderElbow:configure())
-	assert(ArmWristElbow:configure())
-	assert(ArmWrist:configure())
-	
-	
-	
-	
-	assert(DynamixelBus:start())
-	
-	assert(LeftCannonFinger:start())
-	assert(RightCannonFinger:start())
-	assert(LeftCannonStocker:start())
-	assert(RightCannonStocker:start())
-	
-	assert(LeftFinger:start())
-	assert(RightFinger:start())
-	
-	assert(ArmSlider:start())
-	assert(ArmShoulder:start())
-	assert(ArmShoulderElbow:start())
-	assert(ArmWristElbow:start())
-	assert(ArmWrist:start())
-	
+	--nothing to do as we are added to a monitor
 	return true
 end
 
