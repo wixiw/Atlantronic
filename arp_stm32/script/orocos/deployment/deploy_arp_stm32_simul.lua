@@ -39,16 +39,10 @@ assert( HmiDeployer:connect(), 	      	 	"Failed to connect Hmi")
 assert( DiscoveryMonitorDeployer:connect(),	"Failed to connect DiscoveryMonitor")
 
 print("... start components")
+assert( DiscoveryMonitorDeployer:start(),"Failed to start DiscoveryMonitor")
 assert( SimulatedDiscoveryDeployer:start(), "Failed to start SimulatedDiscovery")
---TODO add a way to drive the qemu simulation
---assert( MatchDataDeployer:start(), 			"Failed to start MatchData")
-assert( DynamixelsDeployer:start(), 		"Failed to start Dynamixels")
-assert( SuctionPumpsDeployer:start(), 		"Failed to start SuctionPumps")
-assert( TorDeployer:start(), 				"Failed to start Tor")
-assert( GyrometerDeployer:start(), 			"Failed to start Gyrometer")
 --TODO bug opengl
 --assert( HmiDeployer:start(), 		        "Failed to start Hmi")
-assert( DiscoveryMonitorDeployer:start(),"Failed to start DiscoveryMonitor")
 
 print("fin déploiment arp_stm32")
 print("====================")

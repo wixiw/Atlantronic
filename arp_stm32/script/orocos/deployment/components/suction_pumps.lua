@@ -21,6 +21,7 @@ end
 
 function SuctionPumpsDeployer:connectPump(name)
 	assert( Deployer:stream(name..".outObjectPresent",	ros:topic("/Ubiquity/"..name.."/object_present")))
+	assert( Deployer:stream(name..".inSuctionPowerCmd",	ros:topic("/Ubiquity/"..name.."/suction_power")))
 end
 
 function SuctionPumpsDeployer:connect()

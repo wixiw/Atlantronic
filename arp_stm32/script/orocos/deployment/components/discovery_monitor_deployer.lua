@@ -49,6 +49,8 @@ function DiscoveryMonitorDeployer:connect()
 	DiscoveryMonitorDeployer:addToMonitor("Gyrometer")
 	DiscoveryMonitorDeployer:addToMonitor("MatchData")
 	
+--	DiscoveryMonitorDeployer:addToMonitor("DynamixelBus")
+	
 --TODO a remettre quand les problemes opengl sont regles
 --  DiscoveryMonitorDeployer:addToMonitor("Hmi")
 	

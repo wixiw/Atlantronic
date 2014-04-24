@@ -237,6 +237,8 @@ void Dynamixel::createOrocosInterface()
     addProperty("propId", propId);
     addProperty("propDynamixelFamily", propDynamixelFamily);
 
+    addPort("inPositionCmd", inPositionCmd);
+    addPort("inMaxTorqueAllowed", inMaxTorqueAllowed);
     addPort("outState", outState);
 }
 }

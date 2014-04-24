@@ -14,22 +14,19 @@ import actionlib
 class DynamixelManager():
     
     def initRosItf(self):
-        
-                
-        rospy.loginfo("DynamixelManager : init pose %f %f %f %f",
-                      self.currentGoal.left_finger,self.currentGoal.right_finger,self.currentGoal.left_claw,self.currentGoal.right_claw)
-            
-        self.server = actionlib.SimpleActionServer('move_claw', ClawOrderAction, self.actionServerCb, False)
-        
-    
-    def __init__(self, positionCmdTopic, stateFeedbackTopic):
-        rospy.loginfo("DynamixelManager : initializating ...")
-        
         rospy.init_node('DynamixelManager')
-        self.command = rospy.Publisher(positionCmdTopic, Float64)
-        rospy.Subscriber(stateFeedbackTopic, DynamixelState, self.stateCb)
+                
+        self.leftFingerCommand = rospy.Publisher('/left_finger/command', Float64)
+        self.rightFingerCommand = rospy.Publisher('/right_finger/command', Float64)
+        self.leftClawCommand = rospy.Publisher('/left_claw/command', Float64)
+        self.rightClawCommand = rospy.Publisher('/right_claw/command', Float64)
         
-        self.currentGoal = DynamixelGoal()
+        rospy.Subscriber("/left_finger/state", JointState, self.leftFingerStateCb)
+        rospy.Subscriber("/right_finger/state", JointState, self.rightFingerStateCb)   
+        rospy.Subscriber("/left_claw/state", JointState, self.leftClawStateCb)
+        rospy.Subscriber("/right_claw/state", JointState, self.rightClawStateCb)
+        
+        self.currentGoal = ClawOrderGoal()
         try:
             self.currentGoal.left_finger = rospy.get_param('/left_finger/init_pos', Float64)
             self.currentGoal.right_finger = rospy.get_param('/right_finger/init_pos', Float64)
@@ -37,10 +34,23 @@ class DynamixelManager():
             self.currentGoal.right_claw = rospy.get_param('/right_claw/init_pos', Float64)
         except KeyError:
             rospy.logerr("Failed to find init_pos rosparams.") 
+            
+        rospy.loginfo("DynamixelManager : init pose %f %f %f %f",
+                      self.currentGoal.left_finger,self.currentGoal.right_finger,self.currentGoal.left_claw,self.currentGoal.right_claw)
+            
+        self.server = actionlib.SimpleActionServer('move_claw', ClawOrderAction, self.actionServerCb, False)
         
-        self.state = JointState(error=666)
+    
+    def __init__(self):
+        rospy.loginfo("DynamixelManager : initializating ...")
+        self.initRosItf()
         
-        self.MAX_ERROR = 0.02
+        self.leftFingerState = JointState(error=666)
+        self.rightFingerState = JointState(error=666)
+        self.leftClawState = JointState(error=666)
+        self.rightClawState = JointState(error=666)
+        
+        self.MAX_ERROR = 0.01
         self.goalReached = False
         self.shutdown = False
         
@@ -49,7 +59,7 @@ class DynamixelManager():
         self.server.start()
         rospy.loginfo("DynamixelManager : started")
         while not rospy.is_shutdown():
-            self.command.publish(Float64(self.currentGoal.left_finger))
+            self.leftFingerCommand.publish(Float64(self.currentGoal.left_finger))
             self.rightFingerCommand.publish(Float64(self.currentGoal.right_finger))
             self.leftClawCommand.publish(Float64(self.currentGoal.left_claw))
             self.rightClawCommand.publish(Float64(self.currentGoal.right_claw))

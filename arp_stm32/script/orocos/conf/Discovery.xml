@@ -4,14 +4,5 @@
   <struct name="sched_order" type="string[]">
      <description>Partial order in which peers are executed. Unmentioned peers come last.</description>
      <simple name="Element0" type="string"><description>Sequence Element</description><value>Gyrometer</value></simple>
-     <simple name="Element1" type="string"><description>Sequence Element</description><value>MatchData</value></simple>
-     <simple name="Element2" type="string"><description>Sequence Element</description><value>DynamixelBus</value></simple>
-     <simple name="Element3" type="string"><description>Sequence Element</description><value>LeftCannonFinger</value></simple>
-     <simple name="Element4" type="string"><description>Sequence Element</description><value>RightCannonFinger</value></simple>
-     <simple name="Element5" type="string"><description>Sequence Element</description><value>LeftCannonStocker</value></simple>
-     <simple name="Element6" type="string"><description>Sequence Element</description><value>RightCannonStocker</value></simple>
-     <simple name="Element7" type="string"><description>Sequence Element</description><value>LeftFinger</value></simple>
-     <simple name="Element8" type="string"><description>Sequence Element</description><value>RightFinger</value></simple>
-     <simple name="Element9" type="string"><description>Sequence Element</description><value>ArmSlider</value></simple>
   </struct>
 </properties>
