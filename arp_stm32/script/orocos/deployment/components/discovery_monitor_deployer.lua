@@ -47,7 +47,10 @@ function DiscoveryMonitorDeployer:connect()
 --	DiscoveryMonitorDeployer:addToMonitor("ArmPump")
 	
 --	DiscoveryMonitorDeployer:addToMonitor("Gyrometer")
---	DiscoveryMonitorDeployer:addToMonitor("MatchData")
+	DiscoveryMonitorDeployer:addToMonitor("MatchData")
+	
+--TODO a remettre quand les problemes opengl sont regles
+--  DiscoveryMonitorDeployer:addToMonitor("Hmi")
 	
 	DiscoveryMonitorDeployer:check(me)
 	return true

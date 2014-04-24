@@ -19,9 +19,7 @@ function HmiDeployer:connect()
 end
 
 function HmiDeployer:start()
-	Hmi = assert(Deployer:getPeer(me))
-	assert(Hmi:configure())
-	assert(Hmi:start())
+	--to be added to a monitor ...
 	return true
 end
 

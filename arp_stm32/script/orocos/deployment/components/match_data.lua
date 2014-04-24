@@ -19,9 +19,7 @@ function MatchDataDeployer:connect()
 end
 
 function MatchDataDeployer:start()
-	Discovery = assert(Deployer:getPeer(me))
-	assert(Discovery:configure())
-	assert(Discovery:start())
+	--nothing to do as we are added in a monitor
 	return true
 end
 
