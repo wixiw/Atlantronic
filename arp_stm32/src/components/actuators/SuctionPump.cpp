@@ -63,6 +63,7 @@ void SuctionPump::updateHook()
             suctionPower.data = 100;
         }
         setSuctionPower(suctionPower);
+        attrPumpCommand = suctionPower.data;
     }
 }
 
@@ -83,7 +84,9 @@ bool SuctionPump::getObjectPresent()
 void SuctionPump::createOrocosInterface()
 {
     addAttribute("attrStm32Time", m_robotItf.current_time);
-    addAttribute("attrObjectPresent", attrObjectPresent);
+
+    addAttribute("attrObjectPresent", attrObjectPresent.data);
+    addAttribute("attrObjectPresent", attrPumpCommand);
 
     addProperty("propPumpId", propPumpId);
 

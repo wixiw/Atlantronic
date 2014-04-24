@@ -12,9 +12,9 @@
 #include "linux/tools/robot_interface.h"
 #include "ros/ros.h"
 
-#include <std_msgs/Bool.h>
-#include <std_msgs/UInt8.h>
+#include <arp_core/DynamixelState.h>
 #include <std_msgs/Float32.h>
+#include <std_msgs/UInt8.h>
 
 namespace arp_stm32
 {
@@ -38,39 +38,19 @@ class Dynamixel: public Stm32TaskContext
         RTT::InputPort<std_msgs::UInt8> inMaxTorqueAllowed;
 
         /**
-         * Set the precision of dynamixel in rad
+         * Publish the internal state
          */
-        RTT::InputPort<std_msgs::Float32> inPrecision;
+        RTT::OutputPort<arp_core::DynamixelState> outState;
 
-        /**
-         * Publish the dynamixel position in rad.
-         */
-        RTT::OutputPort<std_msgs::Float32> outPosition;
-
-        /**
-         * Inform if the dynamixel has reached the goal in the precision range
-         */
-        RTT::OutputPort<std_msgs::Bool> outTargetReached;
-
-        /**
-         * Inform if the dynamixel is stucked and can't reach the goal
-         */
-        RTT::OutputPort<std_msgs::Bool> outStucked;
-
-        /**
-         * Inform if the dynamixel is connected to the bus
-         */
-        RTT::OutputPort<std_msgs::Bool> outConnected;
 
     protected:
         void createOrocosInterface();
 
         RobotInterface& m_robotItf;
 
-        std_msgs::Bool attrTargetReached;
-        std_msgs::Bool attrStucked;
-        std_msgs::Bool attrConnected;
-        std_msgs::Float32 attrPosition;
+        arp_core::DynamixelState attrState;
+        double attrPositionCmd;
+        int attrMaxTorque;
 
         double propPrecision;
         int propMaxTorque;
@@ -78,9 +58,9 @@ class Dynamixel: public Stm32TaskContext
         int propDynamixelFamily;
 
 
-        void sendPositionCmd(std_msgs::Float32 position);
-        void sendMaxTorqueCmd(std_msgs::UInt8 percentage);
-        void sendPrecisionCmd(std_msgs::Float32 precision);
+        void sendPositionCmd(double position);
+        void sendMaxTorqueCmd(int percentage);
+        void sendPrecisionCmd(double precision);
 
         bool isTargetReached();
         bool isStucked();

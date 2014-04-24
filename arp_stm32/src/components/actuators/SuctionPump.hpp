@@ -41,6 +41,7 @@ class SuctionPump: public Stm32TaskContext
         RobotInterface& m_robotItf;
 
         std_msgs::Bool attrObjectPresent;
+        int attrPumpCommand;
 
         /** Unique identificator of the pump in RobotInterface*/
         int propPumpId;

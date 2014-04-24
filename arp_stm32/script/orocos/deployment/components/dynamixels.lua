@@ -45,9 +45,7 @@ function DynamixelsDeployer:load()
 end
 
 function DynamixelsDeployer:connectDynamixel(name)
-	assert( Deployer:stream(name..".outTargetReached",	ros:topic("/Ubiquity/"..name.."/target_reached")))
-	assert( Deployer:stream(name..".outPosition",		ros:topic("/Ubiquity/"..name.."/position")))
-	assert( Deployer:stream(name..".outStucked",		ros:topic("/Ubiquity/"..name.."/stucked")))
+        assert( Deployer:stream(name..".outState",      ros:topic("/Ubiquity/"..name.."/state")))
 end
 
 function DynamixelsDeployer:connect()

@@ -52,13 +52,8 @@ bool Dynamixel::configureHook()
         return false;
     }
 
-    UInt8 maxTorque;
-    maxTorque.data = propMaxTorque;
-    sendMaxTorqueCmd(maxTorque);
-
-    Float32 maxPrecision;
-    maxPrecision.data = propMaxTorque;
-    sendPrecisionCmd(maxPrecision);
+    sendMaxTorqueCmd(propMaxTorque);
+    sendPrecisionCmd(propPrecision);
 
     return true;
 }
@@ -74,45 +69,42 @@ void Dynamixel::updateHook()
         LOG(Error) << "updateHook() : mutex.lock()" << endlog();
     }
 
-    attrTargetReached.data   = isTargetReached();
-    attrPosition.data        = getPosition();
-    attrStucked.data         = isStucked();
-    attrConnected.data       = isConnected();
+    attrState.connected       = isConnected();
+    attrState.stucked         = isStucked();
+    attrState.target_reached   = isTargetReached();
+    attrState.position       = getPosition();
 
     mutex.unlock();
 
-    outPosition.write(attrPosition);
-    outTargetReached.write(attrTargetReached);
-    outStucked.write(attrStucked);
-    outConnected.write(attrConnected);
-
+    outState.write(attrState);
 
     std_msgs::Float32 positionCmd;
     if( RTT::NewData == inPositionCmd.read(positionCmd) )
     {
-        sendPositionCmd(positionCmd);
+        attrPositionCmd = positionCmd.data;
+        sendPositionCmd(attrPositionCmd);
+
     }
 
     std_msgs::UInt8 torqueCmd;
     if( RTT::NewData == inMaxTorqueAllowed.read(torqueCmd) )
     {
-        if( 100 < torqueCmd.data)
+        attrMaxTorque = torqueCmd.data;
+        if( 100 < attrMaxTorque)
         {
-            torqueCmd.data = 100;
+            attrMaxTorque = 100;
         }
-        sendMaxTorqueCmd(torqueCmd);
-    }
-
-    std_msgs::Float32 precisionCmd;
-    if( RTT::NewData == inPrecision.read(precisionCmd) )
-    {
-        sendPrecisionCmd(precisionCmd);
+        if( attrMaxTorque < 0)
+        {
+            attrMaxTorque = 0;
+        }
+        sendMaxTorqueCmd(attrMaxTorque);
     }
 }
 
-void Dynamixel::sendPositionCmd(std_msgs::Float32 position)
+void Dynamixel::sendPositionCmd(double position)
 {
-    int errorCode = m_robotItf.dynamixel_set_goal_position(propDynamixelFamily, propId, position.data);
+    int errorCode = m_robotItf.dynamixel_set_goal_position(propDynamixelFamily, propId, position);
     if (errorCode < 0)
     {
         LOG(Error) << "Failed to set position to dynamixel with ID=" << propId << "." << endlog();
@@ -120,18 +112,18 @@ void Dynamixel::sendPositionCmd(std_msgs::Float32 position)
 }
 
 
-void Dynamixel::sendMaxTorqueCmd(std_msgs::UInt8 percentage)
+void Dynamixel::sendMaxTorqueCmd(int percentage)
 {
-    int errorCode = m_robotItf.dynamixel_set_max_torque(propDynamixelFamily, propId, percentage.data);
+    int errorCode = m_robotItf.dynamixel_set_max_torque(propDynamixelFamily, propId, percentage);
     if (errorCode < 0)
     {
         LOG(Error) << "Failed to set position to dynamixel RX24F with ID=" << propId << "." << endlog();
     }
 }
 
-void Dynamixel::sendPrecisionCmd(std_msgs::Float32 precision)
+void Dynamixel::sendPrecisionCmd(double precision)
 {
-    int errorCode = m_robotItf.dynamixel_set_target_reached_threshold(propDynamixelFamily, propId, precision.data);
+    int errorCode = m_robotItf.dynamixel_set_target_reached_threshold(propDynamixelFamily, propId, precision);
     if (errorCode < 0)
     {
         LOG(Error) << "Failed to set precision to dynamixel RX24F with ID=" << propId << "." << endlog();
@@ -232,19 +224,19 @@ void Dynamixel::createOrocosInterface()
 {
     addAttribute("attrStm32Time", m_robotItf.current_time);
 
-    addAttribute("attrTargetReached", attrTargetReached);
-    addAttribute("attrStucked", attrStucked);
-    addAttribute("attrConnected", attrConnected);
-    addAttribute("attrPosition", attrPosition);
+    addAttribute("attrConnected",       attrState.connected);
+    addAttribute("attrStucked",         attrState.stucked);
+    addAttribute("attrTargetReached",   attrState.target_reached);
+    addAttribute("attrPosition",        attrState.position);
+    addAttribute("attrPositionCmd",     attrPositionCmd);
+    addAttribute("attrMaxTorque",       attrMaxTorque);
+
 
     addProperty("propPrecision", propPrecision);
     addProperty("propMaxTorque", propMaxTorque);
     addProperty("propId", propId);
     addProperty("propDynamixelFamily", propDynamixelFamily);
 
-    addPort("outPosition", outPosition);
-    addPort("outTargetReached", outTargetReached);
-    addPort("outStucked", outStucked);
-    addPort("outConnected", outConnected);
+    addPort("outState", outState);
 }
 }
