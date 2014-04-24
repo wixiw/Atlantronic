@@ -4,24 +4,22 @@ MotionControlDeployer = ComposantDeployer:new()
 local me = "MotionControl"
 
 function MotionControlDeployer:load()
-	Deployer:loadComponent(me,"arp_ods::FreeWheel")
+	assert( Deployer:loadComponent(me,"arp_ods::FreeWheel"))
 	assert( Deployer:addPeer("DotGraph",me))
-	Deployer:setMasterSlaveActivity("MotionScheduler", me)
+	assert( Deployer:setMasterSlaveActivity("MotionScheduler", me))
+	return true
 end
 
 
 function MotionControlDeployer:connect()
 	MotionControl = Deployer:getPeer(me);
-	Deployer:addPeer("HmlMonitor", me)
-	Deployer:addPeer(me,"HmlMonitor")
-	Deployer:addPeer("Reporting", me)
-	Deployer:connect(me..".inParams","UbiquityParams.outParams",cp);
-	Deployer:connect(me..".inPower","HmlMonitor.outEnable",cp);
-	Deployer:stream(me..".inBootUpDone",ros:topic("/Strat/go"))
-	
-	--Deployer:addPeer("RluMonitor", me)
-	--RluMonitor = Deployer:getPeer("RluMonitor");
-	--RluMonitor:connect(me,"inICRSpeed","Localizator","outICRSpeed");
+	assert( Deployer:addPeer("HmlMonitor", me))
+	assert( Deployer:addPeer(me,"HmlMonitor"))
+	assert( Deployer:addPeer("Reporting", me))
+	assert( Deployer:connect(me..".inParams","UbiquityParams.outParams",cp))
+	assert( Deployer:connect(me..".inPower","HmlMonitor.outEnable",cp))
+	assert( Deployer:stream(me..".inBootUpDone",ros:topic("/Strat/go"))
+	return true
 end
 
 

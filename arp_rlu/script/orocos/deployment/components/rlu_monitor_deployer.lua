@@ -7,7 +7,7 @@ local me = "RluMonitor"
 function RluMonitorDeployer:load()
 	assert( Deployer:loadComponent(me, "arp_core::Monitor") )
 	assert( Deployer:addPeer("DotGraph",me))
-	assert( Deployer:setActivity(me, 0.100, 10, 1) )
+	assert( Deployer:setActivity(me, 0.100, 0, rtt.globals.ORO_SCHED_OTHER) )
 	return true
 end
 

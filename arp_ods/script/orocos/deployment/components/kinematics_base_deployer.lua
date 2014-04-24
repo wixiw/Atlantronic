@@ -7,6 +7,8 @@ function KinematicBaseDeployer:load()
 	assert( Deployer:loadComponent(me,"arp_ods::KinematicBase"));
 	assert( Deployer:addPeer("DotGraph",me))
 	assert( Deployer:setMasterSlaveActivity("MotionScheduler", me))
+	
+	return true
 end
 
 
@@ -32,6 +34,8 @@ function KinematicBaseDeployer:connect()
 	RluMonitor = Deployer:getPeer("RluMonitor");
 	assert(Deployer:addPeer("RluMonitor", me))
 	assert(RluMonitor:connect(me,"inCurrentICRSpeed","Localizator","outICRSpeed"));
+	
+	return true
 end
 
 

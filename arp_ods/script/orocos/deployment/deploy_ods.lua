@@ -12,20 +12,17 @@ dofile("/opt/ard/arp_ods/script/orocos/deployment/components/motion_control_depl
 dofile("/opt/ard/arp_ods/script/orocos/deployment/components/ods_monitor_deployer.lua");
 dofile("/opt/ard/arp_ods/script/orocos/deployment/components/ros_ods_itf_deployer.lua");
 
-MotionControlDeployer:load();
-KinematicBaseDeployer:load();
-RosOdsItfDeployer:load();
-OdsMonitorDeployer:load();
+assert( MotionControlDeployer:load())
+assert( KinematicBaseDeployer:load())
+assert( RosOdsItfDeployer:load())
+assert( OdsMonitorDeployer:load())
 
-MotionControlDeployer:connect();
-KinematicBaseDeployer:connect();
-RosOdsItfDeployer:connect();
-OdsMonitorDeployer:connect();
+assert( MotionControlDeployer:connect())
+assert( KinematicBaseDeployer:connect())
+assert( RosOdsItfDeployer:connect())
+assert( OdsMonitorDeployer:connect())
 
-OdsMonitorDeployer:addToMonitor("KinematicBase")
-OdsMonitorDeployer:addToMonitor("MotionControl")
-OdsMonitorDeployer:addToMonitor("RosOdsItf")
-OdsMonitorDeployer:start();
+assert( OdsMonitorDeployer:start())
 
 
 print("fin déploiment arp_ods")

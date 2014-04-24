@@ -4,25 +4,27 @@ MotionControlDeployer = ComposantDeployer:new()
 local me = "MotionControl"
 
 function MotionControlDeployer:load()
-	Deployer:loadComponent(me,"arp_ods::MotionControl");
+	assert( Deployer:loadComponent(me,"arp_ods::MotionControl"))
 	assert( Deployer:addPeer("DotGraph",me))
-	Deployer:setMasterSlaveActivity("MotionScheduler", me)
+	assert( Deployer:setMasterSlaveActivity("MotionScheduler", me))
+	return true
 end
 
 
 function MotionControlDeployer:connect()
-	Deployer:addPeer("Reporting", me)
-	RluMonitor = Deployer:getPeer("RluMonitor");
-	Deployer:addPeer("RluMonitor", me);
-	RluMonitor:connect(me,"inPosition","Localizator","outPose");
-	RluMonitor:connect(me,"inCurrentICRSpeed","Odometry","outICRSpeed");
-    RluMonitor:connect(me,"outSmoothLocNeeded","Localizator","inSmoothMode");
+	assert( Deployer:addPeer("Reporting", me))
+	RluMonitor = Deployer:getPeer("RluMonitor")
+	assert( Deployer:addPeer("RluMonitor", me))
+	assert( RluMonitor:connect(me,"inPosition","Localizator","outPose"))
+	assert( RluMonitor:connect(me,"inCurrentICRSpeed","Odometry","outICRSpeed"))
+    assert( RluMonitor:connect(me,"outSmoothLocNeeded","Localizator","inSmoothMode"))
     
-    Deployer:addPeer("HmlMonitor", me)
-    Deployer:connect(me..".inParams", "UbiquityParams.outParams",cp)
+    assert( Deployer:addPeer("HmlMonitor", me))
+    assert( Deployer:connect(me..".inParams", "UbiquityParams.outParams",cp))
     
     HmlMonitor = Deployer:getPeer("HmlMonitor");
-    HmlMonitor:connect(me,"inCanPeriod","Can1","outPeriod");
+    assert( HmlMonitor:connect(me,"inCanPeriod","Can1","outPeriod"))
+    return true
 end
 
 
