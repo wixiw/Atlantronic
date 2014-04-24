@@ -17,9 +17,7 @@ function GyrometerDeployer:connect()
 end
 
 function GyrometerDeployer:start()
-	Discovery = assert(Deployer:getPeer(me))
-	assert(Discovery:configure())
-	assert(Discovery:start())
+	--nothing to do as we are added to a monitor
 	return true
 end
 

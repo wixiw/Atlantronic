@@ -34,19 +34,19 @@ function DiscoveryMonitorDeployer:connect()
 --	DiscoveryMonitorDeployer:addToMonitor("ArmWristElbow")
 --	DiscoveryMonitorDeployer:addToMonitor("ArmWrist")
 	
---	DiscoveryMonitorDeployer:addToMonitor("LeftFingerFireOmron")
---	DiscoveryMonitorDeployer:addToMonitor("RightFingerFireOmron")
---	DiscoveryMonitorDeployer:addToMonitor("ArmFireOmron")
---	DiscoveryMonitorDeployer:addToMonitor("LeftFingerLateralOmron")
---	DiscoveryMonitorDeployer:addToMonitor("RightFingerLateralOmron")
---	DiscoveryMonitorDeployer:addToMonitor("LeftRecalOmron")
---	DiscoveryMonitorDeployer:addToMonitor("RightRecalOmron")
+	DiscoveryMonitorDeployer:addToMonitor("LeftFingerFireOmron")
+	DiscoveryMonitorDeployer:addToMonitor("RightFingerFireOmron")
+	DiscoveryMonitorDeployer:addToMonitor("ArmFireOmron")
+	DiscoveryMonitorDeployer:addToMonitor("LeftFingerLateralOmron")
+	DiscoveryMonitorDeployer:addToMonitor("RightFingerLateralOmron")
+	DiscoveryMonitorDeployer:addToMonitor("LeftRecalOmron")
+	DiscoveryMonitorDeployer:addToMonitor("RightRecalOmron")
 	
 --	DiscoveryMonitorDeployer:addToMonitor("LeftFingerPump")
 --	DiscoveryMonitorDeployer:addToMonitor("RightFingerPump")
 --	DiscoveryMonitorDeployer:addToMonitor("ArmPump")
 	
---	DiscoveryMonitorDeployer:addToMonitor("Gyrometer")
+	DiscoveryMonitorDeployer:addToMonitor("Gyrometer")
 	DiscoveryMonitorDeployer:addToMonitor("MatchData")
 	
 --TODO a remettre quand les problemes opengl sont regles

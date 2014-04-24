@@ -43,29 +43,7 @@ function TorDeployer:connect()
 end
 
 function TorDeployer:start()
-	LeftFingerFireOmron 		= assert(Deployer:getPeer(leftFingerFireOmron))
-	RightFingerFireOmron	 	= assert(Deployer:getPeer(rightFingerFireOmron))
-	ArmFireOmron 				= assert(Deployer:getPeer(armFireOmron))
-	LeftFingerLateralOmron 		= assert(Deployer:getPeer(leftFingerLateralOmron))
-	RightFingerLateralOmron 	= assert(Deployer:getPeer(rightFingerLateralOmron))
-	LeftRacalOmron 				= assert(Deployer:getPeer(leftRacalOmron))
-	RightRecalOmron 			= assert(Deployer:getPeer(rightRecalOmron))
-	
-	assert(LeftFingerFireOmron:configure())
-	assert(RightFingerFireOmron:configure())
-	assert(ArmFireOmron:configure())
-	assert(LeftFingerLateralOmron:configure())
-	assert(RightFingerLateralOmron:configure())
-	assert(LeftRacalOmron:configure())
-	assert(RightRecalOmron:configure())
-	
-	assert(LeftFingerFireOmron:start())
-	assert(RightFingerFireOmron:start())
-	assert(ArmFireOmron:start())
-	assert(LeftFingerLateralOmron:start())
-	assert(RightFingerLateralOmron:start())
-	assert(LeftRacalOmron:start())
-	assert(RightRecalOmron:start())
+	--nothing to do as we are sadded to a monitor
 	return true
 end
 
