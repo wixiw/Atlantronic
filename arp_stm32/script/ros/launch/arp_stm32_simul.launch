@@ -1,0 +1,4 @@
+<!-- ARD arp_stm32 main launch file -->
+<launch>
+	<node name="" pkg="ocl" type="deployer-gnulinux" args="-s $(find arp_stm32)/script/orocos/deployment/deploy_arp_stm32_simul.ops --" output="screen"/>
+</launch>
