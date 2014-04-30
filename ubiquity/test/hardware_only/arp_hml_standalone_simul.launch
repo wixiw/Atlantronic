@@ -1,0 +1,14 @@
+<!--  Use this file de deploy hml only insimulation (for test purposes) -->
+<launch>
+	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
+	<include file="$(find arp_hml)/script/ros/launch/ubiquity/geometry_ubiquity.launch"/>
+    
+	<node 	name="ArpHml" 
+			pkg="ocl" 
+			type="cdeployer-gnulinux" 
+			args="-s $(find arp_hml)/script/orocos/deployment/deploy_ubiquity_simul.ops --" 
+			output="screen"
+			respawn="false"
+			required="true"
+			/>
+</launch>

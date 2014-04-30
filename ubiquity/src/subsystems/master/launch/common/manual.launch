@@ -1,0 +1,13 @@
+<launch>
+	<include file="$(find arp_master)/script/ros/include/common_includes.xml"/>
+
+	<node 
+		name="ManualStratNode" 
+		pkg="arp_master" 
+		type="ManualStratNode.py"
+		args="" 
+		output="screen"
+		respawn="true"
+		launch-prefix="nice -n 19"
+	/>
+</launch>

@@ -1,0 +1,7 @@
+<!-- Use this file to simulate the Ubiquity platform hardware in a integrated environnment (aka with other projects) when you don't have access to the hardwares
+		In this case you need to add the Orocos part of the deployment in your integrated deployment
+ -->
+<launch>
+	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
+	<include file="$(find arp_hml)/script/ros/launch/ubiquity/geometry_ubiquity.launch"/>
+</launch>

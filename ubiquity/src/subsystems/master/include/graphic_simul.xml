@@ -1,0 +1,25 @@
+<launch>
+	<node 
+		name="GraphicsSimu"     
+		pkg="arp_hmi"  
+		type="GraphicsSimuNode" 
+		output="screen" 
+		launch-prefix="nice -n 19"
+	/>
+	<node 
+		name="HmlGraphics"     
+		pkg="arp_hmi"  
+		type="HmlGraphicsNode"     
+		args="" 
+		output="screen" 
+		launch-prefix="nice"
+	/>
+	<node 
+		name="ActuatorGraphics"     
+		pkg="arp_hmi"  
+		type="ActuatorGraphicsNode"     
+		args="" 
+		output="screen" 
+		launch-prefix="nice"
+	/>
+</launch>

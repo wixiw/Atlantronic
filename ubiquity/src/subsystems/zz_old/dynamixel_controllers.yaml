@@ -1,0 +1,74 @@
+# module est le nom du fichier .py a appeler dans dynamixel_controllers/src. A priori seul le joint _position_controller a du sens, les 
+# autres ont l'air buggés ou non utilisable sans doc.
+#
+# joint_torque_limit : entre [0;1]. correspond à un pourcentage de couple max
+# init_pos : position demandé au servo lors du boot (en rad, tenant compte des params motor plus bas). 
+#             C'est un parametre ARD utilise par DynamixelManager.py.
+# motor:id : numero du moteur sur le bus dynamixel
+# motor:min : butée soft, peut être superieure a max auquel cas le servo tourne en sens inverse
+# motor:max : butée soft, cf commentaire ci dessous
+# motor:init : equivalent d'un 0 tourelle. C'est ma position du zéro en radian. 
+#             CE N EST PAS la position initialement demandee au servo au boot!
+#
+
+
+
+left_finger:
+    controller:
+        package: dynamixel_controllers
+        module: joint_position_controller
+        type: JointPositionController
+    joint_name: left_finger_joint
+    joint_speed: 13.0
+    joint_torque_limit: 0.5
+    init_pos: -1.8
+    motor:
+        id: 10
+        init: 512
+        min: 1023
+        max: 0
+
+left_claw:
+    controller:
+        package: dynamixel_controllers
+        module: joint_position_controller
+        type: JointPositionController
+    joint_name: left_claw_joint
+    joint_speed: 13.0
+    joint_torque_limit: 0.5
+    init_pos: -1.8
+    motor:
+        id: 11
+        init: 512
+        min: 1023
+        max: 0
+        
+right_finger:
+    controller:
+        package: dynamixel_controllers
+        module: joint_position_controller
+        type: JointPositionController
+    joint_name: left_finger_joint
+    joint_speed: 13.0
+    joint_torque_limit: 0.5
+    init_pos: -1.8
+    motor:
+        id: 12
+        init: 512
+        min: 0
+        max: 1023
+
+right_claw:
+    controller:
+        package: dynamixel_controllers
+        module: joint_position_controller
+        type: JointPositionController
+    joint_name: left_claw_joint
+    joint_speed: 13.0
+    joint_torque_limit: 0.5
+    init_pos: -1.8
+    motor:
+        id: 14
+        init: 512
+        min: 0
+        max: 1023

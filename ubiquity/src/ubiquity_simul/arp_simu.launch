@@ -1,0 +1,4 @@
+<!-- ARD arp_simu main launch file -->
+<launch>
+\t<node name="" pkg="ocl" type="deployer-gnulinux" args="-s $(find )/script/orocos/deployment/deploy_arp_simu.ops --" output="screen"/>
+</launch>

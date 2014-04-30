@@ -1,0 +1,34 @@
+<!--  Use this file de deploy the Dynamixel HW part
+-->
+<launch>	
+  	<node 	name="DynamixelControllerManager" 
+  	  		pkg="dynamixel_controllers" 
+  	  		type="controller_manager.py" 
+  	  		required="false" 
+  	  		output="screen">
+        <rosparam>
+            namespace: dynamixel_manager
+            serial_ports:
+                dynamixel_bus:
+                    port_name: /dev/usb2dynamixel
+                    baud_rate: 115200
+                    min_motor_id: 10
+                    max_motor_id: 20
+                    update_rate: 20
+        </rosparam>
+    </node>
+    
+    <rosparam file="$(find arp_hml)/script/ros/dynamixel_controllers.yaml" command="load"/>
+	<node name="dynamixel_controller_spawner" pkg="dynamixel_controllers" type="controller_spawner.py"
+		args="--manager=dynamixel_manager
+			--port=dynamixel_bus
+			--type=simple
+			  left_finger
+			  left_claw
+			  right_finger
+			  right_claw"
+		output="screen" >
+	</node>
+	
+	<node name="DynamixelManager"   pkg="arp_hml"  type="DynamixelManager.py" args="" output="screen" respawn="false" />
+</launch>

@@ -1,0 +1,12 @@
+<launch>
+	<include file="$(find arp_master)/script/ros/include/common_includes_simul.xml"/>
+
+	<node 
+		name="StratNode_Tanguy"   
+		pkg="arp_master"  
+		type="StratNode_Tanguy.py"     
+		args="" output="screen"
+		required="true"
+		launch-prefix="nice -n 19"
+	/>
+</launch>

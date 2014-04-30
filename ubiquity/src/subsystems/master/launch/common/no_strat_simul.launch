@@ -1,0 +1,6 @@
+<!-- This file allows you to launch a *simulated* robot idling without any start triggering. 
+It in general usefull for debugging other packages deployments without messing with python-->
+
+<launch>
+	<include file="$(find arp_master)/script/ros/include/common_includes_simul.xml"/>
+</launch>

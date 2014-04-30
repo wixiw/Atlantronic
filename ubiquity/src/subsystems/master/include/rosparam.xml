@@ -1,0 +1,12 @@
+<!--  This file defines all the rosparam to configure the software -->
+<launch>
+	
+  	<param name="/match_duration" value="89.5" /> 
+	<!--Distance between center of robot and back -->
+    <param name="/Ubiquity/DIST_BACK" value="0.053"/>  
+    <!--horizontal wall position -->
+    <param name="/Table/HWALL_Y" value="1.0"/>  
+    <!--vertical wall position -->
+    <param name="/Table/VWALL_X" value="1.5"/>   
+
+</launch>

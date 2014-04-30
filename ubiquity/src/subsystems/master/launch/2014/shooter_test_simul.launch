@@ -1,0 +1,13 @@
+<launch>
+	<include file="$(find arp_master)/script/ros/include/common_includes_simul.xml"/>
+
+	<node 
+		name="ShooterNode"   
+		pkg="arp_master"  
+		type="ShooterNode.py"     		
+		args="" 
+		output="screen"
+		required="true"
+		launch-prefix="nice -n 19"
+	/>
+</launch>
