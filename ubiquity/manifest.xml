@@ -1,0 +1,10 @@
+<package>
+    <description brief="Orocos PACKAGE_NAME Component package">
+        This package contains the components of the PACKAGE_NAME package
+    </description>
+    <author>ARD, http://team-ard.com</author>
+    <license>BSD</license>
+    <url>http://team-ard.com</url>
+    <depend package="arp_core" />
+</package>
+
