@@ -12,7 +12,7 @@
 
 using namespace arp_math;
 using namespace arp_stm32;
-using namespace arp_msgs;
+using namespace arp_core;
 using namespace std;
 using namespace RTT;
 
@@ -36,8 +36,9 @@ bool MatchData::configureHook()
 void MatchData::updateHook()
 {
     Stm32TaskContext::updateHook();
-    MatchDataMsg matchData;
-    bool color;
+    Start start;
+    StartColor color;
+
     DiscoveryMutex mutex;
 
     if (mutex.lock() == DiscoveryMutex::FAILED)
@@ -45,33 +46,25 @@ void MatchData::updateHook()
         LOG(Error) << "updateHook() : mutex.lock()" << endlog();
     }
 
-    color                       = m_robotItf.get_gpio(GPIO_COLOR);
-    attrMatchData.start_in      = m_robotItf.get_gpio(GPIO_IN_GO);
-    attrMatchData.match_time    = m_robotItf.current_time - m_robotItf.start_time;
+    attrStartPlugged = m_robotItf.get_gpio(GPIO_IN_GO);
+    attrStartColor = m_robotItf.get_gpio(GPIO_COLOR);
 
     mutex.unlock();
 
-    switch (color)
+    start.go = attrStartPlugged;
+    outIoStart.write(start);
+
+    switch (attrStartColor)
     {
         case COLOR_RED:
-            attrMatchData.color = "red";
+            color.color = "red";
             break;
         case COLOR_YELLOW:
         default:
-            attrMatchData.color = "yellow";
+            color.color = "yellow";
             break;
     }
-
-    outMatchData.write(attrMatchData);
-
-    std_msgs::Bool readyForMatch;
-    if( RTT::NewData == inReadyForMatch.read(readyForMatch) )
-    {
-        if( readyForMatch.data )
-        {
-            setReadyForMatch();
-        }
-    }
+    outIoStartColor.write(color);
 }
 
 void MatchData::setReadyForMatch()
@@ -91,12 +84,12 @@ void MatchData::setReadyForMatch()
 void MatchData::createOrocosInterface()
 {
     addAttribute("attrStm32Time", m_robotItf.current_time);
-    addAttribute("attrStartPlugged", attrMatchData.start_in);
-    addAttribute("attrStartColor", attrMatchData.color);
-    addAttribute("attrMatchTime", attrMatchData.match_time);
+    addAttribute("attrStartPlugged", attrStartPlugged);
+    addAttribute("attrStartColor", attrStartColor);
 
-    addPort("outMatchData", outMatchData).doc(
-            "Value of match data such as start, color, match time.");
+    addPort("outIoStart", outIoStart).doc(
+            "Value of the start. GO is true when it is not in, go is false when the start is in");
+    addPort("outIoStartColor", outIoStartColor).doc("Value of the color switch");
 
     addEventPort("inReadyForMatch", inReadyForMatch).doc(
             "When set to true, the next start withdraw will be the start signal.");

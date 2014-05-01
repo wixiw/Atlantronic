@@ -11,7 +11,7 @@
 #include <math/math.hpp>
 
 using namespace arp_math;
-using namespace arp_msgs;
+using namespace arp_core;
 using namespace std_msgs;
 using namespace std;
 using namespace RTT;

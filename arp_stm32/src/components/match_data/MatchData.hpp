@@ -12,8 +12,10 @@
 #include "linux/tools/robot_interface.h"
 #include "ros/ros.h"
 
-#include <arp_msgs/MatchDataMsg.h>
 #include <std_msgs/Bool.h>
+#include <arp_core/Start.h>
+#include <arp_core/StartColor.h>
+#include <arp_core/EmptyWithSuccess.h>
 
 namespace arp_stm32
 {
@@ -26,9 +28,6 @@ class MatchData: public Stm32TaskContext
         bool configureHook();
         void updateHook();
 
-        //Start/Color
-        /** Value of match data such as start, color, match time**/
-        RTT::OutputPort<arp_msgs::MatchDataMsg> outMatchData;
 
         /** When set to true, the next start withdraw will be the start signal */
         RTT::InputPort<std_msgs::Bool> inReadyForMatch;
@@ -38,11 +37,21 @@ class MatchData: public Stm32TaskContext
 
         RobotInterface& m_robotItf;
 
-        arp_msgs::MatchDataMsg attrMatchData;
+        bool attrStartPlugged;
+        bool attrStartColor;
+
+        /**
+         * Orocos Interface
+         */
+
+        //Start/Color
+        /** Value of the start. GO is true when it is not in, go is false when the start is in **/
+        RTT::OutputPort<arp_core::Start> outIoStart;
+        /** Value of the color switch. true when ?? **/
+        RTT::OutputPort<arp_core::StartColor> outIoStartColor;
 
         /** Informs the Stm32 we are ready for match ie next start withdraw is the match beginning.*/
         void setReadyForMatch();
-
 };
 
 } /* namespace arp_stm32 */

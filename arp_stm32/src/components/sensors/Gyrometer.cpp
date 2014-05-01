@@ -13,16 +13,24 @@
 using namespace arp_math;
 using namespace arp_stm32;
 using namespace arp_core;
-using namespace arp_msgs;
 using namespace std;
 using namespace RTT;
 
 ORO_LIST_COMPONENT_TYPE( arp_stm32::Gyrometer)
 
 Gyrometer::Gyrometer(const std::string& name) :
-        Stm32TaskContext(name), m_robotItf(DiscoveryMutex::robotItf), attrRawData(0), attrVelocity(0), attrVelocityDegree(
-                0), attrAngleEuler(0), attrAngleEulerDegree(0), attrAngleSimpson(0), attrAngleSimpsonDegree(0), propCalibratedBiais(
-                0.0), propCalibratedScale(0.0), propDeadZone(0.0)
+        Stm32TaskContext(name),
+        m_robotItf(DiscoveryMutex::robotItf),
+        attrRawData(0),
+        attrVelocity(0),
+        attrVelocityDegree(0),
+        attrAngleEuler(0),
+        attrAngleEulerDegree(0),
+        attrAngleSimpson(0),
+        attrAngleSimpsonDegree(0),
+        propCalibratedBiais(0.0),
+        propCalibratedScale(0.0),
+        propDeadZone(0.0)
 {
     createOrocosInterface();
     createRosInterface();
@@ -136,19 +144,21 @@ bool Gyrometer::ooSetCalibrationValues(double scale, double bias, double dead_zo
     }
 }
 
-bool Gyrometer::srvStartCalibration(EmptyWithSuccessSrv::Request& req, EmptyWithSuccessSrv::Response& res)
+
+
+bool Gyrometer::srvStartCalibration(EmptyWithSuccess::Request& req, EmptyWithSuccess::Response& res)
 {
     res.success = ooStartCalibration();
     return res.success;
 }
 
-bool Gyrometer::srvStopCalibration(SetGyroPositionSrv::Request& req, SetGyroPositionSrv::Response& res)
+bool Gyrometer::srvStopCalibration(SetGyroPosition::Request& req, SetGyroPosition::Response& res)
 {
     res.success = ooStopCalibration(req.theta);
     return res.success;
 }
 
-bool Gyrometer::srvSetPosition(SetGyroPositionSrv::Request& req, SetGyroPositionSrv::Response& res)
+bool Gyrometer::srvSetPosition(SetGyroPosition::Request& req, SetGyroPosition::Response& res)
 {
     res.success = ooSetPosition(req.theta);
     return res.success;
@@ -156,18 +166,18 @@ bool Gyrometer::srvSetPosition(SetGyroPositionSrv::Request& req, SetGyroPosition
 
 void Gyrometer::createOrocosInterface()
 {
-    addAttribute("attrStm32Time", m_robotItf.current_time);
-    addAttribute("attrRawData", attrRawData);
-    addAttribute("attrVelocity", attrVelocity);
-    addAttribute("attrVelocityDegree", attrVelocityDegree);
-    addAttribute("attrAngleEuler", attrAngleEuler);
-    addAttribute("attrAngleEulerDegree", attrAngleEulerDegree);
-    addAttribute("attrAngleSimpson", attrAngleSimpson);
-    addAttribute("attrAngleSimpsonDegree", attrAngleSimpsonDegree);
+    addAttribute("attrStm32Time",           m_robotItf.current_time);
+    addAttribute("attrRawData",             attrRawData);
+    addAttribute("attrVelocity",            attrVelocity);
+    addAttribute("attrVelocityDegree",      attrVelocityDegree);
+    addAttribute("attrAngleEuler",          attrAngleEuler);
+    addAttribute("attrAngleEulerDegree",    attrAngleEulerDegree);
+    addAttribute("attrAngleSimpson",        attrAngleSimpson);
+    addAttribute("attrAngleSimpsonDegree",  attrAngleSimpsonDegree);
 
-    addProperty("propCalibratedBiais", propCalibratedBiais);
-    addProperty("propCalibratedScale", propCalibratedScale);
-    addProperty("propDeadZone", propDeadZone);
+    addProperty("propCalibratedBiais",      propCalibratedBiais);
+    addProperty("propCalibratedScale",      propCalibratedScale);
+    addProperty("propDeadZone",             propDeadZone);
 
     addPort("outAngleEuler", outAngleEuler).doc(
             "Angular position of the gyrometer in rad, integrated with Euler explicit integration scheme");
@@ -178,7 +188,8 @@ void Gyrometer::createOrocosInterface()
     addPort("outAngleSimpsonDegree", outAngleSimpsonDegree).doc(
             "Angular position of the gyrometer in degree, integrated with Simpson integration scheme");
     addPort("outVelocity", outVelocity).doc("Angular velocity of the gyrometer in rad/sec");
-    addPort("outVelocityDegree", outVelocityDegree).doc("Angular velocity of the gyrometer in degree/sec");
+    addPort("outVelocityDegree", outVelocityDegree).doc(
+            "Angular velocity of the gyrometer in degree/sec");
     addPort("outRawData", outRawData).doc("Angular velocity of the gyrometer in LSB");
 
     //Gyrometer
@@ -195,9 +206,9 @@ void Gyrometer::createOrocosInterface()
 void Gyrometer::createRosInterface()
 {
     ros::NodeHandle nh;
-    m_serviceList.push_back(
-            nh.advertiseService("/Gyrometer/startCalibration", &Gyrometer::srvStartCalibration, this));
-    m_serviceList.push_back(
-            nh.advertiseService("/Gyrometer/stopCalibration", &Gyrometer::srvStopCalibration, this));
-    m_serviceList.push_back(nh.advertiseService("/Gyrometer/setPosition", &Gyrometer::srvSetPosition, this));
+    nh.advertiseService("/Gyrometer/startGyroCalibration",
+            &Gyrometer::srvStartCalibration, this);
+    nh.advertiseService("/Gyrometer/stopGyroCalibration", &Gyrometer::srvStopCalibration,
+            this);
+    nh.advertiseService("/Gyrometer/setGyroPosition", &Gyrometer::srvSetPosition, this);
 }

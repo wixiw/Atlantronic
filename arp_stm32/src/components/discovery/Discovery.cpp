@@ -11,7 +11,6 @@
 #include <ros/package.h>
 
 using namespace arp_core;
-using namespace arp_msgs;
 using namespace arp_stm32;
 using namespace std;
 using namespace RTT;
@@ -63,13 +62,7 @@ void Discovery::updateHook()
 void Discovery::robotItfCallbackWrapper(void* arg)
 {
     Discovery* discovery = (Discovery*) arg;
-
-    //The period is null if the component is a slave or on file activity descriptor
-    //if the component is periodic we should not call the updateHook
-    if( discovery->getPeriod() == 0 )
-    {
-        discovery->updateHook();
-    }
+    discovery->updateHook();
 }
 
 bool Discovery::ooReset()
@@ -84,7 +77,7 @@ bool Discovery::ooReset()
     return true;
 }
 
-bool Discovery::srvResetStm32(EmptyWithSuccessSrv::Request& req, EmptyWithSuccessSrv::Response& res)
+bool Discovery::srvResetStm32(EmptyWithSuccess::Request& req, EmptyWithSuccess::Response& res)
 {
     res.success = ooReset();
     return res.success;
