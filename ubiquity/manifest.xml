@@ -6,5 +6,13 @@
     <license>BSD</license>
     <url>http://team-ard.com</url>
     <depend package="arp_core" />
+    <depend package="arp_stm32" />
+    <depend package="arp_hml" />
+    <depend package="arp_ods" />
+    <depend package="arp_rlu" />
+    <depend package="arp_master" />
+    <depend package="arp_hmi" />
+    <depend package="arp_simu" />
+    <depend package="arp_music" />
 </package>
 

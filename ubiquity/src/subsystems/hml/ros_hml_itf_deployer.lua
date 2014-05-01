@@ -1,4 +1,4 @@
-dofile("/opt/ard/arp_core/script/orocos/deployment/component_deployer_object.lua")
+dofile("/opt/ard/ubiquity/src/subsystems/orocos/component_deployer_object.lua")
 
 
 RosHmlItfDeployer = ComposantDeployer:new()

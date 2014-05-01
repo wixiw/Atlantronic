@@ -143,8 +143,8 @@ CMAKE_SKIP_RPATH:BOOL=NO
 //Path to a program.
 CMAKE_STRIP:FILEPATH=/usr/bin/strip
 
-//The CMake toolchain file
-CMAKE_TOOLCHAIN_FILE:FILEPATH=/opt/ros/ros/core/rosbuild/rostoolchain.cmake
+//No help, variable specified on the command line.
+CMAKE_TOOLCHAIN_FILE:UNINITIALIZED=/opt/ros/ros/core/rosbuild/rostoolchain.cmake
 
 //If true, cmake will use relative paths in makefiles and projects.
 CMAKE_USE_RELATIVE_PATHS:BOOL=OFF
@@ -198,6 +198,9 @@ TOOLCHAINCONFIG:FILEPATH=TOOLCHAINCONFIG-NOTFOUND
 //Path to a file.
 USERCONFIG:FILEPATH=USERCONFIG-NOTFOUND
 
+//Path to a file.
+_file_name:FILEPATH=_file_name-NOTFOUND
+
 //Path to a library.
 arp_core_arp_core-typekit-gnulinux_LIBRARY:FILEPATH=/opt/ard/arp_core/lib/orocos/gnulinux/types/libarp_core-typekit-gnulinux.so
 
@@ -210,8 +213,92 @@ arp_core_pthread_LIBRARY:FILEPATH=/usr/lib/libpthread.so
 //Path to a library.
 arp_core_rt_LIBRARY:FILEPATH=/usr/lib/librt.so
 
+//Path to a library.
+arp_hmi_orocos-rtt-gnulinux_LIBRARY:FILEPATH=/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so
+
+//Path to a library.
+arp_hmi_pthread_LIBRARY:FILEPATH=/usr/lib/libpthread.so
+
+//Path to a library.
+arp_hmi_rt_LIBRARY:FILEPATH=/usr/lib/librt.so
+
+//Path to a library.
+arp_hml_orocos-rtt-gnulinux_LIBRARY:FILEPATH=/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so
+
+//Path to a library.
+arp_hml_pthread_LIBRARY:FILEPATH=/usr/lib/libpthread.so
+
+//Path to a library.
+arp_hml_rt_LIBRARY:FILEPATH=/usr/lib/librt.so
+
+//Path to a library.
+arp_master_orocos-rtt-gnulinux_LIBRARY:FILEPATH=/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so
+
+//Path to a library.
+arp_master_pthread_LIBRARY:FILEPATH=/usr/lib/libpthread.so
+
+//Path to a library.
+arp_master_rt_LIBRARY:FILEPATH=/usr/lib/librt.so
+
+//Path to a library.
+arp_music_orocos-rtt-gnulinux_LIBRARY:FILEPATH=/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so
+
+//Path to a library.
+arp_music_pthread_LIBRARY:FILEPATH=/usr/lib/libpthread.so
+
+//Path to a library.
+arp_music_rt_LIBRARY:FILEPATH=/usr/lib/librt.so
+
+//Path to a library.
+arp_ods_orocos-rtt-gnulinux_LIBRARY:FILEPATH=/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so
+
+//Path to a library.
+arp_ods_pthread_LIBRARY:FILEPATH=/usr/lib/libpthread.so
+
+//Path to a library.
+arp_ods_rt_LIBRARY:FILEPATH=/usr/lib/librt.so
+
+//Path to a library.
+arp_rlu_orocos-rtt-gnulinux_LIBRARY:FILEPATH=/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so
+
+//Path to a library.
+arp_rlu_pthread_LIBRARY:FILEPATH=/usr/lib/libpthread.so
+
+//Path to a library.
+arp_rlu_rt_LIBRARY:FILEPATH=/usr/lib/librt.so
+
+//Path to a library.
+arp_simu_orocos-rtt-gnulinux_LIBRARY:FILEPATH=/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so
+
+//Path to a library.
+arp_simu_pthread_LIBRARY:FILEPATH=/usr/lib/libpthread.so
+
+//Path to a library.
+arp_simu_rt_LIBRARY:FILEPATH=/usr/lib/librt.so
+
+//Path to a library.
+arp_stm32_orocos-rtt-gnulinux_LIBRARY:FILEPATH=/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so
+
+//Path to a library.
+arp_stm32_pthread_LIBRARY:FILEPATH=/usr/lib/libpthread.so
+
+//Path to a library.
+arp_stm32_rt_LIBRARY:FILEPATH=/usr/lib/librt.so
+
+//Dependencies for the target
+support_LIB_DEPENDS:STATIC=general;/opt/ard/arp_core/lib/orocos/gnulinux/types/libarp_core-typekit-gnulinux.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;ReflexxesTypeIV;general;orocos-bfl;general;libcanfestival_unix.a;general;libcanfestival.a;general;tf;general;BulletDynamics;general;BulletCollision;general;LinearMath;general;message_filters;general;libhokuyo;general;sensor_msgs;general;dynamic_reconfigure_config_init_mutex;general;rosbag;general;topic_tools;general;arp_stm32-components-gnulinux;general;actionlib;general;arp_core-gnulinux;general;rt;general;arp_core-math;general;arp_core-helpers;general;arp_core-time;general;arp_core-logger;general;arp_core-tools;general;arp_core-components-gnulinux;general;ros;general;boost_signals-mt;general;roscpp_serialization;general;XmlRpc;general;rosconsole;general;boost_thread-mt;general;log4cxx;general;rostime;general;cpp_common;general;roslib;general;rospack;general;rosstack;general;imported_orocos-rtt-gnulinux_dynamic;
+
+//Dependencies for the target
+ubiquity-plugin_LIB_DEPENDS:STATIC=general;/opt/ard/arp_core/lib/orocos/gnulinux/types/libarp_core-typekit-gnulinux.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;ReflexxesTypeIV;general;orocos-bfl;general;libcanfestival_unix.a;general;libcanfestival.a;general;tf;general;BulletDynamics;general;BulletCollision;general;LinearMath;general;message_filters;general;libhokuyo;general;sensor_msgs;general;dynamic_reconfigure_config_init_mutex;general;rosbag;general;topic_tools;general;arp_stm32-components-gnulinux;general;actionlib;general;arp_core-gnulinux;general;rt;general;arp_core-math;general;arp_core-helpers;general;arp_core-time;general;arp_core-logger;general;arp_core-tools;general;arp_core-components-gnulinux;general;ros;general;boost_signals-mt;general;roscpp_serialization;general;XmlRpc;general;rosconsole;general;boost_thread-mt;general;log4cxx;general;rostime;general;cpp_common;general;roslib;general;rospack;general;rosstack;general;imported_orocos-rtt-gnulinux_dynamic;
+
+//Dependencies for the target
+ubiquity-service_LIB_DEPENDS:STATIC=general;/opt/ard/arp_core/lib/orocos/gnulinux/types/libarp_core-typekit-gnulinux.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;ReflexxesTypeIV;general;orocos-bfl;general;libcanfestival_unix.a;general;libcanfestival.a;general;tf;general;BulletDynamics;general;BulletCollision;general;LinearMath;general;message_filters;general;libhokuyo;general;sensor_msgs;general;dynamic_reconfigure_config_init_mutex;general;rosbag;general;topic_tools;general;arp_stm32-components-gnulinux;general;actionlib;general;arp_core-gnulinux;general;rt;general;arp_core-math;general;arp_core-helpers;general;arp_core-time;general;arp_core-logger;general;arp_core-tools;general;arp_core-components-gnulinux;general;ros;general;boost_signals-mt;general;roscpp_serialization;general;XmlRpc;general;rosconsole;general;boost_thread-mt;general;log4cxx;general;rostime;general;cpp_common;general;roslib;general;rospack;general;rosstack;general;imported_orocos-rtt-gnulinux_dynamic;
+
 //Value Computed by CMake
 ubiquity_BINARY_DIR:STATIC=/opt/ard/ubiquity/build
+
+//Dependencies for the target
+ubiquity_LIB_DEPENDS:STATIC=general;/opt/ard/arp_core/lib/orocos/gnulinux/types/libarp_core-typekit-gnulinux.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;/opt/ros_addons/orocos_toolchain/install/lib/liborocos-rtt-gnulinux.so;general;/usr/lib/libpthread.so;general;/usr/lib/librt.so;general;ReflexxesTypeIV;general;orocos-bfl;general;libcanfestival_unix.a;general;libcanfestival.a;general;tf;general;BulletDynamics;general;BulletCollision;general;LinearMath;general;message_filters;general;libhokuyo;general;sensor_msgs;general;dynamic_reconfigure_config_init_mutex;general;rosbag;general;topic_tools;general;arp_stm32-components-gnulinux;general;actionlib;general;arp_core-gnulinux;general;rt;general;arp_core-math;general;arp_core-helpers;general;arp_core-time;general;arp_core-logger;general;arp_core-tools;general;arp_core-components-gnulinux;general;ros;general;boost_signals-mt;general;roscpp_serialization;general;XmlRpc;general;rosconsole;general;boost_thread-mt;general;log4cxx;general;rostime;general;cpp_common;general;roslib;general;rospack;general;rosstack;general;imported_orocos-rtt-gnulinux_dynamic;
 
 //Value Computed by CMake
 ubiquity_SOURCE_DIR:STATIC=/opt/ard/ubiquity
@@ -311,7 +398,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_LOCAL_GENERATORS:INTERNAL=1
+CMAKE_NUMBER_OF_LOCAL_GENERATORS:INTERNAL=3
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -354,11 +441,19 @@ PKG_CONFIG_EXECUTABLE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: PYTHON_EXECUTABLE
 PYTHON_EXECUTABLE-ADVANCED:INTERNAL=1
 __pkg_config_checked_arp_core_COMP_gnulinux:INTERNAL=1
+__pkg_config_checked_arp_hmi_COMP_gnulinux:INTERNAL=1
+__pkg_config_checked_arp_hml_COMP_gnulinux:INTERNAL=1
+__pkg_config_checked_arp_master_COMP_gnulinux:INTERNAL=1
+__pkg_config_checked_arp_music_COMP_gnulinux:INTERNAL=1
+__pkg_config_checked_arp_ods_COMP_gnulinux:INTERNAL=1
+__pkg_config_checked_arp_rlu_COMP_gnulinux:INTERNAL=1
+__pkg_config_checked_arp_simu_COMP_gnulinux:INTERNAL=1
+__pkg_config_checked_arp_stm32_COMP_gnulinux:INTERNAL=1
 _rosbuild_EXPORTS:INTERNAL=
-_rosbuild_cached_flag_time:INTERNAL=1398885445.42
+_rosbuild_cached_flag_time:INTERNAL=1398897566.34
 _roslang_LANGS:INTERNAL=roslisp;rospy;roscpp
-_rospack_deps_manifests_invoke_result:INTERNAL=/opt/ros_addons/orocos_toolchain/rtt/manifest.xml;/opt/ros_addons/orocos_toolchain/log4cpp/manifest.xml;/opt/ros_addons/orocos_toolchain/ocl/manifest.xml;/opt/ros/ros/core/rosbuild/manifest.xml;/opt/ros/ros/core/roslang/manifest.xml;/opt/ros/ros_comm/utilities/cpp_common/manifest.xml;/opt/ros/ros_comm/clients/cpp/roscpp_traits/manifest.xml;/opt/ros/ros_comm/utilities/rostime/manifest.xml;/opt/ros/ros_comm/clients/cpp/roscpp_serialization/manifest.xml;/opt/ros/ros/tools/rospack/manifest.xml;/opt/ros/ros/core/roslib/manifest.xml;/opt/ros/ros_comm/utilities/xmlrpcpp/manifest.xml;/opt/ros/ros_comm/tools/rosconsole/manifest.xml;/opt/ros/ros_comm/messages/std_msgs/manifest.xml;/opt/ros/ros_comm/messages/rosgraph_msgs/manifest.xml;/opt/ros/ros_comm/clients/cpp/roscpp/manifest.xml;/opt/ros/common_rosdeps/manifest.xml;/opt/ros_addons/rtt_ros_integration/rtt_rosnode/manifest.xml;/opt/ros_addons/rtt_ros_comm/rtt_std_msgs/manifest.xml;/opt/ros_addons/rtt_ros_comm/rtt_rosgraph_msgs/manifest.xml;/opt/ros_addons/orocos_toolchain/rtt_dot_service/manifest.xml;/opt/ros_addons/orocos_toolchain/fbsched/manifest.xml;/opt/ros/common_msgs/actionlib_msgs/manifest.xml;/opt/ard/arp_msgs/manifest.xml;/opt/ard/arp_core/manifest.xml
-_rospack_msgsrv_gen_invoke_result:INTERNAL=/opt/ros/ros_comm/messages/std_msgs/msg_gen/generated;/opt/ros/ros_comm/messages/rosgraph_msgs/msg_gen/generated;/opt/ros/ros_comm/clients/cpp/roscpp/msg_gen/generated;/opt/ros/ros_comm/clients/cpp/roscpp/srv_gen/generated;/opt/ros/common_msgs/actionlib_msgs/msg_gen/generated;/opt/ard/arp_msgs/msg_gen/generated;/opt/ard/arp_msgs/srv_gen/generated
+_rospack_deps_manifests_invoke_result:INTERNAL=/opt/ros_addons/orocos_toolchain/rtt/manifest.xml;/opt/ros_addons/orocos_toolchain/log4cpp/manifest.xml;/opt/ros_addons/orocos_toolchain/ocl/manifest.xml;/opt/ros/ros/core/rosbuild/manifest.xml;/opt/ros/ros/core/roslang/manifest.xml;/opt/ros/ros_comm/utilities/cpp_common/manifest.xml;/opt/ros/ros_comm/clients/cpp/roscpp_traits/manifest.xml;/opt/ros/ros_comm/utilities/rostime/manifest.xml;/opt/ros/ros_comm/clients/cpp/roscpp_serialization/manifest.xml;/opt/ros/ros/tools/rospack/manifest.xml;/opt/ros/ros/core/roslib/manifest.xml;/opt/ros/ros_comm/utilities/xmlrpcpp/manifest.xml;/opt/ros/ros_comm/tools/rosconsole/manifest.xml;/opt/ros/ros_comm/messages/std_msgs/manifest.xml;/opt/ros/ros_comm/messages/rosgraph_msgs/manifest.xml;/opt/ros/ros_comm/clients/cpp/roscpp/manifest.xml;/opt/ros/common_rosdeps/manifest.xml;/opt/ros_addons/rtt_ros_integration/rtt_rosnode/manifest.xml;/opt/ros_addons/rtt_ros_comm/rtt_std_msgs/manifest.xml;/opt/ros_addons/rtt_ros_comm/rtt_rosgraph_msgs/manifest.xml;/opt/ros_addons/orocos_toolchain/rtt_dot_service/manifest.xml;/opt/ros_addons/orocos_toolchain/fbsched/manifest.xml;/opt/ros/common_msgs/actionlib_msgs/manifest.xml;/opt/ard/arp_msgs/manifest.xml;/opt/ard/arp_core/manifest.xml;/opt/ros/ros_comm/clients/rospy/manifest.xml;/opt/ros/ros_comm/messages/std_srvs/manifest.xml;/opt/ros/ros/tools/rosclean/manifest.xml;/opt/ros/ros_comm/tools/rosgraph/manifest.xml;/opt/ros/ros_comm/tools/rosparam/manifest.xml;/opt/ros/ros_comm/tools/rosmaster/manifest.xml;/opt/ros/ros_comm/tools/rosout/manifest.xml;/opt/ros/ros_comm/tools/roslaunch/manifest.xml;/opt/ros/ros/tools/rosunit/manifest.xml;/opt/ros/ros_comm/tools/rostest/manifest.xml;/opt/ros/common/actionlib/manifest.xml;/opt/ard/arp_stm32/manifest.xml;/opt/ard/can_festival/manifest.xml;/opt/ard/socket_can/manifest.xml;/opt/ros/ros_comm/tools/topic_tools/manifest.xml;/opt/ros/ros_comm/tools/rosbag/manifest.xml;/opt/ros/ros_comm/tools/rosbagmigration/manifest.xml;/opt/ros/common_msgs/geometry_msgs/manifest.xml;/opt/ros/common_msgs/sensor_msgs/manifest.xml;/opt/ros/bullet/manifest.xml;/opt/ros/geometry/angles/manifest.xml;/opt/ros/ros_comm/tools/rosnode/manifest.xml;/opt/ros/ros_comm/tools/rosmsg/manifest.xml;/opt/ros/ros_comm/tools/rostopic/manifest.xml;/opt/ros/ros_comm/tools/rosservice/manifest.xml;/opt/ros/ros_comm/utilities/roswtf/manifest.xml;/opt/ros/ros_comm/utilities/message_filters/manifest.xml;/opt/ros/geometry/tf/manifest.xml;/opt/ros/common_msgs/diagnostic_msgs/manifest.xml;/opt/ros/diagnostics/diagnostic_updater/manifest.xml;/opt/ros/diagnostics/self_test/manifest.xml;/opt/ros/driver_common/dynamic_reconfigure/manifest.xml;/opt/ros/driver_common/driver_base/manifest.xml;/opt/ros_addons/laser_drivers/hokuyo_node/manifest.xml;/opt/ros_addons/dynamixel_motor/dynamixel_msgs/manifest.xml;/opt/ros_addons/dynamixel_motor/dynamixel_driver/manifest.xml;/opt/ros/common_msgs/trajectory_msgs/manifest.xml;/opt/ros_addons/control/control_msgs/manifest.xml;/opt/ros_addons/dynamixel_motor/dynamixel_controllers/manifest.xml;/opt/ard/arp_hml/manifest.xml;/opt/ros/common_msgs/nav_msgs/manifest.xml;/opt/ros_addons/reflexxes_typeIV/manifest.xml;/opt/ard/arp_ods/manifest.xml;/opt/ros_addons/rtt_common_msgs/rtt_actionlib_msgs/manifest.xml;/opt/ard/rtt_arp_msgs/manifest.xml;/opt/ros/common/bfl/manifest.xml;/opt/ard/arp_rlu/manifest.xml;/opt/ros/executive_smach/smach/manifest.xml;/opt/ros/executive_smach/smach_msgs/manifest.xml;/opt/ros/executive_smach/smach_ros/manifest.xml;/opt/ard/arp_master/manifest.xml;/opt/ard/arp_msgs_2014/manifest.xml;/opt/ard/arp_hmi/manifest.xml;/opt/ard/arp_simu/manifest.xml;/opt/ard/arp_music/manifest.xml
+_rospack_msgsrv_gen_invoke_result:INTERNAL=/opt/ros/ros_comm/messages/std_msgs/msg_gen/generated;/opt/ros/ros_comm/messages/rosgraph_msgs/msg_gen/generated;/opt/ros/ros_comm/clients/cpp/roscpp/msg_gen/generated;/opt/ros/ros_comm/clients/cpp/roscpp/srv_gen/generated;/opt/ros/common_msgs/actionlib_msgs/msg_gen/generated;/opt/ard/arp_msgs/msg_gen/generated;/opt/ard/arp_msgs/srv_gen/generated;/opt/ros/ros_comm/messages/std_srvs/srv_gen/generated;/opt/ros/common/actionlib/msg_gen/generated;/opt/ros/ros_comm/tools/topic_tools/srv_gen/generated;/opt/ros/common_msgs/geometry_msgs/msg_gen/generated;/opt/ros/common_msgs/sensor_msgs/msg_gen/generated;/opt/ros/common_msgs/sensor_msgs/srv_gen/generated;/opt/ros/geometry/tf/msg_gen/generated;/opt/ros/geometry/tf/srv_gen/generated;/opt/ros/common_msgs/diagnostic_msgs/msg_gen/generated;/opt/ros/common_msgs/diagnostic_msgs/srv_gen/generated;/opt/ros/driver_common/dynamic_reconfigure/msg_gen/generated;/opt/ros/driver_common/dynamic_reconfigure/srv_gen/generated;/opt/ros/driver_common/driver_base/msg_gen/generated;/opt/ros_addons/dynamixel_motor/dynamixel_msgs/msg_gen/generated;/opt/ros/common_msgs/trajectory_msgs/msg_gen/generated;/opt/ros_addons/control/control_msgs/msg_gen/generated;/opt/ros_addons/dynamixel_motor/dynamixel_controllers/srv_gen/generated;/opt/ros/common_msgs/nav_msgs/msg_gen/generated;/opt/ros/common_msgs/nav_msgs/srv_gen/generated;/opt/ros/executive_smach/smach_msgs/msg_gen/generated;/opt/ard/arp_msgs_2014/msg_gen/generated
 arp_core_COMP_gnulinux_CFLAGS:INTERNAL=-DOROCOS_TARGET=gnulinux;-I/opt/ard/arp_core/include;-I/opt/ard/arp_core/..;-I/opt/ros_addons/orocos_toolchain/rtt/../install/include
 arp_core_COMP_gnulinux_CFLAGS_I:INTERNAL=
 arp_core_COMP_gnulinux_CFLAGS_OTHER:INTERNAL=-DOROCOS_TARGET=gnulinux
@@ -397,18 +492,322 @@ arp_core_COMP_gnulinux_arp_core_INCLUDEDIR:INTERNAL=
 arp_core_COMP_gnulinux_arp_core_LIBDIR:INTERNAL=
 arp_core_COMP_gnulinux_arp_core_PREFIX:INTERNAL=
 arp_core_COMP_gnulinux_arp_core_VERSION:INTERNAL=
+arp_hmi_COMP_gnulinux_CFLAGS:INTERNAL=-DOROCOS_TARGET=gnulinux;-I/opt/ard/arp_hmi/include;-I/opt/ard/arp_hmi/..;-I/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_hmi_COMP_gnulinux_CFLAGS_I:INTERNAL=
+arp_hmi_COMP_gnulinux_CFLAGS_OTHER:INTERNAL=-DOROCOS_TARGET=gnulinux
+arp_hmi_COMP_gnulinux_FOUND:INTERNAL=1
+arp_hmi_COMP_gnulinux_INCLUDEDIR:INTERNAL=/opt/ard/arp_hmi/include
+arp_hmi_COMP_gnulinux_INCLUDE_DIRS:INTERNAL=/opt/ard/arp_hmi/include;/opt/ard/arp_hmi/..;/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_hmi_COMP_gnulinux_LDFLAGS:INTERNAL=-L/opt/ros_addons/orocos_toolchain/rtt/../install/lib;-lorocos-rtt-gnulinux;-lpthread;-lrt
+arp_hmi_COMP_gnulinux_LDFLAGS_OTHER:INTERNAL=
+arp_hmi_COMP_gnulinux_LIBDIR:INTERNAL=/opt/ard/arp_hmi/lib
+arp_hmi_COMP_gnulinux_LIBRARIES:INTERNAL=orocos-rtt-gnulinux;pthread;rt
+arp_hmi_COMP_gnulinux_LIBRARY_DIRS:INTERNAL=/opt/ros_addons/orocos_toolchain/rtt/../install/lib
+arp_hmi_COMP_gnulinux_LIBS:INTERNAL=
+arp_hmi_COMP_gnulinux_LIBS_L:INTERNAL=
+arp_hmi_COMP_gnulinux_LIBS_OTHER:INTERNAL=
+arp_hmi_COMP_gnulinux_LIBS_PATHS:INTERNAL=
+arp_hmi_COMP_gnulinux_PREFIX:INTERNAL=/opt/ard/arp_hmi
+arp_hmi_COMP_gnulinux_STATIC_CFLAGS:INTERNAL=-DOROCOS_TARGET=gnulinux;-I/opt/ard/arp_hmi/include;-I/opt/ard/arp_hmi/..;-I/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_hmi_COMP_gnulinux_STATIC_CFLAGS_I:INTERNAL=
+arp_hmi_COMP_gnulinux_STATIC_CFLAGS_OTHER:INTERNAL=-DOROCOS_TARGET=gnulinux
+arp_hmi_COMP_gnulinux_STATIC_INCLUDE_DIRS:INTERNAL=/opt/ard/arp_hmi/include;/opt/ard/arp_hmi/..;/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_hmi_COMP_gnulinux_STATIC_LDFLAGS:INTERNAL=-L/opt/ros_addons/orocos_toolchain/rtt/../install/lib;-lorocos-rtt-gnulinux;-lboost_filesystem-mt;-lboost_system-mt;-lboost_serialization-mt;-lpthread;-lrt;-ldl
+arp_hmi_COMP_gnulinux_STATIC_LDFLAGS_OTHER:INTERNAL=
+arp_hmi_COMP_gnulinux_STATIC_LIBDIR:INTERNAL=
+arp_hmi_COMP_gnulinux_STATIC_LIBRARIES:INTERNAL=orocos-rtt-gnulinux;boost_filesystem-mt;boost_system-mt;boost_serialization-mt;pthread;rt;dl
+arp_hmi_COMP_gnulinux_STATIC_LIBRARY_DIRS:INTERNAL=/opt/ros_addons/orocos_toolchain/rtt/../install/lib
+arp_hmi_COMP_gnulinux_STATIC_LIBS:INTERNAL=
+arp_hmi_COMP_gnulinux_STATIC_LIBS_L:INTERNAL=
+arp_hmi_COMP_gnulinux_STATIC_LIBS_OTHER:INTERNAL=
+arp_hmi_COMP_gnulinux_STATIC_LIBS_PATHS:INTERNAL=
+arp_hmi_COMP_gnulinux_VERSION:INTERNAL=1.0
+arp_hmi_COMP_gnulinux_arp_hmi-gnulinux_INCLUDEDIR:INTERNAL=
+arp_hmi_COMP_gnulinux_arp_hmi-gnulinux_LIBDIR:INTERNAL=
+arp_hmi_COMP_gnulinux_arp_hmi-gnulinux_PREFIX:INTERNAL=
+arp_hmi_COMP_gnulinux_arp_hmi-gnulinux_VERSION:INTERNAL=
+arp_hmi_COMP_gnulinux_arp_hmi_INCLUDEDIR:INTERNAL=
+arp_hmi_COMP_gnulinux_arp_hmi_LIBDIR:INTERNAL=
+arp_hmi_COMP_gnulinux_arp_hmi_PREFIX:INTERNAL=
+arp_hmi_COMP_gnulinux_arp_hmi_VERSION:INTERNAL=
+arp_hml_COMP_gnulinux_CFLAGS:INTERNAL=-DOROCOS_TARGET=gnulinux;-I/opt/ard/arp_hml/include;-I/opt/ard/arp_hml/..;-I/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_hml_COMP_gnulinux_CFLAGS_I:INTERNAL=
+arp_hml_COMP_gnulinux_CFLAGS_OTHER:INTERNAL=-DOROCOS_TARGET=gnulinux
+arp_hml_COMP_gnulinux_FOUND:INTERNAL=1
+arp_hml_COMP_gnulinux_INCLUDEDIR:INTERNAL=/opt/ard/arp_hml/include
+arp_hml_COMP_gnulinux_INCLUDE_DIRS:INTERNAL=/opt/ard/arp_hml/include;/opt/ard/arp_hml/..;/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_hml_COMP_gnulinux_LDFLAGS:INTERNAL=-L/opt/ros_addons/orocos_toolchain/rtt/../install/lib;-lorocos-rtt-gnulinux;-lpthread;-lrt
+arp_hml_COMP_gnulinux_LDFLAGS_OTHER:INTERNAL=
+arp_hml_COMP_gnulinux_LIBDIR:INTERNAL=/opt/ard/arp_hml/lib
+arp_hml_COMP_gnulinux_LIBRARIES:INTERNAL=orocos-rtt-gnulinux;pthread;rt
+arp_hml_COMP_gnulinux_LIBRARY_DIRS:INTERNAL=/opt/ros_addons/orocos_toolchain/rtt/../install/lib
+arp_hml_COMP_gnulinux_LIBS:INTERNAL=
+arp_hml_COMP_gnulinux_LIBS_L:INTERNAL=
+arp_hml_COMP_gnulinux_LIBS_OTHER:INTERNAL=
+arp_hml_COMP_gnulinux_LIBS_PATHS:INTERNAL=
+arp_hml_COMP_gnulinux_PREFIX:INTERNAL=/opt/ard/arp_hml
+arp_hml_COMP_gnulinux_STATIC_CFLAGS:INTERNAL=-DOROCOS_TARGET=gnulinux;-I/opt/ard/arp_hml/include;-I/opt/ard/arp_hml/..;-I/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_hml_COMP_gnulinux_STATIC_CFLAGS_I:INTERNAL=
+arp_hml_COMP_gnulinux_STATIC_CFLAGS_OTHER:INTERNAL=-DOROCOS_TARGET=gnulinux
+arp_hml_COMP_gnulinux_STATIC_INCLUDE_DIRS:INTERNAL=/opt/ard/arp_hml/include;/opt/ard/arp_hml/..;/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_hml_COMP_gnulinux_STATIC_LDFLAGS:INTERNAL=-L/opt/ros_addons/orocos_toolchain/rtt/../install/lib;-lorocos-rtt-gnulinux;-lboost_filesystem-mt;-lboost_system-mt;-lboost_serialization-mt;-lpthread;-lrt;-ldl
+arp_hml_COMP_gnulinux_STATIC_LDFLAGS_OTHER:INTERNAL=
+arp_hml_COMP_gnulinux_STATIC_LIBDIR:INTERNAL=
+arp_hml_COMP_gnulinux_STATIC_LIBRARIES:INTERNAL=orocos-rtt-gnulinux;boost_filesystem-mt;boost_system-mt;boost_serialization-mt;pthread;rt;dl
+arp_hml_COMP_gnulinux_STATIC_LIBRARY_DIRS:INTERNAL=/opt/ros_addons/orocos_toolchain/rtt/../install/lib
+arp_hml_COMP_gnulinux_STATIC_LIBS:INTERNAL=
+arp_hml_COMP_gnulinux_STATIC_LIBS_L:INTERNAL=
+arp_hml_COMP_gnulinux_STATIC_LIBS_OTHER:INTERNAL=
+arp_hml_COMP_gnulinux_STATIC_LIBS_PATHS:INTERNAL=
+arp_hml_COMP_gnulinux_VERSION:INTERNAL=1.0
+arp_hml_COMP_gnulinux_arp_hml-gnulinux_INCLUDEDIR:INTERNAL=
+arp_hml_COMP_gnulinux_arp_hml-gnulinux_LIBDIR:INTERNAL=
+arp_hml_COMP_gnulinux_arp_hml-gnulinux_PREFIX:INTERNAL=
+arp_hml_COMP_gnulinux_arp_hml-gnulinux_VERSION:INTERNAL=
+arp_hml_COMP_gnulinux_arp_hml_INCLUDEDIR:INTERNAL=
+arp_hml_COMP_gnulinux_arp_hml_LIBDIR:INTERNAL=
+arp_hml_COMP_gnulinux_arp_hml_PREFIX:INTERNAL=
+arp_hml_COMP_gnulinux_arp_hml_VERSION:INTERNAL=
+arp_master_COMP_gnulinux_CFLAGS:INTERNAL=-DOROCOS_TARGET=gnulinux;-I/opt/ard/arp_master/include;-I/opt/ard/arp_master/..;-I/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_master_COMP_gnulinux_CFLAGS_I:INTERNAL=
+arp_master_COMP_gnulinux_CFLAGS_OTHER:INTERNAL=-DOROCOS_TARGET=gnulinux
+arp_master_COMP_gnulinux_FOUND:INTERNAL=1
+arp_master_COMP_gnulinux_INCLUDEDIR:INTERNAL=/opt/ard/arp_master/include
+arp_master_COMP_gnulinux_INCLUDE_DIRS:INTERNAL=/opt/ard/arp_master/include;/opt/ard/arp_master/..;/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_master_COMP_gnulinux_LDFLAGS:INTERNAL=-L/opt/ros_addons/orocos_toolchain/rtt/../install/lib;-lorocos-rtt-gnulinux;-lpthread;-lrt
+arp_master_COMP_gnulinux_LDFLAGS_OTHER:INTERNAL=
+arp_master_COMP_gnulinux_LIBDIR:INTERNAL=/opt/ard/arp_master/lib
+arp_master_COMP_gnulinux_LIBRARIES:INTERNAL=orocos-rtt-gnulinux;pthread;rt
+arp_master_COMP_gnulinux_LIBRARY_DIRS:INTERNAL=/opt/ros_addons/orocos_toolchain/rtt/../install/lib
+arp_master_COMP_gnulinux_LIBS:INTERNAL=
+arp_master_COMP_gnulinux_LIBS_L:INTERNAL=
+arp_master_COMP_gnulinux_LIBS_OTHER:INTERNAL=
+arp_master_COMP_gnulinux_LIBS_PATHS:INTERNAL=
+arp_master_COMP_gnulinux_PREFIX:INTERNAL=/opt/ard/arp_master
+arp_master_COMP_gnulinux_STATIC_CFLAGS:INTERNAL=-DOROCOS_TARGET=gnulinux;-I/opt/ard/arp_master/include;-I/opt/ard/arp_master/..;-I/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_master_COMP_gnulinux_STATIC_CFLAGS_I:INTERNAL=
+arp_master_COMP_gnulinux_STATIC_CFLAGS_OTHER:INTERNAL=-DOROCOS_TARGET=gnulinux
+arp_master_COMP_gnulinux_STATIC_INCLUDE_DIRS:INTERNAL=/opt/ard/arp_master/include;/opt/ard/arp_master/..;/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_master_COMP_gnulinux_STATIC_LDFLAGS:INTERNAL=-L/opt/ros_addons/orocos_toolchain/rtt/../install/lib;-lorocos-rtt-gnulinux;-lboost_filesystem-mt;-lboost_system-mt;-lboost_serialization-mt;-lpthread;-lrt;-ldl
+arp_master_COMP_gnulinux_STATIC_LDFLAGS_OTHER:INTERNAL=
+arp_master_COMP_gnulinux_STATIC_LIBDIR:INTERNAL=
+arp_master_COMP_gnulinux_STATIC_LIBRARIES:INTERNAL=orocos-rtt-gnulinux;boost_filesystem-mt;boost_system-mt;boost_serialization-mt;pthread;rt;dl
+arp_master_COMP_gnulinux_STATIC_LIBRARY_DIRS:INTERNAL=/opt/ros_addons/orocos_toolchain/rtt/../install/lib
+arp_master_COMP_gnulinux_STATIC_LIBS:INTERNAL=
+arp_master_COMP_gnulinux_STATIC_LIBS_L:INTERNAL=
+arp_master_COMP_gnulinux_STATIC_LIBS_OTHER:INTERNAL=
+arp_master_COMP_gnulinux_STATIC_LIBS_PATHS:INTERNAL=
+arp_master_COMP_gnulinux_VERSION:INTERNAL=1.0
+arp_master_COMP_gnulinux_arp_master-gnulinux_INCLUDEDIR:INTERNAL=
+arp_master_COMP_gnulinux_arp_master-gnulinux_LIBDIR:INTERNAL=
+arp_master_COMP_gnulinux_arp_master-gnulinux_PREFIX:INTERNAL=
+arp_master_COMP_gnulinux_arp_master-gnulinux_VERSION:INTERNAL=
+arp_master_COMP_gnulinux_arp_master_INCLUDEDIR:INTERNAL=
+arp_master_COMP_gnulinux_arp_master_LIBDIR:INTERNAL=
+arp_master_COMP_gnulinux_arp_master_PREFIX:INTERNAL=
+arp_master_COMP_gnulinux_arp_master_VERSION:INTERNAL=
+arp_music_COMP_gnulinux_CFLAGS:INTERNAL=-DOROCOS_TARGET=gnulinux;-I/opt/ard/arp_music/include;-I/opt/ard/arp_music/..;-I/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_music_COMP_gnulinux_CFLAGS_I:INTERNAL=
+arp_music_COMP_gnulinux_CFLAGS_OTHER:INTERNAL=-DOROCOS_TARGET=gnulinux
+arp_music_COMP_gnulinux_FOUND:INTERNAL=1
+arp_music_COMP_gnulinux_INCLUDEDIR:INTERNAL=/opt/ard/arp_music/include
+arp_music_COMP_gnulinux_INCLUDE_DIRS:INTERNAL=/opt/ard/arp_music/include;/opt/ard/arp_music/..;/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_music_COMP_gnulinux_LDFLAGS:INTERNAL=-L/opt/ros_addons/orocos_toolchain/rtt/../install/lib;-lorocos-rtt-gnulinux;-lpthread;-lrt
+arp_music_COMP_gnulinux_LDFLAGS_OTHER:INTERNAL=
+arp_music_COMP_gnulinux_LIBDIR:INTERNAL=/opt/ard/arp_music/lib
+arp_music_COMP_gnulinux_LIBRARIES:INTERNAL=orocos-rtt-gnulinux;pthread;rt
+arp_music_COMP_gnulinux_LIBRARY_DIRS:INTERNAL=/opt/ros_addons/orocos_toolchain/rtt/../install/lib
+arp_music_COMP_gnulinux_LIBS:INTERNAL=
+arp_music_COMP_gnulinux_LIBS_L:INTERNAL=
+arp_music_COMP_gnulinux_LIBS_OTHER:INTERNAL=
+arp_music_COMP_gnulinux_LIBS_PATHS:INTERNAL=
+arp_music_COMP_gnulinux_PREFIX:INTERNAL=/opt/ard/arp_music
+arp_music_COMP_gnulinux_STATIC_CFLAGS:INTERNAL=-DOROCOS_TARGET=gnulinux;-I/opt/ard/arp_music/include;-I/opt/ard/arp_music/..;-I/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_music_COMP_gnulinux_STATIC_CFLAGS_I:INTERNAL=
+arp_music_COMP_gnulinux_STATIC_CFLAGS_OTHER:INTERNAL=-DOROCOS_TARGET=gnulinux
+arp_music_COMP_gnulinux_STATIC_INCLUDE_DIRS:INTERNAL=/opt/ard/arp_music/include;/opt/ard/arp_music/..;/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_music_COMP_gnulinux_STATIC_LDFLAGS:INTERNAL=-L/opt/ros_addons/orocos_toolchain/rtt/../install/lib;-lorocos-rtt-gnulinux;-lboost_filesystem-mt;-lboost_system-mt;-lboost_serialization-mt;-lpthread;-lrt;-ldl
+arp_music_COMP_gnulinux_STATIC_LDFLAGS_OTHER:INTERNAL=
+arp_music_COMP_gnulinux_STATIC_LIBDIR:INTERNAL=
+arp_music_COMP_gnulinux_STATIC_LIBRARIES:INTERNAL=orocos-rtt-gnulinux;boost_filesystem-mt;boost_system-mt;boost_serialization-mt;pthread;rt;dl
+arp_music_COMP_gnulinux_STATIC_LIBRARY_DIRS:INTERNAL=/opt/ros_addons/orocos_toolchain/rtt/../install/lib
+arp_music_COMP_gnulinux_STATIC_LIBS:INTERNAL=
+arp_music_COMP_gnulinux_STATIC_LIBS_L:INTERNAL=
+arp_music_COMP_gnulinux_STATIC_LIBS_OTHER:INTERNAL=
+arp_music_COMP_gnulinux_STATIC_LIBS_PATHS:INTERNAL=
+arp_music_COMP_gnulinux_VERSION:INTERNAL=1.0
+arp_music_COMP_gnulinux_arp_music-gnulinux_INCLUDEDIR:INTERNAL=
+arp_music_COMP_gnulinux_arp_music-gnulinux_LIBDIR:INTERNAL=
+arp_music_COMP_gnulinux_arp_music-gnulinux_PREFIX:INTERNAL=
+arp_music_COMP_gnulinux_arp_music-gnulinux_VERSION:INTERNAL=
+arp_music_COMP_gnulinux_arp_music_INCLUDEDIR:INTERNAL=
+arp_music_COMP_gnulinux_arp_music_LIBDIR:INTERNAL=
+arp_music_COMP_gnulinux_arp_music_PREFIX:INTERNAL=
+arp_music_COMP_gnulinux_arp_music_VERSION:INTERNAL=
+arp_ods_COMP_gnulinux_CFLAGS:INTERNAL=-DOROCOS_TARGET=gnulinux;-I/opt/ard/arp_ods/include;-I/opt/ard/arp_ods/..;-I/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_ods_COMP_gnulinux_CFLAGS_I:INTERNAL=
+arp_ods_COMP_gnulinux_CFLAGS_OTHER:INTERNAL=-DOROCOS_TARGET=gnulinux
+arp_ods_COMP_gnulinux_FOUND:INTERNAL=1
+arp_ods_COMP_gnulinux_INCLUDEDIR:INTERNAL=/opt/ard/arp_ods/include
+arp_ods_COMP_gnulinux_INCLUDE_DIRS:INTERNAL=/opt/ard/arp_ods/include;/opt/ard/arp_ods/..;/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_ods_COMP_gnulinux_LDFLAGS:INTERNAL=-L/opt/ros_addons/orocos_toolchain/rtt/../install/lib;-lorocos-rtt-gnulinux;-lpthread;-lrt
+arp_ods_COMP_gnulinux_LDFLAGS_OTHER:INTERNAL=
+arp_ods_COMP_gnulinux_LIBDIR:INTERNAL=/opt/ard/arp_ods/lib
+arp_ods_COMP_gnulinux_LIBRARIES:INTERNAL=orocos-rtt-gnulinux;pthread;rt
+arp_ods_COMP_gnulinux_LIBRARY_DIRS:INTERNAL=/opt/ros_addons/orocos_toolchain/rtt/../install/lib
+arp_ods_COMP_gnulinux_LIBS:INTERNAL=
+arp_ods_COMP_gnulinux_LIBS_L:INTERNAL=
+arp_ods_COMP_gnulinux_LIBS_OTHER:INTERNAL=
+arp_ods_COMP_gnulinux_LIBS_PATHS:INTERNAL=
+arp_ods_COMP_gnulinux_PREFIX:INTERNAL=/opt/ard/arp_ods
+arp_ods_COMP_gnulinux_STATIC_CFLAGS:INTERNAL=-DOROCOS_TARGET=gnulinux;-I/opt/ard/arp_ods/include;-I/opt/ard/arp_ods/..;-I/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_ods_COMP_gnulinux_STATIC_CFLAGS_I:INTERNAL=
+arp_ods_COMP_gnulinux_STATIC_CFLAGS_OTHER:INTERNAL=-DOROCOS_TARGET=gnulinux
+arp_ods_COMP_gnulinux_STATIC_INCLUDE_DIRS:INTERNAL=/opt/ard/arp_ods/include;/opt/ard/arp_ods/..;/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_ods_COMP_gnulinux_STATIC_LDFLAGS:INTERNAL=-L/opt/ros_addons/orocos_toolchain/rtt/../install/lib;-lorocos-rtt-gnulinux;-lboost_filesystem-mt;-lboost_system-mt;-lboost_serialization-mt;-lpthread;-lrt;-ldl
+arp_ods_COMP_gnulinux_STATIC_LDFLAGS_OTHER:INTERNAL=
+arp_ods_COMP_gnulinux_STATIC_LIBDIR:INTERNAL=
+arp_ods_COMP_gnulinux_STATIC_LIBRARIES:INTERNAL=orocos-rtt-gnulinux;boost_filesystem-mt;boost_system-mt;boost_serialization-mt;pthread;rt;dl
+arp_ods_COMP_gnulinux_STATIC_LIBRARY_DIRS:INTERNAL=/opt/ros_addons/orocos_toolchain/rtt/../install/lib
+arp_ods_COMP_gnulinux_STATIC_LIBS:INTERNAL=
+arp_ods_COMP_gnulinux_STATIC_LIBS_L:INTERNAL=
+arp_ods_COMP_gnulinux_STATIC_LIBS_OTHER:INTERNAL=
+arp_ods_COMP_gnulinux_STATIC_LIBS_PATHS:INTERNAL=
+arp_ods_COMP_gnulinux_VERSION:INTERNAL=1.0
+arp_ods_COMP_gnulinux_arp_ods-gnulinux_INCLUDEDIR:INTERNAL=
+arp_ods_COMP_gnulinux_arp_ods-gnulinux_LIBDIR:INTERNAL=
+arp_ods_COMP_gnulinux_arp_ods-gnulinux_PREFIX:INTERNAL=
+arp_ods_COMP_gnulinux_arp_ods-gnulinux_VERSION:INTERNAL=
+arp_ods_COMP_gnulinux_arp_ods_INCLUDEDIR:INTERNAL=
+arp_ods_COMP_gnulinux_arp_ods_LIBDIR:INTERNAL=
+arp_ods_COMP_gnulinux_arp_ods_PREFIX:INTERNAL=
+arp_ods_COMP_gnulinux_arp_ods_VERSION:INTERNAL=
+arp_rlu_COMP_gnulinux_CFLAGS:INTERNAL=-DOROCOS_TARGET=gnulinux;-I/opt/ard/arp_rlu/include;-I/opt/ard/arp_rlu/..;-I/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_rlu_COMP_gnulinux_CFLAGS_I:INTERNAL=
+arp_rlu_COMP_gnulinux_CFLAGS_OTHER:INTERNAL=-DOROCOS_TARGET=gnulinux
+arp_rlu_COMP_gnulinux_FOUND:INTERNAL=1
+arp_rlu_COMP_gnulinux_INCLUDEDIR:INTERNAL=/opt/ard/arp_rlu/include
+arp_rlu_COMP_gnulinux_INCLUDE_DIRS:INTERNAL=/opt/ard/arp_rlu/include;/opt/ard/arp_rlu/..;/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_rlu_COMP_gnulinux_LDFLAGS:INTERNAL=-L/opt/ros_addons/orocos_toolchain/rtt/../install/lib;-lorocos-rtt-gnulinux;-lpthread;-lrt
+arp_rlu_COMP_gnulinux_LDFLAGS_OTHER:INTERNAL=
+arp_rlu_COMP_gnulinux_LIBDIR:INTERNAL=/opt/ard/arp_rlu/lib
+arp_rlu_COMP_gnulinux_LIBRARIES:INTERNAL=orocos-rtt-gnulinux;pthread;rt
+arp_rlu_COMP_gnulinux_LIBRARY_DIRS:INTERNAL=/opt/ros_addons/orocos_toolchain/rtt/../install/lib
+arp_rlu_COMP_gnulinux_LIBS:INTERNAL=
+arp_rlu_COMP_gnulinux_LIBS_L:INTERNAL=
+arp_rlu_COMP_gnulinux_LIBS_OTHER:INTERNAL=
+arp_rlu_COMP_gnulinux_LIBS_PATHS:INTERNAL=
+arp_rlu_COMP_gnulinux_PREFIX:INTERNAL=/opt/ard/arp_rlu
+arp_rlu_COMP_gnulinux_STATIC_CFLAGS:INTERNAL=-DOROCOS_TARGET=gnulinux;-I/opt/ard/arp_rlu/include;-I/opt/ard/arp_rlu/..;-I/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_rlu_COMP_gnulinux_STATIC_CFLAGS_I:INTERNAL=
+arp_rlu_COMP_gnulinux_STATIC_CFLAGS_OTHER:INTERNAL=-DOROCOS_TARGET=gnulinux
+arp_rlu_COMP_gnulinux_STATIC_INCLUDE_DIRS:INTERNAL=/opt/ard/arp_rlu/include;/opt/ard/arp_rlu/..;/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_rlu_COMP_gnulinux_STATIC_LDFLAGS:INTERNAL=-L/opt/ros_addons/orocos_toolchain/rtt/../install/lib;-lorocos-rtt-gnulinux;-lboost_filesystem-mt;-lboost_system-mt;-lboost_serialization-mt;-lpthread;-lrt;-ldl
+arp_rlu_COMP_gnulinux_STATIC_LDFLAGS_OTHER:INTERNAL=
+arp_rlu_COMP_gnulinux_STATIC_LIBDIR:INTERNAL=
+arp_rlu_COMP_gnulinux_STATIC_LIBRARIES:INTERNAL=orocos-rtt-gnulinux;boost_filesystem-mt;boost_system-mt;boost_serialization-mt;pthread;rt;dl
+arp_rlu_COMP_gnulinux_STATIC_LIBRARY_DIRS:INTERNAL=/opt/ros_addons/orocos_toolchain/rtt/../install/lib
+arp_rlu_COMP_gnulinux_STATIC_LIBS:INTERNAL=
+arp_rlu_COMP_gnulinux_STATIC_LIBS_L:INTERNAL=
+arp_rlu_COMP_gnulinux_STATIC_LIBS_OTHER:INTERNAL=
+arp_rlu_COMP_gnulinux_STATIC_LIBS_PATHS:INTERNAL=
+arp_rlu_COMP_gnulinux_VERSION:INTERNAL=1.0
+arp_rlu_COMP_gnulinux_arp_rlu-gnulinux_INCLUDEDIR:INTERNAL=
+arp_rlu_COMP_gnulinux_arp_rlu-gnulinux_LIBDIR:INTERNAL=
+arp_rlu_COMP_gnulinux_arp_rlu-gnulinux_PREFIX:INTERNAL=
+arp_rlu_COMP_gnulinux_arp_rlu-gnulinux_VERSION:INTERNAL=
+arp_rlu_COMP_gnulinux_arp_rlu_INCLUDEDIR:INTERNAL=
+arp_rlu_COMP_gnulinux_arp_rlu_LIBDIR:INTERNAL=
+arp_rlu_COMP_gnulinux_arp_rlu_PREFIX:INTERNAL=
+arp_rlu_COMP_gnulinux_arp_rlu_VERSION:INTERNAL=
+arp_simu_COMP_gnulinux_CFLAGS:INTERNAL=-DOROCOS_TARGET=gnulinux;-I/opt/ard/arp_simu/include;-I/opt/ard/arp_simu/..;-I/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_simu_COMP_gnulinux_CFLAGS_I:INTERNAL=
+arp_simu_COMP_gnulinux_CFLAGS_OTHER:INTERNAL=-DOROCOS_TARGET=gnulinux
+arp_simu_COMP_gnulinux_FOUND:INTERNAL=1
+arp_simu_COMP_gnulinux_INCLUDEDIR:INTERNAL=/opt/ard/arp_simu/include
+arp_simu_COMP_gnulinux_INCLUDE_DIRS:INTERNAL=/opt/ard/arp_simu/include;/opt/ard/arp_simu/..;/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_simu_COMP_gnulinux_LDFLAGS:INTERNAL=-L/opt/ros_addons/orocos_toolchain/rtt/../install/lib;-lorocos-rtt-gnulinux;-lpthread;-lrt
+arp_simu_COMP_gnulinux_LDFLAGS_OTHER:INTERNAL=
+arp_simu_COMP_gnulinux_LIBDIR:INTERNAL=/opt/ard/arp_simu/lib
+arp_simu_COMP_gnulinux_LIBRARIES:INTERNAL=orocos-rtt-gnulinux;pthread;rt
+arp_simu_COMP_gnulinux_LIBRARY_DIRS:INTERNAL=/opt/ros_addons/orocos_toolchain/rtt/../install/lib
+arp_simu_COMP_gnulinux_LIBS:INTERNAL=
+arp_simu_COMP_gnulinux_LIBS_L:INTERNAL=
+arp_simu_COMP_gnulinux_LIBS_OTHER:INTERNAL=
+arp_simu_COMP_gnulinux_LIBS_PATHS:INTERNAL=
+arp_simu_COMP_gnulinux_PREFIX:INTERNAL=/opt/ard/arp_simu
+arp_simu_COMP_gnulinux_STATIC_CFLAGS:INTERNAL=-DOROCOS_TARGET=gnulinux;-I/opt/ard/arp_simu/include;-I/opt/ard/arp_simu/..;-I/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_simu_COMP_gnulinux_STATIC_CFLAGS_I:INTERNAL=
+arp_simu_COMP_gnulinux_STATIC_CFLAGS_OTHER:INTERNAL=-DOROCOS_TARGET=gnulinux
+arp_simu_COMP_gnulinux_STATIC_INCLUDE_DIRS:INTERNAL=/opt/ard/arp_simu/include;/opt/ard/arp_simu/..;/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_simu_COMP_gnulinux_STATIC_LDFLAGS:INTERNAL=-L/opt/ros_addons/orocos_toolchain/rtt/../install/lib;-lorocos-rtt-gnulinux;-lboost_filesystem-mt;-lboost_system-mt;-lboost_serialization-mt;-lpthread;-lrt;-ldl
+arp_simu_COMP_gnulinux_STATIC_LDFLAGS_OTHER:INTERNAL=
+arp_simu_COMP_gnulinux_STATIC_LIBDIR:INTERNAL=
+arp_simu_COMP_gnulinux_STATIC_LIBRARIES:INTERNAL=orocos-rtt-gnulinux;boost_filesystem-mt;boost_system-mt;boost_serialization-mt;pthread;rt;dl
+arp_simu_COMP_gnulinux_STATIC_LIBRARY_DIRS:INTERNAL=/opt/ros_addons/orocos_toolchain/rtt/../install/lib
+arp_simu_COMP_gnulinux_STATIC_LIBS:INTERNAL=
+arp_simu_COMP_gnulinux_STATIC_LIBS_L:INTERNAL=
+arp_simu_COMP_gnulinux_STATIC_LIBS_OTHER:INTERNAL=
+arp_simu_COMP_gnulinux_STATIC_LIBS_PATHS:INTERNAL=
+arp_simu_COMP_gnulinux_VERSION:INTERNAL=1.0
+arp_simu_COMP_gnulinux_arp_simu-gnulinux_INCLUDEDIR:INTERNAL=
+arp_simu_COMP_gnulinux_arp_simu-gnulinux_LIBDIR:INTERNAL=
+arp_simu_COMP_gnulinux_arp_simu-gnulinux_PREFIX:INTERNAL=
+arp_simu_COMP_gnulinux_arp_simu-gnulinux_VERSION:INTERNAL=
+arp_simu_COMP_gnulinux_arp_simu_INCLUDEDIR:INTERNAL=
+arp_simu_COMP_gnulinux_arp_simu_LIBDIR:INTERNAL=
+arp_simu_COMP_gnulinux_arp_simu_PREFIX:INTERNAL=
+arp_simu_COMP_gnulinux_arp_simu_VERSION:INTERNAL=
+arp_stm32_COMP_gnulinux_CFLAGS:INTERNAL=-DOROCOS_TARGET=gnulinux;-I/opt/ard/arp_stm32/include;-I/opt/ard/arp_stm32/..;-I/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_stm32_COMP_gnulinux_CFLAGS_I:INTERNAL=
+arp_stm32_COMP_gnulinux_CFLAGS_OTHER:INTERNAL=-DOROCOS_TARGET=gnulinux
+arp_stm32_COMP_gnulinux_FOUND:INTERNAL=1
+arp_stm32_COMP_gnulinux_INCLUDEDIR:INTERNAL=/opt/ard/arp_stm32/include
+arp_stm32_COMP_gnulinux_INCLUDE_DIRS:INTERNAL=/opt/ard/arp_stm32/include;/opt/ard/arp_stm32/..;/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_stm32_COMP_gnulinux_LDFLAGS:INTERNAL=-L/opt/ros_addons/orocos_toolchain/rtt/../install/lib;-lorocos-rtt-gnulinux;-lpthread;-lrt
+arp_stm32_COMP_gnulinux_LDFLAGS_OTHER:INTERNAL=
+arp_stm32_COMP_gnulinux_LIBDIR:INTERNAL=/opt/ard/arp_stm32/lib
+arp_stm32_COMP_gnulinux_LIBRARIES:INTERNAL=orocos-rtt-gnulinux;pthread;rt
+arp_stm32_COMP_gnulinux_LIBRARY_DIRS:INTERNAL=/opt/ros_addons/orocos_toolchain/rtt/../install/lib
+arp_stm32_COMP_gnulinux_LIBS:INTERNAL=
+arp_stm32_COMP_gnulinux_LIBS_L:INTERNAL=
+arp_stm32_COMP_gnulinux_LIBS_OTHER:INTERNAL=
+arp_stm32_COMP_gnulinux_LIBS_PATHS:INTERNAL=
+arp_stm32_COMP_gnulinux_PREFIX:INTERNAL=/opt/ard/arp_stm32
+arp_stm32_COMP_gnulinux_STATIC_CFLAGS:INTERNAL=-DOROCOS_TARGET=gnulinux;-I/opt/ard/arp_stm32/include;-I/opt/ard/arp_stm32/..;-I/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_stm32_COMP_gnulinux_STATIC_CFLAGS_I:INTERNAL=
+arp_stm32_COMP_gnulinux_STATIC_CFLAGS_OTHER:INTERNAL=-DOROCOS_TARGET=gnulinux
+arp_stm32_COMP_gnulinux_STATIC_INCLUDE_DIRS:INTERNAL=/opt/ard/arp_stm32/include;/opt/ard/arp_stm32/..;/opt/ros_addons/orocos_toolchain/rtt/../install/include
+arp_stm32_COMP_gnulinux_STATIC_LDFLAGS:INTERNAL=-L/opt/ros_addons/orocos_toolchain/rtt/../install/lib;-lorocos-rtt-gnulinux;-lboost_filesystem-mt;-lboost_system-mt;-lboost_serialization-mt;-lpthread;-lrt;-ldl
+arp_stm32_COMP_gnulinux_STATIC_LDFLAGS_OTHER:INTERNAL=
+arp_stm32_COMP_gnulinux_STATIC_LIBDIR:INTERNAL=
+arp_stm32_COMP_gnulinux_STATIC_LIBRARIES:INTERNAL=orocos-rtt-gnulinux;boost_filesystem-mt;boost_system-mt;boost_serialization-mt;pthread;rt;dl
+arp_stm32_COMP_gnulinux_STATIC_LIBRARY_DIRS:INTERNAL=/opt/ros_addons/orocos_toolchain/rtt/../install/lib
+arp_stm32_COMP_gnulinux_STATIC_LIBS:INTERNAL=
+arp_stm32_COMP_gnulinux_STATIC_LIBS_L:INTERNAL=
+arp_stm32_COMP_gnulinux_STATIC_LIBS_OTHER:INTERNAL=
+arp_stm32_COMP_gnulinux_STATIC_LIBS_PATHS:INTERNAL=
+arp_stm32_COMP_gnulinux_VERSION:INTERNAL=1.0
+arp_stm32_COMP_gnulinux_arp_stm32-gnulinux_INCLUDEDIR:INTERNAL=
+arp_stm32_COMP_gnulinux_arp_stm32-gnulinux_LIBDIR:INTERNAL=
+arp_stm32_COMP_gnulinux_arp_stm32-gnulinux_PREFIX:INTERNAL=
+arp_stm32_COMP_gnulinux_arp_stm32-gnulinux_VERSION:INTERNAL=
+arp_stm32_COMP_gnulinux_arp_stm32_INCLUDEDIR:INTERNAL=
+arp_stm32_COMP_gnulinux_arp_stm32_LIBDIR:INTERNAL=
+arp_stm32_COMP_gnulinux_arp_stm32_PREFIX:INTERNAL=
+arp_stm32_COMP_gnulinux_arp_stm32_VERSION:INTERNAL=
 pkg_DEPS:INTERNAL=arp_core
 roscpp_CMAKE:INTERNAL=/opt/ros/ros_comm/clients/cpp/roscpp/cmake/roscpp.cmake
 roslib_path:INTERNAL=/opt/ros/ros/core/roslib
 roslisp_CMAKE:INTERNAL=/opt/ros/ros_comm/clients/roslisp/cmake/roslisp.cmake
 rospy_CMAKE:INTERNAL=/opt/ros/ros_comm/clients/rospy/cmake/rospy.cmake
 rosunit_path:INTERNAL=/opt/ros/ros/tools/rosunit
-ubiquity_CFLAGS_OTHER:INTERNAL=
+ubiquity_CFLAGS_OTHER:INTERNAL=-DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX
 ubiquity_INCLUDEDIR:INTERNAL=
-ubiquity_INCLUDE_DIRS:INTERNAL=/opt/ard/arp_core/src;/opt/ros_addons/rtt_ros_comm/rtt_std_msgs/include;/opt/ros_addons/rtt_ros_comm/rtt_rosgraph_msgs/include;/opt/ros_addons/rtt_ros_integration/rtt_rosnode/src;/opt/ros_addons/rtt_ros_integration/rtt_rosnode/include;/opt/ros/ros_comm/clients/cpp/roscpp/include;/opt/ros/ros_comm/clients/cpp/roscpp/msg_gen/cpp/include;/opt/ros/ros_comm/clients/cpp/roscpp/srv_gen/cpp/include;/opt/ros/ros_comm/clients/cpp/roscpp_serialization/include;/opt/ros/ros_comm/clients/cpp/roscpp_traits/include;/opt/ros/ros_comm/utilities/xmlrpcpp/src;/opt/ros/ros_comm/tools/rosconsole/include;/opt/ros/ros_comm/utilities/rostime/include;/opt/ros/ros_comm/utilities/cpp_common/include;/opt/ros_addons/orocos_toolchain/ocl/install/include/orocos;/opt/ros_addons/orocos_toolchain/log4cpp/../install/include;/opt/ros/ros_comm/messages/rosgraph_msgs/msg_gen/cpp/include;/opt/ros/ros_comm/messages/std_msgs/include;/opt/ros/ros_comm/messages/std_msgs/msg_gen/cpp/include;/opt/ros/ros/core/roslib/msg_gen/cpp/include;/opt/ros/ros/core/roslib/include;/opt/ros/ros/tools/rospack;/opt/ros/ros/tools/rospack/include;/opt/ard/arp_msgs/msg_gen/cpp/include;/opt/ard/arp_msgs/srv_gen/cpp/include;/opt/ros/common_msgs/actionlib_msgs/msg_gen/cpp/include
-ubiquity_LDFLAGS_OTHER:INTERNAL=-Wl,-rpath,/opt/ard/arp_core/lib -Wl,-rpath,/opt/ros/ros_comm/clients/cpp/roscpp/lib -Wl,-rpath,/opt/ros/ros_comm/clients/cpp/roscpp_serialization/lib -Wl,-rpath,/opt/ros/ros_comm/utilities/xmlrpcpp/lib -Wl,-rpath,/opt/ros/ros_comm/tools/rosconsole/lib -Wl,-rpath,/opt/ros/ros_comm/utilities/rostime/lib -Wl,-rpath,/opt/ros/ros_comm/utilities/cpp_common/lib -Wl,-rpath,/opt/ros_addons/orocos_toolchain/log4cpp/../install/lib -Wl,-rpath,/opt/ros/ros/core/roslib/lib -Wl,-rpath,/opt/ros/ros/tools/rospack/lib
-ubiquity_LIBRARIES:INTERNAL=arp_core-gnulinux;rt;arp_core-math;arp_core-helpers;arp_core-time;arp_core-logger;arp_core-tools;arp_core-components-gnulinux;ros;boost_signals-mt;roscpp_serialization;XmlRpc;rosconsole;boost_thread-mt;log4cxx;rostime;cpp_common;roslib;rospack;rosstack
-ubiquity_LIBRARY_DIRS:INTERNAL=/opt/ard/arp_core/lib;/opt/ard/arp_core/lib/orocos/gnulinux;/opt/ros/ros_comm/clients/cpp/roscpp/lib;/opt/ros/ros_comm/clients/cpp/roscpp_serialization/lib;/opt/ros/ros_comm/utilities/xmlrpcpp/lib;/opt/ros/ros_comm/tools/rosconsole/lib;/opt/ros/ros_comm/utilities/rostime/lib;/opt/ros/ros_comm/utilities/cpp_common/lib;/opt/ros_addons/orocos_toolchain/ocl/lib;/opt/ros_addons/orocos_toolchain/log4cpp/../install/lib;/opt/ros/ros/core/roslib/lib;/opt/ros/ros/tools/rospack/lib
-ubiquity_cached_manifest_list:INTERNAL=/opt/ard/ubiquity/manifest.xml;/opt/ros_addons/orocos_toolchain/rtt/manifest.xml;/opt/ros_addons/orocos_toolchain/log4cpp/manifest.xml;/opt/ros_addons/orocos_toolchain/ocl/manifest.xml;/opt/ros/ros/core/rosbuild/manifest.xml;/opt/ros/ros/core/roslang/manifest.xml;/opt/ros/ros_comm/utilities/cpp_common/manifest.xml;/opt/ros/ros_comm/clients/cpp/roscpp_traits/manifest.xml;/opt/ros/ros_comm/utilities/rostime/manifest.xml;/opt/ros/ros_comm/clients/cpp/roscpp_serialization/manifest.xml;/opt/ros/ros/tools/rospack/manifest.xml;/opt/ros/ros/core/roslib/manifest.xml;/opt/ros/ros_comm/utilities/xmlrpcpp/manifest.xml;/opt/ros/ros_comm/tools/rosconsole/manifest.xml;/opt/ros/ros_comm/messages/std_msgs/manifest.xml;/opt/ros/ros_comm/messages/rosgraph_msgs/manifest.xml;/opt/ros/ros_comm/clients/cpp/roscpp/manifest.xml;/opt/ros/common_rosdeps/manifest.xml;/opt/ros_addons/rtt_ros_integration/rtt_rosnode/manifest.xml;/opt/ros_addons/rtt_ros_comm/rtt_std_msgs/manifest.xml;/opt/ros_addons/rtt_ros_comm/rtt_rosgraph_msgs/manifest.xml;/opt/ros_addons/orocos_toolchain/rtt_dot_service/manifest.xml;/opt/ros_addons/orocos_toolchain/fbsched/manifest.xml;/opt/ros/common_msgs/actionlib_msgs/manifest.xml;/opt/ard/arp_msgs/manifest.xml;/opt/ard/arp_core/manifest.xml;/opt/ros/ros_comm/messages/std_msgs/msg_gen/generated;/opt/ros/ros_comm/messages/rosgraph_msgs/msg_gen/generated;/opt/ros/ros_comm/clients/cpp/roscpp/msg_gen/generated;/opt/ros/ros_comm/clients/cpp/roscpp/srv_gen/generated;/opt/ros/common_msgs/actionlib_msgs/msg_gen/generated;/opt/ard/arp_msgs/msg_gen/generated;/opt/ard/arp_msgs/srv_gen/generated
-ubiquity_temp:INTERNAL=-Wl,-rpath,/opt/ard/arp_core/lib;-Wl,-rpath,/opt/ros/ros_comm/clients/cpp/roscpp/lib;-Wl,-rpath,/opt/ros/ros_comm/clients/cpp/roscpp_serialization/lib;-Wl,-rpath,/opt/ros/ros_comm/utilities/xmlrpcpp/lib;-Wl,-rpath,/opt/ros/ros_comm/tools/rosconsole/lib;-Wl,-rpath,/opt/ros/ros_comm/utilities/rostime/lib;-Wl,-rpath,/opt/ros/ros_comm/utilities/cpp_common/lib;-Wl,-rpath,/opt/ros_addons/orocos_toolchain/log4cpp/../install/lib;-Wl,-rpath,/opt/ros/ros/core/roslib/lib;-Wl,-rpath,/opt/ros/ros/tools/rospack/lib
+ubiquity_INCLUDE_DIRS:INTERNAL=/opt/ros_addons/reflexxes_typeIV/Linux/ReflexxesExampleProjects/include;/opt/ros/common_msgs/nav_msgs/msg_gen/cpp/include;/opt/ros/common_msgs/nav_msgs/srv_gen/cpp/include;/opt/ros/common/bfl/include/bfl;/opt/ros/executive_smach/smach_msgs/msg_gen/cpp/include;/opt/ard/rtt_arp_msgs/include;/opt/ros_addons/rtt_common_msgs/rtt_actionlib_msgs/include;/opt/ard/arp_msgs_2014/msg_gen/cpp/include;/opt/ard/can_festival/include;/opt/ard/can_festival/include/canfestival;/opt/ros/geometry/tf/include;/opt/ros/geometry/tf/msg_gen/cpp/include;/opt/ros/geometry/tf/srv_gen/cpp/include;/opt/ros/bullet/include;/opt/ros/geometry/angles/include;/opt/ros/ros_comm/utilities/message_filters/include;/opt/ros_addons/laser_drivers/hokuyo_node/msg/cpp;/opt/ros_addons/laser_drivers/hokuyo_node/srv/cpp;/opt/ros_addons/laser_drivers/hokuyo_node/include;/opt/ros/common_msgs/sensor_msgs/include;/opt/ros/common_msgs/sensor_msgs/msg_gen/cpp/include;/opt/ros/common_msgs/sensor_msgs/srv_gen/cpp/include;/opt/ros/driver_common/driver_base/include;/opt/ros/driver_common/driver_base/msg/cpp;/opt/ros/driver_common/driver_base/msg_gen/cpp/include;/opt/ros/diagnostics/self_test/include;/opt/ros/diagnostics/self_test/srv/cpp;/opt/ros/diagnostics/diagnostic_updater/include;/opt/ros/driver_common/dynamic_reconfigure/include;/opt/ros/driver_common/dynamic_reconfigure/msg/cpp;/opt/ros/driver_common/dynamic_reconfigure/srv/cpp;/opt/ros/driver_common/dynamic_reconfigure/msg_gen/cpp/include;/opt/ros/driver_common/dynamic_reconfigure/srv_gen/cpp/include;/opt/ros_addons/dynamixel_motor/dynamixel_controllers/srv_gen/cpp/include;/opt/ros/common_msgs/diagnostic_msgs/msg_gen/cpp/include;/opt/ros/common_msgs/diagnostic_msgs/srv_gen/cpp/include;/opt/ros_addons/dynamixel_motor/dynamixel_msgs/msg_gen/cpp/include;/opt/ros_addons/control/control_msgs/include;/opt/ros_addons/control/control_msgs/msg/cpp;/opt/ros_addons/control/control_msgs/srv/cpp;/opt/ros_addons/control/control_msgs/msg_gen/cpp/include;/opt/ros/common_msgs/geometry_msgs/msg_gen/cpp/include;/opt/ros/ros_comm/tools/rosbag/include;/opt/ros/ros_comm/tools/topic_tools/include;/opt/ros/ros_comm/tools/topic_tools/srv_gen/cpp/include;/opt/ros/common_msgs/trajectory_msgs/msg_gen/cpp/include;/opt/ard/arp_stm32/src;/opt/ard/arp_stm32/src/Atlantronic/include;/opt/ard/arp_stm32/src/Atlantronic/src;/opt/ard/arp_stm32/src/Atlantronic/include/discovery;/opt/ros/ros_comm/messages/std_srvs/srv_gen/cpp/include;/opt/ros/common/actionlib/include;/opt/ros/common/actionlib/msg_gen/cpp/include;/opt/ros/ros_comm/tools/rostest/include;/opt/ard/arp_core/src;/opt/ros_addons/rtt_ros_comm/rtt_std_msgs/include;/opt/ros_addons/rtt_ros_comm/rtt_rosgraph_msgs/include;/opt/ros_addons/rtt_ros_integration/rtt_rosnode/src;/opt/ros_addons/rtt_ros_integration/rtt_rosnode/include;/opt/ros/ros_comm/clients/cpp/roscpp/include;/opt/ros/ros_comm/clients/cpp/roscpp/msg_gen/cpp/include;/opt/ros/ros_comm/clients/cpp/roscpp/srv_gen/cpp/include;/opt/ros/ros_comm/clients/cpp/roscpp_serialization/include;/opt/ros/ros_comm/clients/cpp/roscpp_traits/include;/opt/ros/ros_comm/utilities/xmlrpcpp/src;/opt/ros/ros_comm/tools/rosconsole/include;/opt/ros/ros_comm/utilities/rostime/include;/opt/ros/ros_comm/utilities/cpp_common/include;/opt/ros_addons/orocos_toolchain/ocl/install/include/orocos;/opt/ros_addons/orocos_toolchain/log4cpp/../install/include;/opt/ros/ros_comm/messages/rosgraph_msgs/msg_gen/cpp/include;/opt/ros/ros_comm/messages/std_msgs/include;/opt/ros/ros_comm/messages/std_msgs/msg_gen/cpp/include;/opt/ros/ros/core/roslib/msg_gen/cpp/include;/opt/ros/ros/core/roslib/include;/opt/ros/ros/tools/rospack;/opt/ros/ros/tools/rospack/include;/opt/ard/arp_msgs/msg_gen/cpp/include;/opt/ard/arp_msgs/srv_gen/cpp/include;/opt/ros/common_msgs/actionlib_msgs/msg_gen/cpp/include
+ubiquity_LDFLAGS_OTHER:INTERNAL=-Wl,-rpath,/opt/ros_addons/reflexxes_typeIV/Linux/ReflexxesExampleProjects/Linux/x86/release/lib/shared -Wl,-rpath,/opt/ros/common/bfl/lib -Wl,-rpath,/opt/ros/geometry/tf/lib -Wl,-rpath,/opt/ros/bullet/lib -Wl,-rpath,/opt/ros/ros_comm/utilities/message_filters/lib -Wl,-rpath,/opt/ros_addons/laser_drivers/hokuyo_node/lib -Wl,-rpath,/opt/ros/common_msgs/sensor_msgs/lib -Wl,-rpath,/opt/ros/driver_common/dynamic_reconfigure/lib -Wl,-rpath,/opt/ros/ros_comm/tools/rosbag/lib -Wl,-rpath,/opt/ros/ros_comm/tools/topic_tools/lib -Wl,-rpath,/opt/ard/arp_stm32/lib -Wl,-rpath,/opt/ros/common/actionlib/lib -Wl,-rpath,/opt/ard/arp_core/lib -Wl,-rpath,/opt/ros/ros_comm/clients/cpp/roscpp/lib -Wl,-rpath,/opt/ros/ros_comm/clients/cpp/roscpp_serialization/lib -Wl,-rpath,/opt/ros/ros_comm/utilities/xmlrpcpp/lib -Wl,-rpath,/opt/ros/ros_comm/tools/rosconsole/lib -Wl,-rpath,/opt/ros/ros_comm/utilities/rostime/lib -Wl,-rpath,/opt/ros/ros_comm/utilities/cpp_common/lib -Wl,-rpath,/opt/ros_addons/orocos_toolchain/log4cpp/../install/lib -Wl,-rpath,/opt/ros/ros/core/roslib/lib -Wl,-rpath,/opt/ros/ros/tools/rospack/lib
+ubiquity_LIBRARIES:INTERNAL=ReflexxesTypeIV;orocos-bfl;libcanfestival_unix.a;libcanfestival.a;tf;BulletDynamics;BulletCollision;LinearMath;message_filters;libhokuyo;sensor_msgs;dynamic_reconfigure_config_init_mutex;rosbag;topic_tools;arp_stm32-components-gnulinux;actionlib;arp_core-gnulinux;rt;arp_core-math;arp_core-helpers;arp_core-time;arp_core-logger;arp_core-tools;arp_core-components-gnulinux;ros;boost_signals-mt;roscpp_serialization;XmlRpc;rosconsole;boost_thread-mt;log4cxx;rostime;cpp_common;roslib;rospack;rosstack
+ubiquity_LIBRARY_DIRS:INTERNAL=/opt/ros_addons/reflexxes_typeIV/Linux/ReflexxesExampleProjects/Linux/x86/release/lib/shared;/opt/ros/common/bfl/lib;/opt/ard/can_festival/lib;/opt/ros/geometry/tf/lib;/opt/ros/bullet/lib;/opt/ros/ros_comm/utilities/message_filters/lib;/opt/ros_addons/laser_drivers/hokuyo_node/lib;/opt/ros/common_msgs/sensor_msgs/lib;/opt/ros/driver_common/dynamic_reconfigure/lib;/opt/ros/ros_comm/tools/rosbag/lib;/opt/ros/ros_comm/tools/topic_tools/lib;/opt/ard/arp_stm32/lib;/opt/ard/arp_stm32/lib/orocos/gnulinux;/opt/ros/common/actionlib/lib;/opt/ard/arp_core/lib;/opt/ard/arp_core/lib/orocos/gnulinux;/opt/ros/ros_comm/clients/cpp/roscpp/lib;/opt/ros/ros_comm/clients/cpp/roscpp_serialization/lib;/opt/ros/ros_comm/utilities/xmlrpcpp/lib;/opt/ros/ros_comm/tools/rosconsole/lib;/opt/ros/ros_comm/utilities/rostime/lib;/opt/ros/ros_comm/utilities/cpp_common/lib;/opt/ros_addons/orocos_toolchain/ocl/lib;/opt/ros_addons/orocos_toolchain/log4cpp/../install/lib;/opt/ros/ros/core/roslib/lib;/opt/ros/ros/tools/rospack/lib
+ubiquity_cached_manifest_list:INTERNAL=/opt/ard/ubiquity/manifest.xml;/opt/ros_addons/orocos_toolchain/rtt/manifest.xml;/opt/ros_addons/orocos_toolchain/log4cpp/manifest.xml;/opt/ros_addons/orocos_toolchain/ocl/manifest.xml;/opt/ros/ros/core/rosbuild/manifest.xml;/opt/ros/ros/core/roslang/manifest.xml;/opt/ros/ros_comm/utilities/cpp_common/manifest.xml;/opt/ros/ros_comm/clients/cpp/roscpp_traits/manifest.xml;/opt/ros/ros_comm/utilities/rostime/manifest.xml;/opt/ros/ros_comm/clients/cpp/roscpp_serialization/manifest.xml;/opt/ros/ros/tools/rospack/manifest.xml;/opt/ros/ros/core/roslib/manifest.xml;/opt/ros/ros_comm/utilities/xmlrpcpp/manifest.xml;/opt/ros/ros_comm/tools/rosconsole/manifest.xml;/opt/ros/ros_comm/messages/std_msgs/manifest.xml;/opt/ros/ros_comm/messages/rosgraph_msgs/manifest.xml;/opt/ros/ros_comm/clients/cpp/roscpp/manifest.xml;/opt/ros/common_rosdeps/manifest.xml;/opt/ros_addons/rtt_ros_integration/rtt_rosnode/manifest.xml;/opt/ros_addons/rtt_ros_comm/rtt_std_msgs/manifest.xml;/opt/ros_addons/rtt_ros_comm/rtt_rosgraph_msgs/manifest.xml;/opt/ros_addons/orocos_toolchain/rtt_dot_service/manifest.xml;/opt/ros_addons/orocos_toolchain/fbsched/manifest.xml;/opt/ros/common_msgs/actionlib_msgs/manifest.xml;/opt/ard/arp_msgs/manifest.xml;/opt/ard/arp_core/manifest.xml;/opt/ros/ros_comm/clients/rospy/manifest.xml;/opt/ros/ros_comm/messages/std_srvs/manifest.xml;/opt/ros/ros/tools/rosclean/manifest.xml;/opt/ros/ros_comm/tools/rosgraph/manifest.xml;/opt/ros/ros_comm/tools/rosparam/manifest.xml;/opt/ros/ros_comm/tools/rosmaster/manifest.xml;/opt/ros/ros_comm/tools/rosout/manifest.xml;/opt/ros/ros_comm/tools/roslaunch/manifest.xml;/opt/ros/ros/tools/rosunit/manifest.xml;/opt/ros/ros_comm/tools/rostest/manifest.xml;/opt/ros/common/actionlib/manifest.xml;/opt/ard/arp_stm32/manifest.xml;/opt/ard/can_festival/manifest.xml;/opt/ard/socket_can/manifest.xml;/opt/ros/ros_comm/tools/topic_tools/manifest.xml;/opt/ros/ros_comm/tools/rosbag/manifest.xml;/opt/ros/ros_comm/tools/rosbagmigration/manifest.xml;/opt/ros/common_msgs/geometry_msgs/manifest.xml;/opt/ros/common_msgs/sensor_msgs/manifest.xml;/opt/ros/bullet/manifest.xml;/opt/ros/geometry/angles/manifest.xml;/opt/ros/ros_comm/tools/rosnode/manifest.xml;/opt/ros/ros_comm/tools/rosmsg/manifest.xml;/opt/ros/ros_comm/tools/rostopic/manifest.xml;/opt/ros/ros_comm/tools/rosservice/manifest.xml;/opt/ros/ros_comm/utilities/roswtf/manifest.xml;/opt/ros/ros_comm/utilities/message_filters/manifest.xml;/opt/ros/geometry/tf/manifest.xml;/opt/ros/common_msgs/diagnostic_msgs/manifest.xml;/opt/ros/diagnostics/diagnostic_updater/manifest.xml;/opt/ros/diagnostics/self_test/manifest.xml;/opt/ros/driver_common/dynamic_reconfigure/manifest.xml;/opt/ros/driver_common/driver_base/manifest.xml;/opt/ros_addons/laser_drivers/hokuyo_node/manifest.xml;/opt/ros_addons/dynamixel_motor/dynamixel_msgs/manifest.xml;/opt/ros_addons/dynamixel_motor/dynamixel_driver/manifest.xml;/opt/ros/common_msgs/trajectory_msgs/manifest.xml;/opt/ros_addons/control/control_msgs/manifest.xml;/opt/ros_addons/dynamixel_motor/dynamixel_controllers/manifest.xml;/opt/ard/arp_hml/manifest.xml;/opt/ros/common_msgs/nav_msgs/manifest.xml;/opt/ros_addons/reflexxes_typeIV/manifest.xml;/opt/ard/arp_ods/manifest.xml;/opt/ros_addons/rtt_common_msgs/rtt_actionlib_msgs/manifest.xml;/opt/ard/rtt_arp_msgs/manifest.xml;/opt/ros/common/bfl/manifest.xml;/opt/ard/arp_rlu/manifest.xml;/opt/ros/executive_smach/smach/manifest.xml;/opt/ros/executive_smach/smach_msgs/manifest.xml;/opt/ros/executive_smach/smach_ros/manifest.xml;/opt/ard/arp_master/manifest.xml;/opt/ard/arp_msgs_2014/manifest.xml;/opt/ard/arp_hmi/manifest.xml;/opt/ard/arp_simu/manifest.xml;/opt/ard/arp_music/manifest.xml;/opt/ros/ros_comm/messages/std_msgs/msg_gen/generated;/opt/ros/ros_comm/messages/rosgraph_msgs/msg_gen/generated;/opt/ros/ros_comm/clients/cpp/roscpp/msg_gen/generated;/opt/ros/ros_comm/clients/cpp/roscpp/srv_gen/generated;/opt/ros/common_msgs/actionlib_msgs/msg_gen/generated;/opt/ard/arp_msgs/msg_gen/generated;/opt/ard/arp_msgs/srv_gen/generated;/opt/ros/ros_comm/messages/std_srvs/srv_gen/generated;/opt/ros/common/actionlib/msg_gen/generated;/opt/ros/ros_comm/tools/topic_tools/srv_gen/generated;/opt/ros/common_msgs/geometry_msgs/msg_gen/generated;/opt/ros/common_msgs/sensor_msgs/msg_gen/generated;/opt/ros/common_msgs/sensor_msgs/srv_gen/generated;/opt/ros/geometry/tf/msg_gen/generated;/opt/ros/geometry/tf/srv_gen/generated;/opt/ros/common_msgs/diagnostic_msgs/msg_gen/generated;/opt/ros/common_msgs/diagnostic_msgs/srv_gen/generated;/opt/ros/driver_common/dynamic_reconfigure/msg_gen/generated;/opt/ros/driver_common/dynamic_reconfigure/srv_gen/generated;/opt/ros/driver_common/driver_base/msg_gen/generated;/opt/ros_addons/dynamixel_motor/dynamixel_msgs/msg_gen/generated;/opt/ros/common_msgs/trajectory_msgs/msg_gen/generated;/opt/ros_addons/control/control_msgs/msg_gen/generated;/opt/ros_addons/dynamixel_motor/dynamixel_controllers/srv_gen/generated;/opt/ros/common_msgs/nav_msgs/msg_gen/generated;/opt/ros/common_msgs/nav_msgs/srv_gen/generated;/opt/ros/executive_smach/smach_msgs/msg_gen/generated;/opt/ard/arp_msgs_2014/msg_gen/generated
+ubiquity_temp:INTERNAL=-Wl,-rpath,/opt/ros_addons/reflexxes_typeIV/Linux/ReflexxesExampleProjects/Linux/x86/release/lib/shared;-Wl,-rpath,/opt/ros/common/bfl/lib;-Wl,-rpath,/opt/ros/geometry/tf/lib;-Wl,-rpath,/opt/ros/bullet/lib;-Wl,-rpath,/opt/ros/ros_comm/utilities/message_filters/lib;-Wl,-rpath,/opt/ros_addons/laser_drivers/hokuyo_node/lib;-Wl,-rpath,/opt/ros/common_msgs/sensor_msgs/lib;-Wl,-rpath,/opt/ros/driver_common/dynamic_reconfigure/lib;-Wl,-rpath,/opt/ros/ros_comm/tools/rosbag/lib;-Wl,-rpath,/opt/ros/ros_comm/tools/topic_tools/lib;-Wl,-rpath,/opt/ard/arp_stm32/lib;-Wl,-rpath,/opt/ros/common/actionlib/lib;-Wl,-rpath,/opt/ard/arp_core/lib;-Wl,-rpath,/opt/ros/ros_comm/clients/cpp/roscpp/lib;-Wl,-rpath,/opt/ros/ros_comm/clients/cpp/roscpp_serialization/lib;-Wl,-rpath,/opt/ros/ros_comm/utilities/xmlrpcpp/lib;-Wl,-rpath,/opt/ros/ros_comm/tools/rosconsole/lib;-Wl,-rpath,/opt/ros/ros_comm/utilities/rostime/lib;-Wl,-rpath,/opt/ros/ros_comm/utilities/cpp_common/lib;-Wl,-rpath,/opt/ros_addons/orocos_toolchain/log4cpp/../install/lib;-Wl,-rpath,/opt/ros/ros/core/roslib/lib;-Wl,-rpath,/opt/ros/ros/tools/rospack/lib
 

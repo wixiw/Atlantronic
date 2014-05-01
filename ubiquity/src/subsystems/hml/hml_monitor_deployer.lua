@@ -1,4 +1,4 @@
-dofile("/opt/ard/arp_core/script/orocos/deployment/component_deployer_object.lua")
+dofile("/opt/ard/ubiquity/src/subsystems/orocos/component_deployer_object.lua")
 
 
 HmlMonitorDeployer = ComposantDeployer:new()
@@ -54,28 +54,22 @@ function HmlMonitorDeployer:connect()
 	
 	assert(Deployer:connect("HmlMonitor.inCanBusConnected", "Can1.outBusConnected",cp))
 
+	assert(HmlMonitorDeployer:check("HmlMonitor"))
+	return true
+end
 
---ajout au monitor
-
+function HmlMonitorDeployer:start()
 	assert(HmlMonitorDeployer:addToBusMonitor("Can1"))
-
 	assert(HmlMonitorDeployer:addToMonitor("LeftDriving"))
 	assert(HmlMonitorDeployer:addToMonitor("RightDriving"))
 	assert(HmlMonitorDeployer:addToMonitor("RearDriving"))
 	assert(HmlMonitorDeployer:addToMonitor("LeftSteering"))
 	assert(HmlMonitorDeployer:addToMonitor("RightSteering"))
 	assert(HmlMonitorDeployer:addToMonitor("RearSteering"))
-
 	assert(HmlMonitorDeployer:addToMonitor("Joystick"))
 	assert(HmlMonitorDeployer:addToMonitor("Syncronizator"))
-
 	assert(HmlMonitorDeployer:addToMonitor("RosHmlItf"))
-	
-	assert(HmlMonitorDeployer:check("HmlMonitor"))
-	return true
-end
 
-function HmlMonitorDeployer:start()
 	HmlMonitor = assert(Deployer:getPeer(me))
 	assert(HmlMonitor:configure())
 	assert(HmlMonitor:start())

@@ -1,3 +1,11 @@
+-- chargement du composant de reporting
+print("loading Reporting component...")
+assert(Deployer:loadComponent("Reporting","OCL::FileReporting"))
+Reporting = Deployer:getPeer("Reporting")
+propFile=Reporting:getProperty("ReportFile")
+assert(propFile:set("/tmp/reports.dat"))
+assert(Reporting:setPeriod (0.010))
+
 -- Ce fichier est chargé par le deployer de arp_master.
 -- La raison de ce choix est qu'il contient en général des fils vers un peu partout donc il vaut mieux être sur le 
 -- système complet pour eviter aux sous partie de faire des erreurs de déploiement
@@ -121,13 +129,13 @@ function Telemetry:report()
 	print("====================")
 	print("début déploiment telemetry")
 	--required in simul to allow plotting against simulated time
-	Reporting:reportPort("Can1","outClockReporting")
+	--Reporting:reportPort("Can1","outClockReporting")
 	--Telemetry:reportJoystick()
 	--Telemetry:reportRobotCmd()
 	--Telemetry:reportRobotState()
 	--Telemetry:reportMotorState()
 	--Telemetry:reportTiming()
-	Telemetry:reportOmnidirect()
+	--Telemetry:reportOmnidirect()
 	
 	
 	Reporting= assert(Deployer:getPeer("Reporting")) 

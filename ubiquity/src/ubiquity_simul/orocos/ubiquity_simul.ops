@@ -1,0 +1,21 @@
+loadService ("Deployer","Lua")
+require("print");               // loads the 'print' service globally. 
+import("rtt_rosnode");
+var bool res = true;
+
+if ( res  ) then
+{
+    if( Lua.exec_file("/opt/ard/ubiquity/src/ubiquity_simul/orocos/ubiquity_simul.lua") == false ) then
+    {
+       print.ln("\033[1;31m!!! -------------------------------- !!!\033[0m");
+       print.ln("\033[1;31m!!! Failed to deploy ubiquity_simul. !!!\033[0m");
+       print.ln("\033[1;31m!!! -------------------------------- !!!\033[0m");
+       res = false;
+    }
+}
+
+
+if( res == false ) then
+{
+    Lua.exec_file("/opt/ard/ubiquity/src/subsystems/orocos/deploy_failed.lua")
+}

@@ -30,7 +30,7 @@ function Syncronizator:connect()
 	assert( Syncronizator:connectMotorMeasure("Velocity"))
 	assert( Syncronizator:connectMotorMeasure("Torque"))
 	assert( Deployer:addPeer("Reporting", me))
-	assert( Deployer:connect(me..".inCanSync", 	"Can1.outClock", cp))
+	assert( Deployer:connect(me..".inCanSync", 	"RealTimeClock.outClock", cp))
 
 	assert( Syncronizator:check(me))
 	
