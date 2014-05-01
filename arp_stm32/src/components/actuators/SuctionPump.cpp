@@ -91,5 +91,5 @@ void SuctionPump::createOrocosInterface()
     addProperty("propPumpId", propPumpId);
 
     addPort("outObjectPresent", outObjectPresent);
-    addPort("inSuctionPowerCmd", inSuctionPowerCmd);
+    addEventPort("inSuctionPowerCmd", inSuctionPowerCmd);
 }

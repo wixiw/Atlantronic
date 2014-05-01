@@ -12,7 +12,7 @@
 #include "linux/tools/robot_interface.h"
 #include "ros/ros.h"
 
-#include <arp_core/DynamixelState.h>
+#include <arp_msgs/DynamixelStateMsg.h>
 #include <std_msgs/Float32.h>
 #include <std_msgs/UInt8.h>
 
@@ -40,7 +40,7 @@ class Dynamixel: public Stm32TaskContext
         /**
          * Publish the internal state
          */
-        RTT::OutputPort<arp_core::DynamixelState> outState;
+        RTT::OutputPort<arp_msgs::DynamixelStateMsg> outState;
 
 
     protected:
@@ -48,7 +48,7 @@ class Dynamixel: public Stm32TaskContext
 
         RobotInterface& m_robotItf;
 
-        arp_core::DynamixelState attrState;
+        arp_msgs::DynamixelStateMsg attrState;
         double attrPositionCmd;
         int attrMaxTorque;
 

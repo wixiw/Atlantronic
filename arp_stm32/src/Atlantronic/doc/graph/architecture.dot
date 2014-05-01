@@ -1,0 +1,66 @@
+digraph robot
+{
+	ratio=fill;
+	size="16,10";
+	center=true;
+	maxiter=100;
+
+	// modules - taches
+	node [color=lawngreen, style=filled ]
+	strategy
+	trajectory
+	control
+	ax12
+	detection
+	usb
+	hokuyo
+
+	// modules - fonctions
+	node [color=lightblue2, style=filled ]
+	location
+	odometry
+	beacon
+	pince
+	us
+	log
+
+	// io
+	node [color=lightblue3, style=filled ]
+	{
+//		rank=same;
+		adc
+		gpio
+		"pwm 1 2"
+		encoders
+		can
+		usart3
+		uart4
+		led
+	}
+
+	// liens
+	strategy -> trajectory
+	strategy -> pince
+	control -> adc
+	control -> gpio
+	control -> location
+	trajectory -> control
+	trajectory -> detection
+	location -> odometry
+	location -> beacon
+	location -> can
+	pince -> ax12
+	detection -> hokuyo
+	detection -> us
+	detection -> location
+	trajectory -> location
+	strategy -> location
+	log -> usb
+
+	hokuyo -> usart3
+	ax12 -> uart4
+	us -> can
+	beacon -> can
+	odometry -> encoders
+	control -> "pwm 1 2"
+}

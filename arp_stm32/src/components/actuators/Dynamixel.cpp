@@ -11,7 +11,7 @@
 #include <math/math.hpp>
 
 using namespace arp_math;
-using namespace arp_core;
+using namespace arp_msgs;
 using namespace std_msgs;
 using namespace std;
 using namespace RTT;
@@ -30,6 +30,7 @@ Dynamixel::Dynamixel(const std::string& name) :
         propDynamixelFamily(0)
 {
     createOrocosInterface();
+    attrMaxTorque = propMaxTorque;
 }
 
 bool Dynamixel::configureHook()
@@ -134,9 +135,6 @@ bool Dynamixel::isTargetReached()
 {
     bool targetReached = false;
 
-    //TODO JB stm32 ITF
-    //faire mieux => à passer dans robot itf please
-
     switch( propDynamixelFamily )
     {
         case DYNAMIXEL_TYPE_AX12:
@@ -237,8 +235,8 @@ void Dynamixel::createOrocosInterface()
     addProperty("propId", propId);
     addProperty("propDynamixelFamily", propDynamixelFamily);
 
-    addPort("inPositionCmd", inPositionCmd);
-    addPort("inMaxTorqueAllowed", inMaxTorqueAllowed);
+    addEventPort("inPositionCmd", inPositionCmd);
+    addEventPort("inMaxTorqueAllowed", inMaxTorqueAllowed);
     addPort("outState", outState);
 }
 }

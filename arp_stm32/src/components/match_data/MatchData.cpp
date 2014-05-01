@@ -12,7 +12,7 @@
 
 using namespace arp_math;
 using namespace arp_stm32;
-using namespace arp_core;
+using namespace arp_msgs;
 using namespace std;
 using namespace RTT;
 
@@ -20,11 +20,9 @@ ORO_LIST_COMPONENT_TYPE( arp_stm32::MatchData)
 
 MatchData::MatchData(const std::string& name) :
         Stm32TaskContext(name),
-        m_robotItf(DiscoveryMutex::robotItf),
-        attrStartPlugged(false)
+        m_robotItf(DiscoveryMutex::robotItf)
 {
     createOrocosInterface();
-    createRosInterface();
 }
 
 bool MatchData::configureHook()
@@ -38,9 +36,8 @@ bool MatchData::configureHook()
 void MatchData::updateHook()
 {
     Stm32TaskContext::updateHook();
-    Start start;
-    StartColor color;
-
+    MatchDataMsg matchData;
+    bool color;
     DiscoveryMutex mutex;
 
     if (mutex.lock() == DiscoveryMutex::FAILED)
@@ -48,65 +45,59 @@ void MatchData::updateHook()
         LOG(Error) << "updateHook() : mutex.lock()" << endlog();
     }
 
-    attrStartPlugged = m_robotItf.get_gpio(GPIO_IN_GO);
-    attrStartColor = m_robotItf.get_gpio(GPIO_COLOR);
+    color                       = m_robotItf.get_gpio(GPIO_COLOR);
+    attrMatchData.start_in      = m_robotItf.get_gpio(GPIO_IN_GO);
+    attrMatchData.match_time    = m_robotItf.current_time - m_robotItf.start_time;
 
     mutex.unlock();
 
-    start.go = attrStartPlugged;
-    outIoStart.write(start);
-
-    switch (attrStartColor)
+    switch (color)
     {
         case COLOR_RED:
-            color.color = "red";
+            attrMatchData.color = "red";
             break;
         case COLOR_YELLOW:
         default:
-            color.color = "yellow";
+            attrMatchData.color = "yellow";
             break;
     }
-    outIoStartColor.write(color);
+
+    outMatchData.write(attrMatchData);
+
+    std_msgs::Bool readyForMatch;
+    if( RTT::NewData == inReadyForMatch.read(readyForMatch) )
+    {
+        if( readyForMatch.data )
+        {
+            setReadyForMatch();
+        }
+    }
 }
 
-bool MatchData::ooEnableStart()
+void MatchData::setReadyForMatch()
 {
     int res = m_robotItf.go_enable();
 
     if (res < 0)
     {
         LOG(Error) << "Failed to enable the start in the stm32 board." << endlog();
-        return false;
     }
     else
     {
         LOG(Info) << "Start enabled in the stm32 board." << endlog();
-        return true;
     }
-}
-
-bool MatchData::srvEnableStart(EmptyWithSuccess::Request& req, EmptyWithSuccess::Response& res)
-{
-    res.success = ooEnableStart();
-    return res.success;
 }
 
 void MatchData::createOrocosInterface()
 {
     addAttribute("attrStm32Time", m_robotItf.current_time);
-    addAttribute("attrStartPlugged", attrStartPlugged);
-    addAttribute("attrStartColor", attrStartColor);
+    addAttribute("attrStartPlugged", attrMatchData.start_in);
+    addAttribute("attrStartColor", attrMatchData.color);
+    addAttribute("attrMatchTime", attrMatchData.match_time);
 
-    addPort("outIoStart", outIoStart).doc(
-            "Value of the start. GO is true when it is not in, go is false when the start is in");
-    addPort("outIoStartColor", outIoStartColor).doc("Value of the color switch");
+    addPort("outMatchData", outMatchData).doc(
+            "Value of match data such as start, color, match time.");
 
-    addOperation("ooEnableStart", &MatchData::ooEnableStart, this, OwnThread).doc(
-            "Informs the stm32 that the next start withdraw sill be the match begining.");
-}
-
-void MatchData::createRosInterface()
-{
-    ros::NodeHandle nh;
-    nh.advertiseService("/MatchData/enableStart", &MatchData::srvEnableStart, this);
+    addEventPort("inReadyForMatch", inReadyForMatch).doc(
+            "When set to true, the next start withdraw will be the start signal.");
 }

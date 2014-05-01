@@ -12,7 +12,7 @@
 #include "linux/tools/robot_interface.h"
 #include "ros/ros.h"
 #include "linux/tools/qemu.h"
-#include <arp_core/EmptyWithSuccess.h>
+#include <arp_msgs/EmptyWithSuccessSrv.h>
 
 namespace arp_stm32
 {
@@ -43,7 +43,7 @@ class Discovery: public arp_core::MotionScheduler
         /**
          * ROS wrapper on the HmlMonitor.ooReset operation
          */
-        bool srvResetStm32(arp_core::EmptyWithSuccess::Request& req, arp_core::EmptyWithSuccess::Response& res);
+        bool srvResetStm32(arp_msgs::EmptyWithSuccessSrv::Request& req, arp_msgs::EmptyWithSuccessSrv::Response& res);
 
 
     protected:

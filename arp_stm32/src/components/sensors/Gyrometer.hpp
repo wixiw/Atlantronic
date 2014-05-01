@@ -11,9 +11,10 @@
 #include "components/taskcontexts/Stm32TaskContext.hpp"
 #include "linux/tools/robot_interface.h"
 #include "ros/ros.h"
+#include <list>
 
-#include <arp_stm32/SetGyroPosition.h>
-#include <arp_core/EmptyWithSuccess.h>
+#include <arp_msgs/SetGyroPositionSrv.h>
+#include <arp_msgs/EmptyWithSuccessSrv.h>
 
 namespace arp_stm32
 {
@@ -59,17 +60,17 @@ class Gyrometer: public Stm32TaskContext
         /**
          * ROS wrapper on the HmlMonitor.ooStartCalibration operation
          */
-        bool srvStartCalibration(arp_core::EmptyWithSuccess::Request& req, arp_core::EmptyWithSuccess::Response& res);
+        bool srvStartCalibration(arp_msgs::EmptyWithSuccessSrv::Request& req, arp_msgs::EmptyWithSuccessSrv::Response& res);
 
         /**
          * ROS wrapper on the HmlMonitor.ooStopCalibration operation
          */
-        bool srvStopCalibration(SetGyroPosition::Request& req, SetGyroPosition::Response& res);
+        bool srvStopCalibration(arp_msgs::SetGyroPositionSrv::Request& req, arp_msgs::SetGyroPositionSrv::Response& res);
 
         /**
          * ROS wrapper on the HmlMonitor.ooSetPosition operation
          */
-        bool srvSetPosition(SetGyroPosition::Request& req, SetGyroPosition::Response& res);
+        bool srvSetPosition(arp_msgs::SetGyroPositionSrv::Request& req, arp_msgs::SetGyroPositionSrv::Response& res);
 
 
     protected:
@@ -77,6 +78,9 @@ class Gyrometer: public Stm32TaskContext
         void createRosInterface();
 
         RobotInterface& m_robotItf;
+
+        /** This is a dummy var to hold service pointers so that they doesn't ket automatically cleared*/
+        std::list<ros::ServiceServer> m_serviceList;
 
         int         attrRawData;
         double      attrVelocity;
