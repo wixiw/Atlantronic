@@ -6,8 +6,6 @@ local me = "DiscoveryMonitor"
 
 function DiscoveryMonitorDeployer:load()
 	assert( Deployer:loadComponent(me, "arp_core::Monitor"))
-	assert( Deployer:addPeer("DotGraph",me))
-	assert( Deployer:setActivity(me, 0.100, 0, rtt.globals.ORO_SCHED_OTHER))
 	return true
 end
 
@@ -22,6 +20,9 @@ end
 
 
 function DiscoveryMonitorDeployer:connect()
+	assert( Deployer:addPeer("DotGraph",me))
+	assert( Deployer:setActivity(me, 0.100, 0, rtt.globals.ORO_SCHED_OTHER))
+	
 	DiscoveryMonitorDeployer:addToMonitor("LeftCannonFinger")
 	DiscoveryMonitorDeployer:addToMonitor("RightCannonFinger")
 	DiscoveryMonitorDeployer:addToMonitor("LeftCannonStocker")
@@ -49,7 +50,7 @@ function DiscoveryMonitorDeployer:connect()
 	DiscoveryMonitorDeployer:addToMonitor("Gyrometer")
 	DiscoveryMonitorDeployer:addToMonitor("MatchData")
 	
---	DiscoveryMonitorDeployer:addToMonitor("DynamixelBus")
+	DiscoveryMonitorDeployer:addToMonitor("DynamixelBus")
 	
 --TODO a remettre quand les problemes opengl sont regles
 --  DiscoveryMonitorDeployer:addToMonitor("Hmi")
@@ -59,9 +60,9 @@ function DiscoveryMonitorDeployer:connect()
 end
 
 function DiscoveryMonitorDeployer:start()
-	OdsMonitor = Deployer:getPeer(me)
-	OdsMonitor:configure()
-	OdsMonitor:start()
+	DiscoveryMonitor = Deployer:getPeer(me)
+	DiscoveryMonitor:configure()
+	DiscoveryMonitor:start()
 	return true
 end
 

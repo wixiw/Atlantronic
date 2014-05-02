@@ -1,6 +1,7 @@
 require("rttlib")
 
 rttlib.color=true
+local SIMULATION=true
 Deployer = rtt.getTC()
 print("===============================")
 print("début déploiment ubiquity_simul")
@@ -12,32 +13,35 @@ dofile("/opt/ard/ubiquity/src/subsystems/stm32/stm32_simul.lua")
 dofile("/opt/ard/ubiquity/src/subsystems/ods/ods.lua")
 dofile("/opt/ard/ubiquity/src/subsystems/rlu/rlu.lua")
 
+function sleep(n)
+  os.execute("sleep " .. tonumber(n))
+end
 
 print("LOADING...")
-assert( OrocosDeployer:load() 			)
-assert( CoreDeployer:load() 			)
-assert( SimuDeployer:load()				)
-assert( Stm32SimulDeployer:load()		)
-assert( OdsDeployer:load()				)
-assert( RluDeployer:load()	 			)
+assert( OrocosDeployer:load() 					)
+assert( CoreDeployer:load(SIMULATION) 			)
+assert( SimuDeployer:load()						)
+assert( Stm32SimulDeployer:load(SIMULATION)		)
+assert( OdsDeployer:load()						)
+assert( RluDeployer:load()	 					)
 
 
 print("CONNECTING...")
-assert( OrocosDeployer:connect() 			)
 assert( CoreDeployer:connect()				)
 assert( SimuDeployer:connect() 				)
 assert( Stm32SimulDeployer:connect()		)
 assert( OdsDeployer:connect("UbiquitySimul","UbiquitySimul"))
 assert( RluDeployer:connect("UbiquitySimul"))
+assert( OrocosDeployer:connect() 			)
 
 print("STARTING...")
-assert( CoreDeployer:start()			)
-assert( SimuDeployer:start() 			)
-assert( Stm32SimulDeployer:start()		)
-assert( OdsDeployer:start()				)
-assert( RluDeployer:start()				)
 --last one for the last component
-assert( OrocosDeployer:start() 			)
+assert( SimuDeployer:start() 				)
+assert( RluDeployer:start()					)
+assert( OdsDeployer:start()					)
+assert( Stm32SimulDeployer:start()			)
+assert( CoreDeployer:start()				)
+assert( OrocosDeployer:start() 				)
 
 print("fin déploiment ubiquity_simul")
 print("=============================")

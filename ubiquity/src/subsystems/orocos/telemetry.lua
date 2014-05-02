@@ -1,11 +1,3 @@
--- chargement du composant de reporting
-print("loading Reporting component...")
-assert(Deployer:loadComponent("Reporting","OCL::FileReporting"))
-Reporting = Deployer:getPeer("Reporting")
-propFile=Reporting:getProperty("ReportFile")
-assert(propFile:set("/tmp/reports.dat"))
-assert(Reporting:setPeriod (0.010))
-
 -- Ce fichier est chargé par le deployer de arp_master.
 -- La raison de ce choix est qu'il contient en général des fils vers un peu partout donc il vaut mieux être sur le 
 -- système complet pour eviter aux sous partie de faire des erreurs de déploiement
@@ -54,7 +46,7 @@ end
 function Telemetry:reportRobotCmd()
 	print("reporting Robot Cmd ")
 	Reporting=Deployer:getPeer("Reporting")
-	Reporting:reportPort("MotionControl","outICRSpeedCmd")
+	--Reporting:reportPort("MotionControl","outICRSpeedCmd")
 	Reporting:reportPort("KinematicBase","outLeftSteeringPositionCmd")
 	Reporting:reportPort("KinematicBase","outRightSteeringPositionCmd")
 	Reporting:reportPort("KinematicBase","outRearSteeringPositionCmd")
@@ -73,7 +65,7 @@ end
 function Telemetry:reportMotorState()
 	print("reporting configuration")
 	Reporting=Deployer:getPeer("Reporting")
-	Reporting:reportPort("Syncronizator","outMotorMeasures")
+	Reporting:reportPort("UbiquitySimul","outMotorMeasures")
 end
 
 
@@ -82,7 +74,7 @@ end
 function Telemetry:reportTiming()
 	print("reporting Timings")
 	Reporting=Deployer:getPeer("Reporting")
-	Reporting:reportPort("Can1","outPeriod")
+	Reporting:reportData("UbiquitySimul","attrPeriod")
 	--Reporting:reportData("LeftSteering","attrPeriod")
 	--Reporting:reportData("RightSteering","attrPeriod")
 	--Reporting:reportData("RearSteering","attrPeriod")
@@ -129,17 +121,15 @@ function Telemetry:report()
 	print("====================")
 	print("début déploiment telemetry")
 	--required in simul to allow plotting against simulated time
-	--Reporting:reportPort("Can1","outClockReporting")
+	Reporting=Deployer:getPeer("Reporting")
+	Reporting:reportPort("RealTimeClock","outClockReporting")
 	--Telemetry:reportJoystick()
-	--Telemetry:reportRobotCmd()
+	Telemetry:reportRobotCmd()
 	--Telemetry:reportRobotState()
-	--Telemetry:reportMotorState()
+	Telemetry:reportMotorState()
 	--Telemetry:reportTiming()
 	--Telemetry:reportOmnidirect()
 	
-	
-	Reporting= assert(Deployer:getPeer("Reporting")) 
-	--assert( Reporting:start() )
 	print("====================")
 	return true
 end

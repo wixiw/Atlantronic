@@ -8,8 +8,7 @@ function UbiquitySimulDeployer:load()
 	assert( Deployer:loadComponent(me,"arp_simu::UbiquitySimul"))
 	assert( Deployer:addPeer("DotGraph",me))
 	assert( Deployer:addPeer("Reporting", me))
-	--aperiodic as we are supposed to be weken up by a periodic timer
-	assert( Deployer:setActivity(me,0.0,60,rtt.globals.ORO_SCHED_RT))
+	assert( Deployer:setMasterSlaveActivity("MotionScheduler", me) )
 	return true
 end
 
@@ -23,11 +22,17 @@ function UbiquitySimulDeployer:connect()
 	
 	assert( Deployer:connect(me..".inBlockMotorCmd", "RosHmlItf.outBlockRobot",cp))
 	assert( Deployer:connect(me..".inParams", "UbiquityParams.outParams",cp) );
-    assert( Deployer:connect(me..".inPeriod", "RealTimeClock.outPeriod",cp) );
+    
+    assert( Deployer:connect(me..".inSteeringPower", "RosHmlItf.outSteeringPowerCmd",cp) );
+   	assert( Deployer:connect(me..".inDrivingPower",  "RosHmlItf.outDrivingPowerCmd",cp) );
+   	assert( Deployer:connect(me..".inTurretsZeroCmd", "RosHmlItf.outHomingRequest",cp) );
     
 	assert( UbiquitySimulDeployer:check(me) )
 	return true
 end
 
+function UbiquitySimulDeployer:start()
 
+	return true
+end
 

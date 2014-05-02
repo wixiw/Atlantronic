@@ -6,13 +6,14 @@ local me = "Odometry"
 
 function OdometryDeployer:load()
 	assert( Deployer:loadComponent(me, "arp_rlu::Odometry4UbiquityICR") )
-	assert( Deployer:addPeer("DotGraph",me))
-	assert( Deployer:addPeer("Reporting", me) )
-	assert( Deployer:setMasterSlaveActivity("MotionScheduler", me) )
 	return true
 end
 
 function OdometryDeployer:connect(synchronizatorName)
+	assert( Deployer:addPeer("DotGraph",me))
+	assert( Deployer:addPeer("Reporting", me) )
+	assert( Deployer:setMasterSlaveActivity("MotionScheduler", me) )
+
 	--on s'ajoute en peer a HmlMonitor pour pouvoir faire les connections
 	assert( Deployer:connect(me..".inTime", 		"RealTimeClock.outClock",cp) );
 	assert( Deployer:connect(me..".inMotorState", 	synchronizatorName..".outMotorMeasures",cp) );

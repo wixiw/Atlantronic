@@ -3,13 +3,5 @@
 	<include file="$(find ubiquity)/src/subsystems/music/music.xml"/>
 	<include file="$(find ubiquity)/src/subsystems/hmi/graphic_simul.xml"/>
 	
-	<node 	
-		name="ArpOrocos" 
-		pkg="ocl" 
-		type="deployer-corba-gnulinux" 
-		args="-s $(find ubiquity)/src/ubiquity_simul/orocos/ubiquity_simul.ops --" 
-		output="screen"
-		respawn="false"
-		required="true"
-	/>
+
 </launch>

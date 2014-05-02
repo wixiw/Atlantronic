@@ -31,11 +31,11 @@ function RluMonitorDeployer:start()
 	assert( RluMonitorDeployer:addToMonitor("Localizator") )
 	assert( RluMonitorDeployer:addToMonitor("FrontObstacleDetector") )
 	assert( RluMonitorDeployer:addToMonitor("ObstacleManager") )
-	assert( RluMonitorDeployer:addToMonitor("RosRluItf") )
 	
-	OdsMonitor = assert( Deployer:getPeer(me) )
-	assert( OdsMonitor:configure() )
-	assert( OdsMonitor:start() )
+	
+	RluMonitor = assert( Deployer:getPeer(me) )
+	assert( RluMonitor:configure() )
+	assert( RluMonitor:start() )
 	return true
 end
 
