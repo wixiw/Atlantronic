@@ -62,9 +62,9 @@ class MainStateMachine(smach.StateMachine):
             smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
                                    transitions={'endInitialisation':'StartSequence','failed':'end'})
 #Choisir pour integrer la phase d'init
-#            smach.StateMachine.add('StartSequence', InitStates.StartSequence2014(Table2014.P_START_POS),
+            smach.StateMachine.add('StartSequence', InitStates.StartSequence2014(Table2014.P_START_POS),
 #Choisir pour bypasser la phase d'init
-            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(Table2014.P_START_POS),
+            #smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(Table2014.P_START_POS),
 
             #position face contre mur : (1.500 - Robot2014.FRONT_SIDE.x,0.550,0)
                                    transitions={'gogogo':'Opening','problem':'end'})

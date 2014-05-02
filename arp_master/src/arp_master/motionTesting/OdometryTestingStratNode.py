@@ -5,8 +5,11 @@ import roslib; roslib.load_manifest('arp_master')
 from std_srvs.srv import *
 import random
 
-from arp_master import *
+#from arp_master import *
 #from arp_master.strat_2014 import *
+from arp_master.util import *
+from arp_master.fsmFramework import *
+from arp_master.commonStates import *
 
 INIT_POS=Pose2D(0.0,0,0)
 
@@ -50,7 +53,7 @@ class MainStateMachine(smach.StateMachine):
                     Strat_Initialisation.UnSecureInitialisation(),
                     transitions={'endInitialisation':'StartSequence', 'failed':'end'})
             smach.StateMachine.add('StartSequence', 
-                    Strat_StartSequence.StartSequence(INIT_POS.x, INIT_POS.y, INIT_POS.theta),
+                    Strat_StartSequence.StartSequence(INIT_POS),
                     transitions={'gogogo':'DrivingCalibration', 'problem':'end'})  
             smach.StateMachine.add('LowSpeedRotation',
                       LowSpeedRotation(),

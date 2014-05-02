@@ -61,8 +61,6 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
     inSpeed.readNewest(speed);
     inParams.readNewest(params);
 
-    arp_ods::Log(Info) << " humhum **********params.getMaxRobotSpeed() " << params.getMaxRobotSpeed();
-
     UbiquityMotionState currentMotionState(pose, speed);
 
     if (goal->move_type == "OMNIDIRECT2" or goal->move_type == "OPENLOOP" or goal->move_type == "REPLAY"

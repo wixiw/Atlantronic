@@ -36,6 +36,9 @@ OpenloopOrder::OpenloopOrder(const OrderGoalConstPtr &goal, arp_math::UbiquityMo
         m_openloop_duration = MAX_OPENLOOP_TIME;
 
     m_timeout = m_openloop_duration + 1.0;
+
+    Log(INFO) << getTypeString() << " with Twist "<<m_openloop_twist.toString()<< "and time "<<m_openloop_duration<<"at cpoint "<<cpoint.toString();
+
 }
 
 void OpenloopOrder::switchRun(UbiquityMotionState currentMotionState)
@@ -59,100 +62,57 @@ void OpenloopOrder::switchRun(UbiquityMotionState currentMotionState)
 
 ICRSpeed OpenloopOrder::computeSpeed(UbiquityMotionState currentMotionState, ArdTimeDelta dt)
 {
+    Log(DEBUG) << ">>computeSpeed  ";
     m_smoothLocNeeded = false;
 
     if (m_currentMode == MODE_DONE or m_currentMode == MODE_INIT or m_currentMode == MODE_ERROR)
         return ICRSpeed(0, 0, 0);
 
-    //transfer of the twist to robot referential
-    Twist2D v_correction_ref_init;
-    v_correction_ref_init = m_openloop_twist.transport(m_cpoint.inverse());
+    ICRSpeed ICRSpeed_correction_ref_init(m_openloop_twist);
+    ICRSpeed_correction_ref_init=ICRSpeed_correction_ref_init.getNormalizedRep();
+    double ro_ref_init=ICRSpeed_correction_ref_init.ro();
 
-    // time to target
-    ArdTimeDelta endDate = addTimeAndDelta(m_initTime, m_openloop_duration);
-    ArdTimeDelta t_left = getTimeDelta(getAbsoluteTime(), endDate);
+    Log(DEBUG) << "ro_ref_init "<<ro_ref_init;
 
-    //find the time when to begin deceleration
-    ArdTimeDelta deceleration_time_lin = v_correction_ref_init.speedNorm() / m_params.getMaxRobotAccel();
-    ArdTimeDelta deceleration_time_rot = fabs(v_correction_ref_init.vh()) / m_params.getMaxRobotAccel();
-    ArdTimeDelta deceleration_time = max(deceleration_time_lin, deceleration_time_rot);
+    ArdTimeDelta acc_time=ro_ref_init/m_params.getMaxRobotAccel();
+    ArdTimeDelta startDec = m_openloop_duration-acc_time;
+    ArdTimeDelta curTime=getAbsoluteTime()-m_initTime;
 
-    //is the twist the nominal one or is it reduced because approaching end time ?
-    Twist2D v_correction_ref;
-    if (t_left < deceleration_time)
-    {
-        v_correction_ref = v_correction_ref_init * (t_left / deceleration_time);
-    }
-    else //deceleration has not begun
-    {
-        v_correction_ref = v_correction_ref_init;
-    }
-
-    //saturation of twist: limit max linear speed/acc;  and max rotation speed/acc
-    Twist2D v_correction_saturated;
-    //v maxlin is the minimum of the max velocity and the old velocity + max acceleration
-
-    // LINEAR (always positive)
-    //limit due to acceleration and deceleration
-    double vmaxlin_sataccdec = firstDerivateLimitation(v_correction_ref.speedNorm(), m_v_correction_old.speedNorm(), dt,
-            -m_params.getMaxRobotAccel(), m_params.getMaxRobotAccel());
-    //selection of the smallest
-    double vmaxlin = min(vmaxlin_sataccdec, m_params.getMaxRobotAccel());
-
-    //ANGULAR (signed)
-    double vmaxrot_sataccdec = fabs(
-            firstDerivateLimitation(v_correction_ref.vh(), m_v_correction_old.vh(), dt, -m_params.getMaxRobotAccel(),
-                    m_params.getMaxRobotAccel()));
-    double vmaxrot = min(vmaxrot_sataccdec, m_params.getMaxRobotAccel());
-
-    //selection of the most saturating
-    double satvlin;
-    if (v_correction_ref.speedNorm() != 0.0)
-        satvlin = v_correction_ref.speedNorm() / vmaxlin;
-    else
-        satvlin = 0;
-
-    double satvrot;
-    if (fabs(v_correction_ref.vh()) != 0.0)
-        satvrot = fabs(v_correction_ref.vh()) / vmaxrot;
-    else
-        satvrot = 0;
-
-    double sat = max(satvlin, max(satvrot, 1.0));
-
-    //application of the saturation
-    v_correction_saturated = v_correction_ref * (1 / sat);
-
-    //ne l'appliquer que si mon ICR est bien dirige d'abord
-    ICRSpeed ICRSpeedPerfect = ICRSpeed(v_correction_saturated);
-
-    /*
-    ICR ICRPerfect = ICRSpeedPerfect.getICR();
-
-    // ac c'est le code pique de omnidirect. a reutiliser si on veut avoir des mouvements d'icr avant appliquer la commande
-
-    double s_max = 5 * dt;
-    double distanceICRMove = ICR_perfect.sphericalDistance(curICR);
-    if (distanceICRMove > PI / 2)
-    {
-        Log(DEBUG) << "     !!!c'etait plus cours de rejoindre l'antipode alors je pars en marche arriere     ";
-        ICR_perfect = ICR_perfect.getAntipodICR();
-    }
-    else
-    {
-        Log(DEBUG) << "     il etait du bon coté     ";
-    }
-    distanceICRMove = ICR_perfect.sphericalDistance(curICR);
-    Log(DEBUG) << "     distanceICRMove                           " << distanceICRMove;
-
-    ICR ICR_possible = curICR.getIntermediate(ICR_perfect, s_max);
-
-    m_v_correction_old = v_correction_saturated;
-
-    */
+    Log(DEBUG) << "acc_time "<<acc_time;
+    Log(DEBUG) << "startDec "<<startDec;
+    Log(DEBUG) << "curTime "<<curTime;
 
 
-    return ICRSpeedPerfect;
+    double roAccDec=0;
+
+    if (curTime>=0 and curTime<acc_time)
+        {
+        roAccDec=ro_ref_init/acc_time*curTime;
+        Log(DEBUG) << "-> acc  ";
+        }
+
+    if (curTime>=acc_time and curTime<startDec)
+        {
+        roAccDec=ro_ref_init;
+        Log(DEBUG) << "-> plateau  ";
+        }
+
+    if (curTime>=startDec and curTime<m_openloop_duration)
+        {
+        roAccDec=ro_ref_init-ro_ref_init/acc_time*(curTime-startDec);
+        Log(DEBUG) << "-> dec  ";
+        }
+
+    Log(DEBUG) << "roAccDec "<<roAccDec;
+
+    ICRSpeed ICRSpeedCor=ICRSpeed_correction_ref_init;
+    ICRSpeedCor.ro(roAccDec);
+
+    Log(DEBUG) << "ICRSpeedCor "<<ICRSpeedCor;
+
+    Log(DEBUG) << "<<computeSpeed  ";
+
+    return ICRSpeedCor;
 
 }
 

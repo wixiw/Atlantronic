@@ -50,8 +50,16 @@ OmnidirectOrder2::OmnidirectOrder2(const OrderGoalConstPtr &goal, arp_math::Ubiq
     }
     else
     {
-        endMotionState.getSpeed().ro(goal->passe_speed);
-        setPassSpeed(goal->passe_speed);
+        if (goal->passe_speed > 0.0 and goal->passe_speed < m_params.getMaxRobotSpeed())
+        {
+            endMotionState.getSpeed().ro(goal->passe_speed);
+            setPassSpeed(goal->passe_speed);
+        }
+        else
+        {
+            endMotionState.getSpeed().ro(m_params.getMaxRobotSpeed());
+            setPassSpeed(m_params.getMaxRobotSpeed());
+        }
     }
 
     setEndMotionState(endMotionState);
@@ -90,10 +98,9 @@ void OmnidirectOrder2::switchInit(arp_math::UbiquityMotionState currentMotionSta
     //TODO mettre la valeur par defaut
     m_dt_N_1 = 0.01;
 
-    m_last_PosVelAcc_computation.position=0;
-    m_last_PosVelAcc_computation.velocity=curICRSpeed.ro();
-    m_last_PosVelAcc_computation.acceleration=0;
-
+    m_last_PosVelAcc_computation.position = 0;
+    m_last_PosVelAcc_computation.velocity = curICRSpeed.ro();
+    m_last_PosVelAcc_computation.acceleration = 0;
 
     Log(DEBUG) << "---curICRSpeed initialise " << m_ICRSpeed_N_1.toString();
     MotionOrder::switchInit(currentMotionState);
@@ -115,6 +122,7 @@ void OmnidirectOrder2::switchRun(arp_math::UbiquityMotionState currentMotionStat
     {
         Log(INFO) << getTypeString() << " switched MODE_RUN --> MODE_DONE " << "because in final zone for pass ";
         m_currentMode = MODE_DONE;
+
         return;
     }
     Log(DEBUG) << "<<switchRun  ";
@@ -134,6 +142,7 @@ PosVelAcc OmnidirectOrder2::profileRoNonJerking(PosVelAcc start, PosVelAcc end, 
     double maxJerk = m_params.getMaxRobotJerk();
 
     PosVelAcc next;
+    PosVelAcc nextnext;
     double ro_N = 0;
     bool OTGres = false;
 
@@ -154,6 +163,8 @@ PosVelAcc OmnidirectOrder2::profileRoNonJerking(PosVelAcc start, PosVelAcc end, 
     Log(DEBUG) << "          maxJerk              " << maxJerk;
 
     OTGres = OTG->computeNextStep(start, end, maxSpeed, maxAcc, maxJerk, next);
+    //pour tests
+    //OTGres = OTG->computeNextStep(next, end, maxSpeed, maxAcc, maxJerk, nextnext);
 
     Log(DEBUG) << "          CALCUL REFLEXXES   ...";
     Log(DEBUG) << "          next.position         " << next.position;
@@ -169,12 +180,18 @@ PosVelAcc OmnidirectOrder2::profileRoNonJerking(PosVelAcc start, PosVelAcc end, 
      outDEBUG6=next.acceleration;
      */
 
+    outDEBUG6=0.0;
     if (!OTGres)
     {
         next.position = 0;
         next.velocity = 0;
         next.acceleration = 0;
         Log(DEBUG) << "          *** PB sur calcul RO: reflexxes a retourne false ****";
+
+        //TODO ceci est ineaceptable mais fat bien sauver le bateau. Reflexxes renvoie des erreurs de synchronisation en monoaxe.. ???
+
+        next = profileRoJerking(start, end, maxSpeed, dt);
+        outDEBUG6=0.5;
     }
 
     Log(DEBUG) << "     <<profileRoNonJerking";
@@ -291,6 +308,8 @@ PosVelAcc OmnidirectOrder2::profileRoJerking(PosVelAcc start, PosVelAcc end, dou
 
 ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSpeed curICRSpeed, double dt)
 {
+    outDEBUG3 = curICRSpeed.ro();
+
     bool inversedRoSign = false;
 
     m_orderTime += dt;
@@ -405,7 +424,11 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
     PosVelAcc end;
     end.position = k_delta;
     //TODO creer un min(1,2,3) et min(1,2,3,4)
-    end.velocity = min(m_vmax_order, min(passSpeed, vmax));
+    double velocity_allowingAcceleration = sqrt(
+            start.velocity * start.velocity
+                    + 2 * m_params.getMaxRobotAccel() * 0.5 * abs(end.position - start.position));
+    Log(DEBUG) << "     velocity_allowingAcceleration " << velocity_allowingAcceleration;
+    end.velocity = min(min(m_vmax_order, min(passSpeed, vmax)), velocity_allowingAcceleration);
     end.acceleration = 0;
 
     //TODO
@@ -425,13 +448,17 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
 
     PosVelAcc next;
 
+    //TODO: attention a cette condition
     if (Cerr.norm() > DISTANCE_LINEAR_ASSERV)
+    //if(false)
     {
-        end.position = end.position * 0.8;
+        //end.position = end.position * 0.8;
+        end.position=end.position-start.velocity*0.060;
         next = profileRoNonJerking(start, end, maxSpeed, dt);
     }
     else
     {
+        end.position=end.position-start.velocity*0.030;
         next = profileRoJerking(start, end, maxSpeed, dt);
     }
 
@@ -458,8 +485,11 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
 
     outDEBUG1 = Cerr.norm();
     outDEBUG2 = corICRSpeed.ro();
-    outDEBUG3 = rad2deg(corICRSpeed.phi()) / 100.0;
-    outDEBUG4 = rad2deg(corICRSpeed.delta()) / 100.0;
+
+    //outDEBUG3 = rad2deg(corICRSpeed.phi()) / 100.0;
+    //outDEBUG4 = rad2deg(corICRSpeed.delta()) / 100.0;
+    //outDEBUG5 = end.velocity;
+    //outDEBUG6 = start.acceleration;
 
     outDEBUG7 = m_orderTime;
 
@@ -493,12 +523,16 @@ ICRSpeed OmnidirectOrder2::computeSpeed(UbiquityMotionState currentMotionState, 
         return ICRSpeed(0, curICRSpeed.getICR());
     }
 
-    outDEBUG5 = m_currentMode ;
+    //outDEBUG5 = m_currentMode;
 
     if (m_currentMode == MODE_DONE)
     {
         ICRSpeed corICRSpeed;
-        if (m_pass == true)
+
+        corICRSpeed = ICRSpeed(max(m_ICRSpeed_N_1.ro() - m_params.getMaxRobotAccel() * 0.2 * dt, 0.0),
+                m_ICRSpeed_N_1.getICR());
+
+        if (m_pass == true or (m_currentMode == MODE_DONE and m_pass == true))
         {
             corICRSpeed = ICRSpeed(max(m_ICRSpeed_N_1.ro() - m_params.getMaxRobotAccel() * 0.2 * dt, 0.0),
                     m_ICRSpeed_N_1.getICR());
@@ -506,9 +540,12 @@ ICRSpeed OmnidirectOrder2::computeSpeed(UbiquityMotionState currentMotionState, 
         }
         else
         {
-            corICRSpeed = ICRSpeed(0.0, m_ICRSpeed_N_1.getICR());
+            m_ICRSpeed_N_1.ro(max(m_ICRSpeed_N_1.ro() - dt * m_params.getMaxRobotAccel() * 0.5, 0.0));
+            corICRSpeed=m_ICRSpeed_N_1;
+            //corICRSpeed = ICRSpeed(0.0, m_ICRSpeed_N_1.getICR());
 
         }
+
 
         m_ICRSpeed_N_1 = corICRSpeed;
 
@@ -516,11 +553,13 @@ ICRSpeed OmnidirectOrder2::computeSpeed(UbiquityMotionState currentMotionState, 
         outDEBUG3 = rad2deg(corICRSpeed.phi()) / 100.0;
         outDEBUG4 = rad2deg(corICRSpeed.delta()) / 100.0;
 
+        Log(DEBUG) << "mode DONE mais j'ai quand meme envoye corICRSpeed:"<<corICRSpeed;
+
         return corICRSpeed;
 
     }
 
-    if (m_currentMode == MODE_RUN or (m_currentMode == MODE_DONE and m_pass == false))
+    if (m_currentMode == MODE_RUN)
     {
         // curICRSpeed est dans le repere robot il faut  le mettre dans le repere target
         curICRSpeed.phi(curICRSpeed.phi() - m_endMotionState.getPosition().h() + currentPosition.h());
@@ -528,6 +567,17 @@ ICRSpeed OmnidirectOrder2::computeSpeed(UbiquityMotionState currentMotionState, 
         ICRSpeed corICRSpeed = computeRunTwist(getPositionInNormalRef(currentPosition), curICRSpeed, dt);
         //dans le repere robot
         corICRSpeed.phi(corICRSpeed.phi() + m_endMotionState.getPosition().h() - currentPosition.h());
+
+        /*
+        if (m_currentMode == MODE_DONE and m_pass == false)
+            {
+            //la fin d'un ordre non passage
+            corICRSpeed=ICRSpeed(corICRSpeed.ro(),m_ICRSpeed_N_1.getICR());
+            //bon attention c'est un peu n'imp, le m_icrspeedn_1 est exprimé dans un autre repere que corICRspeed. mais comme on l'utilise juste pour faire des copies d'icr ca se voit pas. gaffe !
+            m_ICRSpeed_N_1 = corICRSpeed;
+            }
+*/
+
         return corICRSpeed;
     }
 

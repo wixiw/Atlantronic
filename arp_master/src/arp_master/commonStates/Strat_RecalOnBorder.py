@@ -48,15 +48,33 @@ class AmbiRecalOnBorderYellow(smach.StateMachine):
 
             smach.StateMachine.add('ForwardOrder',
                                    ForwardOrder(dist=0.500,vmax=0.2),
-                                   transitions={'succeeded':'non-recaled', 'timeout':'setPosition'}) 
+                                   transitions={'succeeded':'non-recaled', 'timeout':'Pichenette1'}) 
+            
+            vpichenette=0.2
+            postourelle=0.155
+            #c'est une rotation autour de la roue droite et de la roue gauche
+            smach.StateMachine.add('Pichenette1',
+                                   OpenLoopOrder(vpichenette,0.0,vpichenette/postourelle, 
+                                                 duration=0.4),
+                                   transitions={'succeeded':'Pichenette2', 'timeout':'problem'})
+            smach.StateMachine.add('Pichenette2',
+                                   OpenLoopOrder(vpichenette,0.0,-vpichenette/postourelle, 
+                                                 duration=0.4),
+                                   transitions={'succeeded':'Pichenette3', 'timeout':'problem'})
+            smach.StateMachine.add('Pichenette3',
+                                   OpenLoopOrder(0.1,0.0,0.0, 
+                                                 duration=0.1),
+                                   transitions={'succeeded':'setPosition', 'timeout':'problem'})
+            
+            
             #TODO le succeded devrait etre un probleme ! on doit toujours bloquer. mais si je fas ca la simul va merder
             smach.StateMachine.add('setPosition',
                                    SetPositionState(recallWalls[borderName]),
                                    transitions={'succeeded':'BackwardOrder', 'timeout':'problem'})
             
             smach.StateMachine.add('BackwardOrder',
-                                   OpenLoopOrder(-1,0.0,0.0, 
-                                                 duration=6.00),
+                                   OpenLoopOrder(-0.2,0.0,0.0, 
+                                                 duration=1.0),
                                    transitions={'succeeded':'recaled', 'timeout':'problem'})
             
        

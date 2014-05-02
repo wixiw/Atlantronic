@@ -35,7 +35,18 @@ ICRSpeed StayOrder::computeSpeed(UbiquityMotionState currentMotionState, double 
 {
     m_smoothLocNeeded = false;
 
-    return ICRSpeed(0,m_initialICRSpeed.getICR());
+    /*
+    Log(DEBUG) << "m_initialICRSpeed.ro()                                "<<m_initialICRSpeed.ro();
+    Log(DEBUG) << "dt                                                    "<< dt;
+    Log(DEBUG) << "m_params.getMaxRobotAccel()                           "<<m_params.getMaxRobotAccel();
+    Log(DEBUG) << "m_initialICRSpeed.ro()-dt*m_params.getMaxRobotAccel() "<< m_initialICRSpeed.ro()-dt*m_params.getMaxRobotAccel();
+*/
+
+    //m_initialICRSpeed.ro(max(m_initialICRSpeed.ro()-dt*m_params.getMaxRobotAccel(),0.0));
+    //TODO sorry pour l'accel en dure, c'est a cause du createDefaultOrder de la fatcoriy, dont ROSinterface a besoin quand il se lance
+    m_initialICRSpeed.ro(max(m_initialICRSpeed.ro()-dt*1.0,0.0));
+
+    return m_initialICRSpeed;
 }
 
 

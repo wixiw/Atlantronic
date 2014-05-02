@@ -60,7 +60,7 @@ class MainStateMachine(smach.StateMachine):
             
             smach.StateMachine.add('SetInitialPosition',
                       SetPositionState(Pose2D(INIT_POS.x, INIT_POS.y, INIT_POS.theta)),
-                      transitions={'succeeded':'Move', 'timeout':'end'})
+                      transitions={'succeeded':'M1', 'timeout':'end'})
             
 
             
@@ -127,17 +127,17 @@ class MainStateMachine(smach.StateMachine):
             # SPECIFIC DEBUG TESTS ##########################
             
             smach.StateMachine.add('M1',
-                       AmbiOmniDirectOrder2(Pose2D( INIT_POS.x, INIT_POS.y, -pi) ,
+                       AmbiOmniDirectOrder2(Pose2D( INIT_POS.x-0.1, INIT_POS.y, 0) ,
                                            vmax = 1.0),
                       transitions={'succeeded':'M2', 'timeout':'end'})
                         
             smach.StateMachine.add('M2',
-                       AmbiOmniDirectOrder2Pass(Pose2D( INIT_POS.x-0.350, INIT_POS.y, -pi) ,
-                                           vpasse=0.5,vmax = 1.0),
-                      transitions={'succeeded':'Move', 'timeout':'end'})
+                       AmbiOmniDirectOrder2(Pose2D( INIT_POS.x+0.5, INIT_POS.y, 0) ,
+                                           vmax = 1.0),
+                      transitions={'succeeded':'waitMove', 'timeout':'end'})
                                     
             smach.StateMachine.add('M3',
-                       AmbiOmniDirectOrder2(Pose2D(INIT_POS.x-0.750, INIT_POS.y, -pi/2) ,
+                       AmbiOmniDirectOrder2(Pose2D(INIT_POS.x+0.5, INIT_POS.y+0.3, 0) ,
                                            vmax = 1.0),
                       transitions={'succeeded':'waitMove', 'timeout':'end'})            
             
@@ -251,22 +251,30 @@ class RandomMove(MotionState):
 
 
     def createAction(self):
-        self.x = random.uniform(0.4, 1.1)
-        self.y = random.uniform(-0.6, 0.6)
-        self.theta = random.uniform(-pi, pi)
+        #self.x = random.uniform(0.4, 1.1)
+        #self.y = random.uniform(-0.6, 0.6)
+        #self.theta = random.uniform(-pi,pi)
+        
+        self.x = random.uniform(max(Inputs.getx()-0.1,0.4), min(Inputs.getx()+0.1,1.1))
+        self.y = random.uniform(max(Inputs.gety()-0.1,-0.6), min(Inputs.gety()+0.1,0.6))
+        self.theta = random.uniform(Inputs.gettheta()-pi/4, Inputs.gettheta()+pi/4)
         self.vmax = random.uniform(0.1, 1)
-        self.vpass = random.uniform(0.1, 0.5)
+        self.vpass = random.uniform(0.05, 1)
         rospy.loginfo("--- OMNIDIRECTORDER2 ---")
         rospy.loginfo("x =%.3f y=%.3f theta=%.3f"%(self.x, self.y, self.theta))
         rospy.loginfo("vmax =%.3f"%(self.vmax))
 
-        if random.uniform(0, 1)< 0.0 :
-            rospy.loginfo("Stop on point")
+        if random.uniform(0, 1)< 0.2 :
             self.omnidirect2(self.x, self.y, self.theta, self.vmax)
-            #self.omnidirect2(self.x, self.y, self.theta, 1)
         else:
-            rospy.loginfo("Pass with v=%.3f"%(self.vpass))
-            self.omnidirect2Pass(self.x, self.y, self.theta, self.vpass,self.vmax)
+            self.cap(self.theta)
+
+        #if random.uniform(0, 1)< 0.0 :
+        #    rospy.loginfo("Stop on point")
+        #    self.omnidirect2(self.x, self.y, self.theta, self.vmax)
+        #else:
+        #    rospy.loginfo("Pass with v=%.3f"%(self.vpass))
+        #    self.omnidirect2Pass(self.x, self.y, self.theta, self.vpass,self.vmax)
 
     def execute(self,userdata):
         if self.gotoZero is True:
@@ -274,7 +282,8 @@ class RandomMove(MotionState):
             return "gotozero"
         else:
             return MotionState.execute(self,userdata)
-            
+
+
             
 ########################## EXECUTABLE 
 #shall be always at the end ! so that every function is defined before

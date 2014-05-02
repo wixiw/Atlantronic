@@ -49,6 +49,7 @@ class MotionState(CyclicActionState):
         poseTarget=Pose(Data.motionTarget.x,Data.motionTarget.y,Data.motionTargetTheta,0.0,0.0,0.0,0.0)
         self.motionTargetPublisher.publish(MotionTarget(poseTarget,Data.isMotionTranslation))
         
+        
         while(not rospy.is_shutdown()):
             
             self.executeWhile()

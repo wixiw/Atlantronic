@@ -34,15 +34,31 @@ void MotionControl::getInputs()
 {
     //faut-il tester que c'est bien mis à jour ?
     EstimatedPose2D position;
-    inPosition.readNewest(position);
+    if( RTT::NewData !=  inPosition.readNewest(position))
+    {
+        LOG( Error ) << "No new data in inPosition port => return" << endlog();
+        return;
+    }
     attrMotionState.setPosition(position);
 
     EstimatedICRSpeed speed;
-    inCurrentICRSpeed.readNewest(speed);
+    if( RTT::NewData != inCurrentICRSpeed.readNewest(speed))
+    {
+        LOG( Error ) << "No new data in inCurrentICRSpeed port => return" << endlog();
+        return;
+    }
     attrMotionState.setSpeed(speed);
 
-    inCanPeriod.readNewest(attrCanPeriod);
-    inParams.readNewest(attrParams);
+    if( RTT::NoData ==inCanPeriod.readNewest(attrCanPeriod))
+    {
+        LOG( Error ) << "No data in inCanPeriod port => return" << endlog();
+        return;
+    }
+    if( RTT::NoData ==inParams.readNewest(attrParams))
+    {
+        LOG( Error ) << "No data in inParams port => return" << endlog();
+        return;
+    }
 }
 
 void MotionControl::updateHook()
@@ -151,7 +167,7 @@ bool MotionControl::ooSetOrder(shared_ptr<MotionOrder> order)
     attrOrder->setICRSpeedBuffer(m_ICRSpeedBuffer);
 
     m_norder++;
-    outDEBUG8.write(((double) m_norder) / 10.0);
+    outDEBUG10.write(((double) m_norder) / 10.0);
     arp_ods::Log(Info) << "-------------------- order number # ---------------------   >> " << m_norder
             << endlog();
 
