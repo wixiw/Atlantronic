@@ -34,6 +34,8 @@ class Opening(PreemptiveStateMachine):
 
 #Go to stick to frescos entry point not requiered as it is the same as DoubleTargetShootState
 #Stick Frescos
+#
+#####bite
             PreemptiveStateMachine.add('StickFrescos',
                       StickFrescosState(),
                       transitions={'endFrescos':'DoubleTargetShoot', 'problem':'problem'})
