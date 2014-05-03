@@ -14,34 +14,41 @@ class Opening(PreemptiveStateMachine):
                                              transitions={'endMatch':'problem'})
             
             PreemptiveStateMachine.add('EscapeStartArea',
-                      AmbiOmniDirectOrder2( Pose2D(1.100, 0.400, -5*pi/6)),
-                      transitions={'succeeded':'PrepareFrescos', 'timeout':'problem'})
+                      AmbiOmniDirectOrder2Pass(Table2014.P_YOU_HOU,vpasse=-1),
+                      transitions={'succeeded':'GoToYFT', 'timeout':'problem'})
 
             self.setInitialState('EscapeStartArea')
             
 # Go to Yellow Fire Top
             PreemptiveStateMachine.add('GoToYFT',
-                      AmbiOmniDirectOrder2Pass( Pose2D(0.600 + Robot2014.FRONT_SIDE.x, 0.400, -2*pi/3), vpasse=1),
+                      AmbiOmniDirectOrder2Pass( Pose2D(0.650 + Robot2014.FRONT_SIDE.x, 0.300, -5*pi/6),vpasse=-1),
                       transitions={'succeeded':'PrepareFrescos', 'timeout':'problem'})
 
 #GOTO StickFrescos
 
 
-# Go to Gay Camping point, align for ShootStates
-            PreemptiveStateMachine.add('PrepareFrescos',
-                      AmbiOmniDirectOrder2(Pose2D(0.300, 0.400, -5*pi/6)),
-                      transitions={'succeeded':'StickFrescos', 'timeout':'problem'})
+# Go to old Gay Camping point, align for ShootStates
+#            PreemptiveStateMachine.add('PrepareFrescos',
+#                      AmbiOmniDirectOrder2Pass(Pose2D(0.300, 0.400, -5*pi/6),vpasse=-1),
+#                      transitions={'succeeded':'StickFrescos', 'timeout':'problem'})   
 
+# Go to Gay Camping point
+            PreemptiveStateMachine.add('PrepareFrescos',
+                      AmbiOmniDirectOrder2(Pose2D(-0.160, 0.480, -pi/4)),
+                      transitions={'succeeded':'WaitCamping', 'timeout':'WaitCamping'})   
+
+# Wait camping     
+            PreemptiveStateMachine.add('WaitCamping',
+                      WaiterState(2.0),
+                      transitions={'timeout':'StickFrescos'})
+            
 #Go to stick to frescos entry point not requiered as it is the same as DoubleTargetShootState
 #Stick Frescos
-#
-#####bite
             PreemptiveStateMachine.add('StickFrescos',
                       StickFrescosState(),
                       transitions={'endFrescos':'DoubleTargetShoot', 'problem':'problem'})
 
 # Shoot
-
             PreemptiveStateMachine.add('DoubleTargetShoot',
                       DoubleTargetShootState(),
                       transitions={'endShoot':'GoToAlmostCentralHeat', 'problem':'problem'})

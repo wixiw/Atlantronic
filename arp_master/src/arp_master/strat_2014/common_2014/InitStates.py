@@ -59,7 +59,7 @@ class StartSequence2014(smach.StateMachine):
                       transitions={'timeout':'You'})
             
             smach.StateMachine.add('You',
-                      AmbiOmniDirectOrder2( Pose2D(1.100, 0.400, pi), vmax = 0.3),
+                      AmbiOmniDirectOrder2( Table2014.P_YOU_HOU, vmax = 0.3),
                       transitions={'succeeded':'Hou', 'timeout':'Hou'})
                         
             smach.StateMachine.add('Hou',

@@ -23,6 +23,7 @@ class Table2014(TableVierge):
     
     
     P_START_POS         = Pose2D(1.260, 0.550, -5*pi/6)
+    P_YOU_HOU           = Pose2D(1.100, 0.400, -5*pi/6)
     P_IN_FRONT_START_AREA   = Pose2D(1.100, 0.400, pi/4)
 
 #Yellow Heat Bot

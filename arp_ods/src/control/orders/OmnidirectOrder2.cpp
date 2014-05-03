@@ -70,7 +70,7 @@ OmnidirectOrder2::OmnidirectOrder2(const OrderGoalConstPtr &goal, arp_math::Ubiq
         m_vmax_order = m_params.getMaxRobotSpeed();
 
     // timeout is initialised by a rough distance / speed with a margin
-    m_timeout = max(end.distanceTo(currentMotionState.position) / m_vmax_order * 2.0, 15.0);
+    m_timeout = max(end.distanceTo(currentMotionState.position) / m_vmax_order * 2.0, 10.0);
 
     Log(DEBUG) << "goal->max_speed " << goal->max_speed;
     Log(DEBUG) << "m_params.getMaxRobotSpeed() " << m_params.getMaxRobotSpeed();
@@ -200,8 +200,11 @@ PosVelAcc OmnidirectOrder2::profileRoNonJerking(PosVelAcc start, PosVelAcc end, 
 
 PosVelAcc OmnidirectOrder2::profileRoJerking(PosVelAcc start, PosVelAcc end, double maxSpeed, double dt)
 {
+    //dt=0.010; potentiellement necessaire si on travaille sur le jerk ?
+
     PosVelAcc next;
     double maxAcc = m_params.getMaxRobotAccel();
+    double maxJerk = m_params.getMaxRobotJerk();
 
     /*
      * NB: la vitesse est toujours positive
@@ -261,11 +264,22 @@ PosVelAcc OmnidirectOrder2::profileRoJerking(PosVelAcc start, PosVelAcc end, dou
     // limitation de l'acceleration
     double accStep = maxAcc * dt;
 
+
     if (ro_N > 0)
     {
         if (start.velocity < ro_N)
         { //accel
-            ro_N = min(ro_N, start.velocity + accStep);
+            //ceci n'a pas marche car y'a trop de glitch dans les donnees et on obtient des acceleration de -10, des vitesses qui remontent à l'approche.. ca fout la merde
+            //ntoamment, le passage sqrt / lineaire sur la vitesse met aussi du glitch
+            /*
+            Log(DEBUG) << "          cas A   ro_N > 0 et  start.velocity < ro_N   " ;
+            Log(DEBUG) << "          ro_N                                                       " <<ro_N;
+            Log(DEBUG) << "          start.velocity + maxAcc * dt                               " <<start.velocity + maxAcc * dt;
+            Log(DEBUG) << "          start.velocity + (start.acceleration+maxJerk*dt) * dt      " <<start.velocity + (start.acceleration+maxJerk*dt) * dt;
+             */
+            //ro_N = min(min(ro_N, start.velocity + maxAcc * dt),start.velocity + (start.acceleration+maxJerk*dt) * dt);
+
+            ro_N = min(ro_N, start.velocity + maxAcc * dt);
         }
         else
         { //decel
@@ -276,6 +290,7 @@ PosVelAcc OmnidirectOrder2::profileRoJerking(PosVelAcc start, PosVelAcc end, dou
     {
         if (start.velocity > ro_N)
         { //"augmentation du mouvement"
+            Log(DEBUG) << "          cas B      " ;
             ro_N = max(ro_N, start.velocity - accStep);
         }
         else

@@ -98,10 +98,26 @@ void KinematicBase::checkRobotBlocked()
 
 bool KinematicBase::consistencyMeasuredvsCommanded()
 {
+    /*
     attrSpeedError = fabs(attrCurrentICRSpeed.ro() - attrICRSpeedCmd.ro());
 
     // 20 mm/s difference accepted
     return attrSpeedError < propMaxSpeedDiff;
+    */
+
+    //les vitesses sont toujours positives
+
+    /*
+    Log(INFO) << "    consistencyMeasuredvsCommanded";
+    Log(INFO) << "    attrICRSpeedCmd";
+    Log(INFO) << "    attrCurrentICRSpeed";
+    Log(INFO) << "    consistencyMeasuredvsCommanded";
+    */
+
+    if (fabs(attrICRSpeedCmd.ro())>0.005 and fabs(attrCurrentICRSpeed.ro())<fabs(0.8*attrICRSpeedCmd.ro()))
+        return false;
+    else
+        return true;
 }
 
 void KinematicBase::setOutputs()
