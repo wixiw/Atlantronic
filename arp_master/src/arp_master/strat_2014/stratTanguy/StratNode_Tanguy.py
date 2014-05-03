@@ -59,23 +59,36 @@ class MainStateMachine(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['end'])
         with self:
-            smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
+            smach.StateMachine.add('Initialisation', 
+                                   Strat_Initialisation.Initialisation(),
                                    transitions={'endInitialisation':'StartSequence','failed':'end'})
-#Choisir pour integrer la phase d'init
-            smach.StateMachine.add('StartSequence', InitStates.StartSequence2014(Table2014.P_START_POS),
-#Choisir pour bypasser la phase d'init
-            #smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(Table2014.P_START_POS),
 
-            #position face contre mur : (1.500 - Robot2014.FRONT_SIDE.x,0.550,0)
+#Choisir pour bypasser la phase d'init
+            smach.StateMachine.add('StartSequence',
+#                                  InitStates.StartSequence2014(Table2014.P_START_POS),
+                                   Strat_StartSequence.StartSequence(Table2014.P_START_POS),
                                    transitions={'gogogo':'Opening','problem':'end'})
-            smach.StateMachine.add('Opening', Strat_Opening.Opening(),
-                                    transitions={'endOpening':'MiddleGame','problem':'end'})
-            smach.StateMachine.add('MiddleGame', Strat_MiddleGame.MiddleGame(),
-                                    transitions={'endMiddleGame':'EndGame'})
-            smach.StateMachine.add('EndGame', Strat_EndGame.EndGame(),
-                                    transitions={'endEndGame':'Uninitialisation'})
-            smach.StateMachine.add('Uninitialisation', Strat_Uninitialisation.Uninitialisation(),
-                                    transitions={'endUninitialisation':'end'})
+            
+            smach.StateMachine.add('Opening', 
+                                   Strat_Opening.Opening(),
+                                   transitions={'endOpening':'MiddleGame', 'motionBlocked':'Unblock',
+                                                'askSelector':'MiddleGame', 'nearlyEndMatch':'EndGame'})
+            
+            smach.StateMachine.add('MiddleGame', 
+                                   Strat_MiddleGame.MiddleGame(),
+                                   transitions={'endMiddleGame':'EndGame', 'motionBlocked':'Unblock'})
+            
+            smach.StateMachine.add('EndGame', 
+                                   Strat_EndGame.EndGame(),
+                                   transitions={'endEndGame':'Uninitialisation'})
+            
+            smach.StateMachine.add('Uninitialisation', 
+                                   Strat_Uninitialisation.Uninitialisation(),
+                                   transitions={'endUninitialisation':'end'})
+            
+            smach.StateMachine.add('Unblock', 
+                                   Unblock(),
+                                   transitions={'succeeded':'MiddleGame', 'nearlyEndMatch':'EndGame'})
 
    
 ########################## EXECUTABLE 

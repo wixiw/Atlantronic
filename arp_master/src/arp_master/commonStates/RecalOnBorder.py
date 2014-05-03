@@ -30,16 +30,6 @@ class AmbiRecalOnBorderYellow(smach.StateMachine):
         
         smach.StateMachine.__init__(self,outcomes=['recaled','non-recaled','problem'])
         
-        if color=='yellow':
-            pass
-        elif color=='red':
-            if borderName=="LEFT":
-                borderName="RIGHT"
-            if borderName=="RIGHT":
-                borderName="LEFT"            
-        else:
-            rospy.logerr("AmbiRecalOnBorderYellow : default case : color not defined !!")
-        
         with self:
             smach.StateMachine.add('AlignTurrets',
                                    OpenLoopOrder(0.1,0.0,0.0, 
@@ -67,10 +57,9 @@ class AmbiRecalOnBorderYellow(smach.StateMachine):
                                    transitions={'succeeded':'setPosition', 'timeout':'problem'})
             
             
-            #TODO le succeded devrait etre un probleme ! on doit toujours bloquer. mais si je fas ca la simul va merder
             smach.StateMachine.add('setPosition',
                                    SetPositionState(recallWalls[borderName]),
-                                   transitions={'succeeded':'BackwardOrder', 'timeout':'problem'})
+                                   transitions={'succeeded':'BackwardOrder', 'timeout':'non-recaled'})
             
             smach.StateMachine.add('BackwardOrder',
                                    OpenLoopOrder(-0.2,0.0,0.0, 

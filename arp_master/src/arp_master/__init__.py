@@ -13,7 +13,7 @@ import rospy
 
 
 #bon alors j'ai vire tous les chargement ici car ca foutait grave la merde
-#pour aider je donne les dependances prevues. si y'a un probleme faut se refere a ca pour s'en sortir !
+#pour aider je donne les dependances prevues. si y'a un probleme faut se referer a ca pour s'en sortir !
 
 #util
 #fsmFramework<-util

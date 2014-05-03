@@ -6,6 +6,7 @@ import smach
 import smach_ros
 import smach_msgs
 import actionlib
+import random
 
 from MotionState import *
 from CyclicActionState import *
@@ -155,4 +156,21 @@ class TurnOrder(MotionState):
         MotionState.__init__(self)
         self.h=h
     def createAction(self):
-        self.cap(self.h)          
+        self.cap(self.h)   
+
+#Pour retourner au point initial : rosservice call /MotionTestingStratNode/gotoZero
+class RandomMove(MotionState):
+    def __init__(self, vmax):
+        MotionState.__init__(self)
+        seed = random.randint(0, 1000)
+        random.seed(seed)
+        self.vmax=vmax
+
+    def createAction(self):
+        self.x = random.uniform(-1.250, 1.250)
+        self.y = random.uniform(-0.750, 0.750)
+        self.theta = random.uniform(-pi, pi)
+        self.omnidirect2(self.x, self.y, self.theta, self.vmax)
+        
+    def execute(self,userdata):
+        return MotionState.execute(self,userdata)

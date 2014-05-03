@@ -36,7 +36,7 @@ void MotionControl::getInputs()
     EstimatedPose2D position;
     if( RTT::NewData !=  inPosition.readNewest(position))
     {
-        LOG( Error ) << "No new data in inPosition port => return" << endlog();
+        //LOG( Error ) << "No new data in inPosition port => return" << endlog();
         return;
     }
     attrMotionState.setPosition(position);
