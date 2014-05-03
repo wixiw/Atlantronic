@@ -121,7 +121,7 @@ function Telemetry:report()
 	print("====================")
 	print("début déploiment telemetry")
 	--required in simul to allow plotting against simulated time
-	Reporting:reportPort("Can1","outClockReporting")
+	--Reporting:reportPort("Can1","outClockReporting")
 	--Telemetry:reportJoystick()
 	--Telemetry:reportRobotCmd()
 	--Telemetry:reportRobotState()
