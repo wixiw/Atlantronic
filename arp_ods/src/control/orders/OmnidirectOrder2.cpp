@@ -180,7 +180,6 @@ PosVelAcc OmnidirectOrder2::profileRoNonJerking(PosVelAcc start, PosVelAcc end, 
      outDEBUG6=next.acceleration;
      */
 
-    outDEBUG6=0.0;
     if (!OTGres)
     {
         next.position = 0;
@@ -191,7 +190,6 @@ PosVelAcc OmnidirectOrder2::profileRoNonJerking(PosVelAcc start, PosVelAcc end, 
         //TODO ceci est ineaceptable mais fat bien sauver le bateau. Reflexxes renvoie des erreurs de synchronisation en monoaxe.. ???
 
         next = profileRoJerking(start, end, maxSpeed, dt);
-        outDEBUG6=0.5;
     }
 
     Log(DEBUG) << "     <<profileRoNonJerking";
@@ -203,26 +201,18 @@ PosVelAcc OmnidirectOrder2::profileRoNonJerking(PosVelAcc start, PosVelAcc end, 
 PosVelAcc OmnidirectOrder2::profileRoJerking(PosVelAcc start, PosVelAcc end, double maxSpeed, double dt)
 {
     PosVelAcc next;
+    double maxAcc = m_params.getMaxRobotAccel();
 
     /*
-     * NB: si je ne me suis pas trompe, computerunspeed peut demander à profile ro jerkin un "distance" negatif, mais tous les old ICRP speed et oldoldICRspeed ont un ro positif.
-     * arriver avec distance <0 est du a un changement de sens du robot
-     * on doit rester à se taper des ro<0 jusqu'a ce que la vitesse s'annule
+     * NB: la vitesse est toujours positive
+     * la position peut etre negative
+     * la vitesse renvoyee peut etre negative
      */
-
-    double roPass = end.velocity;
-    double distance = end.position;
-
-    //TODO brancher vitesse plutot que last ro
-    double ro_N_1 = m_ICRSpeed_N_1.ro();
-    double dt_N = dt;
-
-    //double curRo=curICRSpeed.ro();
 
     double ro_N;
 
     Log(DEBUG) << "     << profileRoJerking";
-    Log(DEBUG) << "          distance " << distance;
+    Log(DEBUG) << "          distance " << end.position;
 
     /** CONSTRUCTION VITESSE **/
 
@@ -230,24 +220,25 @@ PosVelAcc OmnidirectOrder2::profileRoJerking(PosVelAcc start, PosVelAcc end, dou
      * is this a "passage point" ?
      * if yes, use v=sqrt(dist + vpass²)
      */
-    if (roPass > 0.0)
+    if (end.velocity > 0.0)
     {
-        ro_N = sqrt2(sign(ro_N_1) * roPass * roPass + 2.0 * DECELERATION * distance);
-        Log(DEBUG) << "     roN_1=" << ro_N_1 << " roPass=" << roPass << "   ro_non_limited avec ropass=" << ro_N;
+        ro_N = sqrt2(sign(start.velocity) * end.velocity * end.velocity + 2.0 * DECELERATION * end.position);
+        Log(DEBUG) << "     start.velocity=" << start.velocity << " roPass=" << end.velocity
+                << "   ro_non_limited avec ropass=" << ro_N;
     }
     else
     /*
      * otherwise, use v=sqrt(dist) when far, and v=k.dist when close
      */
     {
-        if (abs(distance) > DISTANCE_LINEAR_ASSERV)
+        if (abs(end.position) > DISTANCE_LINEAR_ASSERV)
         {
-            ro_N = sqrt2(2.0 * DECELERATION) * sqrt2(distance);
+            ro_N = sqrt2(2.0 * DECELERATION) * sqrt2(end.position);
             Log(DEBUG) << "          ro_non_limited  racine       " << ro_N;
         }
         else
         {
-            ro_N = (sqrt2(2.0 * DECELERATION) * sqrt2(DISTANCE_LINEAR_ASSERV)) / DISTANCE_LINEAR_ASSERV * distance;
+            ro_N = (sqrt2(2.0 * DECELERATION) * sqrt2(DISTANCE_LINEAR_ASSERV)) / DISTANCE_LINEAR_ASSERV * end.position;
             Log(DEBUG) << "          ro_non_limited  lineaire     " << ro_N;
         }
     }
@@ -258,8 +249,8 @@ PosVelAcc OmnidirectOrder2::profileRoJerking(PosVelAcc start, PosVelAcc end, dou
 
     /** SATURATION EN VITESSE **/
 
-    ro_N = saturate(ro_N, -m_vmax_order, m_vmax_order);
     ro_N = saturate(ro_N, -maxSpeed, maxSpeed);
+
     /*
      * fin de la construction du ro limite en vitesse
      */
@@ -268,12 +259,13 @@ PosVelAcc OmnidirectOrder2::profileRoJerking(PosVelAcc start, PosVelAcc end, dou
     /** SATURATION EN ACCELERATION **/
 
     // limitation de l'acceleration
-    double accStep = m_params.getMaxRobotAccel() * dt_N;
+    double accStep = maxAcc * dt;
+
     if (ro_N > 0)
     {
-        if (ro_N_1 < ro_N)
+        if (start.velocity < ro_N)
         { //accel
-            ro_N = min(ro_N, ro_N_1 + accStep);
+            ro_N = min(ro_N, start.velocity + accStep);
         }
         else
         { //decel
@@ -282,9 +274,9 @@ PosVelAcc OmnidirectOrder2::profileRoJerking(PosVelAcc start, PosVelAcc end, dou
     }
     else
     {
-        if (ro_N_1 > ro_N)
+        if (start.velocity > ro_N)
         { //"augmentation du mouvement"
-            ro_N = max(ro_N, ro_N_1 - accStep);
+            ro_N = max(ro_N, start.velocity - accStep);
         }
         else
         { //"diminution du mouvement"
@@ -292,14 +284,28 @@ PosVelAcc OmnidirectOrder2::profileRoJerking(PosVelAcc start, PosVelAcc end, dou
         }
     }
 
-    next.position = start.position + ro_N * dt;
-    next.velocity = ro_N;
-    next.acceleration = ro_N - ro_N_1;
-
     /*
      * fin de la construction du ro limite en acceleration
      */
     Log(DEBUG) << "          ro_N limit acc      " << ro_N;
+
+    next.position = start.position + ro_N * dt;
+    next.velocity = ro_N;
+    next.acceleration = (ro_N - start.velocity) / dt;
+
+    Log(DEBUG) << "          start.position       " << start.position;
+    Log(DEBUG) << "          start.velocity       " << start.velocity;
+    Log(DEBUG) << "          start.acceleration   " << start.acceleration;
+    Log(DEBUG) << "          end.position         " << end.position;
+    Log(DEBUG) << "          end.velocity         " << end.velocity;
+    Log(DEBUG) << "          end.acceleration     " << end.acceleration;
+    Log(DEBUG) << "          maxSpeed             " << maxSpeed;
+    Log(DEBUG) << "          maxAcc               " << maxAcc;
+
+    Log(DEBUG) << "          CALCUL ROMEXXES   ...";
+    Log(DEBUG) << "          next.position         " << next.position;
+    Log(DEBUG) << "          next.velocity         " << next.velocity;
+    Log(DEBUG) << "          next.acceleration     " << next.acceleration;
 
     Log(DEBUG) << "     >> profileRoJerking";
     return next;
@@ -308,9 +314,6 @@ PosVelAcc OmnidirectOrder2::profileRoJerking(PosVelAcc start, PosVelAcc end, dou
 
 ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSpeed curICRSpeed, double dt)
 {
-    outDEBUG3 = curICRSpeed.ro();
-
-    bool inversedRoSign = false;
 
     m_orderTime += dt;
 
@@ -322,11 +325,6 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
 
     //curICRspeed est toujours positif en ro
     curICRSpeed = m_ICRSpeed_N_1.getNormalizedRep();
-    if (m_ICRSpeed_N_1.ro() < 0)
-    {
-        Log(DEBUG) << "     inversion du signe de ro...je note...    ";
-        inversedRoSign = true;
-    }
 
     //curICRSpeed = ICRSpeed(vraiRo,m_ICRSpeed_N_1.phi(),m_ICRSpeed_N_1.delta());
 
@@ -356,9 +354,9 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
     //ICR curICR = m_oldICRSpeed.getICR();
 
     // gestion du parkinson final
-    //double s_max = 5 * dt * getParkinsonLimitationFactor(Cerr.norm());
+    double s_max = 5 * dt * getParkinsonLimitationFactor(Cerr.norm());
 
-    double s_max = 5 * dt;
+    //double s_max = 5 * dt ;
 
     Log(DEBUG) << "     Cerr.norm()                               " << Cerr.norm();
     //Log(DEBUG) << "     getParkinsonLimitationFactor(Cerr.norm()) " << getParkinsonLimitationFactor(Cerr.norm());
@@ -419,11 +417,20 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
     start.position = 0;
     start.velocity = m_last_PosVelAcc_computation.velocity;
     // quand reflexxes me sort l'acceleration du tour suivant, il voit deja dans le futur ! je ne peux pas dervier la vitesse passee
-    start.acceleration = m_last_PosVelAcc_computation.acceleration;
+    if (m_last_PosVelAcc_computation.velocity >= 0.0)
+    {
+        start.velocity = m_last_PosVelAcc_computation.velocity;
+        start.acceleration = m_last_PosVelAcc_computation.acceleration;
+    }
+    else
+    {
+        start.velocity = -m_last_PosVelAcc_computation.velocity;
+        start.acceleration = -m_last_PosVelAcc_computation.acceleration;
+    }
 
     PosVelAcc end;
     end.position = k_delta;
-    //TODO creer un min(1,2,3) et min(1,2,3,4)
+//TODO creer un min(1,2,3) et min(1,2,3,4)
     double velocity_allowingAcceleration = sqrt(
             start.velocity * start.velocity
                     + 2 * m_params.getMaxRobotAccel() * 0.5 * abs(end.position - start.position));
@@ -431,34 +438,34 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
     end.velocity = min(min(m_vmax_order, min(passSpeed, vmax)), velocity_allowingAcceleration);
     end.acceleration = 0;
 
-    //TODO
-    // ceci devrait aussi utiliser m_vmax_asked
-    // a rebranche : min (m_vmax_order,m_vmax_asked)
+//TODO
+// ceci devrait aussi utiliser m_vmax_asked
+// a rebranche : min (m_vmax_order,m_vmax_asked)
     double maxSpeed = min(m_vmax_order, vmax);
-
-    if (start.velocity < 0)
-    {
-        start.position = -start.position;
-        start.velocity = -start.velocity;
-        start.acceleration = -start.acceleration;
-        end.position = -end.position;
-        end.velocity = -end.velocity;
-        end.acceleration = -end.acceleration;
-    }
-
+    /*
+     if (start.velocity < 0)
+     {
+     start.position = -start.position;
+     start.velocity = -start.velocity;
+     start.acceleration = -start.acceleration;
+     end.position = -end.position;
+     end.velocity = -end.velocity;
+     end.acceleration = -end.acceleration;
+     }
+     */
     PosVelAcc next;
 
-    //TODO: attention a cette condition
-    if (Cerr.norm() > DISTANCE_LINEAR_ASSERV)
-    //if(false)
+//TODO: attention a cette condition
+//if (Cerr.norm() > DISTANCE_LINEAR_ASSERV)
+    if (false)
     {
         //end.position = end.position * 0.8;
-        end.position=end.position-start.velocity*0.060;
+        end.position = end.position - start.velocity * 0.060;
         next = profileRoNonJerking(start, end, maxSpeed, dt);
     }
     else
     {
-        end.position=end.position-start.velocity*0.030;
+        end.position = end.position - start.velocity * 0.030;
         next = profileRoJerking(start, end, maxSpeed, dt);
     }
 
@@ -469,7 +476,7 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
 
     corICRSpeed = ICRSpeed(ro, ICR_possible);
 
-    //je remet tout dans leur range nominales
+//je remet tout dans leur range nominales
     corICRSpeed = corICRSpeed.getNormalizedRep();
 
     Log(DEBUG) << "     Cerr.norm()           " << Cerr.norm();
@@ -481,15 +488,14 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
     m_ICRSpeed_N_1 = corICRSpeed;
     m_dt_N_1 = dt;
 
-    //for debug
+//for debug
 
     outDEBUG1 = Cerr.norm();
     outDEBUG2 = corICRSpeed.ro();
-
-    //outDEBUG3 = rad2deg(corICRSpeed.phi()) / 100.0;
-    //outDEBUG4 = rad2deg(corICRSpeed.delta()) / 100.0;
-    //outDEBUG5 = end.velocity;
-    //outDEBUG6 = start.acceleration;
+    outDEBUG3 = rad2deg(corICRSpeed.phi()) / 100.0;
+    outDEBUG4 = rad2deg(corICRSpeed.delta()) / 100.0;
+//outDEBUG5 = end.velocity;
+//outDEBUG6 = start.acceleration;
 
     outDEBUG7 = m_orderTime;
 
@@ -523,9 +529,9 @@ ICRSpeed OmnidirectOrder2::computeSpeed(UbiquityMotionState currentMotionState, 
         return ICRSpeed(0, curICRSpeed.getICR());
     }
 
-    //outDEBUG5 = m_currentMode;
+//outDEBUG5 = m_currentMode;
 
-    if (m_currentMode == MODE_DONE)
+    if (m_currentMode == MODE_DONE and m_pass==true)
     {
         ICRSpeed corICRSpeed;
 
@@ -541,11 +547,10 @@ ICRSpeed OmnidirectOrder2::computeSpeed(UbiquityMotionState currentMotionState, 
         else
         {
             m_ICRSpeed_N_1.ro(max(m_ICRSpeed_N_1.ro() - dt * m_params.getMaxRobotAccel() * 0.5, 0.0));
-            corICRSpeed=m_ICRSpeed_N_1;
+            corICRSpeed = m_ICRSpeed_N_1;
             //corICRSpeed = ICRSpeed(0.0, m_ICRSpeed_N_1.getICR());
 
         }
-
 
         m_ICRSpeed_N_1 = corICRSpeed;
 
@@ -553,13 +558,13 @@ ICRSpeed OmnidirectOrder2::computeSpeed(UbiquityMotionState currentMotionState, 
         outDEBUG3 = rad2deg(corICRSpeed.phi()) / 100.0;
         outDEBUG4 = rad2deg(corICRSpeed.delta()) / 100.0;
 
-        Log(DEBUG) << "mode DONE mais j'ai quand meme envoye corICRSpeed:"<<corICRSpeed;
+        Log(DEBUG) << "mode DONE mais j'ai quand meme envoye corICRSpeed:" << corICRSpeed;
 
         return corICRSpeed;
 
     }
 
-    if (m_currentMode == MODE_RUN)
+    if ((m_currentMode == MODE_RUN) or (m_currentMode == MODE_DONE and m_pass == false))
     {
         // curICRSpeed est dans le repere robot il faut  le mettre dans le repere target
         curICRSpeed.phi(curICRSpeed.phi() - m_endMotionState.getPosition().h() + currentPosition.h());
@@ -569,14 +574,14 @@ ICRSpeed OmnidirectOrder2::computeSpeed(UbiquityMotionState currentMotionState, 
         corICRSpeed.phi(corICRSpeed.phi() + m_endMotionState.getPosition().h() - currentPosition.h());
 
         /*
-        if (m_currentMode == MODE_DONE and m_pass == false)
-            {
-            //la fin d'un ordre non passage
-            corICRSpeed=ICRSpeed(corICRSpeed.ro(),m_ICRSpeed_N_1.getICR());
-            //bon attention c'est un peu n'imp, le m_icrspeedn_1 est exprimé dans un autre repere que corICRspeed. mais comme on l'utilise juste pour faire des copies d'icr ca se voit pas. gaffe !
-            m_ICRSpeed_N_1 = corICRSpeed;
-            }
-*/
+         if (m_currentMode == MODE_DONE and m_pass == false)
+         {
+         //la fin d'un ordre non passage
+         corICRSpeed=ICRSpeed(corICRSpeed.ro(),m_ICRSpeed_N_1.getICR());
+         //bon attention c'est un peu n'imp, le m_icrspeedn_1 est exprimé dans un autre repere que corICRspeed. mais comme on l'utilise juste pour faire des copies d'icr ca se voit pas. gaffe !
+         m_ICRSpeed_N_1 = corICRSpeed;
+         }
+         */
 
         return corICRSpeed;
     }
@@ -586,8 +591,8 @@ ICRSpeed OmnidirectOrder2::computeSpeed(UbiquityMotionState currentMotionState, 
 
 Pose2DNorm OmnidirectOrder2::getPositionInNormalRef(Pose2D currentPosition)
 {
-    //Rtarget = repere objectif
-    // Rtarget->Rrobot = (RO->Rtarget)⁻1 x (R0->Rrobot)
+//Rtarget = repere objectif
+// Rtarget->Rrobot = (RO->Rtarget)⁻1 x (R0->Rrobot)
     Pose2D result(m_endMotionState.getPosition().inverse() * currentPosition);
     result.h(betweenMinusPiAndPlusPi(result.h()));
     Pose2DNorm resultNorm(result);
@@ -596,9 +601,15 @@ Pose2DNorm OmnidirectOrder2::getPositionInNormalRef(Pose2D currentPosition)
 
 double OmnidirectOrder2::getParkinsonLimitationFactor(double distance)
 {
-    double freeze_distance = 0.010;
-    double noConstraint_distance = 0.1;
-    return smoothStep(distance, 0.1, freeze_distance, 1, noConstraint_distance);
+    /*
+     double freeze_distance = 0.010;
+     double noConstraint_distance = 0.1;
+     return smoothStep(distance, 0.1, freeze_distance, 1, noConstraint_distance);
+     */
+    if (distance > RO_ACCURACY)
+        return 1;
+    else
+        return 0;
 }
 
 double OmnidirectOrder2::getSpeedLimitationFactor(double distanceICRMove)
