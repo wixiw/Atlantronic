@@ -50,12 +50,12 @@ class Opening(PreemptiveStateMachine):
 #Stick Frescos
             PreemptiveStateMachine.add('StickFrescos',
                       StickFrescosState(),
-                      transitions={'endFrescos':'DoubleTargetShoot', 'problem':'askSelector'})
+                      transitions={'succeeded':'DoubleTargetShoot', 'failed':'askSelector', 'almostEndGame':'nearlyEndMatch' })
 
 # Shoot
             PreemptiveStateMachine.add('DoubleTargetShoot',
                       DoubleTargetShootState(),
-                      transitions={'endShoot':'GoToAlmostCentralHeat', 'problem':'askSelector'})
+                      transitions={'succeeded':'GoToAlmostCentralHeat', 'failed':'askSelector', 'almostEndGame':'nearlyEndMatch'})
 
 # Go to Almost Central Heat
             PreemptiveStateMachine.add('GoToAlmostCentralHeat',

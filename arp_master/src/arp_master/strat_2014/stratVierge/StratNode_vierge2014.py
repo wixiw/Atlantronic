@@ -5,12 +5,18 @@ import roslib; roslib.load_manifest('arp_master')
 
 from arp_master import *
 
+from arp_master.util import *
+from arp_master.fsmFramework import *
+from arp_master.commonStates import *
+from arp_master.strat_2014 import *
+
 #import the main state machines substates     
 #from a0_initialisation import Strat_Initialisation => utilisation de l'etat commun
 #from a1_startSequence import Strat_StartSequence => utilisation de l'etat commun
-from a2_opening import Strat_Opening
-from a3_middleGame import Strat_MiddleGame
-from a4_endGame import Strat_EndGame
+from a2_opening import Vierge_Opening
+#from a3_middleGame import Strat_MiddleGame => utilisation de l'etat commun
+from a3_middleGame import ActionSelectorVierge
+from a4_endGame import Vierge_EndGame
 #from a5_uninitialisation import Strat_Uninitialisation => utilisation de l'etat commun
 
 from arp_master.strat_2014 import *
@@ -25,7 +31,6 @@ class StratNode_vierge():
         rospy.init_node('StratNode')
         #recuperation des parametres (on a besoin d'etre un noeud pour ca
         Table2014.getParams()
-        Robot2014.getParams()
         #creation of the cadencer for all states
         Data.stateMachineRate =rospy.Rate(10)
         #linking of the input in Inputs to the topics
@@ -55,18 +60,28 @@ class MainStateMachine(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['end'])
         with self:
-            smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
+            smach.StateMachine.add('Initialisation', 
+                                   Strat_Initialisation.Initialisation(),
                                    transitions={'endInitialisation':'StartSequence','failed':'end'})
-            smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(1.140 + Robot2014.CDG_POSE.x,0.75,-pi),
+            
+            smach.StateMachine.add('StartSequence', 
+                                   Strat_StartSequence.StartSequence(Pose2D(1.140 + Robot2014.CDG_POSE.x,0.75,-pi)),
                                    transitions={'gogogo':'Opening','problem':'end'})
-            smach.StateMachine.add('Opening', Strat_Opening.Opening(),
-                                    transitions={'endOpening':'MiddleGame','problem':'MiddleGame'})
-            smach.StateMachine.add('MiddleGame', Strat_MiddleGame.MiddleGame(),
-                                    transitions={'endMiddleGame':'EndGame'})
-            smach.StateMachine.add('EndGame', Strat_EndGame.EndGame(),
-                                    transitions={'endEndGame':'Uninitialisation'})
-            smach.StateMachine.add('Uninitialisation', Strat_Uninitialisation.Uninitialisation(),
-                                    transitions={'endUninitialisation':'end'})
+            
+            smach.StateMachine.add('Opening',
+                                   Vierge_Opening.Opening(),
+                                   transitions={'endOpening':'MiddleGame','problem':'MiddleGame'})
+            
+            smach.StateMachine.add('MiddleGame', 
+                                   Strat_MiddleGame.MiddleGame(ActionSelectorVierge()),
+                                   transitions={'endMiddleGame':'EndGame'})
+            
+            smach.StateMachine.add('EndGame', 
+                                   Vierge_EndGame.EndGame(),
+                                   transitions={'endEndGame':'Uninitialisation'})
+            
+            smach.StateMachine.add('Uninitialisation', 
+                                   transitions={'endUninitialisation':'end'})
 
    
 ########################## EXECUTABLE 

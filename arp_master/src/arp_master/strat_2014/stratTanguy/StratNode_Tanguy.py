@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: latin-1 -*-
 
 #libraries for ROS
 import roslib; roslib.load_manifest('arp_master')
@@ -13,9 +14,9 @@ from arp_master.strat_2014 import *
 #import the main state machines substates     
 #from a0_initialisation import Strat_Initialisation => utilisation de l'etat commun
 #from a1_startSequence import Strat_StartSequence => utilisation de l'etat commun
-from a2_opening import Strat_Opening
-from a3_middleGame import Strat_MiddleGame
-from a4_endGame import Strat_EndGame
+from a2_opening import Tanguy_Opening
+#from a3_middleGame import Strat_MiddleGame => utilisation de l'etat commun
+from a4_endGame import Tanguy_EndGame
 #from a5_uninitialisation import Strat_Uninitialisation => utilisation de l'etat commun
 
 
@@ -29,7 +30,6 @@ class StratNode_Tanguy():
         rospy.init_node('StratNode')
         #recuperation des parametres (on a besoin d'etre un noeud pour ca
         Table2014.getParams()
-        Robot2014.getParams()
         #creation of the cadencer for all states
         Data.stateMachineRate =rospy.Rate(10)
         #linking of the input in Inputs to the topics
@@ -63,23 +63,24 @@ class MainStateMachine(smach.StateMachine):
                                    Strat_Initialisation.Initialisation(),
                                    transitions={'endInitialisation':'StartSequence','failed':'end'})
 
-#Choisir pour bypasser la phase d'init
             smach.StateMachine.add('StartSequence',
-#                                  InitStates.StartSequence2014(Table2014.P_START_POS),
+# Uncomment either this line to perform the 2014 init sequence with recalOnBorders
+#                                  InitStates2014.StartSequence2014(Table2014.P_START_POS),
+# Either this line to start directly from the START_POS 
                                    Strat_StartSequence.StartSequence(Table2014.P_START_POS),
-                                   transitions={'gogogo':'Opening','problem':'end'})
+                                   transitions={'gogogo':'MiddleGame','problem':'end'})
             
             smach.StateMachine.add('Opening', 
-                                   Strat_Opening.Opening(),
+                                   Tanguy_Opening.Opening(),
                                    transitions={'endOpening':'MiddleGame', 'motionBlocked':'Unblock',
                                                 'askSelector':'MiddleGame', 'nearlyEndMatch':'EndGame'})
             
             smach.StateMachine.add('MiddleGame', 
-                                   Strat_MiddleGame.MiddleGame(),
+                                   Strat_MiddleGame.MiddleGame(ActionSelector2014()),
                                    transitions={'endMiddleGame':'EndGame', 'motionBlocked':'Unblock'})
             
             smach.StateMachine.add('EndGame', 
-                                   Strat_EndGame.EndGame(),
+                                   Tanguy_EndGame.EndGame(),
                                    transitions={'endEndGame':'Uninitialisation'})
             
             smach.StateMachine.add('Uninitialisation', 

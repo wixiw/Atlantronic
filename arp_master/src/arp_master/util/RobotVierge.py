@@ -1,30 +1,25 @@
 #!/usr/bin/env python
+# -*- coding: latin-1 -*-
+
 import roslib; roslib.load_manifest('arp_master')
 import rospy
 from math import *
 from UtilARD import *
 
-#il faut voir ca comme un namespace
+#RobotVierge is never instanciated, it is more a namespace (or a bad designed singleton) than a class.
+#RobotVierge shall contains every piece of code that is year-independent and robot related. 
+# Repere du robot :
+# x est vers l'avant, y vers la gauche, theta est compte de x vers y
 class RobotVierge:
 
-#x est vers l'avant, y vers la gauche
-
-
-    #position du CDG dans le reperere du robot
+    #position du CDG dans le repere du robot
     CDG_POSE = Point(-0.0583,0)
     
     #position des extremites du robot
     LEFT_SIDE = Point(0,0.212)
     RIGHT_SIDE = Point(0,-0.212)
     REAR_SIDE = Point(-0.233,0)
-    #mesure pifometrique a verifier
-    FRONT_SIDE = Point(0.065,0)
+    FRONT_SIDE = Point(0.064,0)
     
-    @staticmethod
-    def getParams():
-        try:
-            pass #rien
-        except KeyError:
-            rospy.logerr("RobotVierge: Failed to find rosparams.") 
-            
-            
+    
+

@@ -7,6 +7,7 @@ from RecalOnBorder import *
 from SetVMaxState import *
 from Strat_Initialisation import *
 from Strat_StartSequence import *
+from Strat_MiddleGame import *
 from Strat_Uninitialisation import *
 from Waiting import *
 from Unblock import *

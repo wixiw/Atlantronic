@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: latin-1 -*-
 
 #libraries for ROS
 import roslib; roslib.load_manifest('arp_master')
@@ -18,18 +19,17 @@ class DoubleTargetShootState(PreemptiveStateMachine):
         return Pose2D(0.000, 0.400, -pi/2);
     
     def __init__(self):
-        PreemptiveStateMachine.__init__(self,outcomes=['endShoot','problem'])
+        PreemptiveStateMachine.__init__(self,outcomes=['succeeded','failed', 'almostEndGame'])
         with self:      
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
                                              EndMatchPreempter(-Robot2014.SWITCH_TO_EOG_DELAY),
-                                             transitions={'endMatch':'endShoot'})
+                                             transitions={'endMatch':'almostEndGame'})
                                        
             # DoubleShoot : mock state as Autom V2 doesn't allow pure rotation, waiting bugfixes to uncomment below (done)
             PreemptiveStateMachine.add('DoubleShoot',
                       WaiterState(0.5),
                       transitions={'timeout':'TurnDoubleShoot_2'})
                       #transitions={'timeout':'endShoot'})
-
             self.setInitialState('DoubleShoot')
             
 # 2x DoubleShoots on Mammoths, turn of 0.085 RAD = 5 DEG
@@ -37,7 +37,7 @@ class DoubleTargetShootState(PreemptiveStateMachine):
              # Turn DoubleShoot_2
             PreemptiveStateMachine.add('TurnDoubleShoot_2',
                       AmbiTurnOrder(-pi/2 + 0.00),
-                      transitions={'succeeded':'DoubleShoot_2', 'timeout':'problem'})
+                      transitions={'succeeded':'DoubleShoot_2', 'timeout':'DoubleShoot_2'})
             
             # DoubleShoot_2            
             PreemptiveStateMachine.add('DoubleShoot_2',
@@ -47,9 +47,12 @@ class DoubleTargetShootState(PreemptiveStateMachine):
              # Turn DoubleShoot_3
             PreemptiveStateMachine.add('TurnDoubleShoot_3',
                       AmbiTurnOrder(-pi/2 - 0.08),
-                      transitions={'succeeded':'DoubleShoot_3', 'timeout':'problem'})
+                      transitions={'succeeded':'DoubleShoot_3', 'timeout':'DoubleShoot_3'})
             
             # DoubleShoot_3           
             PreemptiveStateMachine.add('DoubleShoot_3',
                       WaiterState(0.5),
-                      transitions={'timeout':'endShoot'})
+                      transitions={'timeout':'succeeded'})
+            
+            
+            

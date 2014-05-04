@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: latin-1 -*-
 
 #libraries for ROS
 import roslib; roslib.load_manifest('arp_master')
@@ -23,17 +24,16 @@ class StickFrescosState(PreemptiveStateMachine):
         return Pose2D(0.000, 0.400, -pi/2);
     
     def __init__(self):
-        PreemptiveStateMachine.__init__(self,outcomes=['endFrescos','problem'])
+        PreemptiveStateMachine.__init__(self,outcomes=['succeeded','failed','almostEndGame'])
         with self:      
             PreemptiveStateMachine.addPreemptive('EndMatchPreemption',
                                              EndMatchPreempter(-Robot2014.SWITCH_TO_EOG_DELAY),
-                                             transitions={'endMatch':'endFrescos'})
+                                             transitions={'endMatch':'almostEndGame'})
             
             # Approach Fresco
             PreemptiveStateMachine.add('GoToFresco',
                       AmbiOmniDirectOrder2(Pose2D(0.000, 1.000 - 0.214 - 0.050, pi+0.428)),
-                      transitions={'succeeded':'StickFrescos', 'timeout':'problem'})
-            
+                      transitions={'succeeded':'StickFrescos', 'timeout':'failed'})
             self.setInitialState('GoToFresco')
             
             #Utiliser un ordre d'approche pour gerer la collision avec le mur (peut venir du timeout precedent)
@@ -41,10 +41,14 @@ class StickFrescosState(PreemptiveStateMachine):
             # Stick Fresco
             PreemptiveStateMachine.add('StickFrescos',
                       AmbiOmniDirectOrder2(Pose2D(0.000, 1.000 - 0.214 + 0.200, pi+0.428),vmax=0.3),
-                      transitions={'succeeded':'problem', 'timeout':'QuitFresco'})
+                      transitions={#a motion success mean that we didn't bumped the wall so it's a problem
+                                   'succeeded':'failed', 
+                                   #a motion failure mean that we bumped the wall, so it's a success
+                                   'timeout':'QuitFresco'})
 
             # Quit Fresco
             PreemptiveStateMachine.add('QuitFresco',
                       AmbiOmniDirectOrder2(self.getEntryYellowPose()),
-                      transitions={'succeeded':'endFrescos', 'timeout':'problem'})
+                      transitions={'succeeded':'succeeded', 'timeout':'failed'})
             
+        
