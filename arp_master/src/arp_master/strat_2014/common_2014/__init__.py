@@ -5,6 +5,3 @@ from Robot2014 import *
 from Table2014 import *
 from ActionSelector2014 import *
 
-#year dependant Actions
-from FrescosStates import *
-from ShootStates import *

@@ -7,8 +7,7 @@ import os
 
 from arp_master import *
 from arp_master.util import *
-from FrescosStates import *
-from ShootStates import *
+from arp_master.strat_2014.localStrategicActions_2014 import *
 
 actionListTanguy2014 = [
     ActionDefinition('StickFrescosState', StickFrescosState()), 
