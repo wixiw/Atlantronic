@@ -9,14 +9,26 @@ from arp_master.util import *
 from arp_master.fsmFramework import *
 from arp_master.commonStates import *
 from arp_master.strat_2014.common_2014 import *
+
+
+class PickFireOnTable(LocalStrategicAction):
+
+    def getEntryYellowPose(self):
+        return self.pose2D;
     
-    
-    
-    
-    
-    # Go to Red Fire Bot
-#            PreemptiveStateMachine.add('GoToRFB',
-#                      AmbiOmniDirectOrder2(Pose2D(-0.400 - Robot2014.FRONT_SIDE.x, -0.600, 0), vmax=1.0),
-#                      transitions={'succeeded':'PickRFB', 'timeout':'ReverseOrder'})
+    def __init__(self, p_pose2D):
+        LocalStrategicAction.__init__(self, Robot2014.SWITCH_TO_EOG_DELAY)
+        self.pose2D = p_pose2D
+        with self:          
+            # Approach Fire
+            LocalStrategicAction.add('ApproachFire',
+                      ForwardOrder(0.050, vmax=0.3),
+                      transitions={'succeeded':'PickFire', 'timeout':'PickFire'})
+            self.setInitialState('ApproachFire')
             
-#as initial state is not the preemptive one, it is necessary to add the information here !
+            #Utiliser un ordre d'approche pour approcher le feu 
+                        
+            # Pick Fire
+            LocalStrategicAction.add('PickFire',
+                      WaiterState(2),
+                      transitions={'timeout':'succeeded'})
