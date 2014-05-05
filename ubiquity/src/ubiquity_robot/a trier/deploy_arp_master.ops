@@ -1,0 +1,81 @@
+loadService ("Deployer","Lua")
+require("print");               // loads the 'print' service globally. 
+var bool res = true;
+
+//ARP_CORE
+if ( res  ) then
+{
+    if( Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua") == false ) then
+    {
+       print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+       print.ln("\033[1;31m!!! Failed to deploy arp_core. !!!\033[0m");
+       print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+       res = false;
+    }
+}
+
+//ARP_HML
+if ( res  ) then
+{
+    if( Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity.lua") == false ) then
+    {
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        print.ln("\033[1;31m!!! Failed to deploy arp_hml. !!!\033[0m");
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        res = false;
+    }
+} 
+
+//ARP_RLU
+if ( res  ) then
+{
+    if( Lua.exec_file("/opt/ard/arp_rlu/script/orocos/deployment/deploy_arp_rlu.lua") == false ) then
+    {
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        print.ln("\033[1;31m!!! Failed to deploy arp_rlu. !!!\033[0m");
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        res = false;
+    }
+}
+
+//ARP_STM32
+if ( res  ) then
+{
+    if( Lua.exec_file("/opt/ard/arp_stm32/script/orocos/deployment/deploy_arp_stm32.lua") == false ) then
+    {
+       print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+       print.ln("\033[1;31m!!! Failed to deploy arp_stm32. !!!\033[0m");
+       print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+       res = false;
+    }
+}
+
+//ARP_ODS
+if ( res  ) then
+{
+    if( Lua.exec_file("/opt/ard/arp_ods/script/orocos/deployment/deploy_ods.lua") == false ) then
+    {
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        print.ln("\033[1;31m!!! Failed to deploy arp_ods. !!!\033[0m");
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        res = false;
+    }
+}
+ 
+//ARP_MASTER
+if ( res  ) then
+{
+    if( Lua.exec_file("/opt/ard/arp_master/script/orocos/deployment/deploy_arp_master.lua") == false ) then
+    {
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        print.ln("\033[1;31m!!! Failed to deploy arp_master. !!!\033[0m");
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        res = false;
+    }
+}
+
+if( res == false )  then
+{
+    Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_failed.lua")
+}
+
