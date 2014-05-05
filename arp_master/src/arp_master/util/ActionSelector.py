@@ -113,7 +113,6 @@ class ActionSelector:
             id = 0
             
         while id != self.currentActionId:
-            print "self.actionList[" + str(id) + "] = " + self.actionList[id].actionResult + " tested against " + p_actionResult
             if self.actionList[id].actionResult == p_actionResult:
                 print "found id=" + str(id)
                 return id

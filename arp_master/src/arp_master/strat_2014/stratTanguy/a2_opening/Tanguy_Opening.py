@@ -16,12 +16,12 @@ class Opening(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('EscapeStartArea',
                       AmbiOmniDirectOrder2Pass(Table2014.P_YOU_HOU,vpasse=-1),
-                      transitions={'succeeded':'GoToYFT', 'timeout':'RetryEscapeStartArea'})
+                      transitions={'succeeded':'endOpening', 'timeout':'RetryEscapeStartArea'})
             self.setInitialState('EscapeStartArea')
             
             PreemptiveStateMachine.add('RetryEscapeStartArea',
                       AmbiOmniDirectOrder2Pass(Pose2D(Table2014.P_YOU_HOU.x, Table2014.P_YOU_HOU.y -0.050, Table2014.P_YOU_HOU.theta) ,vpasse=-1),
-                      transitions={'succeeded':'GoToYFT', 'timeout':'GoToYFT'})
+                      transitions={'succeeded':'endOpening', 'timeout':'endOpening'})
             
             
 ## Go to Yellow Fire Top
