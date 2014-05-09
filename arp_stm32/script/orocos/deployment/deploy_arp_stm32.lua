@@ -28,7 +28,7 @@ assert( DiscoveryMonitorDeployer:load(),"Failed to load DiscoveryMonitor")
 
 print("... connect components")
 assert( DiscoveryDeployer:connect(), 	"Failed to connect Discovery")
---assert( MatchDataDeployer:connect(), 	"Failed to connect MatchData")
+assert( MatchDataDeployer:connect(), 	"Failed to connect MatchData")
 assert( DynamixelsDeployer:connect(), 	"Failed to connect Dynamixels")
 assert( SuctionPumpsDeployer:connect(), "Failed to connect SuctionPumps")
 assert( TorDeployer:connect(), 			"Failed to connect Tor")
