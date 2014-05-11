@@ -2,5 +2,5 @@
 <!DOCTYPE properties SYSTEM "cpf.dtd">
 <properties>
   <simple name="propInvertSignal" type="boolean"><value>0</value></simple>
-  <simple name="propTorId" type="long"><value>32</value></simple>
+  <simple name="propTorId" type="long"><value>5</value></simple>
 </properties>
