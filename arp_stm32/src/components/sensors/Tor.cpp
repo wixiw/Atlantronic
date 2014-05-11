@@ -53,20 +53,21 @@ void Tor::updateHook()
         LOG(Error) << "updateHook() : mutex.lock()" << endlog();
     }
 
-    attrSignal.data = getGpioValue();
+    attrSignal = getGpioValue();
+    Bool msg;
     if( propInvertSignal )
     {
-        attrSignal.data = !attrSignal.data;
+        msg.data = !msg.data;
     }
 
     mutex.unlock();
 
-    outObjectPresent.write(attrSignal);
+    outObjectPresent.write(msg);
 }
 
 bool Tor::getGpioValue()
 {
-    return m_robotItf.get_gpio(propTorId);
+    return m_robotItf.get_gpio(1<<(propTorId-1));
 }
 
 void Tor::createOrocosInterface()

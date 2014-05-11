@@ -57,12 +57,14 @@ void Discovery::cleanupHook()
 void Discovery::updateHook()
 {
     MotionScheduler::updateHook();
+
+    attrDebugGpio = m_robotItf.last_control_usb_data.gpio;
 }
 
 void Discovery::robotItfCallbackWrapper(void* arg)
 {
-    Discovery* discovery = (Discovery*) arg;
-    discovery->updateHook();
+    //Discovery* discovery = (Discovery*) arg;
+    //discovery->updateHook();
 }
 
 bool Discovery::ooReset()
@@ -86,6 +88,7 @@ bool Discovery::srvResetStm32(EmptyWithSuccess::Request& req, EmptyWithSuccess::
 void Discovery::createOrocosInterface()
 {
     addAttribute("attrStm32Time", m_robotItf.current_time);
+    addAttribute("attrDebugGpio", attrDebugGpio);
 
     addProperty("propDeviceName", propDeviceName);
 

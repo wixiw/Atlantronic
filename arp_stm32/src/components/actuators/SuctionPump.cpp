@@ -46,14 +46,15 @@ void SuctionPump::updateHook()
     Stm32TaskContext::updateHook();
 
     DiscoveryMutex mutex;
+    Bool msg;
     if (mutex.lock() == DiscoveryMutex::FAILED)
     {
         LOG(Error) << "updateHook() : mutex.lock()" << endlog();
     }
-    attrObjectPresent.data = getObjectPresent();
+    attrObjectPresent = getObjectPresent();
     mutex.unlock();
-
-    outObjectPresent.write(attrObjectPresent);
+    msg.data = attrObjectPresent;
+    outObjectPresent.write(msg);
 
     UInt8 suctionPower;
     if( RTT::NewData == inSuctionPowerCmd.read(suctionPower) )
@@ -85,8 +86,8 @@ void SuctionPump::createOrocosInterface()
 {
     addAttribute("attrStm32Time", m_robotItf.current_time);
 
-    addAttribute("attrObjectPresent", attrObjectPresent.data);
-    addAttribute("attrObjectPresent", attrPumpCommand);
+    addAttribute("attrObjectPresent", attrObjectPresent);
+    addAttribute("attrPumpCommand", attrPumpCommand);
 
     addProperty("propPumpId", propPumpId);
 

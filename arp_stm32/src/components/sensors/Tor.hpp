@@ -43,7 +43,7 @@ class Tor: public Stm32TaskContext
 
         RobotInterface& m_robotItf;
 
-        std_msgs::Bool attrSignal;
+        int attrSignal;
 
         bool propInvertSignal;
         int propTorId;

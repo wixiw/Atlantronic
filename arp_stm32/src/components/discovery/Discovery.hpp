@@ -54,6 +54,8 @@ class Discovery: public arp_core::MotionScheduler
         RobotInterface& m_robotItf;
 
         std::string propDeviceName;
+
+        int attrDebugGpio;
 };
 
 } /* namespace arp_stm32 */

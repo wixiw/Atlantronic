@@ -3,11 +3,11 @@
 -->
 <launch>
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
-<!--	<include file="$(find arp_hml)/script/ros/launch/ubiquity/geometry_ubiquity.launch"/>-->
+	<include file="$(find arp_hml)/script/ros/launch/ubiquity/geometry_ubiquity.launch"/>
 	
-  	<!--
+  	
   	<include file="$(find arp_hml)/script/ros/launch/ubiquity/hokuyo.launch"/>
-  	<include file="$(find arp_hml)/script/ros/launch/ubiquity/dynamixel.launch"/>
+  <!--	<include file="$(find arp_hml)/script/ros/launch/ubiquity/dynamixel.launch"/>
   	-->
   	
 </launch>
