@@ -1,11 +1,11 @@
 #!/usr/bin/env python
+# -*- coding: latin-1 -*-
 
 #libraries for ROS
 import roslib; roslib.load_manifest('arp_master')
 
 from arp_master.strat_2014.common_2014.Robot2014 import *
 
-from arp_master.util import *
 from arp_master.fsmFramework import *
 from arp_master.commonStates import *
 from arp_master.strat_2014 import *

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: latin-1 -*-
 
 #libraries for ROS
 import roslib; roslib.load_manifest('arp_master')

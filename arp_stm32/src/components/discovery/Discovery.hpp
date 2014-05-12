@@ -56,6 +56,7 @@ class Discovery: public arp_core::MotionScheduler
         std::string propDeviceName;
 
         int attrDebugGpio;
+        double attrBatteryVoltage;
 };
 
 } /* namespace arp_stm32 */

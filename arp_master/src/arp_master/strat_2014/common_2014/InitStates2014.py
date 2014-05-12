@@ -11,6 +11,7 @@ from Table2014 import *
 from arp_master.util import *
 from arp_master.fsmFramework import *
 from arp_master.commonStates import *
+from arp_master.actuators import *
 
 #from arp_master.commonStates.Strat_Initialisation import *
 #from arp_master.commonStates.Strat_RecalOnBorder import *
@@ -22,10 +23,11 @@ class StartSequence2014(smach.StateMachine):
     def __init__(self,startPosition):
         smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
         
-        for name in dir():
-            print name
-        
         with self:
+            smach.StateMachine.add('ActuatorsSelfTest',
+                      SelfTest(),
+                      transitions={'succeeded':'SetInitialPosition', 'problem':'problem'})
+                        
             smach.StateMachine.add('SetInitialPosition',
                       SetPositionState(Pose2D(1.350,0.500,0)),
                       transitions={'succeeded':'WaitForStartUnPlug', 'timeout':'problem'})

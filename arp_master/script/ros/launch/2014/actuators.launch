@@ -1,0 +1,18 @@
+<launch>
+	<node 
+		name="" 
+		pkg="ocl" 
+		type="deployer-gnulinux" 
+		args="-s $(find arp_stm32)/script/orocos/deployment/deploy_arp_stm32.ops --" 
+		output="screen"
+	/>
+
+	<node 
+		name="StratNode_Actuators"   
+		pkg="arp_master"  
+		type="StratNode_Actuators.py"     
+		args="" output="screen"
+		required="true"
+		launch-prefix="nice -n 19"
+	/>
+</launch>

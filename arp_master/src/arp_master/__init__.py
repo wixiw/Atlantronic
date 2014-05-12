@@ -19,7 +19,7 @@ import rospy
 #fsmFramework<-util
 #commonStates<-fsmFramework,util
 #motiontesting<-util,fsmFramework,commonStates
-#
+#actuators<-util,fsmFramework,commonStates
 #
 #
 #

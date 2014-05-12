@@ -415,7 +415,7 @@ bool CanOpenController::coWriteInRemoteDico(CanDicoEntry dicoEntry)
     else
     {
         //on attend pour laisser le CAN respirer
-        usleep(1000);
+        usleep(2000);
 
         //check received SDO
         UNS32 abortCode;
@@ -655,7 +655,7 @@ void CanOpenController::ooResetCanBus()
     }
 
     //TODO faire mieux pour attendre les bootups
-    sleep(2);
+    sleep(6);
 
     //changing state
     m_RunningState = SETTING_UP_DEVICES;

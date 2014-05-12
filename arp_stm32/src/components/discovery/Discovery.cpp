@@ -59,6 +59,7 @@ void Discovery::updateHook()
     MotionScheduler::updateHook();
 
     attrDebugGpio = m_robotItf.last_control_usb_data.gpio;
+    attrBatteryVoltage = m_robotItf.last_control_usb_data.vBat;
 }
 
 void Discovery::robotItfCallbackWrapper(void* arg)
@@ -89,6 +90,7 @@ void Discovery::createOrocosInterface()
 {
     addAttribute("attrStm32Time", m_robotItf.current_time);
     addAttribute("attrDebugGpio", attrDebugGpio);
+    addAttribute("attrBatteryVoltage", attrBatteryVoltage);
 
     addProperty("propDeviceName", propDeviceName);
 
