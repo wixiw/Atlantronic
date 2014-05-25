@@ -1,6 +1,7 @@
 obj-discovery-core += kernel/main.o
 obj-discovery-core += kernel/asm/isr_stm32f4xx.o
 obj-discovery-core += kernel/rcc.o
+obj-discovery-core += kernel/led.o
 obj-discovery-core += kernel/systick.o
 obj-discovery-core += kernel/tasks.o
 obj-discovery-core += kernel/queue.o
@@ -20,6 +21,7 @@ obj-discovery-core += kernel/driver/usb/stm32f4xx/usbd_req.o
 obj-discovery-core += kernel/driver/usb/stm32f4xx/usbd_atlantronic_core.o
 obj-discovery-core += kernel/driver/usb/stm32f4xx/usbd_usr.o
 obj-discovery-core += kernel/driver/usb/stm32f4xx/usbd_desc.o
+obj-discovery-core += kernel/state_machine/state_machine.o
 obj-discovery-core += kernel/end.o
 obj-discovery-core += kernel/driver/power.o
 obj-discovery-core += discovery/gpio.o
@@ -65,6 +67,8 @@ obj-discovery-baz_small += kernel/control/kinematics.o
 obj-discovery-baz_small += kernel/geometric_model/geometric_model.o
 obj-discovery-baz_small += kernel/location/location.o
 obj-discovery-baz_small += kernel/pump.o
+obj-discovery-baz_small += kernel/arm.o
+obj-discovery-baz_small += kernel/math/matrix_homogeneous.o
 obj-discovery-baz_small += discovery/control.o
 
 obj-discovery-baz += $(obj-discovery-core)
@@ -89,6 +93,8 @@ obj-discovery-baz += kernel/geometric_model/geometric_model.o
 obj-discovery-baz += kernel/location/location.o
 obj-discovery-baz += kernel/hokuyo_tools.o
 obj-discovery-baz += kernel/pump.o
+obj-discovery-baz += kernel/arm.o
+obj-discovery-baz += kernel/math/matrix_homogeneous.o
 obj-discovery-baz += discovery/control.o
 obj-discovery-baz += discovery/motion.o
 

@@ -16,10 +16,10 @@ static void pump_cmd(void*);
 
 static Pump pump[PUMP_MAX] =
 {
-	Pump(PWM_PUMP_1),
-	Pump(PWM_PUMP_2),
-	Pump(PWM_PUMP_3),
-	Pump(PWM_PUMP_4)
+	Pump(PWM_1),
+	Pump(PWM_2),
+	Pump(PWM_3),
+	Pump(PWM_4)
 };
 
 int pump_module_init()
@@ -97,6 +97,12 @@ void Pump::update()
 	stdDev2 = mean2 - mean * mean;
 
 	systime dt = systick_get_time() - startTime;
+
+	// pas de detection de bloquage si on est a moins de 50%
+	if(val < 0.5f)
+	{
+		stdDev2 = 0;
+	}
 
 	if( dt.ms > PUMP_CURRENT_PIC_DELAY_MS && stdDev2 * val > PUMP_BLOCKED_MIN_STDDEV2 )
 	{

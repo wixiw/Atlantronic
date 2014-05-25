@@ -13,6 +13,9 @@
 #include "ros/ros.h"
 #include "linux/tools/qemu.h"
 #include <arp_core/EmptyWithSuccess.h>
+#include <arp_stm32/SetPowerSrv.h>
+#include <arp_core/PowerStatusMsg.h>
+
 
 namespace arp_stm32
 {
@@ -36,6 +39,13 @@ class Discovery: public arp_core::MotionScheduler
          */
         bool ooReset();
 
+        /**
+         * Power on the Stm32 board
+         */
+        bool ooPowerOn(bool on);
+
+        RTT::OutputPort<arp_core::PowerStatusMsg> outPowerStatus;
+
 /****************************************************************
  * Interface ROS
  ****************************************************************/
@@ -45,6 +55,23 @@ class Discovery: public arp_core::MotionScheduler
          */
         bool srvResetStm32(arp_core::EmptyWithSuccess::Request& req, arp_core::EmptyWithSuccess::Response& res);
 
+        /**
+         * ROS wrapper on the HmlMonitor.ooPowerOn operation
+         */
+        bool srvPowerOn(SetPowerSrv::Request& req, SetPowerSrv::Response& res);
+
+/****************************************************************
+ * Interface Stm32
+ ****************************************************************/
+
+        bool isPowerOn();
+        bool isEmergencyStopActive();
+        bool isUnderVoltageErrorActive();
+        bool isPowerAllowedByStragety();
+        bool isPowerShutdownAtEndOfMatch();
+        double getBatteryVoltage();
+        int getRawPowerData();
+        int getRawGpioData();
 
     protected:
         static void robotItfCallbackWrapper(void* arg);
@@ -56,6 +83,8 @@ class Discovery: public arp_core::MotionScheduler
         std::string propDeviceName;
 
         int attrDebugGpio;
+        int attrDebugPower;
+        bool attrIsPowerOn;
         double attrBatteryVoltage;
 };
 

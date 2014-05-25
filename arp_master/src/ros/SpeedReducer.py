@@ -11,6 +11,7 @@ from std_msgs.msg import Float64
 from arp_ods.srv import SetVMax
 from arp_master import *
 
+#This speed reducer is the very simple avoidance system that reduce velocity when someone is close to the robot
 class SpeedReducer:
     def __init__(self):
         rospy.init_node('SpeedReducer')

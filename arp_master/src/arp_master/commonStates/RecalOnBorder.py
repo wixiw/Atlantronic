@@ -67,4 +67,53 @@ class AmbiRecalOnBorderYellow(smach.StateMachine):
                                    transitions={'succeeded':'recaled', 'timeout':'problem'})
             
        
-
+#
+# Use this state to check the 2 Recall Omrons state
+# @param p_awaitedValue : 'True' or 'False' The value you are waiting when testing.
+class CheckRecalOmronValue(CyclicState):
+    def __init__(self, p_awaitedValue):
+        CyclicState.__init__(self, outcomes=['succeeded','problem']) 
+        #remember topic
+        self.leftTopicName      = "/Ubiquity/LeftRecalOmron/object_present"
+        self.rightTopicName     = "/Ubiquity/RightRecalOmron/object_present"
+        
+        #remember reference value
+        self.awaitedValue       = p_awaitedValue
+        
+        #Keep an handle on the subscribe, else it would be destructed
+        self.leftSubscriber     = None
+        self.rightSubscriber    = None
+        
+        #Buffer updated by the callback to be used when testing transitions
+        self.leftObjectPresent  = None
+        self.rightObjectPresent = None
+    
+    def leftCallback(self,msg):
+        self.leftObjectPresent  = msg.data
+        
+    def rightCallback(self,msg):
+        self.rightObjectPresent = msg.data
+        
+    #The topic is only listened when entering the state to prevent useless trigger when not active       
+    def executeIn(self):
+        self.leftSubscriber     = rospy.Subscriber(self.leftTopicName, Bool, self.leftCallback)
+        self.rightSubscriber    = rospy.Subscriber(self.rightTopicName, Bool, self.rightCallback)
+        
+    #stop listening to the stop to prevent useless callback activation
+    def executeOut(self):
+        self.leftSubscriber.unregister()
+        self.leftSubscriber     = None
+        self.leftObjectPresent  = None
+        
+        self.rightSubscriber.unregister()
+        self.rightSubscriber    = None
+        self.rightObjectPresent = None
+        
+    def executeTransitions(self):
+        #we wait untill at least a msg has been received
+        if self.leftObjectPresent is None or self.rightObjectPresent is None:
+            return
+        if self.leftObjectPresent == self.awaitedValue and self.rightObjectPresent == self.awaitedValue:
+            return 'succeeded'  
+        else:
+            return 'problem'

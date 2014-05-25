@@ -15,11 +15,12 @@
 #include "kernel/math/polyline.h"
 #include "kernel/driver/usb.h"
 #include "kernel/driver/dynamixel.h"
+#include "kernel/driver/power.h"
 #include "kernel/pump.h"
+#include "kernel/arm.h"
 #include "discovery/control.h"
 #include "discovery/gpio.h"
 #include "foo/pince.h"
-#include "foo/arm.h"
 
 #define CONTROL_USB_DATA_MAX        120000 //!< 600s (10 mn) de données avec l'asservissement à 200Hz
 
@@ -54,6 +55,8 @@ class RobotInterface
 		//! reboot soft du stm
 		//! ATTENTION : pour les tests uniquement : n'est pas equivalent a un reboot HW
 		int reboot();
+
+		int power_off(bool power_off);
 
 		// ---------- gestion des dynamixel --------------------------------------------
 		int dynamixel_cmd(uint8_t cmd, int dynamixel_type, uint8_t id, float param);
@@ -93,13 +96,17 @@ class RobotInterface
 		//!< time : temps en ms
 		int set_match_time(uint32_t time);
 
+		// ---------- gestion motion --------------------------------------------------
+		int motion_homing();
+		int motion_enable(bool enable);
+		int motion_set_max_driving_current(float maxCurrent);
+		int motion_set_actuator_kinematics(struct motion_cmd_set_actuator_kinematics_arg cmd);
+		int motion_set_speed(VectPlan cp, VectPlan u, float v);
+		int motion_goto(VectPlan dest, VectPlan cp, KinematicsParameters linearParam, KinematicsParameters angularParam);
+
 		// ---------- gestion control --------------------------------------------------
 		int control_print_param();
 		int control_set_param(int kp_av, int ki_av, int kd_av, int kp_rot, int ki_rot, int kd_rot, int kx, int ky, int kalpha); // TODO a mettre a jour
-		int control_goto(VectPlan dest, VectPlan cp, KinematicsParameters linearParam, KinematicsParameters angularParam);
-		int control_set_speed(VectPlan cp, VectPlan u, float v);
-		int control_set_actuator_speed(float v[6]);
-		int control_free();
 
 		// ---------- gestion gyro -----------------------------------------------------
 		int gyro_calibration(enum GyroCalibrationCmd cmd);
@@ -126,8 +133,6 @@ class RobotInterface
 		int arm_xyz(float x, float y, float z, enum arm_cmd_type type);
 		int arm_abz(float a, float b, float z);
 		int arm_ventouse(float x1, float y1, float x2, float y2, float z, int8_t tool_way);
-		int arm_hook(float x1, float y1, float x2, float y2, float z, int8_t tool_way);
-		int arm_bridge(uint8_t on);
 
 		// ---------- gestion trajectoire ----------------------------------------------
 		int straight(float dist);

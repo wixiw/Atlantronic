@@ -24,6 +24,10 @@ class StartSequence2014(smach.StateMachine):
         smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
         
         with self:
+            smach.StateMachine.add('ActuatorsConfig',
+                      ActuatorConfigStateMachine(),
+                      transitions={'done':'ActuatorsSelfTest'})
+                        
             smach.StateMachine.add('ActuatorsSelfTest',
                       SelfTest(),
                       transitions={'succeeded':'SetInitialPosition', 'problem':'problem'})

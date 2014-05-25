@@ -20,7 +20,7 @@ include_directories("${ATLANTRONIC_GIT_DIR}/include")
 include_directories("${ATLANTRONIC_GIT_DIR}/include/discovery")
 include_directories("${ATLANTRONIC_GIT_DIR}/src")
 
-add_definitions(-DVERSION='"622ca5ff7cc864b420378c0b1b1f4e31b0eedfe4"')
+add_definitions(-DVERSION='"ed8a3d7f2f02f8c7af637835a8f89633f4a2548a"')
 
 orocos_component(arp_stm32-components ${source_files} )
 target_link_libraries(arp_stm32-components readline)

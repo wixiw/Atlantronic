@@ -30,7 +30,8 @@ class DynamixelBus: public Stm32TaskContext
         /**
          * Scan dynamixels of all types
          */
-        bool ooScan();
+        bool ooScanRx24F();
+        bool ooScanAx12();
 
         /**
          * Set Id="newId" for dynamixel of type "family" named "oldId"
@@ -41,6 +42,11 @@ class DynamixelBus: public Stm32TaskContext
          * Set a new baudrate for the bus of the family type
          */
         bool ooSetBusBaudRate(int family, int baudrate);
+
+        /**
+         * Set a baudrate to 1M for the dynamixel id of the family type type
+         */
+        bool ooSetDynamixelBaudRate(int family, int id);
 
 /****************************************************************
  * Interface ROS

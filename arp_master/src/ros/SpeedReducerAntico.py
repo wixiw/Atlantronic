@@ -12,6 +12,7 @@ from std_msgs.msg import Float64
 from arp_ods.srv import SetVMax
 from arp_master import *
 
+#This more advanced speed reducer than SpeedReducer, is only slowing if the opponent is in our path.
 class SpeedReducerAntico:
     def __init__(self):
         rospy.init_node('SpeedReducerAntico')

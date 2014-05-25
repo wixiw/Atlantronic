@@ -1,0 +1,9 @@
+.svn
+build
+lib
+bin
+*.pc
+msg_gen
+srv_gen
+*.log
+*.pyc

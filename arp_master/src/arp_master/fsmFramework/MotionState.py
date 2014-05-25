@@ -61,6 +61,7 @@ class MotionState(CyclicActionState):
                 preempted=state.preemptionCondition()
                 if preempted:
                     self.client.cancel_all_goals()
+                    self.executeOut()
                     return label
 
             #is the order terminated ?
@@ -73,6 +74,7 @@ class MotionState(CyclicActionState):
             Data.stateMachineRate.sleep()
             Inputs.update()
         rospy.logerr("boucle d'etat cassee par le shutdown")
+        self.executeOut()
         return "shutdown"
         
         

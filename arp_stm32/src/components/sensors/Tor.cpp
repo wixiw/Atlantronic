@@ -55,6 +55,7 @@ void Tor::updateHook()
 
     attrSignal = getGpioValue();
     Bool msg;
+    msg.data = attrSignal;
     if( propInvertSignal )
     {
         msg.data = !msg.data;

@@ -6,7 +6,7 @@
  */
 
 #include "Discovery.hpp"
-#include "DiscoveryMutex.hpp"
+#include "components/discovery/DiscoveryMutex.hpp"
 #include <rtt/Component.hpp>
 #include <ros/package.h>
 
@@ -57,15 +57,68 @@ void Discovery::cleanupHook()
 void Discovery::updateHook()
 {
     MotionScheduler::updateHook();
+    DiscoveryMutex mutex;
 
-    attrDebugGpio = m_robotItf.last_control_usb_data.gpio;
-    attrBatteryVoltage = m_robotItf.last_control_usb_data.vBat;
+    if (mutex.lock() == DiscoveryMutex::FAILED)
+    {
+        LOG(Error) << "updateHook() : mutex.lock()" << endlog();
+    }
+
+    attrDebugGpio = getRawGpioData();
+    attrBatteryVoltage = getBatteryVoltage();
+    attrIsPowerOn = isPowerOn();
+    mutex.unlock();
+
+    PowerStatusMsg msg;
+    msg.voltage = attrBatteryVoltage;
+    msg.isPowerOn = attrIsPowerOn;
+    outPowerStatus.write(msg);
 }
 
 void Discovery::robotItfCallbackWrapper(void* arg)
 {
     //Discovery* discovery = (Discovery*) arg;
     //discovery->updateHook();
+}
+
+bool Discovery::isPowerOn()
+{
+    return getRawPowerData() == POWER_ON;
+}
+
+bool Discovery::isEmergencyStopActive()
+{
+    return getRawPowerData() & POWER_OFF_AU;
+}
+
+bool Discovery::isUnderVoltageErrorActive()
+{
+    return getRawPowerData() & POWER_OFF_UNDERVOLTAGE;
+}
+
+bool Discovery::isPowerAllowedByStragety()
+{
+    return getRawPowerData() & POWER_OFF;
+}
+
+bool Discovery::isPowerShutdownAtEndOfMatch()
+{
+    return getRawPowerData() & POWER_OFF_END_MATCH;
+}
+
+int Discovery::getRawPowerData()
+{
+    return m_robotItf.last_control_usb_data.power_state;
+}
+
+double Discovery::getBatteryVoltage()
+{
+    return m_robotItf.last_control_usb_data.vBat;
+}
+
+int Discovery::getRawGpioData()
+{
+    return m_robotItf.last_control_usb_data.gpio;
 }
 
 bool Discovery::ooReset()
@@ -80,21 +133,45 @@ bool Discovery::ooReset()
     return true;
 }
 
+
+bool Discovery::ooPowerOn(bool on)
+{
+    int res = m_robotItf.power_off(!on);
+
+    if (res < 0)
+    {
+        LOG(Error) << "sendPower() : failed to require power with error code : " << res << endlog();
+        return false;
+    }
+    return true;
+}
+
 bool Discovery::srvResetStm32(EmptyWithSuccess::Request& req, EmptyWithSuccess::Response& res)
 {
     res.success = ooReset();
     return res.success;
 }
 
+bool Discovery::srvPowerOn(SetPowerSrv::Request& req, SetPowerSrv::Response& res)
+{
+    res.success = ooPowerOn(req.powerOn);
+    return res.success;
+}
+
 void Discovery::createOrocosInterface()
 {
-    addAttribute("attrStm32Time", m_robotItf.current_time);
-    addAttribute("attrDebugGpio", attrDebugGpio);
-    addAttribute("attrBatteryVoltage", attrBatteryVoltage);
+    addAttribute("attrStm32Time",       m_robotItf.current_time);
+    addAttribute("attrDebugGpio",       attrDebugGpio);
+    addAttribute("attrDebugPower",      attrDebugPower);
+    addAttribute("attrIsPowerOn",       attrIsPowerOn);
+    addAttribute("attrBatteryVoltage",  attrBatteryVoltage);
 
-    addProperty("propDeviceName", propDeviceName);
+    addProperty("propDeviceName",       propDeviceName);
+
+    addPort("outPowerStatus",           outPowerStatus);
 
     addOperation("ooReset", &Discovery::ooReset, this, OwnThread).doc("Reset the stm32 board.");
+    addOperation("ooPowerOn", &Discovery::ooPowerOn, this, OwnThread).doc("Set the power on the stm32 board.");
 }
 
 void Discovery::createRosInterface()

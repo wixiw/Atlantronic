@@ -1,0 +1,5 @@
+#Use this service to drive power management on the actuators
+
+bool powerOn
+---
+bool success

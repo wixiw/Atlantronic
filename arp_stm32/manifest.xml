@@ -10,6 +10,7 @@
 	<depend package="rospy"/>
 	<depend package="std_srvs" />
 	<depend package="rtt" />
+	<depend package="rtt_arp_core" />
 	<depend package="arp_core" />
 	<depend package="fbsched" />
 	<export>

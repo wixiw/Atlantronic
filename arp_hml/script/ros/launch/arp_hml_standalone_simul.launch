@@ -1,7 +1,6 @@
 <!--  Use this file de deploy hml only insimulation (for test purposes) -->
 <launch>
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
-	<include file="$(find arp_hml)/script/ros/launch/ubiquity/geometry_ubiquity.launch"/>
     
 	<node 	name="ArpHml" 
 			pkg="ocl" 

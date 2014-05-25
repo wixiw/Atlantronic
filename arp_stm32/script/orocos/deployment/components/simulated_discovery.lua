@@ -5,7 +5,7 @@ SimulatedDiscoveryDeployer = ComposantDeployer:new()
 local me = "Discovery"
 
 function SimulatedDiscoveryDeployer:load()
-	assert( Deployer:loadComponent(me,"arp_stm32::SimulatedDiscovery"))
+	assert( Deployer:loadComponent(me,"arp_stm32::Discovery"))
 	assert( Deployer:addPeer("DotGraph",me))
 	assert( Deployer:setActivity(me,0.0,20,rtt.globals.ORO_SCHED_RT));
 	return true

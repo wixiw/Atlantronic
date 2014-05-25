@@ -4,7 +4,7 @@ from EndMatchPreempter import *
 from LocalStrategicAction import *
 from MotorManagement import *
 from RecalOnBorder import *
-from SendOnTopic import *
+from TopicIntegration import *
 from SetPosition import *
 from SetVMaxState import *
 from Strat_Initialisation import *

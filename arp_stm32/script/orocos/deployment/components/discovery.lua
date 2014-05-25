@@ -13,6 +13,7 @@ end
 
 function DiscoveryDeployer:connect()
 	assert( Deployer:addPeer("Reporting", me) )
+	assert( Deployer:stream(me..".outPowerStatus",      ros:topic("/Ubiquity/powerState")))
 	return true
 end
 

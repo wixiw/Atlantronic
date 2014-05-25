@@ -46,6 +46,8 @@ struct control_usb_data
 	float vBat;
 	float iPwm[4];
 	uint8_t pumpState;
+	uint32_t power_state;
+	float arm_matrix[12];
 } __attribute__((packed));
 
 #endif

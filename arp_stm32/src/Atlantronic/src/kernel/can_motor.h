@@ -21,6 +21,7 @@ enum
 enum homing_status
 {
 	CAN_MOTOR_HOMING_NONE,
+	CAN_MOTOR_HOMING_SETTTL,
 	CAN_MOTOR_HOMING_RUN_HP,
 	CAN_MOTOR_HOMING_RUN_SHL,
 	CAN_MOTOR_HOMING_RUN_SHA,
@@ -39,13 +40,13 @@ class CanMotor : public CanopenNode
 		const char* name;
 
 		// donnees brutes
+		uint16_t last_status_word;
 		uint16_t status_word;
 		uint32_t raw_position; //!< position brute (en increments encodeurs)
 		uint16_t current;
 		Kinematics kinematics;
 		enum homing_status homingStatus;
 
-		//systime date;
 		float inputGain;    //!< gain pour convertir la vitesse en unites moteurs (rpm)
 		float outputGain;   //!< gain pour convertir la position en unites robot
 		float positionOffset; //!< offset sur la position
@@ -56,6 +57,9 @@ class CanMotor : public CanopenNode
 		void update_homing(float v);
 		void update_state();
 		void set_speed(float v);
+		void set_position(float pos);
+		void set_max_current(float val);
+		void enable(bool enable);
 
 		inline bool is_op_enable()
 		{

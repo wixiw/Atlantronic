@@ -1,4 +1,4 @@
-//! @file dynamixel.c
+//! @file dynamixel.cxx
 //! @brief Gestion des dynamixel (ax12 et rx24)
 //! @author Atlantronic
 
@@ -8,6 +8,7 @@
 #include "kernel/log.h"
 #include "kernel/driver/usb.h"
 #include "kernel/end.h"
+#include "kernel/driver/power.h"
 #include <stdlib.h>
 #include <math.h>
 
@@ -35,8 +36,8 @@ DynamixelManager rx24;
 
 static int dynamixel_module_init()
 {
-	ax12.init("ax12", USART6_HALF_DUPLEX, 1000000, AX12_MAX_ID, 12);
-	rx24.init("rx24", UART5_FULL_DUPLEX, 1000000, RX24_MAX_ID, 24);
+	ax12.init("ax12", USART6_HALF_DUPLEX, 500000, AX12_MAX_ID, 12);
+	rx24.init("rx24", UART5_FULL_DUPLEX, 500000, RX24_MAX_ID, 24);
 
 	usb_add_cmd(USB_CMD_DYNAMIXEL, &dynamixel_cmd);
 
@@ -88,7 +89,7 @@ int DynamixelManager::init(const char* name, enum usart_id usart_id, uint32_t fr
 		devices[i].max_goal = 0x3ff;
 		devices[i].goal_pos = 0x1ff;
 		devices[i].target_reached_threshold = 2;
-		devices[i].flags = DYNAMIXEL_FLAG_TARGET_REACHED;
+		devices[i].flags = DYNAMIXEL_FLAG_TARGET_REACHED | DYNAMIXEL_FLAG_CONTROL_OFF;
 	}
 
 	return 0;
@@ -113,7 +114,17 @@ void DynamixelManager::task()
 		req.arg[1] = 0x02;
 		req.argc = 2;
 		req.id = id + 1;
-		send(&req);
+
+		// pas de log d erreur de com si pas de puissance
+		if( ! power_get() )
+		{
+			send(&req);
+		}
+		else
+		{
+			req.status.error.transmit_error = ERR_DYNAMIXEL_POWER_OFF;
+		}
+
 		if( !req.status.error.transmit_error )
 		{
 			int pos = req.status.arg[0] + (req.status.arg[1] << 8);
@@ -123,7 +134,11 @@ void DynamixelManager::task()
 
 			uint16_t pos_err = abs(pos - goal_pos);
 			systime t = systick_get_time();
-			if( pos_err < devices[id].target_reached_threshold)
+			if( devices[id].flags & DYNAMIXEL_FLAG_CONTROL_OFF )
+			{
+				devices[id].timeStartMoving_ms = t.ms;
+			}
+			if( pos_err <= devices[id].target_reached_threshold)
 			{
 				devices[id].flags |= DYNAMIXEL_FLAG_TARGET_REACHED;
 				devices[id].timeStartMoving_ms = t.ms;
@@ -133,7 +148,7 @@ void DynamixelManager::task()
 					devices[id].flags &= ~DYNAMIXEL_FLAG_STUCK;
 				}
 			}
-			else
+			else if( pos_err > devices[id].target_reached_threshold + 1)
 			{
 				if( devices[id].flags & DYNAMIXEL_FLAG_TARGET_REACHED )
 				{
@@ -158,7 +173,7 @@ void DynamixelManager::task()
 
 			xSemaphoreGive(mutex);
 
-			if( pos_err > 0)
+			if( pos_err > 0 && ! (devices[id].flags & DYNAMIXEL_FLAG_CONTROL_OFF))
 			{
 				// on va envoyer la position désirée
 				req.instruction = DYNAMIXEL_INSTRUCTION_WRITE_DATA;
@@ -322,6 +337,10 @@ void DynamixelManager::print_error(int id, struct dynamixel_error err)
 		else if( err.transmit_error == ERR_DYNAMIXEL_CHECKSUM)
 		{
 			log_format(LOG_ERROR, "%s %3d : somme de verification incompatible", pcTaskGetTaskName(NULL), id);
+		}
+		else if( err.transmit_error == ERR_DYNAMIXEL_POWER_OFF)
+		{
+			log_format(LOG_ERROR, "%s %3d : power off", pcTaskGetTaskName(NULL), id);
 		}
 		else
 		{
@@ -524,6 +543,7 @@ struct dynamixel_error DynamixelManager::set_goal_position(uint8_t id, float the
 	{
 		// utilisation de la tache pour la mise à jour
 		xSemaphoreTake(mutex, portMAX_DELAY);
+		devices[id].flags &= ~DYNAMIXEL_FLAG_CONTROL_OFF;
 		devices[id].goal_pos = alpha;
 		if( abs(devices[id].goal_pos - devices[id].pos) < devices[id].target_reached_threshold)
 		{
@@ -589,7 +609,7 @@ void DynamixelManager::set_goal_limit(uint8_t id, float min, float max)
 	}
 
 	min = 0x1ff + min * DYNAMIXEL_RD_TO_POS;
-	max = 0x1ff + min * DYNAMIXEL_RD_TO_POS;
+	max = 0x1ff + max * DYNAMIXEL_RD_TO_POS;
 
 	if(min < 0)
 	{
@@ -679,8 +699,8 @@ __OPTIMIZE_SIZE__ void dynamixel_cmd(void* arg)
 			manager->set_goal_position(param->id, param->param);
 			break;
 		case DYNAMIXEL_CMD_SET_BAUDRATE:
-			// on les met a 1Mb, commande usb pour la configuration
-			manager->write8(param->id, DYNAMIXEL_BAUD_RATE, 1);
+			// on les met a 500kb, commande usb pour la configuration
+			manager->write8(param->id, DYNAMIXEL_BAUD_RATE, 3);
 			break;
 		case DYNAMIXEL_CMD_SET_MANAGER_BAUDRATE:
 			usart_set_frequency(manager->usart, (uint32_t)(param->param));
@@ -718,7 +738,7 @@ static void dynamixel_cmd_scan(DynamixelManager* manager)
 		error = manager->ping(i);
 		if(! error.transmit_error)
 		{
-			log_format(LOG_INFO, "dynamixel %3d détecté - status %#.2x", i, error.internal_error);
+			log_format(LOG_INFO, "dynamixel type %d id %3d détecté - status %#.2x", manager->getType(), i, error.internal_error);
 		}
 	}
 

@@ -1,4 +1,7 @@
 <launch>
+	<include file="$(find arp_master)/script/ros/include/rosparam.xml"/>
+	<include file="$(find arp_master)/script/ros/include/actuators_2014.xml"/>
+	
 	<node 
 		name="" 
 		pkg="ocl" 
@@ -7,6 +10,7 @@
 		output="screen"
 	/>
 
+	<!--
 	<node 
 		name="StratNode_Actuators"   
 		pkg="arp_master"  
@@ -15,4 +19,5 @@
 		required="true"
 		launch-prefix="nice -n 19"
 	/>
+	-->
 </launch>

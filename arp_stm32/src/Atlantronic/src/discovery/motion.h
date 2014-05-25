@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include "kernel/systick.h"
 #include "kernel/asm/asm_base_func.h"
+#include "kernel/can_motor.h"
 
 #ifndef WEAK_MOTION
 #define WEAK_MOTION __attribute__((weak, alias("nop_function") ))
@@ -15,13 +16,15 @@
 
 enum motion_state
 {
-	MOTION_READY_FREE = 0,       //!< no trajectory ongoing, control off
-	MOTION_READY_ASSER,          //!< no trajectory ongoing, control on
+	MOTION_DISABLED = 0,         //!< pas de puissance sur les moteurs
+	MOTION_TRY_ENABLE,           //!< mise en puissance des moteurs
+	MOTION_ENABLED,              //!< moteurs avec puissance
+	MOTION_HOMING,               //!< homing des moteurs
+	MOTION_ACTUATOR_KINEMATICS,  //!< pilotage des vitesses ou position des moteurs (debug)
 	MOTION_SPEED,                //!< robot pilote en vitesse (mode manuel)
-	MOTION_ACTUATOR_SPEED,       //!< pilotage des vitesses des moteurs (debug)
 	MOTION_TRAJECTORY,           //!< trajectoire en cours
-	MOTION_BACK_TO_WALL,         //!< pas d'asservissement, les deux roues en marche arrière, pwm à x %. Arrêt quand le robot ne bouge plus
-	MOTION_END,                  //!< end : halted forever
+//	MOTION_BACK_TO_WALL,         //!< pas d'asservissement, les deux roues en marche arrière, pwm à x %. Arrêt quand le robot ne bouge plus
+	MOTION_MAX_STATE,
 };
 
 enum motion_status
@@ -58,7 +61,7 @@ enum motion_type
 	MOTION_LINE_XYA,   //!< aller a la position x,y, alpha en ligne droite (=> rotation puis avance puis rotation)
 };
 
-void motion_stop(bool asser);
+void motion_enable(bool enable);
 
 //!< demande de trajectoire
 void motion_goto(VectPlan dest, VectPlan cp, const KinematicsParameters &linearParam, const KinematicsParameters &angularParam);
@@ -66,13 +69,17 @@ void motion_goto(VectPlan dest, VectPlan cp, const KinematicsParameters &linearP
 //!< demande de vitesse
 void motion_set_cp_speed(VectPlan cp, VectPlan u, float v);
 
-//!< demande de vitesse actionneur (debug)
-void motion_set_actuator_speed(float v[6]);
+//!< demande de cinematique actionneur (debug)
+void motion_set_actuator_kinematics(struct motion_cmd_set_actuator_kinematics_arg cmd);
 
 //!< mise a jour de l'asservissement
 void motion_compute() WEAK_MOTION;
 
 void motion_update_usb_data(struct control_usb_data* data) WEAK_MOTION;
+
+void motion_homing();
+
+void motion_set_max_driving_current(float maxCurrent);
 
 struct motion_cmd_param_arg
 {
@@ -116,9 +123,20 @@ struct motion_cmd_set_speed_arg
 	float v;
 }  __attribute__((packed));
 
-struct motion_cmd_set_actuator_speed_arg
+struct motion_cmd_set_actuator_kinematics_arg
 {
-	float v[6];
+	int mode[CAN_MOTOR_MAX];
+	float val[CAN_MOTOR_MAX];
+}  __attribute__((packed));
+
+struct motion_cmd_enable_arg
+{
+	uint8_t enable;
+}  __attribute__((packed));
+
+struct motion_cmd_set_max_driving_current_arg
+{
+	float maxDrivingCurrent;
 }  __attribute__((packed));
 
 #endif

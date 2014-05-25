@@ -13,10 +13,8 @@ static void (*cmd_exit_callback)(void) = NULL;
 static RobotInterface* cmd_robot = NULL;
 static Qemu* cmd_qemu = NULL;
 
-int cmd_arm_bridge(const char* arg);
 int cmd_arm_xyz(const char* arg);
 int cmd_arm_ventouse(const char* arg);
-int cmd_arm_hook(const char* arg);
 int cmd_arm_abz(const char* arg);
 int cmd_can_lss(const char* arg);
 int cmd_can_lss_set_nodeid(const char* arg);
@@ -32,6 +30,8 @@ int cmd_dynamixel_get_position(const char* arg);
 int cmd_dynamixel_set_max_torque(const char* arg);
 int cmd_dynamixel_set_target_reached_threshold(const char* arg);
 int cmd_help(const char* arg);
+int cmd_homing(const char* arg);
+int cmd_power_off(const char* arg);
 int cmd_pump(const char* arg);
 int cmd_qemu_set_clock_factor(const char* arg);
 int cmd_qemu_set_io(const char* arg);
@@ -49,6 +49,10 @@ int cmd_gyro_set_theta(const char* arg);
 int cmd_gyro_set_calibration_values(const char* arg);
 int cmd_localization_set_position(const char* arg);
 int cmd_max_speed(const char* arg);
+int cmd_motion_enable(const char* arg);
+int cmd_motion_set_max_driving_current(const char* arg);
+int cmd_motion_set_actuator_kinematics(const char* arg);
+int cmd_motion_set_speed(const char* arg);
 int cmd_pince_set_position(const char* arg);
 int cmd_ptask(const char* arg);
 int cmd_reboot(const char* arg);
@@ -59,19 +63,14 @@ int cmd_set_color(const char* arg);
 int cmd_set_match_time(const char* arg);
 int cmd_straight(const char* arg);
 int cmd_straight_to_wall(const char* arg);
-int cmd_set_speed(const char* arg);
-int cmd_set_actuator_speed(const char* arg);
-int cmd_free(const char* arg);
 int cmd_control_param(const char* arg);
 int cmd_control_print_param(const char* arg);
 int cmd_xbee_set_op_baudrate(const char* arg);
 int cmd_xbee_set_manager_baudrate(const char* arg);
 
 COMMAND usb_commands[] = {
-	{ "arm_bridge", cmd_arm_bridge, "mise en marche ou non de la pompe (0 ou 1)"},
 	{ "arm_xyz", cmd_arm_xyz, "deplacement du bras (x, y, z, type)"},
 	{ "arm_ventouse", cmd_arm_ventouse, "deplacement de la ventouse perpendiculairement au segment [(x1,y1,z) (x2, y2, z)] : arm_ventouse x1 y1 x2 y2 z"},
-	{ "arm_hook", cmd_arm_hook, "deplacement du crochet perpendiculairement au segment [(x1,y1,z) (x2, y2, z)] : arm_hook x1 y1 x2 y2 z"},
 	{ "arm_abz", cmd_arm_abz, "deplacement du bras (a, b, z)"},
 	{ "can_lss", cmd_can_lss, "can_lss on/off"},
 	{ "can_lss_set_nodeid", cmd_can_lss_set_nodeid, "can_lss_set_nodeid id"},
@@ -89,7 +88,6 @@ COMMAND usb_commands[] = {
 	{ "dynamixel_set_max_torque", cmd_dynamixel_set_max_torque, "dynamixel_set_max_torque id type val[0 100]"},
 	{ "dynamixel_set_target_reached_threshold", cmd_dynamixel_set_target_reached_threshold, "dynamixel_set_target_reached_threshold id type threshold"},
 	{ "set_match_time", cmd_set_match_time, "set match time"},
-	{ "free", cmd_free, "free()" },
 	{ "go", cmd_go, "go" },
 	{ "go_enable", cmd_go_enable, "go_enable" },
 	{ "goto", cmd_goto, "goto x y theta cpx cpy cptheta" },
@@ -101,10 +99,16 @@ COMMAND usb_commands[] = {
 	{ "gyro_set_theta", cmd_gyro_set_theta, "cmd_gyro_set_theta theta"},
 	{ "gyro_set_calibration_values", cmd_gyro_set_calibration_values, "cmd_gyro_set_calibration_values scale bias dead_zone"},
 	{ "help", cmd_help, "Display this text" },
+	{ "homing", cmd_homing, "homing" },
 	{ "localization_set_position", cmd_localization_set_position, "set robot position : localization_set_position x y alpha"},
 	{ "max_speed", cmd_max_speed, "vitesse max en % (av, rot) : max_speed v_max_av v_max_rot" },
+	{ "motion_enable", cmd_motion_enable, "motion_enable enable" },
+	{ "motion_set_max_driving_current", cmd_motion_set_max_driving_current, "motion_set_max_driving_current val"},
+	{ "motion_set_actuator_kinematics", cmd_motion_set_actuator_kinematics, "set actuators kinematics mode val (x6)"},
+	{ "motion_set_speed", cmd_motion_set_speed, "set speed direction valeur"},
 	{ "pince_set_position", cmd_pince_set_position, "gestion des pinces: gauche droite"},
 	{ "ptask", cmd_ptask, "print tasks"},
+	{ "power_off", cmd_power_off, "power off {0,1}"},
 	{ "pump", cmd_pump, "pump id val[0 100]"},
 	{ "q", cmd_quit, "Quit" },
 	{ "qemu_set_clock_factor", cmd_qemu_set_clock_factor, "qemu_set_clock_factor system_clock_factor icount" },
@@ -116,8 +120,6 @@ COMMAND usb_commands[] = {
 	{ "reboot", cmd_reboot, "reboot" },
 	{ "recalage", cmd_recalage, "recalage"},
 	{ "set_color", cmd_set_color, "set color"},
-	{ "set_speed", cmd_set_speed, "set speed direction valeur"},
-	{ "set_actuator_speed", cmd_set_actuator_speed, "set actuators speed"},
 	{ "straight", cmd_straight, "straight dist" },
 	{ "straight_to_wall", cmd_straight_to_wall, "straight_to_wall" },
 	{ "xbee_set_op_baudrate", cmd_xbee_set_op_baudrate, "xbee_set_op_baudrate"},
@@ -346,6 +348,13 @@ int cmd_help(const char* arg)
 	return CMD_SUCESS;
 }
 
+int cmd_homing(const char* arg)
+{
+	(void) arg;
+	cmd_robot->motion_homing();
+	return CMD_SUCESS;
+}
+
 int cmd_qemu_set_clock_factor(const char* arg)
 {
 	unsigned int system_clock_factor;
@@ -514,10 +523,32 @@ int cmd_rotate_to(const char* arg)
 	return CMD_SUCESS;
 }
 
-int cmd_free(const char* arg)
+int cmd_motion_enable(const char* arg)
 {
-	(void) arg;
-	cmd_robot->control_free();
+	int enable;
+	int count = sscanf(arg, "%d", &enable);
+
+	if(count != 1)
+	{
+		return CMD_ERROR;
+	}
+
+	cmd_robot->motion_enable(enable);
+
+	return CMD_SUCESS;
+}
+
+int cmd_motion_set_max_driving_current(const char* arg)
+{
+	float maxCurrent;
+	int count = sscanf(arg, "%f", &maxCurrent);
+
+	if(count != 1)
+	{
+		return CMD_ERROR;
+	}
+
+	cmd_robot->motion_set_max_driving_current(maxCurrent);
 
 	return CMD_SUCESS;
 }
@@ -574,7 +605,7 @@ int cmd_goto(const char* arg)
 	KinematicsParameters linearParam = {1000, 1000, 1000}; // TODO
 	KinematicsParameters angularParam = {1, 1, 1}; // TODO
 
-	cmd_robot->control_goto(dest, cp, linearParam, angularParam);
+	cmd_robot->motion_goto(dest, cp, linearParam, angularParam);
 	return CMD_SUCESS;
 }
 
@@ -666,6 +697,20 @@ int cmd_ptask(const char*)
 	return CMD_SUCESS;
 }
 
+int cmd_power_off(const char* arg)
+{
+	int val;
+	int count = sscanf(arg, "%d", &val);
+
+	if(count != 1)
+	{
+		return CMD_ERROR;
+	}
+
+	cmd_robot->power_off(val != 0);
+	return CMD_SUCESS;
+}
+
 int cmd_pump(const char* arg)
 {
 	int id;
@@ -735,7 +780,7 @@ int cmd_set_color(const char* arg)
 	return CMD_SUCESS;
 }
 
-int cmd_set_speed(const char* arg)
+int cmd_motion_set_speed(const char* arg)
 {
 	VectPlan u;
 	VectPlan cp;
@@ -748,22 +793,28 @@ int cmd_set_speed(const char* arg)
 		return CMD_ERROR;
 	}
 
-	cmd_robot->control_set_speed(cp, u, v);
+	cmd_robot->motion_set_speed(cp, u, v);
 	return CMD_SUCESS;
 }
 
-int cmd_set_actuator_speed(const char* arg)
+int cmd_motion_set_actuator_kinematics(const char* arg)
 {
-	float v[6];
+	struct motion_cmd_set_actuator_kinematics_arg cmd;
 
-	int count = sscanf(arg, "%f %f %f %f %f %f", &v[0], &v[1], &v[2], &v[3], &v[4], &v[5]);
+	int count = sscanf(arg, "%d %f %d %f %d %f %d %f %d %f %d %f",
+			&cmd.mode[0], &cmd.val[0],
+			&cmd.mode[1], &cmd.val[1],
+			&cmd.mode[2], &cmd.val[2],
+			&cmd.mode[3], &cmd.val[3],
+			&cmd.mode[4], &cmd.val[4],
+			&cmd.mode[5], &cmd.val[5]);
 
-	if(count != 6)
+	if(count != 12)
 	{
 		return CMD_ERROR;
 	}
 
-	cmd_robot->control_set_actuator_speed(v);
+	cmd_robot->motion_set_actuator_kinematics(cmd);
 	return CMD_SUCESS;
 }
 
@@ -819,41 +870,6 @@ int cmd_arm_ventouse(const char* arg)
 	}
 
 	cmd_robot->arm_ventouse(x1, y1, x2, y2, z, tool_way);
-	return CMD_SUCESS;
-}
-
-int cmd_arm_hook(const char* arg)
-{
-	float x1;
-	float y1;
-	float x2;
-	float y2;
-	float z;
-	int tool_way;
-
-	int count = sscanf(arg, "%f %f %f %f %f %d", &x1, &y1, &x2, &y2, &z, &tool_way);
-
-	if(count != 6)
-	{
-		return CMD_ERROR;
-	}
-
-	cmd_robot->arm_hook(x1, y1, x2, y2, z, tool_way);
-	return CMD_SUCESS;
-}
-
-int cmd_arm_bridge(const char* arg)
-{
-	int on;
-
-	int count = sscanf(arg, "%d", &on);
-
-	if(count != 1)
-	{
-		return CMD_ERROR;
-	}
-
-	cmd_robot->arm_bridge((uint8_t) on);
 	return CMD_SUCESS;
 }
 

@@ -72,6 +72,7 @@ enum
 
 #define DYNAMIXEL_FLAG_TARGET_REACHED         0x01
 #define DYNAMIXEL_FLAG_STUCK                  0x02
+#define DYNAMIXEL_FLAG_CONTROL_OFF            0x04
 
 #define DYNAMIXEL_TYPE_AX12         12
 #define DYNAMIXEL_TYPE_RX24         24
@@ -79,6 +80,7 @@ enum
 #define ERR_DYNAMIXEL_SEND_CHECK             0x80
 #define ERR_DYNAMIXEL_PROTO                  0x81
 #define ERR_DYNAMIXEL_CHECKSUM               0x82
+#define ERR_DYNAMIXEL_POWER_OFF              0x83
 
 #define DYNAMIXEL_INPUT_VOLTAGE_ERROR_MASK    0x01
 #define DYNAMIXEL_ANGLE_LIMIT_ERROR_MASK      0x02
@@ -161,6 +163,11 @@ class DynamixelManager
 
 		struct dynamixel_error write8(uint8_t id, uint8_t offset, uint8_t data);
 		struct dynamixel_error write16(uint8_t id, uint8_t offset, uint16_t data);
+
+		inline int getType()
+		{
+			return type;
+		}
 
 	protected:
 		static void task_wrapper(void* arg);

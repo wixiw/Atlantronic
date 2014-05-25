@@ -316,6 +316,11 @@ int RobotInterface::process_log(char* msg, uint16_t size)
 	memcpy(&line, msg + 9, 2);
 
 	log = strchr(msg+11, ':');
+	if( ! log )
+	{
+		res = -1;
+		goto end;
+	}
 	*log = 0;
 	log++;
 
@@ -403,7 +408,7 @@ int RobotInterface::process_code_version(char* msg, uint16_t size)
 	else
 	{
 		versionCompatible = ROBOT_VERSION_KO;
-		log_error("stm_code_version not compatible : %s expected %s", stm_code_version, expected_version);
+		log_error("stm_code_version not compatible : stm32 %s expected %s", stm_code_version, expected_version);
 	}
 
 	pthread_mutex_unlock(&mutex);
@@ -731,6 +736,20 @@ int RobotInterface::reboot()
 	return usb_write(USB_CMD_REBOOT, NULL, 0);
 }
 
+int RobotInterface::power_off(bool power_off)
+{
+	struct power_cmd_arg msg;
+	if( power_off )
+	{
+		msg.power_off = 1;
+	}
+	else
+	{
+		msg.power_off = 0;
+	}
+	return usb_write(USB_CMD_POWER, &msg, sizeof(msg));
+}
+
 int RobotInterface::get_stm_code_version()
 {
 	versionCompatible = ROBOT_VERSION_UNKNOWN;
@@ -811,6 +830,11 @@ int RobotInterface::pump(uint8_t id, uint8_t val)
 	return usb_write(USB_CMD_PUMP, &cmd_arg, sizeof(cmd_arg));
 }
 
+int RobotInterface::motion_homing()
+{
+	return usb_write(USB_CMD_MOTION_HOMING, NULL, 0);
+}
+
 int RobotInterface::control_print_param()
 {
 	return usb_write(USB_CMD_MOTION_PRINT_PARAM, NULL, 0);
@@ -833,7 +857,7 @@ int RobotInterface::control_set_param(int kp_av, int ki_av, int kd_av, int kp_ro
 	return usb_write(USB_CMD_MOTION_PARAM, &cmd_arg, sizeof(cmd_arg));
 }
 
-int RobotInterface::control_goto(VectPlan dest, VectPlan cp, KinematicsParameters linearParam, KinematicsParameters angularParam)
+int RobotInterface::motion_goto(VectPlan dest, VectPlan cp, KinematicsParameters linearParam, KinematicsParameters angularParam)
 {
 	struct motion_cmd_goto_arg cmd_arg;
 
@@ -845,7 +869,7 @@ int RobotInterface::control_goto(VectPlan dest, VectPlan cp, KinematicsParameter
 	return usb_write(USB_CMD_MOTION_GOTO, &cmd_arg, sizeof(cmd_arg));
 }
 
-int RobotInterface::control_set_speed(VectPlan cp, VectPlan u, float v)
+int RobotInterface::motion_set_speed(VectPlan cp, VectPlan u, float v)
 {
 	struct motion_cmd_set_speed_arg cmd_arg;
 
@@ -856,16 +880,9 @@ int RobotInterface::control_set_speed(VectPlan cp, VectPlan u, float v)
 	return usb_write(USB_CMD_MOTION_SET_SPEED, &cmd_arg, sizeof(cmd_arg));
 }
 
-int RobotInterface::control_set_actuator_speed(float v[6])
+int RobotInterface::motion_set_actuator_kinematics(struct motion_cmd_set_actuator_kinematics_arg cmd_arg)
 {
-	struct motion_cmd_set_actuator_speed_arg cmd_arg;
-
-	for(int i = 0; i < 6; i++)
-	{
-		cmd_arg.v[i] = v[i];
-	}
-
-	return usb_write(USB_CMD_MOTION_SET_ACTUATOR_SPEED, &cmd_arg, sizeof(cmd_arg));
+	return usb_write(USB_CMD_MOTION_SET_ACTUATOR_KINEMATICS, &cmd_arg, sizeof(cmd_arg));
 }
 
 int RobotInterface::straight(float dist)
@@ -911,9 +928,20 @@ int RobotInterface::rotate_to(float theta)
 	return usb_write(USB_CMD_TRAJECTORY, &cmd_arg, sizeof(cmd_arg));
 }
 
-int RobotInterface::control_free()
+int RobotInterface::motion_enable(bool enable)
 {
-	return usb_write(USB_CMD_MOTION_FREE, NULL, 0);
+	struct motion_cmd_enable_arg cmd_arg;
+	cmd_arg.enable = enable?1:0;
+
+	return usb_write(USB_CMD_MOTION_ENABLE, &cmd_arg, sizeof(cmd_arg));
+}
+
+int RobotInterface::motion_set_max_driving_current(float maxCurrent)
+{
+	struct motion_cmd_set_max_driving_current_arg cmd_arg;
+	cmd_arg.maxDrivingCurrent = maxCurrent;
+
+	return usb_write(USB_CMD_MOTION_SET_MAX_CURRENT, &cmd_arg, sizeof(cmd_arg));
 }
 
 int RobotInterface::goto_near_xy(float x, float y, float dist, unsigned int way, unsigned int avoidance_type)
@@ -1004,7 +1032,7 @@ int RobotInterface::pince(enum pince_cmd_type cmd_type_left, enum pince_cmd_type
 
 int RobotInterface::arm_xyz(float x, float y, float z, enum arm_cmd_type type)
 {
-	struct arm_cmd_goto_param cmd_arg;
+/*	struct arm_cmd_goto_param cmd_arg;
 
 	if(type == ARM_CMD_ART)
 	{
@@ -1016,12 +1044,12 @@ int RobotInterface::arm_xyz(float x, float y, float z, enum arm_cmd_type type)
 	cmd_arg.z = z * 65536.0f;
 	cmd_arg.type = type;
 
-	return usb_write(USB_CMD_ARM_GOTO, &cmd_arg, sizeof(cmd_arg));
+	return usb_write(USB_CMD_ARM_GOTO, &cmd_arg, sizeof(cmd_arg));*/
 }
 
 int RobotInterface::arm_ventouse(float x1, float y1, float x2, float y2, float z, int8_t tool_way)
 {
-	struct arm_cmd_goto_param cmd_arg;
+/*	struct arm_cmd_goto_param cmd_arg;
 
 	cmd_arg.x1 = x1 * 65536.0f;
 	cmd_arg.y1 = y1 * 65536.0f;
@@ -1031,39 +1059,21 @@ int RobotInterface::arm_ventouse(float x1, float y1, float x2, float y2, float z
 	cmd_arg.tool_way = tool_way;
 	cmd_arg.type = ARM_CMD_VENTOUSE_ABS;
 
-	return usb_write(USB_CMD_ARM_GOTO, &cmd_arg, sizeof(cmd_arg));
-}
-
-int RobotInterface::arm_hook(float x1, float y1, float x2, float y2, float z, int8_t tool_way)
-{
-	struct arm_cmd_goto_param cmd_arg;
-
-	cmd_arg.x1 = x1 * 65536.0f;
-	cmd_arg.y1 = y1 * 65536.0f;
-	cmd_arg.x2 = x2 * 65536.0f;
-	cmd_arg.y2 = y2 * 65536.0f;
-	cmd_arg.z = z * 65536.0f;
-	cmd_arg.tool_way = tool_way;
-	cmd_arg.type = ARM_CMD_HOOK_ABS;
-
-	return usb_write(USB_CMD_ARM_GOTO, &cmd_arg, sizeof(cmd_arg));
+	return usb_write(USB_CMD_ARM_GOTO, &cmd_arg, sizeof(cmd_arg));*/
+	return 0;
 }
 
 int RobotInterface::arm_abz(float a, float b, float z)
 {
-	struct arm_cmd_goto_param cmd_arg;
+/*	struct arm_cmd_goto_param cmd_arg;
 
 	cmd_arg.a = a * (1 << 26) / (2 * M_PI);
 	cmd_arg.b = b * (1 << 26) / (2 * M_PI);
 	cmd_arg.z = z * 65536.0f;
 	cmd_arg.type = ARM_CMD_ART;
 
-	return usb_write(USB_CMD_ARM_GOTO, &cmd_arg, sizeof(cmd_arg));
-}
-
-int RobotInterface::arm_bridge(uint8_t on)
-{
-	return usb_write(USB_CMD_ARM_BRIDGE, &on, sizeof(on));
+	return usb_write(USB_CMD_ARM_GOTO, &cmd_arg, sizeof(cmd_arg));*/
+	return 0;
 }
 
 int RobotInterface::recalage()

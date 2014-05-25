@@ -36,9 +36,9 @@ extern "C" {
 #define GPIO_IN_12        0x800  // IN_12
 #define GPIO_IN_13       0x1000  // IN_13
 #define GPIO_IN_14       0x2000  // IN_14
-#define GPIO_IN_GO       0x4000  // IN_GO (etat pin)
-#define GPIO_IN_BTN1     0x8000  // IN_BTN1 (etat pin)
-#define GPIO_IN_BTN2    0x10000  // IN_BTN2 (etat pin)
+#define GPIO_IN_BTN1     0x4000  // IN_BTN1 (etat pin)
+#define GPIO_IN_BTN2     0x8000  // IN_BTN2 (etat pin)
+#define GPIO_IN_GO      0x10000  // IN_GO (etat pin)
 #define GPIO_GO         0x20000  // GO : match lance
 #define GPIO_COLOR      0x40000  // color
 
@@ -145,8 +145,6 @@ void gpio_pin_init(GPIO_TypeDef* GPIOx, uint32_t pin, enum gpio_mode mode, enum 
 
 void gpio_af_config(GPIO_TypeDef* GPIOx, uint32_t pin, uint32_t gpio_af);
 
-void setLed(uint32_t mask);
-
 static inline void gpio_set_pin(GPIO_TypeDef* GPIOx, uint32_t pin)
 {
 	GPIOx->BSRRL = 1 << pin;
@@ -170,6 +168,12 @@ static inline void gpio_power_on()
 static inline void gpio_power_off()
 {
 	gpio_set_pin(GPIOB, 2);
+}
+
+static inline void gpio_color_change_disable()
+{
+	extern volatile uint8_t gpio_color_change_enable;
+	gpio_color_change_enable = 0;
 }
 
 static inline uint32_t getcolor()

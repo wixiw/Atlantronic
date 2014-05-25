@@ -9,6 +9,7 @@
 
 volatile uint32_t color;
 volatile uint8_t gpio_go;
+volatile uint8_t gpio_color_change_enable;
 static uint8_t gpio_enable_go;
 
 static xQueueHandle gpio_queue_go;
@@ -19,18 +20,9 @@ static void gpio_cmd_color(void* arg);
 static int gpio_module_init(void)
 {
 	// io "sorties"
-	// LED (carte CPU) sur PD14 PD15 (led verte et orange sur PD12 et PD13 non utilisables, encodeur dessus !!)
 	// puissance on/off sur PB2
-	// LED (carte led deportee) sur PC15, PC13, PE4, PE2, PB8
 	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN | RCC_AHB1ENR_GPIOCEN | RCC_AHB1ENR_GPIODEN | RCC_AHB1ENR_GPIOEEN;
 	gpio_pin_init(GPIOB, 2, GPIO_MODE_OUT, GPIO_SPEED_50MHz, GPIO_OTYPE_PP, GPIO_PUPD_UP); // on/off
-	gpio_pin_init(GPIOB, 8, GPIO_MODE_OUT, GPIO_SPEED_50MHz, GPIO_OTYPE_PP, GPIO_PUPD_UP); // LED carte led deportee
-	gpio_pin_init(GPIOC, 13, GPIO_MODE_OUT, GPIO_SPEED_50MHz, GPIO_OTYPE_PP, GPIO_PUPD_UP); // LED carte led deportee
-	gpio_pin_init(GPIOC, 15, GPIO_MODE_OUT, GPIO_SPEED_50MHz, GPIO_OTYPE_PP, GPIO_PUPD_UP); // LED carte led deportee
-	gpio_pin_init(GPIOD, 14, GPIO_MODE_OUT, GPIO_SPEED_50MHz, GPIO_OTYPE_PP, GPIO_PUPD_UP); // LED rouge carte CPU
-	gpio_pin_init(GPIOD, 15, GPIO_MODE_OUT, GPIO_SPEED_50MHz, GPIO_OTYPE_PP, GPIO_PUPD_UP); // LED bleue carte CPU
-	gpio_pin_init(GPIOE, 2, GPIO_MODE_OUT, GPIO_SPEED_50MHz, GPIO_OTYPE_PP, GPIO_PUPD_UP); // LED carte led deportee
-	gpio_pin_init(GPIOE, 4, GPIO_MODE_OUT, GPIO_SPEED_50MHz, GPIO_OTYPE_PP, GPIO_PUPD_UP); // LED carte led deportee
 
 	// "io entrees"
 	// boutons USR1 et USR2 carte led sur PC14 et PB7
@@ -70,11 +62,10 @@ static int gpio_module_init(void)
 	gpio_pin_init(GPIOE, 6, GPIO_MODE_IN, GPIO_SPEED_50MHz, GPIO_OTYPE_PP, GPIO_PUPD_UP);  // IN_13
 	gpio_pin_init(GPIOE, 5, GPIO_MODE_IN, GPIO_SPEED_50MHz, GPIO_OTYPE_PP, GPIO_PUPD_UP);  // IN_14
 
-	setLed( LED_CPU_RED | LED_CPU_BLUE | LED_EXT_BLUE | LED_EXT_GREEN | LED_EXT_ORANGE1 | LED_EXT_ORANGE2 | LED_EXT_RED);
-
 	color = COLOR_RED;
 	gpio_go = 0;
 	gpio_queue_go = xQueueCreate(1, 0);
+	gpio_color_change_enable = 1;
 
 	usb_add_cmd(USB_CMD_GO, &gpio_cmd_go);
 	usb_add_cmd(USB_CMD_COLOR, &gpio_cmd_color);
@@ -154,22 +145,6 @@ uint32_t gpio_get_state()
 	return res;
 }
 
-void setLed(uint32_t mask)
-{
-	GPIOB->BSRRL = (uint16_t)((mask & LED_EXT_RED) >> 16);
-	GPIOB->BSRRH = (uint16_t)(((~mask) & LED_EXT_RED) >> 16);
-
-	GPIOC->BSRRL = (uint16_t)((mask & (LED_EXT_BLUE | LED_EXT_GREEN)) >> 16);
-	GPIOC->BSRRH = (uint16_t)(((~mask) & (LED_EXT_BLUE | LED_EXT_GREEN)) >> 16);
-
-	GPIOD->BSRRL = (uint16_t)(mask & (LED_CPU_RED | LED_CPU_BLUE));
-	GPIOD->BSRRH = (uint16_t)((~mask) & ( LED_CPU_RED | LED_CPU_BLUE));
-
-	GPIOE->BSRRL = (uint16_t)((mask & (LED_EXT_ORANGE1 | LED_EXT_ORANGE2)) >> 16);
-	GPIOE->BSRRH = (uint16_t)(((~mask) & (LED_EXT_ORANGE1 | LED_EXT_ORANGE2)) >> 16);
-}
-
-
 void gpio_wait_go()
 {
 	xQueuePeek(gpio_queue_go, NULL, portMAX_DELAY);
@@ -204,18 +179,16 @@ static void gpio_cmd_go(void * arg)
 static void gpio_cmd_color(void* arg)
 {
 	uint8_t new_color = *((uint8_t*) arg);
-	if(gpio_go == 0)
+	if(gpio_go == 0 && gpio_color_change_enable)
 	{
 		if(new_color == COLOR_RED)
 		{
 			color = COLOR_RED;
-			setLed(LED_CPU_RED | LED_EXT_RED);
 			log(LOG_INFO, "couleur => rouge");
 		}
 		else
 		{
 			color = COLOR_YELLOW;
-			setLed(LED_CPU_BLUE | LED_EXT_ORANGE1);
 			log(LOG_INFO, "couleur => jaune");
 		}
 	}
@@ -233,7 +206,6 @@ void isr_exti3(void)
 		if( gpio_enable_go )
 		{
 			gpio_go = 1;
-			//setLed(LED_CPU_RED | LED_CPU_BLUE);
 			systick_start_match_from_isr();
 			xQueueSendFromISR(gpio_queue_go, NULL, &xHigherPriorityTaskWoken);
 		}
@@ -263,17 +235,15 @@ void isr_exti15_10(void)
 	if( EXTI->PR & EXTI_PR_PR14)
 	{
 		EXTI->PR = EXTI_PR_PR14;
-		if(gpio_go == 0)
+		if(gpio_go == 0 && gpio_color_change_enable)
 		{
 			if(color == COLOR_YELLOW)
 			{
 				color = COLOR_RED;
-				setLed(LED_CPU_RED | LED_EXT_RED);
 			}
 			else
 			{
 				color = COLOR_YELLOW;
-				setLed(LED_CPU_BLUE | LED_EXT_ORANGE1);
 			}
 		}
 	}

@@ -26,12 +26,12 @@ from arp_stm32.srv import *
 # the cyclic state may have an internal timer that fires a timeout transition to prevent being stalled (timeout in seconds)
 
 class CyclicState(smach.StateMachine):
-    def __init__(self,outcomes):
+    def __init__(self,outcomes, timeout=0):
         outcomes.append('timeout')
         smach.StateMachine.__init__(self,outcomes)
         self.preemptiveStates=[]
         self.initClients()
-        self.timeout=0
+        self.timeout=timeout
     
     # the strategic derivation of smach functions. allow to be synchrone and to call functions that will be overrided by my children
     def execute(self,userdata):
@@ -52,6 +52,7 @@ class CyclicState(smach.StateMachine):
 
             #check if the timeout is fired
             if (self.timeout != 0 and rospy.get_rostime().secs-self.timeIn>self.timeout):
+                self.executeOut()
                 return 'timeout'
             #normal transitions
             trans=self.executeTransitions()
@@ -61,6 +62,7 @@ class CyclicState(smach.StateMachine):
             Data.stateMachineRate.sleep()
             Inputs.update()
         rospy.logerr("boucle d'etat cassee par le shutdown")
+        self.executeOut()
         return "shutdown"
         
     # if executeIn, While or Out are not overiden by children, then they will just do nothing.

@@ -56,6 +56,7 @@ class CyclicActionState(CyclicState):
                 
             #check if the timeout is fired
             if (self.timeout != 0 and rospy.get_rostime().secs-self.timeIn>self.timeout):
+                self.executeOut()
                 return 'timeout'
             #is the order terminated ?
             self.trans=self.executeClientTransition()  
