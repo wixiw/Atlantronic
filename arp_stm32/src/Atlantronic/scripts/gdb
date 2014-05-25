@@ -1,3 +1,0 @@
-#!/bin/bash
-
-gdb -q -ex "handle SIGUSR1 nostop noprint pass" -ex "handle SIGUSR2 nostop noprint pass" $*
