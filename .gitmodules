@@ -1,0 +1,3 @@
+[submodule "arp_stm32/src/Atlantronic"]
+	path = arp_stm32/src/Atlantronic
+	url = git@pc_jb:/home/git/Atlantronic
