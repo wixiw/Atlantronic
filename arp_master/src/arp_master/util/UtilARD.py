@@ -79,9 +79,7 @@ class Pose2D(Point):
 # @param String p_color : the side on the yellow configuration  
 # @param String p_color : match color  
 #
-def ambiSide(p_side, p_color):
-
-    def getName(self, p_side, p_color):
+def toAmbiSide(p_side, p_color):
         if p_color is "yellow":
             return p_side
         if p_color is "red":

@@ -62,6 +62,14 @@ class Robot2014(RobotVierge):
     #Configuration of Finger reference positions
     fingerLeftYellowPos = { 'UP'    : dynamixelMinPosList['LeftFinger'],
                             'DOWN'  : dynamixelMaxPosList['LeftFinger']}
+    
     #Configuration of reference suction powers
     suctionPower = { 'HOLD':100,
-                    'IDLE':0 }
+                     'IDLE':0 }
+    
+    #Configuration of Cannon reference positions
+    cannonFingerLeftYellowPos = {   'ARMED'       : 0.0,
+                                    'GOINFRONT'   : 0.0,
+                                    'SHOOT'       : 0.0}
+    cannonStockerLeftYellowPos = {  'LOADING'     : dynamixelMinPosList['LeftCannonStocker'],
+                                    'UNLOADING'   : dynamixelMaxPosList['LeftCannonStocker']}

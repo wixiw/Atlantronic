@@ -145,12 +145,12 @@ class AmbiDynamixelCmd():
     #return the name of the dynamixel to drive depending on the color
     #@param String p_color : match color
     def getName(self, p_color):
-        return ambiSide(self.side, p_color) + self.name
+        return toAmbiSide(self.side, p_color) + self.name
         
     #return the position cmd of the dynamixel to drive depending on the color
     #@param String p_color : match color
     def getPositionCmd(self, p_color):
-        ambiSide = ambiSide(self.side, p_color)
+        ambiSide = toAmbiSide(self.side, p_color)
         if ambiSide is "Left":
             return self.position
         if ambiSide is "Right":
@@ -217,16 +217,16 @@ class AmbiWaitDynamixelReachedPosition(ReceiveFromTopic):
 # @param List(AmbiDynamixelCmd) p_ambiDynamixelCmdList      : the list of commands to do, see AmbiDynamixelCmd
 #   
 class AmbiDynamixelGoto(smach.StateMachine):
-    def __init__(self,p_ambiDynamixelCmdList):
+    def __init__(self, p_ambiDynamixelCmdList):
         smach.StateMachine.__init__(self,outcomes=['succeeded','problem'])
         with self: 
-            for i,AmbiDynamixelGoto in enumerate(p_ambiDynamixelCmdList):
+            for i,ambiDynamixelCmd in enumerate(p_ambiDynamixelCmdList):
                 
                 stateName = 'AmbiSendCommandToLeft' + ambiDynamixelCmd.name
                 if i >= len(p_ambiDynamixelCmdList)-1:
                     transitionName = 'Wait'
                 else:
-                    transitionName = 'AmbiSendCommandToLeft' + ambiDynamixelCmd[i+1].name
+                    transitionName = 'AmbiSendCommandToLeft' + p_ambiDynamixelCmdList[i+1].name
                     
                 smach.StateMachine.add(stateName,
                     AmbiDynamixelNonBlockingPositionCmd(ambiDynamixelCmd),
@@ -234,9 +234,9 @@ class AmbiDynamixelGoto(smach.StateMachine):
         
             smach.StateMachine.add('Wait',
                     WaiterState(0.2),
-                    transitions={'timeout':'AmbiWaitLeft' + ambiDynamixelCmd[0].name + 'PositionReached'})
+                    transitions={'timeout':'AmbiWaitLeft' + p_ambiDynamixelCmdList[0].name + 'PositionReached'})
               
-            for j,dynamixelName in enumerate(p_ambiDynamixelCmdList):   
+            for j,ambiDynamixelCmd in enumerate(p_ambiDynamixelCmdList):   
                 stateName = 'AmbiWaitLeft' + ambiDynamixelCmd.name + 'PositionReached'
                 if i >= len(p_ambiDynamixelCmdList)-1:
                     transitionName = 'succeeded'
@@ -257,7 +257,7 @@ class AmbiOmron():
     #return the name of the omron depending on the color
     #@param String p_color : match color
     def getName(self, p_color):
-        return ambiSide(self.side, p_color) + self.name
+        return toAmbiSide(self.side, p_color) + self.name
         
 
 #

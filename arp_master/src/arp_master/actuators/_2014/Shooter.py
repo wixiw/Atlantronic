@@ -9,65 +9,62 @@ from arp_master.strat_2014.common_2014.Robot2014 import *
 from arp_master.fsmFramework import *
 from arp_master.commonStates import *
 from arp_master.strat_2014 import *
-from arp_master.actuators import *
+from arp_master.actuators import *     
 
-#TODO
-##
-##
-## Remettre le preemptive
-# 
-# class ShooterMainStateMachine(PreemptiveStateMachine):
-#     def __init__(self, p_side):
-#         PreemptiveStateMachine.__init__(self,outcomes=['end','problem'])
-# 
-#         #Configuration of reference positions
-#         self.refPosStocker = { 'UP' : 0.0,
-#                               'DOWN' : 0.0}
-#         self.refPosShooter = { 'ARM' : 0.0,
-#                               'SHOOT' : 0.0,
-#                               'IDLE' : 0.0}
-#                 
-#         with self:      
-# 
-# #Remplacer UserDebugTrigger par vraie etat une fois fini
-#                         
-#             PreemptiveStateMachine.add('Idle',
-#                       CannonBiCommand(p_side, self.refPosShooter['IDLE'], self.refPosStocker['UP']),
-#                       transitions={'succeeded':'WaitForStratCommand', 'problem':'problem'})
-#             
-#             PreemptiveStateMachine.add('WaitForStratCommand',
-#                       CannonWaitForStratRequest(p_side),
-#                       transitions={'load':'Load', 
-#                                    'shoot':'problem'})
-#             
-#             #Load
-#             PreemptiveStateMachine.add('Load',
-#                       CannonBiCommand(p_side, self.refPosShooter['ARM'], self.refPosStocker['DOWN']),
-#                       transitions={'succeeded':'WaitForBall', 'problem':'problem'})  
-#             
-#             PreemptiveStateMachine.add('WaitForBall',
-#                       WaiterState(1.0),
-#                       transitions={'timeout':'CloseStocker'})
-#             
-#             PreemptiveStateMachine.add('CloseStocker',
-#                       CannonBiCommand(p_side, self.refPosShooter['ARM'], self.refPosStocker['UP']),
-#                       transitions={'succeeded':'WaitForShoot', 'problem':'problem'})  
-#                         
-#             PreemptiveStateMachine.add('WaitForShoot',
-#                       CannonWaitForStratRequest(p_side),
-#                       transitions={'load':'WaitForShoot', 
-#                                    'shoot':'Shoot'})
-#                         
-#             #Shoot                        
-#             PreemptiveStateMachine.add('Shoot',
-#                       CannonBiCommand(p_side, self.refPosShooter['SHOOT'], self.refPosStocker['UP']),
-#                       transitions={'succeeded':'WaitABit', 'problem':'problem'})       
-#             
-#             PreemptiveStateMachine.add('WaitABit',
-#                       WaiterState(0.5),
-#                       transitions={'timeout':'Idle'})    
+#
+# This state machine allows to put the cannon in its initial state.
+#
+
+class DefaultCannonState(smach.StateMachine):
+    def __init__(self, p_side):
+            smach.StateMachine.__init__(self, outcomes=['done','problem'])
             
-
+            with self:
+                smach.StateMachine.add('CleanupPositions',
+                       AmbiCannonBiCommand(p_side, Robot2014.cannonFingerLeftYellowPos['GOINFRONT'], Robot2014.cannonStockerLeftYellowPos['LOADING']),
+                       transitions={'succeeded':'CannonPositionCleaned', 'problem':'problem'})
+                                
+                smach.StateMachine.add('CannonPositionCleaned',
+                       AmbiCannonBiCommand(p_side, Robot2014.cannonFingerLeftYellowPos['ARMED'], Robot2014.cannonStockerLeftYellowPos['LOADING']),
+                       transitions={'succeeded':'done', 'problem':'problem'})
+                 
+#
+# This state machine allows to arm, load and shoot a ball.
+#
+# @param String p_side : the side of the cannon that has to shoot on the yellow configuraiton
+#
+class AmbiShootOneBall(smach.StateMachine):
+    def __init__(self, p_side):
+            smach.StateMachine.__init__(self, outcomes=['shot','blocked'])
+            
+            with self:      
+                smach.StateMachine.add('LoadBall',
+                       AmbiCannonBiCommand(p_side, Robot2014.cannonFingerLeftYellowPos['ARMED'], Robot2014.cannonStockerLeftYellowPos['LOADING']),
+                       transitions={'succeeded':'WaitBallInStocker', 'problem':'blocked'})
+                
+                smach.StateMachine.add('WaitBallInStocker',
+                       WaiterState(0.5),
+                       transitions={'timeout':'ReadyToShoot'})    
+                
+                smach.StateMachine.add('ReadyToShoot',
+                       AmbiCannonBiCommand(p_side, Robot2014.cannonFingerLeftYellowPos['ARMED'], Robot2014.cannonStockerLeftYellowPos['UNLOADING']),
+                       transitions={'succeeded':'WaitBallInShooter', 'problem':'blocked'})
+                
+                smach.StateMachine.add('WaitBallInShooter',
+                       WaiterState(0.5),
+                       transitions={'timeout':'ShootBall'})
+                                    
+                smach.StateMachine.add('ShootBall',
+                       AmbiCannonBiCommand(p_side, Robot2014.cannonFingerLeftYellowPos['SHOOT'], Robot2014.cannonStockerLeftYellowPos['UNLOADING']),
+                       transitions={'succeeded':'CleanupPositions', 'problem':'blocked'})
+                
+                smach.StateMachine.add('CleanupPositions',
+                       AmbiCannonBiCommand(p_side, Robot2014.cannonFingerLeftYellowPos['GOINFRONT'], Robot2014.cannonStockerLeftYellowPos['LOADING']),
+                       transitions={'succeeded':'CannonPositionCleaned', 'problem':'blocked'})
+                                
+                smach.StateMachine.add('CannonPositionCleaned',
+                       AmbiCannonBiCommand(p_side, Robot2014.cannonFingerLeftYellowPos['ARMED'], Robot2014.cannonStockerLeftYellowPos['LOADING']),
+                       transitions={'succeeded':'shot', 'problem':'blocked'})                 
 #
 # This state allows to send a blocking command to 2 cannon dynamixels simultaneously  
 #   
@@ -111,6 +108,6 @@ class CannonBiTorqueConfig(smach.StateMachine):
 #
 class AmbiCannonBiCommand(AmbiDynamixelGoto):
     def __init__(self, p_side, p_fingerPosition, p_stockerPosition):
-        AmbiDynamixelGoto.__init__(self, p_side,
-                                   [AmbiDynamixelCmd("CannonFinger", p_fingerPosition),
-                                    AmbiDynamixelCmd("CannonStocker", p_stockerPosition)])
+        AmbiDynamixelGoto.__init__(self, 
+                                   [AmbiDynamixelCmd(p_side, "CannonFinger", p_fingerPosition),
+                                    AmbiDynamixelCmd(p_side, "CannonStocker", p_stockerPosition)])

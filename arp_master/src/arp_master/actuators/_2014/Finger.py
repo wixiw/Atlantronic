@@ -175,7 +175,7 @@ class AmbiFingerPumpCommand(DynamicSendOnTopic):
     #@param String p_side : the side on the yellow
     #@param String p_color : match color
     def getName(self, p_side, p_color):
-        return ambiSide(p_side, p_color) + "FingerPump"
+        return toAmbiSide(p_side, p_color) + "FingerPump"
     
     #Overrided to provide the topic name and the message from the AmbiDynamixelCmd
     def publish(self):
