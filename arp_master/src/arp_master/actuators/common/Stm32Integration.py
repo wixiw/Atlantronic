@@ -11,13 +11,22 @@ from arp_master.commonStates import *
 from std_msgs.msg import *
 
 #
-# You may drive a pump with this state. It send a single command, it is *not* periodic.
-# @param pumpName : String - the name of the pump to drive
-# @param suctionPower : Integer - drive the suction power in percent in the range [50;100]
+# You may drive power on the stm32 with this command.
+# @param Bool p_powerOn : set to true to requiere power
 #
-class SendPumpCmd(SendOnTopic):
+class SendStm32PowerCmd(StaticSendOnTopic):
+    def __init__(self, p_powerOn):
+        StaticSendOnTopic.__init__(self, "/Ubiquity/powerState", Bool, Bool(p_powerOn))
+
+
+#
+# You may drive a pump with this state. It send a single command, it is *not* periodic.
+# @param String pumpName         : the name of the pump to drive
+# @param Integer suctionPower    : drive the suction power in percent in the range [50;100]
+#
+class SendPumpCmd(StaticSendOnTopic):
     def __init__(self, p_pumpName, p_suctionPower):
-        SendOnTopic.__init__(self, "/Ubiquity/"+p_pumpName+"/suction_power", UInt8, UInt8(p_suctionPower))
+        StaticSendOnTopic.__init__(self, "/Ubiquity/"+p_pumpName+"/suction_power", UInt8, UInt8(p_suctionPower))
 
 #
 # You may drive a dynamixel with this state. It send a single command, it is *not* periodic.
@@ -25,9 +34,9 @@ class SendPumpCmd(SendOnTopic):
 # @param dynamixelName : String - the name of the dynamixel to drive
 # @param position : Double - position cmd in [-pi;pi] in radians
 #
-class DynamixelNonBlockingPositionCmd(SendOnTopic):
+class DynamixelNonBlockingPositionCmd(StaticSendOnTopic):
     def __init__(self, p_dynamixelName, p_position):
-        SendOnTopic.__init__(self, "/Ubiquity/"+p_dynamixelName+"/position_cmd", Float32, Float32(p_position))
+        StaticSendOnTopic.__init__(self, "/Ubiquity/"+p_dynamixelName+"/position_cmd", Float32, Float32(p_position))
 
 #
 # You may configure a dynamixel torque with this state. It send a single command, it is *not* periodic.
@@ -35,9 +44,9 @@ class DynamixelNonBlockingPositionCmd(SendOnTopic):
 # @param String - dynamixelName     : the name of the dynamixel to configure
 # @param Percentage - torque        : the torque in % in [20;100]
 #
-class DynamixelTorqueConfig(SendOnTopic):
+class DynamixelTorqueConfig(StaticSendOnTopic):
     def __init__(self, p_dynamixelName, p_torque):
-        SendOnTopic.__init__(self, "/Ubiquity/"+p_dynamixelName+"/max_torque", UInt8, UInt8(p_torque))
+        StaticSendOnTopic.__init__(self, "/Ubiquity/"+p_dynamixelName+"/max_torque", UInt8, UInt8(p_torque))
 
 #
 # You may drive a dynamixel with this state. It send a single command, it is *not* periodic.
@@ -96,11 +105,13 @@ class DynamixelGoto(smach.StateMachine):
                 smach.StateMachine.add(stateName,
                     WaitDynamixelReachedPosition(dynamixelName),
                     transitions={'pos_reached':transitionName, 'stucked':'problem', 'timeout':'problem'})
-        
+
 #
 # Use this state to wait an Omron to be in an expected state
-# @param p_omronName : String - the omron to listen
-# @param p_awaitedValue : Boolean - 'True' or 'False' The value you are waiting until the timeout.
+#
+# @param String p_omronName         : the omron to listen
+# @param Boolean p_awaitedValue     : 'True' or 'False' The value you are waiting until the timeout.
+# @param Double p_timeout           : the timeout to limit infinite wait
 #
 class WaitForOmronValue(ReceiveFromTopic):
     def __init__(self, p_omronName, p_awaitedValue, p_timeout):
@@ -117,3 +128,156 @@ class WaitForOmronValue(ReceiveFromTopic):
         #end with success if last message is the awaited value, else continue to wait
         if self.msg.data == self.awaitedValue:
             return 'triggered'  
+
+#
+#This is a utility class for the AmbiDynamixelGoto class
+# 
+# @param String p_name             : the name of the dynamixel (without the Left/Right prefix)
+# @param Double p_position         : the position of the dynamixel on the left side in the yellow configuration
+#
+class AmbiDynamixelCmd():
+    def __init__(self, p_name, p_position):
+        self.name = p_name
+        self.position = p_position
+        
+    #return the name of the dynamixel to drive depending on the color
+    #@param String p_color : match color
+    def getName(self, p_color):
+        if p_color is "yellow":
+            return "Left" + self.name
+        if p_color is "red":
+            return "Right" + self.name
+        else:
+            return "AmbiDynamixelCmdNoColor"
+        
+    #return the position cmd of the dynamixel to drive depending on the color
+    #@param String p_color : match color
+    def getPositionCmd(self, p_color):
+        if p_color is "yellow":
+            return self.position
+        if p_color is "red":
+            return -self.position
+        else:
+            return "AmbiDynamixelCmdNoColor"
+
+
+                
+#
+# You may drive a dynamixel with this state depending on color and side. 
+# It send a single command, it is *not* periodic.
+# Basically it means that you are *NOT* at the desired position when you exit this state
+#
+# @param AmbiDynamixelCmd p_ambiDynamixelCmd : the name of the dynamixel to drive (defined on the left side in the yellow color)
+#
+class AmbiDynamixelNonBlockingPositionCmd(DynamicSendOnTopic):
+    def __init__(self, p_ambiDynamixelCmd):
+        DynamicSendOnTopic.__init__(self)
+        
+        #remember command
+        self.cmd = p_ambiDynamixelCmd
+        
+    #Overrided to provide the topic name and the message from the AmbiDynamixelCmd
+    def publish(self):
+        color = Data.color
+        topicPublisher = rospy.Publisher("/Ubiquity/"+self.cmd.getName(color)+"/position_cmd", Float32)
+        topicPublisher.publish( Float32(self.cmd.getPositionCmd(color)) )
+        
+
+#
+# You may drive a dynamixel with this state. It send a single command, it is *not* periodic.
+# Basically it means that you are *NOT* at the desired position when you exit this state
+# The dynamixel has 2s to reach its position
+#
+# @param dynamixelName : String - the name of the dynamixel to drive
+#
+class AmbiWaitDynamixelReachedPosition(ReceiveFromTopic):
+    def __init__(self, p_ambiDynamixelCmd):
+        ReceiveFromTopic.__init__(self, "notDefinedYet", DynamixelState,
+            p_outcomes=['pos_reached','stucked'], p_timeout=2.0)
+        
+        #remember command
+        self.cmd = p_ambiDynamixelCmd
+
+    def executeIn(self):
+        self.topicName = "/Ubiquity/"+self.cmd.getName(Data.color)+"/state"
+        ReceiveFromTopic.executeIn(self)
+        return
+
+    def executeTransitions(self):    
+        #if no message has been received yet, just wait again
+        if self.msg is None:
+            return
+        #end with success if the dynamixel is target_reached
+        if self.msg.target_reached is True:
+            return 'pos_reached' 
+        #if the servo is stucked end with failure
+        if self.msg.stucked is True:
+            return 'stucked'
+        #else : continue to wait
+        
+
+#    
+# Use this state to send a blocking "goto" command to list of dynamixels on the left in the yellow configuration
+# The dynamixels has 2s (cumulative in the number of dynamixels) to reach their positions
+#
+# @param List(AmbiDynamixelCmd) p_ambiDynamixelCmdList      : the list of commands to do, see AmbiDynamixelCmd
+#   
+class AmbiDynamixelGoto(smach.StateMachine):
+    def __init__(self,p_ambiDynamixelCmdList):
+        smach.StateMachine.__init__(self,outcomes=['succeeded','problem'])
+        with self: 
+            for i,AmbiDynamixelGoto in enumerate(p_ambiDynamixelCmdList):
+                
+                stateName = 'AmbiSendCommandToLeft' + ambiDynamixelCmd.name
+                if i >= len(p_ambiDynamixelCmdList)-1:
+                    transitionName = 'Wait'
+                else:
+                    transitionName = 'AmbiSendCommandToLeft' + ambiDynamixelCmd[i+1].name
+                    
+                smach.StateMachine.add(stateName,
+                    AmbiDynamixelNonBlockingPositionCmd(ambiDynamixelCmd),
+                    transitions={ 'done' : transitionName })
+        
+            smach.StateMachine.add('Wait',
+                    WaiterState(0.2),
+                    transitions={'timeout':'AmbiWaitLeft' + ambiDynamixelCmd[0].name + 'PositionReached'})
+              
+            for j,dynamixelName in enumerate(p_ambiDynamixelCmdList):   
+                stateName = 'AmbiWaitLeft' + ambiDynamixelCmd.name + 'PositionReached'
+                if i >= len(p_ambiDynamixelCmdList)-1:
+                    transitionName = 'succeeded'
+                else:
+                    transitionName = 'AmbiWaitLeft' + p_ambiDynamixelCmdList[j+1].name + 'PositionReached'
+                    
+                smach.StateMachine.add(stateName,
+                    AmbiWaitDynamixelReachedPosition(ambiDynamixelCmd),
+                    transitions={'pos_reached':transitionName, 'stucked':'problem', 'timeout':'problem'})
+                
+
+#
+# Use this state to wait an Omron on the left side in the yellow configuration to be in an expected state. 
+#
+# @param see WaitForOmronValue
+#
+class AmbiWaitForOmronValue(WaitForOmronValue):
+    def __init__(self, p_omronName, p_awaitedValue, p_timeout):
+        WaitForOmronValue.__init__(self, p_omronName, p_awaitedValue, p_timeout) 
+
+        #remember name
+        self.name = p_omronName
+        
+    #return the name of the omron to listen depending on the color
+    #@param String p_color : match color
+    def getName(self, p_color):
+        if p_color is "yellow":
+            return "Left" + self.name
+        if p_color is "red":
+            return "Right" + self.name
+        else:
+            return "AmbiWaitForOmronValueNoColor"
+        
+    def executeIn(self):
+        self.topicName = "/Ubiquity/"+getName(Data.color)+"/object_present"
+        WaitForOmronValue.executeIn(self)
+        return
+ 

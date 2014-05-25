@@ -9,7 +9,6 @@
 		output="screen"
 	/>
 	
-	<!--
 	<node 
 		name="StratNode_Actuators"   
 		pkg="arp_master"  
@@ -18,6 +17,5 @@
 		required="true"
 		launch-prefix="nice -n 19"
 	/>
-	-->
 		
 </launch>

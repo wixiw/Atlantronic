@@ -103,3 +103,14 @@ class CannonBiTorqueConfig(smach.StateMachine):
             smach.StateMachine.add('ConfigStocker',
                         DynamixelTorqueConfig(p_side + "CannonStocker", p_stockerTorque),
                         transitions={ 'done' : 'done' })
+
+#
+# This state allows to send a blocking command to 2 cannon dynamixels simultaneously depending on the match color 
+#   
+# see CannonBiCommand
+#
+class AmbiCannonBiCommand(AmbiDynamixelGoto):
+    def __init__(self, p_side, p_fingerPosition, p_stockerPosition):
+        AmbiDynamixelGoto.__init__(self, 
+                                   [AmbiDynamixelCmd("CannonFinger", p_fingerPosition),
+                                    AmbiDynamixelCmd("CannonStocker", p_stockerPosition)])

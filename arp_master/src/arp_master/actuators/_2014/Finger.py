@@ -112,24 +112,11 @@ class FingerWaitForObjectPresent(ReceiveFromTopic):
 # @param String p_side :      the side of the finger on the robot
 # @param Integerp_power :     the suction power of the pump in [50;100] in percent
 #
-class FingerPumpCommand(SendOnTopic):
+class FingerPumpCommand(StaticSendOnTopic):
     def __init__(self, p_side, p_power):
-        SendOnTopic.__init__(self, "/Ubiquity/"+p_side+"FingerPump/suction_power", UInt8, UInt8(p_power)) 
-
-          
-# This state allows to send a blocking command to a front finger, the order is always given for a left side
-# the other side is deduced           
-# @param String p_side               : the side of the finger (Left or Right)
-# @param Double p_position           :  finger command
-class FingerAutoSideCommand(DynamixelGoto):
-    def __init__(self, p_side, p_position):
-        dynamixelList = [p_side + "Finger"]
-        if p_side is 'Left':
-            posList = [p_position]
-        else:
-            posList = [-p_position]
-        DynamixelGoto.__init__(self, dynamixelList, posList)          
-
+        StaticSendOnTopic.__init__(self, "/Ubiquity/"+p_side+"FingerPump/suction_power", UInt8, UInt8(p_power)) 
+        
+        
 #
 # This state allows to send configuration to the finger dynamixel
 #
@@ -139,3 +126,43 @@ class FingerAutoSideCommand(DynamixelGoto):
 class FingerTorqueConfig(DynamixelTorqueConfig):
     def __init__(self, p_side, p_fingerTorque):
         DynamixelTorqueConfig.__init__(self, p_side + "Finger", p_fingerTorque)
+        
+          
+# This state allows to send a blocking command to a front finger, the order is always given for a "left side" in the yellow configuration
+# the other side is deduced           
+# @param Double p_position           :  finger command
+class AmbiFingerCommand(AmbiDynamixelGoto):
+    def __init__(self, p_position):
+        AmbiDynamixelGoto.__init__(self, 
+                                   [ AmbiDynamixelCmd("Finger",p_position) ]
+                                    )          
+
+#
+# Use this state to drive the pump on the finger depending on the match color
+# @param Integer p_power :     the suction power of the pump in [50;100] in percent
+#
+class AmbiFingerPumpCommand(DynamicSendOnTopic):
+    def __init__(self, p_power):
+        DynamicSendOnTopic.__init__(self) 
+    
+    #return the name of the omron to listen depending on the color
+    #@param String p_color : match color
+    def getName(self, p_color):
+        if p_color is "yellow":
+            return "LeftFingerPump"
+        if p_color is "red":
+            return "RightFingerPump"
+        else:
+            return "AmbiWaitForOmronValueNoColor"
+    
+    #Overrided to provide the topic name and the message from the AmbiDynamixelCmd
+    def publish(self):
+        topicPublisher = rospy.Publisher("/Ubiquity/"+self.getName(Data.color)+"/suction_power", Float32)
+        topicPublisher.publish( Float32(self.cmd.getPositionCmd(color)) )#
+
+
+# Use this state to wait an Omron on the finger to be in an expected state depending on the match color
+class AmbiWaitFingerOmronValue(AmbiWaitForOmronValue):
+    def __init__(self, p_omronName, p_awaitedValue, p_timeout):
+        AmbiWaitForOmronValue.__init__(self, "Finger", p_awaitedValue, p_timeout) 
+

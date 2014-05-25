@@ -48,8 +48,12 @@ class MainStateMachine(smach.StateMachine):
         with self:
             smach.StateMachine.add('ActuatorsConfig',
                       ActuatorConfigStateMachine(),
-                      transitions={'done':'SelfTest'})
+                      transitions={'done':'SetStm3Power'})
                         
+            smach.StateMachine.add('SetStm3Power',
+                      SendStm32PowerCmd(True),
+                      transitions={'done':'SelfTest'})
+            
             smach.StateMachine.add('SelfTest', 
                       SelfTest(),
                       transitions={'succeeded':'WaitABit','problem':'end'})

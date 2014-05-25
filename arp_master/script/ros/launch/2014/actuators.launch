@@ -9,7 +9,6 @@
 		args="-s $(find arp_stm32)/script/orocos/deployment/deploy_arp_stm32.ops --" 
 		output="screen"
 	/>
-	<!--
 	<node 
 		name="StratNode_Actuators"   
 		pkg="arp_master"  
@@ -17,5 +16,5 @@
 		args="" output="screen"
 		required="true"
 		launch-prefix="nice -n 19"
-	/>-->
+	/>
 </launch>
