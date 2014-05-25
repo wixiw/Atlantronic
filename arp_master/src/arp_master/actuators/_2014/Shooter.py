@@ -111,6 +111,6 @@ class CannonBiTorqueConfig(smach.StateMachine):
 #
 class AmbiCannonBiCommand(AmbiDynamixelGoto):
     def __init__(self, p_side, p_fingerPosition, p_stockerPosition):
-        AmbiDynamixelGoto.__init__(self, 
+        AmbiDynamixelGoto.__init__(self, p_side,
                                    [AmbiDynamixelCmd("CannonFinger", p_fingerPosition),
                                     AmbiDynamixelCmd("CannonStocker", p_stockerPosition)])

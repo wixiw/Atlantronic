@@ -86,8 +86,33 @@ from arp_master.actuators import *
 #                      UserDebugTrigger("Position basse vide post depose"),
 #                      transitions={'continue':'EmptyUpPos'})  
             
-
+#
+# Use this state machine to pick an object with the "p_side" finger (in the yellow config) automatically symetrized for match color
+#
+class AmbiFingerPickObject(smach.StateMachine):
+    def __init__(self, p_side):
+            smach.StateMachine.__init__(outcomes=['picked','blocked','notFound'])
             
+            with self:      
+                smach.StateMachine.add('GoDown',
+                       AmbiFingerCommand(p_side, Robot2014.fingerLeftYellowPos['DOWN']),
+                       transitions={'succeeded':'SearchItemToPick', 'problem':'blocked'})
+
+                smach.StateMachine.add('SearchItemToPick',
+                       AmbiWaitFingerOmronValue(p_side, True, 10.0),
+                       transitions={'triggered':'SuckBitch', 'timeout':'notFound'})    
+
+                smach.StateMachine.add('SuckBitch',
+                       FingerPumpCommand(p_side, suctionPower['HOLD']),
+                       transitions={'done':'GoUp'})  
+                
+                smach.StateMachine.add('GoUp',
+                       AmbiFingerCommand(p_side, Robot2014.fingerLeftYellowPos['UP']),
+                       transitions={'succeeded':'CheckPresence', 'problem':'blocked'})
+                
+                smach.StateMachine.add('CheckPresence',
+                       AmbiWaitFingerOmronValue(p_side, True, 0),
+                       transitions={'triggered':'picked', 'timeout':'notFound'})  
 #
 # Use this state to wait for an object to be present in the suction cup
 # @param String p_side : the side of the finger on the robot
@@ -128,12 +153,13 @@ class FingerTorqueConfig(DynamixelTorqueConfig):
         DynamixelTorqueConfig.__init__(self, p_side + "Finger", p_fingerTorque)
         
           
-# This state allows to send a blocking command to a front finger, the order is always given for a "left side" in the yellow configuration
-# the other side is deduced           
+#
+# This state allows to send a blocking command to a front finger, the order is always given for the yellow configuration        
 # @param Double p_position           :  finger command
+#
 class AmbiFingerCommand(AmbiDynamixelGoto):
-    def __init__(self, p_position):
-        AmbiDynamixelGoto.__init__(self, 
+    def __init__(self, p_side, p_position):
+        AmbiDynamixelGoto.__init__(self, p_side,
                                    [ AmbiDynamixelCmd("Finger",p_position) ]
                                     )          
 
@@ -142,18 +168,14 @@ class AmbiFingerCommand(AmbiDynamixelGoto):
 # @param Integer p_power :     the suction power of the pump in [50;100] in percent
 #
 class AmbiFingerPumpCommand(DynamicSendOnTopic):
-    def __init__(self, p_power):
+    def __init__(self, p_side, p_power):
         DynamicSendOnTopic.__init__(self) 
     
-    #return the name of the omron to listen depending on the color
+    #return the name of the omron to listen depending on the color and the side defined in the yellow config
+    #@param String p_side : the side on the yellow
     #@param String p_color : match color
-    def getName(self, p_color):
-        if p_color is "yellow":
-            return "LeftFingerPump"
-        if p_color is "red":
-            return "RightFingerPump"
-        else:
-            return "AmbiWaitForOmronValueNoColor"
+    def getName(self, p_side, p_color):
+        return ambiSide(p_side, p_color) + "FingerPump"
     
     #Overrided to provide the topic name and the message from the AmbiDynamixelCmd
     def publish(self):
@@ -163,6 +185,6 @@ class AmbiFingerPumpCommand(DynamicSendOnTopic):
 
 # Use this state to wait an Omron on the finger to be in an expected state depending on the match color
 class AmbiWaitFingerOmronValue(AmbiWaitForOmronValue):
-    def __init__(self, p_omronName, p_awaitedValue, p_timeout):
-        AmbiWaitForOmronValue.__init__(self, "Finger", p_awaitedValue, p_timeout) 
+    def __init__(self, p_side, p_awaitedValue, p_timeout):
+        AmbiWaitForOmronValue.__init__(self, AmbiOmron(p_side, "FingerOmron"), p_awaitedValue, p_timeout) 
 

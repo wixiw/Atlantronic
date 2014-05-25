@@ -132,42 +132,36 @@ class WaitForOmronValue(ReceiveFromTopic):
 #
 #This is a utility class for the AmbiDynamixelGoto class
 # 
+# @param String p_side             : the side of the dynamixel in the yellow configuration
 # @param String p_name             : the name of the dynamixel (without the Left/Right prefix)
 # @param Double p_position         : the position of the dynamixel on the left side in the yellow configuration
 #
 class AmbiDynamixelCmd():
-    def __init__(self, p_name, p_position):
+    def __init__(self, p_side, p_name, p_position):
+        self.side = p_side
         self.name = p_name
         self.position = p_position
         
     #return the name of the dynamixel to drive depending on the color
     #@param String p_color : match color
     def getName(self, p_color):
-        if p_color is "yellow":
-            return "Left" + self.name
-        if p_color is "red":
-            return "Right" + self.name
-        else:
-            return "AmbiDynamixelCmdNoColor"
+        return ambiSide(self.side, p_color) + self.name
         
     #return the position cmd of the dynamixel to drive depending on the color
     #@param String p_color : match color
     def getPositionCmd(self, p_color):
-        if p_color is "yellow":
+        ambiSide = ambiSide(self.side, p_color)
+        if ambiSide is "Left":
             return self.position
-        if p_color is "red":
+        if ambiSide is "Right":
             return -self.position
-        else:
-            return "AmbiDynamixelCmdNoColor"
-
-
                 
 #
 # You may drive a dynamixel with this state depending on color and side. 
 # It send a single command, it is *not* periodic.
 # Basically it means that you are *NOT* at the desired position when you exit this state
 #
-# @param AmbiDynamixelCmd p_ambiDynamixelCmd : the name of the dynamixel to drive (defined on the left side in the yellow color)
+# @param AmbiDynamixelCmd p_ambiDynamixelCmd   : the name of the dynamixel to drive (defined on the left side in the yellow color)
 #
 class AmbiDynamixelNonBlockingPositionCmd(DynamicSendOnTopic):
     def __init__(self, p_ambiDynamixelCmd):
@@ -253,31 +247,35 @@ class AmbiDynamixelGoto(smach.StateMachine):
                     AmbiWaitDynamixelReachedPosition(ambiDynamixelCmd),
                     transitions={'pos_reached':transitionName, 'stucked':'problem', 'timeout':'problem'})
                 
+#
+# This class represents an Omron efined by its side in a symetric pair depending on the match color
+class AmbiOmron():
+    def __init__(self, p_side, p_omronName):
+        self.side = p_side
+        self.name = p_omronName
+        
+    #return the name of the omron depending on the color
+    #@param String p_color : match color
+    def getName(self, p_color):
+        return ambiSide(self.side, p_color) + self.name
+        
 
 #
 # Use this state to wait an Omron on the left side in the yellow configuration to be in an expected state. 
 #
-# @param see WaitForOmronValue
+# @param AmbiOmron p_ambiOmron      : the omron described in the Ambi formalism
+# @param Boolean p_awaitedValue     : 'True' or 'False' The value you are waiting until the timeout.
+# @param Double p_timeout           : the timeout to limit infinite wait
 #
 class AmbiWaitForOmronValue(WaitForOmronValue):
-    def __init__(self, p_omronName, p_awaitedValue, p_timeout):
-        WaitForOmronValue.__init__(self, p_omronName, p_awaitedValue, p_timeout) 
-
-        #remember name
-        self.name = p_omronName
+    def __init__(self, p_ambiOmron, p_awaitedValue, p_timeout):
+        WaitForOmronValue.__init__(self, "NoName", p_awaitedValue, p_timeout) 
         
-    #return the name of the omron to listen depending on the color
-    #@param String p_color : match color
-    def getName(self, p_color):
-        if p_color is "yellow":
-            return "Left" + self.name
-        if p_color is "red":
-            return "Right" + self.name
-        else:
-            return "AmbiWaitForOmronValueNoColor"
+        #remember ambi omron
+        self.ambiOmron = p_ambiOmron
         
     def executeIn(self):
-        self.topicName = "/Ubiquity/"+getName(Data.color)+"/object_present"
+        self.topicName = "/Ubiquity/"+self.ambiOmron.getName(Data.color)+"/object_present"
         WaitForOmronValue.executeIn(self)
         return
  

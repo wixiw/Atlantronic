@@ -58,3 +58,10 @@ class Robot2014(RobotVierge):
                          'LeftFinger':              1.4,
                          'RightFinger':             -1.4
                          }
+    
+    #Configuration of Finger reference positions
+    fingerLeftYellowPos = { 'UP'    : dynamixelMinPosList['LeftFinger'],
+                            'DOWN'  : dynamixelMaxPosList['LeftFinger']}
+    #Configuration of reference suction powers
+    suctionPower = { 'HOLD':100,
+                    'IDLE':0 }

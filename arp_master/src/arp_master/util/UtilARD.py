@@ -72,6 +72,29 @@ class Pose2D(Point):
         evaluated, returns a point with the 
         same data."""
         return 'Point(%f,%f,%f)' % (self.x, self.y,self.theta) 
+
+#
+# return the name of the side depending on a color
+#
+# @param String p_color : the side on the yellow configuration  
+# @param String p_color : match color  
+#
+def ambiSide(p_side, p_color):
+
+    def getName(self, p_side, p_color):
+        if p_color is "yellow":
+            return p_side
+        if p_color is "red":
+            if p_side is "Left":
+                return "Right"
+            if p_side is "Right":
+                return "Left"
+            else:
+                return  "AmbiWaitForOmronValuesideUnknown"
+            
+        else:
+            return "AmbiWaitForOmronValueNoColor"
+    
     
 def normalizeAngle(angle):
     angle=angle%(2*pi)
