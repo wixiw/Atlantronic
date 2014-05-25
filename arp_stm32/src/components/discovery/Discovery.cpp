@@ -57,6 +57,7 @@ void Discovery::cleanupHook()
 void Discovery::updateHook()
 {
     MotionScheduler::updateHook();
+
     DiscoveryMutex mutex;
 
     if (mutex.lock() == DiscoveryMutex::FAILED)
@@ -64,15 +65,27 @@ void Discovery::updateHook()
         LOG(Error) << "updateHook() : mutex.lock()" << endlog();
     }
 
-    attrDebugGpio = getRawGpioData();
-    attrBatteryVoltage = getBatteryVoltage();
-    attrIsPowerOn = isPowerOn();
+    attrDebugGpio           = getRawGpioData();
+    attrBatteryVoltage      = getBatteryVoltage();
+    attrIsPowerOn           = isPowerOn();
+    attrIsHeartbeatLost     = isHeartBeatLost();
     mutex.unlock();
 
     PowerStatusMsg msg;
     msg.voltage = attrBatteryVoltage;
     msg.isPowerOn = attrIsPowerOn;
     outPowerStatus.write(msg);
+
+    std_msgs::Empty heartbeatUpdateMsg;
+    if( RTT::NewData == inHeartbeat.read(heartbeatUpdateMsg) )
+    {
+        sendHeartBeat();
+    }
+    //TODO workaround en attendant implem
+    else
+    {
+        sendHeartBeat();
+    }
 }
 
 void Discovery::robotItfCallbackWrapper(void* arg)
@@ -106,6 +119,11 @@ bool Discovery::isPowerShutdownAtEndOfMatch()
     return getRawPowerData() & POWER_OFF_END_MATCH;
 }
 
+bool Discovery::isHeartBeatLost()
+{
+    return getRawPowerData() & POWER_OFF_HEARTBEAT;
+}
+
 int Discovery::getRawPowerData()
 {
     return m_robotItf.last_control_usb_data.power_state;
@@ -119,6 +137,15 @@ double Discovery::getBatteryVoltage()
 int Discovery::getRawGpioData()
 {
     return m_robotItf.last_control_usb_data.gpio;
+}
+
+void Discovery::sendHeartBeat()
+{
+    int errorCode = m_robotItf.heartbeat_update();
+    if (errorCode < 0)
+    {
+        LOG(Error) << "Failed to set send to heartbeat." << endlog();
+    }
 }
 
 bool Discovery::ooReset()
@@ -169,6 +196,7 @@ void Discovery::createOrocosInterface()
     addProperty("propDeviceName",       propDeviceName);
 
     addPort("outPowerStatus",           outPowerStatus);
+    addEventPort("inHeartbeat",         inHeartbeat);
 
     addOperation("ooReset", &Discovery::ooReset, this, OwnThread).doc("Reset the stm32 board.");
     addOperation("ooPowerOn", &Discovery::ooPowerOn, this, OwnThread).doc("Set the power on the stm32 board.");

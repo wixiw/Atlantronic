@@ -15,7 +15,7 @@
 #include <arp_core/EmptyWithSuccess.h>
 #include <arp_stm32/SetPowerSrv.h>
 #include <arp_core/PowerStatusMsg.h>
-
+#include <std_msgs/Empty.h>
 
 namespace arp_stm32
 {
@@ -46,6 +46,11 @@ class Discovery: public arp_core::MotionScheduler
 
         RTT::OutputPort<arp_core::PowerStatusMsg> outPowerStatus;
 
+        /**
+         * Heartbeat update
+         */
+        RTT::InputPort<std_msgs::Empty> inHeartbeat;
+
 /****************************************************************
  * Interface ROS
  ****************************************************************/
@@ -69,9 +74,11 @@ class Discovery: public arp_core::MotionScheduler
         bool isUnderVoltageErrorActive();
         bool isPowerAllowedByStragety();
         bool isPowerShutdownAtEndOfMatch();
+        bool isHeartBeatLost();
         double getBatteryVoltage();
         int getRawPowerData();
         int getRawGpioData();
+        void sendHeartBeat();
 
     protected:
         static void robotItfCallbackWrapper(void* arg);
@@ -85,6 +92,7 @@ class Discovery: public arp_core::MotionScheduler
         int attrDebugGpio;
         int attrDebugPower;
         bool attrIsPowerOn;
+        bool attrIsHeartbeatLost;
         double attrBatteryVoltage;
 };
 

@@ -14,6 +14,7 @@ end
 function DiscoveryDeployer:connect()
 	assert( Deployer:addPeer("Reporting", me) )
 	assert( Deployer:stream(me..".outPowerStatus",      ros:topic("/Ubiquity/powerState")))
+	assert( Deployer:stream(me..".inHeartbeat",      ros:topic("/Ubiquity/heartbeat")))
 	return true
 end
 
