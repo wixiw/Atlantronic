@@ -7,31 +7,16 @@ import roslib; roslib.load_manifest('arp_master')
 from arp_master.fsmFramework import *
 from arp_master.commonStates import *
 from arp_master.actuators.common.Stm32Integration import *
+from arp_master.strat_2014.common_2014.Robot2014 import *
 
 class SelfTest(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['succeeded','problem'])  
         
         # Definition of Pump test parameters
-        self.PUMP_TEST_POWER = 50
+        self.PUMP_TEST_POWER = 100
         self.STRESS_TEST_DURATION = 1
         
-        #Definition of servo test parameters
-        self.DYNAMIXEL_DELTA = 0.7
-        self.dynamixelList = [                       
-                             'LeftCannonFinger',
-                             'LeftCannonStocker',
-                             'RightCannonFinger',
-                             'RightCannonStocker',
-                             'LeftFinger',
-                             'RightFinger',
-                             'ArmSlider',
-                             'ArmShoulder',
-                             'ArmShoulderElbow',
-                             'ArmWristElbow',
-                             'ArmWrist'
-                             ]
-
         with self:
             #Launch the 3 pumps and wait 2 seconds
             smach.StateMachine.add('TryLeftFingerPump',
@@ -44,18 +29,18 @@ class SelfTest(smach.StateMachine):
             
             smach.StateMachine.add('TryArmPump',
                       SendPumpCmd("ArmPump", self.PUMP_TEST_POWER),
-                      transitions={'done':'Move'+self.dynamixelList[0]})
+                      transitions={'done':'Move'+Robot2014.dynamixelList[0]})
             
             #Move all dynamixels
-            for index, dynamixelName in enumerate(self.dynamixelList):
+            for index, dynamixelName in enumerate(Robot2014.dynamixelList):
                 stateName = 'Move' + dynamixelName
-                if index >= len(self.dynamixelList)-1:
+                if index >= len(Robot2014.dynamixelList)-1:
                     transitionName = 'WaitABit'
                 else:
-                    transitionName = 'Move' + self.dynamixelList[index+1]
+                    transitionName = 'Move' + Robot2014.dynamixelList[index+1]
                     
                 smach.StateMachine.add(stateName,
-                          DynamixelNonBlockingPositionCmd(dynamixelName, self.DYNAMIXEL_DELTA),
+                          DynamixelNonBlockingPositionCmd(dynamixelName, Robot2014.dynamixelMinPosList[dynamixelName]),
                           transitions={'done': transitionName})
                 
             smach.StateMachine.add('WaitABit',
@@ -72,15 +57,15 @@ class SelfTest(smach.StateMachine):
             
             smach.StateMachine.add('StopArmPump',
                       SendPumpCmd("ArmPump", 0),
-                      transitions={'done':'Move'+self.dynamixelList[0] +'2'})
+                      transitions={'done':'Move'+Robot2014.dynamixelList[0] +'2'})
             
-            for index, dynamixelName in enumerate(self.dynamixelList):
+            for index, dynamixelName in enumerate(Robot2014.dynamixelList):
                 stateName = 'Move' + dynamixelName +'2'
-                if index >= len(self.dynamixelList)-1:
+                if index >= len(Robot2014.dynamixelList)-1:
                     transitionName = 'succeeded'
                 else:
-                    transitionName = 'Move' + self.dynamixelList[index+1] +'2'
+                    transitionName = 'Move' + Robot2014.dynamixelList[index+1] +'2'
                     
                 smach.StateMachine.add(stateName,
-                          DynamixelNonBlockingPositionCmd(dynamixelName, 0.0),
+                          DynamixelNonBlockingPositionCmd(dynamixelName, Robot2014.dynamixelMaxPosList[dynamixelName]),
                           transitions={'done': transitionName})

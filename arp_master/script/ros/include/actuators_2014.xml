@@ -1,36 +1,3 @@
 <launch>	
-	<node 
-		name="LeftCannon"   
-		pkg="arp_master"  
-		type="LeftCannon.py"     
-		args="" output="screen"
-		required="true"
-		launch-prefix="nice -n 19"
-	/>
-	<node 
-		name="RightCannon"   
-		pkg="arp_master"  
-		type="RightCannon.py"     
-		args="" output="screen"
-		required="true"
-		launch-prefix="nice -n 19"
-	/>
-	
-	<node 
-		name="LeftFinger"   
-		pkg="arp_master"  
-		type="LeftFinger.py"     
-		args="" output="screen"
-		required="true"
-		launch-prefix="nice -n 19"
-	/>
-	
-	<node 
-		name="RightFinger"   
-		pkg="arp_master"  
-		type="RightFinger.py"     
-		args="" output="screen"
-		required="true"
-		launch-prefix="nice -n 19"
-	/>
+
 </launch>

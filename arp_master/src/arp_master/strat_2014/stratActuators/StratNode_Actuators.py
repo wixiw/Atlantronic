@@ -46,9 +46,14 @@ class MainStateMachine(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['end'])
         with self:
+            smach.StateMachine.add('ActuatorsConfig',
+                      ActuatorConfigStateMachine(),
+                      transitions={'done':'SelfTest'})
+                        
             smach.StateMachine.add('SelfTest', 
-                                   SelfTest(),
-                                   transitions={'succeeded':'WaitABit','problem':'end'})
+                      SelfTest(),
+                      transitions={'succeeded':'WaitABit','problem':'end'})
+            
             smach.StateMachine.add('WaitABit',
                       WaiterState(2),
                       transitions={'timeout':'SelfTest'})

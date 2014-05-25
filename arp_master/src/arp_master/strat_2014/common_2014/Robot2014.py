@@ -15,3 +15,46 @@ class Robot2014(RobotVierge):
     
     nbBallInLeftCanon = 3
     nbBallInRightCanon = 3
+    
+    fingerTorque = 40
+    cannonFingerTorque = 35
+    
+    
+    #
+    # Dynamixels configuration
+    #
+    dynamixelList = [                       
+                             'LeftCannonFinger',
+                             'LeftCannonStocker',
+                             'RightCannonFinger',
+                             'RightCannonStocker',
+                             'LeftFinger',
+                             'RightFinger'
+                             ]
+        
+    dynamixelMaxTorqueList = {                       
+                         'LeftCannonFinger':        0,#reglage a faire
+                         'RightCannonFinger':       0,#reglage a faire
+                         'LeftCannonStocker':       35,
+                         'RightCannonStocker':      35,
+                         'LeftFinger':              40,
+                         'RightFinger':             40
+                         }
+    
+    dynamixelMinPosList = {                       
+                         'LeftCannonFinger':        0,#reglage a faire
+                         'RightCannonFinger':       0,#reglage a faire
+                         'LeftCannonStocker':       -1.0,
+                         'RightCannonStocker':      -1.0,
+                         'LeftFinger':              -0.2,
+                         'RightFinger':             0.2
+                         }
+    
+    dynamixelMaxPosList = {                       
+                         'LeftCannonFinger':        0,#reglage a faire
+                         'RightCannonFinger':       0,#reglage a faire
+                         'LeftCannonStocker':       0, 
+                         'RightCannonStocker':      0,
+                         'LeftFinger':              1.4,
+                         'RightFinger':             -1.4
+                         }

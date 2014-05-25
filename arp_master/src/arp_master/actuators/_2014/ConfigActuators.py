@@ -10,30 +10,26 @@ from arp_master.util import *
 from arp_master.fsmFramework import *
 from arp_master.commonStates import *
 from arp_master.strat_2014 import *
-from arp_master.actuators import *
+from arp_master.actuators._2014 import *
 
 
 #This state machine is configuring all torques on dynamixels
 class ActuatorConfigStateMachine(smach.StateMachine):
-    def __init__(self, p_side):
-        PreemptiveStateMachine.__init__(self,outcomes=['done'])
+    def __init__(self):
+        smach.StateMachine.__init__(self,outcomes=['done'])
 
         
         with self:      
-
-            PreemptiveStateMachine.add('LeftFinger',
-                      FingerTorqueConfig('Left', 30),
-                      transitions={'done':'RightFinger'})
-
-            PreemptiveStateMachine.add('RightFinger',
-                      FingerTorqueConfig('Right', 30),
-                      transitions={'done':'LeftCannon'})
-            
-            PreemptiveStateMachine.add('LeftCannon',
-                      CannonBiTorqueConfig('Left', 30, 30),
-                      transitions={'done':'RightCannon'})
-            
-            PreemptiveStateMachine.add('RightCannon',
-                      CannonBiTorqueConfig('Right', 30, 30),
-                      transitions={'done':'done'})
+            #Move all dynamixels
+            for index, dynamixelName in enumerate(Robot2014.dynamixelList):
+                stateName = 'Configure' + dynamixelName
+                if index >= len(Robot2014.dynamixelList)-1:
+                    transitionName = 'done'
+                else:
+                    transitionName = 'Configure' + Robot2014.dynamixelList[index+1]
+                    
+                smach.StateMachine.add(stateName,
+                          DynamixelTorqueConfig(dynamixelName, Robot2014.dynamixelMaxTorqueList[dynamixelName]),
+                          transitions={'done': transitionName})
+                
                         
