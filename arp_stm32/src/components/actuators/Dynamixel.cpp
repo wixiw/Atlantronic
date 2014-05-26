@@ -53,9 +53,14 @@ bool Dynamixel::configureHook()
         return false;
     }
 
+
+    return true;
+}
+
+bool Dynamixel::startHook()
+{
     sendMaxTorqueCmd(propMaxTorque);
     sendPrecisionCmd(propPrecision);
-
     return true;
 }
 
@@ -108,7 +113,7 @@ void Dynamixel::sendPositionCmd(double position)
     int errorCode = m_robotItf.dynamixel_set_goal_position(propDynamixelFamily, propId, position);
     if (errorCode < 0)
     {
-        LOG(Error) << "Failed to set position to dynamixel with ID=" << propId << "." << endlog();
+        LOG(Error) << "Failed to set position to dynamixel (family="<< propDynamixelFamily << ") with ID=" << propId << "." << endlog();
     }
 }
 
@@ -118,7 +123,7 @@ void Dynamixel::sendMaxTorqueCmd(int percentage)
     int errorCode = m_robotItf.dynamixel_set_max_torque(propDynamixelFamily, propId, percentage);
     if (errorCode < 0)
     {
-        LOG(Error) << "Failed to set position to dynamixel RX24F with ID=" << propId << "." << endlog();
+        LOG(Error) << "Failed to set torque to dynamixel (family=" << propDynamixelFamily << ") with ID=" << propId << "." << endlog();
     }
 }
 

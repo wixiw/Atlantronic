@@ -15,7 +15,7 @@ end
 function SuctionPumpsDeployer:load()
 	SuctionPumpsDeployer:loadCpnt(leftFinger, 	"arp_stm32::SuctionPump")
 	SuctionPumpsDeployer:loadCpnt(rightFinger, 	"arp_stm32::SuctionPump")
-	SuctionPumpsDeployer:loadCpnt(arm, 			"arp_stm32::SuctionPump")
+	--SuctionPumpsDeployer:loadCpnt(arm, 			"arp_stm32::SuctionPump")
 	return true
 end
 
@@ -27,7 +27,7 @@ end
 function SuctionPumpsDeployer:connect()
 	SuctionPumpsDeployer:connectPump(leftFinger)
 	SuctionPumpsDeployer:connectPump(rightFinger)
-	SuctionPumpsDeployer:connectPump(arm)
+	--SuctionPumpsDeployer:connectPump(arm)
 	return true
 end
 

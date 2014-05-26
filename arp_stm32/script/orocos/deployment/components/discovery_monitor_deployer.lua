@@ -44,7 +44,7 @@ function DiscoveryMonitorDeployer:connect()
 	
 	DiscoveryMonitorDeployer:addToMonitor("LeftFingerPump")
 	DiscoveryMonitorDeployer:addToMonitor("RightFingerPump")
-	DiscoveryMonitorDeployer:addToMonitor("ArmPump")
+	--DiscoveryMonitorDeployer:addToMonitor("ArmPump")
 	
 	DiscoveryMonitorDeployer:addToMonitor("Gyrometer")
 	DiscoveryMonitorDeployer:addToMonitor("MatchData")

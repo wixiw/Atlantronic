@@ -36,8 +36,8 @@ assert( GyrometerDeployer:connect(),	"Failed to connect Gyrometer")
 assert( DiscoveryMonitorDeployer:connect(),"Failed to connect DiscoveryMonitor")
 
 print("... start components")
+assert( DiscoveryDeployer:start(),    "Failed to start Discovery")
 assert( DiscoveryMonitorDeployer:start(),"Failed to start DiscoveryMonitor")
-assert( DiscoveryDeployer:start(), 		"Failed to start Discovery")
 
 print("fin déploiment arp_stm32")
 print("====================")

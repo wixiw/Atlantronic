@@ -6,6 +6,7 @@ file(
     	*.c*
 		${ATLANTRONIC_GIT_DIR}/src/linux/tools/robot_interface.cxx
 		${ATLANTRONIC_GIT_DIR}/src/linux/tools/com.cxx
+		${ATLANTRONIC_GIT_DIR}/src/linux/tools/server_tcp.cxx
 		${ATLANTRONIC_GIT_DIR}/src/linux/tools/cli.cxx
 		${ATLANTRONIC_GIT_DIR}/src/linux/tools/qemu.cxx
 		${ATLANTRONIC_GIT_DIR}/src/linux/tools/joystick.cxx
@@ -20,7 +21,7 @@ include_directories("${ATLANTRONIC_GIT_DIR}/include")
 include_directories("${ATLANTRONIC_GIT_DIR}/include/discovery")
 include_directories("${ATLANTRONIC_GIT_DIR}/src")
 
-add_definitions(-DVERSION='"8022ac94045f26e01c327289e70a883c19cb8927"')
+add_definitions(-DVERSION='"156d382fd666a322e9fa6a7ebce2a405c7215acd"')
 
 orocos_component(arp_stm32-components ${source_files} )
 target_link_libraries(arp_stm32-components readline)

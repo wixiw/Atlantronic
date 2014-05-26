@@ -25,6 +25,7 @@ class Dynamixel: public Stm32TaskContext
         Dynamixel(const std::string& name);
 
         bool configureHook();
+        bool startHook();
         void updateHook();
 
         /**
