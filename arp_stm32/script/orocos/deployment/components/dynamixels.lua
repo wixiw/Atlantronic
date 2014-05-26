@@ -45,9 +45,10 @@ function DynamixelsDeployer:load()
 end
 
 function DynamixelsDeployer:connectDynamixel(name)
-        assert( Deployer:stream(name..".outState",      ros:topic("/Ubiquity/"..name.."/state")))
-        assert( Deployer:stream(name..".inPositionCmd",      ros:topic("/Ubiquity/"..name.."/position_cmd")))
-        assert( Deployer:stream(name..".inMaxTorqueAllowed",      ros:topic("/Ubiquity/"..name.."/max_torque")))
+        assert( Deployer:stream(name..".outState",            ros:topic("/Ubiquity/"..name.."/state")))
+        assert( Deployer:stream(name..".inPositionCmd",       ros:topic("/Ubiquity/"..name.."/position_cmd")))
+        assert( Deployer:stream(name..".inMaxErrorAllowed",   ros:topic("/Ubiquity/"..name.."/max_error")))
+        assert( Deployer:stream(name..".inMaxTorqueAllowed",  ros:topic("/Ubiquity/"..name.."/max_torque")))
 end
 
 function DynamixelsDeployer:connect()

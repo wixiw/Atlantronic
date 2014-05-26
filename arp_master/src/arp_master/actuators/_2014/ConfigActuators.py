@@ -33,3 +33,54 @@ class ActuatorConfigStateMachine(smach.StateMachine):
                           transitions={'done': transitionName})
                 
                         
+
+#
+# This state machine allows to put any dynamixel in its initial state.
+#
+class DefaultDynamixelState(smach.StateMachine):
+    def __init__(self):
+            smach.StateMachine.__init__(self, outcomes=['done','problem'])
+            
+            with self:
+                #Doigts
+                smach.StateMachine.add('LeftFingerDefault',
+                       DefaultFingerState("Left"),
+                       transitions={'done':'RightFingerDefault', 'problem':'problem'})
+                smach.StateMachine.add('RightFingerDefault',
+                       DefaultFingerState("Right"),
+                       transitions={'done':'LeftCannonDefault', 'problem':'problem'})
+                
+                #Canons
+                smach.StateMachine.add('LeftCannonDefault',
+                       DefaultCannonState("Left"),
+                       transitions={'done':'RightCannonDefault', 'problem':'problem'})
+                smach.StateMachine.add('RightCannonDefault',
+                       DefaultCannonState("Right"),
+                       transitions={'done':'done', 'problem':'problem'})         
+                
+                
+                
+class PrepareActuators(smach.StateMachine):
+    def __init__(self):
+        smach.StateMachine.__init__(self,outcomes=['prepared','problem'])
+        
+        with self:
+            smach.StateMachine.add('ActuatorsConfig',
+                      ActuatorConfigStateMachine(),
+                      transitions={'done':'SetStm32Power'})
+
+            smach.StateMachine.add('SetStm32Power',
+                      SendStm32PowerCmd(True),
+                      transitions={'done':'WaitStm32PowerCmd'})
+            smach.StateMachine.add('WaitStm32PowerCmd',
+                      WaitStm32PowerCmd(True),
+                      transitions={'power_state_reached':'ActuatorsSelfTest','timeout':'problem'})           
+                        
+            smach.StateMachine.add('ActuatorsSelfTest',
+                      SelfTest(),
+                      transitions={'succeeded':'prepared', 'problem':'problem'})
+            
+#             smach.StateMachine.add('DefaultDynamixelState',
+#                       DefaultDynamixelState(),
+#                       transitions={'done':'prepared', 'problem':'problem'})
+                               

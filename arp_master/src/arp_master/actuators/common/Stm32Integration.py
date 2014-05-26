@@ -16,8 +16,30 @@ from std_msgs.msg import *
 #
 class SendStm32PowerCmd(StaticSendOnTopic):
     def __init__(self, p_powerOn):
-        StaticSendOnTopic.__init__(self, "/Ubiquity/powerState", Bool, Bool(p_powerOn))
+        StaticSendOnTopic.__init__(self, "/Ubiquity/stm32_power_request", Bool, Bool(p_powerOn))
 
+#
+# You may wait for power to be effectively in a predefined state.
+# @param Bool p_expectedPower : set to true wait power on or false to wait power off
+#
+class WaitStm32PowerCmd(ReceiveFromTopic):
+    def __init__(self, p_expectedPower):
+        ReceiveFromTopic.__init__(self, "/Ubiquity/powerState", PowerStatusMsg, p_outcomes=['power_state_reached'], p_timeout=5)
+        #remember power
+        self.expectedPower = p_expectedPower
+
+    def executeTransitions(self):    
+        #if no message has been received yet, just wait again
+        if self.msg is None:
+            return
+        #end with success if the power is as expected
+        if self.msg.isPowerOn is self.expectedPower:
+            return 'power_state_reached' 
+        #if the AU is pushed : warn the user
+        if self.msg.isEmergencyStopActive is True:
+            rospy.logerror("AU pushed !!!!!")
+            return
+        #else : continue to wait
 
 #
 # You may drive a pump with this state. It send a single command, it is *not* periodic.
@@ -62,14 +84,18 @@ class WaitDynamixelReachedPosition(ReceiveFromTopic):
     def executeTransitions(self):    
         #if no message has been received yet, just wait again
         if self.msg is None:
+            #print("!!!!!!! *** "+self.topicName+" WaitDynamixelReachedPosition : None")
             return
         #end with success if the dynamixel is target_reached
         if self.msg.target_reached is True:
+            #print("!!!!!!! *** "+self.topicName+" WaitDynamixelReachedPosition : Position Reached")
             return 'pos_reached' 
         #if the servo is stucked end with failure
         if self.msg.stucked is True:
+            #print("!!!!!!! *** "+self.topicName+" WaitDynamixelReachedPosition : Stucked")
             return 'stucked'
-        #else : continue to wait
+        #else : #continue to wait
+        #    print("!!!!!!! *** "+self.topicName+" WaitDynamixelReachedPosition : Continue to wait")
          
 #    
 # Use this state to send a blocking "goto" command to list of dynamixels
@@ -145,7 +171,13 @@ class AmbiDynamixelCmd():
     #return the name of the dynamixel to drive depending on the color
     #@param String p_color : match color
     def getName(self, p_color):
+        #rospy.loginfo("AmbiDynamixelCmd color : " + p_color)
+        #rospy.loginfo("AmbiDynamixelCmd side : " + self.side)
+        #rospy.loginfo("AmbiDynamixelCmd name : " + self.name)
         return toAmbiSide(self.side, p_color) + self.name
+        
+    def getYellowName(self):
+        return self.side + "Yellow" + self.name;
         
     #return the position cmd of the dynamixel to drive depending on the color
     #@param String p_color : match color
@@ -172,7 +204,10 @@ class AmbiDynamixelNonBlockingPositionCmd(DynamicSendOnTopic):
         
     #Overrided to provide the topic name and the message from the AmbiDynamixelCmd
     def publish(self):
-        color = Data.color
+        #TODO a corriger
+        color = "red"
+        print("AmbiDynamixelNonBlockingPositionCmd publishing in : /Ubiquity/"+self.cmd.getName(color)+"/position_cmd")
+        #rospy.loginfo("AmbiDynamixelNonBlockingPositionCmd value : " + str(self.cmd.getPositionCmd(color)))
         topicPublisher = rospy.Publisher("/Ubiquity/"+self.cmd.getName(color)+"/position_cmd", Float32)
         topicPublisher.publish( Float32(self.cmd.getPositionCmd(color)) )
         
@@ -184,30 +219,20 @@ class AmbiDynamixelNonBlockingPositionCmd(DynamicSendOnTopic):
 #
 # @param dynamixelName : String - the name of the dynamixel to drive
 #
-class AmbiWaitDynamixelReachedPosition(ReceiveFromTopic):
+class AmbiWaitDynamixelReachedPosition(WaitDynamixelReachedPosition):
     def __init__(self, p_ambiDynamixelCmd):
-        ReceiveFromTopic.__init__(self, "notDefinedYet", DynamixelState,
-            p_outcomes=['pos_reached','stucked'], p_timeout=2.0)
+        WaitDynamixelReachedPosition.__init__(self, "notDefinedYet")
         
         #remember command
         self.cmd = p_ambiDynamixelCmd
 
     def executeIn(self):
-        self.topicName = "/Ubiquity/"+self.cmd.getName(Data.color)+"/state"
+        #TODO a corriger
+        color = "red"
+        self.topicName = "/Ubiquity/"+self.cmd.getName(color)+"/state"
         ReceiveFromTopic.executeIn(self)
         return
 
-    def executeTransitions(self):    
-        #if no message has been received yet, just wait again
-        if self.msg is None:
-            return
-        #end with success if the dynamixel is target_reached
-        if self.msg.target_reached is True:
-            return 'pos_reached' 
-        #if the servo is stucked end with failure
-        if self.msg.stucked is True:
-            return 'stucked'
-        #else : continue to wait
         
 
 #    
@@ -222,27 +247,27 @@ class AmbiDynamixelGoto(smach.StateMachine):
         with self: 
             for i,ambiDynamixelCmd in enumerate(p_ambiDynamixelCmdList):
                 
-                stateName = 'AmbiSendCommandToLeft' + ambiDynamixelCmd.name
+                stateName = 'AmbiSendCommandTo' + ambiDynamixelCmd.getYellowName()
                 if i >= len(p_ambiDynamixelCmdList)-1:
                     transitionName = 'Wait'
                 else:
-                    transitionName = 'AmbiSendCommandToLeft' + p_ambiDynamixelCmdList[i+1].name
-                    
+                    transitionName = 'AmbiSendCommandTo' + p_ambiDynamixelCmdList[i+1].getYellowName()
+                #print("[i="+str(i)+"]####################  AmbiDynamixelGoto stateName="+stateName + " transition="+transitionName)
                 smach.StateMachine.add(stateName,
                     AmbiDynamixelNonBlockingPositionCmd(ambiDynamixelCmd),
                     transitions={ 'done' : transitionName })
         
             smach.StateMachine.add('Wait',
                     WaiterState(0.2),
-                    transitions={'timeout':'AmbiWaitLeft' + p_ambiDynamixelCmdList[0].name + 'PositionReached'})
+                    transitions={'timeout':'AmbiWait' + p_ambiDynamixelCmdList[0].getYellowName() + 'PositionReached'})
               
             for j,ambiDynamixelCmd in enumerate(p_ambiDynamixelCmdList):   
-                stateName = 'AmbiWaitLeft' + ambiDynamixelCmd.name + 'PositionReached'
-                if i >= len(p_ambiDynamixelCmdList)-1:
+                stateName = 'AmbiWait' + ambiDynamixelCmd.getYellowName() + 'PositionReached'
+                if j >= len(p_ambiDynamixelCmdList)-1:
                     transitionName = 'succeeded'
                 else:
-                    transitionName = 'AmbiWaitLeft' + p_ambiDynamixelCmdList[j+1].name + 'PositionReached'
-                    
+                    transitionName = 'AmbiWait' + p_ambiDynamixelCmdList[j+1].getYellowName() + 'PositionReached'
+                #print("[j="+str(j)+"]####################  AmbiDynamixelGoto stateName="+stateName + " transition="+transitionName)
                 smach.StateMachine.add(stateName,
                     AmbiWaitDynamixelReachedPosition(ambiDynamixelCmd),
                     transitions={'pos_reached':transitionName, 'stucked':'problem', 'timeout':'problem'})
@@ -275,7 +300,9 @@ class AmbiWaitForOmronValue(WaitForOmronValue):
         self.ambiOmron = p_ambiOmron
         
     def executeIn(self):
-        self.topicName = "/Ubiquity/"+self.ambiOmron.getName(Data.color)+"/object_present"
+        #TODO a corriger
+        color = "red"
+        self.topicName = "/Ubiquity/"+self.ambiOmron.getName(color)+"/object_present"
         WaitForOmronValue.executeIn(self)
         return
  

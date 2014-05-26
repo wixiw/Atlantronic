@@ -4,15 +4,15 @@ import struct
 
 
 class PowerStatusMsg(roslib.message.Message):
-  _md5sum = "231632d2d2015d0eddf0da49b1f72006"
+  _md5sum = "77cc9102eee16420f120ed40456af69c"
   _type = "arp_core/PowerStatusMsg"
   _has_header = False #flag to mark the presence of a Header object
   _full_text = """float32 voltage
 bool isPowerOn
- 
+bool isEmergencyStopActive 
 """
-  __slots__ = ['voltage','isPowerOn']
-  _slot_types = ['float32','bool']
+  __slots__ = ['voltage','isPowerOn','isEmergencyStopActive']
+  _slot_types = ['float32','bool','bool']
 
   def __init__(self, *args, **kwds):
     """
@@ -22,7 +22,7 @@ bool isPowerOn
     changes.  You cannot mix in-order arguments and keyword arguments.
     
     The available fields are:
-       voltage,isPowerOn
+       voltage,isPowerOn,isEmergencyStopActive
     
     @param args: complete set of field values, in .msg order
     @param kwds: use keyword arguments corresponding to message field names
@@ -35,9 +35,12 @@ bool isPowerOn
         self.voltage = 0.
       if self.isPowerOn is None:
         self.isPowerOn = False
+      if self.isEmergencyStopActive is None:
+        self.isEmergencyStopActive = False
     else:
       self.voltage = 0.
       self.isPowerOn = False
+      self.isEmergencyStopActive = False
 
   def _get_types(self):
     """
@@ -53,7 +56,7 @@ bool isPowerOn
     """
     try:
       _x = self
-      buff.write(_struct_fB.pack(_x.voltage, _x.isPowerOn))
+      buff.write(_struct_f2B.pack(_x.voltage, _x.isPowerOn, _x.isEmergencyStopActive))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -67,9 +70,10 @@ bool isPowerOn
       end = 0
       _x = self
       start = end
-      end += 5
-      (_x.voltage, _x.isPowerOn,) = _struct_fB.unpack(str[start:end])
+      end += 6
+      (_x.voltage, _x.isPowerOn, _x.isEmergencyStopActive,) = _struct_f2B.unpack(str[start:end])
       self.isPowerOn = bool(self.isPowerOn)
+      self.isEmergencyStopActive = bool(self.isEmergencyStopActive)
       return self
     except struct.error as e:
       raise roslib.message.DeserializationError(e) #most likely buffer underfill
@@ -85,7 +89,7 @@ bool isPowerOn
     """
     try:
       _x = self
-      buff.write(_struct_fB.pack(_x.voltage, _x.isPowerOn))
+      buff.write(_struct_f2B.pack(_x.voltage, _x.isPowerOn, _x.isEmergencyStopActive))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -101,12 +105,13 @@ bool isPowerOn
       end = 0
       _x = self
       start = end
-      end += 5
-      (_x.voltage, _x.isPowerOn,) = _struct_fB.unpack(str[start:end])
+      end += 6
+      (_x.voltage, _x.isPowerOn, _x.isEmergencyStopActive,) = _struct_f2B.unpack(str[start:end])
       self.isPowerOn = bool(self.isPowerOn)
+      self.isEmergencyStopActive = bool(self.isEmergencyStopActive)
       return self
     except struct.error as e:
       raise roslib.message.DeserializationError(e) #most likely buffer underfill
 
 _struct_I = roslib.message.struct_I
-_struct_fB = struct.Struct("<fB")
+_struct_f2B = struct.Struct("<f2B")

@@ -30,7 +30,6 @@ Dynamixel::Dynamixel(const std::string& name) :
         propDynamixelFamily(0)
 {
     createOrocosInterface();
-    attrMaxTorque = propMaxTorque;
 }
 
 bool Dynamixel::configureHook()
@@ -53,6 +52,8 @@ bool Dynamixel::configureHook()
         return false;
     }
 
+    attrMaxTorque = propMaxTorque;
+    attrMaxError = propPrecision;
 
     return true;
 }
@@ -75,10 +76,15 @@ void Dynamixel::updateHook()
         LOG(Error) << "updateHook() : mutex.lock()" << endlog();
     }
 
-    attrState.connected       = isConnected();
-    attrState.stucked         = isStucked();
-    attrState.target_reached   = isTargetReached();
-    attrState.position       = getPosition();
+    attrStucked             = isStucked();
+    attrConnected           = isConnected();
+    attrIsTargetReached     = isTargetReached();
+    attrPositionMeasure     = getPosition();
+
+    attrState.stucked         = attrStucked;
+    attrState.connected       = attrConnected;
+    attrState.target_reached  = attrIsTargetReached;
+    attrState.position        = attrPositionMeasure;
 
     mutex.unlock();
 
@@ -105,6 +111,13 @@ void Dynamixel::updateHook()
             attrMaxTorque = 0;
         }
         sendMaxTorqueCmd(attrMaxTorque);
+    }
+
+    std_msgs::Float32 errorConfig;
+    if( RTT::NewData == inMaxErrorAllowed.read(errorConfig) )
+    {
+        attrMaxError = errorConfig.data;
+        sendPrecisionCmd(attrMaxError);
     }
 }
 
@@ -152,6 +165,7 @@ bool Dynamixel::isTargetReached()
 
         default:
             targetReached = false;
+            LOG(Error) << "isTargetReached() : Unknown family." << endlog();
             break;
     }
 
@@ -173,6 +187,7 @@ bool Dynamixel::isStucked()
 
         default:
             stuck = false;
+            LOG(Error) << "isStucked() : Unknown family." << endlog();
             break;
     }
     return stuck;
@@ -194,6 +209,7 @@ bool Dynamixel::isConnected()
 
         default:
             connected = false;
+            LOG(Error) << "isConnected() : Unknown family." << endlog();
             break;
     }
     return connected;
@@ -216,6 +232,7 @@ double Dynamixel::getPosition()
             break;
 
         default:
+            LOG(Error) << "getPosition() : Unknown family." << endlog();
             position = 0.0;
             break;
     }
@@ -227,21 +244,23 @@ void Dynamixel::createOrocosInterface()
 {
     addAttribute("attrStm32Time", m_robotItf.current_time);
 
-    addAttribute("attrConnected",       attrState.connected);
-    addAttribute("attrStucked",         attrState.stucked);
-    addAttribute("attrTargetReached",   attrState.target_reached);
-    addAttribute("attrPosition",        attrState.position);
     addAttribute("attrPositionCmd",     attrPositionCmd);
     addAttribute("attrMaxTorque",       attrMaxTorque);
+    addAttribute("attrMaxError",        attrMaxError);
+    addAttribute("attrStucked",         attrStucked);
+    addAttribute("attrConnected",       attrConnected);
+    addAttribute("attrTargetReached",   attrIsTargetReached);
+    addAttribute("attrPositionMeasure", attrPositionMeasure);
 
 
-    addProperty("propPrecision", propPrecision);
-    addProperty("propMaxTorque", propMaxTorque);
-    addProperty("propId", propId);
-    addProperty("propDynamixelFamily", propDynamixelFamily);
+    addProperty("propPrecision",        propPrecision);
+    addProperty("propMaxTorque",        propMaxTorque);
+    addProperty("propId",               propId);
+    addProperty("propDynamixelFamily",  propDynamixelFamily);
 
-    addEventPort("inPositionCmd", inPositionCmd);
-    addEventPort("inMaxTorqueAllowed", inMaxTorqueAllowed);
-    addPort("outState", outState);
+    addEventPort("inPositionCmd",       inPositionCmd);
+    addEventPort("inMaxTorqueAllowed",  inMaxTorqueAllowed);
+    addEventPort("inMaxErrorAllowed",   inMaxErrorAllowed);
+    addPort("outState",                 outState);
 }
 }

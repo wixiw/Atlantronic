@@ -46,34 +46,39 @@ class MainStateMachine(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['end'])
         with self:
-            smach.StateMachine.add('ActuatorsConfig',
-                      ActuatorConfigStateMachine(),
-                      transitions={'done':'SetStm3Power'})
+            smach.StateMachine.add('WaitForOrocos', 
+                      WaiterState(5.0),
+                      transitions={'timeout':'PrepareActuators'})
                         
-            smach.StateMachine.add('SetStm3Power',
-                      SendStm32PowerCmd(True),
-                      transitions={'done':'SelfTest'})
-
-#             smach.StateMachine.add('DefaultCannonState',
-#                       DefaultCannonState('Left'),
-#                       transitions={'done':'WaitABit', 'problem':'end'})
+            smach.StateMachine.add('PrepareActuators',
+                       PrepareActuators(),
+                       transitions={'prepared':'WaitABit','problem':'WaitABit'})
+ 
 
 #             smach.StateMachine.add('WaitABit',
-#                       WaiterState(0.5),
-#                       transitions={'timeout':'AmbiShootOneBall'})                        
-#             
-#             smach.StateMachine.add('AmbiShootOneBall',
-#                       AmbiShootOneBall('Left'),
-#                       transitions={'shot':'end', 'blocked':'end'})
-                         
-            smach.StateMachine.add('SelfTest', 
-                      SelfTest(),
-                      transitions={'succeeded':'WaitABit','problem':'end'})
-             
+#                       WaiterState(2),
+#                       transitions={'timeout':'DefaultCannonState'})
+#              
+#             smach.StateMachine.add('DefaultCannonState',
+#                       DefaultCannonState('Left'),
+#                       transitions={'done':'WaitABitZ', 'problem':'end'})
+     
             smach.StateMachine.add('WaitABit',
                       WaiterState(2),
-                      transitions={'timeout':'SelfTest'})
-            
+                      transitions={'timeout':'AmbiShootOneBall'})                        
+                
+            smach.StateMachine.add('AmbiShootOneBall',
+                      AmbiShootOneBall('Left'),
+                      transitions={'shot':'WaitABit', 'blocked':'WaitABit'})
+#             
+#             smach.StateMachine.add('WaitABit2',
+#                       WaiterState(2),
+#                       transitions={'timeout':'SelfTest'})
+#                         
+#             smach.StateMachine.add('SelfTest', 
+#                       SelfTest(),
+#                       transitions={'succeeded':'WaitABit','problem':'end'})
+             
 
    
 ########################## EXECUTABLE 

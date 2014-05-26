@@ -24,18 +24,10 @@ class StartSequence2014(smach.StateMachine):
         smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
         
         with self:
-            smach.StateMachine.add('ActuatorsConfig',
-                      ActuatorConfigStateMachine(),
-                      transitions={'done':'ActuatorsSelfTest'})
+            smach.StateMachine.add('PrepareActuators',
+                      PrepareActuators(),
+                      transitions={'prepared':'SetInitialPosition'})
 
-            smach.StateMachine.add('SetStm3Power',
-                      SendStm32PowerCmd(True),
-                      transitions={'done':'ActuatorsSelfTest'})
-                        
-            smach.StateMachine.add('ActuatorsSelfTest',
-                      SelfTest(),
-                      transitions={'succeeded':'SetInitialPosition', 'problem':'problem'})
-            
             smach.StateMachine.add('SetInitialPosition',
                       SetPositionState(Pose2D(1.350,0.500,0)),
                       transitions={'succeeded':'WaitForStartUnPlug', 'timeout':'problem'})

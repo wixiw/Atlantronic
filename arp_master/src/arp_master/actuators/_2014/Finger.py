@@ -12,79 +12,20 @@ from arp_master.commonStates import *
 from arp_master.strat_2014 import *
 from arp_master.actuators import *
 
-#TODO
-##
-##
-## Remettre le preemptive
-## En faire un vrai action server, là c'est un peu compliqué d'interomptre une action
+ 
+#
+# This state machine allows to put the cannon in its initial state.
+#
 
-# class FingerMainStateMachine(PreemptiveStateMachine):
-#     def __init__(self, p_side):
-#         PreemptiveStateMachine.__init__(self,outcomes=['end','problem'])
-# 
-#         #Configuration of reference positions
-#         self.refPos = { 'UP' : pi/4.0,
-#                         'DOWN' : 0.0}
-#         #Configuration of reference suction powers
-#         self.refSuction = { 'HOLD':100,
-#                            'IDLE':0 }
-#         
-#         with self:      
-#             PreemptiveStateMachine.add('EmptyUpPos',
-#                       FingerAutoSideCommand(p_side, self.refPos['UP']),
-#                       transitions={'succeeded':'WaitCommand', 'problem':'problem'})
-#             
-#             PreemptiveStateMachine.add('WaitCommand',
-#                       FingerWaitForStratRequest(p_side),
-#                       transitions={'pick':'SearchItemToPick',
-#                                    'unload':'UnloadItem'})
-#                         
-#             #prise
-#             PreemptiveStateMachine.add('SearchItemToPick',
-#                       FingerAutoSideCommand(p_side, self.refPos['DOWN']),
-#                       transitions={'succeeded':'WaitDown', 'problem':'problem'})    
-#             
-#             PreemptiveStateMachine.add('SearchItemToPick',
-#                       FingerPumpCommand(p_side, self.refSuction['HOLD']),
-#                       transitions={'done':'WaitItemPresent'})   
-#             
-#             PreemptiveStateMachine.add('WaitItemPresent',
-#                       FingerWaitForObjectPresent(),
-#                       transitions={'object_present':'UpLoaded'})  
-#             
-#             PreemptiveStateMachine.add('UpLoaded',
-#                       FingerAutoSideCommand(p_side, self.refPos['UP']),
-#                       transitions={'succeeded':'WaitCommand', 'problem':'problem'})  
-#             
-#             
-#             #depose
-#             PreemptiveStateMachine.add('UnloadItem',
-#                       FingerAutoSideCommand(p_side, self.refPos['DOWN']),
-#                       transitions={'succeeded':'ReleaseItem', 'problem':'problem'})    
-#             
-#             PreemptiveStateMachine.add('ReleaseItem',
-#                       FingerPumpCommand(p_side, self.refSuction['IDLE']),
-#                       transitions={'done':'WaitABit'})    
-#             
-#             PreemptiveStateMachine.add('WaitABit',
-#                       WaiterState(0.5),
-#                      transitions={'timeout':'EmptyUpPos'})    
-#            
-#Remplacer UserDebugTrigger par vraie etat une fois fini            
-#
-##Test?
-#
-#            PreemptiveStateMachine.add('Test',
-#                      UserDebugTrigger("Presence feu ?"),
-#                      transitions={'continue':'FullDownDrop'})
-#            
-#            PreemptiveStateMachine.add('FullDownDrop',
-#                      UserDebugTrigger("Position basse pleine depose"),
-#                      transitions={'continue':'EmptyDownDrop'})
-#            
-#            PreemptiveStateMachine.add('EmptyDownDrop',
-#                      UserDebugTrigger("Position basse vide post depose"),
-#                      transitions={'continue':'EmptyUpPos'})  
+class DefaultFingerState(smach.StateMachine):
+    def __init__(self, p_side):
+            smach.StateMachine.__init__(self, outcomes=['done','problem'])
+            
+            with self:      
+                smach.StateMachine.add('FingerDefaultPosition',
+                       AmbiFingerCommand(p_side, Robot2014.fingerLeftYellowPos['UP']),
+                       transitions={'succeeded':'done', 'problem':'problem'})
+ 
             
 #
 # Use this state machine to pick an object with the "p_side" finger (in the yellow config) automatically symetrized for match color
@@ -206,8 +147,8 @@ class FingerTorqueConfig(DynamixelTorqueConfig):
 #
 class AmbiFingerCommand(AmbiDynamixelGoto):
     def __init__(self, p_side, p_position):
-        AmbiDynamixelGoto.__init__(self, p_side,
-                                   [ AmbiDynamixelCmd("Finger",p_position) ]
+        AmbiDynamixelGoto.__init__(self,
+                                   [ AmbiDynamixelCmd(p_side, "Finger",p_position) ]
                                     )          
 
 #

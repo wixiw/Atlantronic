@@ -39,6 +39,11 @@ class Dynamixel: public Stm32TaskContext
         RTT::InputPort<std_msgs::UInt8> inMaxTorqueAllowed;
 
         /**
+         * Set the max error of dynamixel in rad (target reached when fabs(error) <= inMaxErrorAllowed)
+         */
+        RTT::InputPort<std_msgs::Float32> inMaxErrorAllowed;
+
+        /**
          * Publish the internal state
          */
         RTT::OutputPort<arp_core::DynamixelState> outState;
@@ -52,6 +57,11 @@ class Dynamixel: public Stm32TaskContext
         arp_core::DynamixelState attrState;
         double attrPositionCmd;
         int attrMaxTorque;
+        double attrMaxError;
+        bool attrStucked;
+        bool attrConnected;
+        bool attrIsTargetReached;
+        double attrPositionMeasure;
 
         double propPrecision;
         int propMaxTorque;

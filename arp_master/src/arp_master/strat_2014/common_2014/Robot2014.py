@@ -33,28 +33,28 @@ class Robot2014(RobotVierge):
                              ]
         
     dynamixelMaxTorqueList = {                       
-                         'LeftCannonFinger':        0,#reglage a faire
-                         'RightCannonFinger':       0,#reglage a faire
-                         'LeftCannonStocker':       35,
-                         'RightCannonStocker':      35,
-                         'LeftFinger':              40,
-                         'RightFinger':             40
+                         'LeftCannonFinger':        70,
+                         'RightCannonFinger':       70,
+                         'LeftCannonStocker':       30,
+                         'RightCannonStocker':      30,
+                         'LeftFinger':              45,
+                         'RightFinger':             45
                          }
     
     dynamixelMinPosList = {                       
-                         'LeftCannonFinger':        0,#reglage a faire
-                         'RightCannonFinger':       0,#reglage a faire
-                         'LeftCannonStocker':       -1.0,
+                         'LeftCannonFinger':        -3,
+                         'RightCannonFinger':       1,
+                         'LeftCannonStocker':       1.0,
                          'RightCannonStocker':      -1.0,
                          'LeftFinger':              -0.2,
                          'RightFinger':             0.2
                          }
     
     dynamixelMaxPosList = {                       
-                         'LeftCannonFinger':        0,#reglage a faire
-                         'RightCannonFinger':       0,#reglage a faire
-                         'LeftCannonStocker':       0, 
-                         'RightCannonStocker':      0,
+                         'LeftCannonFinger':        0,
+                         'RightCannonFinger':       -1,
+                         'LeftCannonStocker':       0.0,
+                         'RightCannonStocker':      0.0,
                          'LeftFinger':              1.4,
                          'RightFinger':             -1.4
                          }
@@ -69,8 +69,8 @@ class Robot2014(RobotVierge):
                      'IDLE':0 }
     
     #Configuration of Cannon reference positions
-    cannonFingerLeftYellowPos = {   'ARMED'       : 0.0,
-                                    'GOINFRONT'   : 0.0,
-                                    'SHOOT'       : 0.0}
+    cannonFingerLeftYellowPos = {   'ARMED'       : 0.9,
+                                    'GOINFRONT'   : -0.8,
+                                    'SHOOT'       : 1.7}
     cannonStockerLeftYellowPos = {  'LOADING'     : dynamixelMinPosList['LeftCannonStocker'],
                                     'UNLOADING'   : dynamixelMaxPosList['LeftCannonStocker']}

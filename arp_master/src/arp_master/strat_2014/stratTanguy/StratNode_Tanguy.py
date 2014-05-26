@@ -65,9 +65,9 @@ class MainStateMachine(smach.StateMachine):
 
             smach.StateMachine.add('StartSequence',
 # Uncomment either this line to perform the 2014 init sequence with recalOnBorders
-                                  InitStates2014.StartSequence2014(Table2014.P_START_POS),
+#                                  InitStates2014.StartSequence2014(Table2014.P_START_POS),
 # Either this line to start directly from the START_POS 
-#                                   Strat_StartSequence.StartSequence(Table2014.P_START_POS),
+                                   Strat_StartSequence.StartSequence(Table2014.P_START_POS),
                                    transitions={'gogogo':'Opening','problem':'end'})
             
             smach.StateMachine.add('Opening', 

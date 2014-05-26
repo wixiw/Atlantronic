@@ -14,7 +14,6 @@ from arp_master.actuators import *
 #
 # This state machine allows to put the cannon in its initial state.
 #
-
 class DefaultCannonState(smach.StateMachine):
     def __init__(self, p_side):
             smach.StateMachine.__init__(self, outcomes=['done','problem'])
