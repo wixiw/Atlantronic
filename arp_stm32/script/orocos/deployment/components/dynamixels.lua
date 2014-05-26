@@ -13,11 +13,11 @@ local rightCannonStocker 	= "RightCannonStocker"
 local leftFinger 			= "LeftFinger"
 local rightFinger 			= "RightFinger"
 
-local armSlider 			= "ArmSlider"
-local armShoulder 			= "ArmShoulder"
-local armShoulderElbow 		= "ArmShoulderElbow"
-local armWristElbow 		= "ArmWristElbow"
-local armWrist 				= "ArmWrist"
+--local armSlider 			= "ArmSlider"
+--local armShoulder 			= "ArmShoulder"
+--local armShoulderElbow 		= "ArmShoulderElbow"
+--local armWristElbow 		= "ArmWristElbow"
+--local armWrist 				= "ArmWrist"
 
 function DynamixelsDeployer:loadCpnt(name, type)
 	assert( Deployer:loadComponent(name,type))
@@ -36,11 +36,11 @@ function DynamixelsDeployer:load()
 	DynamixelsDeployer:loadCpnt(	leftFinger, 			"arp_stm32::Dynamixel")
 	DynamixelsDeployer:loadCpnt(	rightFinger, 			"arp_stm32::Dynamixel")
 	
-	DynamixelsDeployer:loadCpnt(	armSlider, 				"arp_stm32::Dynamixel")
-	DynamixelsDeployer:loadCpnt(	armShoulder, 			"arp_stm32::Dynamixel")
-	DynamixelsDeployer:loadCpnt(	armShoulderElbow, 		"arp_stm32::Dynamixel")
-	DynamixelsDeployer:loadCpnt(	armWristElbow, 			"arp_stm32::Dynamixel")
-	DynamixelsDeployer:loadCpnt(	armWrist,				"arp_stm32::Dynamixel")
+--	DynamixelsDeployer:loadCpnt(	armSlider, 				"arp_stm32::Dynamixel")
+--	DynamixelsDeployer:loadCpnt(	armShoulder, 			"arp_stm32::Dynamixel")
+--	DynamixelsDeployer:loadCpnt(	armShoulderElbow, 		"arp_stm32::Dynamixel")
+--	DynamixelsDeployer:loadCpnt(	armWristElbow, 			"arp_stm32::Dynamixel")
+--	DynamixelsDeployer:loadCpnt(	armWrist,				"arp_stm32::Dynamixel")
 	return true
 end
 
@@ -61,11 +61,11 @@ function DynamixelsDeployer:connect()
 	DynamixelsDeployer:connectDynamixel(leftFinger)
 	DynamixelsDeployer:connectDynamixel(rightFinger)
 	
-	DynamixelsDeployer:connectDynamixel(armSlider)
-	DynamixelsDeployer:connectDynamixel(armShoulder)
-	DynamixelsDeployer:connectDynamixel(armShoulderElbow)
-	DynamixelsDeployer:connectDynamixel(armWristElbow)
-	DynamixelsDeployer:connectDynamixel(armWrist)
+--	DynamixelsDeployer:connectDynamixel(armSlider)
+--	DynamixelsDeployer:connectDynamixel(armShoulder)
+--	DynamixelsDeployer:connectDynamixel(armShoulderElbow)
+--	DynamixelsDeployer:connectDynamixel(armWristElbow)
+--	DynamixelsDeployer:connectDynamixel(armWrist)
 
 	return true
 end

@@ -144,7 +144,7 @@ void Discovery::sendHeartBeat()
     int errorCode = m_robotItf.heartbeat_update();
     if (errorCode < 0)
     {
-        LOG(Error) << "Failed to set send to heartbeat." << endlog();
+        LOG(Error) << "Failed to send to heartbeat." << endlog();
     }
 }
 

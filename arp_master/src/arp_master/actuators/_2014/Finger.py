@@ -96,31 +96,78 @@ class AmbiFingerPickObject(smach.StateMachine):
             with self:      
                 smach.StateMachine.add('GoDown',
                        AmbiFingerCommand(p_side, Robot2014.fingerLeftYellowPos['DOWN']),
-                       transitions={'succeeded':'SearchItemToPick', 'problem':'blocked'})
+                       transitions={'succeeded':'SearchItemToPick', 'problem':'RetryGoDown'})
+
+                # ==> Blocking Point D
 
                 smach.StateMachine.add('SearchItemToPick',
                        AmbiWaitFingerOmronValue(p_side, True, 10.0),
-                       transitions={'triggered':'SuckBitch', 'timeout':'notFound'})    
+                       transitions={'triggered':'SuckMyLovingPump', 'timeout':'GoUpAfterNotFound'})    
 
-                smach.StateMachine.add('SuckBitch',
+                # ==> Functional Error A
+
+                smach.StateMachine.add('SuckMyLovingPump',
                        FingerPumpCommand(p_side, suctionPower['HOLD']),
-                       transitions={'done':'GoUp'})  
+                       transitions={'done':'WaitABit'})  
+
+                smach.StateMachine.add('WaitABit',
+                       WaiterState(0.5),
+                       transitions={'timeout':'WaitForObjectPresent'})
+                
+                smach.StateMachine.add('WaitForObjectPresent',
+                       FingerWaitForObjectPresent(p_side, p_timeout),
+                       transitions={'object_present':'GoUp', 'timeout':'ReTrySuckObject'})                  
+
+                # ==> Blocking Point B
                 
                 smach.StateMachine.add('GoUp',
                        AmbiFingerCommand(p_side, Robot2014.fingerLeftYellowPos['UP']),
-                       transitions={'succeeded':'CheckPresence', 'problem':'blocked'})
+                       transitions={'succeeded':'CheckPresence', 'problem':'RetryGoUp'})
+                
+                # ==> Blocking Point C
                 
                 smach.StateMachine.add('CheckPresence',
-                       AmbiWaitFingerOmronValue(p_side, True, 0),
-                       transitions={'triggered':'picked', 'timeout':'notFound'})  
+                       FingerWaitForObjectPresent(p_side, 0),
+                       transitions={'triggered':'picked', 'timeout':'notFound'})
+
+#Functional Error A: Raising the finger to return to initial state
+                smach.StateMachine.add('GoUpAfterNotFound',
+                       AmbiFingerCommand(p_side, Robot2014.fingerLeftYellowPos['UP']),
+                       transitions={'succeeded':'notFound', 'problem':'blocked'})  
+
+#Blocking Point B: If object is not detected by pump after sucking, probably because objet was not parralel to the ground
+                smach.StateMachine.add('ReTrySuckObject',
+                       FingerPumpCommand(p_side, suctionPower['HOLD']),
+                       transitions={'done':'MoveUp'})  
+                
+                smach.StateMachine.add('MoveUp',
+                       AmbiFingerCommand(p_side, Robot2014.fingerLeftYellowPos['UP']),
+                       transitions={'succeeded':'MoveToFloor', 'problem':'blocked'})
+
+                smach.StateMachine.add('MoveToFloor',
+                       AmbiFingerCommand(p_side, Robot2014.fingerLeftYellowPos['FLOOR']),
+                       transitions={'succeeded':'WaitAWhile', 'problem':'blocked'})
+
+                smach.StateMachine.add('WaitAWhile',
+                       WaiterState(0.5),
+                       transitions={'timeout':'CheckObjectPresence'})
+                
+                smach.StateMachine.add('CheckObjectPresence',
+                       FingerWaitForObjectPresent(p_side, p_timeout),
+                       transitions={'object_present':'GoUp', 'timeout':'blocked'})                  
+        
+#Blocking Point C: If something is stucked between the robot and the finger, the finger can not go up => retry
+
+#Blocking Point D: If something is between the finger and the floor, the finger can not go down => retry
+           
 #
 # Use this state to wait for an object to be present in the suction cup
 # @param String p_side : the side of the finger on the robot
 #
 class FingerWaitForObjectPresent(ReceiveFromTopic):
-    def __init__(self, p_side):
+    def __init__(self, p_side, p_timeout):
         ReceiveFromTopic.__init__(self, "/Ubiquity/"+p_side+"FingerPump/object_present", Bool,
-                                  outcomes=['object_present']) 
+                                  outcomes=['object_present'], p_timeout=p_timeout) 
         
     def executeTransitions(self):
         #if no message has been received yet, just wait again

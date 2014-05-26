@@ -52,27 +52,27 @@ class MainStateMachine(smach.StateMachine):
                         
             smach.StateMachine.add('SetStm3Power',
                       SendStm32PowerCmd(True),
-                      transitions={'done':'DefaultCannonState'})
+                      transitions={'done':'SelfTest'})
 
-            smach.StateMachine.add('DefaultCannonState',
-                      DefaultCannonState('Left'),
-                      transitions={'done':'WaitABit', 'problem':'end'})
+#             smach.StateMachine.add('DefaultCannonState',
+#                       DefaultCannonState('Left'),
+#                       transitions={'done':'WaitABit', 'problem':'end'})
 
-            smach.StateMachine.add('WaitABit',
-                      WaiterState(0.5),
-                      transitions={'timeout':'AmbiShootOneBall'})                        
-            
-            smach.StateMachine.add('AmbiShootOneBall',
-                      AmbiShootOneBall('Left'),
-                      transitions={'shot':'end', 'blocked':'end'})
-                        
-#             smach.StateMachine.add('SelfTest', 
-#                       SelfTest(),
-#                       transitions={'succeeded':'WaitABit','problem':'end'})
-#             
 #             smach.StateMachine.add('WaitABit',
-#                       WaiterState(2),
-#                       transitions={'timeout':'SelfTest'})
+#                       WaiterState(0.5),
+#                       transitions={'timeout':'AmbiShootOneBall'})                        
+#             
+#             smach.StateMachine.add('AmbiShootOneBall',
+#                       AmbiShootOneBall('Left'),
+#                       transitions={'shot':'end', 'blocked':'end'})
+                         
+            smach.StateMachine.add('SelfTest', 
+                      SelfTest(),
+                      transitions={'succeeded':'WaitABit','problem':'end'})
+             
+            smach.StateMachine.add('WaitABit',
+                      WaiterState(2),
+                      transitions={'timeout':'SelfTest'})
             
 
    
