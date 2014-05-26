@@ -41,30 +41,54 @@ class AmbiShootOneBall(smach.StateMachine):
                 smach.StateMachine.add('LoadBall',
                        AmbiCannonBiCommand(p_side, Robot2014.cannonFingerLeftYellowPos['ARMED'], Robot2014.cannonStockerLeftYellowPos['LOADING']),
                        transitions={'succeeded':'WaitBallInStocker', 'problem':'blocked'})
-                
+                                
                 smach.StateMachine.add('WaitBallInStocker',
                        WaiterState(0.5),
                        transitions={'timeout':'ReadyToShoot'})    
                 
                 smach.StateMachine.add('ReadyToShoot',
                        AmbiCannonBiCommand(p_side, Robot2014.cannonFingerLeftYellowPos['ARMED'], Robot2014.cannonStockerLeftYellowPos['UNLOADING']),
-                       transitions={'succeeded':'WaitBallInShooter', 'problem':'blocked'})
+                       transitions={'succeeded':'WaitBallInShooter', 'problem':'ReLoadBall'})
                 
+                # ==> Blocking point A
+                                
                 smach.StateMachine.add('WaitBallInShooter',
                        WaiterState(0.5),
                        transitions={'timeout':'ShootBall'})
-                                    
+
                 smach.StateMachine.add('ShootBall',
                        AmbiCannonBiCommand(p_side, Robot2014.cannonFingerLeftYellowPos['SHOOT'], Robot2014.cannonStockerLeftYellowPos['UNLOADING']),
                        transitions={'succeeded':'CleanupPositions', 'problem':'blocked'})
-                
+                                
                 smach.StateMachine.add('CleanupPositions',
                        AmbiCannonBiCommand(p_side, Robot2014.cannonFingerLeftYellowPos['GOINFRONT'], Robot2014.cannonStockerLeftYellowPos['LOADING']),
-                       transitions={'succeeded':'CannonPositionCleaned', 'problem':'blocked'})
-                                
+                       transitions={'succeeded':'CannonPositionCleaned', 'problem':'ReClean'})
+                           
+                # ==> Blocking point B
+                                                
                 smach.StateMachine.add('CannonPositionCleaned',
                        AmbiCannonBiCommand(p_side, Robot2014.cannonFingerLeftYellowPos['ARMED'], Robot2014.cannonStockerLeftYellowPos['LOADING']),
                        transitions={'succeeded':'shot', 'problem':'blocked'})                 
+
+
+#Blocking point A : when the ball don't fall from Stocker to Shooter
+                smach.StateMachine.add('ReLoadBall',
+                       AmbiCannonBiCommand(p_side, Robot2014.cannonFingerLeftYellowPos['ARMED'], Robot2014.cannonStockerLeftYellowPos['LOADING']),
+                       transitions={'succeeded':'ReadyToShootNoFailure', 'problem':'blocked'})
+                
+                smach.StateMachine.add('ReadyToShootNoFailure',
+                       AmbiCannonBiCommand(p_side, Robot2014.cannonFingerLeftYellowPos['ARMED'], Robot2014.cannonStockerLeftYellowPos['UNLOADING']),
+                       transitions={'succeeded':'WaitBallInShooter', 'problem':'blocked'})
+
+#Blocking point B : when the CannonFinger still contain a ball while returning to LOADING potition
+                smach.StateMachine.add('ReClean',
+                       AmbiCannonBiCommand(p_side, Robot2014.cannonFingerLeftYellowPos['ARMED'], Robot2014.cannonStockerLeftYellowPos['UNLOADING']),
+                       transitions={'succeeded':'CleanupPositionsNoFailure', 'problem':'blocked'})
+
+                smach.StateMachine.add('CleanupPositionsNoFailure',
+                       AmbiCannonBiCommand(p_side, Robot2014.cannonFingerLeftYellowPos['GOINFRONT'], Robot2014.cannonStockerLeftYellowPos['LOADING']),
+                       transitions={'succeeded':'CannonPositionCleaned', 'problem':'blocked'})
+
 #
 # This state allows to send a blocking command to 2 cannon dynamixels simultaneously  
 #   
