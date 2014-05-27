@@ -13,6 +13,7 @@ file(
 		${ATLANTRONIC_GIT_DIR}/src/linux/tools/cmd.cxx
 		${ATLANTRONIC_GIT_DIR}/src/kernel/hokuyo_tools.cxx
 		${ATLANTRONIC_GIT_DIR}/src/kernel/math/vect_plan.cxx
+		${ATLANTRONIC_GIT_DIR}/src/kernel/math/matrix_homogeneous.cxx
 		${ATLANTRONIC_GIT_DIR}/src/discovery/graph.cxx
 		${ATLANTRONIC_GIT_DIR}/src/discovery/table.cxx
     )  
@@ -21,7 +22,8 @@ include_directories("${ATLANTRONIC_GIT_DIR}/include")
 include_directories("${ATLANTRONIC_GIT_DIR}/include/discovery")
 include_directories("${ATLANTRONIC_GIT_DIR}/src")
 
-add_definitions(-DVERSION='"c43e5686caf927c95c9056f55d7d22b30fe40d73"')
+add_definitions(-DVERSION='"59d8f3f146e9c6cd6ab671dc5132a9f602cabc6b"')
+
 
 orocos_component(arp_stm32-components ${source_files} )
 target_link_libraries(arp_stm32-components readline)
