@@ -205,7 +205,7 @@ class AmbiDynamixelNonBlockingPositionCmd(DynamicSendOnTopic):
     #Overrided to provide the topic name and the message from the AmbiDynamixelCmd
     def publish(self):
         #TODO a corriger
-        color = "red"
+        color = "yellow"
         print("AmbiDynamixelNonBlockingPositionCmd publishing in : /Ubiquity/"+self.cmd.getName(color)+"/position_cmd")
         #rospy.loginfo("AmbiDynamixelNonBlockingPositionCmd value : " + str(self.cmd.getPositionCmd(color)))
         topicPublisher = rospy.Publisher("/Ubiquity/"+self.cmd.getName(color)+"/position_cmd", Float32)
@@ -228,7 +228,7 @@ class AmbiWaitDynamixelReachedPosition(WaitDynamixelReachedPosition):
 
     def executeIn(self):
         #TODO a corriger
-        color = "red"
+        color = "yellow"
         self.topicName = "/Ubiquity/"+self.cmd.getName(color)+"/state"
         ReceiveFromTopic.executeIn(self)
         return
@@ -301,7 +301,7 @@ class AmbiWaitForOmronValue(WaitForOmronValue):
         
     def executeIn(self):
         #TODO a corriger
-        color = "red"
+        color = "yellow"
         self.topicName = "/Ubiquity/"+self.ambiOmron.getName(color)+"/object_present"
         WaitForOmronValue.executeIn(self)
         return

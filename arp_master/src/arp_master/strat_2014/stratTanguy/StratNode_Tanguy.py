@@ -28,7 +28,7 @@ class StratNode_Tanguy():
         
         #creation of the node
         rospy.init_node('StratNode')
-        #recuperation des parametres (on a besoin d'etre un noeud pour ca
+        #recuperation des parametres (on a besoin d'etre un noeud pour ca)
         Table2014.getParams()
         #creation of the cadencer for all states
         Data.stateMachineRate =rospy.Rate(10)
@@ -42,17 +42,17 @@ class StratNode_Tanguy():
         rospy.loginfo("Welcome to Advanced Robotics Platform. I am StratNode 2014.")
         rospy.loginfo("Choose color with button")
         rospy.loginfo("Then plug start")
-        rospy.loginfo("Wait for initialisation sequence")
+        rospy.loginfo("Wait for initialization sequence")
         rospy.loginfo("And unplug start")
         rospy.loginfo("******************************************************")
     
         # initialise the smach introspection server to view the state machine with :
         #  rosrun smach_viewer smach_viewer.py
-        sis = smach_ros.IntrospectionServer('strat_server', sm, '/StratNode_Tanguy')
-        sis.start()
+#         sis = smach_ros.IntrospectionServer('strat_server', sm, '/StratNode_Tanguy')
+#         sis.start()
         sm.execute()
-        
-        sis.stop()
+#         
+#         sis.stop()
     
 ############################## MAIN STATE MACHINE CREATION
 class MainStateMachine(smach.StateMachine):
@@ -65,9 +65,9 @@ class MainStateMachine(smach.StateMachine):
 
             smach.StateMachine.add('StartSequence',
 # Uncomment either this line to perform the 2014 init sequence with recalOnBorders
-#                                  InitStates2014.StartSequence2014(Table2014.P_START_POS),
+                                  InitStates2014.StartSequence2014(Table2014.P_START_POS),
 # Either this line to start directly from the START_POS 
-                                   Strat_StartSequence.StartSequence(Table2014.P_START_POS),
+#                                   Strat_StartSequence.StartSequence(Table2014.P_START_POS),
                                    transitions={'gogogo':'Opening','problem':'end'})
             
             smach.StateMachine.add('Opening', 
