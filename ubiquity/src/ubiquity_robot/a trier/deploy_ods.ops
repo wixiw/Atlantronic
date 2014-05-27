@@ -1,4 +1,0 @@
-loadService ("Deployer","Lua")
-Lua.exec_file("/opt/ard/arp_core/script/orocos/deployment/deploy_arp_core.lua")
-Lua.exec_file("/opt/ard/arp_hml/script/orocos/deployment/deploy_ubiquity.lua")
-Lua.exec_file("/opt/ard/arp_ods/script/orocos/deployment/deploy_ods.lua")

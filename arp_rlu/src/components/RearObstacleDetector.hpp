@@ -1,12 +1,12 @@
 /*
- * FrontObstacleDetector.hpp
+ * RearObstacleDetector.hpp
  *
  *  Created on: 14 mai 2012
  *      Author: ard
  */
 
-#ifndef FrontObstacleDetector_HPP_
-#define FrontObstacleDetector_HPP_
+#ifndef REAR_OBSTACLE_DETECTOR_HPP_
+#define REAR_OBSTACLE_DETECTOR_HPP_
 
 #include "RluTaskContext.hpp"
 #include <math/core>
@@ -27,10 +27,10 @@
 namespace arp_rlu
 {
 
-class FrontObstacleDetector: public RluTaskContext
+class RearObstacleDetector: public RluTaskContext
 {
     public:
-    FrontObstacleDetector(const std::string& name);
+    RearObstacleDetector(const std::string& name);
     bool configureHook();
     void updateHook();
 
@@ -73,26 +73,6 @@ class FrontObstacleDetector: public RluTaskContext
      * Paramètres pour la quatrième étape, celle qui consiste à identifier les clusters comme étant des cercles.
      */
     lsl::CircleIdentif::Params cip;
-
-    /**
-     * Définit la zone accessible sur la table
-     */
-    double xMinAccessible;
-
-    /**
-     * Définit la zone accessible sur la table
-     */
-    double xMaxAccessible;
-
-    /**
-     * Définit la zone accessible sur la table
-     */
-    double yMinAccessible;
-
-    /**
-     * Définit la zone accessible sur la table
-     */
-    double yMaxAccessible;
 
     /**
      * Position du repère hky dans le ropère de référence du robot
@@ -148,4 +128,4 @@ class FrontObstacleDetector: public RluTaskContext
 };
 
 } /* namespace arp_rlu */
-#endif /* FrontObstacleDetector_HPP_ */
+#endif /* REAR_OBSTACLE_DETECTOR_HPP_ */

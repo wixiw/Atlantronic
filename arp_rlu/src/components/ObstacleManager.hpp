@@ -24,10 +24,11 @@ class ObstacleManager: public RluTaskContext
 
     protected:
 
+    bool isObstacleOutOfScope(arp_math::Vector2 obstacle);
+
     /* Params */
     int propNumberOfOpponents;
     double propMinProximity;
-    double propCentralZoneRadius;
 
     std::vector<arp_math::Vector2> attrFrontObstacles;
     std::vector<arp_math::Vector2> attrRearObstacles;

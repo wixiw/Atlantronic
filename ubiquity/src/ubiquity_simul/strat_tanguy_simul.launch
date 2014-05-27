@@ -1,3 +1,0 @@
-<launch>
-	<include file="$(find ubiquity)/src/ubiquity_simul/ros/common_simul.xml"/>
-</launch>

@@ -84,18 +84,18 @@ class WaitDynamixelReachedPosition(ReceiveFromTopic):
     def executeTransitions(self):    
         #if no message has been received yet, just wait again
         if self.msg is None:
-            #print("!!!!!!! *** "+self.topicName+" WaitDynamixelReachedPosition : None")
+            print("!!!!!!! *** "+self.topicName+" WaitDynamixelReachedPosition : None")
             return
         #end with success if the dynamixel is target_reached
         if self.msg.target_reached is True:
-            #print("!!!!!!! *** "+self.topicName+" WaitDynamixelReachedPosition : Position Reached")
+            print("!!!!!!! *** "+self.topicName+" WaitDynamixelReachedPosition : Position Reached")
             return 'pos_reached' 
         #if the servo is stucked end with failure
         if self.msg.stucked is True:
-            #print("!!!!!!! *** "+self.topicName+" WaitDynamixelReachedPosition : Stucked")
+            print("!!!!!!! *** "+self.topicName+" WaitDynamixelReachedPosition : Stucked")
             return 'stucked'
-        #else : #continue to wait
-        #    print("!!!!!!! *** "+self.topicName+" WaitDynamixelReachedPosition : Continue to wait")
+        else : #continue to wait
+            print("!!!!!!! *** "+self.topicName+" WaitDynamixelReachedPosition : Continue to wait")
          
 #    
 # Use this state to send a blocking "goto" command to list of dynamixels

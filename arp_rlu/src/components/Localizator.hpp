@@ -129,6 +129,12 @@ class Localizator: public RluTaskContext
         unsigned int propIEKFMaxIt;
         double propIEKFInnovationMin;
 
+        double propCornerBeaconX;
+        double propCornerBeaconY;
+        double propMiddleBeaconX;
+        double propMiddleBeaconY;
+        double propBeaconRadius;
+
         /** Activate or not the time reporting */
         bool propTimeReporting;
 

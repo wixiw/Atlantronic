@@ -275,13 +275,13 @@ bool BeaconDetector::process(lsl::LaserScan ls, Eigen::VectorXd tt, Eigen::Vecto
     }
 
     Log( DEBUG ) << "BeaconDetector::process - " << beaconCandidates.size() << " beaconCandidates detected : ";
-    for(int i = 0 ; i < beaconCandidates.size() ; i++)
+    for(unsigned int i = 0 ; i < beaconCandidates.size() ; i++)
     {
         Log( DEBUG ) << "BeaconDetector::process -      [" << i << "] x:" << beaconCandidates[i].x() << " - y:" << beaconCandidates[i].y() << " - r:" << beaconCandidates[i].r();
     }
 
     Log( DEBUG ) << "BeaconDetector::process - " << beaconCandidates.size() << " obstacles detected : ";
-    for(int i = 0 ; i < detectedObstacles.size() ; i++)
+    for(unsigned int i = 0 ; i < detectedObstacles.size() ; i++)
     {
         Log( DEBUG ) << "BeaconDetector::process -      [" << i << "] x:" << detectedObstacles[i].x() << " - y:" << detectedObstacles[i].y();
     }

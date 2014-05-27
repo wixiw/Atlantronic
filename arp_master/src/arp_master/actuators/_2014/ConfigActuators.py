@@ -80,7 +80,7 @@ class PrepareActuators(smach.StateMachine):
                       SelfTest(),
                       transitions={'succeeded':'prepared', 'problem':'problem'})
             
-#             smach.StateMachine.add('DefaultDynamixelState',
-#                       DefaultDynamixelState(),
-#                       transitions={'done':'prepared', 'problem':'problem'})
+            smach.StateMachine.add('DefaultDynamixelState',
+                       DefaultDynamixelState(),
+                       transitions={'done':'prepared', 'problem':'problem'})
                                

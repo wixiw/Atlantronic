@@ -15,6 +15,7 @@ function MatchDataDeployer:connect()
 	assert( Deployer:addPeer("Reporting", me) )
 	assert( Deployer:stream(me..".outIoStart",ros:topic("/Ubiquity/start")))
 	assert( Deployer:stream(me..".outIoStartColor",ros:topic("/Ubiquity/color")))
+	assert( Deployer:stream(me..".inReadyForMatch",ros:topic("/Ubiquity/ready_for_match")))
 	return true
 end
 

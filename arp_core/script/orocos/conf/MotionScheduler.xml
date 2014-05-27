@@ -6,8 +6,7 @@
      <simple name="Element0" type="string"><description>Sequence Element</description><value>Syncronizator</value></simple>
      <simple name="Element1" type="string"><description>Sequence Element</description><value>Odometry</value></simple>
      <simple name="Element2" type="string"><description>Sequence Element</description><value>Localizator</value></simple>
-     <simple name="Element3" type="string"><description>Sequence Element</description><value>LocalizatorFilter</value></simple>
-     <simple name="Element4" type="string"><description>Sequence Element</description><value>MotionControl</value></simple>
-     <simple name="Element5" type="string"><description>Sequence Element</description><value>KinematicBase</value></simple>
+     <simple name="Element3" type="string"><description>Sequence Element</description><value>MotionControl</value></simple>
+     <simple name="Element4" type="string"><description>Sequence Element</description><value>KinematicBase</value></simple>
   </struct>
 </properties>

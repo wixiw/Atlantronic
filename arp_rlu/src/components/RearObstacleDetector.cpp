@@ -1,5 +1,5 @@
 /*
- * FrontObstacleDetector.cpp
+ * RearObstacleDetector.cpp
  *
  *  Created on: 14 mai 2012
  *      Author: ard
@@ -7,12 +7,12 @@
 
 #include <iomanip>
 
-#include "FrontObstacleDetector.hpp"
+#include "RearObstacleDetector.hpp"
 #include <rtt/Component.hpp>
 #include "LSL/Logger.hpp"
 #include "LSL/tools/JsonScanParser.hpp"
 #include <ros/ros.h>
-
+#include "ObstacleParams.hpp"
 
 using namespace arp_core::log;
 using namespace arp_rlu;
@@ -22,9 +22,9 @@ using namespace arp_math;
 using namespace std;
 using namespace RTT;
 
-ORO_LIST_COMPONENT_TYPE( arp_rlu::FrontObstacleDetector )
+ORO_LIST_COMPONENT_TYPE( arp_rlu::RearObstacleDetector )
 
-FrontObstacleDetector::FrontObstacleDetector(const std::string& name)
+RearObstacleDetector::RearObstacleDetector(const std::string& name)
 : RluTaskContext(name)
 , mfp(lsl::MedianFilter::Params())
 , pcp(lsl::PolarCrop::Params())
@@ -32,14 +32,10 @@ FrontObstacleDetector::FrontObstacleDetector(const std::string& name)
 , minNbPoints(3)
 , cartStddevMax(0.20)
 , cip(lsl::CircleIdentif::Params())
-, xMinAccessible(-1.4)
-, xMaxAccessible(1.4)
-, yMinAccessible(-0.9)
-, yMaxAccessible(0.9)
 , H_hky_robot(Pose2D())
 {
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
-    //arp_rlu::lsl::Logger::InitFile("LSL", WARN);
+    arp_rlu::lsl::Logger::InitFile("LSL", WARN);
 
     createOrocosInterface();
     m_monotonicTimeToRealTime = ros::Time::now().toSec() - getAbsoluteTime();
@@ -62,17 +58,12 @@ FrontObstacleDetector::FrontObstacleDetector(const std::string& name)
     cip.coeffs.push_back( 1.0);
     cip.coeffs.push_back( opponentRadius );
 
-    xMinAccessible = -1.35;
-    xMaxAccessible =  1.35;
-    yMinAccessible = -0.9;
-    yMaxAccessible =  0.9;
-
-    H_hky_robot = arp_math::Pose2D(0.034, 0., 0.);
+    H_hky_robot = arp_math::Pose2D(-0.154, 0.0, M_PI);
 
 
 }
 
-bool FrontObstacleDetector::configureHook()
+bool RearObstacleDetector::configureHook()
 {
     if( !RluTaskContext::configureHook() )
         return false;
@@ -81,23 +72,23 @@ bool FrontObstacleDetector::configureHook()
 }
 
 
-void FrontObstacleDetector::updateHook()
+void RearObstacleDetector::updateHook()
 {
     RluTaskContext::updateHook();
-
+    LOG( Info ) << "Update" << endlog();
     //**************************************************************
     // Acquisition
     EstimatedPose2D H_robot_table;
     if( RTT::NoData == inPose.read(H_robot_table) )
     {
-        //LOG( Info ) << "FrontObstacleDetector - No data on inPose port" << endlog();
+        //LOG( Info ) << "RearObstacleDetector - No data on inPose port" << endlog();
         return;
     }
     EstimatedPose2D H_hky_table = H_robot_table * H_hky_robot;
     sensor_msgs::LaserScan rosScan;
     if( RTT::NoData == inScan.read(rosScan) )
     {
-        //LOG( Info ) << "FrontObstacleDetector - No data on inScan port" << endlog();
+        //LOG( Info ) << "RearObstacleDetector - No data on inScan port" << endlog();
         return;
     }
     ArdTimeDelta dateBeg = rosScan.header.stamp.toSec() - m_monotonicTimeToRealTime;
@@ -124,7 +115,7 @@ void FrontObstacleDetector::updateHook()
     mfTimer.Start();
     LaserScan scan_0 = MedianFilter::apply(lslScan, mfp);
     mfTimer.Stop();
-    //    export_json( scan_0, "./FrontObstacleDetector__process__scan_0.json" );
+        export_json( scan_0, "./RearObstacleDetector__process__scan_0.json" );
 
     //*****************************
     // Polar croping
@@ -141,7 +132,7 @@ void FrontObstacleDetector::updateHook()
     Eigen::VectorXd hhc = Eigen::VectorXd::Ones(scan_1.getSize()) * H_hky_table.h();
     scan_1.computeCartesianData(ttc, xxc, yyc, hhc);
     cartTimer.Stop();
-    //    export_json( scan_1, "./FrontObstacleDetector__process__scan_1.json" );
+        export_json( scan_1, "./RearObstacleDetector__process__scan_1.json" );
 
 
     //*****************************
@@ -194,11 +185,11 @@ void FrontObstacleDetector::updateHook()
     detectedObstacles.clear();
     for(unsigned int i = 0 ; i < detectedCircles.size() ; i++)
     {
-        if( (detectedCircles[i].getCartesianMean()[0] < xMinAccessible) || (detectedCircles[i].getCartesianMean()[0] > xMaxAccessible) )
+        if( (detectedCircles[i].getCartesianMean()[0] < OBSTACLE_X_MIN) || (detectedCircles[i].getCartesianMean()[0] > OBSTACLE_X_MAX) )
         {
             continue;
         }
-        if( (detectedCircles[i].getCartesianMean()[1] < yMinAccessible) || (detectedCircles[i].getCartesianMean()[1] > yMaxAccessible) )
+        if( (detectedCircles[i].getCartesianMean()[1] < OBSTACLE_Y_MIN) || (detectedCircles[i].getCartesianMean()[1] > OBSTACLE_Y_MAX) )
         {
             continue;
         }
@@ -210,7 +201,7 @@ void FrontObstacleDetector::updateHook()
 }
 
 
-std::string FrontObstacleDetector::coGetPerformanceReport()
+std::string RearObstacleDetector::coGetPerformanceReport()
 {
     std::stringstream info;
     info << "============================================" << std::endl;
@@ -262,9 +253,9 @@ std::string FrontObstacleDetector::coGetPerformanceReport()
 }
 
 
-void FrontObstacleDetector::createOrocosInterface()
+void RearObstacleDetector::createOrocosInterface()
 {
-    addEventPort("inScan",inScan)
+    addPort("inScan",inScan)
                                             .doc("LaserScan from LRF");
 
     addPort("inPose",inPose)
@@ -285,9 +276,4 @@ void FrontObstacleDetector::createOrocosInterface()
     addProperty("MinNbPoints", minNbPoints);
     addProperty("cartStddevMax", cartStddevMax);
     addProperty("opponentRadius", opponentRadius);
-
-    addProperty("xMinAccessible", xMinAccessible);
-    addProperty("xMaxAccessible", xMaxAccessible);
-    addProperty("yMinAccessible", yMinAccessible);
-    addProperty("yMaxAccessible", yMaxAccessible);
 }

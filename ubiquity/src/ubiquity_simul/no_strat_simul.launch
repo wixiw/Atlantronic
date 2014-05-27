@@ -1,4 +1,0 @@
-<launch>
-	<include file="$(find ubiquity)/src/ubiquity_simul/ros/common_simul.xml"/>
-	<include file="$(find ubiquity)/src/subsystems/master/strat/tanguy.xml"/>
-</launch>

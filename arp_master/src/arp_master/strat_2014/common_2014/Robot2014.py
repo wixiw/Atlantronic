@@ -71,6 +71,6 @@ class Robot2014(RobotVierge):
     #Configuration of Cannon reference positions
     cannonFingerLeftYellowPos = {   'ARMED'       : 0.9,
                                     'GOINFRONT'   : -0.8,
-                                    'SHOOT'       : 1.7}
+                                    'SHOOT'       : 1.5}
     cannonStockerLeftYellowPos = {  'LOADING'     : dynamixelMinPosList['LeftCannonStocker'],
                                     'UNLOADING'   : dynamixelMaxPosList['LeftCannonStocker']}

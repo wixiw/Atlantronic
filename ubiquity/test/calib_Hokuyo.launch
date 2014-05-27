@@ -1,3 +1,0 @@
-<launch>
-	<node name="HokuyoCalibrator"   pkg="arp_hml"  type="HokuyoCalibrator.py"     args="" output="screen"/>
-</launch>
