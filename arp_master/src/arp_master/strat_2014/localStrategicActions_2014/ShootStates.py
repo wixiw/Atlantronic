@@ -10,44 +10,79 @@ from arp_master.fsmFramework import *
 from arp_master.commonStates import *
 from arp_master.strat_2014.common_2014 import *
 
-# This action shoot 3 balls on each mammoths (so a total of 6 balls are shot).
-#In order to use this action you have to go to the entry point DoubleTargetShootState.getEntryPoint()
-class DoubleTargetShootState(LocalStrategicAction):
-    
-    def getEntryYellowPose(self):
-        return Pose2D(0.000, 0.400, -pi/2);
-    
-    def __init__(self):
-        LocalStrategicAction.__init__(self, Robot2014.SWITCH_TO_EOG_DELAY)
-        with self:      
-            # DoubleShoot : mock state as Autom V2 doesn't allow pure rotation, waiting bugfixes to uncomment below (done)
-            LocalStrategicAction.add('DoubleShoot',
-                      WaiterState(0.5),
-                      transitions={'timeout':'TurnDoubleShoot_2'})
-                      #transitions={'timeout':'endShoot'})
-            self.setInitialState('DoubleShoot')
-            
-# 2x DoubleShoots on Mammoths, turn of 0.085 RAD = 5 DEG
+#===============================================================================
+# Here is listed the different shooting positions with Right or Left Cannon
+# Do not forget to put a full unload order in ActionSelector2014!!
+#===============================================================================
 
-             # Turn DoubleShoot_2
-            LocalStrategicAction.add('TurnDoubleShoot_2',
-                      AmbiTurnOrder(-pi/2 + 0.00),
-                      transitions={'succeeded':'DoubleShoot_2', 'timeout':'DoubleShoot_2'})
+#In order to use this action you have to go to the entry point AmbiShootOpponentMammoth.getEntryPoint()
+
+class AmbiShootOpponentMammoth(LocalStrategicAction):
+    
+    @staticmethod
+    def getEntryYellowPoseStatic(p_side, p_opponent_side = False):
+        
+        #Choix du cannon
+        if p_side is 'Left':
+            x = 0.160
+            h = -3*pi/4
+            y = 0.480
+        elif p_side is 'Right':
+            x = 0.100
+            y = 0.542
+            h = -3*pi/4
+        else:
+            return None
+        
+        #Si on visder le mammouth oppose on symmetrise les positions
+        if p_opponent_side is True:
+            x = -x
+            h = pi - h
+        
+        return Pose2D(x,y,h)
+        
+        
+    def getEntryYellowPose(self):
+        return self.getEntryYellowPoseStatic(self.cannon_side, self.opponent_side)
+    
+    # @param String p_cannon_side                    : defines on the Yellow configuration which cannon to use (Left or Right)
+    # @param Boolean p_opponent_side (optionnal)     : if this is set to True, the shoot is done on the opposite side mammouth  
+    def __init__(self, p_cannon_side, p_opponent_side = False):
+        LocalStrategicAction.__init__(self, Robot2014.SWITCH_TO_EOG_DELAY)
+        
+        #remember cannon side
+        self.cannon_side = p_cannon_side
+        #remember opponent side
+        self.opponent_side = p_opponent_side
+        
+        with self:      
+
+            LocalStrategicAction.add('Shoot',
+                      AmbiShootOneBall(p_cannon_side),
+                      transitions={'shot':'TurnShoot_2', 'blocked':'failed'})
+            self.setInitialState('Shoot')
             
-            # DoubleShoot_2            
-            LocalStrategicAction.add('DoubleShoot_2',
-                      WaiterState(0.5),
-                      transitions={'timeout':'TurnDoubleShoot_3'})
+# 2x additional shots on Mammoths, turn of 0.085 RAD = 5 DEG
+
+             # Turn Shoot_2
+            LocalStrategicAction.add('TurnShoot_2',
+                      AmbiTurnOrder(-pi/4 + 0.08),
+                      transitions={'succeeded':'Shoot_2', 'timeout':'Shoot_2'})
             
-             # Turn DoubleShoot_3
-            LocalStrategicAction.add('TurnDoubleShoot_3',
-                      AmbiTurnOrder(-pi/2 - 0.08),
-                      transitions={'succeeded':'DoubleShoot_3', 'timeout':'DoubleShoot_3'})
+            # Shoot_2            
+            LocalStrategicAction.add('Shoot_2',
+                      AmbiShootOneBall(p_cannon_side),
+                      transitions={'shot':'TurnShoot_3', 'blocked':'failed'})
             
-            # DoubleShoot_3           
-            LocalStrategicAction.add('DoubleShoot_3',
-                      WaiterState(0.5),
-                      transitions={'timeout':'succeeded'})
+             # Turn Shoot_3
+            LocalStrategicAction.add('TurnShoot_3',
+                      AmbiTurnOrder(-pi/4 - 0.08),
+                      transitions={'succeeded':'Shoot_3', 'timeout':'Shoot_3'})
             
+            # Shoot_3           
+            LocalStrategicAction.add('Shoot_3',
+                      AmbiShootOneBall(p_cannon_side),
+                      transitions={'shot':'succeeded', 'blocked':'failed'})
+
             
             

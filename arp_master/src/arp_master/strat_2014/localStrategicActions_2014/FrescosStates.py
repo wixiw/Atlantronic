@@ -16,8 +16,12 @@ from arp_master.strat_2014.common_2014 import *
 
 class StickFrescosState(LocalStrategicAction):
 
-    def getEntryYellowPose(self):
+    @staticmethod
+    def getEntryYellowPoseStatic():
         return Pose2D(0.000, 0.400, -pi/2);
+    
+    def getEntryYellowPose(self):
+        return self.getEntryYellowPoseStatic();
     
     def __init__(self):
         LocalStrategicAction.__init__(self, Robot2014.SWITCH_TO_EOG_DELAY)

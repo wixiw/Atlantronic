@@ -16,63 +16,54 @@ class Opening(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('EscapeStartArea',
                       AmbiOmniDirectOrder2Pass(Table2014.P_YOU_HOU,vpasse=-1),
-                      transitions={'succeeded':'endOpening', 'timeout':'RetryEscapeStartArea'})
+                      transitions={'succeeded':'GoToYFT', 'timeout':'RetryEscapeStartArea'})
             self.setInitialState('EscapeStartArea')
             
             PreemptiveStateMachine.add('RetryEscapeStartArea',
                       AmbiOmniDirectOrder2Pass(Pose2D(Table2014.P_YOU_HOU.x, Table2014.P_YOU_HOU.y -0.050, Table2014.P_YOU_HOU.theta) ,vpasse=-1),
-                      transitions={'succeeded':'endOpening', 'timeout':'endOpening'})
+                      transitions={'succeeded':'GoToYFT', 'timeout':'motionBlocked'})
             
+                
+# Go to Yellow Fire Top
+            PreemptiveStateMachine.add('GoToYFT',
+                      AmbiOmniDirectOrder2Pass( Pose2D(0.650 + Robot2014.FRONT_SIDE.x, 0.300, -5*pi/6),vpasse=-1),
+                      transitions={'succeeded':'GotoGayCampingPoint', 'timeout':'PrepareFrescos'})
+
+# Go to Gay Camping point
+            PreemptiveStateMachine.add('GotoGayCampingPoint',
+                      AmbiOmniDirectOrder2(AmbiShootOpponentMammoth.getEntryYellowPoseStatic('Left', p_opponent_side = True)),
+                      transitions={'succeeded':'TargetShoot', 'timeout':'PrepareFrescos'})   
+
+# Shoot
+            PreemptiveStateMachine.add('TargetShoot',
+                      AmbiShootOpponentMammoth('Left', p_opponent_side = True),
+                      transitions={'succeeded':'PrepareFrescos', 'failed':'askSelector', 'almostEndGame':'nearlyEndMatch'})
+
+# Go to Frescos entry point
+            PreemptiveStateMachine.add('PrepareFrescos',
+                      AmbiOmniDirectOrder2(StickFrescosState.getEntryYellowPoseStatic()),
+                      transitions={'succeeded':'StickFrescos', 'timeout':'motionBlocked'})   
             
-## Go to Yellow Fire Top
-#            PreemptiveStateMachine.add('GoToYFT',
-#                      AmbiOmniDirectOrder2Pass( Pose2D(0.650 + Robot2014.FRONT_SIDE.x, 0.300, -5*pi/6),vpasse=-1),
-#                      transitions={'succeeded':'PrepareFrescos', 'timeout':'PrepareFrescos'})
-#
-##GOTO StickFrescos
-#
-#
-## Go to old Gay Camping point, align for ShootStates
-##            PreemptiveStateMachine.add('PrepareFrescos',
-##                      AmbiOmniDirectOrder2Pass(Pose2D(0.300, 0.400, -5*pi/6),vpasse=-1),
-##                      transitions={'succeeded':'StickFrescos', 'timeout':'problem'})   
-#
-## Go to Gay Camping point
-#            PreemptiveStateMachine.add('PrepareFrescos',
-#                      AmbiOmniDirectOrder2(Pose2D(-0.160, 0.480, -pi/4)),
-#                      transitions={'succeeded':'WaitCamping', 'timeout':'WaitCamping'})   
-#
-## Wait camping     
-#            PreemptiveStateMachine.add('WaitCamping',
-#                      WaiterState(2.0),
-#                      transitions={'timeout':'StickFrescos'})
-#            
-##Go to stick to frescos entry point not requiered as it is the same as DoubleTargetShootState
-##Stick Frescos
-#            PreemptiveStateMachine.add('StickFrescos',
-#                      StickFrescosState(),
-#                      transitions={'succeeded':'DoubleTargetShoot', 'failed':'askSelector', 'almostEndGame':'nearlyEndMatch' })
-#
-## Shoot
-#            PreemptiveStateMachine.add('DoubleTargetShoot',
-#                      DoubleTargetShootState(),
-#                      transitions={'succeeded':'GoToAlmostCentralHeat', 'failed':'askSelector', 'almostEndGame':'nearlyEndMatch'})
-#
-## Go to Almost Central Heat
-#            PreemptiveStateMachine.add('GoToAlmostCentralHeat',
-#                      AmbiOmniDirectOrder2(Pose2D(0.000, 0.100, -pi/2)),
-#                      transitions={'succeeded':'DropYFT', 'timeout':'motionBlocked'})
-#
-## Drop  Yellow Fire Top     
-#            PreemptiveStateMachine.add('DropYFT',
-#                      WaiterState(1.5),
-#                      transitions={'timeout':'EscapeAlmostCentralHeat'})
-#            
-## Escape from Almost Central Heat
-#            PreemptiveStateMachine.add('EscapeAlmostCentralHeat',
-#                      AmbiOmniDirectOrder2(Pose2D(0.220, 0.150, -pi/2)),
-#                      transitions={'succeeded':'GoToYellowMobileTorch', 'timeout':'motionBlocked'})
-#
+#Stick Frescos
+            PreemptiveStateMachine.add('StickFrescos',
+                      StickFrescosState(),
+                      transitions={'succeeded':'GoToAlmostCentralHeat', 'failed':'askSelector', 'almostEndGame':'nearlyEndMatch' })
+
+# Go to Almost Central Heat
+            PreemptiveStateMachine.add('GoToAlmostCentralHeat',
+                      AmbiOmniDirectOrder2(Pose2D(0.000, 0.100, -pi/2)),
+                      transitions={'succeeded':'DropYFT', 'timeout':'motionBlocked'})
+
+# Drop  Yellow Fire Top     
+            PreemptiveStateMachine.add('DropYFT',
+                      WaiterState(1.5),
+                      transitions={'timeout':'EscapeAlmostCentralHeat'})
+            
+# Escape from Almost Central Heat
+            PreemptiveStateMachine.add('EscapeAlmostCentralHeat',
+                      AmbiOmniDirectOrder2(Pose2D(0.220, 0.150, -pi/2)),
+                      transitions={'succeeded':'endOpening', 'timeout':'motionBlocked'})
+
 ####################################################################################################################
 ## End of Rush
 ####################################################################################################################

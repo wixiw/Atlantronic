@@ -11,7 +11,7 @@ from arp_master.strat_2014.localStrategicActions_2014 import *
 
 actionListTanguy2014 = [
     ActionDefinition('StickFrescosState', StickFrescosState()), 
-    ActionDefinition('DoubleTargetShootState', DoubleTargetShootState()),
+    ActionDefinition('AmbiShootOpponentMammoth', AmbiShootOpponentMammoth('Right')),
 
     ActionDefinition('PickSelfFireTop', PickFireOnTable(Table2014.P_SELF_FIRE_TOP)),
     ActionDefinition('PickSelfFireMid', PickFireOnTable(Table2014.P_SELF_FIRE_MID)),
