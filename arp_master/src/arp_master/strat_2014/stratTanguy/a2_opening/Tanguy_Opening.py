@@ -31,12 +31,12 @@ class Opening(PreemptiveStateMachine):
 
 # Go to Gay Camping point
             PreemptiveStateMachine.add('GotoGayCampingPoint',
-                      AmbiOmniDirectOrder2(AmbiShootOpponentMammoth.getEntryYellowPoseStatic('Left', p_opponent_side = True)),
+                      AmbiOmniDirectOrder2(AmbiShootMammoth.getEntryYellowPoseStatic('Left', p_opponent_side = True)),
                       transitions={'succeeded':'TargetShoot', 'timeout':'PrepareFrescos'})   
 
 # Shoot
             PreemptiveStateMachine.add('TargetShoot',
-                      AmbiShootOpponentMammoth('Left', p_opponent_side = True),
+                      AmbiShootMammoth('Left', p_opponent_side = True),
                       transitions={'succeeded':'PrepareFrescos', 'failed':'askSelector', 'almostEndGame':'nearlyEndMatch'})
 
 # Go to Frescos entry point

@@ -144,16 +144,21 @@ void ObstacleManager::updateHook()
 //        }
 //        LOG( Info ) << ss.str() << endlog();
 //    }
-    /*std::vector<arp_math::EstimatedPose2D> dummy;
+
+    //TODO Willy : fake object to test avoidance system
+    std::vector<arp_math::EstimatedPose2D> dummy;
     opponents = dummy;
     arp_math::EstimatedPose2D oppDummy;
-    oppDummy.x(1.064);
-    oppDummy.y(0.000);
+    //devant le bac a fruitmouth jaune empeche le rush
+    oppDummy.x(-0.400);
+    oppDummy.y(0.400);
     opponents.push_back( oppDummy );
     arp_math::EstimatedPose2D oppDummy2;
-    oppDummy2.x(0.500);
-    oppDummy2.y(0.500);
-    opponents.push_back( oppDummy2 );*/
+    //en bas au milieu pour faire chier
+    oppDummy2.x(0.000);
+    oppDummy2.y(-0.500);
+    opponents.push_back( oppDummy2 );
+
     outOpponents.write(opponents);
 }
 

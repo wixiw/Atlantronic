@@ -5,6 +5,9 @@
 #include "linux/tools/robot_interface.h"
 #include "ros/ros.h"
 
+#include <arp_core/ArmCommandMsg.h>
+#include <arp_core/ArmStatusMsg.h>
+
 namespace arp_stm32
 {
     class Arm: public Stm32TaskContext

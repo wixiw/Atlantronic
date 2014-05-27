@@ -15,9 +15,9 @@ from arp_master.strat_2014.common_2014 import *
 # Do not forget to put a full unload order in ActionSelector2014!!
 #===============================================================================
 
-#In order to use this action you have to go to the entry point AmbiShootOpponentMammoth.getEntryPoint()
+#In order to use this action you have to go to the entry point AmbiShootMammoth.getEntryPoint()
 
-class AmbiShootOpponentMammoth(LocalStrategicAction):
+class AmbiShootMammoth(LocalStrategicAction):
     
     @staticmethod
     def getEntryYellowPoseStatic(p_side, p_opponent_side = False):

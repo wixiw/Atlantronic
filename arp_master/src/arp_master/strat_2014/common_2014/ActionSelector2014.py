@@ -11,14 +11,15 @@ from arp_master.strat_2014.localStrategicActions_2014 import *
 
 actionListTanguy2014 = [
     ActionDefinition('StickFrescosState', StickFrescosState()), 
-    ActionDefinition('AmbiShootOpponentMammoth', AmbiShootOpponentMammoth('Right')),
+    ActionDefinition('AmbiShootMammoth', AmbiShootMammoth('Right')),
 
-    ActionDefinition('PickSelfFireTop', PickFireOnTable(Table2014.P_SELF_FIRE_TOP)),
+    #ActionDefinition('PickSelfFireTop', PickFireOnTable(Table2014.P_SELF_FIRE_TOP)),
+    ActionDefinition('PickOppFireTop', PickFireOnTable(Table2014.P_OPP_FIRE_TOP)),
+    ActionDefinition('PickOppFireBop', PickFireOnTable(Table2014.P_OPP_FIRE_BOT)), 
+    ActionDefinition('PickSelfFireBot', PickFireOnTable(Table2014.P_SELF_FIRE_BOT)), 
     ActionDefinition('PickSelfFireMid', PickFireOnTable(Table2014.P_SELF_FIRE_MID)),
-    ActionDefinition('PickSelfFireBot', PickFireOnTable(Table2014.P_SELF_FIRE_BOT)),              
-    ActionDefinition('PickOppFireBop', PickFireOnTable(Table2014.P_OPP_FIRE_BOT)),                
     ActionDefinition('PickOppFireMid', PickFireOnTable(Table2014.P_OPP_FIRE_MID)),                
-    ActionDefinition('PickOppFireTop', PickFireOnTable(Table2014.P_OPP_FIRE_TOP))
+    
     #Warning: remettre la virgule quand on decommente
     
 #    ActionDefinition('PickSelfTorchMid', PickFireOnBorder(Table2014.P_SELF_TORCH_MID)),

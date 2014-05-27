@@ -3,9 +3,6 @@
 #include <rtt/Component.hpp>
 #include <math/math.hpp>
 
-#include <arp_core/ArmCommandMsg.h>
-#include <arp_core/ArmStatusMsg.h>
-
 using namespace arp_math;
 using namespace arp_core;
 using namespace std_msgs;
