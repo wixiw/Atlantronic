@@ -66,7 +66,7 @@ class WaitForMatch(CyclicState):
         self.pubBeep.publish(Beep(300,0.3,3))
     
     def executeTransitions(self):
-       self.pubReady.publish(Bool(True))
+       #TODO workaround pour coupure puissance en fin de match : self.pubReady.publish(Bool(True))
        if Inputs.getstart()==0:
             return 'start'
         

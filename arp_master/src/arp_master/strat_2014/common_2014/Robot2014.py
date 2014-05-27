@@ -33,44 +33,29 @@ class Robot2014(RobotVierge):
                              ]
         
     dynamixelMaxTorqueList = {                       
-                         'LeftCannonFinger':        70,
-                         'RightCannonFinger':       70,
-                         'LeftCannonStocker':       30,
-                         'RightCannonStocker':      30,
-                         'LeftFinger':              45,
-                         'RightFinger':             45
+                         'LeftCannonFinger':        100,
+                         'RightCannonFinger':       100,
+                         'LeftCannonStocker':       60,
+                         'RightCannonStocker':      60,
+                         'LeftFinger':              80,
+                         'RightFinger':             80
                          }
-    
-    dynamixelMinPosList = {                       
-                         'LeftCannonFinger':        -3,
-                         'RightCannonFinger':       1,
-                         'LeftCannonStocker':       1.0,
-                         'RightCannonStocker':      -1.0,
-                         'LeftFinger':              -0.2,
-                         'RightFinger':             0.2
-                         }
-    
-    dynamixelMaxPosList = {                       
-                         'LeftCannonFinger':        0,
-                         'RightCannonFinger':       -1,
-                         'LeftCannonStocker':       0.0,
-                         'RightCannonStocker':      0.0,
-                         'LeftFinger':              1.4,
-                         'RightFinger':             -1.4
-                         }
-    
-    #Configuration of Finger reference positions
-    fingerLeftYellowPos = { 'UP'    : dynamixelMinPosList['LeftFinger'],
-                            'DOWN'  : dynamixelMaxPosList['LeftFinger'],
-                            'FLOOR' : dynamixelMaxPosList['LeftFinger']}
     
     #Configuration of reference suction powers
-    suctionPower = { 'HOLD':100,
+    suctionPower = { 'HOLD':70,
                      'IDLE':0 }
+    
+    #Configuration of Finger reference positions
+    fingerLeftYellowPos = {         'UP'    : -0.2,
+                                    'SEARCH': 1.2,
+                                    'DOWN'  : 1.45,
+                                    'FLOOR' : 1.45}
     
     #Configuration of Cannon reference positions
     cannonFingerLeftYellowPos = {   'ARMED'       : 0.9,
                                     'GOINFRONT'   : -0.8,
                                     'SHOOT'       : 1.5}
-    cannonStockerLeftYellowPos = {  'LOADING'     : dynamixelMinPosList['LeftCannonStocker'],
-                                    'UNLOADING'   : dynamixelMaxPosList['LeftCannonStocker']}
+    cannonStockerLeftYellowPos = {  'LOADING'     : 1.0,
+                                    'UNLOADING'   : 0.0,
+                                    'SHOWREADY'   : 0.7
+                                    }

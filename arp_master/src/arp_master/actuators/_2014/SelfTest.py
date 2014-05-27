@@ -9,16 +9,16 @@ from arp_master.commonStates import *
 from arp_master.actuators.common.Stm32Integration import *
 from arp_master.strat_2014.common_2014.Robot2014 import *
 
+
 class SelfTest(smach.StateMachine):
     def __init__(self):
-        smach.StateMachine.__init__(self,outcomes=['succeeded','problem'])  
+        smach.StateMachine.__init__(self,outcomes=['done'])  
         
         # Definition of Pump test parameters
         self.PUMP_TEST_POWER = 100
         self.STRESS_TEST_DURATION = 1
         
         with self:
-            #Launch the 3 pumps and wait 2 seconds
             smach.StateMachine.add('TryLeftFingerPump',
                       SendPumpCmd("LeftFingerPump", self.PUMP_TEST_POWER),
                       transitions={'done':'TryRightFingerPump'})
@@ -29,20 +29,12 @@ class SelfTest(smach.StateMachine):
             
             smach.StateMachine.add('TryArmPump',
                       SendPumpCmd("ArmPump", self.PUMP_TEST_POWER),
-                      transitions={'done':'Move'+Robot2014.dynamixelList[0]})
+                      transitions={'done':'TestDynamixel'})
             
-            #Move all dynamixels
-            for index, dynamixelName in enumerate(Robot2014.dynamixelList):
-                stateName = 'Move' + dynamixelName
-                if index >= len(Robot2014.dynamixelList)-1:
-                    transitionName = 'WaitABit'
-                else:
-                    transitionName = 'Move' + Robot2014.dynamixelList[index+1]
-                    
-                smach.StateMachine.add(stateName,
-                          DynamixelNonBlockingPositionCmd(dynamixelName, Robot2014.dynamixelMinPosList[dynamixelName]),
-                          transitions={'done': transitionName})
-                
+            smach.StateMachine.add('TestDynamixel',
+                      SelfTestDynamixelShowReady(),
+                      transitions={'succeeded':'WaitABit','problem':'WaitABit'})
+            
             smach.StateMachine.add('WaitABit',
                       WaiterState(self.STRESS_TEST_DURATION),
                       transitions={'timeout':'StopLeftFingerPump'})
@@ -57,15 +49,37 @@ class SelfTest(smach.StateMachine):
             
             smach.StateMachine.add('StopArmPump',
                       SendPumpCmd("ArmPump", 0),
-                      transitions={'done':'Move'+Robot2014.dynamixelList[0] +'2'})
+                      transitions={'done':'DefaultDynamixelState'})
             
-            for index, dynamixelName in enumerate(Robot2014.dynamixelList):
-                stateName = 'Move' + dynamixelName +'2'
-                if index >= len(Robot2014.dynamixelList)-1:
-                    transitionName = 'succeeded'
-                else:
-                    transitionName = 'Move' + Robot2014.dynamixelList[index+1] +'2'
-                    
-                smach.StateMachine.add(stateName,
-                          DynamixelNonBlockingPositionCmd(dynamixelName, Robot2014.dynamixelMaxPosList[dynamixelName]),
-                          transitions={'done': transitionName})
+            smach.StateMachine.add('DefaultDynamixelState',
+                       DefaultDynamixelState(),
+                       transitions={'succeeded':'done', 'problem':'done'}) 
+            
+#
+# This state moves all dynamixels to show that they are alive
+#
+class SelfTestDynamixelShowReady(DynamixelGoto):
+        def __init__(self):
+            DynamixelGoto.__init__(self, Robot2014.dynamixelList,
+                                   [ Robot2014.cannonFingerLeftYellowPos['GOINFRONT'],
+                                     Robot2014.cannonStockerLeftYellowPos['SHOWREADY'],
+                                    -Robot2014.cannonFingerLeftYellowPos['GOINFRONT'],
+                                    -Robot2014.cannonStockerLeftYellowPos['SHOWREADY'],
+                                     Robot2014.fingerLeftYellowPos['DOWN'],
+                                    -Robot2014.fingerLeftYellowPos['DOWN']
+                                    ])
+
+
+#
+# This state machine allows to put any dynamixel in its initial state.
+#
+class DefaultDynamixelState(DynamixelGoto):
+    def __init__(self):
+        DynamixelGoto.__init__(self, Robot2014.dynamixelList, 
+                                   [Robot2014.cannonFingerLeftYellowPos['ARMED'],
+                                    Robot2014.cannonStockerLeftYellowPos['LOADING'],
+                                    -Robot2014.cannonFingerLeftYellowPos['ARMED'],
+                                    -Robot2014.cannonStockerLeftYellowPos['LOADING'],
+                                    Robot2014.fingerLeftYellowPos['UP'],
+                                    -Robot2014.fingerLeftYellowPos['UP']
+                                    ])

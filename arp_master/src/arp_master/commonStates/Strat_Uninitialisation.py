@@ -32,6 +32,6 @@ class UninitialisationState(CyclicState):
         os.system("sh /opt/ard/arp_core/script/linux/match_finished.sh")
         
     def executeTransitions(self):
-        return 'ok'     
+        return     
     
     

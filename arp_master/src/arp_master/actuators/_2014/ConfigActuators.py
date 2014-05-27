@@ -34,31 +34,6 @@ class ActuatorConfigStateMachine(smach.StateMachine):
                 
                         
 
-#
-# This state machine allows to put any dynamixel in its initial state.
-#
-class DefaultDynamixelState(smach.StateMachine):
-    def __init__(self):
-            smach.StateMachine.__init__(self, outcomes=['done','problem'])
-            
-            with self:
-                #Doigts
-                smach.StateMachine.add('LeftFingerDefault',
-                       DefaultFingerState("Left"),
-                       transitions={'done':'RightFingerDefault', 'problem':'problem'})
-                smach.StateMachine.add('RightFingerDefault',
-                       DefaultFingerState("Right"),
-                       transitions={'done':'LeftCannonDefault', 'problem':'problem'})
-                
-                #Canons
-                smach.StateMachine.add('LeftCannonDefault',
-                       DefaultCannonState("Left"),
-                       transitions={'done':'RightCannonDefault', 'problem':'problem'})
-                smach.StateMachine.add('RightCannonDefault',
-                       DefaultCannonState("Right"),
-                       transitions={'done':'done', 'problem':'problem'})         
-                
-                
                 
 class PrepareActuators(smach.StateMachine):
     def __init__(self):
@@ -78,9 +53,7 @@ class PrepareActuators(smach.StateMachine):
                         
             smach.StateMachine.add('ActuatorsSelfTest',
                       SelfTest(),
-                      transitions={'succeeded':'prepared', 'problem':'problem'})
+                      transitions={'done':'prepared'})
             
-            smach.StateMachine.add('DefaultDynamixelState',
-                       DefaultDynamixelState(),
-                       transitions={'done':'prepared', 'problem':'problem'})
+
                                

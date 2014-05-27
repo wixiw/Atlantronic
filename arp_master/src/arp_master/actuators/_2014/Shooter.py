@@ -9,24 +9,7 @@ from arp_master.strat_2014.common_2014.Robot2014 import *
 from arp_master.fsmFramework import *
 from arp_master.commonStates import *
 from arp_master.strat_2014 import *
-from arp_master.actuators import *     
-
-#
-# This state machine allows to put the cannon in its initial state.
-#
-class DefaultCannonState(smach.StateMachine):
-    def __init__(self, p_side):
-            smach.StateMachine.__init__(self, outcomes=['done','problem'])
-            
-            with self:
-                smach.StateMachine.add('CleanupPositions',
-                       AmbiCannonBiCommand(p_side, Robot2014.cannonFingerLeftYellowPos['GOINFRONT'], Robot2014.cannonStockerLeftYellowPos['LOADING']),
-                       transitions={'succeeded':'CannonPositionCleaned', 'problem':'problem'})
-                                
-                smach.StateMachine.add('CannonPositionCleaned',
-                       AmbiCannonBiCommand(p_side, Robot2014.cannonFingerLeftYellowPos['ARMED'], Robot2014.cannonStockerLeftYellowPos['LOADING']),
-                       transitions={'succeeded':'done', 'problem':'problem'})
-                 
+from arp_master.actuators import *                
 #
 # This state machine allows to arm, load and shoot a ball.
 #

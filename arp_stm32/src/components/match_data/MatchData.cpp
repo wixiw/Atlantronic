@@ -78,6 +78,20 @@ void MatchData::updateHook()
     }
 }
 
+//void MatchData::informInitialized()
+//{
+//    int res = m_robotItf.led_readyXXX();
+//
+//    if (res < 0)
+//    {
+//        LOG(Error) << "Failed the stm32 board that we are initialized." << endlog();
+//    }
+//    else
+//    {
+//        LOG(Info) << "Stm32 board informed about our status." << endlog();
+//    }
+//}
+
 void MatchData::setReadyForMatch()
 {
     int res = m_robotItf.go_enable();

@@ -11,21 +11,6 @@ from arp_master.fsmFramework import *
 from arp_master.commonStates import *
 from arp_master.strat_2014 import *
 from arp_master.actuators import *
-
- 
-#
-# This state machine allows to put the cannon in its initial state.
-#
-
-class DefaultFingerState(smach.StateMachine):
-    def __init__(self, p_side):
-            smach.StateMachine.__init__(self, outcomes=['done','problem'])
-            
-            with self:      
-                smach.StateMachine.add('FingerDefaultPosition',
-                       AmbiFingerCommand(p_side, Robot2014.fingerLeftYellowPos['UP']),
-                       transitions={'succeeded':'done', 'problem':'problem'})
- 
             
 #
 # Use this state machine to pick an object with the "p_side" finger (in the yellow config) automatically symetrized for match color
@@ -35,8 +20,8 @@ class AmbiFingerPickObject(smach.StateMachine):
             smach.StateMachine.__init__(outcomes=['picked','blocked','notFound'])
             
             with self:      
-                smach.StateMachine.add('GoDown',
-                       AmbiFingerCommand(p_side, Robot2014.fingerLeftYellowPos['DOWN']),
+                smach.StateMachine.add('GoSearch',
+                       AmbiFingerCommand(p_side, Robot2014.fingerLeftYellowPos['SEARCH']),
                        transitions={'succeeded':'SearchItemToPick', 'problem':'RetryGoDown'})
 
                 # ==> Blocking Point D
@@ -46,6 +31,10 @@ class AmbiFingerPickObject(smach.StateMachine):
                        transitions={'triggered':'SuckMyLovingPump', 'timeout':'GoUpAfterNotFound'})    
 
                 # ==> Functional Error A
+
+                smach.StateMachine.add('GoDown',
+                       AmbiFingerCommand(p_side, Robot2014.fingerLeftYellowPos['Down']),
+                       transitions={'succeeded':'SuckMyLovingPump', 'problem':'SuckMyLovingPump'})
 
                 smach.StateMachine.add('SuckMyLovingPump',
                        FingerPumpCommand(p_side, suctionPower['HOLD']),

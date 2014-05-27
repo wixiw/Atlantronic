@@ -52,7 +52,7 @@ class MainStateMachine(smach.StateMachine):
                         
             smach.StateMachine.add('PrepareActuators',
                        PrepareActuators(),
-                       transitions={'prepared':'WaitABit','problem':'WaitABit'})
+                       transitions={'prepared':'WaitABit2','problem':'WaitABit2'})
  
 
 #             smach.StateMachine.add('WaitABit',
@@ -63,21 +63,21 @@ class MainStateMachine(smach.StateMachine):
 #                       DefaultCannonState('Left'),
 #                       transitions={'done':'WaitABitZ', 'problem':'end'})
      
-            smach.StateMachine.add('WaitABit',
-                      WaiterState(0),
-                      transitions={'timeout':'AmbiShootOneBall'})                        
-                
-            smach.StateMachine.add('AmbiShootOneBall',
-                      AmbiShootOneBall('Left'),
-                      transitions={'shot':'WaitABit', 'blocked':'WaitABit'})
-#             
-#             smach.StateMachine.add('WaitABit2',
-#                       WaiterState(2),
-#                       transitions={'timeout':'SelfTest'})
-#                         
-#             smach.StateMachine.add('SelfTest', 
-#                       SelfTest(),
-#                       transitions={'succeeded':'WaitABit','problem':'end'})
+#             smach.StateMachine.add('WaitABit',
+#                       WaiterState(0),
+#                       transitions={'timeout':'AmbiShootOneBall'})                        
+#                 
+#             smach.StateMachine.add('AmbiShootOneBall',
+#                       AmbiShootOneBall('Left'),
+#                       transitions={'shot':'WaitABit', 'blocked':'WaitABit'})
+             
+            smach.StateMachine.add('WaitABit2',
+                      WaiterState(2),
+                      transitions={'timeout':'SelfTest'})
+                         
+            smach.StateMachine.add('SelfTest', 
+                      SelfTest(),
+                      transitions={'succeeded':'WaitABit2','problem':'end'})
              
 
    

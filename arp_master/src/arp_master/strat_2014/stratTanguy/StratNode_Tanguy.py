@@ -61,14 +61,14 @@ class MainStateMachine(smach.StateMachine):
         with self:
             smach.StateMachine.add('Initialisation', 
                                    Strat_Initialisation.Initialisation(),
-                                   transitions={'endInitialisation':'StartSequence','failed':'end'})
+                                   transitions={'endInitialisation':'StartSequence','failed':'Uninitialisation'})
 
             smach.StateMachine.add('StartSequence',
 # Uncomment either this line to perform the 2014 init sequence with recalOnBorders
                                   InitStates2014.StartSequence2014(Table2014.P_START_POS),
 # Either this line to start directly from the START_POS 
 #                                   Strat_StartSequence.StartSequence(Table2014.P_START_POS),
-                                   transitions={'gogogo':'Opening','problem':'end'})
+                                   transitions={'gogogo':'Opening','problem':'Uninitialisation'})
             
             smach.StateMachine.add('Opening', 
                                    Tanguy_Opening.Opening(),
@@ -79,6 +79,10 @@ class MainStateMachine(smach.StateMachine):
                                    Strat_MiddleGame.MiddleGame(ActionSelector2014()),
                                    transitions={'endMiddleGame':'EndGame', 'motionBlocked':'Unblock'})
             
+            smach.StateMachine.add('Unblock', 
+                                   Unblock(),
+                                   transitions={'succeeded':'MiddleGame', 'nearlyEndMatch':'EndGame'})
+            
             smach.StateMachine.add('EndGame', 
                                    Tanguy_EndGame.EndGame(),
                                    transitions={'endEndGame':'Uninitialisation'})
@@ -87,9 +91,7 @@ class MainStateMachine(smach.StateMachine):
                                    Strat_Uninitialisation.Uninitialisation(),
                                    transitions={'endUninitialisation':'end'})
             
-            smach.StateMachine.add('Unblock', 
-                                   Unblock(),
-                                   transitions={'succeeded':'MiddleGame', 'nearlyEndMatch':'EndGame'})
+
 
    
 ########################## EXECUTABLE 
@@ -101,4 +103,5 @@ if __name__ == '__main__':
     except rospy.ROSInterruptException: 
         rospy.loginfo("handling rospy.ROSInterruptException ...")
         rospy.loginfo("Exiting")
+        
         pass

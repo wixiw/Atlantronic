@@ -18,7 +18,7 @@ class StickFrescosState(LocalStrategicAction):
 
     @staticmethod
     def getEntryYellowPoseStatic():
-        return Pose2D(0.000, 0.400, -pi/2);
+        return Pose2D(0.000, 0.400, pi+0.428);
     
     def getEntryYellowPose(self):
         return self.getEntryYellowPoseStatic();
@@ -28,7 +28,7 @@ class StickFrescosState(LocalStrategicAction):
         with self:          
             # Approach Fresco
             LocalStrategicAction.add('GoToFresco',
-                      AmbiOmniDirectOrder2(Pose2D(0.000, 1.000 - 0.214 - 0.050, pi+0.428)),
+                      AmbiOmniDirectOrder2(Pose2D(0.000, 1.000 - Robot2014.LEFT_SIDE.y - 0.050, pi+0.428)),
                       transitions={'succeeded':'StickFrescos', 'timeout':'failed'})
             self.setInitialState('GoToFresco')
             
