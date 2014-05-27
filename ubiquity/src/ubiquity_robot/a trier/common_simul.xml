@@ -1,7 +1,0 @@
-<launch>
-	<include file="$(find ubiquity)/src/subsystems/ros/machines.xml"/>
-	<include file="$(find ubiquity)/src/subsystems/hml/hokuyo.xml"/>
-	<include file="$(find ubiquity)/src/subsystems/music/music.xml"/>
-	<!--<include file="$(find ubiquity)/src/subsystems/orocos/orocos_simul.xml"/>-->
-	<include file="$(find ubiquity)/src/subsystems/hmi/graphic_simul.xml"/>
-</launch>

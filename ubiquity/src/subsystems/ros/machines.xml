@@ -1,7 +1,0 @@
-<!--  use this launch file to declare the different machines -->
-<launch>
-	<machine name="vm" address="vm" user="ard" password="ard" timeout="5.0" default="false" />
-	<machine name="alpha" address="alpha" user="root" password="ard" timeout="5.0" default="false" />
-	<machine name="beta" address="beta" user="root" password="ard" timeout="5.0" default="false" />
-	<machine name="ubiquity" address="ubiquity" user="root" password="ard" timeout="5.0" default="false" />
-</launch>

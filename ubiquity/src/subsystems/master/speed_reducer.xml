@@ -1,9 +1,0 @@
-<launch>
-	<node 
-		name="SpeedReducerAntico" 
-		pkg="arp_master" 
-		type="SpeedReducerAntico.py" 
-		args=""
-		output="screen"
-	/>
-</launch>
