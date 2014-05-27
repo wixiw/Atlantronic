@@ -65,6 +65,17 @@ void MatchData::updateHook()
             break;
     }
     outIoStartColor.write(color);
+
+    std_msgs::Bool readyForMatchMsg;
+    if( RTT::NewData == inReadyForMatch.read(readyForMatchMsg) )
+    {
+        attrReadyForMatch = readyForMatchMsg.data;
+        if( attrReadyForMatch )
+        {
+            setReadyForMatch();
+        }
+
+    }
 }
 
 void MatchData::setReadyForMatch()
@@ -86,6 +97,8 @@ void MatchData::createOrocosInterface()
     addAttribute("attrStm32Time", m_robotItf.current_time);
     addAttribute("attrStartPlugged", attrStartPlugged);
     addAttribute("attrStartColor", attrStartColor);
+    addAttribute("attrReadyForMatch", attrReadyForMatch);
+
 
     addPort("outIoStart", outIoStart).doc(
             "Value of the start. GO is true when it is not in, go is false when the start is in");

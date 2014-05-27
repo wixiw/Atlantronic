@@ -19,6 +19,14 @@ class SendStm32PowerCmd(StaticSendOnTopic):
         StaticSendOnTopic.__init__(self, "/Ubiquity/stm32_power_request", Bool, Bool(p_powerOn))
 
 #
+# You may inform the stm32 that the robot is ready to fight.
+#
+class SendReadyForMatch(StaticSendOnTopic):
+    def __init__(self):
+        StaticSendOnTopic.__init__(self, "/Ubiquity/ready_for_match", Bool, Bool(True))
+
+
+#
 # You may wait for power to be effectively in a predefined state.
 # @param Bool p_expectedPower : set to true wait power on or false to wait power off
 #

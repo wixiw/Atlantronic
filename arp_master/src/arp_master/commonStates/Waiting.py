@@ -33,10 +33,10 @@ class WaiterState(CyclicState):
 class WaitForStart(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['start'])
-        self.pub = rospy.Publisher('/Master/beep', Beep)
+        self.pubBeep = rospy.Publisher('/Master/beep', Beep)
     
     def executeIn(self):
-        self.pub.publish(Beep(200,0.2,2))
+        self.pubBeep.publish(Beep(200,0.2,2))
     
     def executeTransitions(self):
        if Inputs.getstart()==1:
@@ -46,10 +46,10 @@ class WaitForStart(CyclicState):
 class WaitForStartUnplug(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['startunplug'])
-        self.pub = rospy.Publisher('/Master/beep', Beep)
+        self.pubBeep = rospy.Publisher('/Master/beep', Beep)
     
     def executeIn(self):
-        self.pub.publish(Beep(200,0.1,1))
+        self.pubBeep.publish(Beep(200,0.1,1))
         
     def executeTransitions(self):
        if Inputs.getstart()==0:
@@ -59,12 +59,14 @@ class WaitForStartUnplug(CyclicState):
 class WaitForMatch(CyclicState):
     def __init__(self):
         CyclicState.__init__(self, outcomes=['start'])
-        self.pub = rospy.Publisher('/Master/beep', Beep)
+        self.pubBeep = rospy.Publisher('/Master/beep', Beep)
+        self.pubReady = rospy.Publisher('/Master/ready_for_match', Bool)
     
     def executeIn(self):
-        self.pub.publish(Beep(300,0.3,3))
+        self.pubBeep.publish(Beep(300,0.3,3))
     
     def executeTransitions(self):
+       self.pubReady.publish(Bool(True))
        if Inputs.getstart()==0:
             return 'start'
         

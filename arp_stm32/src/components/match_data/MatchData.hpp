@@ -39,6 +39,7 @@ class MatchData: public Stm32TaskContext
 
         bool attrStartPlugged;
         bool attrStartColor;
+        bool attrReadyForMatch;
 
         /**
          * Orocos Interface
