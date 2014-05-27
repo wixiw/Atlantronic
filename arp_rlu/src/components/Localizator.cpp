@@ -12,6 +12,7 @@
 #include "LSL/Logger.hpp"
 #include "KFL/Logger.hpp"
 #include <ros/ros.h>
+#include "ObstacleParams.hpp"
 
 #define stringify( name ) # name
 
@@ -37,6 +38,11 @@ Localizator::Localizator(const std::string& name)
 , propLaserThetaSigmaSmooth(1.0) //, propLaserThetaSigmaSmooth(1000)
 , propIEKFMaxIt(10)
 , propIEKFInnovationMin(0.0122474)
+, propCornerBeaconX(1.562)
+, propCornerBeaconY(1.062)
+, propMiddleBeaconX(1.562)
+, propMiddleBeaconY(0.000)
+, propBeaconRadius(0.040)
 , propTimeReporting(false)
 , smoothMode(false)
 , predictionOk(false)
@@ -61,14 +67,14 @@ Localizator::Localizator(const std::string& name)
     propParams.bufferSize = 100;
     propParams.maxTime4OdoPrediction = 0.5;
 
-    propParams.H_hky_robot = Pose2D(-0.058, 0., M_PI);
+    propParams.H_hky_robot = Pose2D(-0.051, 0.0003 /*...hum bravo meca ?*/, 0.);
     propParams.H_odo_robot = Pose2D();
 
     // Red is default config
     propParams.referencedBeacons = std::vector< lsl::Circle >();
-    propParams.referencedBeacons.push_back( lsl::Circle(-1.567, 0.   , 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle( 1.569,-1.069, 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle( 1.567, 1.051, 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle(-propMiddleBeaconX, propMiddleBeaconY   , propBeaconRadius ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( propMiddleBeaconX,-propCornerBeaconY   , propBeaconRadius ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( propMiddleBeaconX, propCornerBeaconY   , propBeaconRadius ) );
 
     propParams.iekfParams.defaultOdoVelTransSigma = 0.01;
     propParams.iekfParams.defaultOdoVelRotSigma   = 0.01;
@@ -86,17 +92,17 @@ Localizator::Localizator(const std::string& name)
 
     propParams.procParams.psp.rangeThres = 0.08;
 
-    propParams.procParams.xMin = -2.0;
-    propParams.procParams.xMax =  2.0;
-    propParams.procParams.yMin = -1.5;
-    propParams.procParams.yMax =  1.5;
+    propParams.procParams.xMin = -1.7;
+    propParams.procParams.xMax =  1.7;
+    propParams.procParams.yMin = -1.2;
+    propParams.procParams.yMax =  1.2;
 
-    propParams.procParams.xMinObstacle = -1.35;
-    propParams.procParams.xMaxObstacle =  1.35;
-    propParams.procParams.yMinObstacle = -0.9;
-    propParams.procParams.yMaxObstacle =  0.9;
+    propParams.procParams.xMinObstacle = OBSTACLE_X_MIN;
+    propParams.procParams.xMaxObstacle = OBSTACLE_X_MAX;
+    propParams.procParams.yMinObstacle = OBSTACLE_Y_MIN;
+    propParams.procParams.yMaxObstacle = OBSTACLE_Y_MAX;
 
-    propParams.procParams.cip.radius = 0.04;
+    propParams.procParams.cip.radius = propBeaconRadius;
     propParams.procParams.cip.coeffs = std::vector<double>();
     propParams.procParams.cip.coeffs.push_back(-0.01743846);
     propParams.procParams.cip.coeffs.push_back( 0.19259734);
@@ -410,9 +416,9 @@ void Localizator::ooGetPerformanceReport()
 void Localizator::ooSwitchToRedConfig()
 {
     propParams.referencedBeacons = std::vector< lsl::Circle >();
-    propParams.referencedBeacons.push_back( lsl::Circle(-1.567, 0.   , 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle( 1.569,-1.069, 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle( 1.567, 1.051, 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle(-propMiddleBeaconX, propMiddleBeaconY, propBeaconRadius ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( propCornerBeaconX,-propCornerBeaconY, propBeaconRadius ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( propCornerBeaconX, propCornerBeaconY, propBeaconRadius ) );
     kfloc.setParams(propParams);
 
     LOG(Info) << "Switched to Red Beacon configuration" << endlog();
@@ -421,9 +427,9 @@ void Localizator::ooSwitchToRedConfig()
 void Localizator::ooSwitchToYellowConfig()
 {
     propParams.referencedBeacons = std::vector< lsl::Circle >();
-    propParams.referencedBeacons.push_back( lsl::Circle( 1.567, 0., 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle(-1.567, 1.051, 0.04 ) );
-    propParams.referencedBeacons.push_back( lsl::Circle(-1.569,-1.069, 0.04 ) );
+    propParams.referencedBeacons.push_back( lsl::Circle( propMiddleBeaconX, propMiddleBeaconY, propBeaconRadius ) );
+    propParams.referencedBeacons.push_back( lsl::Circle(-propMiddleBeaconX, propCornerBeaconY, propBeaconRadius ) );
+    propParams.referencedBeacons.push_back( lsl::Circle(-propMiddleBeaconX,-propCornerBeaconY, propBeaconRadius ) );
     kfloc.setParams(propParams);
 
     LOG(Info) << "Switched to Yellow Beacon configuration" << endlog();

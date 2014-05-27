@@ -14,7 +14,7 @@ end
 
 function LocalizatorDeployer:connect()
 	Deployer:connect(me..".inOdo","Odometry.outICRSpeed",cp)
-	assert( Deployer:stream(me..".inScan",ros:topic("/top_scan")))
+	assert( Deployer:stream(me..".inScan",ros:topic("/Ubiquity/top_front_scan")))
 	Deployer:addPeer("Reporting", me)
 	LocalizatorDeployer:check(me)
 	return true

@@ -42,7 +42,7 @@ class AmbiShootOneBall(smach.StateMachine):
                        transitions={'succeeded':'WaitBallInStocker', 'problem':'blocked'})
                                 
                 smach.StateMachine.add('WaitBallInStocker',
-                       WaiterState(0.5),
+                       WaiterState(0.3),
                        transitions={'timeout':'ReadyToShoot'})    
                 
                 smach.StateMachine.add('ReadyToShoot',
@@ -52,7 +52,7 @@ class AmbiShootOneBall(smach.StateMachine):
                 # ==> Blocking point A
                                 
                 smach.StateMachine.add('WaitBallInShooter',
-                       WaiterState(0.5),
+                       WaiterState(0.3),
                        transitions={'timeout':'ShootBall'})
 
                 smach.StateMachine.add('ShootBall',

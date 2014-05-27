@@ -21,7 +21,6 @@ ObstacleManager::ObstacleManager(const std::string& name)
 : RluTaskContext(name),
   propNumberOfOpponents(2),
   propMinProximity(0.1),
-  propCentralZoneRadius(0.25),
   attrFrontObstacles(),
   attrRearObstacles()
 {
@@ -38,10 +37,10 @@ bool ObstacleManager::configureHook()
     return true;
 }
 
-
 void ObstacleManager::updateHook()
 {
     RluTaskContext::updateHook();
+    LOG( Info ) << "Update" << endlog();
 
     arp_math::Vector2 permanentObstacle(0., 0.);
 
@@ -51,7 +50,7 @@ void ObstacleManager::updateHook()
     std::vector<arp_math::Vector2> obstacles;
     for(unsigned int i = 0 ; i < attrFrontObstacles.size() ; i++)
     {
-        if( attrFrontObstacles[i].norm() < propCentralZoneRadius )
+        if( isObstacleOutOfScope(attrFrontObstacles[i]) )
         {
             continue;
         }
@@ -59,7 +58,7 @@ void ObstacleManager::updateHook()
     }
     for(unsigned int i = 0 ; i < attrRearObstacles.size() ; i++)
     {
-        if( attrRearObstacles[i].norm() < propCentralZoneRadius )
+        if( isObstacleOutOfScope(attrFrontObstacles[i]) )
         {
             continue;
         }
@@ -67,16 +66,16 @@ void ObstacleManager::updateHook()
     }
 
 //    LOG( Info ) << "***************************************************************" << endlog();
-    {
-        std::stringstream ss;
-        ss << "Obstacles (N = " << obstacles.size() << "): ";
-        for(unsigned int i = 0 ; (i < obstacles.size()) ; i++)
-        {
-            ss << "(" << obstacles[i].transpose() << ") ";
-        }
-
+//    {
+//        std::stringstream ss;
+//        ss << "Obstacles (N = " << obstacles.size() << "): ";
+//        for(unsigned int i = 0 ; (i < obstacles.size()) ; i++)
+//        {
+//            ss << "(" << obstacles[i].transpose() << ") ";
+//        }
+//
 //        LOG( Info ) << ss.str() << endlog();
-    }
+//    }
 
     std::vector<arp_math::EstimatedPose2D> opponents;
 
@@ -109,7 +108,7 @@ void ObstacleManager::updateHook()
         if( dmin < propMinProximity )
         {
             std::vector<arp_math::Vector2> newObstacles;
-            for(unsigned int i = 0 ; i < obstacles.size() ; i++)
+            for(int i = 0 ; i < obstacles.size() ; i++)
             {
                 if( (i != combs[iMin](0)) && (i != combs[iMin](1)) )
                 {
@@ -159,19 +158,24 @@ void ObstacleManager::updateHook()
     outOpponents.write(opponents);
 }
 
+bool ObstacleManager::isObstacleOutOfScope(Vector2 obstacle)
+{
+    //TODO filtrer les arbres
+    return false;
+}
+
 void ObstacleManager::createOrocosInterface()
 {
     addProperty("propNumberOfOpponents", propNumberOfOpponents);
     addProperty("propMinProximity", propMinProximity);
-    addProperty("propCentralZoneRadius", propCentralZoneRadius);
 
     addAttribute("attrFrontObstacles", attrFrontObstacles);
     addAttribute("attrRearObstacles", attrRearObstacles);
 
-    addPort("inFrontObstacles",inFrontObstacles)
+    addEventPort("inFrontObstacles",inFrontObstacles)
     .doc("List of things detected with front hokuyo");
 
-    addPort("inRearObstacles",inRearObstacles)
+    addEventPort("inRearObstacles",inRearObstacles)
     .doc("List of things detected during Localization on the table");
 
     addPort("outOpponents",outOpponents)

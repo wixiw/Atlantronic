@@ -10,7 +10,7 @@ class HokuyoViewer():
     
     def __init__(self):
         rospy.init_node('HokuyoViewer', anonymous=True)
-        rospy.Subscriber("/top_scan", LaserScan, self.callback)
+        rospy.Subscriber("/Ubiquity/top_front_scan", LaserScan, self.callback)
         self.goon = True
         while self.goon is True:
             rospy.sleep(1.0)

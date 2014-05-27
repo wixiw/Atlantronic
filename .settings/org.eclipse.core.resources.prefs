@@ -12,6 +12,7 @@ encoding//arp_master/src/arp_master/commonStates/Strat_StartSequence.py=UTF-8
 encoding//arp_master/src/arp_master/commonStates/TopicIntegration.py=latin1
 encoding//arp_master/src/arp_master/strat_2014/common_2014/Robot2014.py=latin1
 encoding//arp_master/src/arp_master/strat_2014/stratTanguy/StratNode_Tanguy.py=latin1
+encoding//arp_master/src/arp_master/strat_2014/stratTanguy/a2_opening/Tanguy_Opening.py=latin1
 encoding//arp_master/src/ros=UTF-8
 encoding//arp_master/src/ros/SpeedReducer.py=US-ASCII
 encoding//arp_ods/test/temporal_planif/test_planif.py=utf-8

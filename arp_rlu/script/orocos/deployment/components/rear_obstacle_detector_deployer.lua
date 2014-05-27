@@ -1,21 +1,21 @@
 dofile("/opt/ard/arp_core/script/orocos/deployment/component_deployer_object.lua")
 
 
-FrontObstacleDetector = ComposantDeployer:new()
-local me = "FrontObstacleDetector"
+RearObstacleDetector = ComposantDeployer:new()
+local me = "RearObstacleDetector"
 
-function FrontObstacleDetector:load()
-	assert( Deployer:loadComponent(me, "arp_rlu::FrontObstacleDetector"))
+function RearObstacleDetector:load()
+	assert( Deployer:loadComponent(me, "arp_rlu::RearObstacleDetector"))
 	assert( Deployer:addPeer("DotGraph",me))
-	assert( Deployer:setActivity(me, 0, 0, rtt.globals.ORO_SCHED_OTHER) )
+	assert( Deployer:setActivity(me, 0.100, 0, rtt.globals.ORO_SCHED_OTHER) )
 	return true
 end
 
-function FrontObstacleDetector:connect()
+function RearObstacleDetector:connect()
 	assert( Deployer:addPeer("Reporting", me))
 	assert( Deployer:connect(me..".inPose", "Localizator.outPose",cp))
-    assert( Deployer:stream(me..".inScan",ros:topic("/front_scan")) )
-	assert( FrontObstacleDetector:check(me))
+    assert( Deployer:stream(me..".inScan",ros:topic("/Ubiquity/rear_scan")) )
+	assert( RearObstacleDetector:check(me))
 	return true
 end
 

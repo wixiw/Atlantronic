@@ -13,7 +13,6 @@ end
 
 function RosRluItfDeployer:connect()
 	assert( Deployer:addPeer(me,"Localizator") )
-	assert( Deployer:addPeer(me,"LaserOnlyLocalizator") )
 	assert( Deployer:connect(me..".inPose","Localizator.outPose",cp) )
 	assert( Deployer:connect(me..".inLocalizationState","Localizator.outLocalizationState",cp) )
 	assert( Deployer:connect(me..".inLocalizationMode","Localizator.outLocalizationMode",cp) )

@@ -64,7 +64,7 @@ class MainStateMachine(smach.StateMachine):
 #                       transitions={'done':'WaitABitZ', 'problem':'end'})
      
             smach.StateMachine.add('WaitABit',
-                      WaiterState(2),
+                      WaiterState(0),
                       transitions={'timeout':'AmbiShootOneBall'})                        
                 
             smach.StateMachine.add('AmbiShootOneBall',

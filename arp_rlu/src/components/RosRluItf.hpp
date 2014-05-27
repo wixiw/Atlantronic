@@ -46,20 +46,15 @@ class RosRluItf: public arp_rlu::RluTaskContext
         RTT::OutputPort< arp_core::OpponentsList > outOpponents;
 
         RTT::OperationCaller<bool(double,double,double)> m_ooInitialize;
-        RTT::OperationCaller<bool(void)> m_ooDo;
-        RTT::OperationCaller<arp_math::EstimatedPose2D(void)> m_ooGetEstimatedPose;
-        RTT::OperationCaller<double(void)> m_ooGetRelativeHeadingForConfirmation;
         RTT::OperationCaller<void(void)> m_ooSwitchToRedConfig;
         RTT::OperationCaller<void(void)> m_ooSwitchToYellowConfig;
 
         bool srvInitialize(arp_core::SetPosition::Request& req, arp_core::SetPosition::Response& res);
-        bool srvAutoInit(AutoInit::Request& req, AutoInit::Response& res);
         bool srvSetColor(arp_core::SetColor::Request& req, arp_core::SetColor::Response& res);
         void createRosInterface();
 
         /** node handles to store services **/
         ros::ServiceServer m_srvInitialize;
-        ros::ServiceServer m_srvAutoInit;
         ros::ServiceServer m_srvSetColor;
 
 };
