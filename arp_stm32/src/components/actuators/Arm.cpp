@@ -3,6 +3,9 @@
 #include <rtt/Component.hpp>
 #include <math/math.hpp>
 
+#include <arp_core/ArmCommandMsg.h>
+#include <arp_core/ArmStatusMsg.h>
+
 using namespace arp_math;
 using namespace arp_core;
 using namespace std_msgs;
@@ -34,7 +37,6 @@ bool Arm::configureHook()
 void Arm::updateHook()
 {
     Stm32TaskContext::updateHook();
-
     DiscoveryMutex mutex;
 
     if (mutex.lock() == DiscoveryMutex::FAILED)
@@ -43,10 +45,37 @@ void Arm::updateHook()
     }
 
     m_armMatrix = m_robotItf.last_control_usb_data.arm_matrix;
+    attrActionDone = isActionDone();
+    attrStucked = isArmStucked();
 
     mutex.unlock();
 
+    ArmCommandMsg armCmdMsg;
+    if( RTT::NewData == inArmCommand.read(armCmdMsg) )
+    {
+        attrLastCommand = armCmdMsg.command;
+        sendCmd(attrLastCommand);
+    }
+
     outArmPosition.write(m_armMatrix);
+
+    ArmStatusMsg armStatusMsg;
+    armStatusMsg.action_done = attrActionDone;
+    armStatusMsg.stucked = attrStucked;
+
+    outArmStatus.write(armStatusMsg);
+}
+
+bool Arm::isActionDone()
+{
+    //TODO JB : a remplir
+    return false;
+}
+
+bool Arm::isArmStucked()
+{
+    //TODO JB : a remplir
+    return true;
 }
 
 void Arm::sendCmd(uint32_t cmdType)
@@ -61,5 +90,12 @@ void Arm::sendCmd(uint32_t cmdType)
 
 void Arm::createOrocosInterface()
 {
+    addAttribute("attrLastCommand", attrLastCommand);
+    addAttribute("attrActionDone", attrActionDone);
+    addAttribute("attrStucked", attrStucked);
+
+    addPort("outArmPosition", outArmPosition);
+    addPort("outArmStatus", outArmStatus);
+    addPort("inArmCommand", inArmCommand);
 
 }

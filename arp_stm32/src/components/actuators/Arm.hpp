@@ -16,10 +16,26 @@ namespace arp_stm32
             void updateHook();
 
             RTT::OutputPort<MatrixHomogeneous> outArmPosition;
+            RTT::OutputPort<arp_core::ArmStatusMsg> outArmStatus;
+            RTT::InputPort<arp_core::ArmCommandMsg> inArmCommand;
+
 
         protected:
-            void createOrocosInterface();
+            /*
+             * Interface STM32
+             */
             void sendCmd(uint32_t cmdType);
+            bool isActionDone();
+            bool isArmStucked();
+
+            /**
+             * Interface Orocos
+             */
+            void createOrocosInterface();
+
+            unsigned int attrLastCommand;
+            bool attrActionDone;
+            bool attrStucked;
 
             RobotInterface& m_robotItf;
             MatrixHomogeneous m_armMatrix;
