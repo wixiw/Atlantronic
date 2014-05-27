@@ -39,8 +39,7 @@ bool ObstacleManager::configureHook()
 
 void ObstacleManager::updateHook()
 {
-    RluTaskContext::updateHook();
-    LOG( Info ) << "Update" << endlog();
+    //LOG( Info ) << "Update" << endlog();
 
     arp_math::Vector2 permanentObstacle(0., 0.);
 

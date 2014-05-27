@@ -74,8 +74,7 @@ bool RearObstacleDetector::configureHook()
 
 void RearObstacleDetector::updateHook()
 {
-    RluTaskContext::updateHook();
-    LOG( Info ) << "Update" << endlog();
+    //LOG( Info ) << "Update" << endlog();
     //**************************************************************
     // Acquisition
     EstimatedPose2D H_robot_table;
@@ -115,7 +114,7 @@ void RearObstacleDetector::updateHook()
     mfTimer.Start();
     LaserScan scan_0 = MedianFilter::apply(lslScan, mfp);
     mfTimer.Stop();
-        export_json( scan_0, "./RearObstacleDetector__process__scan_0.json" );
+        //export_json( scan_0, "./RearObstacleDetector__process__scan_0.json" );
 
     //*****************************
     // Polar croping
@@ -132,7 +131,7 @@ void RearObstacleDetector::updateHook()
     Eigen::VectorXd hhc = Eigen::VectorXd::Ones(scan_1.getSize()) * H_hky_table.h();
     scan_1.computeCartesianData(ttc, xxc, yyc, hhc);
     cartTimer.Stop();
-        export_json( scan_1, "./RearObstacleDetector__process__scan_1.json" );
+        //export_json( scan_1, "./RearObstacleDetector__process__scan_1.json" );
 
 
     //*****************************
