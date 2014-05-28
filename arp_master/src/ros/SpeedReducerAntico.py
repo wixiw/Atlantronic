@@ -40,7 +40,7 @@ class SpeedReducerAntico:
 
         self.min_distance = 0.500
         self.reduced_min_speed = 0.000
-        self.decc = 1.0
+        self.decc = 3.0
 
         rospy.wait_for_service('MotionControl/setVMax')            
         self.setVMax_srv=rospy.ServiceProxy("MotionControl/setVMax",SetVMax)
@@ -112,7 +112,7 @@ class SpeedReducerAntico:
                 
             # fin du test si j'etais en translation
                         
-            rospy.sleep(0.050) 
+            rospy.sleep(0.020) 
     
     def updateOpponentCallBack(self, oppList):
         self.opponentsMgs = oppList

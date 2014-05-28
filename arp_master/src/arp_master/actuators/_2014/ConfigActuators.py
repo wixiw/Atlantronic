@@ -42,15 +42,8 @@ class PrepareActuators(smach.StateMachine):
         with self:
             smach.StateMachine.add('ActuatorsConfig',
                       ActuatorConfigStateMachine(),
-                      transitions={'done':'SetStm32Power'})
+                      transitions={'done':'ActuatorsSelfTest'})
 
-            smach.StateMachine.add('SetStm32Power',
-                      SendStm32PowerCmd(True),
-                      transitions={'done':'WaitStm32PowerCmd'})
-            smach.StateMachine.add('WaitStm32PowerCmd',
-                      WaitStm32PowerCmd(True),
-                      transitions={'power_state_reached':'ActuatorsSelfTest','timeout':'problem'})           
-                        
             smach.StateMachine.add('ActuatorsSelfTest',
                       SelfTest(),
                       transitions={'done':'prepared'})

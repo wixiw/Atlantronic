@@ -58,7 +58,7 @@ RearObstacleDetector::RearObstacleDetector(const std::string& name)
     cip.coeffs.push_back( 1.0);
     cip.coeffs.push_back( opponentRadius );
 
-    H_hky_robot = arp_math::Pose2D(-0.154, 0.0, M_PI);
+    H_hky_robot = arp_math::Pose2D(0.0, -0.154, M_PI);
 
 
 }
@@ -74,7 +74,6 @@ bool RearObstacleDetector::configureHook()
 
 void RearObstacleDetector::updateHook()
 {
-    //LOG( Info ) << "Update" << endlog();
     //**************************************************************
     // Acquisition
     EstimatedPose2D H_robot_table;
@@ -255,13 +254,13 @@ std::string RearObstacleDetector::coGetPerformanceReport()
 void RearObstacleDetector::createOrocosInterface()
 {
     addPort("inScan",inScan)
-                                            .doc("LaserScan from LRF");
+        .doc("LaserScan from LRF");
 
     addPort("inPose",inPose)
-    .doc("H_robot_table");
+        .doc("H_robot_table");
 
     addPort("outObstacles",outObstacles)
-    .doc("List of things detected with front hokuyo");
+        .doc("List of things detected with front hokuyo");
 
     addProperty("MedianFilterWidth", mfp.width);
 

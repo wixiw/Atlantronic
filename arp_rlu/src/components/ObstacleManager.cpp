@@ -21,6 +21,9 @@ ObstacleManager::ObstacleManager(const std::string& name)
 : RluTaskContext(name),
   propNumberOfOpponents(2),
   propMinProximity(0.1),
+  propActivateFakeRobots(false),
+  propFakeLittleRobot(-0.400, 0.400, 0.0),
+  propFakeBigRobot( 0.000, -0.500, 0.0),
   attrFrontObstacles(),
   attrRearObstacles()
 {
@@ -39,8 +42,6 @@ bool ObstacleManager::configureHook()
 
 void ObstacleManager::updateHook()
 {
-    //LOG( Info ) << "Update" << endlog();
-
     arp_math::Vector2 permanentObstacle(0., 0.);
 
     inFrontObstacles.readNewest(attrFrontObstacles);
@@ -146,18 +147,14 @@ void ObstacleManager::updateHook()
 //    }
 
     //TODO Willy : fake object to test avoidance system
-    std::vector<arp_math::EstimatedPose2D> dummy;
-    opponents = dummy;
-    arp_math::EstimatedPose2D oppDummy;
-    //devant le bac a fruitmouth jaune empeche le rush
-    oppDummy.x(-0.400);
-    oppDummy.y(0.400);
-    opponents.push_back( oppDummy );
-    arp_math::EstimatedPose2D oppDummy2;
-    //en bas au milieu pour faire chier
-    oppDummy2.x(0.000);
-    oppDummy2.y(-0.500);
-    opponents.push_back( oppDummy2 );
+    if( propActivateFakeRobots )
+    {
+        opponents.clear();
+        arp_math::EstimatedPose2D oppDummy(propFakeLittleRobot);
+        arp_math::EstimatedPose2D oppDummy2(propFakeBigRobot);
+        opponents.push_back( oppDummy );
+        opponents.push_back( oppDummy2 );
+    }
 
     outOpponents.write(opponents);
 }
@@ -172,6 +169,9 @@ void ObstacleManager::createOrocosInterface()
 {
     addProperty("propNumberOfOpponents", propNumberOfOpponents);
     addProperty("propMinProximity", propMinProximity);
+    addProperty("propActivateFakeRobots", propActivateFakeRobots);
+    addProperty("propFakeLittleRobot", propFakeLittleRobot);
+    addProperty("propFakeBigRobot", propFakeBigRobot);
 
     addAttribute("attrFrontObstacles", attrFrontObstacles);
     addAttribute("attrRearObstacles", attrRearObstacles);

@@ -29,6 +29,9 @@ class ObstacleManager: public RluTaskContext
     /* Params */
     int propNumberOfOpponents;
     double propMinProximity;
+    bool propActivateFakeRobots;
+    arp_math::Pose2D propFakeLittleRobot; //diameter 130
+    arp_math::Pose2D propFakeBigRobot;    //diameter 200
 
     std::vector<arp_math::Vector2> attrFrontObstacles;
     std::vector<arp_math::Vector2> attrRearObstacles;

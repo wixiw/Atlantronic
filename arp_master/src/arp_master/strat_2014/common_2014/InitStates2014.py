@@ -41,6 +41,14 @@ class InitSequence2014(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['endInitialisation','failed'])
         with self:
+            smach.StateMachine.add('SetStm32Power',
+                      SendStm32PowerCmd(True),
+                      transitions={'done':'WaitStm32PowerCmd'})
+            
+            smach.StateMachine.add('WaitStm32PowerCmd',
+                      WaitStm32PowerCmd(True),
+                      transitions={'power_state_reached':'WaitForOrocos','timeout':'SetStm32Power'})   
+            
             smach.StateMachine.add('WaitForOrocos', 
                                    WaitForOrocos(),
                                    transitions={'deployed':'WaitForStartUnplug','timeout':'WaitForOrocos'})

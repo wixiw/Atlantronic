@@ -65,12 +65,12 @@ class WaitForMatch(CyclicState):
     
     def executeIn(self):
         self.pubBeep.publish(Beep(300,0.3,3))
+        self.pubReady.publish(Bool(True))
     
     def executeTransitions(self):
        if Inputs.getstart()==0:
             return 'start'
-       self.pubReady.publish(Bool(True))
-        
+       
     def executeOut(self):
         #je note le temps de debut de match
         Data.start_time=rospy.get_rostime()

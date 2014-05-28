@@ -453,9 +453,6 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
     end.velocity = min(min(m_vmax_order, min(passSpeed, vmax)), velocity_allowingAcceleration);
     end.acceleration = 0;
 
-//TODO
-// ceci devrait aussi utiliser m_vmax_asked
-// a rebranche : min (m_vmax_order,m_vmax_asked)
     double maxSpeed = min(m_vmax_order, vmax);
     /*
      if (start.velocity < 0)
@@ -470,7 +467,7 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
      */
     PosVelAcc next;
 
-//TODO: attention a cette condition
+//TODO: attention a cette condition => desactivation
 //if (Cerr.norm() > DISTANCE_LINEAR_ASSERV)
     if (false)
     {
@@ -486,7 +483,8 @@ ICRSpeed OmnidirectOrder2::computeRunTwist(Pose2DNorm currentPositionNorm, ICRSp
 
     m_last_PosVelAcc_computation = next;
 
-    ro = next.velocity;
+    //TODO zizi WILLY => RMO : faut verifier ca, c'est mis la parce que le speed reducer fait une rampe
+    ro = min(next.velocity,m_vmax_asked);
     Log(DEBUG) << "     ro            " << ro;
 
     corICRSpeed = ICRSpeed(ro, ICR_possible);
