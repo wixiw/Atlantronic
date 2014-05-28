@@ -17,6 +17,7 @@
 #include <arp_core/PowerStatusMsg.h>
 #include <std_msgs/Empty.h>
 #include <std_msgs/Bool.h>
+#include <math/core>
 
 namespace arp_stm32
 {
@@ -54,6 +55,9 @@ class Discovery: public arp_core::MotionScheduler
         RTT::InputPort<std_msgs::Empty> inHeartbeat;
 
         RTT::InputPort<std_msgs::Bool> inPowerRequest;
+
+        // localization update
+        RTT::InputPort<arp_math::EstimatedPose2D> inPose;
 
 /****************************************************************
  * Interface ROS
