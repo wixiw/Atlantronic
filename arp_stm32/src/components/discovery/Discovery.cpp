@@ -98,6 +98,10 @@ void Discovery::updateHook()
         ooPowerOn(powerRequestMsg.data);
     }
 
+    arp_math::EstimatedPose2D pos;
+    inPose.read(pos);
+    m_robotItf.set_position(VectPlan(pos.x(), pos.y(), pos.angle()));
+
     //TODO workaround en attendant implem
 //    std_msgs::Empty heartbeatUpdateMsg;
 //    if( RTT::NewData == inHeartbeat.read(heartbeatUpdateMsg) )
@@ -238,6 +242,7 @@ void Discovery::createOrocosInterface()
     addPort("outPowerStatus",                           outPowerStatus);
     addEventPort("inHeartbeat",                         inHeartbeat);
     addEventPort("inPowerRequest",                      inPowerRequest);
+    addPort("inPose",                                   inPose);
 
     addOperation("ooReset", &Discovery::ooReset, this, OwnThread).doc("Reset the stm32 board.");
     addOperation("ooPowerOn", &Discovery::ooPowerOn, this, OwnThread).doc("Set the power on the stm32 board.");
