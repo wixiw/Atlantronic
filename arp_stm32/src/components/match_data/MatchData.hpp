@@ -34,7 +34,7 @@ class MatchData: public Stm32TaskContext
         RobotInterface& m_robotItf;
 
         bool attrStartPlugged;
-        bool attrStartColor;
+        int attrStartColor;
         bool attrReadyForMatch;
         bool attrInitialized;
 

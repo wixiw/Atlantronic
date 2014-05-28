@@ -47,7 +47,7 @@ void MatchData::updateHook()
     }
 
     attrStartPlugged = m_robotItf.get_gpio(GPIO_IN_GO);
-    attrStartColor = m_robotItf.get_gpio(GPIO_COLOR);
+    attrStartColor = m_robotItf.last_control_usb_data.color;
 
     mutex.unlock();
 
