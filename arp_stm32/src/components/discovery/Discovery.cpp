@@ -53,7 +53,7 @@ bool Discovery::configureHook()
 
 bool Discovery::startHook()
 {
-    bool res = true; //ooReset();
+    bool res = ooReset();
     res &= MotionScheduler::startHook();
     return res;
 }

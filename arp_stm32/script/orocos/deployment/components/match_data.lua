@@ -16,6 +16,7 @@ function MatchDataDeployer:connect()
 	assert( Deployer:stream(me..".outIoStart",ros:topic("/Ubiquity/start")))
 	assert( Deployer:stream(me..".outIoStartColor",ros:topic("/Ubiquity/color")))
 	assert( Deployer:stream(me..".inReadyForMatch",ros:topic("/Master/ready_for_match")))
+	assert( Deployer:stream(me..".inInformInitialized",ros:topic("/Master/initialized")))
 	return true
 end
 

@@ -28,10 +28,6 @@ class MatchData: public Stm32TaskContext
         bool configureHook();
         void updateHook();
 
-
-        /** When set to true, the next start withdraw will be the start signal */
-        RTT::InputPort<std_msgs::Bool> inReadyForMatch;
-
     protected:
         void createOrocosInterface();
 
@@ -40,10 +36,16 @@ class MatchData: public Stm32TaskContext
         bool attrStartPlugged;
         bool attrStartColor;
         bool attrReadyForMatch;
+        bool attrInitialized;
 
         /**
          * Orocos Interface
          */
+
+        /** When set to true, the next start withdraw will be the start signal */
+        RTT::InputPort<std_msgs::Bool> inReadyForMatch;
+        /**When the code is booted and waiting user*/
+        RTT::InputPort<std_msgs::Bool> inInformInitialized;
 
         //Start/Color
         /** Value of the start. GO is true when it is not in, go is false when the start is in **/
@@ -53,6 +55,8 @@ class MatchData: public Stm32TaskContext
 
         /** Informs the Stm32 we are ready for match ie next start withdraw is the match beginning.*/
         void setReadyForMatch();
+
+        void informInitialized();
 };
 
 } /* namespace arp_stm32 */

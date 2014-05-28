@@ -58,13 +58,15 @@ void MatchData::updateHook()
     {
         case COLOR_RED:
             color.color = "red";
+            outIoStartColor.write(color);
             break;
         case COLOR_YELLOW:
-        default:
             color.color = "yellow";
+            outIoStartColor.write(color);
+            break;
+        default:
             break;
     }
-    outIoStartColor.write(color);
 
     std_msgs::Bool readyForMatchMsg;
     if( RTT::NewData == inReadyForMatch.read(readyForMatchMsg) )
@@ -74,23 +76,32 @@ void MatchData::updateHook()
         {
             setReadyForMatch();
         }
+    }
 
+    std_msgs::Bool informInitializedMsg;
+    if( RTT::NewData == inInformInitialized.read(informInitializedMsg) )
+    {
+        attrInitialized = informInitializedMsg.data;
+        if( attrInitialized )
+        {
+            informInitialized();
+        }
     }
 }
 
-//void MatchData::informInitialized()
-//{
-//    int res = m_robotItf.led_readyXXX();
-//
-//    if (res < 0)
-//    {
-//        LOG(Error) << "Failed the stm32 board that we are initialized." << endlog();
-//    }
-//    else
-//    {
-//        LOG(Info) << "Stm32 board informed about our status." << endlog();
-//    }
-//}
+void MatchData::informInitialized()
+{
+    int res = m_robotItf.led_ready_for_init();
+
+    if (res < 0)
+    {
+        LOG(Error) << "Failed the stm32 board that we are initialized." << endlog();
+    }
+    else
+    {
+        LOG(Info) << "Stm32 board informed about our status." << endlog();
+    }
+}
 
 void MatchData::setReadyForMatch()
 {
@@ -112,7 +123,7 @@ void MatchData::createOrocosInterface()
     addAttribute("attrStartPlugged", attrStartPlugged);
     addAttribute("attrStartColor", attrStartColor);
     addAttribute("attrReadyForMatch", attrReadyForMatch);
-
+    addAttribute("attrInitialized", attrInitialized);
 
     addPort("outIoStart", outIoStart).doc(
             "Value of the start. GO is true when it is not in, go is false when the start is in");
@@ -120,4 +131,5 @@ void MatchData::createOrocosInterface()
 
     addEventPort("inReadyForMatch", inReadyForMatch).doc(
             "When set to true, the next start withdraw will be the start signal.");
+    addEventPort("inInformInitialized", inInformInitialized);
 }
