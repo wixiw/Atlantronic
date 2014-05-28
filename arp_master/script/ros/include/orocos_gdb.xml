@@ -3,7 +3,7 @@
 		name="ArpOrocos" 
 		pkg="ocl" 
 		type="deployer-gnulinux" 
-		args="-s $(find arp_master)/script/orocos/deployment/deploy_arp_master.ops --" 
+		launch-prefix="gdb --eval-command=run -s $(find arp_master)/script/orocos/deployment/deploy_arp_master.ops --"
 		output="screen"
 		respawn="false"
 		required="true"

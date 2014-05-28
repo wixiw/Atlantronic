@@ -11,7 +11,6 @@ from MotorManagement import *
 
 from arp_master.fsmFramework import *
 
-
 class InitTurretZeros(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['succeeded','problem'])
@@ -32,51 +31,8 @@ class InitTurretZeros(smach.StateMachine):
                       SetDrivingPower(),
                       transitions={'succeeded':'succeeded', 'timeout':'problem'})
 
-#
-# This is the default a0 level state in any strategy. 
-# _ It checks if the initial state is as expected
-# _ It waits for Orocos to be up
-# _ It search for turrets zeros
-# _ It waits for the start to be plugged in
-# _ It reads the color plug
-#
-##################################################
-class Initialisation(smach.StateMachine):
-    def __init__(self):
-        smach.StateMachine.__init__(self,outcomes=['endInitialisation','failed'])
-        with self:
-            smach.StateMachine.add('Init', Init(),
-                                   transitions={'initstateok':'WaitForOrocos','timeout':'Init'})
-            smach.StateMachine.add('WaitForOrocos', 
-                                   WaitForOrocos(),
-                                   transitions={'deployed':'WaitForStart','timeout':'WaitForOrocos'})
-            smach.StateMachine.add('WaitForStart', 
-                                   WaitForStart(),
-                                   transitions={'start':'FindSteeringZeros','timeout':'WaitForStart'})
-            smach.StateMachine.add('FindSteeringZeros',
-                                   InitTurretZeros(), 
-                                   transitions={'succeeded':'SetColor', 'problem':'failed'})
-            smach.StateMachine.add('SetColor', 
-                                   SetColor(),
-                                   transitions={'done':'endInitialisation','timeout':'SetColor'})
-    
-class UnSecureInitialisation(smach.StateMachine):
-    def __init__(self):
-        smach.StateMachine.__init__(self,outcomes=['endInitialisation','failed'])
-        with self:
-            smach.StateMachine.add('Init', Init(),
-                                   transitions={'initstateok':'WaitForOrocos','timeout':'Init'})
-            smach.StateMachine.add('WaitForOrocos', 
-                                   WaitForOrocos(),
-                                   transitions={'deployed':'FindSteeringZeros','timeout':'WaitForOrocos'})
-            smach.StateMachine.add('FindSteeringZeros',
-                                   InitTurretZeros(), 
-                                   transitions={'succeeded':'SetColor', 'problem':'failed'})
-            smach.StateMachine.add('SetColor', 
-                                   SetColor(),
-                                   transitions={'done':'endInitialisation','timeout':'SetColor'})
-    
-    
+
+        
 #the first state: only to wait for the start to be unpluged 
 class Init(CyclicState):
     def __init__(self):
@@ -100,26 +56,4 @@ class WaitForOrocos(CyclicState):
         rospy.loginfo("Orocos deployed.")
 
 
-#configure software that depends on the color
-class SetColor(CyclicState):
-    def __init__(self):
-        CyclicState.__init__(self, outcomes=['done'])
-    
-    def executeIn(self):
-        Data.color=Inputs.getcolor()
-        if Data.color=='red':
-            Data.adv_color='yellow'
-        else:
-            Data.adv_color='red'
-        
-       
-    
-    def executeTransitions(self):
-       rospy.loginfo("Execute.")
-       if  self.configureColor(Data.color) is True:
-            return 'done'
-    
-    def executeOut(self):
-        rospy.loginfo("Color configured.")
             
-    

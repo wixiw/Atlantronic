@@ -60,7 +60,7 @@ class MainStateMachine(smach.StateMachine):
         smach.StateMachine.__init__(self,outcomes=['end'])
         with self:
             smach.StateMachine.add('Initialisation', 
-                                   Strat_Initialisation.Initialisation(),
+                                   InitStates2014.InitSequence2014(),
                                    transitions={'endInitialisation':'StartSequence','failed':'Uninitialisation'})
 
             smach.StateMachine.add('StartSequence',

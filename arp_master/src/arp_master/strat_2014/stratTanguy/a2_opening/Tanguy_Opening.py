@@ -21,33 +21,37 @@ class Opening(PreemptiveStateMachine):
             
             PreemptiveStateMachine.add('RetryEscapeStartArea',
                       AmbiOmniDirectOrder2Pass(Pose2D(Table2014.P_YOU_HOU.x, Table2014.P_YOU_HOU.y -0.050, Table2014.P_YOU_HOU.theta) ,vpasse=-1),
-                      transitions={'succeeded':'GoToYFT', 'timeout':'motionBlocked'})
+                      transitions={'succeeded':'GoToYFT', 'timeout':'nearlyEndMatch'})
             
                 
 # Go to Yellow Fire Top
             PreemptiveStateMachine.add('GoToYFT',
                       AmbiOmniDirectOrder2Pass( Pose2D(0.650 + Robot2014.FRONT_SIDE.x, 0.300, -5*pi/6),vpasse=-1),
-                      transitions={'succeeded':'GotoGayCampingPoint', 'timeout':'PrepareFrescos'})
+                      transitions={'succeeded':'GotoGayCampingPoint', 'timeout':'nearlyEndMatch'})
 
 # Go to Gay Camping point
             PreemptiveStateMachine.add('GotoGayCampingPoint',
                       AmbiOmniDirectOrder2(AmbiShootMammoth.getEntryYellowPoseStatic('Left', p_opponent_side = True)),
-                      transitions={'succeeded':'TargetShoot', 'timeout':'PrepareFrescos'})   
+                      transitions={'succeeded':'TargetShoot', 'timeout':'nearlyEndMatch'})   
 
 # Shoot
             PreemptiveStateMachine.add('TargetShoot',
                       AmbiShootMammoth('Left', p_opponent_side = True),
-                      transitions={'succeeded':'PrepareFrescos', 'failed':'askSelector', 'almostEndGame':'nearlyEndMatch'})
+                      transitions={'succeeded':'PrepareFrescos', 'failed':'nearlyEndMatch', 'almostEndGame':'nearlyEndMatch'})
 
 # Go to Frescos entry point
             PreemptiveStateMachine.add('PrepareFrescos',
                       AmbiOmniDirectOrder2(StickFrescosState.getEntryYellowPoseStatic()),
-                      transitions={'succeeded':'StickFrescos', 'timeout':'motionBlocked'})   
+                      transitions={'succeeded':'StickFrescos', 'timeout':'nearlyEndMatch'})   
             
 #Stick Frescos
             PreemptiveStateMachine.add('StickFrescos',
                       StickFrescosState(),
-                      transitions={'succeeded':'GoToAlmostCentralHeat', 'failed':'askSelector', 'almostEndGame':'nearlyEndMatch' })
+                      transitions={'succeeded':'ReturnInStartArea', 'failed':'nearlyEndMatch', 'almostEndGame':'nearlyEndMatch' })
+#DEBUG WILLY
+            PreemptiveStateMachine.add('ReturnInStartArea',
+                      AmbiOmniDirectOrder2(Table2014.P_YOU_HOU),
+                      transitions={'succeeded':'nearlyEndMatch', 'timeout':'nearlyEndMatch'})
 
 # Go to Almost Central Heat
             PreemptiveStateMachine.add('GoToAlmostCentralHeat',

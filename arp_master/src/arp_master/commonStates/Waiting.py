@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: latin-1 -*-
 
 #libraries for ROS
 import roslib; roslib.load_manifest('arp_master')
@@ -66,9 +67,9 @@ class WaitForMatch(CyclicState):
         self.pubBeep.publish(Beep(300,0.3,3))
     
     def executeTransitions(self):
-       #TODO workaround pour coupure puissance en fin de match : self.pubReady.publish(Bool(True))
        if Inputs.getstart()==0:
             return 'start'
+       self.pubReady.publish(Bool(True))
         
     def executeOut(self):
         #je note le temps de debut de match

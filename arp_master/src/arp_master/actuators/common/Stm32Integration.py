@@ -25,7 +25,39 @@ class SendReadyForMatch(StaticSendOnTopic):
     def __init__(self):
         StaticSendOnTopic.__init__(self, "/Ubiquity/ready_for_match", Bool, Bool(True))
 
+#
+# You may inform the stm32 that the robot is initialized
+#
+class InformInitialized(StaticSendOnTopic):
+    def __init__(self):
+        StaticSendOnTopic.__init__(self, "/Master/initialized", Bool, Bool(True))
 
+#
+# You may wait for color to be entered by the user
+#
+class WaitStm32ColorChoice(ReceiveFromTopic):
+    def __init__(self):
+        ReceiveFromTopic.__init__(self, "/Ubiquity/color", String, p_outcomes=['color_choice_done'], p_timeout=90)
+
+    def executeTransitions(self):    
+        #if no message has been received yet, just wait again
+        if self.msg is None:
+            return
+            
+        color = self.msg.color
+ 
+        if ((color == "red") and (Inputs.getstart() == 1)):
+            rospy.loginfo("User has chosen RED")
+            return 'color_choice_done' 
+        
+        if ((color == "yellow") and (Inputs.getstart() == 1)):
+            rospy.loginfo("User has chosen YELLOW")
+            return 'color_choice_done' 
+        
+        #else : continue to wait
+
+
+        
 #
 # You may wait for power to be effectively in a predefined state.
 # @param Bool p_expectedPower : set to true wait power on or false to wait power off
