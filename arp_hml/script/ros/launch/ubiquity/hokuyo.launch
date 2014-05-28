@@ -1,6 +1,8 @@
-<!--  Use this file de deploy kokuyo stuffs
--->
+
+
 <launch>
+<!--  Use this file de deploy kokuyo stuffs
+  	-->
 	<remap from="scan" to="/Ubiquity/top_front_scan" />
 	<node 	name="TopFrontsHokuyo" 
 			pkg="hokuyo_node" 

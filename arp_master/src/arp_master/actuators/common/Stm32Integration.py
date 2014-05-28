@@ -10,6 +10,20 @@ from arp_master.fsmFramework import *
 from arp_master.commonStates import *
 from std_msgs.msg import *
 
+
+class ResetStm32(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded','failed'])
+        self.setReset_srv=rospy.ServiceProxy("/Ubiquity/resetStm32",EmptyWithSuccess)
+
+    def execute(self, userdata):
+        try:
+            self.setReset_srv();
+            return 'succeeded';
+        except rospy.ServiceException, e:
+            rospy.logerr("ResetStm32 failed to reset e=")
+            return 'failed'
+    
 #
 # You may drive power on the stm32 with this command.
 # @param Bool p_powerOn : set to true to requiere power

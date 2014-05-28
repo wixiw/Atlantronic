@@ -206,9 +206,9 @@ void Gyrometer::createOrocosInterface()
 void Gyrometer::createRosInterface()
 {
     ros::NodeHandle nh;
-    nh.advertiseService("/Gyrometer/startGyroCalibration",
-            &Gyrometer::srvStartCalibration, this);
-    nh.advertiseService("/Gyrometer/stopGyroCalibration", &Gyrometer::srvStopCalibration,
-            this);
-    nh.advertiseService("/Gyrometer/setGyroPosition", &Gyrometer::srvSetPosition, this);
+    m_srvList.push_back(nh.advertiseService("/Gyrometer/startGyroCalibration",
+            &Gyrometer::srvStartCalibration, this));
+    m_srvList.push_back(nh.advertiseService("/Gyrometer/stopGyroCalibration", &Gyrometer::srvStopCalibration,
+            this));
+    m_srvList.push_back(nh.advertiseService("/Gyrometer/setGyroPosition", &Gyrometer::srvSetPosition, this));
 }

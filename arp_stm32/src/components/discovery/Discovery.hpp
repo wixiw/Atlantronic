@@ -107,6 +107,8 @@ class Discovery: public arp_core::MotionScheduler
         bool attrIsConnected;
         bool attrIsHeartbeatLost;
         double attrBatteryVoltage;
+
+        std::vector<ros::ServiceServer> m_srvList;
 };
 
 } /* namespace arp_stm32 */

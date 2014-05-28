@@ -53,7 +53,7 @@ bool Discovery::configureHook()
 
 bool Discovery::startHook()
 {
-    bool res = ooReset();
+    bool res = true ; //ooReset();
     res &= MotionScheduler::startHook();
     return res;
 }
@@ -99,8 +99,10 @@ void Discovery::updateHook()
     }
 
     arp_math::EstimatedPose2D pos;
-    inPose.read(pos);
-    m_robotItf.set_position(VectPlan(pos.x(), pos.y(), pos.angle()));
+    if( RTT::NewData == inPose.read(pos))
+    {
+        m_robotItf.set_position(VectPlan(pos.x()*1000, pos.y()*1000, pos.angle()));
+    }
 
     //TODO workaround en attendant implem
 //    std_msgs::Empty heartbeatUpdateMsg;
@@ -251,6 +253,6 @@ void Discovery::createOrocosInterface()
 void Discovery::createRosInterface()
 {
     ros::NodeHandle nh;
-    nh.advertiseService("/Ubiquity/resetStm32", &Discovery::srvResetStm32, this);
-    nh.advertiseService("/Ubiquity/powerOn", &Discovery::srvPowerOn, this);
+    m_srvList.push_back(nh.advertiseService("/Ubiquity/resetStm32", &Discovery::srvResetStm32, this));
+    m_srvList.push_back(nh.advertiseService("/Ubiquity/powerOn", &Discovery::srvPowerOn, this));
 }

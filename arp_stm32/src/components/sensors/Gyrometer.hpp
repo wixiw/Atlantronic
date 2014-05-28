@@ -99,6 +99,8 @@ class Gyrometer: public Stm32TaskContext
         RTT::OutputPort<double> outAngleSimpson;
         RTT::OutputPort<double> outAngleSimpsonDegree;
         RTT::OutputPort<double> outRawData;
+
+        std::vector<ros::ServiceServer> m_srvList;
 };
 
 } /* namespace arp_stm32 */

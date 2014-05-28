@@ -41,17 +41,40 @@ class InitSequence2014(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self,outcomes=['endInitialisation','failed'])
         with self:
-            smach.StateMachine.add('SetStm32Power',
-                      SendStm32PowerCmd(True),
-                      transitions={'done':'WaitStm32PowerCmd'})
-            
-            smach.StateMachine.add('WaitStm32PowerCmd',
-                      WaitStm32PowerCmd(True),
-                      transitions={'power_state_reached':'WaitForOrocos','timeout':'SetStm32Power'})   
-            
+ 
             smach.StateMachine.add('WaitForOrocos', 
                                    WaitForOrocos(),
-                                   transitions={'deployed':'WaitForStartUnplug','timeout':'WaitForOrocos'})
+                                   transitions={'deployed':'UnsetStm32Power','timeout':'WaitForOrocos'})
+    #Begin galere STM32 et hokuyo qui ne s'aiment pas ...
+            smach.StateMachine.add('UnsetStm32Power',
+                       SendStm32PowerCmd(False),
+                       transitions={'done':'WaitStm32PowerDown'})
+              
+            smach.StateMachine.add('WaitStm32PowerDown',
+                       WaitStm32PowerCmd(False),
+                       transitions={'power_state_reached':'WaiterState','timeout':'UnsetStm32Power'})   
+              
+            smach.StateMachine.add('WaiterState',
+                       WaiterState(3.0),
+                       transitions={'timeout':'ResetStm32'})   
+            
+            smach.StateMachine.add('ResetStm32',
+                       ResetStm32(),
+                       transitions={'succeeded':'WaitForStartUnplug','failed':'ResetStm32'})    
+              
+# normalement le stm32 le fait tout seul  
+#           
+#  smach.StateMachine.add('SetStm32Power',
+#                        SendStm32PowerCmd(True),
+#                        transitions={'done':'WaitStm32PowerCmd'})
+#               
+#             smach.StateMachine.add('WaitStm32PowerCmd',
+#                        WaitStm32PowerCmd(True),
+#                        transitions={'power_state_reached':'WaitForOrocos','timeout':'SetStm32Power'})   
+#               
+              #END galere stm32 hokuyo qui ne s'aiment pas
+              
+              
             smach.StateMachine.add('WaitForStartUnplug', 
                                    WaitForStartUnplug(),
                                    transitions={'startunplug':'InformInitDone', 'timeout':'WaitForStartUnplug'}) 
