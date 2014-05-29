@@ -17,7 +17,7 @@ dofile("/opt/ard/arp_rlu/script/orocos/deployment/components/ros_rlu_itf_deploye
 
 OdometryDeployer:load();
 LocalizatorDeployer:load();
-ObstacleDetector:load();
+--ObstacleDetector:load();
 ObstacleManager:load();
 RosRluItfDeployer:load();
 RluMonitorDeployer:load();
@@ -25,7 +25,7 @@ RluMonitorDeployer:load();
 
 OdometryDeployer:connect();
 LocalizatorDeployer:connect();
-ObstacleDetector:connect();
+--ObstacleDetector:connect();
 ObstacleManager:connect();
 RosRluItfDeployer:connect();
 RluMonitorDeployer:connect();
