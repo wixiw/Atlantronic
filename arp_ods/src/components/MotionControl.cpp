@@ -19,7 +19,7 @@ using namespace arp_math;
 ORO_LIST_COMPONENT_TYPE( arp_ods::MotionControl)
 
 MotionControl::MotionControl(const std::string& name) :
-        OdsTaskContext(name), attrVmax_asked(1.0), attrCurrentOrder("default"), m_ICRSpeedBuffer(), m_norder(0)
+        OdsTaskContext(name), attrVmax_asked(-1.0), attrCurrentOrder("default"), m_ICRSpeedBuffer(), m_norder(0)
 
 {
     //***WARNING*** Ne pas laisser tourner des logs verbeux sur le robot
@@ -58,6 +58,12 @@ void MotionControl::getInputs()
     {
         LOG( Error ) << "No data in inParams port => return" << endlog();
         return;
+    }
+
+    std_msgs::Float32 vmaxMsg;
+    if( RTT::NewData == inVmaxLimit.read(vmaxMsg))
+    {
+        attrVmax_asked = vmaxMsg.data;
     }
 }
 
@@ -180,12 +186,6 @@ bool MotionControl::ooSetOrder(shared_ptr<MotionOrder> order)
      }*/
 }
 
-bool MotionControl::ooSetVMax(double vmax)
-{
-    attrVmax_asked = vmax;
-    return true;
-}
-
 void MotionControl::createOrocosInterface()
 {
     addAttribute("attrComputedICRSpeedCmd", attrComputedICRSpeedCmd);
@@ -200,6 +200,7 @@ void MotionControl::createOrocosInterface()
     addPort("inCurrentICRSpeed", inCurrentICRSpeed).doc("");
     addPort("inParams", inParams).doc("");
     addPort("inCanPeriod", inCanPeriod).doc("Period computed between 2 SYNC messages by the CAN layer");
+    addPort("inVmaxLimit", inVmaxLimit).doc("");
 
     //DEBUG
     addPort("outICRSpeedCmd", outICRSpeedCmd).doc("");
@@ -221,7 +222,4 @@ void MotionControl::createOrocosInterface()
 
     addOperation("ooSetOrder", &MotionControl::ooSetOrder, this, OwnThread).doc("Define a new order to do").arg(
             "orderRef", "a reference to the new order to do");
-
-    addOperation("ooSetVMax", &MotionControl::ooSetVMax, this, OwnThread).doc("Define a new max velocity to respect").arg(
-            "vmax", "max velocity in m/s");
 }

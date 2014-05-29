@@ -8,7 +8,7 @@ import actionlib
 from arp_core.msg import OpponentsList
 from arp_core.msg import Pose
 from arp_core.msg import MotionTarget
-from std_msgs.msg import Float64
+from std_msgs.msg import Float32
 from arp_ods.srv import SetVMax
 from arp_master import *
 
@@ -16,9 +16,10 @@ from arp_master import *
 class SpeedReducerAntico:
     def __init__(self):
         rospy.init_node('SpeedReducerAntico')
-        self.opponentsTopic = rospy.Subscriber("Localizator/opponents_detected", OpponentsList,self.updateOpponentCallBack)
-        self.poseTopic      = rospy.Subscriber("Localizator/pose", Pose,self.updatePoseCallBack)
-        self.motionTargetTopic      = rospy.Subscriber("Master/motionTarget", MotionTarget,self.updateMotionTargetCallBack)
+        self.opponentsTopic = rospy.Subscriber("/Localizator/opponents_detected", OpponentsList,self.updateOpponentCallBack)
+        self.poseTopic      = rospy.Subscriber("/Localizator/pose", Pose,self.updatePoseCallBack)
+        self.motionTargetTopic      = rospy.Subscriber("/Master/motionTarget", MotionTarget,self.updateMotionTargetCallBack)
+        self.speedLimitPublisher = rospy.Publisher("/Master/setVMax", Float32)
         
         #NOTE : les calculs sont fait au centre des tourelles, ca meriterait d'etre fait au centre du robot.
         self.opponentsMgs = OpponentsList()
@@ -42,9 +43,6 @@ class SpeedReducerAntico:
         self.reduced_min_speed = 0.000
         self.decc = 1.0
 
-        rospy.wait_for_service('MotionControl/setVMax')            
-        self.setVMax_srv=rospy.ServiceProxy("MotionControl/setVMax",SetVMax)
-    
     #a appeler des que l'objet est construit pour commencer a travailler. Appel bloquant
     def start(self):
         rospy.loginfo("SpeedReducer : started")
@@ -124,14 +122,14 @@ class SpeedReducerAntico:
     
     def setVmax(self,v):
         try:
-            self.setVMax_srv(v,False)
+            self.speedLimitPublisher(v)
         except:
             #rospy.logerr("Failed to setVmax");
             pass;
             
     def unsetVmax(self):
         try:
-            self.setVMax_srv(-1.0,True)
+            self.speedLimitPublisher(-1)
         except:
             pass
             #rospy.logerr("Failed to unsetVmax");

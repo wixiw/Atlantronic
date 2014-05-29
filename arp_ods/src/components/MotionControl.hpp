@@ -13,6 +13,8 @@
 #include "control/orders/OrderFactory.hpp"
 #include "control/replay_buffers/ICRSpeedBuffer.hpp"
 #include <math/core>
+#include <std_msgs/Float32.h>
+
 
 namespace arp_ods
 {
@@ -30,13 +32,6 @@ class MotionControl: public OdsTaskContext
          */
         bool ooSetOrder(shared_ptr<orders::MotionOrder> order);
 
-        /**
-         * Use this opration to setup a new max speed
-         * @param vmax : new max speed in m/s
-         * @return true on successfull change aka the max speed sent is positive
-         */
-        bool ooSetVMax(double vmax);
-
     protected:
         /**
          * Position courante du robot par rapport a la table dans le repère (??? XXX ??? )
@@ -52,6 +47,9 @@ class MotionControl: public OdsTaskContext
 
         /** Period between 2 CanOpen Sync Messages*/
         RTT::InputPort<double> inCanPeriod;
+
+        /** Used to avoid opponents */
+        RTT::InputPort<std_msgs::Float32> inVmaxLimit;
 
         /**
          * This is the result of computation : the Twist that the robot should do

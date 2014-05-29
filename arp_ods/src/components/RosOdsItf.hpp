@@ -76,12 +76,6 @@ class RosOdsItf: public OdsTaskContext
         bool setVMaxCallback(SetVMax::Request& req, SetVMax::Response& res);
 
         RTT::OperationCaller<bool(shared_ptr<orders::MotionOrder>)> m_ooSetOrder;
-        RTT::OperationCaller<bool(double)> m_ooSetVMax;
-
-
-        /** node handle to store the service advertiser srvInitialize**/
-        ros::ServiceServer m_srvSetVMax;
-
         /**
          * Utility functions to hide framework interface declarations at the end of the file
          */

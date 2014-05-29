@@ -17,6 +17,7 @@ function MotionControlDeployer:connect()
 	assert( Deployer:addPeer("RluMonitor", me))
 	assert( RluMonitor:connect(me,"inPosition","Localizator","outPose"))
 	assert( RluMonitor:connect(me,"inCurrentICRSpeed","Odometry","outICRSpeed"))
+	assert( Deployer:stream(me..".inVmaxLimit",ros:topic("/Master/setVMax")))
     assert( RluMonitor:connect(me,"outSmoothLocNeeded","Localizator","inSmoothMode"))
     
     assert( Deployer:addPeer("HmlMonitor", me))

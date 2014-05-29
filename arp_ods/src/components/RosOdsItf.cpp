@@ -36,7 +36,6 @@ bool RosOdsItf::configureHook()
 {
     bool res = OdsTaskContext::configureHook();
     res &= getOperation("MotionControl", "ooSetOrder", m_ooSetOrder);
-    res &= getOperation("MotionControl", "ooSetVMax", m_ooSetVMax);
     return res;
 }
 
@@ -151,11 +150,6 @@ void RosOdsItf::newOrderCB(const OrderGoalConstPtr &goal)
     return;
 }
 
-bool RosOdsItf::setVMaxCallback(SetVMax::Request& req, SetVMax::Response& res)
-{
-    return m_ooSetVMax(req.vMax);
-}
-
 void RosOdsItf::createOrocosInterface()
 {
     addPort("inPose", inPose);
@@ -169,7 +163,5 @@ void RosOdsItf::createOrocosInterface()
 
 void RosOdsItf::createRosInterface()
 {
-    ros::NodeHandle nh;
-    m_srvSetVMax = nh.advertiseService("/MotionControl/setVMax", &RosOdsItf::setVMaxCallback, this);
 }
 
