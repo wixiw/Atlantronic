@@ -44,24 +44,24 @@ class InitSequence2014(smach.StateMachine):
  
             smach.StateMachine.add('WaitForOrocos', 
                                    WaitForOrocos(),
-                                   transitions={'deployed':'ResetStm32','timeout':'WaitForOrocos'})
+                                   transitions={'deployed':'UnsetStm32Power','timeout':'WaitForOrocos'})
 
 #Begin galere STM32 et hokuyo qui ne s'aiment pas ... => TODO willy a priori a virer si ca marche maintenant que les hokuyo sont sur rs232
-#            smach.StateMachine.add('UnsetStm32Power',
-#                       SendStm32PowerCmd(False),
-#                       transitions={'done':'WaitStm32PowerDown'})
-#              
-#            smach.StateMachine.add('WaitStm32PowerDown',
-#                       WaitStm32PowerCmd(False),
-#                       transitions={'power_state_reached':'WaiterState','timeout':'UnsetStm32Power'})   
-#              
-#            smach.StateMachine.add('WaiterState',
-#                       WaiterState(3.0),
-#                       transitions={'timeout':'ResetStm32'})   
+            smach.StateMachine.add('UnsetStm32Power',
+                       SendStm32PowerCmd(False),
+                       transitions={'done':'WaitStm32PowerDown'})
+              
+            smach.StateMachine.add('WaitStm32PowerDown',
+                       WaitStm32PowerCmd(False),
+                       transitions={'power_state_reached':'WaiterState','timeout':'UnsetStm32Power'})   
+              
+            smach.StateMachine.add('WaiterState',
+                       WaiterState(3.0),
+                       transitions={'timeout':'ResetStm32'})   
             
             smach.StateMachine.add('ResetStm32',
                        ResetStm32(),
-                       transitions={'succeeded':'WaitForStartUnplug','failed':'ResetStm32'})                 
+                       transitions={'succeeded':'WaitForStartUnplug','failed':'UnsetStm32Power'})                 
               
             smach.StateMachine.add('WaitForStartUnplug', 
                                    WaitForStartUnplug(),
