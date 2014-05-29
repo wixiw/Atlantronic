@@ -14,8 +14,8 @@ end
 
 function ObstacleManager:connect()
 	assert( Deployer:addPeer("Reporting", me))
-    assert( Deployer:connect(me..".inRearObstacles", "Localizator.outObstacles",cp))
-	assert( Deployer:connect(me..".inFrontObstacles", "RearObstacleDetector.outObstacles",cp))
+    assert( Deployer:connect(me..".inRearObstacles", "RearObstacleDetector.outObstacles",cp))
+	assert( Deployer:connect(me..".inFrontObstacles", "FrontObstacleDetector.outObstacles",cp))
 	assert( ObstacleManager:check(me))
 	return true
 end

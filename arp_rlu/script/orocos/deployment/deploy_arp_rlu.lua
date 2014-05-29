@@ -11,13 +11,13 @@ Deployer:import("rtt_sensor_msgs");
 dofile("/opt/ard/arp_rlu/script/orocos/deployment/components/rlu_monitor_deployer.lua");
 dofile("/opt/ard/arp_rlu/script/orocos/deployment/components/odometry_deployer.lua");
 dofile("/opt/ard/arp_rlu/script/orocos/deployment/components/localizator_deployer.lua");
-dofile("/opt/ard/arp_rlu/script/orocos/deployment/components/rear_obstacle_detector_deployer.lua");
+dofile("/opt/ard/arp_rlu/script/orocos/deployment/components/obstacle_detector_deployer.lua");
 dofile("/opt/ard/arp_rlu/script/orocos/deployment/components/obstacle_manager_deployer.lua");
 dofile("/opt/ard/arp_rlu/script/orocos/deployment/components/ros_rlu_itf_deployer.lua");
 
 OdometryDeployer:load();
 LocalizatorDeployer:load();
-RearObstacleDetector:load();
+ObstacleDetector:load();
 ObstacleManager:load();
 RosRluItfDeployer:load();
 RluMonitorDeployer:load();
@@ -25,7 +25,7 @@ RluMonitorDeployer:load();
 
 OdometryDeployer:connect();
 LocalizatorDeployer:connect();
-RearObstacleDetector:connect();
+ObstacleDetector:connect();
 ObstacleManager:connect();
 RosRluItfDeployer:connect();
 RluMonitorDeployer:connect();

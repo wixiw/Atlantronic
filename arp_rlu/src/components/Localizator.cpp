@@ -177,19 +177,15 @@ void Localizator::updateHook()
     hokuyo_scan rosScan;
     if( RTT::NewData == inScan.read(rosScan) )
     {
-        double dateBeg = 0.0; //TODO JB//rosScan.header.stamp.toSec() - m_monotonicTimeToRealTime;
-        double HOKUYO_TIME_INCREMENT = 0.0; //TODO JB
-        int HOKUYO_MIN_RANGE = 20 ; //TODO JB
-        int HOKUYO_MAX_RANGE = 4000 ; //TODO JB
-        double HOKUYO_DTHETA = (M_PI / 512.0f);//TODO JB
-        double HOKUYO_START_ANGLE = ((- 135 * M_PI / 180.0f) + 44 * HOKUYO_DTHETA);//TODO JB
+        double dateBeg = 0;
+        //rosScan.date.ms/1000.0 + rosScan.date.ns/1.0E9;  //TODO JB//rosScan.header.stamp.toSec() - m_monotonicTimeToRealTime;
 
         lsl::LaserScan lslScan;
         Eigen::MatrixXd polarData(3, HOKUYO_NUM_POINTS);
         for (unsigned int i = 0; i != HOKUYO_NUM_POINTS; i++)
         {
-            polarData(0,i) = dateBeg + i * HOKUYO_TIME_INCREMENT;
-            polarData(2,i) = HOKUYO_START_ANGLE + i*HOKUYO_TIME_INCREMENT;
+            polarData(0,i) = dateBeg + i * HOKUYO_POINT_TO_POINT_DT;
+            polarData(2,i) = HOKUYO_START_ANGLE + i*HOKUYO_DTHETA;
             if (rosScan.distance[i] <= HOKUYO_MAX_RANGE && HOKUYO_MIN_RANGE <= rosScan.distance[i])
             {
                 polarData(1,i) = rosScan.distance[i]/1000.0;

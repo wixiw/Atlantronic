@@ -19,7 +19,9 @@ function LocalizatorDeployer:connect()
 	DiscoveryMonitor = Deployer:getPeer("DiscoveryMonitor")
 	assert( Deployer:addPeer("DiscoveryMonitor", me))
 	assert( Deployer:connect("Discovery.inPose", me..".outPose", cp))
-	assert( DiscoveryMonitor:connect(me,"inScan","FrontHokuyo","outScan"))
+	
+	--TODO coupe 2014 : desactive pour eviter de pourrir le x86 => utilisation d'un simple obstacle detector pour devant aussi
+	--assert( DiscoveryMonitor:connect(me,"inScan","FrontHokuyo","outScan"))
 	
 	Deployer:addPeer("Reporting", me)
 	LocalizatorDeployer:check(me)

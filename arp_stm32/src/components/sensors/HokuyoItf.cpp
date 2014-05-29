@@ -30,7 +30,7 @@ bool HokuyoItf::configureHook()
 void HokuyoItf::updateHook()
 {
     Stm32TaskContext::updateHook();
-
+    LOG(Info) << "updateHook" <<  endlog();
     DiscoveryMutex mutex;
 
     if (mutex.lock() == DiscoveryMutex::FAILED)
