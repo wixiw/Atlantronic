@@ -12,7 +12,7 @@
 #include "linux/tools/qemu.h"
 #include <std_msgs/Bool.h>
 
-namespace arp_simu
+namespace arp_stm32
 {
 
 class SimulatedDiscovery: public arp_stm32::Discovery

@@ -11,13 +11,12 @@
 
 using namespace arp_stm32;
 using namespace std_msgs;
-using namespace arp_simu;
 using namespace std;
 using namespace RTT;
 
 #define LOG(level) RTT::log(level)<<"["<<getName()<<"] "
 
-ORO_LIST_COMPONENT_TYPE( arp_simu::SimulatedDiscovery )
+ORO_LIST_COMPONENT_TYPE( arp_stm32::SimulatedDiscovery )
 
 SimulatedDiscovery::SimulatedDiscovery(const std::string& name) :
         Discovery(name),
