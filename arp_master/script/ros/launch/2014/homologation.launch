@@ -1,0 +1,12 @@
+<launch>
+	<include file="$(find arp_master)/script/ros/include/common_includes.xml"/>
+	
+	<node 
+		name="StratNode_Homologation"   
+		pkg="arp_master"  
+		type="StratNode_Homologation.py"     
+		args="" output="screen" 
+		required="true"
+		launch-prefix="nice -n 19"
+	/>
+</launch>
