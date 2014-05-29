@@ -58,34 +58,36 @@ class SpeedReducerAntico:
                 #distance = opp.closest_distance;
                 
                 isInTrajectory=False
+                opponentInTrajectory=False
                 distance=1000.0
                 
                 #rospy.loginfo("SpeedReducer : opp list size %d", len(opp.list))
                 
-                for potential in opp.list: # je boucle sur les opponents detectes
+                for i,potential in enumerate(opp.list): # je boucle sur les opponents detectes
                     potentialPosition=Point(potential.x,potential.y)
                     myPosition=Point(self.pose.x,self.pose.y)
                     motionTargetPosition=Point(self.motionTarget.target.x,self.motionTarget.target.y)
                     
-                    #rospy.loginfo("SpeedReducer : potentialPosition %s", potentialPosition)
-                    #rospy.loginfo("SpeedReducer : myPosition %s", myPosition)
-                    #rospy.loginfo("SpeedReducer : motionTargetPosition %s", motionTargetPosition)
+                    #rospy.loginfo("["+str(i)+"] SpeedReducer : potentialPosition %s", potentialPosition)
+                    #rospy.loginfo("["+str(i)+"] SpeedReducer : myPosition %s", myPosition)
+                    #rospy.loginfo("["+str(i)+"] SpeedReducer : motionTargetPosition %s", motionTargetPosition)
                     
                     isInTrajectory=isInRectangle(potentialPosition,myPosition,motionTargetPosition,0.900)
                     
-                    #rospy.loginfo("SpeedReducer : isInTrajectory %s", isInTrajectory)
+                    #rospy.loginfo("["+str(i)+"] SpeedReducer : isInTrajectory %s", isInTrajectory)
                     
                     if isInTrajectory: # il est sur ma traj ?
-                        isInTrajectory=True
+                        opponentInTrajectory=True
                         distancePotential=myPosition.dist(potentialPosition)
                         if distancePotential<distance: # c'est le plus pres ?
-                            distance=distancePotential
+                            distance=distancePotential #je note la distance de l'adversaire le plus proche
                 
                 #rospy.loginfo("SpeedReducer : isInTrajectory %s", isInTrajectory)
                 
                 # y avait-il qqn sur mon traj ?
-                if isInTrajectory:
+                if opponentInTrajectory:
                     #rospy.loginfo("SpeedReducer : adversaire dans ma trajectoire")
+                    #rospy.loginfo("SpeedReducer : a une distance de %s",distance)
                     #l'adversaire est tres proche
                     if distance <= self.min_distance:
                         #rospy.loginfo("SpeedReducer : min %s", self.reduced_min_speed)
