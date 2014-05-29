@@ -14,9 +14,11 @@ end
 
 function ObstacleManager:connect()
 	assert( Deployer:addPeer("Reporting", me))
-    --assert( Deployer:connect(me..".inRearObstacles", "RearObstacleDetector.outObstacles",cp))
-	assert( Deployer:connect(me..".inFrontObstacles", "FrontObstacleDetector.outObstacles",cp))
-	--assert( Deployer:connect(me..".inFrontObstacles", "Localizator.outObstacles",cp))
+    
+    DiscoveryMonitor = Deployer:getPeer("DiscoveryMonitor")
+	assert( Deployer:addPeer("DiscoveryMonitor", me))
+    assert( DiscoveryMonitor:connect(me,"inFrontObstacles","FrontHokuyo","outObstacles"))
+	assert( DiscoveryMonitor:connect(me,"inRearObstacles","RearHokuyo","outObstacles"))
 	assert( ObstacleManager:check(me))
 	return true
 end

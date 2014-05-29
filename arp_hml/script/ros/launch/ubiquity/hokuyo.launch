@@ -2,7 +2,6 @@
 
 <launch>
 <!--  Use this file de deploy kokuyo stuffs
-  	-->
 	<remap from="scan" to="/Ubiquity/top_front_scan" />
 	<node 	name="TopFrontsHokuyo" 
 			pkg="hokuyo_node" 
@@ -31,5 +30,5 @@
   		<param name="frame_id" type="string" value="rear_laser" />
   		<param name="min_ang" type="double" value="-2.08621" />
   		<param name="max_ang" type="double" value="2.08621" />
-  	</node>
+  	</node>-->
 </launch>

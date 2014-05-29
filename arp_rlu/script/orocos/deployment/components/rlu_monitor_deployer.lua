@@ -25,8 +25,6 @@ function RluMonitorDeployer:connect()
 --ajout au monitor
 	assert( RluMonitorDeployer:addToMonitor("Odometry"), "Failed to add Odometry in Monitor" )
 	assert( RluMonitorDeployer:addToMonitor("Localizator") )
-	assert( RluMonitorDeployer:addToMonitor("FrontObstacleDetector") )
-	--assert( RluMonitorDeployer:addToMonitor("RearObstacleDetector") )
 	assert( RluMonitorDeployer:addToMonitor("ObstacleManager") )
 	assert( RluMonitorDeployer:addToMonitor("RosRluItf") )
 	assert( RluMonitorDeployer:check(me) )

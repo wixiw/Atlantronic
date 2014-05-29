@@ -10,7 +10,7 @@ from arp_core.msg import Pose
 from arp_core.msg import MotionTarget
 from std_msgs.msg import Float32
 from arp_ods.srv import SetVMax
-from arp_master import *
+from arp_master.util import *
 
 #This more advanced speed reducer than SpeedReducer, is only slowing if the opponent is in our path.
 class SpeedReducerAntico:
@@ -45,7 +45,7 @@ class SpeedReducerAntico:
 
     #a appeler des que l'objet est construit pour commencer a travailler. Appel bloquant
     def start(self):
-        rospy.loginfo("SpeedReducer : started")
+        #rospy.loginfo("SpeedReducer : started")
         
         while not rospy.is_shutdown():
             
@@ -105,7 +105,7 @@ class SpeedReducerAntico:
                         #    self.unsetVmax()
                             #rospy.loginfo("SpeedReducer : prop out of angle (dh %s = %s - %d)",dh,opp.closest_angle,self.pose.theta)
                 else:
-                    #rospy.loginfo("SpeedReducer : unset")
+                    #rospy.loginfo("SpeedReducer : unset ")
                     self.unsetVmax()
                 
             # fin du test si j'etais en translation
@@ -113,26 +113,23 @@ class SpeedReducerAntico:
             rospy.sleep(0.020) 
     
     def updateOpponentCallBack(self, oppList):
+        #print("Opponent : nb=" + str(oppList.nbOpponents))
         self.opponentsMgs = oppList
     def updatePoseCallBack(self, pose):
+        #print("Pose : " + str(pose))
         self.pose = pose
         
     def updateMotionTargetCallBack(self, motionTarget):
+        #print("MotionTarget")
         self.motionTarget=motionTarget
     
     def setVmax(self,v):
-        try:
-            self.speedLimitPublisher(v)
-        except:
-            #rospy.logerr("Failed to setVmax");
-            pass;
+        #print("Limit Speed " + str(v))
+        self.speedLimitPublisher.publish(Float32(v))
             
     def unsetVmax(self):
-        try:
-            self.speedLimitPublisher(-1)
-        except:
-            pass
-            #rospy.logerr("Failed to unsetVmax");
+        #print("UnLimit Speed ")
+        self.speedLimitPublisher.publish(Float32(-1.0))
     
 if __name__ == '__main__':
     try:

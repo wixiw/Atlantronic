@@ -4,5 +4,5 @@
 	<include file="$(find arp_music)/script/ros/launch/arp_music.launch"/>
 	<include file="$(find arp_master)/script/ros/include/rosparam.xml"/>
 	<include file="$(find arp_master)/script/ros/include/orocos.xml"/>
-	<!--<include file="$(find arp_master)/script/ros/include/speed_reducer.xml"/>-->
+	<include file="$(find arp_master)/script/ros/include/speed_reducer.xml"/>
 </launch>

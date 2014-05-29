@@ -4,8 +4,7 @@
 #include "components/taskcontexts/Stm32TaskContext.hpp"
 #include "linux/tools/robot_interface.h"
 #include "ros/ros.h"
-
-#include <std_msgs/Bool.h>
+#include <math/core>
 
 namespace arp_stm32
 {
@@ -23,6 +22,7 @@ class HokuyoItf: public Stm32TaskContext
         void updateHook();
 
         RTT::OutputPort<hokuyo_scan> outScan;
+        RTT::OutputPort< std::vector<arp_math::Vector2> > outObstacles;
 
         int propHokuyoId;
 
