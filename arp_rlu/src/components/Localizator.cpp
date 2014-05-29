@@ -186,7 +186,7 @@ void Localizator::updateHook()
         {
             polarData(0,i) = dateBeg + i * HOKUYO_POINT_TO_POINT_DT;
             polarData(2,i) = HOKUYO_START_ANGLE + i*HOKUYO_DTHETA;
-            if (rosScan.distance[i] <= HOKUYO_MAX_RANGE && HOKUYO_MIN_RANGE <= rosScan.distance[i])
+            if (rosScan.distance[i] <= HOKUYO_MAX_RANGE && rosScan.min_distance <= rosScan.distance[i])
             {
                 polarData(1,i) = rosScan.distance[i]/1000.0;
             }

@@ -49,20 +49,61 @@ void HokuyoItf::updateHook()
     }
 
     std::vector<arp_math::Vector2> opponents;
-    for( int i=0 ; i < m_robotItf.detection_dynamic_object_count ; i++)
+
+
+
+    for( int i=0 ; i < getNbDetectedObjects() ; i++)
     {
+        struct detection_object* obstacles = getObstacles();
+        if( obstacles == NULL )
+        {
+            LOG(Error) << "Failed to find obstacle list due du index errors." << endlog();
+            stop();
+            return;
+        }
+
         /*LOG(Info) << "count= " << m_robotItf.detection_dynamic_object_count
                 << " i=" << i << " x="<<m_robotItf.detection_obj[i].x/1000.0
                 << " y" << m_robotItf.detection_obj[i].y/1000.0 << endlog();*/
         opponents.push_back( arp_math::Vector2(
-                m_robotItf.detection_obj[i].x/1000.0,
-                m_robotItf.detection_obj[i].y/1000.0));
+                obstacles[i].x/1000.0,
+                obstacles[i].y/1000.0));
     }
 
     mutex.unlock();
 
     outObstacles.write(opponents);
 }
+
+struct detection_object* HokuyoItf::getObstacles()
+{
+    if( propHokuyoId == HOKUYO1)
+    {
+        return m_robotItf.detection_obj1;
+    }
+    if( propHokuyoId == HOKUYO2)
+    {
+        return m_robotItf.detection_obj2;
+    }
+    return NULL;
+}
+
+
+int HokuyoItf::getNbDetectedObjects()
+{
+    int nbObjects = 0;
+    if( propHokuyoId == HOKUYO1)
+    {
+        nbObjects = m_robotItf.detection_dynamic_object_count1;
+    }
+    else if( propHokuyoId == HOKUYO2)
+    {
+        nbObjects = m_robotItf.detection_dynamic_object_count2;
+    }
+
+    return nbObjects;
+}
+
 
 void HokuyoItf::createOrocosInterface()
 {
