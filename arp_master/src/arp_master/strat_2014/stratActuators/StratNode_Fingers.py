@@ -18,7 +18,7 @@ class StratNode_vierge():
     def __init__(self):
         
         #creation of the node
-        rospy.init_node('StratNode_Actuators')
+        rospy.init_node('StratNode_Finger')
         #recuperation des parametres (on a besoin d'etre un noeud pour ca
         Table2014.getParams()
         #creation of the cadencer for all states
@@ -30,12 +30,12 @@ class StratNode_vierge():
     
         #welcome message
         rospy.loginfo("******************************************************")
-        rospy.loginfo("Welcome to Advanced Robotics Platform. I am StratNode Actuators.")
+        rospy.loginfo("Welcome to Advanced Robotics Platform. I am StratNode Finger.")
         rospy.loginfo("******************************************************")
     
         # initialise the smach introspection server to view the state machine with :
         #  rosrun smach_viewer smach_viewer.py
-        sis = smach_ros.IntrospectionServer('strat_server', sm, '/StratNode_Actuators')
+        sis = smach_ros.IntrospectionServer('strat_server', sm, '/StratNode_Finger')
         sis.start()
         sm.execute()
         
@@ -46,38 +46,30 @@ class MainStateMachine(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['end'])
         with self:
-            smach.StateMachine.add('WaitForOrocos', 
-                      WaiterState(5.0),
-                      transitions={'timeout':'PrepareActuators'})
-                        
+            smach.StateMachine.add('Initialisation', 
+                                   InitStates2014.InitSequence2014(),
+                                   transitions={'endInitialisation':'PrepareActuators','failed':'Uninitialisation'})
+             
+            smach.StateMachine.add('Uninitialisation', 
+                                   Strat_Uninitialisation.Uninitialisation(),
+                                   transitions={'endUninitialisation':'end'})
+            
+            #Bootup actuators, show their aliveness, and go to default position. All actuators are driven
             smach.StateMachine.add('PrepareActuators',
                        PrepareActuators(),
-                       transitions={'prepared':'WaitABit2','problem':'WaitABit2'})
- 
+                       transitions={'prepared':'WaitABit','problem':'Uninitialisation'})
 
-#             smach.StateMachine.add('WaitABit',
-#                       WaiterState(2),
-#                       transitions={'timeout':'DefaultCannonState'})
-#              
-#             smach.StateMachine.add('DefaultCannonState',
-#                       DefaultCannonState('Left'),
-#                       transitions={'done':'WaitABitZ', 'problem':'end'})
+            smach.StateMachine.add('WaitABit',
+                       WaiterState(1),
+                       transitions={'timeout':'AmbiShootOneBallLeft'})
      
-#             smach.StateMachine.add('WaitABit',
-#                       WaiterState(0),
-#                       transitions={'timeout':'AmbiShootOneBall'})                        
-#                 
-#             smach.StateMachine.add('AmbiShootOneBall',
-#                       AmbiShootOneBall('Left'),
-#                       transitions={'shot':'WaitABit', 'blocked':'WaitABit'})
+            smach.StateMachine.add('AmbiPickLeft',
+                       AmbiFingerPickObject('Left'),
+                       transitions={'shot':'AmbiPickRight', 'blocked':'Uninitialisation'})
              
-            smach.StateMachine.add('WaitABit2',
-                      WaiterState(2),
-                      transitions={'timeout':'SelfTest'})
-                         
-            smach.StateMachine.add('SelfTest', 
-                      SelfTest(),
-                      transitions={'succeeded':'WaitABit2','problem':'end'})
+            smach.StateMachine.add('AmbiPickRight',
+                       AmbiFingerPickObject('Right'),
+                       transitions={'shot':'WaitABit', 'blocked':'Uninitialisation'})
              
 
    

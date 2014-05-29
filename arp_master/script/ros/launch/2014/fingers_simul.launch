@@ -10,9 +10,9 @@
 	/>
 	
 	<node 
-		name="StratNode_Actuators"   
+		name="StratNode_Fingers"   
 		pkg="arp_master"  
-		type="StratNode_Actuators.py"     
+		type="StratNode_Fingers.py"     
 		args="" output="screen"
 		required="true"
 		launch-prefix="nice -n 19"
