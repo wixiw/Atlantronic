@@ -13,12 +13,10 @@ end
 
 function DiscoveryDeployer:connect()
 	assert( Deployer:addPeer("Reporting", me) )
-	RluMonitor = Deployer:getPeer("RluMonitor")
-	assert( Deployer:addPeer("RluMonitor", me))
 	assert( Deployer:stream(me..".outPowerStatus",      ros:topic("/Ubiquity/powerState")))
 	assert( Deployer:stream(me..".inHeartbeat",         ros:topic("/Ubiquity/heartbeat")))
 	assert( Deployer:stream(me..".inPowerRequest",      ros:topic("/Ubiquity/stm32_power_request")))
-	assert( RluMonitor:connect(me,"inPose","Localizator","outPose"))
+	
 	return true
 end
 

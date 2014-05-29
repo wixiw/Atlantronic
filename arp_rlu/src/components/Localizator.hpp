@@ -15,6 +15,7 @@
 #include "LocalizatorTypes.hpp"
 #include "KFL/KFLocalizator.hpp"
 #include "time/ArdTime.hpp"
+#include <linux/tools/robot_interface.h>
 
 namespace arp_rlu
 {
@@ -39,7 +40,7 @@ class Localizator: public RluTaskContext
 
         //*****************************************************
         // Ports
-        RTT::InputPort<sensor_msgs::LaserScan> inScan;
+        RTT::InputPort<hokuyo_scan> inScan;
         RTT::InputPort<arp_math::EstimatedICRSpeed > inOdo;
         RTT::InputPort<double> inGyroAngle;
         RTT::InputPort< bool > inSmoothMode;

@@ -29,18 +29,6 @@ m!!! --------------------------- !!!\033[0m");
     }
 } 
 
-//ARP_RLU
-if ( res  ) then
-{
-    if( Lua.exec_file("/opt/ard/arp_rlu/script/orocos/deployment/deploy_arp_rlu.lua") == false ) then
-    {
-        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
-        print.ln("\033[1;31m!!! Failed to deploy arp_rlu. !!!\033[0m");
-        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
-        res = false;
-    }
-}
-
 //ARP_STM32
 if ( res  ) then
 {
@@ -48,6 +36,18 @@ if ( res  ) then
     {
         print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
         print.ln("\033[1;31m!!! Failed to deploy arp_stm32. !!!\033[0m");
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        res = false;
+    }
+}
+
+//ARP_RLU
+if ( res  ) then
+{
+    if( Lua.exec_file("/opt/ard/arp_rlu/script/orocos/deployment/deploy_arp_rlu.lua") == false ) then
+    {
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
+        print.ln("\033[1;31m!!! Failed to deploy arp_rlu. !!!\033[0m");
         print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
         res = false;
     }

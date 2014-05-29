@@ -46,10 +46,13 @@ function DiscoveryMonitorDeployer:connect()
 	DiscoveryMonitorDeployer:addToMonitor("RightFingerPump")
 	--DiscoveryMonitorDeployer:addToMonitor("ArmPump")
 	
-	DiscoveryMonitorDeployer:addToMonitor("Gyrometer")
+	--DiscoveryMonitorDeployer:addToMonitor("Gyrometer")
 	DiscoveryMonitorDeployer:addToMonitor("MatchData")
 	
 	DiscoveryMonitorDeployer:addToMonitor("DynamixelBus")
+	
+	DiscoveryMonitorDeployer:addToMonitor("FrontHokuyo")
+	DiscoveryMonitorDeployer:addToMonitor("RearHokuyo")
 	
 	DiscoveryMonitorDeployer:check(me)
 	return true

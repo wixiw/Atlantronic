@@ -15,7 +15,7 @@
 	<depend package="fbsched" />
 	<export>
 		<cpp os="gnulinux" 
-		cflags="-I${prefix}/src -I${prefix}/src/Atlantronic/include -I${prefix}/src/Atlantronic/src" 
+		cflags="-I${prefix}/src -I${prefix}/src/Atlantronic/include -I${prefix}/src/Atlantronic/include/discovery -I${prefix}/src/Atlantronic/src" 
 		lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -L${prefix}/lib/orocos/gnulinux -larp_stm32-components-gnulinux"/>
 	</export>
 </package>

@@ -174,20 +174,25 @@ void Localizator::updateHook()
         predictionOk = kfloc.newOdoVelocity(T_odo_table_p_odo_r_odo);
     }
 
-    sensor_msgs::LaserScan rosScan;
+    hokuyo_scan rosScan;
     if( RTT::NewData == inScan.read(rosScan) )
     {
-        double dateBeg = rosScan.header.stamp.toSec() - m_monotonicTimeToRealTime;
+        double dateBeg = 0.0; //TODO JB//rosScan.header.stamp.toSec() - m_monotonicTimeToRealTime;
+        double HOKUYO_TIME_INCREMENT = 0.0; //TODO JB
+        int HOKUYO_MIN_RANGE = 20 ; //TODO JB
+        int HOKUYO_MAX_RANGE = 4000 ; //TODO JB
+        double HOKUYO_DTHETA = (M_PI / 512.0f);//TODO JB
+        double HOKUYO_START_ANGLE = ((- 135 * M_PI / 180.0f) + 44 * HOKUYO_DTHETA);//TODO JB
 
         lsl::LaserScan lslScan;
-        Eigen::MatrixXd polarData(3, rosScan.ranges.size());
-        for (unsigned int i = 0; i != rosScan.ranges.size(); i++)
+        Eigen::MatrixXd polarData(3, HOKUYO_NUM_POINTS);
+        for (unsigned int i = 0; i != HOKUYO_NUM_POINTS; i++)
         {
-            polarData(0,i) = dateBeg + i * rosScan.time_increment;
-            polarData(2,i) = rosScan.angle_min + i*rosScan.angle_increment;
-            if (rosScan.ranges[i] <= rosScan.range_max && rosScan.range_min <= rosScan.ranges[i])
+            polarData(0,i) = dateBeg + i * HOKUYO_TIME_INCREMENT;
+            polarData(2,i) = HOKUYO_START_ANGLE + i*HOKUYO_TIME_INCREMENT;
+            if (rosScan.distance[i] <= HOKUYO_MAX_RANGE && HOKUYO_MIN_RANGE <= rosScan.distance[i])
             {
-                polarData(1,i) = rosScan.ranges[i];
+                polarData(1,i) = rosScan.distance[i]/1000.0;
             }
             else
             {

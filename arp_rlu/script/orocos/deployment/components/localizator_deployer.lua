@@ -14,7 +14,13 @@ end
 
 function LocalizatorDeployer:connect()
 	Deployer:connect(me..".inOdo","Odometry.outICRSpeed",cp)
-	assert( Deployer:stream(me..".inScan",ros:topic("/Ubiquity/top_front_scan")))
+	
+	--TODO coupe 2014 c'est mal range, probleme de dependance cyclique => est corrige par le nouveau deploiement big_refactoring
+	DiscoveryMonitor = Deployer:getPeer("DiscoveryMonitor")
+	assert( Deployer:addPeer("DiscoveryMonitor", me))
+	assert( Deployer:connect("Discovery.inPose", me..".outPose", cp))
+	assert( DiscoveryMonitor:connect(me,"inScan","FrontHokuyo","outScan"))
+	
 	Deployer:addPeer("Reporting", me)
 	LocalizatorDeployer:check(me)
 	return true

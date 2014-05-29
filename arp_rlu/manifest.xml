@@ -5,6 +5,7 @@
 	<url>http://88.191.124.77/redmine/projects/positionnnement/wiki</url>
 	<depend package="rtt" />
 	<depend package="arp_core" />
+	<depend package="arp_stm32" />
 	<depend package="rtt_arp_core" />
 	<depend package="arp_hml" />
 	<depend package="std_srvs" />
