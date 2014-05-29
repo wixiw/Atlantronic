@@ -27,9 +27,12 @@ class DefaultFingerState(smach.StateMachine):
                        transitions={'succeeded':'done', 'problem':'problem'})
  
             
-#
+
+#===============================================================================
 # Use this state machine to pick an object with the "p_side" finger (in the yellow config) automatically symetrized for match color
-#
+#===============================================================================
+
+
 class AmbiFingerPickObject(smach.StateMachine):
     def __init__(self, p_side):
             smach.StateMachine.__init__(outcomes=['picked','blocked','notFound'])
@@ -52,7 +55,7 @@ class AmbiFingerPickObject(smach.StateMachine):
                        transitions={'done':'WaitABit'})  
 
                 smach.StateMachine.add('WaitABit',
-                       WaiterState(0.5),
+                       WaiterState(0.3),
                        transitions={'timeout':'WaitForObjectPresent'})
                 
                 smach.StateMachine.add('WaitForObjectPresent',
@@ -63,7 +66,7 @@ class AmbiFingerPickObject(smach.StateMachine):
                 
                 smach.StateMachine.add('GoUp',
                        AmbiFingerCommand(p_side, Robot2014.fingerLeftYellowPos['UP']),
-                       transitions={'succeeded':'CheckPresence', 'problem':'RetryGoUp'})
+                       transitions={'succeeded':'CheckPresence', 'problem':'GoDownbeforeRetryGoUp'})
                 
                 # ==> Blocking Point C
                 
@@ -90,7 +93,7 @@ class AmbiFingerPickObject(smach.StateMachine):
                        transitions={'succeeded':'WaitAWhile', 'problem':'blocked'})
 
                 smach.StateMachine.add('WaitAWhile',
-                       WaiterState(0.5),
+                       WaiterState(0.3),
                        transitions={'timeout':'CheckObjectPresence'})
                 
                 smach.StateMachine.add('CheckObjectPresence',
@@ -98,13 +101,71 @@ class AmbiFingerPickObject(smach.StateMachine):
                        transitions={'object_present':'GoUp', 'timeout':'blocked'})                  
         
 #Blocking Point C: If something is stucked between the robot and the finger, the finger can not go up => retry
-
+#Entrypoint is Finger is blocked in rising state
+                smach.StateMachine.add('GoDownbeforeRetryGoUp',
+                       AmbiFingerCommand(p_side, Robot2014.fingerLeftYellowPos['DOWN']),
+                       transitions={'succeeded':'WaitRetryGoUp', 'problem':'blocked'})
+                
+                smach.StateMachine.add('WaitRetryGoUp',
+                       WaiterState(0.3),
+                       transitions={'timeout':'RetryGoUp'})
+                
+                smach.StateMachine.add('RetryGoUp',
+                       AmbiFingerCommand(p_side, Robot2014.fingerLeftYellowPos['UP']),
+                       transitions={'succeeded':'CheckPresence', 'problem':'blocked'})
+                
 #Blocking Point D: If something is between the finger and the floor, the finger can not go down => retry
-           
-#
+#Entrypoint is Finger is blocked in descending state
+
+# Il faut reculer, abaisser sufisamment le doigt pour pousser un eventuel objet deplacable (torche, feu en biais, bouchon, balle)
+# A faire dans strat PickingState
+                smach.StateMachine.add('GoUpAfterRetryGoDown',
+                       AmbiFingerCommand(p_side, Robot2014.fingerLeftYellowPos['UP']),
+                       transitions={'succeeded':'WaitRetryGoDown', 'problem':'RetryGoDown'})
+                
+                smach.StateMachine.add('WaitRetryGoDown',
+                       WaiterState(0.3),
+                       transitions={'timeout':'ReleaseObject'})
+                
+                smach.StateMachine.add('RetryGoDown',
+                       AmbiFingerCommand(p_side, Robot2014.fingerLeftYellowPos['DOWN']),
+                       transitions={'succeeded':'ReleaseObject', 'problem':'blocked'})
+                
+                smach.StateMachine.add('ReleaseObject',
+                       FingerPumpCommand(p_side, suctionPower['IDLE']),
+                       transitions={'done':'SearchItemToPick'})   
+ 
+#===============================================================================
+# Use this state to unload an object hold with the "p_side" finger (in the yellow config) automatically symetrized for match color
+#===============================================================================
+
+class AmbiUnloadObjectOnThefFloor(smach.StateMachine):
+    def __init__(self, p_side):
+            smach.StateMachine.__init__(outcomes=['released','blocked','notFound'])
+            
+            with self:
+
+                smach.StateMachine.add('CheckObjectPresence',
+                       FingerWaitForObjectPresent(p_side, p_timeout),
+                       transitions={'object_present':'GoDown', 'timeout':'notFound'}) 
+                
+                smach.StateMachine.add('GoDown',
+                       AmbiFingerCommand(p_side, Robot2014.fingerLeftYellowPos['DOWN']),
+                       transitions={'succeeded':'StopPumping', 'problem':'RetryGoDown'})
+
+                smach.StateMachine.add('StopPumping',
+                       FingerPumpCommand(p_side, suctionPower['IDLE']),
+                       transitions={'done':'CheckPresence'})  
+                
+                smach.StateMachine.add('CheckPresence',
+                       FingerWaitForObjectPresent(p_side, 0),
+                       transitions={'triggered':'released', 'timeout':'notFound'})
+                
+#===============================================================================
 # Use this state to wait for an object to be present in the suction cup
 # @param String p_side : the side of the finger on the robot
-#
+#===============================================================================
+
 class FingerWaitForObjectPresent(ReceiveFromTopic):
     def __init__(self, p_side, p_timeout):
         ReceiveFromTopic.__init__(self, "/Ubiquity/"+p_side+"FingerPump/object_present", Bool,
@@ -119,23 +180,23 @@ class FingerWaitForObjectPresent(ReceiveFromTopic):
             return 'object_present'  
         #else continue to wait
 
-
-#
+#===============================================================================
 # Use this state to drive the pump on the finger
 # @param String p_side :      the side of the finger on the robot
 # @param Integerp_power :     the suction power of the pump in [50;100] in percent
-#
+#===============================================================================
+
 class FingerPumpCommand(StaticSendOnTopic):
     def __init__(self, p_side, p_power):
         StaticSendOnTopic.__init__(self, "/Ubiquity/"+p_side+"FingerPump/suction_power", UInt8, UInt8(p_power)) 
-        
-        
-#
+
+#===============================================================================
 # This state allows to send configuration to the finger dynamixel
-#
+# 
 # @param String p_side               : the side of the cannon (Left or Right)
 # @param Percentage p_fingerTorque   : shooting finger torque in [20;100]
-#
+#===============================================================================
+
 class FingerTorqueConfig(DynamixelTorqueConfig):
     def __init__(self, p_side, p_fingerTorque):
         DynamixelTorqueConfig.__init__(self, p_side + "Finger", p_fingerTorque)

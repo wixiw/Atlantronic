@@ -34,7 +34,7 @@ class AmbiShootOpponentMammoth(LocalStrategicAction):
         else:
             return None
         
-        #Si on visder le mammouth oppose on symmetrise les positions
+        #Si on vise le mammouth oppose on symetrise les positions
         if p_opponent_side is True:
             x = -x
             h = pi - h

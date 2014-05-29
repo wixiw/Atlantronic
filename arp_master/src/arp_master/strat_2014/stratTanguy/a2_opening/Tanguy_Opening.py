@@ -26,7 +26,7 @@ class Opening(PreemptiveStateMachine):
                 
 # Go to Yellow Fire Top
             PreemptiveStateMachine.add('GoToYFT',
-                      AmbiOmniDirectOrder2Pass( Pose2D(0.650 + Robot2014.FRONT_SIDE.x, 0.300, -5*pi/6),vpasse=-1),
+                      AmbiOmniDirectOrder2Pass(Pose2D(0.650 + Robot2014.FRONT_SIDE.x, 0.300, -5*pi/6),vpasse=-1),
                       transitions={'succeeded':'GotoGayCampingPoint', 'timeout':'PrepareFrescos'})
 
 # Go to Gay Camping point
