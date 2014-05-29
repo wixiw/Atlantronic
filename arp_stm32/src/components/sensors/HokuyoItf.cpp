@@ -51,9 +51,9 @@ void HokuyoItf::updateHook()
     std::vector<arp_math::Vector2> opponents;
     for( int i=0 ; i < m_robotItf.detection_dynamic_object_count ; i++)
     {
-        LOG(Info) << "count= " << m_robotItf.detection_dynamic_object_count
+        /*LOG(Info) << "count= " << m_robotItf.detection_dynamic_object_count
                 << " i=" << i << " x="<<m_robotItf.detection_obj[i].x/1000.0
-                << " y" << m_robotItf.detection_obj[i].y/1000.0 << endlog();
+                << " y" << m_robotItf.detection_obj[i].y/1000.0 << endlog();*/
         opponents.push_back( arp_math::Vector2(
                 m_robotItf.detection_obj[i].x/1000.0,
                 m_robotItf.detection_obj[i].y/1000.0));
