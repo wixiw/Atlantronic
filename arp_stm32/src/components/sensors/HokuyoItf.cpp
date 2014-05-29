@@ -14,7 +14,8 @@ ORO_LIST_COMPONENT_TYPE( arp_stm32::HokuyoItf)
 
 HokuyoItf::HokuyoItf(const std::string& name) :
         Stm32TaskContext(name),
-        m_robotItf(DiscoveryMutex::robotItf)
+        m_robotItf(DiscoveryMutex::robotItf),
+        propHokuyoId(HOKUYO_MAX)
 {
     createOrocosInterface();
 }
@@ -38,7 +39,15 @@ void HokuyoItf::updateHook()
         LOG(Error) << "updateHook() : mutex.lock()" << endlog();
     }
 
-    outScan.write(m_robotItf.hokuyo_scan[HOKUYO1]);
+    if(propHokuyoId < 0 || propHokuyoId >= HOKUYO_MAX)
+    {
+        LOG(Error) << "propHokuyoId is out of range" << endlog();
+        stop();
+    }
+    else
+    {
+        outScan.write(m_robotItf.hokuyo_scan[propHokuyoId]);
+    }
 
     mutex.unlock();
 }
@@ -46,5 +55,7 @@ void HokuyoItf::updateHook()
 void HokuyoItf::createOrocosInterface()
 {
     addPort("outScan",outScan);
+
+    addProperty("propHokuyoId",propHokuyoId);
 }
 

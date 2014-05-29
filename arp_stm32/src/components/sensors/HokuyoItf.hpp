@@ -24,6 +24,8 @@ class HokuyoItf: public Stm32TaskContext
 
         RTT::OutputPort<hokuyo_scan> outScan;
 
+        int propHokuyoId;
+
         /****************************************************************
          * Interface ROS
          ****************************************************************/

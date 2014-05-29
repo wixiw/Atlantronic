@@ -133,8 +133,19 @@ class RearObstacleDetector: public ObstacleDetector
 {
     public:
         RearObstacleDetector(const std::string& name) :
-            ObstacleDetector(name, arp_math::Pose2D(0.0, -0.154, M_PI))
-        {}
+            ObstacleDetector(name, arp_math::Pose2D(-0.154, 0.0, M_PI))
+        {
+            pcp.minRange = 0.05;
+            pcp.maxRange = 1.5;
+            pcp.minTheta = -arp_math::PI;
+            pcp.maxTheta = arp_math::PI;
+
+            psp.rangeThres = 0.15;
+
+            minNbPoints = 5;
+            cartStddevMax = 0.15;
+            opponentRadius = 0.05;
+        }
 };
 
 class FrontObstacleDetector: public ObstacleDetector
@@ -142,7 +153,18 @@ class FrontObstacleDetector: public ObstacleDetector
     public:
         FrontObstacleDetector(const std::string& name) :
             ObstacleDetector(name, arp_math::Pose2D(-0.051, -0.0, 0))
-        {}
+        {
+            pcp.minRange = 0.15;
+            pcp.maxRange = 1.5;
+            pcp.minTheta = -arp_math::PI;
+            pcp.maxTheta = arp_math::PI;
+
+            psp.rangeThres = 0.10;
+
+            minNbPoints = 5;
+            cartStddevMax = 0.15;
+            opponentRadius = 0.05;
+        }
 };
 
 

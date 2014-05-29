@@ -52,7 +52,7 @@ ObstacleDetector::ObstacleDetector(const std::string& name, arp_math::Pose2D p_H
 
     minNbPoints = 3;
     cartStddevMax = 0.15;
-    opponentRadius = 0.15;
+    opponentRadius = 0.05;
 
     cip.radius = opponentRadius;
     cip.coeffs = std::vector<double>();
@@ -99,7 +99,7 @@ void ObstacleDetector::updateHook()
         }
     }
 
-    LOG(Info) << "MidPoint distance = " << rosScan.distance[HOKUYO_NUM_POINTS/2] << endlog();
+    LOG(Info) << "MidPoint distance = " << polarData(1,HOKUYO_NUM_POINTS/2) << endlog();
 
     lslScan.setPolarData(polarData);
 
