@@ -72,7 +72,7 @@ class SpeedReducerAntico:
                     #rospy.loginfo("["+str(i)+"] SpeedReducer : myPosition %s", myPosition)
                     #rospy.loginfo("["+str(i)+"] SpeedReducer : motionTargetPosition %s", motionTargetPosition)
                     
-                    isInTrajectory=isInRectangle(potentialPosition,myPosition,motionTargetPosition,0.900)
+                    isInTrajectory=isInRectangle(potentialPosition,myPosition,motionTargetPosition,0.900,0.200)
                     
                     #rospy.loginfo("["+str(i)+"] SpeedReducer : isInTrajectory %s", isInTrajectory)
                     

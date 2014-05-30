@@ -136,7 +136,7 @@ def averageAngle(h1,h2):
     #compute the mean angle, between - PI and +PI, of 2 angles. takes the smallest angle between h1 and h2 to define the direction
     return normalizeAngle(h1+normalizeAngle(h2-h1)/2)
 
-def isInRectangle(pointObj,pointRect1,pointRect2,widthRect):
+def isInRectangle(pointObj,pointRect1,pointRect2,widthRect,deltaLenght):
     #answer if the considered point is in a rectangle
     #
     #    ------------------------------
@@ -146,7 +146,7 @@ def isInRectangle(pointObj,pointRect1,pointRect2,widthRect):
     #
     #   the 2 "x" :    pointRect1 and  pointRect2
     #
-    #    the lenght:  norm(pointRect2-pointRect1) + widthRect
+    #    the lenght:  norm(pointRect2-pointRect1) + 2*deltaLenght
     #    the height:   widthRect
     
     if pointRect1.dist(pointRect2)==0.0:
@@ -159,10 +159,10 @@ def isInRectangle(pointObj,pointRect1,pointRect2,widthRect):
     # et son ami otrhogonal
     orthoVect=Point(-unitVect.y,unitVect.x)
 
-    A=pointRect1-unitVect*widthRect*(0.5)+orthoVect*widthRect*(0.5)
-    B=pointRect1-unitVect*widthRect*(0.5)-orthoVect*widthRect*(0.5)
-    C=pointRect2+unitVect*widthRect*(0.5)-orthoVect*widthRect*(0.5)
-    D=pointRect2+unitVect*widthRect*(0.5)+orthoVect*widthRect*(0.5)
+    A=pointRect1-unitVect*deltaLenght+orthoVect*widthRect*(0.5)
+    B=pointRect1-unitVect*deltaLenght-orthoVect*widthRect*(0.5)
+    C=pointRect2+unitVect*deltaLenght-orthoVect*widthRect*(0.5)
+    D=pointRect2+unitVect*deltaLenght+orthoVect*widthRect*(0.5)
 
     #je cree les 4 points de mon rectangle
     rect=[]

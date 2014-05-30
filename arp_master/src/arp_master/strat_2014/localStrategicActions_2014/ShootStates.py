@@ -24,13 +24,27 @@ class AmbiShootMammoth(LocalStrategicAction):
         
         #Choix du cannon
         if p_side is 'Left':
-            x = 0.160
-            h = -3*pi/4
-            y = 0.480
+            
+#old position
+#            x = 0.160
+#            h = -3*pi/4
+#            y = 0.480
+
+            #x = 0.570
+            x = 0.600
+            y = 0.300
+            h = pi + 1.059
+
         elif p_side is 'Right':
-            x = 0.100
-            y = 0.542
-            h = -3*pi/4
+#old position
+#            x = 0.100
+#            y = 0.542
+#            h = -3*pi/4
+
+            #x = 0.570
+            x = 0.600
+            y = 0.300
+            h = pi + 1.059
         else:
             return None
         
