@@ -15,12 +15,12 @@ class Opening(PreemptiveStateMachine):
                                              transitions={'endMatch':'nearlyEndMatch'})
             
             PreemptiveStateMachine.add('EscapeStartArea',
-                      AmbiOmniDirectOrder2Pass(Table2014.P_YOU_HOU, vmax=Robot2014.motionSpeeds['Fast'], vpasse=-1),
+                      AmbiOmniDirectOrder2Pass(Table2014.P_IN_FRONT_START_AREA, vmax=Robot2014.motionSpeeds['Fast'], vpasse=-1),
                       transitions={'succeeded':'GoToSFT', 'timeout':'RetryEscapeStartArea'})
             self.setInitialState('EscapeStartArea')
             
             PreemptiveStateMachine.add('RetryEscapeStartArea',
-                      AmbiOmniDirectOrder2Pass(Pose2D(Table2014.P_YOU_HOU.x, Table2014.P_YOU_HOU.y -0.050, Table2014.P_YOU_HOU.theta), vmax=Robot2014.motionSpeeds['Carefull'] ,vpasse=-1),
+                      AmbiOmniDirectOrder2Pass(Pose2D(Table2014.P_IN_FRONT_START_AREA.x, Table2014.P_IN_FRONT_START_AREA.y -0.050, Table2014.P_IN_FRONT_START_AREA.theta), vmax=Robot2014.motionSpeeds['Carefull'] ,vpasse=-1),
                       transitions={'succeeded':'GoToSFT', 'timeout':'EscapeStartArea'})
             
 # Go to Self Fire Top
@@ -57,7 +57,7 @@ class Opening(PreemptiveStateMachine):
                       transitions={'succeeded':'StickFrescos', 'timeout':'RecoverPrepareStickFrescos'})   #si on y arrive pas, on va au self shoot point
             
             PreemptiveStateMachine.add('RecoverPrepareStickFrescos',
-                      AmbiOmniDirectOrder2(Table2014.P_YOU_HOU, vmax=Robot2014.motionSpeeds['Carefull']),
+                      AmbiOmniDirectOrder2(Table2014.P_IN_FRONT_START_AREA, vmax=Robot2014.motionSpeeds['Carefull']),
                       transitions={'succeeded':'GoToSFM', 'timeout':'GoToSFT'})
             
 #Stick Frescos

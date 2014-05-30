@@ -1,10 +1,10 @@
 <launch>
-	<!--<node 
+	<node 
 		name="GraphicsSimu"     
 		pkg="arp_master"  
 		type="GraphicsSimuNode" 
 		args="/Ubiquity/simuRealPose" 
 		output="screen" 
 		launch-prefix="nice -n 19"
-	/>-->
+	/>
 </launch>
