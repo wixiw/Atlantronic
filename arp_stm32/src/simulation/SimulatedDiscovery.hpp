@@ -21,12 +21,12 @@ class SimulatedDiscovery: public arp_stm32::Discovery
         SimulatedDiscovery(const std::string& name);
         ~SimulatedDiscovery();
 
-        bool configureHook();
         void updateHook();
         bool breakUpdateHook();
 
         static Qemu m_qemu;
         virtual bool ooReset();
+        virtual void sendHeartBeat();
 
     protected:
         void createOrocosInterface();

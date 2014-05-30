@@ -86,7 +86,7 @@ class Discovery: public arp_core::MotionScheduler
         double getBatteryVoltage();
         int getRawPowerData();
         int getRawGpioData();
-        void sendHeartBeat();
+        virtual void sendHeartBeat();
         bool waitStm32BootDone(double timeout);
 
     protected:

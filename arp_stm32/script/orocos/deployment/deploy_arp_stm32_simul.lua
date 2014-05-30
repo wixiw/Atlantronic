@@ -3,7 +3,7 @@ require("rttlib")
 rttlib.color=true
 Deployer = rtt.getTC()
 print("====================")
-print("début déploiment arp_stm32")
+print("début déploiment arp_stm32 SIMU")
 
 -- chargement des librairies contenants les composants d'arp_stm32
 Deployer:import("arp_stm32");
@@ -18,7 +18,7 @@ dofile("/opt/ard/arp_stm32/script/orocos/deployment/components/suction_pumps.lua
 dofile("/opt/ard/arp_stm32/script/orocos/deployment/components/tor.lua");
 dofile("/opt/ard/arp_stm32/script/orocos/deployment/components/hokuyo_stm32.lua");
 
-print("... load components")
+print("... load components SIMU")
 assert( SimulatedDiscoveryDeployer:load(), 	"Failed to load SimulatedDiscovery")
 assert( MatchDataDeployer:load(), 			"Failed to load MatchData")
 assert( DynamixelsDeployer:load(), 			"Failed to load Dynamixels")
@@ -29,7 +29,7 @@ assert( HokuyoStm32Deployer:load(),"Failed to load Hokuyo")
 assert( HmiDeployer:load(), 		    	"Failed to load Hmi")
 assert( DiscoveryMonitorDeployer:load(),	"Failed to load DiscoveryMonitor")
 
-print("... connect components")
+print("... connect components SIMU")
 assert( SimulatedDiscoveryDeployer:connect(),"Failed to connect SimulatedDiscovery")
 assert( MatchDataDeployer:connect(), 		"Failed to connect MatchData")
 assert( DynamixelsDeployer:connect(), 		"Failed to connect Dynamixels")
@@ -40,10 +40,10 @@ assert( HmiDeployer:connect(), 	      	 	"Failed to connect Hmi")
 assert( HokuyoStm32Deployer:connect(),"Failed to load Hokuyo")
 assert( DiscoveryMonitorDeployer:connect(),	"Failed to connect DiscoveryMonitor")
 
-print("... start components")
+print("... start components SIMU")
 assert( DiscoveryMonitorDeployer:start(),"Failed to start DiscoveryMonitor")
 assert( SimulatedDiscoveryDeployer:start(), "Failed to start SimulatedDiscovery")
 assert( HmiDeployer:start(), 		        "Failed to start Hmi")
 
-print("fin déploiment arp_stm32")
+print("fin déploiment arp_stm32 SIMU")
 print("====================")

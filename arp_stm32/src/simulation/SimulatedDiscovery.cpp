@@ -32,46 +32,6 @@ SimulatedDiscovery::~SimulatedDiscovery()
     m_qemu.destroy();
 }
 
-
-
-bool SimulatedDiscovery::configureHook()
-{
-    string atlantronicPath = ros::package::getPath("arp_stm32") + "/src/Atlantronic/";
-    // TODO changement du path en attente de compilation du sous module Atlantronic. Pour le moment, binaire commite dans arp_stm32
-    //string prog_stm = atlantronicPath + "bin/discovery/" + propStm32ExecutableName;
-    string prog_stm = ros::package::getPath("arp_stm32") + "/bin/discovery/" + propStm32ExecutableName;
-    string qemu_path = atlantronicPath + "qemu/arm-softmmu/qemu-system-arm";
-    int gdb_port = 0;
-
-    if( boost::filesystem::exists(qemu_path.c_str()) == false )
-    {
-        LOG(Error) << "configureHook() : qemu exec was not found." << endlog();
-        return false;
-    }
-
-    if( boost::filesystem::exists(prog_stm.c_str()) == false )
-    {
-        LOG(Error) << "configureHook() : stm32 binary was not found." << endlog();
-        return false;
-    }
-
-    int res = m_qemu.init(qemu_path.c_str(), prog_stm.c_str(), gdb_port);
-    if (res)
-    {
-        LOG(Error) << "configureHook() : qume.init() failed" << endlog();
-        return false;
-    }
-
-    propDeviceName = m_qemu.file_board_read;
-    res = m_robotItf.init("discovery", m_qemu.file_board_read, m_qemu.file_board_write, NULL, robotItfCallbackWrapper, this);
-    if (res != 0)
-    {
-        return false;
-    }
-
-    return true;
-}
-
 void SimulatedDiscovery::updateHook()
 {
     Bool io;
@@ -112,6 +72,11 @@ bool SimulatedDiscovery::breakUpdateHook()
 bool SimulatedDiscovery::ooReset()
 {
     return true;
+}
+
+void SimulatedDiscovery::sendHeartBeat()
+{
+    return;
 }
 
 void SimulatedDiscovery::createOrocosInterface()

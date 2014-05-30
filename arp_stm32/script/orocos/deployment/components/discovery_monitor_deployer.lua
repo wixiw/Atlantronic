@@ -54,7 +54,7 @@ function DiscoveryMonitorDeployer:connect()
 	DiscoveryMonitorDeployer:addToMonitor("FrontHokuyo")
 	DiscoveryMonitorDeployer:addToMonitor("RearHokuyo")
 	
-	DiscoveryMonitorDeployer:addToMonitor("Hmi")
+	--DiscoveryMonitorDeployer:addToMonitor("Hmi")
 	
 	DiscoveryMonitorDeployer:check(me)
 	return true
