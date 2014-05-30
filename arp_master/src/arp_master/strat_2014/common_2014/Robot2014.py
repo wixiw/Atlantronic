@@ -17,6 +17,13 @@ class Robot2014(RobotVierge):
     nbBallInRightCanon = 3
 
     
+    motionSpeeds = {
+                    'Carefull' : 0.3,
+                    'Average'  : 0.5,
+                    'Fast'     : 1.0
+                    }
+    
+    
     #
     # Dynamixels configuration
     #

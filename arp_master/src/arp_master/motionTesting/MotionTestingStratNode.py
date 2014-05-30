@@ -194,7 +194,7 @@ class MainStateMachine(smach.StateMachine):
                       transitions={'succeeded':'RECAL1', 'timeout':'end'})     
             
             smach.StateMachine.add('RECAL1',
-                       AmbiRecalOnBorderYellow('RIGHT',"yellow"),
+                       AmbiRecalOnBorderYellow('RIGHT'),
                       transitions={'recaled':'RECAL3','non-recaled':'end' ,'problem':'end'})
             
             smach.StateMachine.add('RECAL3',
@@ -208,7 +208,7 @@ class MainStateMachine(smach.StateMachine):
                       transitions={'succeeded':'RECAL5', 'timeout':'end'}) 
             
             smach.StateMachine.add('RECAL5',
-                       AmbiRecalOnBorderYellow('UP',"yellow"),
+                       AmbiRecalOnBorderYellow('UP'),
                       transitions={'recaled':'RECAL6','non-recaled':'end' ,'problem':'end'})   
                         
             smach.StateMachine.add('RECAL6',

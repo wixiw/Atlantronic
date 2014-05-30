@@ -19,7 +19,7 @@ from MotorManagement import *
 
 
 class AmbiRecalOnBorderYellow(smach.StateMachine):
-    def __init__(self,borderName,color):
+    def __init__(self,borderName):
         
         recallWalls={'RIGHT':Pose2D(1.500-RobotVierge.FRONT_SIDE.x,"FREE",0),
                  'LEFT':Pose2D(-1.500+RobotVierge.FRONT_SIDE.x,"FREE",-pi),
@@ -37,7 +37,7 @@ class AmbiRecalOnBorderYellow(smach.StateMachine):
                                    transitions={'succeeded':'ForwardOrder', 'timeout':'problem'})
 
             smach.StateMachine.add('ForwardOrder',
-                                   ForwardOrder(dist=0.500,vmax=0.2),
+                                   ForwardOrder(dist=0.550,vmax=0.2),
                                    transitions={'succeeded':'non-recaled', 'timeout':'Pichenette1'}) 
             
             vpichenette=0.2
