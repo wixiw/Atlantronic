@@ -1,0 +1,20 @@
+<launch>
+	<include file="$(find arp_master)/script/ros/include/rosparam.xml"/>
+	<include file="$(find arp_master)/script/ros/include/actuators_2014.xml"/>
+	
+	<node 
+		name="" 
+		pkg="ocl" 
+		type="deployer-gnulinux" 
+		args="-s $(find arp_stm32)/script/orocos/deployment/deploy_arp_stm32.ops --" 
+		output="screen"
+	/>
+	<node 
+		name="StratNode_Cannons"   
+		pkg="arp_master"  
+		type="StratNode_Cannons.py"     
+		args="" output="screen"
+		required="true"
+		launch-prefix="nice -n 19"
+	/>
+</launch>

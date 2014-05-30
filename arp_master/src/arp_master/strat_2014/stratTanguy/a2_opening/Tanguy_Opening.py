@@ -48,10 +48,15 @@ class Opening(PreemptiveStateMachine):
             PreemptiveStateMachine.add('StickFrescos',
                       StickFrescosState(),
                       transitions={'succeeded':'ReturnInStartArea', 'failed':'nearlyEndMatch', 'almostEndGame':'nearlyEndMatch' })
-#DEBUG WILLY
+#DEBUG WILLY POUR HOMOLOGATION EVITEMENT
             PreemptiveStateMachine.add('ReturnInStartArea',
                       AmbiOmniDirectOrder2(Table2014.P_YOU_HOU),
-                      transitions={'succeeded':'nearlyEndMatch', 'timeout':'nearlyEndMatch'})
+                      transitions={'succeeded':'CyclePoint', 'timeout':'CyclePoint'})
+            
+            #DEBUG WILLY POUR HOMOLOGATION EVITEMENT
+            PreemptiveStateMachine.add('CyclePoint',
+                      AmbiOmniDirectOrder2(Pose2D(0.600, -0.600, 0)),
+                      transitions={'succeeded':'ReturnInStartArea', 'timeout':'ReturnInStartArea'})
 
 # Go to Almost Central Heat
             PreemptiveStateMachine.add('GoToAlmostCentralHeat',

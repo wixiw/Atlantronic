@@ -27,8 +27,11 @@ class HokuyoItf: public Stm32TaskContext
         int propHokuyoId;
 
         /****************************************************************
-         * Interface ROS
+         * Interface STM32
          ****************************************************************/
+
+        int getNbDetectedObjects();
+        struct detection_object* getObstacles();
 
     protected:
         void createOrocosInterface();

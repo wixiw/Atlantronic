@@ -10,8 +10,11 @@ import random
 from arp_master.util import *
 from arp_master.fsmFramework import *
 from arp_master.commonStates import *
+from arp_master.strat_2014 import *
 
-INIT_POS=Pose2D(0.750,0,0)
+#INIT_POS=Pose2D(0.750,0,0)
+INIT_POS=Pose2D(1.250, 0.550, -2.13 - 0.30)
+
 
 ###########################  TEMPORAL BEHAVIOR
 
@@ -53,7 +56,7 @@ class MainStateMachine(smach.StateMachine):
     def __init__(self):
         smach.StateMachine.__init__(self, outcomes=['end'])
         with self:
-            smach.StateMachine.add('Initialisation', Strat_Initialisation.Initialisation(),
+            smach.StateMachine.add('Initialisation', InitStates2014.InitSequence2014(),
                                    transitions={'endInitialisation':'StartSequence', 'failed':'end'})
             smach.StateMachine.add('StartSequence', Strat_StartSequence.StartSequence(Pose2D(INIT_POS.x, INIT_POS.y, INIT_POS.theta)),
                                    transitions={'gogogo':'SetInitialPosition', 'problem':'end'})  
@@ -127,23 +130,18 @@ class MainStateMachine(smach.StateMachine):
             # SPECIFIC DEBUG TESTS ##########################
             
             smach.StateMachine.add('M1',
-                       AmbiOmniDirectOrder2(Pose2D( INIT_POS.x-0.1, INIT_POS.y, 0) ,
+                       AmbiOmniDirectOrder2(Pose2D(1.0,0.4,-pi/2) ,
                                            vmax = 1.0),
                       transitions={'succeeded':'M2', 'timeout':'end'})
                         
             smach.StateMachine.add('M2',
-                       AmbiOmniDirectOrder2(Pose2D( INIT_POS.x+0.5, INIT_POS.y, 0) ,
+                       AmbiOmniDirectOrder2(Pose2D(1.0,-0.4,-pi/2),
                                            vmax = 1.0),
                       transitions={'succeeded':'waitMove', 'timeout':'end'})
-                                    
-            smach.StateMachine.add('M3',
-                       AmbiOmniDirectOrder2(Pose2D(INIT_POS.x+0.5, INIT_POS.y+0.3, 0) ,
-                                           vmax = 1.0),
-                      transitions={'succeeded':'waitMove', 'timeout':'end'})            
-            
+                                               
             smach.StateMachine.add('waitMove',
-                      WaiterState(5),
-                      transitions={'timeout':'Move'})
+                      WaiterState(1),
+                      transitions={'timeout':'M1'})
                         
             # TEST OF ALL RANDOM OMNIDIRECT ORDERS ##########################
                         
@@ -230,7 +228,6 @@ class MainStateMachine(smach.StateMachine):
                       transitions={'succeeded':'TestAccelFront', 'timeout':'end'})   
 
 
-#Pour retourner au point initial : rosservice call /MotionTestingStratNode/gotoZero
 class RandomMove(MotionState):
     def __init__(self):
         outcomes = ['gotozero']
@@ -238,16 +235,10 @@ class RandomMove(MotionState):
         #seed = random.randint(0, 1000)
         seed=761
         random.seed(seed)
-        rospy.Service('/MotionTestingStratNode/gotoZero', Empty, self.gotoZeroSrvCallback)
-        self.gotoZero = False
         rospy.loginfo("------------MOTIONTESTING INIT----------------")
         rospy.loginfo("randomized with seed: %d" % (seed))
         rospy.loginfo("----------------------------------------------")
 
-    def gotoZeroSrvCallback(self,req):
-        self.gotoZero = True
-        rospy.loginfo("Goto Zero received")
-        return EmptyResponse()
 
 
     def createAction(self):
@@ -277,11 +268,7 @@ class RandomMove(MotionState):
         #    self.omnidirect2Pass(self.x, self.y, self.theta, self.vpass,self.vmax)
 
     def execute(self,userdata):
-        if self.gotoZero is True:
-            self.gotoZero = False
-            return "gotozero"
-        else:
-            return MotionState.execute(self,userdata)
+        return MotionState.execute(self,userdata)
 
 
             
