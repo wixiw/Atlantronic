@@ -30,13 +30,13 @@ class Opening(PreemptiveStateMachine):
             
             # -pi/2 -0.05 car on veut eviter que ca tourne tout seul du mauvais cote
             PreemptiveStateMachine.add('GoMid',
-                      AmbiOmniDirectOrder2Pass(Pose2D(0.0, 0.400, -pi/2 + 0.05), vmax=Robot2014.motionSpeeds['Average'],vpasse=-1),
+                      AmbiOmniDirectOrder2Pass(Pose2D(0.0, 0.300, -pi/2 + 0.05), vmax=Robot2014.motionSpeeds['Fast'],vpasse=-1),
                       transitions={'succeeded':'GoToOpponentTopFire', 'timeout':'PrepareFrescos'}) #si on y arrive pas on repart au depart et on recommence
 
 
             ## Push Opponent Top Fire, SLOWLY (parce qu'on est chez lui quand même ...)
             PreemptiveStateMachine.add('GoToOpponentTopFire',
-                      AmbiOmniDirectOrder2(Pose2D(-0.600, 0.400, -pi),vmax=Robot2014.motionSpeeds['Carefull']),
+                      AmbiOmniDirectOrder2(Pose2D(-0.600, 0.300, 0),vmax=Robot2014.motionSpeeds['Carefull']),
                       transitions={'succeeded':'PrepareFrescos', 'timeout':'DeblocProvocatedCollision'}) 
             
             PreemptiveStateMachine.add('DeblocProvocatedCollision',
@@ -53,7 +53,7 @@ class Opening(PreemptiveStateMachine):
 
 # Go to Frescos entry point
             PreemptiveStateMachine.add('PrepareFrescos',
-                      AmbiOmniDirectOrder2(StickFrescosState.getEntryYellowPoseStatic(), vmax=Robot2014.motionSpeeds['Fast']),
+                      AmbiOmniDirectOrder2(StickFrescosState.getEntryYellowPoseStatic(), vmax=Robot2014.motionSpeeds['Average']),
                       transitions={'succeeded':'StickFrescos', 'timeout':'RecoverPrepareStickFrescos'})   #si on y arrive pas, on va au self shoot point
             
             PreemptiveStateMachine.add('RecoverPrepareStickFrescos',
