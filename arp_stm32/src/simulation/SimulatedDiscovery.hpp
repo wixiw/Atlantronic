@@ -26,6 +26,7 @@ class SimulatedDiscovery: public arp_stm32::Discovery
         bool breakUpdateHook();
 
         static Qemu m_qemu;
+        virtual bool ooReset();
 
     protected:
         void createOrocosInterface();

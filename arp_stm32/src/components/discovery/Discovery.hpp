@@ -40,7 +40,7 @@ class Discovery: public arp_core::MotionScheduler
         /**
          * Resets the Stm32 board
          */
-        bool ooReset();
+        virtual bool ooReset();
 
         /**
          * Power on the Stm32 board

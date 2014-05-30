@@ -109,6 +109,11 @@ bool SimulatedDiscovery::breakUpdateHook()
     return true;
 }
 
+bool SimulatedDiscovery::ooReset()
+{
+    return true;
+}
+
 void SimulatedDiscovery::createOrocosInterface()
 {
     addProperty("propStm32ExecutableName", propStm32ExecutableName);
