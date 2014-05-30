@@ -3,7 +3,7 @@
  -->
 <launch>
 	<include file="$(find arp_core)/script/ros/launch/machines.launch"/>
-	
+	<!--
 	<node 
 		name="HmlGraphics"     
 		pkg="arp_hml"  
@@ -20,5 +20,7 @@
 		args="" 
 		output="screen" 
 		launch-prefix="nice"
-	/>
+	</node>
+	/>!-->
+	
 </launch>

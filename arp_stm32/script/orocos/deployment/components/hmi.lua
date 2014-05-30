@@ -5,16 +5,14 @@ HmiDeployer = ComposantDeployer:new()
 local me = "Hmi"
 
 function HmiDeployer:load()
-	assert( Deployer:loadComponent(me,"arp_stm32::Hmi"))
+	assert( Deployer:loadComponent(me,"arp_stm32::Stm32Hmi"))
 	assert( Deployer:addPeer("DotGraph",me))
-	assert( Deployer:setMasterSlaveActivity("Discovery", me))
+	assert( Deployer:setActivity(me,0.050,20,rtt.globals.ORO_SCHED_RT));
 	return true
 end
 
 function HmiDeployer:connect()
 	assert( Deployer:addPeer("Reporting", me) )
-	Deployer:addPeer("RluMonitor", me);
-	RluMonitor:connect(me,"inEstimatedPose","Localizator","outPose");
 	return true
 end
 
