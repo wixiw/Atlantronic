@@ -15,19 +15,20 @@ class Opening(PreemptiveStateMachine):
                                              transitions={'endMatch':'nearlyEndMatch'})
             
             PreemptiveStateMachine.add('EscapeStartArea',
-                      AmbiOmniDirectOrder2Pass(Table2014.P_YOU_HOU,vpasse=-1),
+                      AmbiOmniDirectOrder2Pass(Table2014.P_YOU_HOU, vmax=1.0, vpasse=-1),
                       transitions={'succeeded':'GoToSFT', 'timeout':'RetryEscapeStartArea'})
             self.setInitialState('EscapeStartArea')
             
             PreemptiveStateMachine.add('RetryEscapeStartArea',
-                      AmbiOmniDirectOrder2Pass(Pose2D(Table2014.P_YOU_HOU.x, Table2014.P_YOU_HOU.y -0.050, Table2014.P_YOU_HOU.theta) ,vpasse=-1),
+                      AmbiOmniDirectOrder2Pass(Pose2D(Table2014.P_YOU_HOU.x, Table2014.P_YOU_HOU.y -0.050, Table2014.P_YOU_HOU.theta), vmax=0.3 ,vpasse=-1),
                       transitions={'succeeded':'GoToSFT', 'timeout':'EscapeStartArea'})
             
                 
 # Go to Self Fire Top
             PreemptiveStateMachine.add('GoToSFT',
-                      AmbiOmniDirectOrder2Pass(Pose2D(0.650 + Robot2014.FRONT_SIDE.x, 0.300, -5*pi/6),vpasse=-1),
-                      transitions={'succeeded':'GotoOpponentShootPoint', 'timeout':'EscapeStartArea'}) #si on y arrive pas on repart au depart et on recommence
+                      AmbiOmniDirectOrder2Pass(Pose2D(0.650 + Robot2014.FRONT_SIDE.x, 0.300, -5*pi/6), vmax=1.0,vpasse=-1),
+                      transitions={'succeeded':'PrepareFrescos', 'timeout':'EscapeStartArea'}) #si on y arrive pas on repart au depart et on recommence
+
 
 ## Go through Opponent Shoot Point
 #            PreemptiveStateMachine.add('GoThroughOpponentShootPoint',
@@ -35,15 +36,15 @@ class Opening(PreemptiveStateMachine):
 #                      transitions={'succeeded':'GotoOpponentShootPoint', 'timeout':'PrepareFrescos'}) #si on y arrive pas, tant pis on passe l'action on va coller
 #            
 # Go to Opponent Shoot Point
-            PreemptiveStateMachine.add('GotoOpponentShootPoint',
-                      AmbiOmniDirectOrder2(AmbiShootMammoth.getEntryYellowPoseStatic('Left', p_opponent_side = True)),
-                      transitions={'succeeded':'WaitOppShoot', 'timeout':'PrepareFrescos'}) #si on y arrive pas, tant pis on passe l'action on va coller
+#            PreemptiveStateMachine.add('GotoOpponentShootPoint',
+#                      AmbiOmniDirectOrder2(AmbiShootMammoth.getEntryYellowPoseStatic('Left', p_opponent_side = True)),
+#                      transitions={'succeeded':'WaitOppShoot', 'timeout':'PrepareFrescos'}) #si on y arrive pas, tant pis on passe l'action on va coller
 
 #Simulate opp shoot
-            PreemptiveStateMachine.add('WaitOppShoot',
-                      WaiterState(1.0),
-                      transitions={'timeout':'PrepareFrescos'})
-            
+#            PreemptiveStateMachine.add('WaitOppShoot',
+#                      WaiterState(1.0),
+#                      transitions={'timeout':'PrepareFrescos'})
+#            
 # Shoot Opponent Mammoth
 #            PreemptiveStateMachine.add('TargetShoot',
 #                      AmbiShootMammoth('Left', p_opponent_side = True),
@@ -56,17 +57,21 @@ class Opening(PreemptiveStateMachine):
 
 # Go to Frescos entry point
             PreemptiveStateMachine.add('PrepareFrescos',
-                      AmbiOmniDirectOrder2(StickFrescosState.getEntryYellowPoseStatic()),
-                      transitions={'succeeded':'StickFrescos', 'timeout':'GotoSelfShootPoint'})   #si on y arrive pas, on va au self shoot point
+                      AmbiOmniDirectOrder2(StickFrescosState.getEntryYellowPoseStatic(), vmax=0.3),
+                      transitions={'succeeded':'StickFrescos', 'timeout':'RecoverPrepareStickFrescos'})   #si on y arrive pas, on va au self shoot point
+            
+            PreemptiveStateMachine.add('RecoverPrepareStickFrescos',
+                      AmbiOmniDirectOrder2(Table2014.P_YOU_HOU, vmax=0.3),
+                      transitions={'succeeded':'GoToSFM', 'timeout':'GoToSFT'})
             
 #Stick Frescos
             PreemptiveStateMachine.add('StickFrescos',
                       StickFrescosState(),
-                      transitions={'succeeded':'GotoSelfShootPoint', 'failed':'EmmergencyEscapeFrescos', 'almostEndGame':'nearlyEndMatch' }) # si on y arrive pas on part au point d'urgence de sortie
+                      transitions={'succeeded':'PrepareRecalYAfterRush', 'failed':'EmmergencyEscapeFrescos', 'almostEndGame':'nearlyEndMatch' }) # si on y arrive pas on part au point d'urgence de sortie
             
             PreemptiveStateMachine.add('EmmergencyEscapeFrescos',
-                      AmbiOmniDirectOrder2(Pose2D(0 , 0.300, pi/2)),
-                      transitions={'succeeded':'GotoSelfShootPoint', 'timeout':'GotoSelfShootPoint' })
+                      AmbiOmniDirectOrder2(Pose2D(0 , 0.300, pi/2), vmax=0.3),
+                      transitions={'succeeded':'PrepareRecalYAfterRush', 'timeout':'PrepareRecalYAfterRush' })
             
 ##DEBUG WILLY POUR HOMOLOGATION EVITEMENT
 #            PreemptiveStateMachine.add('ReturnInStartArea',
@@ -78,15 +83,27 @@ class Opening(PreemptiveStateMachine):
 #                      AmbiOmniDirectOrder2(Pose2D(0.600, -0.600, 0)),
 #                      transitions={'succeeded':'ReturnInStartArea', 'timeout':'ReturnInStartArea'})
 
+
+#Recalage apres le rush
+            PreemptiveStateMachine.add('PrepareRecalYAfterRush',
+                      AmbiOmniDirectOrder2(Pose2D(0.800,0.500,pi/2), vmax=0.5),
+                      transitions={'succeeded':'RecalYAfterRush', 'timeout':'GoToSFM'})
+
+            PreemptiveStateMachine.add('RecalYAfterRush',
+                      AmbiRecalOnBorderYellow("FRUITBASKET",Data.color),
+                      transitions={'recaled':'EscapeRecalYAfterRush', # 'non-recaled':'askSelector','problem':'motionBlocked'})
+                                   'non-recaled':'EscapeRecalYAfterRush','problem':'EscapeRecalYAfterRush'})  
+            
+            PreemptiveStateMachine.add('EscapeRecalYAfterRush',
+                      AmbiOmniDirectOrder2(Pose2D(1.200,0.400,pi/4), vmax=0.5),
+                      transitions={'succeeded':'GotoSelfShootPoint', 'timeout':'GotoSelfShootPoint'})
+
+
 # Go to Self Shoot Point
             PreemptiveStateMachine.add('GotoSelfShootPoint',
                       AmbiOmniDirectOrder2(AmbiShootMammoth.getEntryYellowPoseStatic('Left', p_opponent_side = False)),
-                      transitions={'succeeded':'WaitSelfShoot', 'timeout':'GoToSFM'}) # si on y arrive pas on passe a la suite
+                      transitions={'succeeded':'GoToSFM', 'timeout':'GoToSFM'}) # si on y arrive pas on passe a la suite
 
-#Simulate self shoot
-            PreemptiveStateMachine.add('WaitSelfShoot',
-                      WaiterState(1.0),
-                      transitions={'timeout':'GoToSFM'})
 # Shoot Self Mammoth
 #            PreemptiveStateMachine.add('TargetShoot',
 #                      AmbiShootMammoth('Right', p_opponent_side = False),
@@ -103,6 +120,7 @@ class Opening(PreemptiveStateMachine):
                       AmbiOmniDirectOrder2Pass(Pose2D(0.600, 0.200, -pi/2), vmax=0.5, vpasse=0.3),
                       transitions={'succeeded':'WaypointBeforeSmurf', 'timeout':'GoToSFB'}) #Si on y arrive pas, on va au Self fire bot
 
+            #faut taper fort dans les fire d'ou le 1.0
             PreemptiveStateMachine.add('WaypointBeforeSmurf',
                       AmbiOmniDirectOrder2Pass(Pose2D(1.100, -0.200, -pi/2), vmax=1.0, vpasse=0.3),
                       transitions={'succeeded':'GoToSmurfPoint', 'timeout':'GoToSmurfPoint'}) #Si on y arrive pas, on va au dessus de la torche mobile                       
@@ -119,13 +137,13 @@ class Opening(PreemptiveStateMachine):
 
             PreemptiveStateMachine.add('EmergencyMiddlePoint',
                       AmbiOmniDirectOrder2(Pose2D(1.200, 0.200, -pi/2), vmax=0.5),
-                      transitions={'succeeded':'PrepareRecalY', 'timeout':'GotoOpponentShootPoint'}) #Si on y arrive pas, on retourne au opponent shoot point
+                      transitions={'succeeded':'PrepareRecalY', 'timeout':'GoToOpponentTorchBot'}) #Si on y arrive pas, on retourne au opponent shoot point
             
 #Ordres de recalage Top
 
             PreemptiveStateMachine.add('PrepareRecalY',
                       AmbiOmniDirectOrder2(Pose2D(0.800,0.500,pi/2), vmax=0.5),
-                      transitions={'succeeded':'RecalY', 'timeout':'motionBlocked'})
+                      transitions={'succeeded':'RecalY', 'timeout':'RecalXSelfTorchMid'})
             
             PreemptiveStateMachine.add('RecalY',
                       AmbiRecalOnBorderYellow("FRUITBASKET",Data.color),
@@ -146,8 +164,11 @@ class Opening(PreemptiveStateMachine):
 
 # Go to Self Torch Mid
             PreemptiveStateMachine.add('GoToSelfTorchMid',
-                      AmbiOmniDirectOrder2(Pose2D(1.285, 0.200, 0), vmax=0.5),
+                      AmbiOmniDirectOrder2(Pose2D(1.185, 0.200, 0), vmax=0.3),
                       transitions={'succeeded':'RecalXSelfTorchMid', 'timeout':'PrepareRecalY'})
+            
+            
+            
 # Push Self Torch Mid
             PreemptiveStateMachine.add('RecalXSelfTorchMid',
                       AmbiRecalOnBorderYellow("RIGHT",Data.color),
@@ -155,12 +176,12 @@ class Opening(PreemptiveStateMachine):
 
 # Go to WaipointFire Bot
             PreemptiveStateMachine.add('WaipointFireBot',
-                      AmbiOmniDirectOrder2(Pose2D(0.600, -0.600, -pi/4), vmax=0.5),
+                      AmbiOmniDirectOrder2(Pose2D(0.600, -0.600, -pi/4), vmax=0.3),
                       transitions={'succeeded':'GoToOpponentTorchBot', 'timeout':'GoToSFB'})
             
 # Go to Opponent Torch Bot
             PreemptiveStateMachine.add('GoToOpponentTorchBot',
-                      AmbiOmniDirectOrder2(Pose2D(-0.200, -0.885, -pi/2), vmax=0.5),
+                      AmbiOmniDirectOrder2(Pose2D(-0.200, -0.885, -pi/2), vmax=0.3),
                       transitions={'succeeded':'RecalYOpponentTorchBot', 'timeout':'GoToSFB'})
 
 # Push Opponent Torch Bot
@@ -170,32 +191,32 @@ class Opening(PreemptiveStateMachine):
 
 # Go to Opponent Mobile Torch
             PreemptiveStateMachine.add('GoToOpponentMobileTorch',
-                      AmbiOmniDirectOrder2Pass(Pose2D(-0.500, -0.100, -pi/2), vmax=0.5, vpasse=0.3),
+                      AmbiOmniDirectOrder2Pass(Pose2D(-0.500, -0.100, -pi/2), vmax=0.3, vpasse=0.3),
                       transitions={'succeeded':'GoToOpponentFireMid', 'timeout':'GoToOpponentEscapePoint'})
             
 # Go to Opponent Escape Point
             PreemptiveStateMachine.add('GoToOpponentEscapePoint',
-                      AmbiOmniDirectOrder2Pass(Pose2D(0, -0.500, pi/2), vmax=0.5, vpasse=0.3),
+                      AmbiOmniDirectOrder2Pass(Pose2D(0, -0.500, pi/2), vmax=0.3, vpasse=0.3),
                       transitions={'succeeded':'GoToSFB', 'timeout':'GoToSFB'})
             
 # Go to Opponent Fire Mid
             PreemptiveStateMachine.add('GoToOpponentFireMid',
-                      AmbiOmniDirectOrder2Pass(Pose2D(-1.100, -0.200, pi/2), vmax=0.5, vpasse=0.3),
+                      AmbiOmniDirectOrder2Pass(Pose2D(-1.100, -0.200, pi/2), vmax=0.3, vpasse=0.3),
                       transitions={'succeeded':'PushOpponentFireMid', 'timeout':'GoToSFB'})
             
 # Push Opponent Fire Mid
             PreemptiveStateMachine.add('PushOpponentFireMid',
-                      AmbiOmniDirectOrder2Pass(Pose2D(-1.100, 0.000, pi/2), vmax=0.5, vpasse=0.3),
+                      AmbiOmniDirectOrder2Pass(Pose2D(-1.100, 0.000, pi/2), vmax=0.3, vpasse=0.3),
                       transitions={'succeeded':'GoToOpponentFireBot', 'timeout':'GoToSFB'})
             
 # Go to Opponent Fire Bot
             PreemptiveStateMachine.add('GoToOpponentFireBot',
-                  AmbiOmniDirectOrder2Pass(Pose2D(-0.700, -0.600, 0), vmax=0.5, vpasse=0.3),
+                  AmbiOmniDirectOrder2Pass(Pose2D(-0.700, -0.600, 0), vmax=0.3, vpasse=0.3),
                   transitions={'succeeded':'PushOpponentFireBot', 'timeout':'GoToSFB'})
         
 # Push Opponent Fire Bot
             PreemptiveStateMachine.add('PushOpponentFireBot',
-                  AmbiOmniDirectOrder2Pass(Pose2D(-0.500, -0.600, 0), vmax=0.5, vpasse=0.3),
+                  AmbiOmniDirectOrder2Pass(Pose2D(-0.500, -0.600, 0), vmax=0.3, vpasse=0.3),
                   transitions={'succeeded':'GoToSFB', 'timeout':'GoToSFB'})       
         
 
