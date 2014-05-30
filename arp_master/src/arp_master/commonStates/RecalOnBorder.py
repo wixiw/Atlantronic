@@ -8,6 +8,7 @@ import roslib; roslib.load_manifest('arp_master')
 from arp_master import *
 import os
 from SetPosition import *
+from Debug import *
 
 from arp_master.fsmFramework import *
 from MotorManagement import *
@@ -54,10 +55,13 @@ class AmbiRecalOnBorderYellow(smach.StateMachine):
             smach.StateMachine.add('Pichenette3',
                                    OpenLoopOrder(0.1,0.0,0.0, 
                                                  duration=0.1),
-                                   transitions={'succeeded':'setPosition', 'timeout':'problem'})
+                                   transitions={'succeeded':'PrintPosition', 'timeout':'problem'})
             
+            smach.StateMachine.add('PrintPosition',
+                                   PrintPosition(),
+                                   transitions={'continue':'SetPosition', 'timeout':'SetPosition'})
             
-            smach.StateMachine.add('setPosition',
+            smach.StateMachine.add('SetPosition',
                                    SetPositionState(recallWalls[borderName]),
                                    transitions={'succeeded':'BackwardOrder', 'timeout':'non-recaled'})
             

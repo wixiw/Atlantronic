@@ -76,29 +76,3 @@ class WaitForMatch(CyclicState):
         Data.start_time=rospy.get_rostime()
         self.stopGyroCalibration(); 
 
-#Log a text
-class LoggerState(CyclicState):
-    def __init__(self,text):
-        self.text = text
-        CyclicState.__init__(self, outcomes=['continue'])
-    
-    def executeIn(self):
-        rospy.loginfo(self.text)
-    
-    def executeTransitions(self):
-        return 'continue'
-
-# Debug state : print a log and ask a strat plug in/plug out
-class UserDebugTrigger(smach.StateMachine):
-    def __init__(self,text):
-        smach.StateMachine.__init__(self, outcomes=['continue'])
-        with self:
-            smach.StateMachine.add('Log', 
-                                   LoggerState(text),
-                                   transitions={'continue':'WaitForStart', 'timeout':'Log'})
-            smach.StateMachine.add('WaitForStart', 
-                                   WaitForStart(),
-                                   transitions={'start':'WaitForStartUnplug', 'timeout':'Log'})  
-            smach.StateMachine.add('WaitForStartUnplug', 
-                                   WaitForStartUnplug(),
-                                   transitions={'startunplug':'continue', 'timeout':'Log'})  

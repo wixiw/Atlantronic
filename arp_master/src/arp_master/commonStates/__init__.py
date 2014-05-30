@@ -1,5 +1,6 @@
 print("Importing commonStates module")
 
+from Debug import *
 from EndMatchPreempter import *
 from LocalStrategicAction import *
 from MotorManagement import *
