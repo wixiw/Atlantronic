@@ -39,7 +39,7 @@ class SpeedReducerAntico:
 #            rospy.logerr("Failed to find cropping_distance rosparams.") 
 #            raise RuntimeError
 
-        self.min_distance = 0.500
+        self.min_distance = 0.550
         self.reduced_min_speed = 0.000
         self.decc = 1.0
 
@@ -72,7 +72,7 @@ class SpeedReducerAntico:
                     #rospy.loginfo("["+str(i)+"] SpeedReducer : myPosition %s", myPosition)
                     #rospy.loginfo("["+str(i)+"] SpeedReducer : motionTargetPosition %s", motionTargetPosition)
                     
-                    isInTrajectory=isInRectangle(potentialPosition,myPosition,motionTargetPosition,0.900)
+                    isInTrajectory=isInRectangle(potentialPosition,myPosition,motionTargetPosition,0.900,0.300)
                     
                     #rospy.loginfo("["+str(i)+"] SpeedReducer : isInTrajectory %s", isInTrajectory)
                     

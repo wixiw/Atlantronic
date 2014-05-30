@@ -96,7 +96,7 @@ class StartSequence2014(smach.StateMachine):
                       transitions={'startunplug':'RecalX', 'timeout':'problem'})
 
             smach.StateMachine.add('RecalX',
-                      AmbiRecalOnBorderYellow("RIGHT",Data.color),
+                      AmbiRecalOnBorderYellow("RIGHT"),
                       transitions={'recaled':'PrepareRecalY', 'non-recaled':'problem','problem':'problem'})
             
             smach.StateMachine.add('PrepareRecalY',
@@ -104,7 +104,7 @@ class StartSequence2014(smach.StateMachine):
                       transitions={'succeeded':'RecalY', 'timeout':'problem'})
             
             smach.StateMachine.add('RecalY',
-                      AmbiRecalOnBorderYellow("FRUITBASKET",Data.color),
+                      AmbiRecalOnBorderYellow("FRUITBASKET"),
                       transitions={'recaled':'PrepareGoHome', 'non-recaled':'problem','problem':'problem'})   
             
             smach.StateMachine.add('PrepareGoHome',

@@ -15,9 +15,13 @@ class Robot2014(RobotVierge):
     
     nbBallInLeftCanon = 3
     nbBallInRightCanon = 3
+
     
-    fingerTorque = 40
-    cannonFingerTorque = 35
+    motionSpeeds = {
+                    'Carefull' : 0.3,
+                    'Average'  : 0.5,
+                    'Fast'     : 1.0
+                    }
     
     
     #
@@ -33,12 +37,12 @@ class Robot2014(RobotVierge):
                              ]
         
     dynamixelMaxTorqueList = {                       
-                         'LeftCannonFinger':        100,
-                         'RightCannonFinger':       100,
+                         'LeftCannonFinger':        60,
+                         'RightCannonFinger':       60,
                          'LeftCannonStocker':       60,
                          'RightCannonStocker':      60,
-                         'LeftFinger':              80,
-                         'RightFinger':             80
+                         'LeftFinger':              70,
+                         'RightFinger':             70
                          }
     
     #Configuration of reference suction powers
