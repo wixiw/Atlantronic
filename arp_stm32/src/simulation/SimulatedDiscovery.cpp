@@ -18,9 +18,11 @@ using namespace RTT;
 
 ORO_LIST_COMPONENT_TYPE( arp_stm32::SimulatedDiscovery )
 
+Qemu SimulatedDiscovery::m_qemu;
+
 SimulatedDiscovery::SimulatedDiscovery(const std::string& name) :
         Discovery(name),
-        propStm32ExecutableName("baz_small")
+        propStm32ExecutableName("baz")
 {
     createOrocosInterface();
 }
@@ -35,7 +37,9 @@ SimulatedDiscovery::~SimulatedDiscovery()
 bool SimulatedDiscovery::configureHook()
 {
     string atlantronicPath = ros::package::getPath("arp_stm32") + "/src/Atlantronic/";
-    string prog_stm = atlantronicPath + "bin/discovery/" + propStm32ExecutableName;
+    // TODO changement du path en attente de compilation du sous module Atlantronic. Pour le moment, binaire commite dans arp_stm32
+    //string prog_stm = atlantronicPath + "bin/discovery/" + propStm32ExecutableName;
+    string prog_stm = ros::package::getPath("arp_stm32") + "/bin/discovery/" + propStm32ExecutableName;
     string qemu_path = atlantronicPath + "qemu/arm-softmmu/qemu-system-arm";
     int gdb_port = 0;
 

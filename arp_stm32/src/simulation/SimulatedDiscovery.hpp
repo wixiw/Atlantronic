@@ -25,10 +25,11 @@ class SimulatedDiscovery: public arp_stm32::Discovery
         void updateHook();
         bool breakUpdateHook();
 
+        static Qemu m_qemu;
+
     protected:
         void createOrocosInterface();
 
-        Qemu m_qemu;
         std::string propStm32ExecutableName;
 
         //Ports used to drive qemu IOs

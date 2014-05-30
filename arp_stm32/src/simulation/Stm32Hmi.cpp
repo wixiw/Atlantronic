@@ -11,6 +11,7 @@
 #include <math/math.hpp>
 #include <ros/package.h>
 #include "linux/tools/glplot.h"
+#include "SimulatedDiscovery.hpp"
 
 using namespace arp_stm32;
 using namespace arp_math;
@@ -58,7 +59,7 @@ void* Stm32Hmi::task_wrapper(void* arg)
 {
     Stm32Hmi* hmi = (Stm32Hmi*) arg;
     string path = ros::package::getPath("arp_stm32") + "/src/Atlantronic/";
-    glplot_main(path.c_str(), 0, NO_CMD_PROMPT, NULL, &hmi->m_robotItf);
+    glplot_main(path.c_str(), 1, NO_CMD_PROMPT, &SimulatedDiscovery::m_qemu, &hmi->m_robotItf);
     return NULL;
 }
 
