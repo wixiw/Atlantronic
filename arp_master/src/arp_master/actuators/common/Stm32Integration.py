@@ -114,6 +114,11 @@ class DynamixelNonBlockingPositionCmd(StaticSendOnTopic):
     def __init__(self, p_dynamixelName, p_position):
         StaticSendOnTopic.__init__(self, "/Ubiquity/"+p_dynamixelName+"/position_cmd", Float32, Float32(p_position))
 
+class DynamixelNonBlockingSpeedCmd(StaticSendOnTopic):
+    def __init__(self, p_dynamixelName, p_speed):
+        StaticSendOnTopic.__init__(self, "/Ubiquity/"+p_dynamixelName+"/speed_cmd", Float32, Float32(p_speed))
+
+
 #
 # You may configure a dynamixel torque with this state. It send a single command, it is *not* periodic.
 # Basically it means that the torque cmd is just sent but not executed when you exit the state

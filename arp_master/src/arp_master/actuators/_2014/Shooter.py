@@ -138,6 +138,11 @@ class AmbiCannonStockerCmd(AmbiDynamixelGoto):
         AmbiDynamixelGoto.__init__(self, [AmbiDynamixelCmd(p_side, "CannonStocker", p_stockerPosition)])
         
         
+class FingerSpeedCmd(DynamixelNonBlockingSpeedCmd):
+    def __init__(self, p_side, p_speed):
+        DynamixelNonBlockingSpeedCmd.__init__(self, p_side + "CannonFinger" , p_speed)
+        
+        
 class AmbiFingerSpeedCmd(AmbiDynamixelNonBlockingSpeedCmd):
     def __init__(self, p_side, p_speed):
         AmbiDynamixelNonBlockingSpeedCmd.__init__(self,AmbiDynamixelSpeedCmd(p_side, "CannonFinger", p_speed))

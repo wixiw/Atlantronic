@@ -16,8 +16,8 @@ class SelfTest(smach.StateMachine):
         smach.StateMachine.__init__(self,outcomes=['done'])  
         
         # Definition of Pump test parameters
-        self.PUMP_TEST_POWER = 30
-        self.STRESS_TEST_DURATION = 30
+        self.PUMP_TEST_POWER = 100
+        self.STRESS_TEST_DURATION = 1
         
         with self:
             smach.StateMachine.add('TryLeftFingerPump',
@@ -71,11 +71,11 @@ class SelfTestSpeedDynamixel(smach.StateMachine):
                 
         with self:    
             smach.StateMachine.add('StartLeftShooter',
-                   AmbiFingerSpeedCmd("Left", Robot2014.cannonFingerSpeed['SHOOT']),
+                   FingerSpeedCmd("Left", Robot2014.cannonFingerSpeed['SHOOT']),
                    transitions={'done':'StartRightShooter'})
             
             smach.StateMachine.add('StartRightShooter',
-                   AmbiFingerSpeedCmd("Right", Robot2014.cannonFingerSpeed['SHOOT']),
+                   FingerSpeedCmd("Right", -Robot2014.cannonFingerSpeed['SHOOT']),
                    transitions={'done':'done'})
 
 class DefaultSpeedDynamixel(smach.StateMachine):
@@ -84,11 +84,11 @@ class DefaultSpeedDynamixel(smach.StateMachine):
                 
         with self:    
             smach.StateMachine.add('StopLeftShooter',
-                   AmbiFingerSpeedCmd("Left", Robot2014.cannonFingerSpeed['STOPPED']),
+                   FingerSpeedCmd("Left", Robot2014.cannonFingerSpeed['STOPPED']),
                    transitions={'done':'StopRightShooter'})
             
             smach.StateMachine.add('StopRightShooter',
-                   AmbiFingerSpeedCmd("Right", Robot2014.cannonFingerSpeed['STOPPED']),
+                   FingerSpeedCmd("Right", Robot2014.cannonFingerSpeed['STOPPED']),
                    transitions={'done':'done'})
         
 #
