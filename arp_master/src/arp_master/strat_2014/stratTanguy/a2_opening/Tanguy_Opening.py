@@ -25,35 +25,35 @@ class Opening(PreemptiveStateMachine):
             
 # Go to Self Fire Top
             PreemptiveStateMachine.add('GoToSFT',
-                      AmbiOmniDirectOrder2Pass(Pose2D(0.650 + Robot2014.FRONT_SIDE.x, 0.420, -0.25), vmax=Robot2014.motionSpeeds['Fast'],vpasse=-1),
-                      transitions={'succeeded':'GoMid', 'timeout':'EscapeStartArea'}) #si on y arrive pas on repart au depart et on recommence
+                      AmbiOmniDirectOrder2Pass(Pose2D(0.650 + Robot2014.FRONT_SIDE.x, 0.420, -0.15), vmax=Robot2014.motionSpeeds['Fast'],vpasse=-1),
+                      transitions={'succeeded':'PrepareFrescos', 'timeout':'PrepareRecalYAfterRush'}) #si on y arrive pas on repart au depart et on recommence
             
-            # Conserver angle 0 pour reculer tout droit
-            PreemptiveStateMachine.add('GoMid',
-                      AmbiOmniDirectOrder2Pass(Pose2D(0.0, 0.475, 0), vmax=Robot2014.motionSpeeds['Fast'],vpasse=-1),
-                      transitions={'succeeded':'GoToOpponentTopFire', 'timeout':'PrepareFrescos'}) #si on y arrive pas on repart au depart et on recommence
+#            # Conserver angle 0 pour reculer tout droit
+#            PreemptiveStateMachine.add('GoMid',
+#                      AmbiOmniDirectOrder2Pass(Pose2D(0.0, 0.475, 0), vmax=Robot2014.motionSpeeds['Fast'],vpasse=-1),
+#                      transitions={'succeeded':'PrepareFrescos', 'timeout':'PrepareFrescos'}) #si on y arrive pas on repart au depart et on recommence
 
 
-            ## Push Opponent Top Fire, SLOWLY (parce qu'on est chez lui quand même ...)
-            PreemptiveStateMachine.add('GoToOpponentTopFire',
-                      AmbiOmniDirectOrder2(Pose2D(-0.650, 0.475, 0.25),vmax=Robot2014.motionSpeeds['Carefull']),
-                      transitions={'succeeded':'GotoPrepareOppShoot', 'timeout':'DeblocProvocatedCollision'}) 
-            
-            PreemptiveStateMachine.add('DeblocProvocatedCollision',
-                      OpenLoopOrder(0.3,0.0,0.0, duration=0.4),
-                      transitions={'succeeded':'GotoPrepareOppShoot', 'timeout':'GotoPrepareOppShoot'})
+#            ## Push Opponent Top Fire, SLOWLY (parce qu'on est chez lui quand même ...)
+#            PreemptiveStateMachine.add('GoToOpponentTopFire',
+#                      AmbiOmniDirectOrder2(Pose2D(-0.650, 0.475, 0.25),vmax=Robot2014.motionSpeeds['Carefull']),
+#                      transitions={'succeeded':'GotoPrepareOppShoot', 'timeout':'DeblocProvocatedCollision'}) 
+#            
+#            PreemptiveStateMachine.add('DeblocProvocatedCollision',
+#                      OpenLoopOrder(0.3,0.0,0.0, duration=0.4),
+#                      transitions={'succeeded':'GotoPrepareOppShoot', 'timeout':'GotoPrepareOppShoot'})
             
             
             #si on y arrive pas, tant pis on passe l'action on va coller
             
-# Shoot Opponent Mammoth
-            PreemptiveStateMachine.add('GotoPrepareOppShoot',
-                      AmbiOmniDirectOrder2(AmbiShootMammoth.getEntryYellowPoseStatic(p_opponent_side = True), vmax=Robot2014.motionSpeeds['Carefull']),
-                      transitions={'succeeded':'OppShoot', 'timeout':'OppShoot'})
-            
-            PreemptiveStateMachine.add('OppShoot',
-                      AmbiShootMammoth(p_opponent_side = True),
-                      transitions={'succeeded':'PrepareFrescos', 'failed':'PrepareFrescos', 'almostEndGame':'nearlyEndMatch'})
+## Shoot Opponent Mammoth
+#            PreemptiveStateMachine.add('GotoPrepareOppShoot',
+#                      AmbiOmniDirectOrder2(AmbiShootMammoth.getEntryYellowPoseStatic(p_opponent_side = True), vmax=Robot2014.motionSpeeds['Carefull']),
+#                      transitions={'succeeded':'OppShoot', 'timeout':'OppShoot'})
+#            
+#            PreemptiveStateMachine.add('OppShoot',
+#                      AmbiShootMammoth(p_opponent_side = True),
+#                      transitions={'succeeded':'PrepareFrescos', 'failed':'PrepareFrescos', 'almostEndGame':'nearlyEndMatch'})
 
 # Go to Frescos entry point
             PreemptiveStateMachine.add('PrepareFrescos',
