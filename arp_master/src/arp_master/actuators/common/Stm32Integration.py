@@ -315,6 +315,7 @@ class AmbiDynamixelNonBlockingSpeedCmd(DynamicSendOnTopic):
     #Overrided to provide the topic name and the message from the AmbiDynamixelCmd
     def publish(self):
         color = Data.color
+        print("8====> Data.color : " + Data.color)
         print("AmbiDynamixelNonBlockingSpeedCmd publishing in : /Ubiquity/"+self.cmd.getName(color)+"/speed_cmd")
         topicPublisher = rospy.Publisher("/Ubiquity/"+self.cmd.getName(color)+"/speed_cmd", Float32)
         topicPublisher.publish( Float32(self.cmd.getSpeedCmd(color)) )

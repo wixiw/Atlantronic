@@ -80,12 +80,12 @@ class Pose2D(Point):
 # @param String p_color : match color  
 #
 def toAmbiSide(p_side, p_color):
-        if p_color is "yellow":
+        if p_color == "yellow":
             return p_side
-        if p_color is "red":
-            if p_side is "Left":
+        if p_color == "red":
+            if p_side == "Left":
                 return "Right"
-            if p_side is "Right":
+            if p_side == "Right":
                 return "Left"
             else:
                 return  "UnKnownSide"
