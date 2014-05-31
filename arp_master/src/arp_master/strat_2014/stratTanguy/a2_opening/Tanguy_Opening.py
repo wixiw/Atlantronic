@@ -25,31 +25,35 @@ class Opening(PreemptiveStateMachine):
             
 # Go to Self Fire Top
             PreemptiveStateMachine.add('GoToSFT',
-                      AmbiOmniDirectOrder2Pass(Pose2D(0.650 + Robot2014.FRONT_SIDE.x, 0.300, 0), vmax=Robot2014.motionSpeeds['Fast'],vpasse=-1),
+                      AmbiOmniDirectOrder2Pass(Pose2D(0.650 + Robot2014.FRONT_SIDE.x, 0.400, 0), vmax=Robot2014.motionSpeeds['Fast'],vpasse=-1),
                       transitions={'succeeded':'GoMid', 'timeout':'EscapeStartArea'}) #si on y arrive pas on repart au depart et on recommence
             
             # Conserver angle 0 pour reculer tout droit
             PreemptiveStateMachine.add('GoMid',
-                      AmbiOmniDirectOrder2Pass(Pose2D(0.0, 0.300, 0), vmax=Robot2014.motionSpeeds['Fast'],vpasse=-1),
+                      AmbiOmniDirectOrder2Pass(Pose2D(0.0, 0.400, 0), vmax=Robot2014.motionSpeeds['Fast'],vpasse=-1),
                       transitions={'succeeded':'GoToOpponentTopFire', 'timeout':'PrepareFrescos'}) #si on y arrive pas on repart au depart et on recommence
 
 
             ## Push Opponent Top Fire, SLOWLY (parce qu'on est chez lui quand même ...)
             PreemptiveStateMachine.add('GoToOpponentTopFire',
-                      AmbiOmniDirectOrder2(Pose2D(-0.600, 0.300, 0),vmax=Robot2014.motionSpeeds['Carefull']),
-                      transitions={'succeeded':'PrepareFrescos', 'timeout':'DeblocProvocatedCollision'}) 
+                      AmbiOmniDirectOrder2(Pose2D(-0.600, 0.400, 0),vmax=Robot2014.motionSpeeds['Carefull']),
+                      transitions={'succeeded':'GotoPrepareOppShoot', 'timeout':'DeblocProvocatedCollision'}) 
             
             PreemptiveStateMachine.add('DeblocProvocatedCollision',
                       OpenLoopOrder(0.3,0.0,0.0, duration=0.4),
-                      transitions={'succeeded':'PrepareFrescos', 'timeout':'PrepareFrescos'})
+                      transitions={'succeeded':'GotoPrepareOppShoot', 'timeout':'GotoPrepareOppShoot'})
             
             
             #si on y arrive pas, tant pis on passe l'action on va coller
             
 # Shoot Opponent Mammoth
-#            PreemptiveStateMachine.add('TargetShoot',
-#                      AmbiShootMammoth('Left', p_opponent_side = True),
-#                      transitions={'succeeded':'PrepareFrescos', 'failed':'nearlyEndMatch', 'almostEndGame':'nearlyEndMatch'})
+            PreemptiveStateMachine.add('GotoPrepareOppShoot',
+                      AmbiOmniDirectOrder2(AmbiShootMammoth.getEntryYellowPoseStatic('Left', p_opponent_side = True), vmax=Robot2014.motionSpeeds['Carefull']),
+                      transitions={'succeeded':'OppShoot', 'timeout':'OppShoot'})
+            
+            PreemptiveStateMachine.add('OppShoot',
+                      AmbiShootMammoth('Left', p_opponent_side = True),
+                      transitions={'succeeded':'PrepareFrescos', 'failed':'PrepareFrescos', 'almostEndGame':'nearlyEndMatch'})
 
 # Go to Frescos entry point
             PreemptiveStateMachine.add('PrepareFrescos',
@@ -82,13 +86,13 @@ class Opening(PreemptiveStateMachine):
 
 # Go to Self Shoot Point
             PreemptiveStateMachine.add('GotoSelfShootPoint',
-                      AmbiOmniDirectOrder2(AmbiShootMammoth.getEntryYellowPoseStatic('Left', p_opponent_side = False)),
-                      transitions={'succeeded':'GoToSFM', 'timeout':'GoToSFM'}) # si on y arrive pas on passe a la suite
+                      AmbiOmniDirectOrder2(AmbiShootMammoth.getEntryYellowPoseStatic('Right', p_opponent_side = False)),
+                      transitions={'succeeded':'SelfShoot', 'timeout':'SelfShoot'}) # si on y arrive pas on passe a la suite
 
 # Shoot Self Mammoth
-#            PreemptiveStateMachine.add('TargetShoot',
-#                      AmbiShootMammoth('Right', p_opponent_side = False),
-#                      transitions={'succeeded':'GoToSFM', 'failed':'nearlyEndMatch', 'almostEndGame':'nearlyEndMatch'})
+            PreemptiveStateMachine.add('SelfShoot',
+                      AmbiShootMammoth('Right', p_opponent_side = False),
+                      transitions={'succeeded':'GoToSFM', 'failed':'GoToSFM', 'almostEndGame':'nearlyEndMatch'})
 
 
 # Go to Self Fire Mid

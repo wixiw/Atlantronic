@@ -60,17 +60,11 @@ class MainStateMachine(smach.StateMachine):
         smach.StateMachine.__init__(self,outcomes=['end'])
         with self:
             smach.StateMachine.add('Initialisation', 
-# REAL
-#                                   InitStates2014.InitSequence2014(),
-# SIMU
-                                   InitStates2014.InitSimu(),
+                                   InitStates2014.InitSequence2014(),
                                    transitions={'endInitialisation':'StartSequence','failed':'Uninitialisation'})
 
             smach.StateMachine.add('StartSequence',
-# REAL
-#                                  InitStates2014.StartSequence2014(Table2014.P_START_POS),
-# SIMU 
-                                   InitStates2014.StartSimu(Table2014.P_START_POS),
+                                  InitStates2014.StartSequence2014(Table2014.P_START_POS),
                                    transitions={'gogogo':'Opening','problem':'Uninitialisation'})
             
             smach.StateMachine.add('Opening', 

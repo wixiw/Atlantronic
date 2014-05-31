@@ -76,7 +76,7 @@ class InitSequence2014(smach.StateMachine):
                                    WaitForStart(),
                                    transitions={'start':'FindSteeringZeros','timeout':'WaitForStart'})
             smach.StateMachine.add('FindSteeringZeros',
-                                   InitTurretZeros(), 
+                                   InitTurretZeros(),             
                                    transitions={'succeeded':'SetColor', 'problem':'failed'})
             smach.StateMachine.add('SetColor', 
                                    SetColor(),
@@ -108,29 +108,30 @@ class StartSequence2014(smach.StateMachine):
                       transitions={'recaled':'PrepareGoHome', 'non-recaled':'problem','problem':'problem'})   
             
             smach.StateMachine.add('PrepareGoHome',
-                      AmbiOmniDirectOrder2(Pose2D(1.100,0.350,-3*pi/4), vmax = 0.3),
-                      transitions={'succeeded':'GoHome', 'timeout':'GoHome'})
-            
-            smach.StateMachine.add('GoHome',
-                      AmbiOmniDirectOrder2(startPosition, vmax = 0.3),
+                      AmbiOmniDirectOrder2(Pose2D(1.100,0.350,0), vmax = 0.3),
                       transitions={'succeeded':'PrepareActuators', 'timeout':'PrepareActuators'})
             
             smach.StateMachine.add('PrepareActuators',
                       PrepareActuators(),
-                      transitions={'prepared':'You'})
+                      transitions={'prepared':'GoHome'})
             
-            smach.StateMachine.add('You',
-                      AmbiOmniDirectOrder2( Table2014.P_YOU_HOU, vmax = 0.3),
-                      transitions={'succeeded':'Hou', 'timeout':'Hou'})
-                        
-            smach.StateMachine.add('Hou',
+            smach.StateMachine.add('GoHome',
                       AmbiOmniDirectOrder2(startPosition, vmax = 0.3),
+                      transitions={'succeeded':'Push', 'timeout':'Push'})
+            
+            smach.StateMachine.add('Push',
+                      OpenLoopOrder(0.3,0.0,0.0, 
+                                                 duration=1.0),
+                      transitions={'succeeded':'SetFinalPosition', 'timeout':'SetFinalPosition'})
+            
+            smach.StateMachine.add('SetFinalPosition',
+                      SetPositionState(Pose2D(1.500 - Robot2014.FRONT_SIDE.x , startPosition.y, startPosition.theta)),
                       transitions={'succeeded':'WaitForStart', 'timeout':'WaitForStart'})
             
             smach.StateMachine.add('WaitForStart', 
                        WaitForStart(),
                        transitions={'start':'WaitForMatch','timeout':'WaitForStart'})
-            
+                        
             smach.StateMachine.add('WaitForMatch', 
                       WaitForMatch(),
                       transitions={'start':'gogogo', 'timeout':'WaitForMatch'})
