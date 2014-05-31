@@ -60,14 +60,17 @@ class MainStateMachine(smach.StateMachine):
         smach.StateMachine.__init__(self,outcomes=['end'])
         with self:
             smach.StateMachine.add('Initialisation', 
-                                   InitStates2014.InitSequence2014(),
+# REAL
+#                                   InitStates2014.InitSequence2014(),
+# SIMU
+                                   InitStates2014.InitSimu(),
                                    transitions={'endInitialisation':'StartSequence','failed':'Uninitialisation'})
 
             smach.StateMachine.add('StartSequence',
-# Uncomment either this line to perform the 2014 init sequence with recalOnBorders
-                                  InitStates2014.StartSequence2014(Table2014.P_START_POS),
-# Either this line to start directly from the START_POS 
-#                                   Strat_StartSequence.StartSequence(Table2014.P_START_POS),
+# REAL
+#                                  InitStates2014.StartSequence2014(Table2014.P_START_POS),
+# SIMU 
+                                   InitStates2014.StartSimu(Table2014.P_START_POS),
                                    transitions={'gogogo':'Opening','problem':'Uninitialisation'})
             
             smach.StateMachine.add('Opening', 

@@ -40,7 +40,7 @@ class Discovery: public arp_core::MotionScheduler
         /**
          * Resets the Stm32 board
          */
-        bool ooReset();
+        virtual bool ooReset();
 
         /**
          * Power on the Stm32 board
@@ -86,7 +86,7 @@ class Discovery: public arp_core::MotionScheduler
         double getBatteryVoltage();
         int getRawPowerData();
         int getRawGpioData();
-        void sendHeartBeat();
+        virtual void sendHeartBeat();
         bool waitStm32BootDone(double timeout);
 
     protected:

@@ -81,7 +81,7 @@ class InitSequence2014(smach.StateMachine):
             smach.StateMachine.add('SetColor', 
                                    SetColor(),
                                    transitions={'done':'endInitialisation','timeout':'SetColor'})
-         
+     
 class StartSequence2014(smach.StateMachine):
     def __init__(self,startPosition):
         smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
@@ -135,5 +135,55 @@ class StartSequence2014(smach.StateMachine):
                       WaitForMatch(),
                       transitions={'start':'gogogo', 'timeout':'WaitForMatch'})
 
+       
+class InitSimu(smach.StateMachine):
+    def __init__(self):
+        smach.StateMachine.__init__(self,outcomes=['endInitialisation','failed'])
+        with self:
+ 
+            smach.StateMachine.add('WaitForOrocos', 
+                                   WaitForOrocos(),
+                                   transitions={'deployed':'FindSteeringZeros','timeout':'WaitForOrocos'})
+            smach.StateMachine.add('FindSteeringZeros',
+                                   InitTurretZeros(), 
+                                   transitions={'succeeded':'ActivateFakeColor', 'problem':'failed'})
+            smach.StateMachine.add('ActivateFakeColor', 
+                                   ActivateFakeColor("yellow"),
+                                   transitions={'done':'Wait'})
+            smach.StateMachine.add('Wait', 
+                                   WaiterState(0.5),
+                                   transitions={'timeout':'SetColor'})
+            smach.StateMachine.add('SetColor', 
+                                   SetColor(),
+                                   transitions={'done':'FakeStart','timeout':'SetColor'})
+            smach.StateMachine.add('FakeStart', 
+                                   FakeStart(),
+                                   transitions={'start':'endInitialisation','timeout':'FakeStart'})
+            
+
+class ActivateFakeColor(StaticSendOnTopic):
+    def __init__(self, color):
+        StaticSendOnTopic.__init__(self, "/Ubiquity/color", StartColor, StartColor(color))
+
+
+class FakeStart(CyclicState):
+    def __init__(self):
+        CyclicState.__init__(self, outcomes=['start'])
+    
+    def executeTransitions(self):
+        return 'start'
+       
+    def executeOut(self):
+        Data.start_time=rospy.get_rostime()
+        
+
+class StartSimu(smach.StateMachine):
+    def __init__(self,startPosition):
+        smach.StateMachine.__init__(self,outcomes=['gogogo','problem'])
+        
+        with self:
+            smach.StateMachine.add('SetInitialPosition',
+                      SetPositionState(startPosition),
+                      transitions={'succeeded':'gogogo', 'timeout':'problem'})
 
 ####################################################################################################################
