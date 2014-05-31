@@ -64,11 +64,11 @@ class MainStateMachine(smach.StateMachine):
                        transitions={'timeout':'AmbiShootOneBallLeft'})
      
             smach.StateMachine.add('AmbiShootOneBallLeft',
-                       AmbiShootOneBall('Left'),
+                       AmbiShootNBalls('Left',3),
                        transitions={'shot':'AmbiShootOneBallRight', 'blocked':'Uninitialisation'})
              
             smach.StateMachine.add('AmbiShootOneBallRight',
-                       AmbiShootOneBall('Right'),
+                       AmbiShootNBalls('Right',3),
                        transitions={'shot':'WaitABit', 'blocked':'Uninitialisation'})
              
 

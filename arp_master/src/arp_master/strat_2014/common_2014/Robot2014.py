@@ -28,21 +28,17 @@ class Robot2014(RobotVierge):
     # Dynamixels configuration
     #
     dynamixelList = [                       
-                             'LeftCannonFinger',
-                             'LeftCannonStocker',
-                             'RightCannonFinger',
-                             'RightCannonStocker',
                              'LeftFinger',
-                             'RightFinger'
+                             'RightFinger',
+                             'LeftCannonStocker',
+                             'RightCannonStocker'
                              ]
         
     dynamixelMaxTorqueList = {                       
-                         'LeftCannonFinger':        60,
-                         'RightCannonFinger':       60,
+                         'LeftFinger':        75,
+                         'RightFinger':       75,
                          'LeftCannonStocker':       60,
-                         'RightCannonStocker':      60,
-                         'LeftFinger':              70,
-                         'RightFinger':             70
+                         'RightCannonStocker':      60
                          }
     
     #Configuration of reference suction powers
@@ -56,9 +52,9 @@ class Robot2014(RobotVierge):
                                     'FLOOR' : 1.45}
     
     #Configuration of Cannon reference positions
-    cannonFingerLeftYellowPos = {   'ARMED'       : 0.9,
-                                    'GOINFRONT'   : -0.8,
-                                    'SHOOT'       : 1.5}
+    cannonFingerSpeed = {           'STOPPED' : 0.0,
+                                    'SHOOT'   : 3.0}
+       
     cannonStockerLeftYellowPos = {  'LOADING'     : 1.0,
                                     'UNLOADING'   : 0.0,
                                     'SHOWREADY'   : 0.7

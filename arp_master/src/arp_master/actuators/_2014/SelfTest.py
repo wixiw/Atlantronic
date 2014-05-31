@@ -7,6 +7,7 @@ import roslib; roslib.load_manifest('arp_master')
 from arp_master.fsmFramework import *
 from arp_master.commonStates import *
 from arp_master.actuators.common.Stm32Integration import *
+from arp_master.actuators._2014.Shooter import *
 from arp_master.strat_2014.common_2014.Robot2014 import *
 
 
@@ -33,7 +34,11 @@ class SelfTest(smach.StateMachine):
             
             smach.StateMachine.add('TestDynamixel',
                       SelfTestDynamixelShowReady(),
-                      transitions={'succeeded':'WaitABit','problem':'WaitABit'})
+                      transitions={'succeeded':'SelfTestSpeedDynamixel','problem':'WaitABit'})
+            
+            smach.StateMachine.add('SelfTestSpeedDynamixel',
+                      SelfTestSpeedDynamixel(),
+                      transitions={'done':'WaitABit'})
             
             smach.StateMachine.add('WaitABit',
                       WaiterState(self.STRESS_TEST_DURATION),
@@ -53,20 +58,49 @@ class SelfTest(smach.StateMachine):
             
             smach.StateMachine.add('DefaultDynamixelState',
                        DefaultDynamixelState(),
-                       transitions={'succeeded':'done', 'problem':'done'}) 
+                       transitions={'succeeded':'DefaultSpeedDynamixel', 'problem':'DefaultSpeedDynamixel'}) 
             
+            smach.StateMachine.add('DefaultSpeedDynamixel',
+                      DefaultSpeedDynamixel(),
+                      transitions={'done':'done'})
+    
+    
+class SelfTestSpeedDynamixel(smach.StateMachine):
+    def __init__(self):
+        smach.StateMachine.__init__(self,outcomes=['done'])  
+                
+        with self:    
+            smach.StateMachine.add('StartLeftShooter',
+                   AmbiFingerSpeedCmd("Left", Robot2014.cannonFingerSpeed['SHOOT']),
+                   transitions={'done':'StartRightShooter'})
+            
+            smach.StateMachine.add('StartRightShooter',
+                   AmbiFingerSpeedCmd("Right", Robot2014.cannonFingerSpeed['SHOOT']),
+                   transitions={'done':'done'})
+
+class DefaultSpeedDynamixel(smach.StateMachine):
+    def __init__(self):
+        smach.StateMachine.__init__(self,outcomes=['done'])  
+                
+        with self:    
+            smach.StateMachine.add('StopLeftShooter',
+                   AmbiFingerSpeedCmd("Left", Robot2014.cannonFingerSpeed['STOPPED']),
+                   transitions={'done':'StopRightShooter'})
+            
+            smach.StateMachine.add('StopRightShooter',
+                   AmbiFingerSpeedCmd("Right", Robot2014.cannonFingerSpeed['STOPPED']),
+                   transitions={'done':'done'})
+        
 #
 # This state moves all dynamixels to show that they are alive
 #
 class SelfTestDynamixelShowReady(DynamixelGoto):
         def __init__(self):
             DynamixelGoto.__init__(self, Robot2014.dynamixelList,
-                                   [ Robot2014.cannonFingerLeftYellowPos['GOINFRONT'],
+                                   [ Robot2014.fingerLeftYellowPos['DOWN'],
+                                    -Robot2014.fingerLeftYellowPos['DOWN'],
                                      Robot2014.cannonStockerLeftYellowPos['SHOWREADY'],
-                                    -Robot2014.cannonFingerLeftYellowPos['GOINFRONT'],
-                                    -Robot2014.cannonStockerLeftYellowPos['SHOWREADY'],
-                                     Robot2014.fingerLeftYellowPos['DOWN'],
-                                    -Robot2014.fingerLeftYellowPos['DOWN']
+                                    -Robot2014.cannonStockerLeftYellowPos['SHOWREADY']
                                     ])
 
 
@@ -76,10 +110,8 @@ class SelfTestDynamixelShowReady(DynamixelGoto):
 class DefaultDynamixelState(DynamixelGoto):
     def __init__(self):
         DynamixelGoto.__init__(self, Robot2014.dynamixelList, 
-                                   [Robot2014.cannonFingerLeftYellowPos['ARMED'],
+                                   [Robot2014.fingerLeftYellowPos['UP'],
+                                    -Robot2014.fingerLeftYellowPos['UP'],
                                     Robot2014.cannonStockerLeftYellowPos['LOADING'],
-                                    -Robot2014.cannonFingerLeftYellowPos['ARMED'],
-                                    -Robot2014.cannonStockerLeftYellowPos['LOADING'],
-                                    Robot2014.fingerLeftYellowPos['UP'],
-                                    -Robot2014.fingerLeftYellowPos['UP']
+                                    -Robot2014.cannonStockerLeftYellowPos['LOADING']
                                     ])

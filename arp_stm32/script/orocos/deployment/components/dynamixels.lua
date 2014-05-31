@@ -28,8 +28,8 @@ end
 function DynamixelsDeployer:load()
 	DynamixelsDeployer:loadCpnt(	dynamixelBus, 			"arp_stm32::DynamixelBus")
 	
-	DynamixelsDeployer:loadCpnt(	leftCannonFinger, 		"arp_stm32::Dynamixel")
-	DynamixelsDeployer:loadCpnt(	rightCannonFinger, 		"arp_stm32::Dynamixel")
+	DynamixelsDeployer:loadCpnt(	leftCannonFinger, 		"arp_stm32::SpeedDynamixel")
+	DynamixelsDeployer:loadCpnt(	rightCannonFinger, 		"arp_stm32::SpeedDynamixel")
 	DynamixelsDeployer:loadCpnt(	leftCannonStocker, 		"arp_stm32::Dynamixel")
 	DynamixelsDeployer:loadCpnt(	rightCannonStocker, 	"arp_stm32::Dynamixel")
 	
@@ -51,11 +51,16 @@ function DynamixelsDeployer:connectDynamixel(name)
         assert( Deployer:stream(name..".inMaxTorqueAllowed",  ros:topic("/Ubiquity/"..name.."/max_torque")))
 end
 
+function DynamixelsDeployer:connectSpeedDynamixel(name)
+        assert( Deployer:stream(name..".outState",            ros:topic("/Ubiquity/"..name.."/state")))
+        assert( Deployer:stream(name..".inSpeedCmd",          ros:topic("/Ubiquity/"..name.."/speed_cmd")))
+end
+
 function DynamixelsDeployer:connect()
 	assert( Deployer:addPeer("Reporting", dynamixelBus) )
 	
-	DynamixelsDeployer:connectDynamixel(leftCannonFinger)
-	DynamixelsDeployer:connectDynamixel(rightCannonFinger)
+	DynamixelsDeployer:connectSpeedDynamixel(leftCannonFinger)
+	DynamixelsDeployer:connectSpeedDynamixel(rightCannonFinger)
 	DynamixelsDeployer:connectDynamixel(leftCannonStocker)
 	DynamixelsDeployer:connectDynamixel(rightCannonStocker)
 	

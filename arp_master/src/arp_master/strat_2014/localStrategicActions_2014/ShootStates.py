@@ -72,7 +72,7 @@ class AmbiShootMammoth(LocalStrategicAction):
         with self:      
 
             LocalStrategicAction.add('Shoot',
-                      AmbiShootOneBall(p_cannon_side),
+                      AmbiShootNBalls(p_cannon_side,1),
                       transitions={'shot':'TurnShoot_2', 'blocked':'failed'})
             self.setInitialState('Shoot')
             
@@ -85,7 +85,7 @@ class AmbiShootMammoth(LocalStrategicAction):
             
             # Shoot_2            
             LocalStrategicAction.add('Shoot_2',
-                      AmbiShootOneBall(p_cannon_side),
+                      AmbiShootNBalls(p_cannon_side,1),
                       transitions={'shot':'TurnShoot_3', 'blocked':'failed'})
             
              # Turn Shoot_3
@@ -95,7 +95,7 @@ class AmbiShootMammoth(LocalStrategicAction):
             
             # Shoot_3           
             LocalStrategicAction.add('Shoot_3',
-                      AmbiShootOneBall(p_cannon_side),
+                      AmbiShootNBalls(p_cannon_side,1),
                       transitions={'shot':'succeeded', 'blocked':'failed'})
 
             

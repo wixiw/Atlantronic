@@ -241,6 +241,33 @@ class AmbiDynamixelCmd():
             return self.position
         if ambiSide is "Right":
             return -self.position
+
+
+class AmbiDynamixelSpeedCmd():
+    def __init__(self, p_side, p_name, p_speed):
+        self.side = p_side
+        self.name = p_name
+        self.speed = p_speed
+        
+    #return the name of the dynamixel to drive depending on the color
+    #@param String p_color : match color
+    def getName(self, p_color):
+        #rospy.loginfo("AmbiDynamixelCmd color : " + p_color)
+        #rospy.loginfo("AmbiDynamixelCmd side : " + self.side)
+        #rospy.loginfo("AmbiDynamixelCmd name : " + self.name)
+        return toAmbiSide(self.side, p_color) + self.name
+        
+    def getYellowName(self):
+        return self.side + "Yellow" + self.name;
+        
+    #return the speed cmd of the dynamixel to drive depending on the color
+    #@param String p_color : match color
+    def getSpeedCmd(self, p_color):
+        ambiSide = toAmbiSide(self.side, p_color)
+        if ambiSide is "Left":
+            return self.speed
+        if ambiSide is "Right":
+            return -self.speed
                 
 #
 # You may drive a dynamixel with this state depending on color and side. 
@@ -258,12 +285,35 @@ class AmbiDynamixelNonBlockingPositionCmd(DynamicSendOnTopic):
         
     #Overrided to provide the topic name and the message from the AmbiDynamixelCmd
     def publish(self):
-        #TODO a corriger
-        color = "yellow"
+        color = Data.color
         print("AmbiDynamixelNonBlockingPositionCmd publishing in : /Ubiquity/"+self.cmd.getName(color)+"/position_cmd")
         #rospy.loginfo("AmbiDynamixelNonBlockingPositionCmd value : " + str(self.cmd.getPositionCmd(color)))
         topicPublisher = rospy.Publisher("/Ubiquity/"+self.cmd.getName(color)+"/position_cmd", Float32)
         topicPublisher.publish( Float32(self.cmd.getPositionCmd(color)) )
+        
+        
+#
+# You may drive a dynamixel with this state depending on color and side. 
+# It send a single command, it is *not* periodic.
+# Basically it means that you are *NOT* at the desired position when you exit this state
+#
+# @param AmbiDynamixelSpeedCmd p_ambiDynamixelSpeedCmd   : the name of the dynamixel to drive (defined on the left side in the yellow color)
+#
+class AmbiDynamixelNonBlockingSpeedCmd(DynamicSendOnTopic):
+    def __init__(self, p_ambiDynamixelSpeedCmd):
+        DynamicSendOnTopic.__init__(self)
+        
+        #remember command
+        self.cmd = p_ambiDynamixelSpeedCmd
+        
+    #Overrided to provide the topic name and the message from the AmbiDynamixelCmd
+    def publish(self):
+        color = Data.color
+        print("AmbiDynamixelNonBlockingSpeedCmd publishing in : /Ubiquity/"+self.cmd.getName(color)+"/position_cmd")
+        topicPublisher = rospy.Publisher("/Ubiquity/"+self.cmd.getName(color)+"/speed_cmd", Float32)
+        topicPublisher.publish( Float32(self.cmd.getSpeedCmd(color)) )
+        
+        
         
 
 #
@@ -281,8 +331,7 @@ class AmbiWaitDynamixelReachedPosition(WaitDynamixelReachedPosition):
         self.cmd = p_ambiDynamixelCmd
 
     def executeIn(self):
-        #TODO a corriger
-        color = "yellow"
+        color = Data.color
         self.topicName = "/Ubiquity/"+self.cmd.getName(color)+"/state"
         ReceiveFromTopic.executeIn(self)
         return
@@ -354,8 +403,7 @@ class AmbiWaitForOmronValue(WaitForOmronValue):
         self.ambiOmron = p_ambiOmron
         
     def executeIn(self):
-        #TODO a corriger
-        color = "yellow"
+        color = Data.color
         self.topicName = "/Ubiquity/"+self.ambiOmron.getName(color)+"/object_present"
         WaitForOmronValue.executeIn(self)
         return

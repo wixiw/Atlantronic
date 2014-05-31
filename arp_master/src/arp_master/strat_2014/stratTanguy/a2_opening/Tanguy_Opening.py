@@ -15,22 +15,21 @@ class Opening(PreemptiveStateMachine):
                                              transitions={'endMatch':'nearlyEndMatch'})
             
             PreemptiveStateMachine.add('EscapeStartArea',
-                      AmbiOmniDirectOrder2Pass(Table2014.P_YOU_HOU, vmax=Robot2014.motionSpeeds['Fast'], vpasse=-1),
+                      AmbiOmniDirectOrder2Pass(Table2014.P_IN_FRONT_START_AREA, vmax=Robot2014.motionSpeeds['Fast'], vpasse=-1),
                       transitions={'succeeded':'GoToSFT', 'timeout':'RetryEscapeStartArea'})
             self.setInitialState('EscapeStartArea')
             
             PreemptiveStateMachine.add('RetryEscapeStartArea',
-                      AmbiOmniDirectOrder2Pass(Pose2D(Table2014.P_YOU_HOU.x, Table2014.P_YOU_HOU.y -0.050, Table2014.P_YOU_HOU.theta), vmax=Robot2014.motionSpeeds['Carefull'] ,vpasse=-1),
+                      AmbiOmniDirectOrder2Pass(Pose2D(Table2014.P_IN_FRONT_START_AREA.x, Table2014.P_IN_FRONT_START_AREA.y -0.050, Table2014.P_IN_FRONT_START_AREA.theta), vmax=Robot2014.motionSpeeds['Carefull'] ,vpasse=-1),
                       transitions={'succeeded':'GoToSFT', 'timeout':'EscapeStartArea'})
             
 # Go to Self Fire Top
             PreemptiveStateMachine.add('GoToSFT',
-                      AmbiOmniDirectOrder2Pass(Pose2D(0.650 + Robot2014.FRONT_SIDE.x, 0.300, 0), vmax=Robot2014.motionSpeeds['Fast'],vpasse=-1),
+                      AmbiOmniDirectOrder2Pass(Pose2D(0.650 + Robot2014.FRONT_SIDE.x, 0.300, -5*pi/6), vmax=Robot2014.motionSpeeds['Fast'],vpasse=-1),
                       transitions={'succeeded':'GoMid', 'timeout':'EscapeStartArea'}) #si on y arrive pas on repart au depart et on recommence
             
-            # Conserver angle 0 pour reculer tout droit
             PreemptiveStateMachine.add('GoMid',
-                      AmbiOmniDirectOrder2Pass(Pose2D(0.0, 0.300, 0), vmax=Robot2014.motionSpeeds['Fast'],vpasse=-1),
+                      AmbiOmniDirectOrder2Pass(Pose2D(0.0, 0.300, 0.0), vmax=Robot2014.motionSpeeds['Fast'],vpasse=-1),
                       transitions={'succeeded':'GoToOpponentTopFire', 'timeout':'PrepareFrescos'}) #si on y arrive pas on repart au depart et on recommence
 
 
@@ -53,20 +52,20 @@ class Opening(PreemptiveStateMachine):
 
 # Go to Frescos entry point
             PreemptiveStateMachine.add('PrepareFrescos',
-                      AmbiOmniDirectOrder2(ReverseStickFrescosState.getEntryYellowPoseStatic(), vmax=Robot2014.motionSpeeds['Average']),
-                      transitions={'succeeded':'ReverseStickFrescos', 'timeout':'RecoverPrepareStickFrescos'})   #si on y arrive pas, on va au self shoot point
+                      AmbiOmniDirectOrder2(StickFrescosState.getEntryYellowPoseStatic(), vmax=Robot2014.motionSpeeds['Average']),
+                      transitions={'succeeded':'StickFrescos', 'timeout':'RecoverPrepareStickFrescos'})   #si on y arrive pas, on va au self shoot point
             
             PreemptiveStateMachine.add('RecoverPrepareStickFrescos',
-                      AmbiOmniDirectOrder2(Table2014.P_YOU_HOU, vmax=Robot2014.motionSpeeds['Carefull']),
+                      AmbiOmniDirectOrder2(Table2014.P_IN_FRONT_START_AREA, vmax=Robot2014.motionSpeeds['Carefull']),
                       transitions={'succeeded':'GoToSFM', 'timeout':'GoToSFT'})
             
 #Stick Frescos
-            PreemptiveStateMachine.add('ReverseStickFrescos',
-                      ReverseStickFrescosState(),
-                      transitions={'succeeded':'EmmergencyEscapeFrescos', 'failed':'EmmergencyEscapeFrescos', 'almostEndGame':'nearlyEndMatch' }) # si on y arrive pas on part au point d'urgence de sortie
+            PreemptiveStateMachine.add('StickFrescos',
+                      StickFrescosState(),
+                      transitions={'succeeded':'PrepareRecalYAfterRush', 'failed':'EmmergencyEscapeFrescos', 'almostEndGame':'nearlyEndMatch' }) # si on y arrive pas on part au point d'urgence de sortie
             
             PreemptiveStateMachine.add('EmmergencyEscapeFrescos',
-                      AmbiOmniDirectOrder2(Pose2D(0.200 , 0.400, 0), vmax=Robot2014.motionSpeeds['Carefull']),
+                      AmbiOmniDirectOrder2(Pose2D(0 , 0.400, -5/6*pi), vmax=Robot2014.motionSpeeds['Carefull']),
                       transitions={'succeeded':'PrepareRecalYAfterRush', 'timeout':'PrepareRecalYAfterRush' })
 
 #Recalage apres le rush
@@ -104,15 +103,7 @@ class Opening(PreemptiveStateMachine):
             #faut taper fort dans les fire d'ou le 1.0
             PreemptiveStateMachine.add('WaypointBeforeSmurf',
                       AmbiOmniDirectOrder2Pass(Pose2D(1.100, -0.200, -pi/2), vmax=Robot2014.motionSpeeds['Fast'], vpasse=0.3),
-                      transitions={'succeeded':'PushSelfMobileTorch', 'timeout':'GoToSmurfPoint'}) #Si on y arrive pas, on va au dessus de la torche mobile                       
-
-            PreemptiveStateMachine.add('PushSelfMobileTorch',
-                      AmbiOmniDirectOrder2Pass(Pose2D(0.800, -0.300, 2*pi/3), vmax=Robot2014.motionSpeeds['Carefull'], vpasse=0.3),
-                      transitions={'succeeded':'GoToSmurfPoint', 'timeout':'PrepareRecalY'})
-
-
-
-
+                      transitions={'succeeded':'GoToSmurfPoint', 'timeout':'GoToSmurfPoint'}) #Si on y arrive pas, on va au dessus de la torche mobile                       
 
 # Go to Smurf Point to go to Self Fire Bot
             PreemptiveStateMachine.add('GoToSmurfPoint',
