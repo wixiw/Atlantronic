@@ -24,7 +24,7 @@ class Table2014(TableVierge):
     
 #Start Positions    
     P_START_POS         = Pose2D(1.450, 0.55 , 0.0)
-    P_IN_FRONT_START_AREA   = Pose2D(1.100, 0.400, pi/4)
+    P_IN_FRONT_START_AREA   = Pose2D(1.100, 0.400, 0)
 
 #Fire EntryPoint
 

@@ -1,4 +1,3 @@
-#Fri May 30 00:29:39 CEST 2014
 eclipse.preferences.version=1
 encoding//arp_core/src/tools/ksthelper.py=utf-8
 encoding//arp_master/src/arp_master=US-ASCII
@@ -10,6 +9,7 @@ encoding//arp_master/src/arp_master/actuators/_2014/Shooter.py=latin1
 encoding//arp_master/src/arp_master/actuators/common/Stm32Integration.py=latin1
 encoding//arp_master/src/arp_master/commonStates/LocalStrategicAction.py=latin1
 encoding//arp_master/src/arp_master/commonStates/Strat_Initialisation.py=latin1
+encoding//arp_master/src/arp_master/commonStates/Strat_MiddleGame.py=latin1
 encoding//arp_master/src/arp_master/commonStates/Strat_StartSequence.py=UTF-8
 encoding//arp_master/src/arp_master/commonStates/TopicIntegration.py=latin1
 encoding//arp_master/src/arp_master/commonStates/Waiting.py=latin1
