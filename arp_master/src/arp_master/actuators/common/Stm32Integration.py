@@ -255,6 +255,7 @@ class AmbiDynamixelSpeedCmd():
         #rospy.loginfo("AmbiDynamixelCmd color : " + p_color)
         #rospy.loginfo("AmbiDynamixelCmd side : " + self.side)
         #rospy.loginfo("AmbiDynamixelCmd name : " + self.name)
+        rospy.loginfo("AmbiDynamixelCmd ngetName() :" + toAmbiSide(self.side, p_color) + self.name)
         return toAmbiSide(self.side, p_color) + self.name
         
     def getYellowName(self):
@@ -309,7 +310,7 @@ class AmbiDynamixelNonBlockingSpeedCmd(DynamicSendOnTopic):
     #Overrided to provide the topic name and the message from the AmbiDynamixelCmd
     def publish(self):
         color = Data.color
-        print("AmbiDynamixelNonBlockingSpeedCmd publishing in : /Ubiquity/"+self.cmd.getName(color)+"/position_cmd")
+        print("AmbiDynamixelNonBlockingSpeedCmd publishing in : /Ubiquity/"+self.cmd.getName(color)+"/speed_cmd")
         topicPublisher = rospy.Publisher("/Ubiquity/"+self.cmd.getName(color)+"/speed_cmd", Float32)
         topicPublisher.publish( Float32(self.cmd.getSpeedCmd(color)) )
         

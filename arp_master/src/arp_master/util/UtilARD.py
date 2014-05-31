@@ -88,10 +88,10 @@ def toAmbiSide(p_side, p_color):
             if p_side is "Right":
                 return "Left"
             else:
-                return  "AmbiWaitForOmronValuesideUnknown"
+                return  "UnKnownSide"
             
         else:
-            return "AmbiWaitForOmronValueNoColor"
+            return "UnknownColor"
     
     
 def normalizeAngle(angle):

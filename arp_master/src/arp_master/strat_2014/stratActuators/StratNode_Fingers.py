@@ -13,7 +13,7 @@ from arp_master.actuators import *
 
 ###########################  TEMPORAL BEHAVIOR
 
-class StratNode_vierge():
+class StratNode_Fingers():
     
     def __init__(self):
         
@@ -78,7 +78,7 @@ class MainStateMachine(smach.StateMachine):
 # this main function is the one called by ros
 if __name__ == '__main__':
     try:
-        StratNode_vierge()
+        StratNode_Fingers()
     except rospy.ROSInterruptException: 
         rospy.loginfo("handling rospy.ROSInterruptException ...")
         rospy.loginfo("Exiting")

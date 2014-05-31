@@ -21,10 +21,7 @@ if ( res  ) then
     {
         print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
         print.ln("\033[1;31m!!! Failed to deploy arp_hml. !!!\033[0m");
-        print.ln("\033[1;3139.385 [ ERROR  ][Logger] [MotionControl] No new data in inPosition port => return
-39.395 [ ERROR  ][Logger] [MotionControl] No new data in inPosition port => return
-39.405 [ ERROR  ][Logger] [MotionControl] No new data in inPosition port => return
-m!!! --------------------------- !!!\033[0m");
+        print.ln("\033[1;31m!!! --------------------------- !!!\033[0m");
         res = false;
     }
 } 

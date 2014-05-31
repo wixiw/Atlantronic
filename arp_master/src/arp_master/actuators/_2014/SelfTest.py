@@ -16,8 +16,8 @@ class SelfTest(smach.StateMachine):
         smach.StateMachine.__init__(self,outcomes=['done'])  
         
         # Definition of Pump test parameters
-        self.PUMP_TEST_POWER = 100
-        self.STRESS_TEST_DURATION = 1
+        self.PUMP_TEST_POWER = 30
+        self.STRESS_TEST_DURATION = 30
         
         with self:
             smach.StateMachine.add('TryLeftFingerPump',
@@ -34,7 +34,7 @@ class SelfTest(smach.StateMachine):
             
             smach.StateMachine.add('TestDynamixel',
                       SelfTestDynamixelShowReady(),
-                      transitions={'succeeded':'SelfTestSpeedDynamixel','problem':'WaitABit'})
+                      transitions={'succeeded':'SelfTestSpeedDynamixel','problem':'SelfTestSpeedDynamixel'})
             
             smach.StateMachine.add('SelfTestSpeedDynamixel',
                       SelfTestSpeedDynamixel(),
