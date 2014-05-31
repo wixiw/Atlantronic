@@ -25,7 +25,7 @@ class Opening(PreemptiveStateMachine):
             
 # Go to Self Fire Top
             PreemptiveStateMachine.add('GoToSFT',
-                      AmbiOmniDirectOrder2Pass(Pose2D(0.650 + Robot2014.FRONT_SIDE.x, 0.420, -0.10), vmax=Robot2014.motionSpeeds['Fast'],vpasse=-1),
+                      AmbiOmniDirectOrder2Pass(Pose2D(0.650 + Robot2014.FRONT_SIDE.x, 0.420, -0.25), vmax=Robot2014.motionSpeeds['Fast'],vpasse=-1),
                       transitions={'succeeded':'GoMid', 'timeout':'EscapeStartArea'}) #si on y arrive pas on repart au depart et on recommence
             
             # Conserver angle 0 pour reculer tout droit
@@ -36,7 +36,7 @@ class Opening(PreemptiveStateMachine):
 
             ## Push Opponent Top Fire, SLOWLY (parce qu'on est chez lui quand même ...)
             PreemptiveStateMachine.add('GoToOpponentTopFire',
-                      AmbiOmniDirectOrder2(Pose2D(-0.650, 0.475, 0.1),vmax=Robot2014.motionSpeeds['Carefull']),
+                      AmbiOmniDirectOrder2(Pose2D(-0.650, 0.475, 0.25),vmax=Robot2014.motionSpeeds['Carefull']),
                       transitions={'succeeded':'GotoPrepareOppShoot', 'timeout':'DeblocProvocatedCollision'}) 
             
             PreemptiveStateMachine.add('DeblocProvocatedCollision',
@@ -70,7 +70,7 @@ class Opening(PreemptiveStateMachine):
                       transitions={'succeeded':'EmmergencyEscapeFrescos', 'failed':'EmmergencyEscapeFrescos', 'almostEndGame':'nearlyEndMatch' }) # si on y arrive pas on part au point d'urgence de sortie
             
             PreemptiveStateMachine.add('EmmergencyEscapeFrescos',
-                      AmbiOmniDirectOrder2(Pose2D(0.200 , 0.400, 0), vmax=Robot2014.motionSpeeds['Carefull']),
+                      AmbiOmniDirectOrder2(Pose2D(0.200 , 0.475, 0), vmax=Robot2014.motionSpeeds['Carefull']),
                       transitions={'succeeded':'PrepareRecalYAfterRush', 'timeout':'PrepareRecalYAfterRush' })
 
 #Recalage apres le rush
@@ -227,7 +227,7 @@ class Opening(PreemptiveStateMachine):
                       AmbiOmniDirectOrder2Pass(Pose2D(0, -0.500, pi/2), vmax=Robot2014.motionSpeeds['Average'], vpasse=0.3),
                       transitions={'succeeded':'GoToOpponentFireMid', 'timeout':'RecalYOpponentTorchBot'})
 
-# Retry Shoot Mammoth
+# Retry Opp Shoot Mammoth
             PreemptiveStateMachine.add('RetryGotoPrepareOppShoot',
                       AmbiOmniDirectOrder2(AmbiShootMammoth.getEntryYellowPoseStatic(p_opponent_side = True), vmax=Robot2014.motionSpeeds['Average']),
                       transitions={'succeeded':'RetryOppShoot', 'timeout':'FinalLoopOpp'})
@@ -236,17 +236,25 @@ class Opening(PreemptiveStateMachine):
                       AmbiShootMammoth(p_opponent_side = True),
                       transitions={'succeeded':'RetryGotoSelfShootPoint', 'failed':'RetryGotoSelfShootPoint', 'almostEndGame':'nearlyEndMatch'})
 
+
+#Retry Stick Frescos
+            PreemptiveStateMachine.add('RetryPrepareFrescos',
+                      AmbiOmniDirectOrder2(ReverseStickFrescosState.getEntryYellowPoseStatic(), vmax=Robot2014.motionSpeeds['Average']),
+                      transitions={'succeeded':'RetryReverseStickFrescos', 'timeout':'nearlyEndMatch'})   #si on y arrive pas, on va au self shoot point
+            
+            PreemptiveStateMachine.add('RetryReverseStickFrescos',
+                      ReverseStickFrescosState(),
+                      transitions={'succeeded':'FinalLoopOpp', 'failed':'nearlyEndMatch', 'almostEndGame':'nearlyEndMatch' }) # si on y arrive pas on part au point d'urgence de sortie
+
+
+# Retry Self Shoot Mammoth
             PreemptiveStateMachine.add('RetryGotoSelfShootPoint',
                       AmbiOmniDirectOrder2(AmbiShootMammoth.getEntryYellowPoseStatic(p_opponent_side = False)),
-                      transitions={'succeeded':'RetrySelfShoot', 'timeout':'SelfShoot'}) # si on y arrive pas on passe a la suite
-
-            PreemptiveStateMachine.add('EscapeFromSelf',
-                      AmbiOmniDirectOrder2Pass(Pose2D(-0.700, 0.400, -pi/2), vmax=Robot2014.motionSpeeds['Fast'], vpasse=0.5),
-                      transitions={'succeeded':'FinalLoopOpp', 'timeout':'nearlyEndMatch'})
+                      transitions={'succeeded':'RetrySelfShoot', 'timeout':'FinalLoopSelf'}) # si on y arrive pas on passe a la suite
 
             PreemptiveStateMachine.add('RetrySelfShoot',
                       AmbiShootMammoth(p_opponent_side = False),
-                      transitions={'succeeded':'FinalLoopOpp', 'failed':'FinalLoopOpp', 'almostEndGame':'nearlyEndMatch'})
+                      transitions={'succeeded':'FinalLoopSelf', 'failed':'FinalLoopSelf', 'almostEndGame':'nearlyEndMatch'})
 
 
 #Final Loop

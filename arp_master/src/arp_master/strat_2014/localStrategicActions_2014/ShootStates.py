@@ -21,9 +21,9 @@ class AmbiShootMammoth(LocalStrategicAction):
     
     @staticmethod
     def getEntryYellowPoseStatic(p_opponent_side = False):
-        x = 0.570
+        x = 0.400
         y = 0.425 #position moulineau a 300
-        h = -1.95 + Robot2014.shootDelta 
+        h = -3*pi/4 - 0.020
         
         #Si on viser le mammouth oppose on symetrise les positions
         if p_opponent_side is True:
@@ -44,8 +44,10 @@ class AmbiShootMammoth(LocalStrategicAction):
         #remember cannon side
         if p_opponent_side is True:
             self.cannon_side = "Left"
+            self.deltaSign = 1.0
         else:
             self.cannon_side = "Right"
+            self.deltaSign = -1.0
         
         with self:   
             PreemptiveStateMachine.add('ApproachBasket',
@@ -54,14 +56,17 @@ class AmbiShootMammoth(LocalStrategicAction):
                                                   0.800, 
                                                   self.getEntryYellowPoseStatic(p_opponent_side).theta), 
                                            vmax=Robot2014.motionSpeeds['Carefull']),
-                      transitions={'succeeded':'AcquireBasketTarget', 'timeout':'AcquireBasketTarget'})
+                      transitions={'succeeded':'GoAwayFromBasket', 'timeout':'GoAwayFromBasket'})
             self.setInitialState('ApproachBasket')
 
-            PreemptiveStateMachine.add('AcquireBasketTarget',
-                      AmbiOmniDirectOrder2(self.getEntryYellowPoseStatic(p_opponent_side), 
-                                           vmax=Robot2014.motionSpeeds['Carefull']),
-                      transitions={'succeeded':'Shoot', 'timeout':'Shoot'})
+#            PreemptiveStateMachine.add('AcquireBasketTarget',
+#                      AmbiOmniDirectOrder2(self.getEntryYellowPoseStatic(p_opponent_side), 
+#                                           vmax=Robot2014.motionSpeeds['Carefull']),
+#                      transitions={'succeeded':'Shoot', 'timeout':'Shoot'})
 
+            PreemptiveStateMachine.add('GoAwayFromBasket',
+                      ForwardOrder(0.030, vmax=Robot2014.motionSpeeds['Carefull']),
+                      transitions={'succeeded':'Shoot', 'timeout':'Shoot'})
 
             LocalStrategicAction.add('Shoot',
                       AmbiShootFirstBall(self.cannon_side,1),
@@ -69,7 +74,7 @@ class AmbiShootMammoth(LocalStrategicAction):
             
              # Turn Shoot_2
             LocalStrategicAction.add('TurnShoot_2',
-                      AmbiTurnOrder(self.getEntryYellowPoseStatic(p_opponent_side).theta - Robot2014.shootDelta),
+                      AmbiTurnOrder(self.getEntryYellowPoseStatic(p_opponent_side).theta + self.deltaSign*Robot2014.shootDelta),
                       transitions={'succeeded':'Shoot_2', 'timeout':'Shoot_2'})
             
             # Shoot_2            
@@ -79,7 +84,7 @@ class AmbiShootMammoth(LocalStrategicAction):
             
              # Turn Shoot_3
             LocalStrategicAction.add('TurnShoot_3',
-                      AmbiTurnOrder(self.getEntryYellowPoseStatic(p_opponent_side).theta - 2*Robot2014.shootDelta),
+                      AmbiTurnOrder(self.getEntryYellowPoseStatic(p_opponent_side).theta + self.deltaSign*2*Robot2014.shootDelta),
                       transitions={'succeeded':'Shoot_3', 'timeout':'Shoot_3'})
             
             # Shoot_3           

@@ -18,7 +18,7 @@ class StickFrescosState(LocalStrategicAction):
 
     @staticmethod
     def getEntryYellowPoseStatic():
-        return Pose2D(0.000, 0.400, pi+0.428);
+        return Pose2D(0.000, 0.475, pi+0.428);
     
     def getEntryYellowPose(self):
         return self.getEntryYellowPoseStatic();
@@ -51,7 +51,7 @@ class ReverseStickFrescosState(LocalStrategicAction):
 
     @staticmethod
     def getEntryYellowPoseStatic():
-        return Pose2D(0.000, 0.400, -0.428);
+        return Pose2D(0.000, 0.475, -0.428);
     
     def getEntryYellowPose(self):
         return self.getEntryYellowPoseStatic();

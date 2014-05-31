@@ -24,7 +24,7 @@ class Robot2014(RobotVierge):
                     }
     
     
-    shootDelta = 0.12
+    shootDelta = 0.040
     
     #
     # Dynamixels configuration
@@ -39,8 +39,8 @@ class Robot2014(RobotVierge):
     dynamixelMaxTorqueList = {                       
                          'LeftFinger':        75,
                          'RightFinger':       75,
-                         'LeftCannonStocker':       60,
-                         'RightCannonStocker':      60
+                         'LeftCannonStocker':       45,
+                         'RightCannonStocker':      45
                          }
     
     #Configuration of reference suction powers
