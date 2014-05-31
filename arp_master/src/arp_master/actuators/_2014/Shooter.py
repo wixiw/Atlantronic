@@ -92,7 +92,7 @@ class AmbiPutNextBallInCannon(smach.StateMachine):
                 #==> Blocking Point A
                                 
                 smach.StateMachine.add('WaitBallInCannon',
-                       WaiterState(0.3),
+                       WaiterState(0.0),
                        transitions={'timeout':'succeeded'}) 
                  
                 #Blocking point A : when the ball don't fall from Stocker to Shooter
@@ -116,7 +116,7 @@ class AmbiGetNextBallFromStocker(smach.StateMachine):
                 #==> Blocking Point A
                                 
                 smach.StateMachine.add('WaitBallInStocker',
-                       WaiterState(0.3),
+                       WaiterState(0.0),
                        transitions={'timeout':'succeeded'})
                 
                 #Blocking point A : when next ball prevent finger from moving
