@@ -12,6 +12,35 @@ from arp_master.strat_2014 import *
 from arp_master.actuators import *                
     
 
+class AmbiShootFirstBall(smach.StateMachine):
+    def __init__(self, p_side, p_nbBalls):
+            smach.StateMachine.__init__(self, outcomes=['shot','blocked'])    
+        
+            with self:  
+                
+                smach.StateMachine.add('StartShooter',
+                       AmbiFingerSpeedCmd(p_side, Robot2014.cannonFingerSpeed['SHOOT']),
+                       transitions={'done':'WaitFirstBallOut'})
+                              
+                smach.StateMachine.add('WaitFirstBallOut',
+                           WaiterState(2.0),
+                           transitions={'timeout':'StopShooter'})
+                                     
+                #Arret du cannon en success
+                smach.StateMachine.add('StopShooter',
+                       AmbiFingerSpeedCmd(p_side, Robot2014.cannonFingerSpeed['STOPPED']),
+                       transitions={'done':'shot'})
+                  
+                #Arret du cannon en blocage et suppression du couple
+                smach.StateMachine.add('EmergencyStopShooter',
+                       AmbiFingerSpeedCmd(p_side, Robot2014.cannonFingerSpeed['STOPPED']),
+                       transitions={'done':'EmergencyStopStocker'})  
+                
+                smach.StateMachine.add('EmergencyStopStocker',
+                       CannonTorqueConfig(p_side, 0),
+                       transitions={'done':'blocked'}) 
+
+
 class AmbiShootNBalls(smach.StateMachine):
     def __init__(self, p_side, p_nbBalls):
             smach.StateMachine.__init__(self, outcomes=['shot','blocked'])    
@@ -40,8 +69,6 @@ class AmbiShootNBalls(smach.StateMachine):
                     secondBallTransition = "StopShooter"
                     
                     
-                    
-                    
                 if p_nbBalls > 1:
                     #Chargement de la seconde balle
                     smach.StateMachine.add('GetSecondBallFromStock',
@@ -54,7 +81,6 @@ class AmbiShootNBalls(smach.StateMachine):
                     firstBallTransition = "GetSecondBallFromStock"
                 else:
                     firstBallTransition = "StopShooter"    
-                    
                           
                           
                           
@@ -92,7 +118,7 @@ class AmbiPutNextBallInCannon(smach.StateMachine):
                 #==> Blocking Point A
                                 
                 smach.StateMachine.add('WaitBallInCannon',
-                       WaiterState(0.0),
+                       WaiterState(0.3),
                        transitions={'timeout':'succeeded'}) 
                  
                 #Blocking point A : when the ball don't fall from Stocker to Shooter
@@ -116,7 +142,7 @@ class AmbiGetNextBallFromStocker(smach.StateMachine):
                 #==> Blocking Point A
                                 
                 smach.StateMachine.add('WaitBallInStocker',
-                       WaiterState(0.0),
+                       WaiterState(0.3),
                        transitions={'timeout':'succeeded'})
                 
                 #Blocking point A : when next ball prevent finger from moving

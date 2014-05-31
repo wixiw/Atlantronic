@@ -20,35 +20,12 @@ from arp_master.strat_2014.common_2014 import *
 class AmbiShootMammoth(LocalStrategicAction):
     
     @staticmethod
-    def getEntryYellowPoseStatic(p_side, p_opponent_side = False):
+    def getEntryYellowPoseStatic(p_opponent_side = False):
+        x = 0.570
+        y = 0.425 #position moulineau a 300
+        h = -1.95 + Robot2014.shootDelta 
         
-        #Choix du cannon
-        if p_side is 'Left':
-            
-#old position
-#            x = 0.160
-#            h = -3*pi/4
-#            y = 0.480
-
-            #x = 0.570
-            x = 0.600
-            y = 0.300
-            h = pi + 1.059
-
-        elif p_side is 'Right':
-#old position
-#            x = 0.100
-#            y = 0.542
-#            h = -3*pi/4
-
-            #x = 0.570
-            x = 0.600
-            y = 0.300
-            h = pi + 1.059
-        else:
-            return None
-        
-        #Si on visder le mammouth oppose on symmetrise les positions
+        #Si on viser le mammouth oppose on symetrise les positions
         if p_opponent_side is True:
             x = -x
             h = pi - h
@@ -57,46 +34,60 @@ class AmbiShootMammoth(LocalStrategicAction):
         
         
     def getEntryYellowPose(self):
-        return self.getEntryYellowPoseStatic(self.cannon_side, self.opponent_side)
+        return self.getEntryYellowPoseStatic(self.opponent_side)
     
     # @param String p_cannon_side                    : defines on the Yellow configuration which cannon to use (Left or Right)
     # @param Boolean p_opponent_side (optionnal)     : if this is set to True, the shoot is done on the opposite side mammouth  
-    def __init__(self, p_cannon_side, p_opponent_side = False):
+    def __init__(self, p_opponent_side = False):
         LocalStrategicAction.__init__(self, Robot2014.SWITCH_TO_EOG_DELAY)
         
         #remember cannon side
-        self.cannon_side = p_cannon_side
-        #remember opponent side
-        self.opponent_side = p_opponent_side
+        if p_opponent_side is True:
+            self.cannon_side = "Left"
+        else:
+            self.cannon_side = "Right"
         
-        with self:      
+        with self:   
+            PreemptiveStateMachine.add('ApproachBasket',
+                      AmbiOmniDirectOrder2(
+                                           Pose2D(self.getEntryYellowPoseStatic(p_opponent_side).x, 
+                                                  0.800, 
+                                                  self.getEntryYellowPoseStatic(p_opponent_side).theta), 
+                                           vmax=Robot2014.motionSpeeds['Carefull']),
+                      transitions={'succeeded':'AcquireBasketTarget', 'timeout':'AcquireBasketTarget'})
+            self.setInitialState('ApproachBasket')
+
+            PreemptiveStateMachine.add('AcquireBasketTarget',
+                      AmbiOmniDirectOrder2(self.getEntryYellowPoseStatic(p_opponent_side), 
+                                           vmax=Robot2014.motionSpeeds['Carefull']),
+                      transitions={'succeeded':'Shoot', 'timeout':'Shoot'})
+
 
             LocalStrategicAction.add('Shoot',
-                      AmbiShootNBalls(p_cannon_side,1),
+                      AmbiShootFirstBall(self.cannon_side,1),
                       transitions={'shot':'TurnShoot_2', 'blocked':'failed'})
-            self.setInitialState('Shoot')
             
-# 2x additional shots on Mammoths, turn of 0.085 RAD = 5 DEG
-
              # Turn Shoot_2
             LocalStrategicAction.add('TurnShoot_2',
-                      AmbiTurnOrder(-pi/4 + 0.08),
+                      AmbiTurnOrder(self.getEntryYellowPoseStatic(p_opponent_side).theta - Robot2014.shootDelta),
                       transitions={'succeeded':'Shoot_2', 'timeout':'Shoot_2'})
             
             # Shoot_2            
             LocalStrategicAction.add('Shoot_2',
-                      AmbiShootNBalls(p_cannon_side,1),
+                      AmbiShootNBalls(self.cannon_side,1),
                       transitions={'shot':'TurnShoot_3', 'blocked':'failed'})
             
              # Turn Shoot_3
             LocalStrategicAction.add('TurnShoot_3',
-                      AmbiTurnOrder(-pi/4 - 0.08),
+                      AmbiTurnOrder(self.getEntryYellowPoseStatic(p_opponent_side).theta - 2*Robot2014.shootDelta),
                       transitions={'succeeded':'Shoot_3', 'timeout':'Shoot_3'})
             
             # Shoot_3           
             LocalStrategicAction.add('Shoot_3',
-                      AmbiShootNBalls(p_cannon_side,1),
-                      transitions={'shot':'succeeded', 'blocked':'failed'})
+                      AmbiShootNBalls(self.cannon_side,1),
+                      transitions={'shot':'ReturnToEntryPoint', 'blocked':'failed'})
 
-            
+            PreemptiveStateMachine.add('ReturnToEntryPoint',
+                      AmbiOmniDirectOrder2(self.getEntryYellowPoseStatic(p_opponent_side), vmax=Robot2014.motionSpeeds['Average']),
+                      transitions={'succeeded':'succeeded', 'timeout':'succeeded'})
             

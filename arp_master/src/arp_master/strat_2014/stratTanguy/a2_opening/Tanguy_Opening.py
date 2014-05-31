@@ -25,18 +25,18 @@ class Opening(PreemptiveStateMachine):
             
 # Go to Self Fire Top
             PreemptiveStateMachine.add('GoToSFT',
-                      AmbiOmniDirectOrder2Pass(Pose2D(0.650 + Robot2014.FRONT_SIDE.x, 0.400, 0), vmax=Robot2014.motionSpeeds['Fast'],vpasse=-1),
+                      AmbiOmniDirectOrder2Pass(Pose2D(0.650 + Robot2014.FRONT_SIDE.x, 0.420, -0.10), vmax=Robot2014.motionSpeeds['Fast'],vpasse=-1),
                       transitions={'succeeded':'GoMid', 'timeout':'EscapeStartArea'}) #si on y arrive pas on repart au depart et on recommence
             
             # Conserver angle 0 pour reculer tout droit
             PreemptiveStateMachine.add('GoMid',
-                      AmbiOmniDirectOrder2Pass(Pose2D(0.0, 0.400, 0), vmax=Robot2014.motionSpeeds['Fast'],vpasse=-1),
+                      AmbiOmniDirectOrder2Pass(Pose2D(0.0, 0.475, 0), vmax=Robot2014.motionSpeeds['Fast'],vpasse=-1),
                       transitions={'succeeded':'GoToOpponentTopFire', 'timeout':'PrepareFrescos'}) #si on y arrive pas on repart au depart et on recommence
 
 
             ## Push Opponent Top Fire, SLOWLY (parce qu'on est chez lui quand même ...)
             PreemptiveStateMachine.add('GoToOpponentTopFire',
-                      AmbiOmniDirectOrder2(Pose2D(-0.600, 0.400, 0),vmax=Robot2014.motionSpeeds['Carefull']),
+                      AmbiOmniDirectOrder2(Pose2D(-0.650, 0.475, 0.1),vmax=Robot2014.motionSpeeds['Carefull']),
                       transitions={'succeeded':'GotoPrepareOppShoot', 'timeout':'DeblocProvocatedCollision'}) 
             
             PreemptiveStateMachine.add('DeblocProvocatedCollision',
@@ -48,11 +48,11 @@ class Opening(PreemptiveStateMachine):
             
 # Shoot Opponent Mammoth
             PreemptiveStateMachine.add('GotoPrepareOppShoot',
-                      AmbiOmniDirectOrder2(AmbiShootMammoth.getEntryYellowPoseStatic('Left', p_opponent_side = True), vmax=Robot2014.motionSpeeds['Carefull']),
+                      AmbiOmniDirectOrder2(AmbiShootMammoth.getEntryYellowPoseStatic(p_opponent_side = True), vmax=Robot2014.motionSpeeds['Carefull']),
                       transitions={'succeeded':'OppShoot', 'timeout':'OppShoot'})
             
             PreemptiveStateMachine.add('OppShoot',
-                      AmbiShootMammoth('Left', p_opponent_side = True),
+                      AmbiShootMammoth(p_opponent_side = True),
                       transitions={'succeeded':'PrepareFrescos', 'failed':'PrepareFrescos', 'almostEndGame':'nearlyEndMatch'})
 
 # Go to Frescos entry point
@@ -86,12 +86,12 @@ class Opening(PreemptiveStateMachine):
 
 # Go to Self Shoot Point
             PreemptiveStateMachine.add('GotoSelfShootPoint',
-                      AmbiOmniDirectOrder2(AmbiShootMammoth.getEntryYellowPoseStatic('Right', p_opponent_side = False)),
+                      AmbiOmniDirectOrder2(AmbiShootMammoth.getEntryYellowPoseStatic(p_opponent_side = False)),
                       transitions={'succeeded':'SelfShoot', 'timeout':'SelfShoot'}) # si on y arrive pas on passe a la suite
 
 # Shoot Self Mammoth
             PreemptiveStateMachine.add('SelfShoot',
-                      AmbiShootMammoth('Right', p_opponent_side = False),
+                      AmbiShootMammoth(p_opponent_side = False),
                       transitions={'succeeded':'GoToSFM', 'failed':'GoToSFM', 'almostEndGame':'nearlyEndMatch'})
 
 
@@ -220,25 +220,47 @@ class Opening(PreemptiveStateMachine):
 # Push Opponent Fire Mid
             PreemptiveStateMachine.add('PushOpponentFireMid',
                       AmbiOmniDirectOrder2Pass(Pose2D(-1.100, 0.000, pi/2), vmax=Robot2014.motionSpeeds['Fast'], vpasse=0.3),
-                      transitions={'succeeded':'FinalLoopOpp', 'timeout':'GoToOpponentEscapePoint'})
+                      transitions={'succeeded':'RetryGotoPrepareOppShoot', 'timeout':'GoToOpponentEscapePoint'})
             
 # Go to Opponent Escape Point
             PreemptiveStateMachine.add('GoToOpponentEscapePoint',
                       AmbiOmniDirectOrder2Pass(Pose2D(0, -0.500, pi/2), vmax=Robot2014.motionSpeeds['Average'], vpasse=0.3),
                       transitions={'succeeded':'GoToOpponentFireMid', 'timeout':'RecalYOpponentTorchBot'})
 
+# Retry Shoot Mammoth
+            PreemptiveStateMachine.add('RetryGotoPrepareOppShoot',
+                      AmbiOmniDirectOrder2(AmbiShootMammoth.getEntryYellowPoseStatic(p_opponent_side = True), vmax=Robot2014.motionSpeeds['Average']),
+                      transitions={'succeeded':'RetryOppShoot', 'timeout':'FinalLoopOpp'})
+            
+            PreemptiveStateMachine.add('RetryOppShoot',
+                      AmbiShootMammoth(p_opponent_side = True),
+                      transitions={'succeeded':'RetryGotoSelfShootPoint', 'failed':'RetryGotoSelfShootPoint', 'almostEndGame':'nearlyEndMatch'})
+
+            PreemptiveStateMachine.add('RetryGotoSelfShootPoint',
+                      AmbiOmniDirectOrder2(AmbiShootMammoth.getEntryYellowPoseStatic(p_opponent_side = False)),
+                      transitions={'succeeded':'RetrySelfShoot', 'timeout':'SelfShoot'}) # si on y arrive pas on passe a la suite
+
+            PreemptiveStateMachine.add('EscapeFromSelf',
+                      AmbiOmniDirectOrder2Pass(Pose2D(-0.700, 0.400, -pi/2), vmax=Robot2014.motionSpeeds['Fast'], vpasse=0.5),
+                      transitions={'succeeded':'FinalLoopOpp', 'timeout':'nearlyEndMatch'})
+
+            PreemptiveStateMachine.add('RetrySelfShoot',
+                      AmbiShootMammoth(p_opponent_side = False),
+                      transitions={'succeeded':'FinalLoopOpp', 'failed':'FinalLoopOpp', 'almostEndGame':'nearlyEndMatch'})
+
+
 #Final Loop
             PreemptiveStateMachine.add('FinalLoopOpp',
                       AmbiOmniDirectOrder2Pass(Pose2D(-0.700, -0.600, pi), vmax=Robot2014.motionSpeeds['Fast'], vpasse=0.5),
-                      transitions={'succeeded':'FinalLoopMid', 'timeout':'FinalLoopOpp'})
+                      transitions={'succeeded':'FinalLoopMid', 'timeout':'nearlyEndMatch'})
             
             PreemptiveStateMachine.add('FinalLoopMid',
                       AmbiOmniDirectOrder2Pass(Pose2D(0, -0.600, pi/2), vmax=Robot2014.motionSpeeds['Fast'], vpasse=0.5),
-                      transitions={'succeeded':'FinalLoopSelf', 'timeout':'FinalLoopOpp'})
+                      transitions={'succeeded':'FinalLoopSelf', 'timeout':'nearlyEndMatch'})
             
             PreemptiveStateMachine.add('FinalLoopSelf',
                       AmbiOmniDirectOrder2Pass(Pose2D(0.700, -0.600, 0), vmax=Robot2014.motionSpeeds['Fast'], vpasse=0.5),
-                      transitions={'succeeded':'FinalLoopOpp', 'timeout':'FinalLoopMid'})            
+                      transitions={'succeeded':'FinalLoopOpp', 'timeout':'nearlyEndMatch'})            
 
     
 ####################################################################################################################

@@ -93,44 +93,19 @@ class StartSequence2014(smach.StateMachine):
             
             smach.StateMachine.add('WaitForStartUnPlug',
                       WaitForStartUnplug(),
-                      transitions={'startunplug':'RecalX', 'timeout':'problem'})
-
-            smach.StateMachine.add('RecalX',
-                      AmbiRecalOnBorderYellow("RIGHT"),
-                      transitions={'recaled':'PrepareRecalY', 'non-recaled':'problem','problem':'problem'})
-            
-            smach.StateMachine.add('PrepareRecalY',
-                      AmbiOmniDirectOrder2(Pose2D(0.900,0.500,pi/2), vmax = 0.3),
-                      transitions={'succeeded':'RecalY', 'timeout':'problem'})
-            
-            smach.StateMachine.add('RecalY',
-                      AmbiRecalOnBorderYellow("FRUITBASKET"),
-                      transitions={'recaled':'PrepareGoHome', 'non-recaled':'problem','problem':'problem'})   
-            
-            smach.StateMachine.add('PrepareGoHome',
-                      AmbiOmniDirectOrder2(Pose2D(1.100,0.350,0), vmax = 0.3),
-                      transitions={'succeeded':'PrepareActuators', 'timeout':'PrepareActuators'})
+                      transitions={'startunplug':'PrepareActuators', 'timeout':'WaitForStartUnPlug'})
             
             smach.StateMachine.add('PrepareActuators',
                       PrepareActuators(),
-                      transitions={'prepared':'GoHome'})
-            
-            smach.StateMachine.add('GoHome',
-                      AmbiOmniDirectOrder2(startPosition, vmax = 0.3),
-                      transitions={'succeeded':'Push', 'timeout':'Push'})
-            
-            smach.StateMachine.add('Push',
-                      OpenLoopOrder(0.3,0.0,0.0, 
-                                                 duration=1.0),
-                      transitions={'succeeded':'SetFinalPosition', 'timeout':'SetFinalPosition'})
-            
-            smach.StateMachine.add('SetFinalPosition',
-                      SetPositionState(Pose2D(1.500 - Robot2014.FRONT_SIDE.x , startPosition.y, startPosition.theta)),
-                      transitions={'succeeded':'WaitForStart', 'timeout':'WaitForStart'})
+                      transitions={'prepared':'WaitForStart'})
             
             smach.StateMachine.add('WaitForStart', 
                        WaitForStart(),
-                       transitions={'start':'WaitForMatch','timeout':'WaitForStart'})
+                       transitions={'start':'SetFinalPosition','timeout':'SetFinalPosition'})
+            
+            smach.StateMachine.add('SetFinalPosition',
+                      SetPositionState(Pose2D(1.500 - Robot2014.FRONT_SIDE.x , startPosition.y, startPosition.theta)),
+                      transitions={'succeeded':'WaitForMatch', 'timeout':'WaitForMatch'})
                         
             smach.StateMachine.add('WaitForMatch', 
                       WaitForMatch(),
