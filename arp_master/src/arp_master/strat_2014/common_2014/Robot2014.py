@@ -53,7 +53,7 @@ class Robot2014(RobotVierge):
     
     #Configuration of Cannon reference positions
     cannonFingerSpeed = {           'STOPPED' : 0.0,
-                                    'SHOOT'   : 0.5}
+                                    'SHOOT'   : 3.0}
        
     cannonStockerLeftYellowPos = {  'LOADING'     : 1.0,
                                     'UNLOADING'   : 0.0,
