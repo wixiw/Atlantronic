@@ -26,7 +26,7 @@ class AmbiFingerPickObject(smach.StateMachine):
             with self:      
                 smach.StateMachine.add('GoSearch',
                        AmbiFingerCommand(p_side, Robot2014.fingerLeftYellowPos['SEARCH']),
-                       transitions={'succeeded':'SearchItemToPick', 'problem':'RetryGoDown'})
+                       transitions={'succeeded':'SearchItemToPick', 'problem':'blocked'})
 
                 # ==> Blocking Point D
 
