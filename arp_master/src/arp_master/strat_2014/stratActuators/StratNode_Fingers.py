@@ -47,29 +47,30 @@ class MainStateMachine(smach.StateMachine):
         smach.StateMachine.__init__(self, outcomes=['end'])
         with self:
             smach.StateMachine.add('Initialisation', 
-                                   InitStates2014.InitSequence2014(),
-                                   transitions={'endInitialisation':'PrepareActuators','failed':'Uninitialisation'})
-             
-            smach.StateMachine.add('Uninitialisation', 
-                                   Strat_Uninitialisation.Uninitialisation(),
-                                   transitions={'endUninitialisation':'end'})
+                        InitStates2014.InitSequence2014(),
+                        transitions={'endInitialisation':'WaitForMatch','failed':'end'})
+            
+            smach.StateMachine.add('WaitForMatch', 
+                      WaitForMatch(),
+                      transitions={'start':'PrepareActuators', 'timeout':'WaitForMatch'})
+            
             
             #Bootup actuators, show their aliveness, and go to default position. All actuators are driven
             smach.StateMachine.add('PrepareActuators',
                        PrepareActuators(),
-                       transitions={'prepared':'WaitABit','problem':'Uninitialisation'})
+                       transitions={'prepared':'WaitABit','problem':'end'})
 
             smach.StateMachine.add('WaitABit',
                        WaiterState(1),
-                       transitions={'timeout':'AmbiShootOneBallLeft'})
+                       transitions={'timeout':'AmbiPickLeft'})
      
             smach.StateMachine.add('AmbiPickLeft',
                        AmbiFingerPickObject('Left'),
-                       transitions={'shot':'AmbiPickRight', 'blocked':'Uninitialisation'})
-             
+                       transitions={'picked':'AmbiPickRight', 'blocked':'AmbiPickRight', 'notFound':'AmbiPickRight'})
+            
             smach.StateMachine.add('AmbiPickRight',
                        AmbiFingerPickObject('Right'),
-                       transitions={'shot':'WaitABit', 'blocked':'Uninitialisation'})
+                       transitions={'picked':'WaitABit', 'blocked':'WaitABit', 'notFound':'WaitABit'})
              
 
    

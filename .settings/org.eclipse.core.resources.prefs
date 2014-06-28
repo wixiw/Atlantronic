@@ -1,3 +1,4 @@
+#Sat Jun 28 20:03:28 CEST 2014
 eclipse.preferences.version=1
 encoding//arp_core/src/tools/ksthelper.py=utf-8
 encoding//arp_master/src/arp_master=US-ASCII
@@ -21,7 +22,6 @@ encoding//arp_master/src/arp_master/strat_2014/localStrategicActions_2014/Fresco
 encoding//arp_master/src/arp_master/strat_2014/stratHomologation/StratNode_Homologation.py=latin1
 encoding//arp_master/src/arp_master/strat_2014/stratHomologation/a2_opening/Homologation_Opening.py=latin1
 encoding//arp_master/src/arp_master/strat_2014/stratTanguy/StratNode_Tanguy.py=latin1
-encoding//arp_master/src/arp_master/strat_2014/stratTanguy/a2_opening/Tanguy_Opening.py=latin1
 encoding//arp_master/src/arp_master/util/ActionSelector.py=latin1
 encoding//arp_master/src/arp_master/util/RobotVierge.py=latin1
 encoding//arp_master/src/ros=UTF-8

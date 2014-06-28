@@ -37,8 +37,8 @@ class Robot2014(RobotVierge):
                              ]
         
     dynamixelMaxTorqueList = {                       
-                         'LeftFinger':        75,
-                         'RightFinger':       75,
+                         'LeftFinger':        85,
+                         'RightFinger':       85,
                          'LeftCannonStocker':       45,
                          'RightCannonStocker':      45
                          }
@@ -49,6 +49,7 @@ class Robot2014(RobotVierge):
     
     #Configuration of Finger reference positions
     fingerLeftYellowPos = {         'UP'    : -0.2,
+                                    'TORCH' : 1.0,
                                     'SEARCH': 1.2,
                                     'DOWN'  : 1.45,
                                     'FLOOR' : 1.45}

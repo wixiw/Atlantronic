@@ -97,8 +97,8 @@ class DefaultSpeedDynamixel(smach.StateMachine):
 class SelfTestDynamixelShowReady(DynamixelGoto):
         def __init__(self):
             DynamixelGoto.__init__(self, Robot2014.dynamixelList,
-                                   [ Robot2014.fingerLeftYellowPos['DOWN'],
-                                    -Robot2014.fingerLeftYellowPos['DOWN'],
+                                   [ Robot2014.fingerLeftYellowPos['TORCH'],
+                                    -Robot2014.fingerLeftYellowPos['TORCH'],
                                      Robot2014.cannonStockerLeftYellowPos['SHOWREADY'],
                                     -Robot2014.cannonStockerLeftYellowPos['SHOWREADY']
                                     ])

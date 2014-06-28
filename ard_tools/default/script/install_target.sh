@@ -93,7 +93,10 @@ then
 			--exclude "ressource/unittest"\
 			--exclude ".gems"\
 			--exclude ".hpp"\
-			--exclude ".cpp"
+			--exclude ".cpp"\
+			--exclude "src/Atlantronic/qemu"\
+			--exclude "socket_can/trunk"\
+			--exclude "src/objdictgen"
 		else
 			rsync  -avzh `rosstack find $stack` root@$2:/opt/ros \
 			--delete \
@@ -108,7 +111,10 @@ then
 			--exclude "ressource/unittest"\
 			--exclude ".gems"\
 			--exclude ".hpp"\
-			--exclude ".cpp"
+			--exclude ".cpp"\
+			--exclude "src/Atlantronic/qemu"\
+			--exclude "socket_can/trunk"\
+			--exclude "src/objdictgen"
 			
 			#avec les sources sinon on trouve plus les trucs python
 		fi
@@ -127,7 +133,10 @@ then
 	--exclude "ressource/unittest"\
 	--exclude ".gems"\
 	--exclude ".hpp"\
-	--exclude ".cpp"
+	--exclude ".cpp"\
+	--exclude "src/Atlantronic/qemu"\
+	--exclude "socket_can/trunk"\
+	--exclude "src/objdictgen"
 
 	#syncronisation des fichiers supplementaires	
 	scp /opt/ros/setup.bash root@$2:/opt/ros
@@ -148,7 +157,10 @@ else
 		--exclude "ressource/unittest"\
 		--exclude ".gems"\
 		--exclude ".hpp"\
-		--exclude ".cpp"
+		--exclude ".cpp"\
+		--exclude "src/Atlantronic/qemu"\
+		--exclude "socket_can/trunk"\
+		--exclude "src/objdictgen"
 	else
 		echo -e $ROUGE "Please provide an ard package name or the ard stack name." -e $NORMAL
 	fi

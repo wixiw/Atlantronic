@@ -61,7 +61,7 @@ alias myip="sudo ifconfig | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2
 alias ard-stress='stress --cpu 2 --io 1 --vm 1 --vm-bytes 128M'
 alias ard-mount-robot='sudo mkdir /media/ubiquity -p;sudo sshfs root@ubiquity:/ /media/ubiquity'
 alias ard-kst='python /opt/ard/arp_core/src/tools/ksthelper.py'
-alias gitk='gitk --all'
+alias gitk='gitk --all&'
 
 #alias Linux utiles
 export LS_OPTIONS='--color=auto -h'

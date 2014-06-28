@@ -63,7 +63,7 @@ class MainStateMachine(smach.StateMachine):
             
             smach.StateMachine.add('SetInitialPosition',
                       SetPositionState(Pose2D(INIT_POS.x, INIT_POS.y, INIT_POS.theta)),
-                      transitions={'succeeded':'M1', 'timeout':'end'})
+                      transitions={'succeeded':'Move', 'timeout':'end'})
             
 
             
@@ -146,27 +146,8 @@ class MainStateMachine(smach.StateMachine):
             # TEST OF ALL RANDOM OMNIDIRECT ORDERS ##########################
                         
             smach.StateMachine.add('Move', RandomMove(),
-                                   transitions={'succeeded':'Move', 'gotozero':'GotoZero','timeout':'end'}) 
+                                   transitions={'succeeded':'Move','timeout':'end'}) 
             
-            smach.StateMachine.add('GotoZero',
-                       AmbiOmniDirectOrder2(Pose2D(INIT_POS.x, INIT_POS.y, INIT_POS.theta) ,
-                                           vmax = 0.3),
-                      transitions={'succeeded':'StopParkinson', 'timeout':'end'}) 
-            
-            smach.StateMachine.add('StopParkinson',
-                                   OpenLoopOrder(vx = 0.005, 
-                                           vy = 0, 
-                                           vh = 0, 
-                                           duration=0.1),
-                                   transitions={'succeeded':'WaitUserAck', 'timeout':'end'})    
-            
-            smach.StateMachine.add('WaitUserAck',
-                       WaitForStart(),
-                       transitions={'start':'WaitUserAck2','timeout':'end'})
-            
-            smach.StateMachine.add('WaitUserAck2',
-                       WaitForStartUnplug(),
-                       transitions={'startunplug':'Move','timeout':'end'})
 
             # TEST OF PASS ##########################      
             smach.StateMachine.add('PASS1',
@@ -230,8 +211,7 @@ class MainStateMachine(smach.StateMachine):
 
 class RandomMove(MotionState):
     def __init__(self):
-        outcomes = ['gotozero']
-        MotionState.__init__(self, outcomes)
+        MotionState.__init__(self)
         #seed = random.randint(0, 1000)
         seed=761
         random.seed(seed)

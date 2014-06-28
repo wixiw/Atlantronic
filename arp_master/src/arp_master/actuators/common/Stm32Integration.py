@@ -201,7 +201,7 @@ class DynamixelGoto(smach.StateMachine):
 class WaitForOmronValue(ReceiveFromTopic):
     def __init__(self, p_omronName, p_awaitedValue, p_timeout):
         ReceiveFromTopic.__init__(self, "/Ubiquity/"+p_omronName+"/object_present", Bool,
-                                  outcomes=['triggered'], timeout=p_timeout) 
+                                  p_outcomes=['triggered'], p_timeout=p_timeout) 
 
         #remember reference value
         self.awaitedValue = p_awaitedValue
@@ -209,10 +209,13 @@ class WaitForOmronValue(ReceiveFromTopic):
     def executeTransitions(self):
         #if no message has been received yet, just wait again
         if self.msg is None:
+            print("None")
             return
         #end with success if last message is the awaited value, else continue to wait
         if self.msg.data == self.awaitedValue:
-            return 'triggered'  
+            return 'triggered'
+        else:
+            print("not expected %s != %s") %(self.msg.data,self.awaitedValue)
 
 #
 #This is a utility class for the AmbiDynamixelGoto class

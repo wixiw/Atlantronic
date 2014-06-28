@@ -84,6 +84,7 @@ class ReceiveFromTopic(CyclicState):
         
      #The topic is only listened when entering the state to prevent useless trigger when not active       
     def executeIn(self):
+        print("Subscribing to %s") %(self.topicName)
         self.subscriber = rospy.Subscriber(self.topicName, self.topicMsgType, self.callback)
         return
         
