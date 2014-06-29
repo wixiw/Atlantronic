@@ -1,7 +1,6 @@
 # global rules
 
 obj
-bin
 doc/doxygen
 
 .cfg
