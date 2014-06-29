@@ -12,8 +12,7 @@ from arp_master.fsmFramework import *
 from arp_master.commonStates import *
 from arp_master.strat_2014 import *
 
-#INIT_POS=Pose2D(0.750,0,0)
-INIT_POS=Pose2D(1.250, 0.550, -2.13 - 0.30)
+INIT_POS=Pose2D(0.750,0,0)
 
 
 ###########################  TEMPORAL BEHAVIOR
@@ -222,30 +221,29 @@ class RandomMove(MotionState):
 
 
     def createAction(self):
-        #self.x = random.uniform(0.4, 1.1)
-        #self.y = random.uniform(-0.6, 0.6)
-        #self.theta = random.uniform(-pi,pi)
+        self.x = random.uniform(0.4, 1.1)
+        self.y = random.uniform(-0.6, 0.6)
+        self.theta = random.uniform(-pi,pi)
         
-        self.x = random.uniform(max(Inputs.getx()-0.1,0.4), min(Inputs.getx()+0.1,1.1))
-        self.y = random.uniform(max(Inputs.gety()-0.1,-0.6), min(Inputs.gety()+0.1,0.6))
-        self.theta = random.uniform(Inputs.gettheta()-pi/4, Inputs.gettheta()+pi/4)
         self.vmax = random.uniform(0.1, 1)
         self.vpass = random.uniform(0.05, 1)
-        rospy.loginfo("--- OMNIDIRECTORDER2 ---")
-        rospy.loginfo("x =%.3f y=%.3f theta=%.3f"%(self.x, self.y, self.theta))
-        rospy.loginfo("vmax =%.3f"%(self.vmax))
+        self.movetype = random.uniform(0, 1)
+        
 
-        if random.uniform(0, 1)< 0.2 :
+        
+        if self.movetype < 0.2 :
+            rospy.loginfo("------ BFCap ------")
+            rospy.loginfo("on current position, theta=%.1f rad"%(self.theta))
+            self.cap(self.theta)
+        elif self.movetype > 0.6 :
+            rospy.loginfo("--- OMNIDIRECTORDER2 ---")
+            rospy.loginfo("x =%.3f y=%.3f theta=%.1f vmax =%.1f"%(self.x, self.y, self.theta, self.vmax))
             self.omnidirect2(self.x, self.y, self.theta, self.vmax)
         else:
-            self.cap(self.theta)
+            rospy.loginfo("--- OMNIDIRECTORDER2 PASS ---")
+            rospy.loginfo("x =%.3f y=%.3f theta=%.1f vmax =%.1f Pass with v=%.3f"%(self.x, self.y, self.theta, self.vmax,self.vpass))
+            self.omnidirect2Pass(self.x, self.y, self.theta, self.vpass,self.vmax)
 
-        #if random.uniform(0, 1)< 0.0 :
-        #    rospy.loginfo("Stop on point")
-        #    self.omnidirect2(self.x, self.y, self.theta, self.vmax)
-        #else:
-        #    rospy.loginfo("Pass with v=%.3f"%(self.vpass))
-        #    self.omnidirect2Pass(self.x, self.y, self.theta, self.vpass,self.vmax)
 
     def execute(self,userdata):
         return MotionState.execute(self,userdata)

@@ -13,7 +13,7 @@ include (FindPkgConfig)
 pkg_check_modules(GTK REQUIRED gtk+-2.0)
 pkg_check_modules(GTKGLEXT REQUIRED gtkglext-1.0)
 
-add_definitions(-DVERSION='"59d8f3f146e9c6cd6ab671dc5132a9f602cabc6b"')
+add_definitions(-DVERSION='"ea97d5f847e3312f38a8a515280c5b31a57ea752"')
 
 
 include_directories("${ATLANTRONIC_GIT_DIR}/include")
