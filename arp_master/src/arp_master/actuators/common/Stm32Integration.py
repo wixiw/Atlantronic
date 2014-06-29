@@ -209,13 +209,12 @@ class WaitForOmronValue(ReceiveFromTopic):
     def executeTransitions(self):
         #if no message has been received yet, just wait again
         if self.msg is None:
-            print("None")
+
             return
         #end with success if last message is the awaited value, else continue to wait
         if self.msg.data == self.awaitedValue:
             return 'triggered'
-        else:
-            print("not expected %s != %s") %(self.msg.data,self.awaitedValue)
+
 
 #
 #This is a utility class for the AmbiDynamixelGoto class
