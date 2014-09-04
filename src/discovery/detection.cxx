@@ -77,8 +77,8 @@ int detection_module_init()
 		return ERR_INIT_DETECTION;
 	}
 
-	hokuyo[HOKUYO1].register_callback(detection_hokuyo1_callback);
-	hokuyo[HOKUYO2].register_callback(detection_hokuyo2_callback);
+	hokuyo[HOKUYO_AVANT].register_callback(detection_hokuyo1_callback);
+	hokuyo[HOKUYO_ARRIERE].register_callback(detection_hokuyo2_callback);
 
 	detection_reg_size = 0;
 
@@ -101,7 +101,7 @@ static void detection_task(void* arg)
 			if( event == DETECTION_EVENT_HOKUYO_1 )
 			{
 		//		struct systime last_time = systick_get_time();
-				detection_compute(HOKUYO1);
+				detection_compute(HOKUYO_AVANT);
 		//		struct systime current_time = systick_get_time();
 		//		struct systime dt = timediff(current_time, last_time);
 		//		log_format(LOG_INFO, "compute_time : %lu us", dt.ms * 1000 + dt.ns/1000);
@@ -109,7 +109,7 @@ static void detection_task(void* arg)
 				//TODO
 				//xSemaphoreGive(hokuyo_scan_mutex);
 
-				int16_t detect_size = detection_num_obj[HOKUYO1];
+				int16_t detect_size = detection_num_obj[HOKUYO_AVANT];
 				usb_add(USB_DETECTION_DYNAMIC_OBJECT_SIZE1, &detect_size, sizeof(detect_size));
 
 				//log_format(LOG_INFO, "%d obj", (int)detection_num_obj);
@@ -127,7 +127,7 @@ static void detection_task(void* arg)
 			if( event == DETECTION_EVENT_HOKUYO_2 )
 			{
 		//		struct systime last_time = systick_get_time();
-				detection_compute(HOKUYO2);
+				detection_compute(HOKUYO_ARRIERE);
 		//		struct systime current_time = systick_get_time();
 		//		struct systime dt = timediff(current_time, last_time);
 		//		log_format(LOG_INFO, "compute_time : %lu us", dt.ms * 1000 + dt.ns/1000);
@@ -135,7 +135,7 @@ static void detection_task(void* arg)
 				//TODO
 				//xSemaphoreGive(hokuyo_scan_mutex);
 
-				int16_t detect_size = detection_num_obj[HOKUYO2];
+				int16_t detect_size = detection_num_obj[HOKUYO_ARRIERE];
 				usb_add(USB_DETECTION_DYNAMIC_OBJECT_SIZE2, &detect_size, sizeof(detect_size));
 
 				//log_format(LOG_INFO, "%d obj", (int)detection_num_obj);
@@ -220,7 +220,7 @@ static void detection_compute(int id)
 			}
 		}
 
-		if(id == HOKUYO1 )
+		if(id == HOKUYO_AVANT )
 		{
 			detection_obj1[i].x = (xmin + xmax) / 2;
 			detection_obj1[i].y = (ymin + ymax) / 2;
@@ -230,7 +230,7 @@ static void detection_compute(int id)
 				detection_obj1[i].size = ymax - ymin;
 			}
 		}
-		else
+		else //arriere
 		{
 			detection_obj2[i].x = (xmin + xmax) / 2;
 			detection_obj2[i].y = (ymin + ymax) / 2;

@@ -658,7 +658,7 @@ end:
 int RobotInterface::process_hokuyo_seg(char* msg, uint16_t size)
 {
 	int res = 0;
-	int id = HOKUYO1;
+	int id = HOKUYO_AVANT;
 	unsigned int num = size / sizeof(detection_hokuyo_reg[0]);
 	if(size != num * sizeof(detection_hokuyo_reg[0]) )
 	{
@@ -815,8 +815,10 @@ int RobotInterface::power_off(bool power_off)
 
 int RobotInterface::get_stm_code_version()
 {
-	versionCompatible = ROBOT_VERSION_UNKNOWN;
-	return usb_write(USB_CMD_GET_VERSION, NULL, 0);
+    //HACK HACK HACK
+//	versionCompatible = ROBOT_VERSION_UNKNOWN;
+//	return usb_write(USB_CMD_GET_VERSION, NULL, 0);
+    return 0;
 }
 
 //! fonction generique pour envoyer un ordre a un dynamixel

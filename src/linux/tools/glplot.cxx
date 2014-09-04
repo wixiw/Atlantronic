@@ -23,6 +23,9 @@
 #include "discovery/graph.h"
 #include "discovery/table.h"
 
+//HACK HACK
+#define OLD_GTK
+
 // limitation du rafraichissement
 // hokuyo => 10fps. On met juste un peu plus
 #define MAX_FPS    11
@@ -345,7 +348,7 @@ int glplot_main(const char* AtlantronicPath, int Simulation, bool cli, Qemu* Qem
 
 	gtk_widget_show_all(main_window);
 
-	joystick_init(&joystick, "/dev/input/js0", joystick_event);
+//	joystick_init(&joystick, "/dev/input/js0", joystick_event);
 
 	if( cli )
 	{
@@ -372,7 +375,7 @@ int glplot_main(const char* AtlantronicPath, int Simulation, bool cli, Qemu* Qem
 
 	gdk_threads_leave();
 
-	joystick_destroy(&joystick);
+//	joystick_destroy(&joystick);
 
 	return 0;
 }
@@ -779,7 +782,7 @@ void plot_table(Graphique* graph)
 	if( graph->courbes_activated[SUBGRAPH_TABLE_HOKUYO1] )
 	{
 		glColor3fv(&graph->color[3*SUBGRAPH_TABLE_HOKUYO1]);
-		for(i=HOKUYO1*HOKUYO_NUM_POINTS; i < (HOKUYO1+1)*HOKUYO_NUM_POINTS; i++)
+		for(i=HOKUYO_AVANT*HOKUYO_NUM_POINTS; i < (HOKUYO_AVANT+1)*HOKUYO_NUM_POINTS; i++)
 		{
 			draw_plus(robotItf->detection_hokuyo_pos[i].x, robotItf->detection_hokuyo_pos[i].y, plus_dx, plus_dy);
 		}
@@ -788,7 +791,7 @@ void plot_table(Graphique* graph)
 	if( graph->courbes_activated[SUBGRAPH_TABLE_HOKUYO2] )
 	{
 		glColor3fv(&graph->color[3*SUBGRAPH_TABLE_HOKUYO2]);
-		for(i=HOKUYO2*HOKUYO_NUM_POINTS; i < (HOKUYO2+1)*HOKUYO_NUM_POINTS; i++)
+		for(i=HOKUYO_ARRIERE*HOKUYO_NUM_POINTS; i < (HOKUYO_ARRIERE+1)*HOKUYO_NUM_POINTS; i++)
 		{
 			draw_plus(robotItf->detection_hokuyo_pos[i].x, robotItf->detection_hokuyo_pos[i].y, plus_dx, plus_dy);
 		}
@@ -984,7 +987,7 @@ void plot_hokuyo_hist(Graphique* graph)
 		glColor3fv(&graph->color[3*GRAPH_HOKUYO1_HIST]);
 		for(i = 0; i < HOKUYO_NUM_POINTS; i++)
 		{
-			draw_plus(i, robotItf->hokuyo_scan[HOKUYO1].distance[i], 0.25*font_width*ratio_x, 0.25*font_width*ratio_y);
+			draw_plus(i, robotItf->hokuyo_scan[HOKUYO_AVANT].distance[i], 0.25*font_width*ratio_x, 0.25*font_width*ratio_y);
 		}
 	}
 
@@ -993,7 +996,7 @@ void plot_hokuyo_hist(Graphique* graph)
 		glColor3fv(&graph->color[3*GRAPH_HOKUYO2_HIST]);
 		for(i = 0; i < HOKUYO_NUM_POINTS; i++)
 		{
-			draw_plus(i, robotItf->hokuyo_scan[HOKUYO2].distance[i], 0.25*font_width*ratio_x, 0.25*font_width*ratio_y);
+			draw_plus(i, robotItf->hokuyo_scan[HOKUYO_ARRIERE].distance[i], 0.25*font_width*ratio_x, 0.25*font_width*ratio_y);
 		}
 	}
 }

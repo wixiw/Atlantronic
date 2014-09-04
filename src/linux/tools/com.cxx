@@ -317,6 +317,10 @@ void Com::skip(int count)
 
 int Com::write(const void* buf, int size)
 {
+    //HACK HACK HACK
+    struct usb_header* header = (struct usb_header*) buf;
+    log_info("msg usb id=%d, size=%d", buf[0], buf[1]);
+
 	if(fd_write == -1)
 	{
 		return -1;
@@ -339,4 +343,5 @@ int Com::write(const void* buf, int size)
 	{
 		return 0;
 	}
+	return size;
 }

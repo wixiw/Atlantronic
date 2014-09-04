@@ -37,29 +37,29 @@ Hokuyo hokuyo[HOKUYO_MAX];
 
 int hokuyo_module_init()
 {
-	int err = hokuyo[0].init(UART4_FULL_DUPLEX, "hokuyo1", HOKUYO1);
+	int err = hokuyo[0].init(UART4_FULL_DUPLEX, "hokuyo1", HOKUYO_AVANT);
 	if(err)
 	{
 		goto done;
 	}
 
-	err = hokuyo[1].init(USART2_FULL_DUPLEX, "hokuyo2", HOKUYO2);
+	err = hokuyo[1].init(USART2_FULL_DUPLEX, "hokuyo2", HOKUYO_ARRIERE);
 
 	if(err)
 	{
 		goto done;
 	}
 
-	hokuyo[0].setPosition(VectPlan( -51, 0, 0), 1);
-	hokuyo[0].scan.theta_min = -M_PI;
-	hokuyo[0].scan.theta_max = M_PI;
-	hokuyo[0].scan.min_object_size = 1;
-	hokuyo[0].scan.min_distance = 100;
-	hokuyo[1].setPosition(VectPlan(-154, 0, M_PI), 1);
-	hokuyo[1].scan.theta_min = -M_PI_2;
-	hokuyo[1].scan.theta_max = M_PI_2;
-	hokuyo[1].scan.min_object_size = 3;
-	hokuyo[1].scan.min_distance = 100;
+	hokuyo[HOKUYO_AVANT].setPosition(VectPlan( -51, 0, 0), 1);
+	hokuyo[HOKUYO_AVANT].scan.theta_min = -M_PI;
+	hokuyo[HOKUYO_AVANT].scan.theta_max = M_PI;
+	hokuyo[HOKUYO_AVANT].scan.min_object_size = 1;
+	hokuyo[HOKUYO_AVANT].scan.min_distance = 100;
+	hokuyo[HOKUYO_ARRIERE].setPosition(VectPlan(-154, 0, M_PI), 1);
+	hokuyo[HOKUYO_ARRIERE].scan.theta_min = -M_PI_2;
+	hokuyo[HOKUYO_ARRIERE].scan.theta_max = M_PI_2;
+	hokuyo[HOKUYO_ARRIERE].scan.min_object_size = 3;
+	hokuyo[HOKUYO_ARRIERE].scan.min_distance = 100;
 
 done:
 	return err;

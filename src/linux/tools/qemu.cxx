@@ -34,6 +34,7 @@ struct atlantronic_model_tx_event
 
 int Qemu::init(const char* qemu_path, const char* prog_name, int gdb_port)
 {
+/*
 	pid_t current_pid = getpid();
 
 	snprintf(file_qemu_read, sizeof(file_qemu_read), "/tmp/qemu-%i.out", current_pid);
@@ -98,23 +99,44 @@ int Qemu::init(const char* qemu_path, const char* prog_name, int gdb_port)
 	com.open_block();
 
 	return 0;
+*/
+
+        snprintf(file_qemu_read, sizeof(file_qemu_read), "/tmp/qemu-test.out");
+        snprintf(file_qemu_write, sizeof(file_qemu_write), "/tmp/qemu-test.in");
+        snprintf(file_board_read, sizeof(file_board_read), "/tmp/carte-test.out");
+        snprintf(file_board_write, sizeof(file_board_write), "/tmp/carte-test.in");
+
+//        mkfifo(file_qemu_read, 0666);
+//        mkfifo(file_qemu_write, 0666);
+//        mkfifo(file_board_read, 0666);
+//        mkfifo(file_board_write, 0666);
+
+        com.init(file_qemu_read, file_qemu_write, NULL);
+
+        com.open_block();
+
+        return 0;
+
+
 }
 
 void Qemu::destroy()
 {
-	// TODO un peu bourrin, faire mieux
-	if(pid > 0)
-	{
-		kill(pid, SIGILL);
-	}
+    //HACK HACK
+//	if(pid > 0)
+//	{
+//		kill(pid, SIGILL);
+//	}
 
 	com.close();
 	com.destroy();
 
-	unlink(file_qemu_read);
-	unlink(file_qemu_write);
-	unlink(file_board_read);
-	unlink(file_board_write);
+	//HACK HACK
+//
+//	unlink(file_qemu_read);
+//	unlink(file_qemu_write);
+//	unlink(file_board_read);
+//	unlink(file_board_write);
 }
 
 int Qemu::set_clock_factor(unsigned int factor, unsigned int icount)

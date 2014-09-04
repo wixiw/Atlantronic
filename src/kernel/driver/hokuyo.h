@@ -30,8 +30,8 @@
 
 enum hokuyo_id
 {
-	HOKUYO1 = 0,
-	HOKUYO2,
+	HOKUYO_AVANT = 0,
+	HOKUYO_ARRIERE,
 	HOKUYO_MAX,
 };
 

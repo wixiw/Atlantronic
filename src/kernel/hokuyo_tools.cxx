@@ -14,6 +14,8 @@
 
 #define GAP 90 //150
 #define HOKUYO_TABLE_DELTA       200
+//cet offset sert à compenser le fait que le hokuyo arriere tape sur le corps du robot et non en son centre.
+#define HOKUYO_ARRIERE_OFFSET       150.0
 
 void hokuyo_compute_xy(struct hokuyo_scan* scan, struct vect2 *pos)
 {
@@ -22,13 +24,19 @@ void hokuyo_compute_xy(struct hokuyo_scan* scan, struct vect2 *pos)
 	VectPlan hokuyo_pos_table = loc_to_abs(scan->pos_robot, scan->pos_hokuyo);
 	float theta = scan->sens * HOKUYO_START_ANGLE + hokuyo_pos_table.theta;
 	float hokuyoTheta = HOKUYO_START_ANGLE;
+	float offset = 0.0;
+
+    if( HOKUYO_ARRIERE == scan->id )
+    {
+        offset = HOKUYO_ARRIERE_OFFSET;
+    }
 
 	for( ; size--; )
 	{
 		if(*distance > scan->min_distance && *distance < HOKUYO_MAX_RANGE && hokuyoTheta > scan->theta_min && hokuyoTheta < scan->theta_max)
 		{
-			pos->x = *distance * cosf(theta) + hokuyo_pos_table.x;
-			pos->y = *distance * sinf(theta) + hokuyo_pos_table.y;
+			pos->x = (*distance + offset) * cosf(theta) + hokuyo_pos_table.x;
+			pos->y = (*distance + offset) * sinf(theta) + hokuyo_pos_table.y;
 		}
 		else
 		{
