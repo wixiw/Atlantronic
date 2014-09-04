@@ -248,6 +248,8 @@ void usb_read_task(void * arg)
 				// on a recu tout le message, on va le traiter
 				if( id < USB_CMD_NUM && usb_cmd[id])
 				{
+					log_format(LOG_INFO, "[usb_read_task] command id=%d received, size=%d", id, size);
+
 					int nMax = sizeof(usb_rx_buffer) - usb_rx_buffer_tail;
 					// mise "a plat" dans un seul buffer pour le traitement si necessaire
 					if( size <= nMax )
@@ -416,7 +418,8 @@ void usb_cmd_ptask(void* arg)
 
 void usb_cmd_get_version(void* arg)
 {
-	(void) arg;
-	usb_get_version_done = 1;
-	usb_add(USB_CMD_GET_VERSION, (void*)version, 41);
+        (void) arg;
+        usb_get_version_done ++;
+        log_format(LOG_INFO, "[usb_cmd_get_version] send version number %d", usb_get_version_done);
+        usb_add(USB_CMD_GET_VERSION, (void*)version, 41);
 }
