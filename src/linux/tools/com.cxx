@@ -318,8 +318,8 @@ void Com::skip(int count)
 int Com::write(const void* buf, int size)
 {
     //HACK HACK HACK
-    struct usb_header* header = (struct usb_header*) buf;
-    log_info("msg usb id=%d, size=%d", buf[0], buf[1]);
+    //char* header = (char* )buf;
+    //log_info("[Com::write] msg usb id=%d, size=%d", header[0], header[1]);
 
 	if(fd_write == -1)
 	{
