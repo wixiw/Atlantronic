@@ -22,7 +22,7 @@ Qemu SimulatedDiscovery::m_qemu;
 
 SimulatedDiscovery::SimulatedDiscovery(const std::string& name) :
         Discovery(name),
-        propStm32ExecutableName("baz")
+        propStm32ExecutableName("baz_small")
 {
     createOrocosInterface();
 }
