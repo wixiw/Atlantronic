@@ -77,11 +77,11 @@ void HokuyoItf::updateHook()
 
 struct detection_object* HokuyoItf::getObstacles()
 {
-    if( propHokuyoId == HOKUYO1)
+    if( propHokuyoId == HOKUYO_AVANT)
     {
         return m_robotItf.detection_obj1;
     }
-    if( propHokuyoId == HOKUYO2)
+    if( propHokuyoId == HOKUYO_ARRIERE)
     {
         return m_robotItf.detection_obj2;
     }
@@ -92,11 +92,11 @@ struct detection_object* HokuyoItf::getObstacles()
 int HokuyoItf::getNbDetectedObjects()
 {
     int nbObjects = 0;
-    if( propHokuyoId == HOKUYO1)
+    if( propHokuyoId == HOKUYO_AVANT)
     {
         nbObjects = m_robotItf.detection_dynamic_object_count1;
     }
-    else if( propHokuyoId == HOKUYO2)
+    else if( propHokuyoId == HOKUYO_ARRIERE)
     {
         nbObjects = m_robotItf.detection_dynamic_object_count2;
     }

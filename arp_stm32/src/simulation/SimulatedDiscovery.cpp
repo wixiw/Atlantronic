@@ -57,7 +57,7 @@ bool SimulatedDiscovery::configureHook()
     int res = m_qemu.init(qemu_path.c_str(), prog_stm.c_str(), gdb_port);
     if (res)
     {
-        LOG(Error) << "configureHook() : qume.init() failed" << endlog();
+        LOG(Error) << "configureHook() : qemu.init() failed" << endlog();
         return false;
     }
 
