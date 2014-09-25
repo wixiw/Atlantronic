@@ -815,10 +815,8 @@ int RobotInterface::power_off(bool power_off)
 
 int RobotInterface::get_stm_code_version()
 {
-    //HACK HACK HACK
-//	versionCompatible = ROBOT_VERSION_UNKNOWN;
-//	return usb_write(USB_CMD_GET_VERSION, NULL, 0);
-    return 0;
+	versionCompatible = ROBOT_VERSION_UNKNOWN;
+	return usb_write(USB_CMD_GET_VERSION, NULL, 0);
 }
 
 //! fonction generique pour envoyer un ordre a un dynamixel
