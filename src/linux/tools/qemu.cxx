@@ -126,14 +126,13 @@ void Qemu::destroy()
 		kill(pid, SIGILL);
 	}
 
+    com.close();
+    com.destroy();
+
 	unlink(file_qemu_read);
 	unlink(file_qemu_write);
 	unlink(file_board_read);
 	unlink(file_board_write);
-
-    //HACK HACK
-    //com.close();
-    //com.destroy();
 }
 
 int Qemu::set_clock_factor(unsigned int factor, unsigned int icount)

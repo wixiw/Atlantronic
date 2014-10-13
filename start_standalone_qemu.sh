@@ -5,7 +5,6 @@ mkfifo /tmp/qemu-test.out
 mkfifo /tmp/carte-test.in
 mkfifo /tmp/carte-test.out
 
-VERSION_GIT=96739a5bcc6e5b608c18fa1ac371e34dbe7e2478
 STM32_BIN_PATH=/opt/ard/arp_stm32/src/Atlantronic/bin/discovery/baz_small
 
 echo "Launching qemu..."
