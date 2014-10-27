@@ -395,7 +395,7 @@ void atlantronic_urb_out_callback(struct urb *urb)
 			err("arrêt urb: %d", urb->status);
 			break;
 		default:
-			err("status urb non nul: %d - taille = %d", urb->status, urb->actual_length);
+			//err("status urb non nul: %d - taille = %d", urb->status, urb->actual_length);
 			break;
 	}
 
