@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 
 	if(simulation)
 	{
-		int res = qemu.init("qemu/arm-softmmu/qemu-system-arm", prog_stm, gdb_port);
+		int res = qemu.init("/tmp/qemu.out","/tmp/qemu.in");
 		if( res )
 		{
 			fprintf(stderr, "qemu_init : error");

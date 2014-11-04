@@ -122,7 +122,7 @@ int RobotInterface::init(const char* _name, const char* file_read, const char* f
 
 	for( int i = 0; i < USB_DATA_MAX; i++)
 	{
-		process_func[i] = 0;
+		process_func[i] = NULL;
 	}
 	add_usb_data_callback(USB_LOG, &RobotInterface::process_log);
 	add_usb_data_callback(USB_ERR, &RobotInterface::process_fault);
@@ -135,8 +135,8 @@ int RobotInterface::init(const char* _name, const char* file_read, const char* f
 //	add_usb_data_callback(USB_DETECTION_DYNAMIC_OBJECT_POLYLINE, &RobotInterface::process_detect_obj);
 	add_usb_data_callback(USB_DETECTION_DYNAMIC_OBJECT1, &RobotInterface::process_detect_obj1);
 	add_usb_data_callback(USB_DETECTION_DYNAMIC_OBJECT2, &RobotInterface::process_detect_obj2);
-	add_usb_data_callback(USB_CAN_TRACE, &RobotInterface::can_trace);
-	add_usb_data_callback(USB_CMD_GET_VERSION, &RobotInterface::process_code_version);
+//	add_usb_data_callback(USB_CAN_TRACE, &RobotInterface::can_trace);
+	add_usb_data_callback(USB_PUBLISH_VERSION, &RobotInterface::process_code_version);
 
 	if( ip == NULL )
 	{
@@ -190,7 +190,8 @@ void* RobotInterface::task()
 	unsigned int lost_count = 0;
 
 	com.open_block();
-	get_stm_code_version();
+    get_stm_code_version();
+    sleep(1);
 
 	while( !stop_task)
 	{
@@ -206,6 +207,7 @@ void* RobotInterface::task()
 
 		if( res )
 		{
+		    log_error("failed to read header");
 			fault_reset();
 			connected = false;
 			com.open_block();
@@ -225,6 +227,7 @@ void* RobotInterface::task()
 
 		if( res )
 		{
+		    log_error("failed to read message");
 			fault_reset();
 			connected = false;
 			com.open_block();
@@ -242,10 +245,19 @@ void* RobotInterface::task()
 			if( process_func[header.type] )
 			{
 				res = (this->*process_func[header.type])(msg, header.size);
+
+				//debug
+				if(         header.type != USB_LOG
+				        &&  header.type != USB_ERR
+				        &&  header.type != USB_CONTROL)
+				{
+				        log_error("processed message header.type=%d with res=%d", header.type, res);
+				}
 			}
 		}
 		else
 		{
+		    log_error("failed to process message header.type=%d", header.type);
 			res = -1;
 		}
 
@@ -313,6 +325,7 @@ void* RobotInterface::task()
 	}
 
 end:
+    log_info("RobotInterface::task : end task");
 	return NULL;
 }
 
@@ -784,6 +797,10 @@ int RobotInterface::usb_write(unsigned char cmd, void* data, int size)
 		memcpy(buffer+2, data, size);
 	}
 
+	if( cmd != USB_CMD_HEARTBEAT )
+	{
+	    log_info("Sending to Stm32 cmd=%d",cmd);
+	}
 	return com.write(buffer, buffer[1]);
 }
 
@@ -816,7 +833,7 @@ int RobotInterface::power_off(bool power_off)
 int RobotInterface::get_stm_code_version()
 {
 	versionCompatible = ROBOT_VERSION_UNKNOWN;
-	return usb_write(USB_CMD_GET_VERSION, NULL, 0);
+	return usb_write(USB_CMD_REQUEST_VERSION, NULL, 0);
 }
 
 //! fonction generique pour envoyer un ordre a un dynamixel

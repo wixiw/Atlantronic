@@ -107,7 +107,7 @@ static int usb_module_init(void)
 		return ERR_INIT_USB;
 	}
 
-	usb_add_cmd(USB_CMD_GET_VERSION, usb_cmd_get_version);
+	usb_add_cmd(USB_CMD_REQUEST_VERSION, usb_cmd_get_version);
 	usb_add_cmd(USB_CMD_PTASK, usb_cmd_ptask);
 	usb_add_cmd(USB_CMD_REBOOT, (void (*)(void*))reboot);
 
@@ -167,6 +167,13 @@ void usb_add(uint16_t type, void* msg, uint16_t size)
 	{
 		return;
 	}
+
+	//le premier message de version n'est pas parti
+	if( !usb_get_version_done && type != USB_PUBLISH_VERSION )
+	{
+	    return;
+	}
+
 	struct usb_header header = {type, size};
 
 	xSemaphoreTake(usb_mutex, portMAX_DELAY);
@@ -425,5 +432,5 @@ void usb_cmd_get_version(void* arg)
 {
 	(void) arg;
 	usb_get_version_done = 1;
-	usb_add(USB_CMD_GET_VERSION, (void*)version, 41);
+	usb_add(USB_PUBLISH_VERSION, (void*)version, 41);
 }
