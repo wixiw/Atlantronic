@@ -107,6 +107,11 @@ void DynamixelManager::task()
 	struct dynamixel_request req;
 	int id = 1;
 
+    while( !usb_is_get_version_done())
+    {
+        sleep(1);
+    }
+
 	while(1)
 	{
 		// lecture de la position du dynamixel

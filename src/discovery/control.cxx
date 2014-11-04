@@ -43,6 +43,11 @@ static void control_task(void* /*arg*/)
 {
 	uint32_t wake_time = 0;
 
+    while( !usb_is_get_version_done())
+    {
+        sleep(1);
+    }
+
 	while(1)
 	{
 		// mise a jour adc

@@ -55,6 +55,11 @@ static void fault_task(void* arg)
 {
 	(void) arg;
 
+    while( !usb_is_get_version_done())
+    {
+        sleep(1);
+    }
+
 	usb_add(USB_ERR, fault_status, sizeof(fault_status));
 
 	while(1)

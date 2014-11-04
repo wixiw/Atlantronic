@@ -273,6 +273,11 @@ static void spi_task(void* arg)
 	(void) arg;
 	int i = 0;
 
+    while( !usb_is_get_version_done())
+    {
+        sleep(1);
+    }
+
 	while(1)
 	{
 		for(i = 0; i < SPI_DEVICE_MAX; i++)

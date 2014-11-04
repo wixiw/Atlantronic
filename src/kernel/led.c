@@ -68,6 +68,12 @@ static void led_task(void *arg)
 {
 	(void) arg;
 
+	while( !usb_is_get_version_done())
+	{
+	    sleep(1);
+	}
+
+
 	int color = getcolor();
 	int old_color = color;
 
