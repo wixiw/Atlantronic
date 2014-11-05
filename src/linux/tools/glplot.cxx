@@ -106,6 +106,7 @@ static bool glplot_3d = false;
 static MatrixHomogeneous glplot_view;
 
 Graphique graph[GRAPH_NUM];
+static int glplot_init_done = 0;
 
 static void close_gtk(GtkWidget* widget, gpointer arg);
 static void select_graph(GtkWidget* widget, gpointer arg);
@@ -385,7 +386,7 @@ void glplot_update()
 	static struct timespec last_plot = {0, 0};
 	struct timespec current;
 
-	if( opengl_window )
+	if( opengl_window && glplot_init_done )
 	{
 		clock_gettime(CLOCK_MONOTONIC, &current);
 		double delta = (current.tv_sec - last_plot.tv_sec) + (current.tv_nsec - last_plot.tv_nsec) / ((double)1000000000.0f);
@@ -509,6 +510,7 @@ static void init(GtkWidget* widget, gpointer arg)
 	gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, gdk_pixbuf_get_width(pix), gdk_pixbuf_get_height(pix), GL_RGB, GL_UNSIGNED_BYTE, gdk_pixbuf_get_pixels(pix));
 
 	gdk_gl_drawable_gl_end(gldrawable);
+	glplot_init_done = 1;
 }
 
 static gboolean config(GtkWidget* widget, GdkEventConfigure* ev, gpointer arg)

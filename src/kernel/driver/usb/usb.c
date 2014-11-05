@@ -38,6 +38,7 @@ static xSemaphoreHandle usb_mutex;
 static void (*usb_cmd[USB_CMD_NUM])(void*);
 static const char version[41] = VERSION;
 unsigned char usb_get_version_done = 0;
+static unsigned char usb_ready = 0;
 
 void usb_read_task(void *);
 void usb_write_task(void *);
@@ -162,16 +163,10 @@ void usb_add(uint16_t type, void* msg, uint16_t size)
 		return;
 	}
 
-	// on se reserve le buffer circulaire pour les log s'il n'y a personne sur l'usb
-	if( USB_OTG_dev.dev.device_status != USB_OTG_CONFIGURED )
+	// on se reserve le buffer circulaire pour les log s'il n'y a personne sur l'usb ou que le premier message de demande de version n'est pas recu
+	if( (USB_OTG_dev.dev.device_status != USB_OTG_CONFIGURED || !usb_ready) && type != USB_CMD_GET_VERSION)
 	{
 		return;
-	}
-
-	//le premier message de version n'est pas parti
-	if( !usb_get_version_done && type != USB_PUBLISH_VERSION )
-	{
-	    return;
 	}
 
 	struct usb_header header = {type, size};
@@ -340,6 +335,10 @@ void usb_write_task(void * arg)
 				DCD_EP_Tx(&USB_OTG_dev, 0x81, usb_buffer + usb_buffer_begin, sizeMax);
 				usb_buffer_size -= sizeMax;
 				usb_buffer_begin = (usb_buffer_begin + sizeMax) % USB_TX_BUFER_SIZE;
+			}
+			else
+			{
+			    usb_ready = usb_get_version_done;
 			}
 			xSemaphoreGive(usb_mutex);
 		}
