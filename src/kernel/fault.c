@@ -54,10 +54,11 @@ module_init(fault_module_init, INIT_FAULT);
 static void fault_task(void* arg)
 {
 	(void) arg;
+	const portTickType xDelay = 500 / portTICK_RATE_MS;
 
     while( !usb_is_get_version_done())
     {
-        sleep(1);
+    	vTaskDelay( xDelay );
     }
 
 	usb_add(USB_ERR, fault_status, sizeof(fault_status));

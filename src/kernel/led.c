@@ -67,11 +67,12 @@ module_init(led_module_init, INIT_LED);
 static void led_task(void *arg)
 {
 	(void) arg;
+	const portTickType xDelay = 500 / portTICK_RATE_MS;
 
-	while( !usb_is_get_version_done())
-	{
-	    sleep(1);
-	}
+    while( !usb_is_get_version_done())
+    {
+    	vTaskDelay( xDelay );
+    }
 
 
 	int color = getcolor();

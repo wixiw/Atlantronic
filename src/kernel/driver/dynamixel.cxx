@@ -106,11 +106,13 @@ void DynamixelManager::task()
 {
 	struct dynamixel_request req;
 	int id = 1;
+	const portTickType xDelay = 500 / portTICK_RATE_MS;
 
     while( !usb_is_get_version_done())
     {
-        sleep(1);
+    	vTaskDelay( xDelay );
     }
+
 
 	while(1)
 	{
