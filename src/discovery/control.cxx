@@ -44,7 +44,7 @@ static void control_task(void* /*arg*/)
 	uint32_t wake_time = 0;
 	const portTickType xDelay = 500 / portTICK_RATE_MS;
 
-    while( 1 /*!usb_is_get_version_done()*/)
+    while( !usb_is_get_version_done() )
     {
     	vTaskDelay( xDelay );
     }
