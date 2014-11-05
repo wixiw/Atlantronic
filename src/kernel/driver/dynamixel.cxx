@@ -108,7 +108,7 @@ void DynamixelManager::task()
 	int id = 1;
 	const portTickType xDelay = 500 / portTICK_RATE_MS;
 
-    while( !usb_is_get_version_done() )
+    while( 1 /*!usb_is_get_version_done()*/)
     {
     	vTaskDelay( xDelay );
     }
