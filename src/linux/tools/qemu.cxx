@@ -32,91 +32,12 @@ struct atlantronic_model_tx_event
 	};
 };
 
-int Qemu::init(const char* qemu_path, const char* prog_name, int gdb_port)
+int Qemu::init(const char* file_qemu_read, const char* file_qemu_write)
 {
-	pid_t current_pid = getpid();
-
-	snprintf(file_qemu_read, sizeof(file_qemu_read), "/tmp/qemu-%i.out", current_pid);
-	snprintf(file_qemu_write, sizeof(file_qemu_write), "/tmp/qemu-%i.in", current_pid);
-	snprintf(file_board_read, sizeof(file_board_read), "/tmp/carte-%i.out", current_pid);
-	snprintf(file_board_write, sizeof(file_board_write), "/tmp/carte-%i.in", current_pid);
-
-	mkfifo(file_qemu_read, 0666);
-	mkfifo(file_qemu_write, 0666);
-	mkfifo(file_board_read, 0666);
-	mkfifo(file_board_write, 0666);
-
-	pid = fork();
-
-	char pipe_usb[64];
-	char pipe_model[64];
-	snprintf(pipe_usb, sizeof(pipe_usb), "pipe,id=foo_usb,path=/tmp/carte-%i", current_pid);
-	snprintf(pipe_model, sizeof(pipe_model), "pipe,id=foo_model,path=/tmp/qemu-%i", current_pid);
-
-	if(pid == 0)
-	{
-		char* arg[15];
-		char buf_tcp[64];
-
-		arg[0] = (char*) qemu_path;
-		arg[1] = (char*) "-M";
-		arg[2] = (char*) "atlantronic";
-		arg[3] = (char*)"-nodefaults";
-		arg[4] = (char*)"-nographic";
-		arg[5] = (char*) "-chardev";
-		arg[6] = (char*) pipe_usb;
-		arg[7] = (char*) "-chardev";
-		arg[8] = (char*) pipe_model;
-		arg[9] = (char*) "-kernel";
-		arg[10] = (char*) prog_name;
-		if(gdb_port)
-		{
-			arg[11] = (char*) "-S";
-			arg[12] = (char*) "-gdb";
-			snprintf(buf_tcp, sizeof(buf_tcp), "tcp::%i", gdb_port);
-			arg[13] = buf_tcp;
-			arg[14] = NULL;
-		}
-		else
-		{
-			arg[11] = NULL;
-		}
-
-		execv(arg[0], arg);
-		perror("execv");
-		exit(-1);
-	}
-
-	if(pid < 0)
-	{
-		perror("fork");
-		return -1;
-	}
-
 	com.init(file_qemu_read, file_qemu_write, NULL);
-
 	com.open_block();
 
 	return 0;
-
-// HACK HACK HACK
-//        snprintf(file_qemu_read, sizeof(file_qemu_read), "/tmp/qemu-test.out");
-//        snprintf(file_qemu_write, sizeof(file_qemu_write), "/tmp/qemu-test.in");
-//        snprintf(file_board_read, sizeof(file_board_read), "/tmp/carte-test.out");
-//        snprintf(file_board_write, sizeof(file_board_write), "/tmp/carte-test.in");
-//
-////        mkfifo(file_qemu_read, 0666);
-////        mkfifo(file_qemu_write, 0666);
-////        mkfifo(file_board_read, 0666);
-////        mkfifo(file_board_write, 0666);
-//
-//        com.init(file_qemu_read, file_qemu_write, NULL);
-//
-//        com.open_block();
-//
-//        return 0;
-
-
 }
 
 void Qemu::destroy()
@@ -128,11 +49,6 @@ void Qemu::destroy()
 
     com.close();
     com.destroy();
-
-	unlink(file_qemu_read);
-	unlink(file_qemu_write);
-	unlink(file_board_read);
-	unlink(file_board_write);
 }
 
 int Qemu::set_clock_factor(unsigned int factor, unsigned int icount)

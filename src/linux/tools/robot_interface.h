@@ -64,6 +64,8 @@ class RobotInterface
 		//! ATTENTION : pour les tests uniquement : n'est pas equivalent a un reboot HW
 		int reboot();
 
+        int get_stm_code_version();
+
 		int power_off(bool power_off);
 
 		// ---------- gestion des dynamixel --------------------------------------------
@@ -239,7 +241,6 @@ class RobotInterface
 		int process_detect_obj2(char* msg, uint16_t size);
 		int process_code_version(char* msg, uint16_t size);
 		int can_trace(char* msg, uint16_t size);
-		int get_stm_code_version();
 
 		int add_usb_data_callback(uint8_t cmd, int (RobotInterface::*process_func)(char* msg, uint16_t size));
 		int (RobotInterface::*process_func[USB_DATA_MAX])(char* msg, uint16_t size);

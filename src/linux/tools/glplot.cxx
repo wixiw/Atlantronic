@@ -15,7 +15,6 @@
 #include "linux/tools/qemu.h"
 #include "linux/tools/cmd.h"
 #include "linux/tools/graphique.h"
-#include "linux/tools/joystick.h"
 #include "kernel/robot_parameters.h"
 #include "kernel/math/vect_plan.h"
 #include "kernel/math/fx_math.h"
@@ -107,7 +106,6 @@ static bool glplot_3d = false;
 static MatrixHomogeneous glplot_view;
 
 Graphique graph[GRAPH_NUM];
-struct joystick joystick;
 
 static void close_gtk(GtkWidget* widget, gpointer arg);
 static void select_graph(GtkWidget* widget, gpointer arg);
@@ -123,7 +121,6 @@ static gboolean keyboard_press(GtkWidget* widget, GdkEventKey* event, gpointer a
 static gboolean keyboard_release(GtkWidget* widget, GdkEventKey* event, gpointer arg);
 static void simu_toggle_btn_color(GtkWidget* widget, gpointer arg);
 static void simu_go(GtkWidget* widget, gpointer arg);
-static void joystick_event(int event, float val);
 static void mouse_move(GtkWidget* widget, GdkEventMotion* event);
 static int init_font(GLuint base, char* f);
 static void draw_plus(float x, float y, float rx, float ry);
@@ -348,8 +345,6 @@ int glplot_main(const char* AtlantronicPath, int Simulation, bool cli, Qemu* Qem
 
 	gtk_widget_show_all(main_window);
 
-//	joystick_init(&joystick, "/dev/input/js0", joystick_event);
-
 	if( cli )
 	{
 		cmd_init(robotItf, qemu, gtk_end);
@@ -357,25 +352,23 @@ int glplot_main(const char* AtlantronicPath, int Simulation, bool cli, Qemu* Qem
 
 	if( simulation )
 	{
-		// ajout de la table dans qemu
-		for(i = 0; i < TABLE_OBJ_SIZE; i++)
-		{
-			qemu->add_object(table_obj[i]);
-		}
-
-		// ajout d'un robot adverse
-		qemu->add_object(oponent_robot);
-
-		// on le met a sa position de depart
-		vect2 origin(0, 0);
-		qemu->move_object(QEMU_OPPONENT_ID, origin, opponent_robot_pos);
+//		 ajout de la table dans qemu
+//		for(i = 0; i < TABLE_OBJ_SIZE; i++)
+//		{
+//			qemu->add_object(table_obj[i]);
+//		}
+//
+//		// ajout d'un robot adverse
+//		qemu->add_object(oponent_robot);
+//
+//		 on le met a sa position de depart
+//		vect2 origin(0, 0);
+//		qemu->move_object(QEMU_OPPONENT_ID, origin, opponent_robot_pos);
 	}
 
 	gtk_main();
 
 	gdk_threads_leave();
-
-//	joystick_destroy(&joystick);
 
 	return 0;
 }
@@ -1646,60 +1639,6 @@ static void simu_go(GtkWidget* widget, gpointer arg)
 	{
 		go = !go;
 		qemu->set_io(GPIO_IN_GO, go);
-	}
-}
-
-static void joystick_event(int event, float val)
-{
-	if(event & JOYSTICK_BTN_BASE)
-	{
-		int v = rint(val);
-		// c'est un bouton
-		switch(event & ~JOYSTICK_BTN_BASE)
-		{
-			case 0: // A (xbox)
-				if( v )
-				{
-					robotItf->pince(PINCE_OPEN, PINCE_OPEN);
-				}
-				break;
-			case 1: // B (xbox)
-				if( v )
-				{
-					robotItf->pince(PINCE_CLOSE, PINCE_CLOSE);
-				}
-				break;
-			case 2: // X (xbox)
-				break;
-			case 3: // Y (xbox)
-				break;
-			case 4: // LB (xbox)
-				break;
-			case 5: // RB (xbox)
-				break;
-			default:
-				break;
-		}
-		//log_info("bouton %d : %d", event & ~JOYSTICK_BTN_BASE, (int)rint(val));
-	}
-	else
-	{
-		// c'est un axe
-		switch(event)
-		{
-			case 0: // joystick gauche (xbox)
-				robotItf->motion_set_speed(VectPlan(), VectPlan(0,0,1), val);
-				break;
-			case 2: // gachette gauche (xbox)
-				robotItf->motion_set_speed(VectPlan(), VectPlan(1,0,0), val*1000);
-				break;
-			case 5: // gachette droite (xbox)
-				robotItf->motion_set_speed(VectPlan(), VectPlan(0,1,0), val*1000);
-				break;
-			default:
-				break;
-		}
-		//log_info("axe %d : %f", event, val);
 	}
 }
 
