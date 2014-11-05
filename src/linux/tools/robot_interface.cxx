@@ -422,7 +422,7 @@ int RobotInterface::process_code_version(char* msg, uint16_t size)
 
 	if(size != sizeof(stm_code_version) || msg[40] != 0)
 	{
-	    log_error("size of code version is insane size=%d, msg=%s", size, msg);
+	    log_error("size of code version is insane size=%d", size);
 		res = -1;
 		goto end;
 	}
