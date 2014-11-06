@@ -272,13 +272,6 @@ static void spi_task(void* arg)
 {
 	(void) arg;
 	int i = 0;
-	const portTickType xDelay = 500 / portTICK_RATE_MS;
-
-    while( !usb_is_get_version_done())
-    {
-    	vTaskDelay( xDelay );
-    }
-
 
 	while(1)
 	{
