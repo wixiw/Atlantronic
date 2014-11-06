@@ -164,7 +164,7 @@ void usb_add(uint16_t type, void* msg, uint16_t size)
 	}
 
 	// on se reserve le buffer circulaire pour les log s'il n'y a personne sur l'usb ou que le premier message de demande de version n'est pas recu
-	if( (USB_OTG_dev.dev.device_status != USB_OTG_CONFIGURED || !usb_ready) && type != USB_CMD_GET_VERSION)
+	if( (USB_OTG_dev.dev.device_status != USB_OTG_CONFIGURED || !usb_ready) && type != USB_PUBLISH_VERSION)
 	{
 		return;
 	}
