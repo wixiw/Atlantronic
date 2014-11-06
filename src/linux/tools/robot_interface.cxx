@@ -247,17 +247,17 @@ void* RobotInterface::task()
 				res = (this->*process_func[header.type])(msg, header.size);
 
 				//debug
-				if(         header.type != USB_LOG
-				        &&  header.type != USB_ERR
-				        &&  header.type != USB_CONTROL)
-				{
-				        log_error("processed message header.type=%d with res=%d", header.type, res);
-				}
+//				if(         header.type != USB_LOG
+//				        &&  header.type != USB_ERR
+//				        &&  header.type != USB_CONTROL)
+//				{
+//				        log_error("processed message header.type=%d with res=%d", header.type, res);
+//				}
 			}
 		}
 		else
 		{
-		    log_error("failed to process message header.type=%d", header.type);
+		    //log_error("failed to process message header.type=%d", header.type);
 			res = -1;
 		}
 
@@ -798,10 +798,10 @@ int RobotInterface::usb_write(unsigned char cmd, void* data, int size)
 		memcpy(buffer+2, data, size);
 	}
 
-	if( cmd != USB_CMD_HEARTBEAT )
-	{
-	    log_info("Sending to Stm32 cmd=%d",cmd);
-	}
+//	if( cmd != USB_CMD_HEARTBEAT )
+//	{
+//	    log_info("Sending to Stm32 cmd=%d",cmd);
+//	}
 	return com.write(buffer, buffer[1]);
 }
 
