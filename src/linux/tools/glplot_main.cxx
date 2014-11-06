@@ -58,8 +58,8 @@ int main(int argc, char *argv[])
 			return -1;
 		}
 
-		file_stm_read = qemu.file_board_read;
-		file_stm_write = qemu.file_board_write;
+		file_stm_read = "/tmp/carte.out";
+		file_stm_write = "/tmp/carte.in";
 	}
 
 	robotItf.init("discovery", file_stm_read, file_stm_write, ip, robotItfCallback, NULL);
