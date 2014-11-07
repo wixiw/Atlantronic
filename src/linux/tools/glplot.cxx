@@ -353,18 +353,18 @@ int glplot_main(const char* AtlantronicPath, int Simulation, bool cli, Qemu* Qem
 
 	if( simulation )
 	{
-//		 ajout de la table dans qemu
-//		for(i = 0; i < TABLE_OBJ_SIZE; i++)
-//		{
-//			qemu->add_object(table_obj[i]);
-//		}
-//
-//		// ajout d'un robot adverse
-//		qemu->add_object(oponent_robot);
-//
-//		 on le met a sa position de depart
-//		vect2 origin(0, 0);
-//		qemu->move_object(QEMU_OPPONENT_ID, origin, opponent_robot_pos);
+		// ajout de la table dans qemu
+		for(i = 0; i < TABLE_OBJ_SIZE; i++)
+		{
+			qemu->add_object(table_obj[i]);
+		}
+
+		// ajout d'un robot adverse
+		qemu->add_object(oponent_robot);
+
+		// on le met a sa position de depart
+		vect2 origin(0, 0);
+		qemu->move_object(QEMU_OPPONENT_ID, origin, opponent_robot_pos);
 	}
 
 	gtk_main();
