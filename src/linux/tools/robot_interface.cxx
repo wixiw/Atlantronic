@@ -191,7 +191,6 @@ void* RobotInterface::task()
 
 	com.open_block();
     get_stm_code_version();
-    sleep(1);
 
 	while( !stop_task)
 	{
@@ -207,7 +206,7 @@ void* RobotInterface::task()
 
 		if( res )
 		{
-		    log_error("failed to read header");
+		    //log_error("failed to read header");
 			fault_reset();
 			connected = false;
 			com.open_block();
@@ -227,7 +226,7 @@ void* RobotInterface::task()
 
 		if( res )
 		{
-		    log_error("failed to read message");
+		    //log_error("failed to read message");
 			fault_reset();
 			connected = false;
 			com.open_block();
@@ -325,7 +324,6 @@ void* RobotInterface::task()
 	}
 
 end:
-    log_info("RobotInterface::task : end task");
 	return NULL;
 }
 
@@ -422,7 +420,7 @@ int RobotInterface::process_code_version(char* msg, uint16_t size)
 
 	if(size != sizeof(stm_code_version) || msg[40] != 0)
 	{
-	    log_error("size of code version is insane size=%d", size);
+	    //log_error("size of code version is insane size=%d", size);
 		res = -1;
 		goto end;
 	}

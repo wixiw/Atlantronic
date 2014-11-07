@@ -168,7 +168,6 @@ void usb_add(uint16_t type, void* msg, uint16_t size)
 	{
 		return;
 	}
-
 	struct usb_header header = {type, size};
 
 	xSemaphoreTake(usb_mutex, portMAX_DELAY);

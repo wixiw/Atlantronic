@@ -343,5 +343,4 @@ int Com::write(const void* buf, int size)
 	{
 		return 0;
 	}
-	return size;
 }
