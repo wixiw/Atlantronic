@@ -28,3 +28,8 @@ Module.markers
 *.mcs
 *.mcw
 .metadata
+
+#Cmake temp stuff
+src/AtlantronicForArd-stamp/
+tmp/
+
