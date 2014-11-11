@@ -106,6 +106,7 @@ static bool glplot_3d = false;
 static MatrixHomogeneous glplot_view;
 
 Graphique graph[GRAPH_NUM];
+static int glplot_init_done = 0;
 
 static void close_gtk(GtkWidget* widget, gpointer arg);
 static void select_graph(GtkWidget* widget, gpointer arg);
@@ -352,18 +353,18 @@ int glplot_main(const char* AtlantronicPath, int Simulation, bool cli, Qemu* Qem
 
 	if( simulation )
 	{
-//		 ajout de la table dans qemu
-//		for(i = 0; i < TABLE_OBJ_SIZE; i++)
-//		{
-//			qemu->add_object(table_obj[i]);
-//		}
-//
-//		// ajout d'un robot adverse
-//		qemu->add_object(oponent_robot);
-//
-//		 on le met a sa position de depart
-//		vect2 origin(0, 0);
-//		qemu->move_object(QEMU_OPPONENT_ID, origin, opponent_robot_pos);
+		// ajout de la table dans qemu
+		for(i = 0; i < TABLE_OBJ_SIZE; i++)
+		{
+			qemu->add_object(table_obj[i]);
+		}
+
+		// ajout d'un robot adverse
+		qemu->add_object(oponent_robot);
+
+		// on le met a sa position de depart
+		vect2 origin(0, 0);
+		qemu->move_object(QEMU_OPPONENT_ID, origin, opponent_robot_pos);
 	}
 
 	gtk_main();
@@ -385,7 +386,7 @@ void glplot_update()
 	static struct timespec last_plot = {0, 0};
 	struct timespec current;
 
-	if( opengl_window )
+	if( opengl_window && glplot_init_done )
 	{
 		clock_gettime(CLOCK_MONOTONIC, &current);
 		double delta = (current.tv_sec - last_plot.tv_sec) + (current.tv_nsec - last_plot.tv_nsec) / ((double)1000000000.0f);
@@ -509,6 +510,7 @@ static void init(GtkWidget* widget, gpointer arg)
 	gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, gdk_pixbuf_get_width(pix), gdk_pixbuf_get_height(pix), GL_RGB, GL_UNSIGNED_BYTE, gdk_pixbuf_get_pixels(pix));
 
 	gdk_gl_drawable_gl_end(gldrawable);
+	glplot_init_done = 1;
 }
 
 static gboolean config(GtkWidget* widget, GdkEventConfigure* ev, gpointer arg)

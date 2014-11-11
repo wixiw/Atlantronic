@@ -11,7 +11,6 @@ extern "C" {
 
 enum
 {
-    USB_PUBLISH_VERSION = 0, // laisser en 0 pour la compatibilite avec USB_CMD_REQUEST_VERSION
 	USB_LOG = 1,
 	USB_ERR = 2,
 	USB_HOKUYO = 3,
@@ -22,12 +21,12 @@ enum
 	USB_DETECTION_DYNAMIC_OBJECT_SIZE2 = 8,
 	USB_DETECTION_DYNAMIC_OBJECT1 = 9,
 	USB_DETECTION_DYNAMIC_OBJECT2 = 10,
+	USB_PUBLISH_VERSION = 11,
 	USB_DATA_MAX = 12,     //!< nombre d'id, laisser en dernier
 };
 
 enum usb_cmd
 {
-	USB_CMD_REQUEST_VERSION = 0, // laisser en 0 pour la compatibiliteavec USB_PUBLISH_VERSION
 	USB_CMD_PTASK = 1,
 	USB_CMD_TRAJECTORY = 2,
 	USB_CMD_MOTION_PARAM = 3,
@@ -59,7 +58,8 @@ enum usb_cmd
 	USB_CMD_POWER = 29,
 	USB_CMD_HEARTBEAT = 30,
 	USB_CMD_LED_READY_FOR_INIT = 31,
-	USB_CMD_NUM = 32      //!< nombre de commandes, laisser en dernier
+    USB_CMD_REQUEST_VERSION = 32,
+	USB_CMD_NUM = 33      //!< nombre de commandes, laisser en dernier
 };
 
 struct usb_header

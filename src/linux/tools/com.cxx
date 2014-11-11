@@ -221,9 +221,17 @@ end:
 
 void Com::open_block()
 {
+	struct timespec req;
+	struct timespec rem;
+
 	while( open() )
 	{
-		sleep(1);
+		req.tv_sec = 0;
+		req.tv_nsec = 100000000;
+		while( nanosleep(&req, &rem) )
+		{
+			req = rem;
+		}
 	}
 }
 
@@ -335,5 +343,4 @@ int Com::write(const void* buf, int size)
 	{
 		return 0;
 	}
-	return size;
 }
