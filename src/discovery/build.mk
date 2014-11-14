@@ -56,8 +56,8 @@ obj-discovery-hokuyo += kernel/math/vect_plan.o
 obj-discovery-baz_small += $(obj-discovery-core)
 obj-discovery-baz_small += kernel/driver/usart.o
 obj-discovery-baz_small += kernel/driver/spi.o
-obj-discovery-baz_small += kernel/driver/accelero.o
 obj-discovery-baz_small += kernel/driver/gyro.o
+obj-discovery-baz_small += kernel/driver/hokuyo.o
 obj-discovery-baz_small += kernel/driver/dynamixel.o
 obj-discovery-baz_small += kernel/driver/pwm.o
 obj-discovery-baz_small += kernel/driver/encoder.o
@@ -69,7 +69,6 @@ obj-discovery-baz_small += kernel/control/kinematics.o
 obj-discovery-baz_small += kernel/geometric_model/geometric_model.o
 obj-discovery-baz_small += kernel/location/location.o
 obj-discovery-baz_small += kernel/pump.o
-obj-discovery-baz_small += kernel/math/matrix_homogeneous.o
 obj-discovery-baz_small += discovery/control.o
 
 obj-discovery-baz += $(obj-discovery-core)
