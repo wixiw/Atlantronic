@@ -23,32 +23,18 @@
 struct control_usb_data
 {
 	struct systime current_time;
-	int32_t motion_state;
-	VectPlan cons;
-	VectPlan pos;
-	VectPlan wanted_pos;
 	int16_t raw_data_gyro;
 	uint16_t encoder[ENCODER_MAX];
 	uint32_t gpio;
 	float omega_gyro;
 	float pos_theta_gyro_euler;
 	float pos_theta_gyro_simpson;
-	float cons_v1;
-	float cons_v2;
-	float cons_v3;
-	float cons_theta1;
-	float cons_theta2;
-	float cons_theta3;
-	Kinematics mes_motors[CAN_MOTOR_MAX];
-	float mes_motor_current[CAN_MOTOR_MAX];
 	float vBat;
 	float iPwm[4];
-	bool homingDone;
 	uint8_t pumpState;
 	uint8_t color;
 	uint32_t power_state;
 	struct dynamixel_usb_data dynamixel;
-	MatrixHomogeneous arm_matrix;
 } __attribute__((packed));
 
 #endif
