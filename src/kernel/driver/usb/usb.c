@@ -13,6 +13,8 @@
 #include "kernel/driver/usb.h"
 #include "kernel/log.h"
 
+#include "boot_signals.h"
+
 // Attention, pour l'envoi de commandes par usb, on suppose que c'est envoyé en une seule trame usb
 
 #define USB_TX_BUFER_SIZE       4096
@@ -246,21 +248,29 @@ void usb_read_task(void * arg)
 			int size = usb_rx_buffer[(usb_rx_buffer_tail + 1)%sizeof(usb_rx_buffer)];
 			if( size <= (int)usb_rx_buffer_count && size >= 2)
 			{
+
 				// on a recu tout le message, on va le traiter
 				if( id < USB_CMD_NUM && usb_cmd[id])
 				{
-					int nMax = sizeof(usb_rx_buffer) - usb_rx_buffer_tail;
-					// mise "a plat" dans un seul buffer pour le traitement si necessaire
-					if( size <= nMax )
+					if( !usb_get_version_done && id != USB_CMD_REQUEST_VERSION )
 					{
-						// message deja contigu en memoire
-						usb_cmd[id](&usb_rx_buffer[usb_rx_buffer_tail+2]);
+						log_format(LOG_ERROR, "protocol error, first msg should be Version request (%d)", id);
 					}
 					else
 					{
-						memcpy(usb_rx_buffer_one_msg, &usb_rx_buffer[usb_rx_buffer_tail], nMax);
-						memcpy(&usb_rx_buffer_one_msg[nMax], usb_rx_buffer, size - nMax);
-						usb_cmd[id](&usb_rx_buffer_one_msg[2]);
+						int nMax = sizeof(usb_rx_buffer) - usb_rx_buffer_tail;
+						// mise "a plat" dans un seul buffer pour le traitement si necessaire
+						if( size <= nMax )
+						{
+							// message deja contigu en memoire
+							usb_cmd[id](&usb_rx_buffer[usb_rx_buffer_tail+2]);
+						}
+						else
+						{
+							memcpy(usb_rx_buffer_one_msg, &usb_rx_buffer[usb_rx_buffer_tail], nMax);
+							memcpy(&usb_rx_buffer_one_msg[nMax], usb_rx_buffer, size - nMax);
+							usb_cmd[id](&usb_rx_buffer_one_msg[2]);
+						}
 					}
 				}
 				else
@@ -311,6 +321,8 @@ void usb_read_task(void * arg)
 void usb_write_task(void * arg)
 {
 	(void) arg;
+
+	wait_signal(&usb_boot_signal);
 
 	while(1)
 	{
@@ -431,4 +443,11 @@ void usb_cmd_get_version(void* arg)
 	(void) arg;
 	usb_get_version_done = 1;
 	usb_add(USB_PUBLISH_VERSION, (void*)version, 41);
+
+	int i;
+	for( i = 0 ; i < BOOT_SIGNAL_NB ; i++ )
+	{
+		set_signal(boot_signals[i]);
+	}
+
 }

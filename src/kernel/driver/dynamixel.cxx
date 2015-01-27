@@ -8,7 +8,7 @@
 #include "kernel/rcc.h"
 #include "kernel/log.h"
 #include "kernel/driver/usb.h"
-#include "kernel/end.h"
+#include "end.h"
 #include "kernel/driver/power.h"
 #include <stdlib.h>
 #include <math.h>

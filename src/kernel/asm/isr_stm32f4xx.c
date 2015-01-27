@@ -4,7 +4,7 @@
 
 #include "kernel/FreeRTOS.h"
 #include "priority.h"
-#include "kernel/fault.h"
+#include "fault.h"
 
 struct stack_t
 {

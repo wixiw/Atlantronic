@@ -7,8 +7,8 @@
 #include "kernel/hokuyo_tools.h"
 #include "kernel/log.h"
 #include "kernel/driver/usb.h"
-#include "kernel/location/location.h"
-#include "kernel/fault.h"
+#include "location.h"
+#include "fault.h"
 #include <string.h>
 
 #define ERR_HOKUYO_TIMEOUT              0x01

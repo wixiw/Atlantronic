@@ -6,7 +6,7 @@
 #include "kernel/semphr.h"
 #include "kernel/rcc.h"
 #include "kernel/log.h"
-#include "kernel/fault.h"
+#include "fault.h"
 #include "kernel/driver/usb.h"
 #include "kernel/error_codes.h"
 #include "kernel/module.h"

@@ -3,21 +3,17 @@
 #include "kernel/semphr.h"
 #include "kernel/module.h"
 #include "kernel/log.h"
-#include "kernel/can_motor.h"
-#include "kernel/can/can_id.h"
-#include "kernel/canopen.h"
 #include "control.h"
-#include "kernel/location/location.h"
-#include "kernel/geometric_model/geometric_model.h"
+#include "location.h"
 #include "kernel/driver/usb.h"
 #include "kernel/driver/gyro.h"
 #include "kernel/driver/adc.h"
 #include "kernel/driver/power.h"
-#include "kernel/arm.h"
 #include "kernel/heartbeat.h"
 #include "gpio.h"
-#include "kernel/fault.h"
+#include "fault.h"
 #include "kernel/pump.h"
+#include "boot_signals.h"
 
 #define CONTROL_STACK_SIZE       350
 
@@ -43,21 +39,16 @@ static void control_task(void* /*arg*/)
 {
 	uint32_t wake_time = 0;
 
+	control_boot_signal.wait();
+
 	while(1)
 	{
 		// mise a jour adc
 		adc_update();
 
-		// mise a jour du can
-		//canopen_update(wake_time + 3);
-
-		// mise a jour de la loc et calcul asservissement
-		motion_compute();
-
 		// mise a jour heartbeat
 		heartbeat_update();
 
-		motion_update_usb_data(&control_usb_data);
 		control_usb_data.current_time = systick_get_time();
 		control_usb_data.raw_data_gyro = gyro_get_raw_data();
         control_usb_data.encoder[ENCODER_1] = encoder_get(ENCODER_1);

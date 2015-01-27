@@ -7,7 +7,7 @@
 #include "kernel/FreeRTOS.h"
 #include "kernel/task.h"
 #include "kernel/semphr.h"
-#include "kernel/fault.h"
+#include "fault.h"
 #include <math.h>
 
 #define SPI_STACK_SIZE             300

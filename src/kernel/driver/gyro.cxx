@@ -6,7 +6,7 @@
 #include "kernel/driver/usb.h"
 #include "kernel/math/simpson_integrator.h"
 #include "gpio.h"
-#include "kernel/fault.h"
+#include "fault.h"
 #include <math.h>
 
 // interface gyro

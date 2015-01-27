@@ -5,7 +5,7 @@
 #include "kernel/log.h"
 #include "kernel/driver/usb.h"
 #include "gpio.h"
-#include "kernel/fault.h"
+#include "fault.h"
 #include <math.h>
 
 // interface accelero

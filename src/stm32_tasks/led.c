@@ -6,7 +6,7 @@
 #include "kernel/driver/usb.h"
 #include "kernel/driver/power.h"
 #include "kernel/log.h"
-#include "kernel/end.h"
+#include "end.h"
 #include "led.h"
 #include "gpio.h"
 

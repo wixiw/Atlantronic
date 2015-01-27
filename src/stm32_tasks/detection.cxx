@@ -11,10 +11,11 @@
 #include "kernel/math/regression.h"
 #include "kernel/math/segment_intersection.h"
 #include "kernel/math/polyline.h"
-#include "kernel/location/location.h"
+#include "location.h"
 #include "gpio.h"
-#include "table.h"
 #include "detection.h"
+#include "boot_signals.h"
+#include "table.h"
 
 //! @todo réglage au pif
 #define DETECTION_STACK_SIZE         400
@@ -91,6 +92,8 @@ static void detection_task(void* arg)
 {
 	(void) arg;
 	unsigned char event;
+
+	detection_boot_signal.wait();
 
 	while(1)
 	{

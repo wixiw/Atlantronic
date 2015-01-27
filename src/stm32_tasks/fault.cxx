@@ -8,11 +8,12 @@
 #include "kernel/semphr.h"
 #include "kernel/log.h"
 #include "kernel/module.h"
-#include "kernel/fault.h"
+#include "fault.h"
 #include "kernel/driver/usb.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include "gpio.h"
+#include "boot_signals.h"
 
 #define FAULT_STACK_SIZE       70
 
@@ -54,6 +55,8 @@ module_init(fault_module_init, INIT_FAULT);
 static void fault_task(void* arg)
 {
 	(void) arg;
+
+	fault_boot_signal.wait();
 
 	usb_add(USB_ERR, fault_status, sizeof(fault_status));
 

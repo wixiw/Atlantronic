@@ -7,7 +7,7 @@
 #include "kernel/task.h"
 #include <math.h>
 #include "gpio.h"
-#include "kernel/end.h"
+#include "end.h"
 #include "kernel/event.h"
 
 #define TASK1_STACK_SIZE          100

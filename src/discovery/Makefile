@@ -46,4 +46,4 @@ LDFLAGS+=-lm
 LDFLAGS+=-lg
 LDFLAGS+=-g3
 
-INCLUDES+=-Iinclude/$(ARCH) -Isrc/$(ARCH)
+INCLUDES+=-Iinclude/$(ARCH) -Isrc/$(ARCH) -Iinclude/kernel -Isrc/kernel -Isrc/stm32_tasks
