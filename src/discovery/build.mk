@@ -44,6 +44,11 @@ obj-discovery-stm32_ard += discovery/boot_signals.o
 obj-discovery-stm32_ard += discovery/location.o
 obj-discovery-stm32_ard += discovery/table_2015.o
 
+#ipc folder
+obj-discovery-stm32_ard += ipc/Datagram.o
+obj-discovery-stm32_ard += ipc/IpcHeader.o
+obj-discovery-stm32_ard += ipc/IpcMsg.o
+
 #stm32_tasks folder
 obj-discovery-stm32_ard += stm32_tasks/fault.o
 obj-discovery-stm32_ard += stm32_tasks/end.o

@@ -80,6 +80,12 @@ $(obj)/$(ARCH)/%.o: $(src)/%.cxx
 	mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -DVERSION=\"$(VERSION)\" $($(patsubst $(obj)/$(ARCH)/%,cxxflags-$(ARCH)-%, $@)) -c $< -o $@ -MMD -MF$(@:.o=.d) $(INCLUDES) || ( rm -vfr $@ $(@:.o=.d) ; exit 1 )
 
+$(obj)/$(ARCH)/%.o: $(src)/%.cpp
+	@echo "   CPP    " $@
+	mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -DVERSION=\"$(VERSION)\" $($(patsubst $(obj)/$(ARCH)/%,cxxflags-$(ARCH)-%, $@)) -c $< -o $@ -MMD -MF$(@:.o=.d) $(INCLUDES) || ( rm -vfr $@ $(@:.o=.d) ; exit 1 )
+
+
 $(obj)/$(ARCH)/%.o: $(src)/%.S
 	@echo [AS] $@
 	$(AS) $(AFLAGS) -c $< -o $@ -MMD -MF$(@:.o=.d) $(INCLUDES)

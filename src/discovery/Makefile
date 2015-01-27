@@ -29,6 +29,8 @@ CXXFLAGS:=$(CFLAGS)
 CXXFLAGS+=-fno-rtti
 CXXFLAGS+=-ftemplate-depth-0
 CXXFLAGS+=-Woverloaded-virtual
+CXXFLAGS+=-Wfatal-errors
+CXXFLAGS+=-ftemplate-depth=17 
 
 #cflag qu'on ne met pas pour le c++
 CFLAGS+=-Wunsuffixed-float-constants
@@ -46,4 +48,5 @@ LDFLAGS+=-lm
 LDFLAGS+=-lg
 LDFLAGS+=-g3
 
-INCLUDES+=-Iinclude/$(ARCH) -Isrc/$(ARCH) -Iinclude/kernel -Isrc/kernel -Isrc/stm32_tasks
+
+INCLUDES+=-Iinclude/$(ARCH) -Isrc/$(ARCH) -Iinclude/kernel -Isrc/kernel -Isrc/stm32_tasks -Isrc/ipc
