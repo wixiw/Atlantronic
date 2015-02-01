@@ -9,7 +9,7 @@
 #define STATUSMESSAGE_HPP_
 
 #include "ipc/IpcMsg.hpp"
-#include "linux/tools/robot_interface.h"
+#include "stm32_tasks/control.h"
 
 namespace arp_stm32
 {
@@ -20,24 +20,24 @@ class StatusMessage: public arp_stm32::IpcMsg
         StatusMessage();
         virtual ~StatusMessage();
 
-        static const ipc::MsgSize SIZE = sizeof(control_usb_data);
+        static const MsgSize SIZE = sizeof(control_usb_data);
 
         /**
          * Overloaded \see IpcMsg
          * convert the string version
          */
-        virtual bool serialize(ipc::Payload& payload) const;
+        virtual bool serialize(Payload& payload) const;
 
         /**
          * Overloaded \see IpcMsg
          * ensure size is 41
          */
-        virtual bool deserialize(ipc::PayloadConst payload);
+        virtual bool deserialize(PayloadConst payload);
 
         /**
          * Overloaded \see IpcMsg
          */
-        virtual ipc::MsgType getType() const;
+        virtual MsgType getType() const;
 
     protected:
         control_usb_data m_data;

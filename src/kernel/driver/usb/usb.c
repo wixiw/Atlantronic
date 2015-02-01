@@ -12,13 +12,13 @@
 
 #include "kernel/driver/usb.h"
 #include "kernel/log.h"
-
 #include "boot_signals.h"
+#include "kernel/driver/usb/ArdCom_c_wrapper.h"
 
 // Attention, pour l'envoi de commandes par usb, on suppose que c'est envoyé en une seule trame usb
 
 #define USB_TX_BUFER_SIZE       4096
-#define USB_RX_BUFER_SIZE        512
+#define USB_RX_BUFER_SIZE        2000 //Take care to accord with MSG_MAX_SIZE in IpcTypes.hpp
 #define USB_READ_STACK_SIZE      400
 #define USB_WRITE_STACK_SIZE      75
 
@@ -28,7 +28,6 @@ static unsigned char usb_buffer[USB_TX_BUFER_SIZE];
 static int usb_buffer_begin;
 static int usb_buffer_end;
 static int usb_buffer_size;
-static unsigned char usb_rx_buffer_one_msg[256]; //!< buffer usb de reception avec un seul message mis a plat pour le traitement par la tache usb_read (en cas de bouclage sur le buffer circulaire)
 static unsigned char usb_rx_buffer_ep[64]; //!< buffer usb de reception d'un endpoint si on n'a pas 64 octets contigus pour le mettre directement dans le buffer circulaire
 static unsigned char usb_rx_buffer[USB_RX_BUFER_SIZE]; //!< buffer usb de reception (circulaire)
 static unsigned int usb_rx_buffer_head; //!< position ou on doit ajouter les nouveaux octets
@@ -37,15 +36,11 @@ static volatile unsigned int usb_rx_buffer_count; //!< taille du buffer usb de r
 static unsigned int usb_rx_buffer_ep_used;
 static int usb_rx_waiting; //!< overflow sur usb - reception. Vaut 1 si on doit relancer la reception
 static xSemaphoreHandle usb_mutex;
-static void (*usb_cmd[USB_CMD_NUM])(void*);
-static const char version[41] = VERSION;
-unsigned char usb_get_version_done = 0;
+
 static unsigned char usb_ready = 0;
 
 void usb_read_task(void *);
 void usb_write_task(void *);
-void usb_cmd_ptask(void*);
-void usb_cmd_get_version(void*);
 
 static xSemaphoreHandle usb_write_sem;
 static xSemaphoreHandle usb_read_sem;
@@ -110,9 +105,7 @@ static int usb_module_init(void)
 		return ERR_INIT_USB;
 	}
 
-	usb_add_cmd(USB_CMD_REQUEST_VERSION, usb_cmd_get_version);
-	usb_add_cmd(USB_CMD_PTASK, usb_cmd_ptask);
-	usb_add_cmd(USB_CMD_REBOOT, (void (*)(void*))reboot);
+	usb_ard_init();
 
 	return 0;
 }
@@ -160,74 +153,72 @@ void usb_write(const void* buffer, int size)
 
 void usb_add(uint16_t type, void* msg, uint16_t size)
 {
-	if(size == 0)
-	{
-		return;
-	}
-
-	// on se reserve le buffer circulaire pour les log s'il n'y a personne sur l'usb ou que le premier message de demande de version n'est pas recu
-	if( (USB_OTG_dev.dev.device_status != USB_OTG_CONFIGURED || !usb_ready) && type != USB_PUBLISH_VERSION)
-	{
-		return;
-	}
-	struct usb_header header = {type, size};
-
-	xSemaphoreTake(usb_mutex, portMAX_DELAY);
-
-	usb_write(&header, sizeof(header));
-	usb_write(msg, size);
-
-	xSemaphoreGive(usb_mutex);
-
-	xSemaphoreGive(usb_write_sem);
+//	if(size == 0)
+//	{
+//		return;
+//	}
+//
+//	// on se reserve le buffer circulaire pour les log s'il n'y a personne sur l'usb ou que le premier message de demande de version n'est pas recu
+//	if( (USB_OTG_dev.dev.device_status != USB_OTG_CONFIGURED || !usb_ready) && type != USB_PUBLISH_VERSION)
+//	{
+//		return;
+//	}
+//	struct usb_header header = {type, size};
+//
+//	xSemaphoreTake(usb_mutex, portMAX_DELAY);
+//
+//	usb_write(&header, sizeof(header));
+//	usb_write(msg, size);
+//
+//	xSemaphoreGive(usb_mutex);
+//
+//	xSemaphoreGive(usb_write_sem);
 }
 
 void usb_add_log(unsigned char level, const char* func, uint16_t line, const char* msg)
 {
-	uint16_t msg_size = strlen(msg);
-	char log_header[32];
-
-	if(msg_size == 0)
-	{
-		return;
-	}
-
-	struct systime current_time = systick_get_time();
-	memcpy(log_header, &current_time, 8);
-	log_header[8] = level;
-	memcpy(log_header+9, &line, 2);
-
-	int len = strlen(func);
-
-	if(len > 20)
-	{
-		len = 20;
-	}
-
-	memcpy(log_header + 11, func, len);
-	len += 11;
-	log_header[len] = ':';
-	len++;
-
-	uint16_t size = msg_size + len + 1;
-	struct usb_header usb_header = {USB_LOG, size};
-
-	xSemaphoreTake(usb_mutex, portMAX_DELAY);
-
-	usb_write(&usb_header, sizeof(usb_header));
-	usb_write(log_header, len);
-	usb_write(msg, msg_size);
-	usb_write_byte((unsigned  char)'\n');
-
-	xSemaphoreGive(usb_mutex);
-
-	xSemaphoreGive(usb_write_sem);
+//	uint16_t msg_size = strlen(msg);
+//	char log_header[32];
+//
+//	if(msg_size == 0)
+//	{
+//		return;
+//	}
+//
+//	struct systime current_time = systick_get_time();
+//	memcpy(log_header, &current_time, 8);
+//	log_header[8] = level;
+//	memcpy(log_header+9, &line, 2);
+//
+//	int len = strlen(func);
+//
+//	if(len > 20)
+//	{
+//		len = 20;
+//	}
+//
+//	memcpy(log_header + 11, func, len);
+//	len += 11;
+//	log_header[len] = ':';
+//	len++;
+//
+//	uint16_t size = msg_size + len + 1;
+//	struct usb_header usb_header = {USB_LOG, size};
+//
+//	xSemaphoreTake(usb_mutex, portMAX_DELAY);
+//
+//	usb_write(&usb_header, sizeof(usb_header));
+//	usb_write(log_header, len);
+//	usb_write(msg, msg_size);
+//	usb_write_byte((unsigned  char)'\n');
+//
+//	xSemaphoreGive(usb_mutex);
+//
+//	xSemaphoreGive(usb_write_sem);
 }
 
-void usb_add_cmd(enum usb_cmd id, void (*cmd)(void*))
-{
-	usb_cmd[id] = cmd;
-}
+//TODO a enelever
+void usb_add_cmd(enum usb_cmd id, void (*cmd)(void*)){}
 
 //! Usb read task
 void usb_read_task(void * arg)
@@ -243,51 +234,18 @@ void usb_read_task(void * arg)
 
 		if( usb_rx_buffer_count )
 		{
-			// lecture header
-			int id = usb_rx_buffer[usb_rx_buffer_tail];
-			int size = usb_rx_buffer[(usb_rx_buffer_tail + 1)%sizeof(usb_rx_buffer)];
-			if( size <= (int)usb_rx_buffer_count && size >= 2)
-			{
+			CircularBuffer circularBuffer; //TODO refactorer le driver pour utiliser ça partout
+			circularBuffer.data = usb_rx_buffer;
+			circularBuffer.size = USB_RX_BUFER_SIZE;
+			circularBuffer.start = usb_rx_buffer_tail;
+			circularBuffer.end = usb_rx_buffer_head;
+			circularBuffer.count = usb_rx_buffer_count;
 
-				// on a recu tout le message, on va le traiter
-				if( id < USB_CMD_NUM && usb_cmd[id])
-				{
-					if( !usb_get_version_done && id != USB_CMD_REQUEST_VERSION )
-					{
-						log_format(LOG_ERROR, "protocol error, first msg should be Version request (%d)", id);
-					}
-					else
-					{
-						int nMax = sizeof(usb_rx_buffer) - usb_rx_buffer_tail;
-						// mise "a plat" dans un seul buffer pour le traitement si necessaire
-						if( size <= nMax )
-						{
-							// message deja contigu en memoire
-							usb_cmd[id](&usb_rx_buffer[usb_rx_buffer_tail+2]);
-						}
-						else
-						{
-							memcpy(usb_rx_buffer_one_msg, &usb_rx_buffer[usb_rx_buffer_tail], nMax);
-							memcpy(&usb_rx_buffer_one_msg[nMax], usb_rx_buffer, size - nMax);
-							usb_cmd[id](&usb_rx_buffer_one_msg[2]);
-						}
-					}
-				}
-				else
-				{
-					log_format(LOG_ERROR, "command %d not found", id);
-				}
+			int readBytes = deserialize_ard(&circularBuffer);
 
-				__sync_sub_and_fetch(&usb_rx_buffer_count, size);
-				usb_rx_buffer_tail = (usb_rx_buffer_tail + size) % sizeof(usb_rx_buffer);
-			}
-			else
-			{
-				log_format(LOG_ERROR, "usb protocol error : size = %d", size);
-				usb_rx_buffer_count = 0;
-				usb_rx_buffer_tail = usb_rx_buffer_head;
-			}
-				
+			__sync_sub_and_fetch(&usb_rx_buffer_count, readBytes);
+			usb_rx_buffer_tail = (usb_rx_buffer_tail + readBytes) % sizeof(usb_rx_buffer);
+
 			if( unlikely(usb_rx_waiting != 0))
 			{
 				int nMax = sizeof(usb_rx_buffer) - usb_rx_buffer_head;
@@ -349,7 +307,7 @@ void usb_write_task(void * arg)
 			}
 			else
 			{
-			    usb_ready = usb_get_version_done;
+			    usb_ready = usb_is_get_version_done();
 			}
 			xSemaphoreGive(usb_mutex);
 		}
@@ -430,24 +388,4 @@ void EP2_OUT_Callback(void)
 	portCLEAR_INTERRUPT_MASK_FROM_ISR(0);
 }
 
-void usb_cmd_ptask(void* arg)
-{
-	(void) arg;
-	char usb_ptask_buffer[400];
-	vTaskGetRunTimeStats(usb_ptask_buffer, sizeof(usb_ptask_buffer));
-	log(LOG_INFO, usb_ptask_buffer);
-}
 
-void usb_cmd_get_version(void* arg)
-{
-	(void) arg;
-	usb_get_version_done = 1;
-	usb_add(USB_PUBLISH_VERSION, (void*)version, 41);
-
-	int i;
-	for( i = 0 ; i < BOOT_SIGNAL_NB ; i++ )
-	{
-		set_signal(boot_signals[i]);
-	}
-
-}

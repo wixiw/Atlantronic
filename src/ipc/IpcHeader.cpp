@@ -9,7 +9,6 @@
 #include <cstring>
 
 using namespace arp_stm32;
-using namespace arp_stm32::ipc;
 using namespace std;
 
 IpcHeader::IpcHeader():
@@ -22,7 +21,8 @@ IpcHeader::IpcHeader():
 bool IpcHeader::serialize(uint8_t* const buffer) const
 {
     if( NULL == buffer
-            || 0 == type )
+            || 0 == type
+            || MSG_MAX_SIZE < size)
     {
         return false;
     }
@@ -33,12 +33,6 @@ bool IpcHeader::serialize(uint8_t* const buffer) const
     header.type = type;
     header.size = size;
     memcpy(buffer, &header, HEADER_SIZE);
-    MsgSize size=0;
-    if( MSG_MAX_SIZE < size
-            || size != size)
-    {
-        return false;
-    }
 
     return true;
 }
@@ -66,9 +60,3 @@ bool IpcHeader::deserialize(uint8_t const * const buffer)
     return true;
 }
 
-//string IpcHeader::toString() const
-//{
-//    ostringstream s;
-//    s << "magic=" << hex << magic << " id=0x" << dec <<  static_cast<unsigned int>(type) << " l=" << static_cast<unsigned int>(size);
-//    return s.str();
-//}

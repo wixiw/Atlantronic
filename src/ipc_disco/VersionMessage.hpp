@@ -26,7 +26,7 @@ namespace arp_stm32
 class VersionMessage: public IpcMsg
 {
     public:
-        static const ipc::MsgSize SIZE = 41;
+        static const MsgSize SIZE = 41;
         static const char EXPECTED_VERSION[SIZE];
 
         VersionMessage();
@@ -36,18 +36,18 @@ class VersionMessage: public IpcMsg
          * Overloaded \see IpcMsg
          * convert the string version
          */
-        virtual bool serialize(ipc::Payload& payload) const;
+        virtual bool serialize(Payload& payload) const;
 
         /**
          * Overloaded \see IpcMsg
          * ensure size is 41
          */
-        virtual bool deserialize(ipc::PayloadConst payload);
+        virtual bool deserialize(PayloadConst payload);
 
         /**
          * Overloaded \see IpcMsg
          */
-        virtual ipc::MsgType getType() const;
+        virtual MsgType getType() const;
 
         /**
          * getter
@@ -59,11 +59,6 @@ class VersionMessage: public IpcMsg
          */
         void setVersion(char const * const version);
 
-        /**
-         * For debug purposes
-         */
-        std::string toString() const;
-        
     protected:
         char m_version[SIZE];
 };

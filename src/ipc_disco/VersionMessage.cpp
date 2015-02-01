@@ -6,11 +6,10 @@
  */
 
 #include "VersionMessage.hpp"
-#include "DiscoveryIpcTypes.hpp"
-#include "math/math.hpp"
+#include "DiscoveryIpcTypes.h"
+#include <cstring>
 
 using namespace arp_stm32;
-using namespace arp_stm32::ipc;
 using namespace std;
 
 const char VersionMessage::EXPECTED_VERSION[VersionMessage::SIZE] = VERSION;
@@ -60,9 +59,4 @@ void VersionMessage::setVersion(char const * const version)
 MsgType VersionMessage::getType() const
 {
     return MSG_VERSION;
-}
-
-string VersionMessage::toString() const
-{
-    return arp_math::charToHexArray(getVersion(),VersionMessage::SIZE);
 }

@@ -6,12 +6,12 @@
  */
 
 #include "EventMessage.hpp"
-#include "DiscoveryIpcTypes.hpp"
+#include "DiscoveryIpcTypes.h"
+#include <cstring>
 
 namespace arp_stm32
 {
 
-using namespace arp_stm32::ipc;
 
 EventMessage::EventMessage()
     : IpcMsg()
@@ -19,7 +19,7 @@ EventMessage::EventMessage()
 {
 }
 
-EventMessage::EventMessage(ipc::EventId id)
+EventMessage::EventMessage(EventId id)
     : IpcMsg()
     , m_id(id)
 {
@@ -44,9 +44,9 @@ bool EventMessage::deserialize(PayloadConst payload)
     return true;
 }
 
-EventId const & EventMessage::getEventId() const
+EventId EventMessage::getEventId() const
 {
-    return m_id;
+    return static_cast<EventId>(m_id);
 }
 
 MsgType EventMessage::getType() const

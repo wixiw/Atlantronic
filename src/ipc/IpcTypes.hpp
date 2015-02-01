@@ -11,7 +11,12 @@
 #include <stdint.h>
 #include <utility>
 
-namespace arp_stm32 { namespace ipc
+//TODO
+typedef unsigned char uint8_t;
+//TODO
+typedef unsigned short uint16_t;
+
+namespace arp_stm32
 {
     /**
      * This is a common pattern used for ram check.
@@ -32,10 +37,10 @@ namespace arp_stm32 { namespace ipc
             uint16_t    magic;
             MsgType     type;
             MsgSize     size;
-    };
+    } __attribute((packed)); //without packed, the struct is aligned on uint16_t.
 
     static const MsgSize HEADER_SIZE = sizeof(IpcHeaderPod);
-    static const MsgSize MSG_MAX_SIZE = 1000;
+    static const MsgSize MSG_MAX_SIZE = 1000; //Take care to accord with USB_RX_BUFER_SIZE in usb.c
 
     typedef std::pair<uint8_t *, MsgSize> Payload;
     typedef std::pair<uint8_t const * const, MsgSize const> PayloadConst;
@@ -43,7 +48,7 @@ namespace arp_stm32 { namespace ipc
     //This is specific to linux but we'll survive to this shortcut ;p
     typedef int FileDesciptor;
 
-}}
+}
 
 
 #endif /* IPCTYPES_HPP_ */

@@ -8,8 +8,10 @@
 #ifndef DISCOVERYIPCTYPES_HPP_
 #define DISCOVERYIPCTYPES_HPP_
 
-namespace arp_stm32 { namespace ipc
+#ifdef __cplusplus
+extern "C"
 {
+#endif
 
 typedef enum
 {
@@ -26,9 +28,13 @@ typedef enum
 {
     EVT_RESERVED = 0,
     EVT_START_MATCH = 1,
-    EVT_REQUEST_VERSION = 2
+    EVT_REQUEST_VERSION = 2,
+    EVT_REBOOT = 3,
+    EVT_LIST_TASKS = 4,
 } EventId;
 
-}}
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* DISCOVERYIPCTYPES_HPP_ */

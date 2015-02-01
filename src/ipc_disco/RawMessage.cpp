@@ -6,11 +6,9 @@
  */
 
 #include "RawMessage.hpp"
-#include <string>
-#include <math/math.hpp>
+#include <cstring>
 
 using namespace arp_stm32;
-using namespace arp_stm32::ipc;
 using namespace std;
 
 RawMessage::RawMessage()
@@ -61,13 +59,5 @@ void RawMessage::setPayload(uint8_t const * const data, MsgSize size)
 
 MsgType RawMessage::getType() const
 {
-    return 666U;
-}
-
-string RawMessage::toString() const
-{
-    using namespace arp_math;
-    ostringstream s;
-     s << "RawMsg = " << uint8ToHexArray(m_data, ipc::MSG_MAX_SIZE) << ".";
-    return s.str();
+    return 120U;
 }

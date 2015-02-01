@@ -21,26 +21,25 @@ class LogMessage: public arp_stm32::IpcMsg
         LogMessage();
         virtual ~LogMessage();
 
-        static const ipc::MsgSize MAX_FUNCTION_LENGTH = 20;
-        static const ipc::MsgSize MAX_LOG_SIZE = ipc::MSG_MAX_SIZE - MAX_FUNCTION_LENGTH - sizeof(uint16_t) - sizeof(log_level);
-        static const ipc::MsgSize SIZE = MAX_LOG_SIZE + MAX_FUNCTION_LENGTH + sizeof(uint16_t) + sizeof(log_level);
+        static const MsgSize MAX_FUNCTION_LENGTH = 20;
+        static const MsgSize MAX_LOG_SIZE = MSG_MAX_SIZE - MAX_FUNCTION_LENGTH - sizeof(uint16_t) - sizeof(log_level);
+        static const MsgSize SIZE = MAX_LOG_SIZE + MAX_FUNCTION_LENGTH + sizeof(uint16_t) + sizeof(log_level);
 
         /**
          * Overloaded \see IpcMsg
          */
-        virtual bool serialize(ipc::Payload& payload) const;
+        virtual bool serialize(Payload& payload) const;
 
         /**
          * Overloaded \see IpcMsg
          */
-        virtual bool deserialize(ipc::PayloadConst payload);
+        virtual bool deserialize(PayloadConst payload);
 
         /**
          * Overloaded \see IpcMsg
          */
-        virtual ipc::MsgType getType() const;
+        virtual MsgType getType() const;
 
-        std::string getLogString() const;
         void log(enum log_level lvl, std::string function, uint16_t line, std::string log);
 
     protected:

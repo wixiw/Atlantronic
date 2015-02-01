@@ -9,6 +9,7 @@
 #include "end.h"
 #include "led.h"
 #include "gpio.h"
+#include "kernel/driver/usb/ArdCom_c_wrapper.h"
 
 #define LED_STACK_SIZE           100
 

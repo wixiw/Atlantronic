@@ -9,7 +9,7 @@
 #define FAULTMESSAGE_HPP_
 
 #include "ipc/IpcMsg.hpp"
-#include "kernel/fault.h"
+#include "stm32_tasks/fault.h"
 
 namespace arp_stm32
 {
@@ -20,22 +20,22 @@ class FaultMessage : IpcMsg
         FaultMessage();
         virtual ~FaultMessage();
 
-        static const ipc::MsgSize SIZE = sizeof(fault_status)*FAULT_MAX;
+        static const MsgSize SIZE = sizeof(fault_status)*FAULT_MAX;
 
         /**
          * Overloaded \see IpcMsg
          */
-        virtual bool serialize(ipc::Payload& payload) const;
+        virtual bool serialize(Payload& payload) const;
 
         /**
          * Overloaded \see IpcMsg
          */
-        virtual bool deserialize(ipc::PayloadConst payload);
+        virtual bool deserialize(PayloadConst payload);
 
         /**
          * Overloaded \see IpcMsg
          */
-        virtual ipc::MsgType getType() const;
+        virtual MsgType getType() const;
 
     protected:
         struct fault_status m_fault[FAULT_MAX];

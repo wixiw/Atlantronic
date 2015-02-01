@@ -11,8 +11,6 @@
 namespace arp_stm32
 {
 
-using namespace arp_stm32::ipc;
-
 IpcMsg::IpcMsg(){}
 IpcMsg::~IpcMsg(){}
 

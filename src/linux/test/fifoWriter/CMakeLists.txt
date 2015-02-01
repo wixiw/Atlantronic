@@ -1,2 +1,0 @@
-rosbuild_add_executable(fifo_writer.ard fifoWriter.cpp)
-target_link_libraries(fifo_writer.ard arp_stm32-components)

@@ -31,12 +31,12 @@ class Datagram
         /**
          * @return : a read only pointer to the message payload and its dedicated header size
          */
-        ipc::PayloadConst getPayload() const;
+        PayloadConst getPayload() const;
 
         /**
          * @return : a pointer to the payload in order to fill it.
          */
-        ipc::Payload getWritablePayload();
+        Payload getWritablePayload();
 
         /** Check that the payload has a size matching the header*/
         bool isPayloadFullyReceived() const;
@@ -46,14 +46,14 @@ class Datagram
          * an external client can use them safely.
          * @return : the buffer position for next append and the remaining size. Returns null in case the payload has the correct size.
          */
-        ipc::Payload appendPayload(ipc::MsgSize size);
+        Payload appendPayload(MsgSize size);
 
         /**
          * Extract some bytes from the payload. This function is not doing the extracting job on memory, it is just managing pointers so that
          * an external client can use them safely.
          * @return : the buffer position for next extract and the remaining size. Returns null in case the payload has been fully extracted.
          */
-        ipc::Payload extractPayload(ipc::MsgSize size);
+        Payload extractPayload(MsgSize size);
 
         /**
          * Decorator, see IpcHeader.deserialize
@@ -72,8 +72,8 @@ class Datagram
 
     protected:
         IpcHeader m_header;
-        uint8_t m_payload[ipc::MSG_MAX_SIZE];
-        ipc::MsgSize m_currentPayloadSize;
+        uint8_t m_payload[MSG_MAX_SIZE];
+        MsgSize m_currentPayloadSize;
         uint8_t* m_currentPayloadPosition;
 };
 

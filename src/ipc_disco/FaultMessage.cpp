@@ -6,12 +6,13 @@
  */
 
 #include "FaultMessage.hpp"
-#include "DiscoveryIpcTypes.hpp"
+#include "DiscoveryIpcTypes.h"
+#include <cstring>
 
 namespace arp_stm32
 {
 
-using namespace arp_stm32::ipc;
+
 
 FaultMessage::FaultMessage()
     : IpcMsg()

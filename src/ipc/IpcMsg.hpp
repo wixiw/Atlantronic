@@ -9,7 +9,7 @@
 #define IPCMSG_HPP_
 
 #include "IpcTypes.hpp"
-#include <cstring>
+
 
 namespace arp_stm32
 {
@@ -25,18 +25,18 @@ class IpcMsg
          * Overloaded \see IpcMsg
          * convert the string verison
          */
-        virtual bool serialize(ipc::Payload& payload) const = 0;
+        virtual bool serialize(Payload& payload) const = 0;
 
         /**
          * Overloaded \see IpcMsg
          * ensure size is 41
          */
-        virtual bool deserialize(ipc::PayloadConst payload) = 0;
+        virtual bool deserialize(PayloadConst payload) = 0;
 
         /**
          * Get associated ID for header construction
          */
-        virtual ipc::MsgType getType() const = 0;
+        virtual MsgType getType() const = 0;
 
         bool fillDatagram(Datagram& dtg) const;
 };

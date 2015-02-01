@@ -9,9 +9,8 @@
 #define OPPONENTLISTMSG_HPP_
 
 #include "ipc/IpcMsg.hpp"
-#include "discovery/detection.h"
+#include "stm32_tasks/detection.h"
 #include <list>
-#include <string>
 
 namespace arp_stm32
 {
@@ -25,22 +24,17 @@ class OpponentListMsg: public arp_stm32::IpcMsg
         /**
          * Overloaded \see IpcMsg
          */
-        virtual bool serialize(ipc::Payload& payload) const;
+        virtual bool serialize(Payload& payload) const;
 
         /**
          * Overloaded \see IpcMsg
          */
-        virtual bool deserialize(ipc::PayloadConst payload);
+        virtual bool deserialize(PayloadConst payload);
 
         /**
          * Overloaded \see IpcMsg
          */
-        virtual ipc::MsgType getType() const;
-
-        /**
-         * For debug purposes
-         */
-        virtual std::string toString() const;
+        virtual MsgType getType() const;
 
         std::list<detection_object> const & getOppList() const;
 

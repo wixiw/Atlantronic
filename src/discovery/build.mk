@@ -10,6 +10,8 @@ obj-discovery-stm32_ard += kernel/heap_1.o
 obj-discovery-stm32_ard += kernel/log.o
 obj-discovery-stm32_ard += kernel/heartbeat.o
 obj-discovery-stm32_ard += kernel/driver/usb/usb.o
+obj-discovery-stm32_ard += kernel/driver/usb/ArdCom.o
+obj-discovery-stm32_ard += kernel/driver/usb/ArdCom_c_wrapper.o
 obj-discovery-stm32_ard += kernel/driver/usb/usb_descriptor.o
 obj-discovery-stm32_ard += kernel/driver/usb/stm32f4xx/usb_core.o
 obj-discovery-stm32_ard += kernel/driver/usb/stm32f4xx/usb_dcd.o
@@ -48,6 +50,16 @@ obj-discovery-stm32_ard += discovery/table_2015.o
 obj-discovery-stm32_ard += ipc/Datagram.o
 obj-discovery-stm32_ard += ipc/IpcHeader.o
 obj-discovery-stm32_ard += ipc/IpcMsg.o
+
+#ipc_disco folder
+obj-discovery-stm32_ard += ipc_disco/EventMessage.o
+obj-discovery-stm32_ard += ipc_disco/FaultMessage.o
+obj-discovery-stm32_ard += ipc_disco/LogMessage.o
+obj-discovery-stm32_ard += ipc_disco/OpponentListMsg.o
+obj-discovery-stm32_ard += ipc_disco/RawMessage.o
+obj-discovery-stm32_ard += ipc_disco/StatusMessage.o
+obj-discovery-stm32_ard += ipc_disco/VersionMessage.o
+
 
 #stm32_tasks folder
 obj-discovery-stm32_ard += stm32_tasks/fault.o

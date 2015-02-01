@@ -9,7 +9,7 @@
 #define EVENTMESSAGE_HPP_
 
 #include "ipc/IpcMsg.hpp"
-#include "DiscoveryIpcTypes.hpp"
+#include "DiscoveryIpcTypes.h"
 
 namespace arp_stm32
 {
@@ -17,33 +17,33 @@ namespace arp_stm32
 class EventMessage: public arp_stm32::IpcMsg
 {
     public:
-        static const ipc::MsgSize SIZE = sizeof(ipc::EventId);
+        static const MsgSize SIZE = sizeof(uint8_t);
 
         EventMessage();
-        EventMessage(ipc::EventId id);
+        EventMessage(EventId id);
         virtual ~EventMessage();
 
 
-        ipc::EventId const & getEventId() const;
+        EventId getEventId() const;
 
 
         /**
          * Overloaded \see IpcMsg
          */
-        virtual bool serialize(ipc::Payload& payload) const;
+        virtual bool serialize(Payload& payload) const;
 
         /**
          * Overloaded \see IpcMsg
          */
-        virtual bool deserialize(ipc::PayloadConst payload);
+        virtual bool deserialize(PayloadConst payload);
 
         /**
          * Overloaded \see IpcMsg
          */
-        virtual ipc::MsgType getType() const;
+        virtual MsgType getType() const;
 
     protected:
-        ipc::EventId m_id;
+        uint8_t m_id;
 };
 
 } /* namespace arp_stm32 */

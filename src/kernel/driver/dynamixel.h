@@ -244,10 +244,14 @@ struct dynamixel_usb_data
 
 } __attribute((packed));
 
+#ifndef LINUX
+
 void dynamixel_update_usb_data(struct dynamixel_usb_data* dynamixel) WEAK_DYNAMIXEL;
 
 void dynamixel_disable() WEAK_DYNAMIXEL;
 
 void dynamixel_enable() WEAK_DYNAMIXEL;
+
+#endif
 
 #endif

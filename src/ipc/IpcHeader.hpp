@@ -24,8 +24,8 @@ class IpcHeader
     //everything is public as it's a POD class.
     public:
         uint16_t        magic;
-        ipc::MsgType    type;
-        ipc::MsgSize    size;
+        MsgType    type;
+        MsgSize    size;
 
 
         IpcHeader();

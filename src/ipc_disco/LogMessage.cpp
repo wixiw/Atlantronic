@@ -6,13 +6,14 @@
  */
 
 #include "LogMessage.hpp"
-#include "DiscoveryIpcTypes.hpp"
+#include "DiscoveryIpcTypes.h"
+#include <cstring>
 #include <sstream>
 
 namespace arp_stm32
 {
 
-using namespace arp_stm32::ipc;
+
 using namespace std;
 
 LogMessage::LogMessage()
@@ -72,13 +73,6 @@ bool LogMessage::deserialize(PayloadConst payload)
     currentPos += MAX_LOG_SIZE;
 
     return true;
-}
-
-string LogMessage::getLogString() const
-{
-    ostringstream os;
-    os << "[" << m_level << "] " << string(m_function) << "() at l=" << m_line << " : " << string(m_log);
-    return os.str();
 }
 
 void LogMessage::log(enum log_level lvl, std::string function, uint16_t line, std::string log)

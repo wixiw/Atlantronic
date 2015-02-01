@@ -10,7 +10,6 @@
 
 using namespace std;
 using namespace arp_stm32;
-using namespace arp_stm32::ipc;
 
 Datagram::Datagram():
         m_header()
@@ -117,10 +116,6 @@ PayloadConst Datagram::getPayload() const
 
 Payload Datagram::getWritablePayload()
 {
-    return std::make_pair(m_payload, ipc::MSG_MAX_SIZE);
+    return std::make_pair(m_payload, MSG_MAX_SIZE);
 }
 
-//std::string Datagram::toString() const
-//{
-//    return m_header.toString() + " " + uint8ToHexArray(m_payload,MSG_MAX_SIZE);
-//}

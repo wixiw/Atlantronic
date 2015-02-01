@@ -12,25 +12,27 @@
 #include <iostream>
 #include <string.h>
 #include "ipc/IpcHeader.hpp"
-#include <math/math.hpp>
-#include "components/usb/DiscoveryIpcTypes.hpp"
-#include "components/usb/VersionMessage.hpp"
-#include "components/usb/StatusMessage.hpp"
-#include "components/usb/LogMessage.hpp"
-#include "components/usb/FaultMessage.hpp"
-#include "components/usb/EventMessage.hpp"
-#include "components/usb/OpponentListMsg.hpp"
-#include "components/usb/RawMessage.hpp"
+#include "ipc_disco/MessagePrinter.hpp"
+#include "ipc_disco/DiscoveryIpcTypes.h"
+#include "ipc_disco/VersionMessage.hpp"
+#include "ipc_disco/StatusMessage.hpp"
+#include "ipc_disco/LogMessage.hpp"
+#include "ipc_disco/FaultMessage.hpp"
+#include "ipc_disco/EventMessage.hpp"
+#include "ipc_disco/OpponentListMsg.hpp"
+#include "ipc_disco/RawMessage.hpp"
 
 using namespace std;
-using namespace arp_math;
 using namespace arp_stm32;
-using namespace arp_stm32::ipc;
+
+#ifndef LINUX
+#define LINUX
+#endif
 
 int main()
 {
     //Try to open the file, this call is blocking if no reader are present
-    int writeFd = ::open("/tmp/wix", O_WRONLY);
+    int writeFd = ::open("/tmp/carte.in", O_WRONLY);
     if( writeFd < 0 )
     {
         cout << "Open returned an error : " << strerror(errno) << endl;
@@ -58,8 +60,9 @@ int main()
             header.size = VersionMessage::SIZE;
             if ( header.serialize(buffer) )
             {
-                cout << "sending header (" << static_cast<unsigned short>(HEADER_SIZE) << "): " << uint8ToHexArray(buffer, HEADER_SIZE) << "." << endl;
-                ::write(writeFd, buffer , HEADER_SIZE);
+                cout << "sending header (" << static_cast<unsigned short>(HEADER_SIZE) << "): " << MessagePrinter::uint8ToHexArray(buffer, HEADER_SIZE) << "." << endl;
+                int res = ::write(writeFd, buffer , HEADER_SIZE);
+                res ++;
             }
             else
             {
@@ -69,13 +72,14 @@ int main()
             VersionMessage msg;
             Payload payload;
             msg.setVersion("aa9c07957790bc0c8bab0f1d80d1bad7c4a4452c");
-            cout << "Message is : " << msg.toString() << endl;
+            cout << "Message is : " << MessagePrinter::toString(msg) << endl;
             memset(buffer, 0, MSG_MAX_SIZE);
             payload.first = buffer;
             if ( msg.serialize(payload) )
             {
-                cout << "sending body (" << static_cast<unsigned short>(payload.second) << "): " << uint8ToHexArray(buffer, payload.second) << "." << endl;
-                ::write(writeFd, payload.first , payload.second);
+                cout << "sending body (" << static_cast<unsigned short>(payload.second) << "): " << MessagePrinter::uint8ToHexArray(buffer, payload.second) << "." << endl;
+                int res = ::write(writeFd, payload.first , payload.second);
+                res ++;
             }
             else
             {
@@ -90,8 +94,9 @@ int main()
             header.size = StatusMessage::SIZE;
             if ( header.serialize(buffer) )
             {
-                cout << "sending header (" << static_cast<unsigned short>(HEADER_SIZE) << "): " << uint8ToHexArray(buffer, HEADER_SIZE) << "." << endl;
-                ::write(writeFd, buffer , HEADER_SIZE);
+                cout << "sending header (" << static_cast<unsigned short>(HEADER_SIZE) << "): " << MessagePrinter::uint8ToHexArray(buffer, HEADER_SIZE) << "." << endl;
+                int res = ::write(writeFd, buffer , HEADER_SIZE);
+                res ++;
             }
             else
             {
@@ -104,8 +109,9 @@ int main()
             payload.first = buffer;
             if ( msg.serialize(payload) )
             {
-                cout << "sending body (" << static_cast<unsigned short>(payload.second) << "): " << uint8ToHexArray(buffer, payload.second) << "." << endl;
-                ::write(writeFd, payload.first , payload.second);
+                cout << "sending body (" << static_cast<unsigned short>(payload.second) << "): " << MessagePrinter::uint8ToHexArray(buffer, payload.second) << "." << endl;
+                int res = ::write(writeFd, payload.first , payload.second);
+                res ++;
             }
             else
             {
@@ -120,8 +126,9 @@ int main()
             header.size = LogMessage::SIZE;
             if ( header.serialize(buffer) )
             {
-                cout << "sending header (" << static_cast<unsigned short>(HEADER_SIZE) << "): " << uint8ToHexArray(buffer, HEADER_SIZE) << "." << endl;
-                ::write(writeFd, buffer , HEADER_SIZE);
+                cout << "sending header (" << static_cast<unsigned short>(HEADER_SIZE) << "): " << MessagePrinter::uint8ToHexArray(buffer, HEADER_SIZE) << "." << endl;
+                int res = ::write(writeFd, buffer , HEADER_SIZE);
+                res ++;
             }
             else
             {
@@ -135,8 +142,9 @@ int main()
             payload.first = buffer;
             if ( msg.serialize(payload) )
             {
-                cout << "sending body (" << static_cast<unsigned short>(payload.second) << "): " << uint8ToHexArray(buffer, payload.second) << "." << endl;
-                ::write(writeFd, payload.first , payload.second);
+                cout << "sending body (" << static_cast<unsigned short>(payload.second) << "): " << MessagePrinter::uint8ToHexArray(buffer, payload.second) << "." << endl;
+                int res = ::write(writeFd, payload.first , payload.second);
+                res ++;
             }
             else
             {
@@ -151,8 +159,9 @@ int main()
             header.size = FaultMessage::SIZE;
             if ( header.serialize(buffer) )
             {
-                cout << "sending header (" << static_cast<unsigned short>(HEADER_SIZE) << "): " << uint8ToHexArray(buffer, HEADER_SIZE) << "." << endl;
-                ::write(writeFd, buffer , HEADER_SIZE);
+                cout << "sending header (" << static_cast<unsigned short>(HEADER_SIZE) << "): " << MessagePrinter::uint8ToHexArray(buffer, HEADER_SIZE) << "." << endl;
+                int res = ::write(writeFd, buffer , HEADER_SIZE);
+                res ++;
             }
             else
             {
@@ -165,8 +174,9 @@ int main()
             payload.first = buffer;
             if ( msg.serialize(payload) )
             {
-                cout << "sending body (" << static_cast<unsigned short>(payload.second) << "): " << uint8ToHexArray(buffer, payload.second) << "." << endl;
-                ::write(writeFd, payload.first , payload.second);
+                cout << "sending body (" << static_cast<unsigned short>(payload.second) << "): " << MessagePrinter::uint8ToHexArray(buffer, payload.second) << "." << endl;
+                int res = ::write(writeFd, payload.first , payload.second);
+                res ++;
             }
             else
             {
@@ -181,22 +191,24 @@ int main()
             header.size = EventMessage::SIZE;
             if ( header.serialize(buffer) )
             {
-                cout << "sending header (" << static_cast<unsigned short>(HEADER_SIZE) << "): " << uint8ToHexArray(buffer, HEADER_SIZE) << "." << endl;
-                ::write(writeFd, buffer , HEADER_SIZE);
+                cout << "sending header (" << static_cast<unsigned short>(HEADER_SIZE) << "): " << MessagePrinter::uint8ToHexArray(buffer, HEADER_SIZE) << "." << endl;
+                int res = ::write(writeFd, buffer , HEADER_SIZE);
+                cout << "header sent with " << res << " bytes. HEADER_SIZE=" << HEADER_SIZE << endl;
             }
             else
             {
                 cout << "failed to serialize header." << endl;
             }
 
-            EventMessage msg(EVT_START_MATCH);
+            EventMessage msg(EVT_REQUEST_VERSION);
             Payload payload;
             memset(buffer, 0, MSG_MAX_SIZE);
             payload.first = buffer;
             if ( msg.serialize(payload) )
             {
-                cout << "sending body (" << static_cast<unsigned short>(payload.second) << "): " << uint8ToHexArray(buffer, payload.second) << "." << endl;
-                ::write(writeFd, payload.first , payload.second);
+                cout << "sending body (" << static_cast<unsigned short>(payload.second) << "): " << MessagePrinter::uint8ToHexArray(buffer, payload.second) << "." << endl;
+                int res = ::write(writeFd, payload.first , payload.second);
+                cout << "payload sent with " << res << " bytes." << endl;
             }
             else
             {
@@ -222,8 +234,9 @@ int main()
             header.size = 2*sizeof(detection_object);
             if ( header.serialize(buffer) )
             {
-                cout << "sending header (" << static_cast<unsigned short>(HEADER_SIZE) << "): " << uint8ToHexArray(buffer, HEADER_SIZE) << "." << endl;
-                ::write(writeFd, buffer , HEADER_SIZE);
+                cout << "sending header (" << static_cast<unsigned short>(HEADER_SIZE) << "): " << MessagePrinter::uint8ToHexArray(buffer, HEADER_SIZE) << "." << endl;
+                int res = ::write(writeFd, buffer , HEADER_SIZE);
+                res ++;
             }
             else
             {
@@ -235,8 +248,9 @@ int main()
             payload.first = buffer;
             if ( msg.serialize(payload) )
             {
-                cout << "sending body (" << static_cast<unsigned short>(payload.second) << "): " << uint8ToHexArray(buffer, payload.second) << "." << endl;
-                ::write(writeFd, payload.first , payload.second);
+                cout << "sending body (" << static_cast<unsigned short>(payload.second) << "): " << MessagePrinter::uint8ToHexArray(buffer, payload.second) << "." << endl;
+                int res = ::write(writeFd, payload.first , payload.second);
+                res ++;
             }
             else
             {
@@ -251,8 +265,9 @@ int main()
             header.size = 3;
             if ( header.serialize(buffer) )
             {
-                cout << "sending header (" << static_cast<unsigned short>(HEADER_SIZE) << "): " << uint8ToHexArray(buffer, HEADER_SIZE) << "." << endl;
-                ::write(writeFd, buffer , HEADER_SIZE);
+                cout << "sending header (" << static_cast<unsigned short>(HEADER_SIZE) << "): " << MessagePrinter::uint8ToHexArray(buffer, HEADER_SIZE) << "." << endl;
+                int res = ::write(writeFd, buffer , HEADER_SIZE);
+                res ++;
             }
             else
             {
@@ -266,8 +281,9 @@ int main()
             payload.first = buffer;
             if ( msg.serialize(payload) )
             {
-                cout << "sending body (" << static_cast<unsigned short>(payload.second) << "): " << uint8ToHexArray(buffer, payload.second) << "." << endl;
-                ::write(writeFd, payload.first , payload.second);
+                cout << "sending body (" << static_cast<unsigned short>(payload.second) << "): " << MessagePrinter::uint8ToHexArray(buffer, payload.second) << "." << endl;
+                int res = ::write(writeFd, payload.first , payload.second);
+                res ++;
             }
             else
             {

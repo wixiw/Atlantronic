@@ -1,2 +1,0 @@
-rosbuild_add_executable(fifo_reader.ard fifoReader.cpp)
-target_link_libraries(fifo_reader.ard arp_stm32-components)

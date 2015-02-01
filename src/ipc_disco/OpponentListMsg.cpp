@@ -6,14 +6,13 @@
  */
 
 #include "OpponentListMsg.hpp"
-#include "DiscoveryIpcTypes.hpp"
-#include <sstream>
-#include <iostream>
+#include "DiscoveryIpcTypes.h"
+#include <cstring>
 
 namespace arp_stm32
 {
 
-using namespace arp_stm32::ipc;
+
 using namespace std;
 
 OpponentListMsg::OpponentListMsg()
@@ -57,7 +56,7 @@ bool OpponentListMsg::deserialize(PayloadConst payload)
     if( payload.second % sizeof(detection_object) != 0
             || payload.first == NULL)
     {
-        cout << "Size = " << payload.second << " modulo=" << sizeof(detection_object) << " res=" << payload.second % sizeof(detection_object);
+        //cout << "Size = " << payload.second << " modulo=" << sizeof(detection_object) << " res=" << payload.second % sizeof(detection_object);
         return false;
     }
     m_oppList.clear();
@@ -73,21 +72,6 @@ bool OpponentListMsg::deserialize(PayloadConst payload)
     }
 
     return true;
-}
-
-string OpponentListMsg::toString() const
-{
-    ostringstream os;
-    os << "OppList(" << m_oppList.size() << ")[x,y,size] = [";
-    std::list<detection_object>::const_iterator i;
-    detection_object obj;
-    for( i = m_oppList.begin() ; i != m_oppList.end() ; i++)
-    {
-        obj = *i;
-        os << obj.x << "," << obj.y << ", " << obj.size << "|";
-    }
-    os << "]";
-    return os.str();
 }
 
 std::list<detection_object> const & OpponentListMsg::getOppList() const

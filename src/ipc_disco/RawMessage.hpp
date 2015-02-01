@@ -8,8 +8,7 @@
 #ifndef RAWMESSAGE_HPP_
 #define RAWMESSAGE_HPP_
 
-#include "IpcMsg.hpp"
-#include <string>
+#include "ipc/IpcMsg.hpp"
 
 namespace arp_stm32
 {
@@ -27,23 +26,23 @@ class RawMessage: public IpcMsg
          * Overloaded \see IpcMsg
          * convert the string verison
          */
-        virtual bool serialize(ipc::Payload& payload) const;
+        virtual bool serialize(Payload& payload) const;
 
         /**
          * Overloaded \see IpcMsg
          * ensure size is 41
          */
-        virtual bool deserialize(ipc::PayloadConst payload);
+        virtual bool deserialize(PayloadConst payload);
 
         /**
          * Overloaded \see IpcMsg
          */
-        virtual ipc::MsgType getType() const;
+        virtual MsgType getType() const;
 
         /**
          * Return the total length of the message body (current size)
          */
-        ipc::MsgSize getPayloadSize() const;
+        MsgSize getPayloadSize() const;
 
         /**
          * Return the body pointer
@@ -55,17 +54,11 @@ class RawMessage: public IpcMsg
          * @param data : a pointer to the payload to copy, if NULL will fill m_data with zeroes
          * @param size : the size of the payload. You have to ensure that size is less than UsbMessage::MSG_MAX_SIZE
          */
-        void setPayload(uint8_t const * const data, ipc::MsgSize size);
-
-
-        /**
-         * Overloaded \see UsbMessage
-         */
-        virtual std::string toString() const;
+        void setPayload(uint8_t const * const data, MsgSize size);
 
     protected:
-        uint8_t m_data[ipc::MSG_MAX_SIZE];
-        ipc::MsgSize m_payloadSize;
+        uint8_t m_data[MSG_MAX_SIZE];
+        MsgSize m_payloadSize;
 
 
 };

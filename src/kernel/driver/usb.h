@@ -9,6 +9,7 @@
 extern "C" {
 #endif
 
+//TODO a enlever
 enum
 {
 	USB_LOG = 1,
@@ -24,6 +25,7 @@ enum
 	USB_DATA_MAX = 12,     //!< nombre d'id, laisser en dernier
 };
 
+//TODO a enlever
 enum usb_cmd
 {
 	USB_CMD_PTASK = 1,
@@ -61,27 +63,15 @@ enum usb_cmd
 	USB_CMD_NUM = 33      //!< nombre de commandes, laisser en dernier
 };
 
-struct usb_header
-{
-	uint16_t type;
-	uint16_t size;
-} __attribute__((packed));
+//TODO a enlever
+void usb_add_cmd(enum usb_cmd id, void (*cmd)(void*));
+
 
 //!< ajout de log
 //!< le module usb doit être initialisé
 void usb_add(uint16_t type, void* msg, uint16_t size);
 
 void usb_add_log(unsigned char level, const char* func, uint16_t line, const char* msg);
-
-//!< ajout d'une commande
-//!< peut être appelée avant l'initialisation du module usb
-void usb_add_cmd(enum usb_cmd id, void (*cmd)(void*));
-
-static inline unsigned char usb_is_get_version_done()
-{
-	extern unsigned char usb_get_version_done;
-	return usb_get_version_done;
-}
 
 #ifdef __cplusplus
 }

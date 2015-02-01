@@ -6,12 +6,13 @@
  */
 
 #include "StatusMessage.hpp"
-#include "DiscoveryIpcTypes.hpp"
+#include "DiscoveryIpcTypes.h"
+#include <cstring>
 
 namespace arp_stm32
 {
 
-using namespace arp_stm32::ipc;
+
 
 StatusMessage::StatusMessage()
     : IpcMsg()
@@ -49,7 +50,7 @@ bool StatusMessage::deserialize(PayloadConst payload)
 
 MsgType StatusMessage::getType() const
 {
-    return ipc::MSG_STATUS;
+    return MSG_STATUS;
 }
 
 } /* namespace arp_stm32 */
