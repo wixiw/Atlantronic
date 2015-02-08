@@ -18,6 +18,7 @@ class StatusMessage: public arp_stm32::IpcMsg
 {
     public:
         StatusMessage();
+        StatusMessage(control_usb_data const&  data);
         virtual ~StatusMessage();
 
         static const MsgSize SIZE = sizeof(control_usb_data);
@@ -38,6 +39,12 @@ class StatusMessage: public arp_stm32::IpcMsg
          * Overloaded \see IpcMsg
          */
         virtual MsgType getType() const;
+
+        /**
+         * Overloaded \see IpcMsg
+         */
+        virtual MsgSize getSize() const;
+
 
     protected:
         control_usb_data m_data;

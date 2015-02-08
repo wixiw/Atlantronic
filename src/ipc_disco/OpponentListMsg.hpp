@@ -36,6 +36,11 @@ class OpponentListMsg: public arp_stm32::IpcMsg
          */
         virtual MsgType getType() const;
 
+        /**
+         * Overloaded \see IpcMsg
+         */
+        virtual MsgSize getSize() const;
+
         std::list<detection_object> const & getOppList() const;
 
         void addOpponent(detection_object& opp);

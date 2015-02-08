@@ -14,7 +14,7 @@ void kernel_panic(uint8_t err) __attribute__((noreturn));
 
 void kernel_panic(uint8_t err)
 {
-	(void) err;
+	UNUSED(err);
 	while(1)
 	{
 		//setLed(LED_RED);
@@ -35,10 +35,10 @@ void vApplicationMallocFailedHook( void )
 	kernel_panic(0);
 }
 
-void vApplicationStackOverflowHook( xTaskHandle pxTask, signed char *pcTaskName )
+__OPTIMIZE_ZERO__ void vApplicationStackOverflowHook( xTaskHandle pxTask, signed char *pcTaskName )
 {
-	( void ) pcTaskName;
-	( void ) pxTask;
+	UNUSED(pcTaskName);
+	UNUSED(pxTask);
 
 	taskDISABLE_INTERRUPTS();
 	kernel_panic(0);

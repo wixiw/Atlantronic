@@ -11,7 +11,7 @@
 #include "gpio.h"
 #include "kernel/driver/usb/ArdCom_c_wrapper.h"
 
-#define LED_STACK_SIZE           100
+#define LED_STACK_SIZE           1024
 
 enum
 {

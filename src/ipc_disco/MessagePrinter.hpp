@@ -13,6 +13,7 @@
 #include "ipc/Datagram.hpp"
 #include "ipc_disco/RawMessage.hpp"
 #include "ipc_disco/VersionMessage.hpp"
+#include "ipc_disco/LogMessage.hpp"
 
 namespace arp_stm32
 {
@@ -23,6 +24,7 @@ class MessagePrinter
         static std::string toString(VersionMessage const & msg);
         static std::string toString(IpcHeader const & msg);
         static std::string toString(Datagram const & msg);
+        static std::string toString(LogMessage const & msg);
 
         /**
          * Build a char buffer as an array of hex numbers 0x[??|??|...]

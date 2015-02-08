@@ -54,6 +54,7 @@ obj-discovery-stm32_ard += ipc/IpcMsg.o
 #ipc_disco folder
 obj-discovery-stm32_ard += ipc_disco/EventMessage.o
 obj-discovery-stm32_ard += ipc_disco/FaultMessage.o
+obj-discovery-stm32_ard += ipc_disco/HokuyoMessage.o
 obj-discovery-stm32_ard += ipc_disco/LogMessage.o
 obj-discovery-stm32_ard += ipc_disco/OpponentListMsg.o
 obj-discovery-stm32_ard += ipc_disco/RawMessage.o
@@ -63,9 +64,10 @@ obj-discovery-stm32_ard += ipc_disco/VersionMessage.o
 
 #stm32_tasks folder
 obj-discovery-stm32_ard += stm32_tasks/fault.o
-obj-discovery-stm32_ard += stm32_tasks/end.o
 obj-discovery-stm32_ard += stm32_tasks/led.o
+obj-discovery-stm32_ard += stm32_tasks/end.o
 obj-discovery-stm32_ard += stm32_tasks/control.o
-obj-discovery-stm32_ard += stm32_tasks/detection.o
+#TODO a remettre quand les messages usb seront code
+#obj-discovery-stm32_ard += stm32_tasks/detection.o
 
 bin-discovery += stm32_ard

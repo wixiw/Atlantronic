@@ -1,11 +1,11 @@
 /*
- * StatusMessage.cpp
+ * HokuyoMessage.cpp
  *
  *  Created on: Jan 10, 2015
  *      Author: ard
  */
 
-#include "StatusMessage.hpp"
+#include "HokuyoMessage.hpp"
 #include "DiscoveryIpcTypes.h"
 #include <cstring>
 
@@ -14,22 +14,22 @@ namespace arp_stm32
 
 
 
-StatusMessage::StatusMessage()
+HokuyoMessage::HokuyoMessage()
     : IpcMsg()
-    , m_data()
+    , m_scan()
 {
 }
 
-StatusMessage::StatusMessage(control_usb_data const& data)
+HokuyoMessage::HokuyoMessage(struct hokuyo_scan const& scan)
 : IpcMsg()
-, m_data(data)
+, m_scan(scan)
 {
 
 }
 
-StatusMessage::~StatusMessage(){}
+HokuyoMessage::~HokuyoMessage(){}
 
-bool StatusMessage::serialize(Payload& payload) const
+bool HokuyoMessage::serialize(Payload& payload) const
 {
     if( MSG_MAX_SIZE < SIZE)
     {
@@ -37,12 +37,12 @@ bool StatusMessage::serialize(Payload& payload) const
         return false;
     }
 
-    memcpy(payload.first, &m_data, SIZE);
+    memcpy(payload.first, &m_scan, SIZE);
     payload.second = SIZE;
     return true;
 }
 
-bool StatusMessage::deserialize(PayloadConst payload)
+bool HokuyoMessage::deserialize(PayloadConst payload)
 {
     if( payload.second != SIZE
             || MSG_MAX_SIZE < SIZE
@@ -51,16 +51,16 @@ bool StatusMessage::deserialize(PayloadConst payload)
         return false;
     }
 
-    memcpy(&m_data, payload.first, SIZE);
+    memcpy(&m_scan, payload.first, SIZE);
     return true;
 }
 
-MsgType StatusMessage::getType() const
+MsgType HokuyoMessage::getType() const
 {
-    return MSG_STATUS;
+    return MSG_HOKUYO_SCAN;
 }
 
-MsgSize StatusMessage::getSize() const
+MsgSize HokuyoMessage::getSize() const
 {
 	return SIZE;
 }

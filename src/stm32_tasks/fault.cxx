@@ -14,8 +14,12 @@
 #include <stdio.h>
 #include "gpio.h"
 #include "boot_signals.h"
+#include "ipc_disco/FaultMessage.hpp"
+#include "kernel/driver/usb/ArdCom.h"
 
-#define FAULT_STACK_SIZE       70
+using namespace arp_stm32;
+
+#define FAULT_STACK_SIZE       1024
 
 struct fault_status fault_status[FAULT_MAX];
 
@@ -58,7 +62,10 @@ static void fault_task(void* arg)
 
 	fault_boot_signal.wait();
 
-	usb_add(USB_ERR, fault_status, sizeof(fault_status));
+	//Send message on usb com stack
+	FaultMessage msg(fault_status);
+	ArdCom::getInstance().send(msg);
+
 
 	while(1)
 	{
@@ -67,7 +74,10 @@ static void fault_task(void* arg)
 
 		// pas de mutex, on envoi pour le debug, s'il y a une modif en cours, on va renvoyer juste apres
 		// remarque : un defaut peut avoir eu le temps de monter et de descendre entre 2 envois
-		usb_add(USB_ERR, fault_status, sizeof(fault_status));
+
+		//Send message on usb com stack
+		FaultMessage msg(fault_status);
+		ArdCom::getInstance().send(msg);
 	}
 }
 

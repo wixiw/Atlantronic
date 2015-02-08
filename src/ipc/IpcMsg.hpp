@@ -38,7 +38,12 @@ class IpcMsg
          */
         virtual MsgType getType() const = 0;
 
-        bool fillDatagram(Datagram& dtg) const;
+        /**
+         * Get serialized paylaod sier for header construction
+         */
+        virtual MsgSize getSize() const = 0;
+
+        bool fillDatagram(Datagram& dtg, uint8_t * const headerBuffer) const;
 };
 
 } /* namespace arp_stm32 */

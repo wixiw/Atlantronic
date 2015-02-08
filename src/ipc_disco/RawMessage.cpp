@@ -61,3 +61,8 @@ MsgType RawMessage::getType() const
 {
     return 120U;
 }
+
+MsgSize RawMessage::getSize() const
+{
+	return m_payloadSize;
+}

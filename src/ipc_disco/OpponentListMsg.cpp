@@ -84,6 +84,12 @@ MsgType OpponentListMsg::getType() const
     return MSG_OPP_LIST;
 }
 
+MsgSize OpponentListMsg::getSize() const
+{
+	//TODO
+	return 0;
+}
+
 void OpponentListMsg::addOpponent(detection_object& opp)
 {
     m_oppList.push_back(opp);

@@ -47,12 +47,18 @@ int main()
     {
         uint8_t buffer[MSG_MAX_SIZE];
         memset(buffer, 0, MSG_MAX_SIZE);
-        int readBytes = ::read(readFd, buffer, HEADER_SIZE);
+        int readBytes = 0;
+        while( readBytes < HEADER_SIZE)
+        {
+        	readBytes += ::read(readFd, buffer+readBytes, HEADER_SIZE-readBytes);
+        	//cout << "Read H incomplete : " << readBytes << "/" << HEADER_SIZE << endl;
+        }
+
         Datagram dtg;
 
         if( readBytes == HEADER_SIZE && dtg.deserializeHeader(buffer) )
         {
-            cout << "Deserialized buffer successfully" << endl;
+            //cout << "Deserialized buffer successfully, type=" << (int) dtg.getHeader().type << endl;
         }
         else
         {
@@ -61,15 +67,51 @@ int main()
         }
 
         memset(buffer, 0, MSG_MAX_SIZE);
-        readBytes = ::read(readFd, buffer, dtg.getHeader().size);
 
-        if( readBytes == dtg.getHeader().size)
+        Payload p = dtg.appendPayload(0);
+        readBytes = 0;
+        while( NULL != p.first)
         {
-            cout << "Datagram succefully received : " << MessagePrinter::toString(dtg) << endl;
+        	//cout << "Receiving " << p.second << "/" << dtg.getHeader().size << endl;
+        	readBytes = ::read(readFd, p.first, p.second);
+        	p = dtg.appendPayload(readBytes);
         }
-        else
+
+        //cout << "Datagram received : " << MessagePrinter::uint8ToHexArray(dtg.getPayload().first, dtg.getPayload().second )<< endl;
+
+        switch(dtg.getHeader().type)
         {
-            cout << "Failed to receie payload. nb bytes=" << readBytes << endl;
+        	case MSG_VERSION:
+        	{
+        		VersionMessage msg;
+        		if( msg.deserialize(dtg.getPayload()) )
+        		{
+        			cout << "Version message received : " << msg.getVersion() << endl;
+        		}
+        		else
+        		{
+        			cout << "Failed to deserialize Version message." << endl;
+        		}
+        		break;
+        	}
+
+        	case MSG_LOG:
+        	{
+        		LogMessage msg;
+        		if( msg.deserialize(dtg.getPayload()) )
+        		{
+        			cout << "[LOG:" << msg.getLevelText() << "] " << msg.getLogText() << endl;
+        		}
+        		else
+        		{
+        			cout << "Failed to deserialize Log message." << endl;
+        		}
+        		break;
+        	}
+
+        	default:
+        		cout << "Unknown message type (" << static_cast<unsigned int>(dtg.getHeader().type) << ")" << endl;
+        		break;
         }
 
     }

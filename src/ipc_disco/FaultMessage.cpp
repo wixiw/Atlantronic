@@ -20,6 +20,12 @@ FaultMessage::FaultMessage()
     memset(m_fault, 0, sizeof(m_fault));
 }
 
+FaultMessage::FaultMessage(struct fault_status const * const fault)
+	: IpcMsg()
+{
+	memcpy(m_fault, fault, sizeof(m_fault));
+}
+
 FaultMessage::~FaultMessage(){}
 
 bool FaultMessage::serialize(Payload& payload) const
@@ -52,6 +58,12 @@ MsgType FaultMessage::getType() const
 {
     return MSG_FAULT;
 }
+
+MsgSize FaultMessage::getSize() const
+{
+	return SIZE;
+}
+
 
 
 } /* namespace arp_stm32 */

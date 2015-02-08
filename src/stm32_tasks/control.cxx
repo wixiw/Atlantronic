@@ -14,8 +14,12 @@
 #include "fault.h"
 #include "kernel/pump.h"
 #include "boot_signals.h"
+#include "ipc_disco/StatusMessage.hpp"
+#include "kernel/driver/usb/ArdCom.h"
 
-#define CONTROL_STACK_SIZE       350
+using namespace arp_stm32;
+
+#define CONTROL_STACK_SIZE       1024
 
 static struct control_usb_data control_usb_data;
 
@@ -68,8 +72,9 @@ static void control_task(void* /*arg*/)
 		control_usb_data.power_state = power_get();
 		dynamixel_update_usb_data(&control_usb_data.dynamixel);
 
-		usb_add(USB_CONTROL, &control_usb_data, sizeof(control_usb_data));
-
+		//Send message on usb com stack
+		StatusMessage msg(control_usb_data);
+		ArdCom::getInstance().send(msg);
 
 		vTaskDelayUntil(&wake_time, CONTROL_PERIOD);
 	}

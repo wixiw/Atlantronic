@@ -120,10 +120,14 @@ int main()
         }
         else if( 0 == strcmp(line, "log"))
         {
+        	LogMessage msg;
+        	Payload payload;
+        	msg.logArd(LOG_ERROR, "MyFunction", 8, "Bonjour, Bite!");
+
             memset(buffer, 0, MSG_MAX_SIZE);
             header.magic = MAGIC_NUMBER;
             header.type = MSG_LOG;
-            header.size = LogMessage::SIZE;
+            header.size = msg.getSize();
             if ( header.serialize(buffer) )
             {
                 cout << "sending header (" << static_cast<unsigned short>(HEADER_SIZE) << "): " << MessagePrinter::uint8ToHexArray(buffer, HEADER_SIZE) << "." << endl;
@@ -135,9 +139,6 @@ int main()
                 cout << "failed to serialize header." << endl;
             }
 
-            LogMessage msg;
-            Payload payload;
-            msg.log(LOG_ERROR, "MyFunction", 8, "Bonjour, Bite!");
             memset(buffer, 0, MSG_MAX_SIZE);
             payload.first = buffer;
             if ( msg.serialize(payload) )

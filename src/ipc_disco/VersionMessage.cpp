@@ -28,7 +28,7 @@ bool VersionMessage::serialize(Payload& payload) const
         return false;
     }
 
-    memcpy(payload.first, m_version, SIZE);
+    memcpy(payload.first, EXPECTED_VERSION, SIZE);
     payload.second = SIZE;
     return true;
 }
@@ -59,4 +59,9 @@ void VersionMessage::setVersion(char const * const version)
 MsgType VersionMessage::getType() const
 {
     return MSG_VERSION;
+}
+
+MsgSize VersionMessage::getSize() const
+{
+	return SIZE;
 }

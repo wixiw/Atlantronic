@@ -83,7 +83,6 @@ bool Datagram::serializeHeader(uint8_t * const buffer)
         //reset the payload so that its ready to be received
         m_currentPayloadSize = m_header.size;
         m_currentPayloadPosition = m_payload;
-        memset(m_payload, 0, MSG_MAX_SIZE);
         return true;
     }
     else

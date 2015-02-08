@@ -64,15 +64,16 @@ static int gpio_module_init(void)
 	gpio_pin_init(GPIOE, 5, GPIO_MODE_IN, GPIO_SPEED_50MHz, GPIO_OTYPE_PP, GPIO_PUPD_UP);  // IN_14
 
 	// TODO puissance par defaut
-
 	gpio_power_on();
+
 	color = COLOR_UNKNOWN;
 	gpio_go = 0;
 	gpio_queue_go = xQueueCreate(1, 0);
 	gpio_color_change_enable = 1;
 
-	usb_add_cmd(USB_CMD_GO, &gpio_cmd_go);
-	usb_add_cmd(USB_CMD_COLOR, &gpio_cmd_color);
+	//TODO necessaire ou relicat ligne de commande  ?
+	//usb_add_cmd(USB_CMD_GO, &gpio_cmd_go);
+	//usb_add_cmd(USB_CMD_COLOR, &gpio_cmd_color);
 
 	// boutons en IT sur front montant : USR1 et USR2
 	// boutons en IT sur front descendant sur le GO

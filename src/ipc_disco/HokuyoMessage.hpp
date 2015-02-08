@@ -1,34 +1,37 @@
 /*
- * LogMessage.hpp
+ * HokuyoMessage.hpp
  *
  *  Created on: Jan 10, 2015
- *      Author: ard
+ *      Author: willy
  */
 
-#ifndef LOGMESSAGE_HPP_
-#define LOGMESSAGE_HPP_
+#ifndef HokuyoMessage_HPP_
+#define HokuyoMessage_HPP_
 
 #include "ipc/IpcMsg.hpp"
-#include "kernel/log_level.h"
+#include "kernel/driver/hokuyo.h"
 
 namespace arp_stm32
 {
 
-class LogMessage: public arp_stm32::IpcMsg
+class HokuyoMessage: public arp_stm32::IpcMsg
 {
     public:
-        LogMessage();
-        virtual ~LogMessage();
+        HokuyoMessage();
+        HokuyoMessage(struct hokuyo_scan const& scan);
+        virtual ~HokuyoMessage();
 
-        static const MsgSize MAX_LOG_SIZE = MSG_MAX_SIZE - 1 - sizeof(log_level);
+        static const MsgSize SIZE = sizeof(hokuyo_scan);
 
         /**
          * Overloaded \see IpcMsg
+         * convert the string version
          */
         virtual bool serialize(Payload& payload) const;
 
         /**
          * Overloaded \see IpcMsg
+         * ensure size is 41
          */
         virtual bool deserialize(PayloadConst payload);
 
@@ -42,15 +45,10 @@ class LogMessage: public arp_stm32::IpcMsg
          */
         virtual MsgSize getSize() const;
 
-        char const * getLogText() const;
-        char const * getLevelText() const;
-
-        void logArd(enum log_level lvl, char const * const function_, uint16_t line, char const * const log_);
 
     protected:
-	    uint8_t m_level;
-	    uint8_t m_log[MAX_LOG_SIZE];
+        struct hokuyo_scan m_scan;
 };
 
 } /* namespace arp_stm32 */
-#endif /* LOGMESSAGE_HPP_ */
+#endif /* HokuyoMessage_HPP_ */

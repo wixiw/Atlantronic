@@ -9,19 +9,26 @@
 extern "C" {
 #endif
 
+//Send a message on usb, you have to call getUsbMutex() before
+void usb_write(const void* buffer, int size);
+
+//Hold the lock on the usb stack to prevent mixing when sending a message
+void takeUsbMutex();
+
+//Release the lock on the usb stack after having called takeUsbMutex
+void releaseUsbMutex();
+
+//Signal the writing task that a message is ready
+void signalUsbMsg();
+
 //TODO a enlever
 enum
 {
-	USB_LOG = 1,
 	USB_ERR = 2,
-	USB_HOKUYO = 3,
-	USB_CONTROL = 5,
-	USB_GO = 6,
 	USB_DETECTION_DYNAMIC_OBJECT_SIZE1 = 7,
 	USB_DETECTION_DYNAMIC_OBJECT_SIZE2 = 8,
 	USB_DETECTION_DYNAMIC_OBJECT1 = 9,
 	USB_DETECTION_DYNAMIC_OBJECT2 = 10,
-	USB_PUBLISH_VERSION = 11,
 	USB_DATA_MAX = 12,     //!< nombre d'id, laisser en dernier
 };
 
@@ -67,11 +74,6 @@ enum usb_cmd
 void usb_add_cmd(enum usb_cmd id, void (*cmd)(void*));
 
 
-//!< ajout de log
-//!< le module usb doit être initialisé
-void usb_add(uint16_t type, void* msg, uint16_t size);
-
-void usb_add_log(unsigned char level, const char* func, uint16_t line, const char* msg);
 
 #ifdef __cplusplus
 }

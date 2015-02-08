@@ -50,6 +50,11 @@ class VersionMessage: public IpcMsg
         virtual MsgType getType() const;
 
         /**
+         * Overloaded \see IpcMsg
+         */
+        virtual MsgSize getSize() const;
+
+        /**
          * getter
          */
         char const* getVersion() const;

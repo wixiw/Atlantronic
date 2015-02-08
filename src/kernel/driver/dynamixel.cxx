@@ -12,6 +12,7 @@
 #include "kernel/driver/power.h"
 #include <stdlib.h>
 #include <math.h>
+#include "boot_signals.h"
 
 #define DYNAMIXEL_INSTRUCTION_PING             0x01
 #define DYNAMIXEL_INSTRUCTION_READ_DATA        0x02
@@ -21,7 +22,7 @@
 #define DYNAMIXEL_INSTRUCTION_RESET            0x06
 #define DYNAMIXEL_INSTRUCTION_SYNC_WRITE       0x83
 
-#define DYNAMIXEL_STACK_SIZE            350
+#define DYNAMIXEL_STACK_SIZE           1024
 #define DYNAMIXEL_READ_TIMEOUT           15 // en ms
 #define DYNAMIXEL_MOVE_TIMEOUT         3000 // en ms
 
@@ -106,6 +107,8 @@ void DynamixelManager::task()
 {
 	struct dynamixel_request req;
 	int id = 1;
+
+	dynamixel_boot_signal.wait();
 
 	while(1)
 	{

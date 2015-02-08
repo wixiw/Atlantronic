@@ -10,8 +10,12 @@
 #include "led.h"
 #include "gpio.h"
 #include "kernel/driver/power.h"
+#include "ipc_disco/EventMessage.hpp"
+#include "kernel/driver/usb/ArdCom.h"
 
-#define END_STACK_SIZE           100
+using namespace arp_stm32;
+
+#define END_STACK_SIZE           1024
 uint32_t end_match_time = 90000; //!< duree du match en ms
 
 static void end_cmd_set_time(void* arg);
@@ -53,19 +57,19 @@ static void end_task(void *arg)
 	(void) arg;
 
 	gpio_wait_go();
-	uint32_t msg[3];
-	struct systime t = systick_get_time();
-	msg[0] = t.ms;
-	msg[1] = t.ns;
-	msg[2] = end_match_time;
-	usb_add(USB_GO, &msg, sizeof(msg));
+	EventMessage msgBegin(EVT_START_MATCH);
+	ArdCom::getInstance().send(msgBegin);
+
 	vTaskDelay(end_match_time);
 	end_match = 1;
-	log(LOG_INFO, "Fin du match");
+
+	setLed(0x00);
+	EventMessage msgEnd(EVT_END_MATCH);
+	ArdCom::getInstance().send(msgEnd);
 
 	power_set(POWER_OFF_END_MATCH);
-	exitModules();
-	setLed(0x00);
+	log(LOG_INFO, "Fin du match");
 
+	exitModules();
 	vTaskSuspend(0);
 }

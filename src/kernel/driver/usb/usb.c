@@ -11,16 +11,15 @@
 #include "gpio.h"
 
 #include "kernel/driver/usb.h"
-#include "kernel/log.h"
 #include "boot_signals.h"
 #include "kernel/driver/usb/ArdCom_c_wrapper.h"
 
 // Attention, pour l'envoi de commandes par usb, on suppose que c'est envoyé en une seule trame usb
 
 #define USB_TX_BUFER_SIZE       4096
-#define USB_RX_BUFER_SIZE        2000 //Take care to accord with MSG_MAX_SIZE in IpcTypes.hpp
-#define USB_READ_STACK_SIZE      400
-#define USB_WRITE_STACK_SIZE      75
+#define USB_RX_BUFER_SIZE       2000 //Take care to accord with MSG_MAX_SIZE in IpcTypes.hpp
+#define USB_READ_STACK_SIZE      800
+#define USB_WRITE_STACK_SIZE     150
 
 // variables statiques => segment bss, initialisation a 0
 
@@ -37,8 +36,6 @@ static unsigned int usb_rx_buffer_ep_used;
 static int usb_rx_waiting; //!< overflow sur usb - reception. Vaut 1 si on doit relancer la reception
 static xSemaphoreHandle usb_mutex;
 
-static unsigned char usb_ready = 0;
-
 void usb_read_task(void *);
 void usb_write_task(void *);
 
@@ -47,6 +44,21 @@ static xSemaphoreHandle usb_read_sem;
 static volatile unsigned int usb_endpoint_ready;
 static __ALIGN_BEGIN USB_OTG_CORE_HANDLE USB_OTG_dev __ALIGN_END;
 void USB_OTG_BSP_mDelay (const uint32_t msec);
+
+void takeUsbMutex()
+{
+	xSemaphoreTake(usb_mutex, portMAX_DELAY);
+}
+
+void releaseUsbMutex()
+{
+	xSemaphoreGive(usb_mutex);
+}
+
+void signalUsbMsg()
+{
+	xSemaphoreGive(usb_write_sem);
+}
 
 static int usb_module_init(void)
 {
@@ -151,73 +163,7 @@ void usb_write(const void* buffer, int size)
 	}
 }
 
-void usb_add(uint16_t type, void* msg, uint16_t size)
-{
-//	if(size == 0)
-//	{
-//		return;
-//	}
-//
-//	// on se reserve le buffer circulaire pour les log s'il n'y a personne sur l'usb ou que le premier message de demande de version n'est pas recu
-//	if( (USB_OTG_dev.dev.device_status != USB_OTG_CONFIGURED || !usb_ready) && type != USB_PUBLISH_VERSION)
-//	{
-//		return;
-//	}
-//	struct usb_header header = {type, size};
-//
-//	xSemaphoreTake(usb_mutex, portMAX_DELAY);
-//
-//	usb_write(&header, sizeof(header));
-//	usb_write(msg, size);
-//
-//	xSemaphoreGive(usb_mutex);
-//
-//	xSemaphoreGive(usb_write_sem);
-}
-
-void usb_add_log(unsigned char level, const char* func, uint16_t line, const char* msg)
-{
-//	uint16_t msg_size = strlen(msg);
-//	char log_header[32];
-//
-//	if(msg_size == 0)
-//	{
-//		return;
-//	}
-//
-//	struct systime current_time = systick_get_time();
-//	memcpy(log_header, &current_time, 8);
-//	log_header[8] = level;
-//	memcpy(log_header+9, &line, 2);
-//
-//	int len = strlen(func);
-//
-//	if(len > 20)
-//	{
-//		len = 20;
-//	}
-//
-//	memcpy(log_header + 11, func, len);
-//	len += 11;
-//	log_header[len] = ':';
-//	len++;
-//
-//	uint16_t size = msg_size + len + 1;
-//	struct usb_header usb_header = {USB_LOG, size};
-//
-//	xSemaphoreTake(usb_mutex, portMAX_DELAY);
-//
-//	usb_write(&usb_header, sizeof(usb_header));
-//	usb_write(log_header, len);
-//	usb_write(msg, msg_size);
-//	usb_write_byte((unsigned  char)'\n');
-//
-//	xSemaphoreGive(usb_mutex);
-//
-//	xSemaphoreGive(usb_write_sem);
-}
-
-//TODO a enelever
+//TODO a enlever
 void usb_add_cmd(enum usb_cmd id, void (*cmd)(void*)){}
 
 //! Usb read task
@@ -291,7 +237,7 @@ void usb_write_task(void * arg)
 
 		if( usb_endpoint_ready )
 		{
-			xSemaphoreTake(usb_mutex, portMAX_DELAY);
+			takeUsbMutex();
 			if(usb_buffer_size > 0)
 			{
 				int sizeMax = USB_TX_BUFER_SIZE - usb_buffer_begin;
@@ -305,11 +251,7 @@ void usb_write_task(void * arg)
 				usb_buffer_size -= sizeMax;
 				usb_buffer_begin = (usb_buffer_begin + sizeMax) % USB_TX_BUFER_SIZE;
 			}
-			else
-			{
-			    usb_ready = usb_is_get_version_done();
-			}
-			xSemaphoreGive(usb_mutex);
+			releaseUsbMutex();
 		}
 
 		xSemaphoreTake(usb_write_sem, portMAX_DELAY);

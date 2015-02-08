@@ -8,6 +8,7 @@
 #include "ArdCom.h"
 #include "kernel/log.h"
 #include <cstring>
+#include "kernel/driver/usb.h"
 
 using namespace std;
 using namespace arp_stm32;
@@ -16,7 +17,7 @@ using namespace arp_stm32;
 ArdCom* ArdCom::m_instance=0;
 
 ArdCom::ArdCom()
-	: m_dtg()
+	: m_recvDtg()
 	, m_state(STATE_UNINITIALIZED)
 {
 }
@@ -68,7 +69,7 @@ int ArdCom::waitingHeaderHook(CircularBuffer const * const buffer)
 
 	//On a recu un message qui fait au moins la taille d'un header
 	//on le deserialize pour connaitre la payload
-    if( !m_dtg.deserializeHeader(m_headerBuffer) )
+    if( !m_recvDtg.deserializeHeader(m_headerBuffer) )
     {
     	log_format(LOG_ERROR, "protocol error, header deserialization failed.");
     	m_state = STATE_ERROR;
@@ -82,7 +83,7 @@ int ArdCom::waitingHeaderHook(CircularBuffer const * const buffer)
 int ArdCom::waitingPayloadHook(CircularBuffer const * const buffer)
 {
 	//Si on a recu un message trop petit on attend la suite
-	if( buffer->count < m_dtg.getHeader().size )
+	if( buffer->count < m_recvDtg.getHeader().size )
 	{
 		log_format(LOG_ERROR, "protocol error, payload size too short.");
 		m_state = STATE_ERROR;
@@ -90,18 +91,18 @@ int ArdCom::waitingPayloadHook(CircularBuffer const * const buffer)
 	}
 
 	//decircularisation du buffer de reception
-	memcpy_circularToLinear( m_dtg.getWritablePayload().first, buffer, m_dtg.getHeader().size);
-	m_dtg.appendPayload(m_dtg.getHeader().size);
+	memcpy_circularToLinear( m_recvDtg.getWritablePayload().first, buffer, m_recvDtg.getHeader().size);
+	m_recvDtg.appendPayload(m_recvDtg.getHeader().size);
 
 	//Call message callback associated to received header type.
-	map<DiscoveryMsgType, MsgCallback>::iterator element = m_msgCallbacks.find(static_cast<DiscoveryMsgType>(m_dtg.getHeader().type));
+	map<DiscoveryMsgType, MsgCallback>::iterator element = m_msgCallbacks.find(static_cast<DiscoveryMsgType>(m_recvDtg.getHeader().type));
 	if( element == m_msgCallbacks.end() )
-		log_format(LOG_ERROR, "protocol error, unknown message type=%d.", m_dtg.getHeader().type);
+		log_format(LOG_ERROR, "protocol error, unknown message type=%d.", m_recvDtg.getHeader().type);
 	else
-		element->second(m_dtg);
+		element->second(m_recvDtg);
 
     m_state = STATE_WAITING_HEADER;
-	return m_dtg.getHeader().size;
+	return m_recvDtg.getHeader().size;
 }
 
 int ArdCom::deserialize(CircularBuffer const * const buffer)
@@ -126,5 +127,26 @@ int ArdCom::deserialize(CircularBuffer const * const buffer)
 	}
 
 	return res;
+}
+
+bool ArdCom::send(arp_stm32::IpcMsg& msg) const
+{
+	Datagram dtg;
+	uint8_t headerBuffer[HEADER_SIZE];
+
+	if(!msg.fillDatagram(dtg,headerBuffer))
+	{
+		return false;
+	}
+
+	takeUsbMutex();
+
+	usb_write(&headerBuffer, HEADER_SIZE);
+	usb_write(dtg.getPayload().first, dtg.getPayload().second);
+
+	signalUsbMsg();
+	releaseUsbMutex();
+
+	return true;
 }
 

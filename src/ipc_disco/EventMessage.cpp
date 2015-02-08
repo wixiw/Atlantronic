@@ -54,6 +54,11 @@ MsgType EventMessage::getType() const
     return MSG_EVENT;
 }
 
+MsgSize EventMessage::getSize() const
+{
+	return SIZE;
+}
+
 EventMessage::~EventMessage(){}
 
 } /* namespace arp_stm32 */

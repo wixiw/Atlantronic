@@ -15,36 +15,34 @@ using namespace std;
 
 string MessagePrinter::uint8ToHexArray(uint8_t const * const buffer, size_t l)
 {
-//    ostringstream s;
-//    s << "0x[";
-//    if( l != 0 )
-//    {
-//        s  << hex << static_cast<unsigned int>(buffer[0]);
-//        for( size_t i=1 ; i<l ; i++)
-//        {
-//            s << "|" << hex << static_cast<unsigned int>(buffer[i]);
-//        }
-//    }
-//    s << "]";
-//    return s.str();
-	return "NOT IMPLEMENTED";
+    ostringstream s;
+    s << "0x[";
+    if( l != 0 )
+    {
+        s  << hex << static_cast<unsigned int>(buffer[0]);
+        for( size_t i=1 ; i<l ; i++)
+        {
+            s << "|" << hex << static_cast<unsigned int>(buffer[i]);
+        }
+    }
+    s << "]";
+    return s.str();
 }
 
 string MessagePrinter::charToHexArray(char const * const buffer, size_t l)
 {
-//    ostringstream s;
-//    s << "0x[";
-//    if( l != 0 )
-//    {
-//        s  << hex << static_cast<unsigned int>(buffer[0]);
-//        for( size_t i=1 ; i<l ; i++)
-//        {
-//            s << "|" << hex << static_cast<unsigned int>(buffer[i]);
-//        }
-//    }
-//    s << "]";
-//    return s.str();
-	return "NOT IMPLEMENTED";
+    ostringstream s;
+    s << "0x[";
+    if( l != 0 )
+    {
+        s  << hex << static_cast<unsigned int>(buffer[0]);
+        for( size_t i=1 ; i<l ; i++)
+        {
+            s << "|" << hex << static_cast<unsigned int>(buffer[i]);
+        }
+    }
+    s << "]";
+    return s.str();
 }
 
 //string RawMessage::toString() const
@@ -58,7 +56,6 @@ string MessagePrinter::charToHexArray(char const * const buffer, size_t l)
 std::string MessagePrinter::toString(VersionMessage const & msg)
 {
     //return charToHexArray(msg.getVersion(),VersionMessage::SIZE);
-	return "NOT IMPLEMENTED";
 }
 
 
@@ -72,16 +69,13 @@ std::string MessagePrinter::toString(IpcHeader const & msg)
 
 std::string MessagePrinter::toString(Datagram const & msg)
 {
-//	return MessagePrinter::toString(msg.getHeader()) + " " + uint8ToHexArray(msg.getPayload().first,MSG_MAX_SIZE);
-	return "NOT IMPLEMENTED";
+	//return MessagePrinter::toString(msg.getHeader()) + " " + uint8ToHexArray(msg.getPayload().first,MSG_MAX_SIZE);
 }
 
-//string LogMessage::getLogString() const
-//{
-//    ostringstream os;
-//    os << "[" << m_level << "] " << string(m_function) << "() at l=" << m_line << " : " << string(m_log);
-//    return os.str();
-//}
+string MessagePrinter::toString(LogMessage const & msg)
+{
+	return msg.getLogText();
+}
 //
 //string OpponentListMsg::toString() const
 //{

@@ -42,6 +42,11 @@ class EventMessage: public arp_stm32::IpcMsg
          */
         virtual MsgType getType() const;
 
+        /**
+         * Overloaded \see IpcMsg
+         */
+        virtual MsgSize getSize() const;
+
     protected:
         uint8_t m_id;
 };

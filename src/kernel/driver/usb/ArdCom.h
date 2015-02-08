@@ -9,6 +9,7 @@
 #define ARDCOM_H_
 
 #include <map>
+#include "ipc/IpcMsg.hpp"
 #include "ipc/Datagram.hpp"
 #include "ArdCom_c_wrapper.h"
 
@@ -40,6 +41,8 @@ public:
 		return *m_instance;
 	}
 
+	bool send(arp_stm32::IpcMsg& msg) const;
+
 private:
 	ArdCom();
 
@@ -55,7 +58,7 @@ private:
 	void msgCb_event(arp_stm32::Datagram& dtg);
 
 
-	arp_stm32::Datagram m_dtg;
+	arp_stm32::Datagram m_recvDtg;
 	std::map<DiscoveryMsgType, MsgCallback> m_msgCallbacks;
 	comState m_state;
 	uint8_t m_headerBuffer[arp_stm32::HEADER_SIZE];

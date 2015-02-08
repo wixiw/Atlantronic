@@ -508,6 +508,9 @@ static void isr_bus_fault(void)
 
 static void isr_usage_fault(void)
 {
+	//Read UFSR register to see status
+	//in order to read in gdb : "x /2xb 0xE000ED2A"
+	//ref http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0553a/CIHFDJCA.html
 	while( 1 )
 	{
 

@@ -40,9 +40,9 @@ class RawMessage: public IpcMsg
         virtual MsgType getType() const;
 
         /**
-         * Return the total length of the message body (current size)
+         * Overloaded \see IpcMsg
          */
-        MsgSize getPayloadSize() const;
+        virtual MsgSize getSize() const;
 
         /**
          * Return the body pointer

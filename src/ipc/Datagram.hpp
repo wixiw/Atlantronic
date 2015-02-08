@@ -44,6 +44,8 @@ class Datagram
         /**
          * Append some bytes to the payload. This function is not doing the appending job on memory, it is just managing pointers so that
          * an external client can use them safely.
+         * You probably want to use this when receiving a message. The datagram is not deserialized yet and you use this function
+         * in case you received an incomplete datagram and keep track of the part that have already been received (thus appended to the payload).
          * @return : the buffer position for next append and the remaining size. Returns null in case the payload has the correct size.
          */
         Payload appendPayload(MsgSize size);
@@ -51,6 +53,8 @@ class Datagram
         /**
          * Extract some bytes from the payload. This function is not doing the extracting job on memory, it is just managing pointers so that
          * an external client can use them safely.
+         * You probably want to use this when sending a msg. The datagram is already serialized and you use this function
+         * to do some partial send and keep track of the part that have already been sent (hence extracted from the payload to the usb driver).
          * @return : the buffer position for next extract and the remaining size. Returns null in case the payload has been fully extracted.
          */
         Payload extractPayload(MsgSize size);

@@ -14,10 +14,11 @@
 namespace arp_stm32
 {
 
-class FaultMessage : IpcMsg
+class FaultMessage : public IpcMsg
 {
     public:
         FaultMessage();
+        FaultMessage(struct fault_status const * const fault);
         virtual ~FaultMessage();
 
         static const MsgSize SIZE = sizeof(fault_status)*FAULT_MAX;
@@ -36,6 +37,11 @@ class FaultMessage : IpcMsg
          * Overloaded \see IpcMsg
          */
         virtual MsgType getType() const;
+
+        /**
+         * Overloaded \see IpcMsg
+         */
+        virtual MsgSize getSize() const;
 
     protected:
         struct fault_status m_fault[FAULT_MAX];

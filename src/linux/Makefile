@@ -18,10 +18,14 @@ LDFLAGS+=-T $(LDSCRIPT)
 LDFLAGS+=-pthread
 LDFLAGS+=-lrt
 
+#Workaround ARD, segfault vant le main sinon
+DEBUG=1
 ifneq ($(DEBUG),1)
 DEF+= NDEBUG
 CFLAGS+=-O2
 CFLAGS+=-fomit-frame-pointer
+else
+CFLAGS+=-O0
 endif
 
 CFLAGS+=$(addprefix -D,$(DEF))

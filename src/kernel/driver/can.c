@@ -83,9 +83,9 @@ __OPTIMIZE_SIZE__ int can_open(enum can_baudrate baudrate, xQueueHandle _can_rea
 
 	can_set_mask(0, 0x00);
 
-	// commandes can
-	usb_add_cmd(USB_CMD_CAN_SET_BAUDRATE, &can_cmd_set_baudrate);
-	usb_add_cmd(USB_CMD_CAN_WRITE, &can_cmd_write);
+	//TODO utile ? ou relicat ligne de commande ?
+	//usb_add_cmd(USB_CMD_CAN_SET_BAUDRATE, &can_cmd_set_baudrate);
+	//usb_add_cmd(USB_CMD_CAN_WRITE, &can_cmd_write);
 
 	return 0;
 }
