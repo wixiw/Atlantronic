@@ -163,9 +163,6 @@ void usb_write(const void* buffer, int size)
 	}
 }
 
-//TODO a enlever
-void usb_add_cmd(enum usb_cmd id, void (*cmd)(void*)){}
-
 //! Usb read task
 void usb_read_task(void * arg)
 {

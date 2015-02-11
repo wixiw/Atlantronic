@@ -9,19 +9,10 @@
 extern "C" {
 #endif
 
+void heartbeat_kick();
+void heartbeat_enable();
 void heartbeat_update();
 
-enum
-{
-	HEARTBEAT_UPDATE,
-	HEARTBEAT_DISABLE,
-};
-
-//------------------ interface usb -------------------
-struct heartbeat_cmd_arg
-{
-	int type;
-} __attribute__((packed));
 
 #ifdef __cplusplus
 }

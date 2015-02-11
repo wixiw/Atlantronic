@@ -10,7 +10,6 @@
 
 
 VectPlan location_get_position();
-
 void location_set_position(VectPlan pos);
 
 #endif

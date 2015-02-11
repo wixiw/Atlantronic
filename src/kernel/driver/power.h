@@ -20,12 +20,6 @@ void power_set(int powerEventMask);
 
 void power_clear(int powerEventMask);
 
-//------------------ interface usb -------------------
-struct power_cmd_arg
-{
-	int power_off;         //!< 0 pour laisser la puissance, !=0 sinon
-} __attribute__((packed));
-
 //------------------ fonctions inline------------------
 
 //! @return 0 si on a la puissance, masque POWER_OFF_* sinon

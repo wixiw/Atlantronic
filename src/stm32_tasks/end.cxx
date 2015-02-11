@@ -18,7 +18,6 @@ using namespace arp_stm32;
 #define END_STACK_SIZE           1024
 uint32_t end_match_time = 90000; //!< duree du match en ms
 
-static void end_cmd_set_time(void* arg);
 static void end_task(void *arg);
 volatile int end_match;
 
@@ -34,17 +33,13 @@ static int end_module_init()
 		return ERR_INIT_END;
 	}
 
-	usb_add_cmd(USB_CMD_MATCH_TIME, &end_cmd_set_time);
-
 	return 0;
 }
 
 module_init(end_module_init, INIT_END);
 
-static void end_cmd_set_time(void* arg)
+void end_cmd_set_time(uint32_t time)
 {
-	// temps passé en ms
-	uint32_t time = *((uint32_t*) arg);
 	if( ! getGo() )
 	{
 		end_match_time = time;

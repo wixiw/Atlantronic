@@ -15,14 +15,14 @@
 
 #define PUMP_SAMPLE_STDDEV              10
 
-enum
+typedef enum
 {
 	PUMP_1,
 	PUMP_2,
 	PUMP_3,
 	PUMP_4,
 	PUMP_MAX
-};
+} PumpId;
 
 class Pump
 {

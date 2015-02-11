@@ -28,7 +28,6 @@ static void led_task(void *arg);
 static void led_two_half_chaser();
 static void led_chaser();
 //static void led_tetris();
-static void led_cmd(void* arg);
 
 static int led_mode = LED_MODE_BOOT;
 static int led_step;
@@ -58,7 +57,6 @@ static int led_module_init(void)
 	}
 
 	led_mode = LED_MODE_WAIT_X86;
-	usb_add_cmd(USB_CMD_LED_READY_FOR_INIT, led_cmd);
 
 	return 0;
 }
@@ -260,8 +258,7 @@ static void led_tetris()
 	}
 }*/
 
-static void led_cmd(void* arg)
+void led_inform_x86_ready()
 {
-	(void) arg;
 	led_ready_for_init = 1;
 }

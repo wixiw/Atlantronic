@@ -12,8 +12,6 @@
 #define PUMP_UNBLOCKED_MAX_STDDEV2     0.002f
 #define PUMP_CURRENT_PIC_DELAY_MS         200
 
-static void pump_cmd(void*);
-
 Pump pump[PUMP_MAX] =
 {
 	Pump(PWM_1),
@@ -21,15 +19,6 @@ Pump pump[PUMP_MAX] =
 	Pump(PWM_3),
 	Pump(PWM_4)
 };
-
-int pump_module_init()
-{
-	usb_add_cmd(USB_CMD_PUMP, pump_cmd);
-
-	return 0;
-}
-
-module_init(pump_module_init, INIT_PUMP);
 
 uint32_t pump_update()
 {
@@ -46,6 +35,7 @@ uint32_t pump_update()
 
 Pump::Pump(uint8_t Pwm_id)
 {
+	currentId = 0;
 	pwm_id = Pwm_id;
 	val = 0;
 	pumpBlocked = false;
@@ -121,19 +111,4 @@ void Pump::update()
 		pumpBlocked = false;
 	}
 	pwm_set(pwm_id, val * PUMP_VMAX / adc_filtered_data.vBat);
-}
-
-//------------------ interface usb -------------------
-void pump_cmd(void* arg)
-{
-	struct pump_cmd_arg* cmd_arg = (struct pump_cmd_arg*) arg;
-	int id = cmd_arg->id;
-	if( id < PUMP_MAX)
-	{
-		pump[id].set(cmd_arg->val/100.0f);
-	}
-	else
-	{
-		log_format(LOG_INFO, "unknown pump id %d", id);
-	}
 }

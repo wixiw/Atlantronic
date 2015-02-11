@@ -52,14 +52,17 @@ obj-discovery-stm32_ard += ipc/IpcHeader.o
 obj-discovery-stm32_ard += ipc/IpcMsg.o
 
 #ipc_disco folder
+obj-discovery-stm32_ard += ipc_disco/ConfigurationMsg.o
 obj-discovery-stm32_ard += ipc_disco/EventMessage.o
 obj-discovery-stm32_ard += ipc_disco/FaultMessage.o
+obj-discovery-stm32_ard += ipc_disco/GyroMsg.o
 obj-discovery-stm32_ard += ipc_disco/HokuyoMessage.o
 obj-discovery-stm32_ard += ipc_disco/LogMessage.o
 obj-discovery-stm32_ard += ipc_disco/OpponentListMsg.o
 obj-discovery-stm32_ard += ipc_disco/RawMessage.o
 obj-discovery-stm32_ard += ipc_disco/StatusMessage.o
 obj-discovery-stm32_ard += ipc_disco/VersionMessage.o
+obj-discovery-stm32_ard += ipc_disco/X86CmdMsg.o
 
 
 #stm32_tasks folder

@@ -15,9 +15,6 @@ static volatile struct systime gpio_color_change_time;
 
 static xQueueHandle gpio_queue_go;
 
-static void gpio_cmd_go(void* arg);
-static void gpio_cmd_color(void* arg);
-
 static int gpio_module_init(void)
 {
 	// io "sorties"
@@ -157,52 +154,6 @@ void gpio_wait_go()
 	xQueuePeek(gpio_queue_go, NULL, portMAX_DELAY);
 }
 
-static void gpio_cmd_go(void * arg)
-{
-	struct gpio_cmd_go_arg* cmd_arg = (struct gpio_cmd_go_arg*) arg;
-
-	switch(cmd_arg->cmd)
-	{
-		case GPIO_CMD_ENABLE_GO:
-			if( gpio_enable_go != 1 )
-			{
-				gpio_enable_go = 1;
-				log(LOG_INFO, "enable GO");
-			}
-			break;
-		case GPIO_CMD_GO:
-			if(gpio_enable_go)
-			{
-				log(LOG_INFO, "usb go");
-				gpio_go = 1;
-				//setLed(LED_CPU_RED | LED_CPU_BLUE);
-				systick_start_match();
-				xQueueSend(gpio_queue_go, NULL, 0);
-			}
-			break;
-		default:
-			log_format(LOG_ERROR, "unknown go cmd %d", cmd_arg->cmd);
-			break;
-	}
-}
-
-static void gpio_cmd_color(void* arg)
-{
-	uint8_t new_color = *((uint8_t*) arg);
-	if(gpio_go == 0 && gpio_color_change_enable)
-	{
-		if(new_color == COLOR_RED)
-		{
-			color = COLOR_RED;
-			log(LOG_INFO, "couleur => rouge");
-		}
-		else
-		{
-			color = COLOR_YELLOW;
-			log(LOG_INFO, "couleur => jaune");
-		}
-	}
-}
 
 void isr_exti3(void)
 {

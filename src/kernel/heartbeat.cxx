@@ -1,37 +1,20 @@
 #include "kernel/driver/power.h"
 #include "heartbeat.h"
-#include "kernel/module.h"
-#include "kernel/log.h"
+#include "kernel/systick.h"
 
 #define HEARTBEAT_TIMEOUT                 5000
 
 static systime heartbeat_last_time;
-static int heartbeat_disabled = 0;
+static int heartbeat_disabled = 1;
 
-static void heartbeat_cmd(void* arg);
-
-int heartbeat_module_init()
+void heartbeat_kick()
 {
-	usb_add_cmd(USB_CMD_HEARTBEAT, heartbeat_cmd);
-
-	return 0;
+	heartbeat_last_time = systick_get_time();
 }
 
-module_init(heartbeat_module_init, INIT_HEARTBEAT);
-
-static void heartbeat_cmd(void* arg)
+void heartbeat_enable()
 {
-	struct heartbeat_cmd_arg* cmd_arg = (struct heartbeat_cmd_arg*) arg;
-
-	if( cmd_arg->type == HEARTBEAT_UPDATE )
-	{
-		heartbeat_disabled = 0;
-		heartbeat_last_time = systick_get_time();
-	}
-	else if( cmd_arg->type == HEARTBEAT_DISABLE )
-	{
-		heartbeat_disabled = 1;
-	}
+	heartbeat_disabled = 0;
 }
 
 void heartbeat_update()

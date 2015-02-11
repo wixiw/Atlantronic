@@ -6,7 +6,6 @@
 //! @author Atlantronic
 
 #include "kernel/driver/usart.h"
-#include "dynamixel_id.h"
 #include "kernel/FreeRTOS.h"
 #include "kernel/task.h"
 #include "kernel/queue.h"
@@ -15,6 +14,11 @@
 #ifndef WEAK_DYNAMIXEL
 #define WEAK_DYNAMIXEL __attribute__((weak, alias("nop_function") ))
 #endif
+
+#define NB_MAX_AX12 10
+#define NB_MAX_RX24 4
+
+void dynamixel_cmd_scan();
 
 enum
 {
@@ -195,7 +199,7 @@ class DynamixelManager
 		int max_devices_id;
 		Dynamixel* devices;
 		bool disabled;
-		friend void dynamixel_cmd(void* arg);
+		friend void dynamixel_cmd(struct dynamixel_cmd_param const * const param);
 		friend void dynamixel_update_usb_data(struct dynamixel_usb_data* dynamixel);
 		friend void dynamixel_disable();
 		friend void dynamixel_enable();
@@ -208,8 +212,7 @@ extern DynamixelManager rx24;
 // ------------------ interface usb ------------------
 enum
 {
-	DYNAMIXEL_CMD_SCAN = 1,
-	DYNAMIXEL_CMD_SET_ID,
+	DYNAMIXEL_CMD_SET_ID = 2,
 	DYNAMIXEL_CMD_SET_BAUDRATE,
 	DYNAMIXEL_CMD_SET_MANAGER_BAUDRATE,
 	DYNAMIXEL_CMD_SET_GOAL_POSITION,
@@ -237,12 +240,15 @@ struct dynamixel_usb_device_data
 	struct dynamixel_error error; //!< erreurs
 } __attribute((packed));
 
+
 struct dynamixel_usb_data
 {
-	struct dynamixel_usb_device_data ax12[AX12_MAX_ID];
-	struct dynamixel_usb_device_data rx24[RX24_MAX_ID];
+	struct dynamixel_usb_device_data ax12[NB_MAX_AX12];
+	struct dynamixel_usb_device_data rx24[NB_MAX_RX24];
 
 } __attribute((packed));
+
+void dynamixel_cmd(struct dynamixel_cmd_param const * const param);
 
 #ifndef LINUX
 

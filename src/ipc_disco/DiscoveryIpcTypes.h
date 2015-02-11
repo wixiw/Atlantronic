@@ -15,14 +15,17 @@ extern "C"
 
 typedef enum
 {
-    MSG_RESERVED = 0,		//not used, reserved for coherency checks (0 is default memory value)
-    MSG_VERSION = 1,		//sended by stm32, publish the runtime version
-    MSG_STATUS = 2,			//sended by stm32, see control.cxx
-    MSG_LOG = 3,			//sended by stm32, log to be appended by x86 log system
-    MSG_FAULT = 4,			//sended by stm32, publish an hardware fault, see fault.cxx
-    MSG_EVENT = 5,			//simple message with no payload, see EventId below
-    MSG_OPP_LIST = 6,		//sended by stm32, list of detected opponents in hokuyo scans, see detection.cxx
-    MSG_HOKUYO_SCAN = 7,	//sended by stm32, hokuyo raw scan, for debug purposes, see hokuyo.cxx
+    MSG_RESERVED = 0,			//not used, reserved for coherency checks (0 is default memory value)
+    MSG_VERSION = 1,			//sended by stm32, publish the runtime version
+    MSG_STATUS = 2,				//sended by stm32, see control.cxx
+    MSG_LOG = 3,				//sended by stm32, log to be appended by x86 log system
+    MSG_FAULT = 4,				//sended by stm32, publish an hardware fault, see fault.cxx
+    MSG_EVENT = 5,				//sended by both, simple message with no payload, see EventId below
+    MSG_OPP_LIST = 6,			//sended by stm32, list of detected opponents in hokuyo scans, see detection.cxx
+    MSG_HOKUYO_SCAN = 7,		//sended by stm32, hokuyo raw scan, for debug purposes, see hokuyo.cxx
+    MSG_X86_CMD = 8,			//sended by x86, publish a consolidated list of commands for stm32 actuators
+    MSG_CONFIGURATION = 9,		//sended by x86, send configuration parameters to the stm32
+    MSG_GYRO_CMD = 10			//sended by x86, gyrometer related commands (calibration, config, set pose)
 } DiscoveryMsgType;
 
 typedef enum
@@ -33,6 +36,10 @@ typedef enum
     EVT_REBOOT = 3,				//sended by x86, request stm32 soft reboot
     EVT_LIST_TASKS = 4,			//sended by x86, for debug purpose, display tasks data
     EVT_END_MATCH = 5,			//sended by stm32, match end event, see end.cxx
+    EVT_ENABLE_HEARTBEAT = 6,	//sended by x86, to enable the x86 life check
+    EVT_X86_INIT_DONE = 7,		//sended by x86, to inform strat is deployed and ready
+    EVT_SCAN_DYNAMIXELS = 8, 	//sended by x86, debug only
+
 } EventId;
 
 #ifdef __cplusplus

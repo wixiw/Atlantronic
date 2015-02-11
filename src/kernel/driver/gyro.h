@@ -7,37 +7,28 @@ enum GyroState
 	GYRO_STATE_RUNNING,
 };
 
-enum GyroCalibrationCmd
-{
-	GYRO_CALIBRATION_START,
-	GYRO_CALIBRATION_STOP,
-};
+//enum for gyro_cmd.calib_cmd
+#define	GYRO_CMD_CALIBRATION_START 	1
+#define	GYRO_CMD_CALIBRATION_STOP 	2
+#define	GYRO_CMD_SET_POSITION 		3
+#define	GYRO_CMD_CONFIGURE 			4
 
-struct gyro_cmd_calibration_arg
-{
-	int32_t calib_cmd;
-} __attribute__((packed));
+typedef struct {
 
-struct gyro_cmd_set_position_arg
-{
+	uint8_t cmd;
 	float theta;
-} __attribute__((packed));
-
-struct gyro_cmd_set_calibration_values_arg
-{
 	float scale;
 	float bias;
 	float dead_zone;
-} __attribute__((packed));
 
+} __attribute__((packed)) gyro_cmd ;
 
 int16_t gyro_get_raw_data();
 float gyro_get_omega();
 float gyro_get_theta_euler();
 float gyro_get_theta_simpson();
-
 void gyro_set_theta(float theta);
 
-void gyro_calib(enum GyroCalibrationCmd cmd);
+void gyro_calibration_cmd(gyro_cmd const& cmd);
 
 #endif

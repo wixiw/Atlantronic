@@ -41,9 +41,6 @@ static unsigned char gyro_rx_buffer[8];
 static Simpson gyro_simpson;
 
 static void init_gyro();
-static void gyro_calibration_cmd(void* arg);
-static void gyro_set_position_cmd(void* arg);
-static void gyro_set_calibration_values_cmd(void* arg);
 static void gyro_spi_callback();
 static int gyro_update(float dt);
 
@@ -52,10 +49,6 @@ int gyro_module_init()
 	gyro_state = GYRO_STATE_DISCONNECTED;
 
 	spi_register_callback(SPI_DEVICE_GYRO, gyro_spi_callback);
-
-	usb_add_cmd(USB_CMD_GYRO_CALIB, &gyro_calibration_cmd);
-	usb_add_cmd(USB_CMD_GYRO_SET_POSITION, &gyro_set_position_cmd);
-	usb_add_cmd(USB_CMD_GYRO_SET_CALIBRATION_VALUES, &gyro_set_calibration_values_cmd);
 
 	gyro_scale = 0.000218166156f;  // from datasheet
 
@@ -265,12 +258,13 @@ void gyro_set_theta(float theta)
 	log_format(LOG_INFO, "gyro set theta to : %d mrad", (int)(1000*theta));
 }
 
-void gyro_calib(enum GyroCalibrationCmd cmd)
+void gyro_calibration_cmd(gyro_cmd const& cmd)
 {
 	float bias = 0.f;
-	switch(cmd)
+
+	switch( cmd.cmd )
 	{
-		case GYRO_CALIBRATION_START:
+		case GYRO_CMD_CALIBRATION_START:
 			portENTER_CRITICAL();
 			gyro_calib_mode = 1;
 			gyro_dev_count = 0;
@@ -278,36 +272,30 @@ void gyro_calib(enum GyroCalibrationCmd cmd)
 			portEXIT_CRITICAL();
 			log(LOG_INFO, "gyro start calibration");
 			break;
-		case GYRO_CALIBRATION_STOP:
+
+		case GYRO_CMD_CALIBRATION_STOP:
 			gyro_calib_mode = 0;
 			portENTER_CRITICAL();
 			bias = gyro_bias;
 			portEXIT_CRITICAL();
 			log_format(LOG_INFO, "gyro stop calibration : %d mLSB/s", (int)(1000*bias));
 			break;
+
+		case GYRO_CMD_SET_POSITION:
+			gyro_set_theta(cmd.theta);
+			break;
+
+		case GYRO_CMD_CONFIGURE:
+			portENTER_CRITICAL();
+			gyro_scale = cmd.scale;
+			gyro_bias = cmd.bias;
+			gyro_dead_zone = cmd.dead_zone;
+			portEXIT_CRITICAL();
+			break;
+
 		default:
+			log_format(LOG_ERROR, "Unknown gyro command : %d.", cmd.cmd);
 			break;
 	}
 }
 
-void gyro_calibration_cmd(void* arg)
-{
-	struct gyro_cmd_calibration_arg* cmd_arg = (struct gyro_cmd_calibration_arg*) arg;
-	gyro_calib((enum GyroCalibrationCmd)cmd_arg->calib_cmd);
-}
-
-void gyro_set_position_cmd(void* arg)
-{
-	struct gyro_cmd_set_position_arg* cmd_arg = (struct gyro_cmd_set_position_arg*) arg;
-	gyro_set_theta(cmd_arg->theta);
-}
-
-void gyro_set_calibration_values_cmd(void* arg)
-{
-	struct gyro_cmd_set_calibration_values_arg *param = (struct gyro_cmd_set_calibration_values_arg*)arg;
-	portENTER_CRITICAL();
-	gyro_scale = param->scale;
-	gyro_bias = param->bias;
-	gyro_dead_zone = param->dead_zone;
-	portEXIT_CRITICAL();
-}

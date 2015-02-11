@@ -28,9 +28,6 @@
 
 static uint8_t dynamixel_checksum(uint8_t* buffer, uint8_t size);
 
-// fonctions de commandes (utilisation par usb uniquement)
-void dynamixel_cmd(void* arg);
-static void dynamixel_cmd_scan(DynamixelManager* manager);
 static void dynamixel_cmd_set_id(DynamixelManager* manager, uint8_t old_id, uint8_t id);
 
 DynamixelManager ax12;
@@ -38,10 +35,8 @@ DynamixelManager rx24;
 
 static int dynamixel_module_init()
 {
-	ax12.init("ax12", USART6_HALF_DUPLEX, 200000, AX12_MAX_ID, 12);
-	rx24.init("rx24", UART5_FULL_DUPLEX, 200000, RX24_MAX_ID, 24);
-
-	usb_add_cmd(USB_CMD_DYNAMIXEL, &dynamixel_cmd);
+	ax12.init("ax12", USART6_HALF_DUPLEX, 200000, NB_MAX_AX12, 12);
+	rx24.init("rx24", UART5_FULL_DUPLEX, 200000, NB_MAX_RX24, 24);
 
 	return 0;
 }
@@ -232,7 +227,7 @@ void DynamixelManager::task()
 void dynamixel_update_usb_data(struct dynamixel_usb_data* dynamixel)
 {
 	xSemaphoreTake(ax12.mutex, portMAX_DELAY);
-	for(int i = 1; i < AX12_MAX_ID; i++)
+	for(int i = 1; i < NB_MAX_AX12; i++)
 	{
 		dynamixel->ax12[i].pos = ax12.devices[i-1].pos;
 		dynamixel->ax12[i].flags = ax12.devices[i-1].flags;
@@ -241,7 +236,7 @@ void dynamixel_update_usb_data(struct dynamixel_usb_data* dynamixel)
 	xSemaphoreGive(ax12.mutex);
 
 	xSemaphoreTake(rx24.mutex, portMAX_DELAY);
-	for(int i = 1; i < RX24_MAX_ID; i++)
+	for(int i = 1; i < NB_MAX_RX24; i++)
 	{
 		dynamixel->rx24[i].pos = rx24.devices[i-1].pos;
 		dynamixel->rx24[i].flags = rx24.devices[i-1].flags;
@@ -804,9 +799,8 @@ float DynamixelManager::get_position(uint8_t id, struct dynamixel_error* error)
 	return (alpha - 0x1ff) * DYNAMIXEL_POS_TO_RD;
 }
 
-__OPTIMIZE_SIZE__ void dynamixel_cmd(void* arg)
+__OPTIMIZE_SIZE__ void dynamixel_cmd(struct dynamixel_cmd_param const * const param)
 {
-	struct dynamixel_cmd_param* param = (struct dynamixel_cmd_param*)arg;
 	struct dynamixel_error err;
 	float theta;
 
@@ -828,8 +822,6 @@ __OPTIMIZE_SIZE__ void dynamixel_cmd(void* arg)
 
 	switch(param->cmd_id)
 	{
-		case DYNAMIXEL_CMD_SCAN:
-			dynamixel_cmd_scan(manager);
 			break;
 		case DYNAMIXEL_CMD_SET_ID:
 			dynamixel_cmd_set_id(manager, param->id, ((int)param->param) & 0xff);
@@ -876,7 +868,7 @@ __OPTIMIZE_SIZE__ void dynamixel_cmd(void* arg)
 	}
 }
 
-static void dynamixel_cmd_scan(DynamixelManager* manager)
+void dynamixel_cmd_scan()
 {
 	int i;
 	struct dynamixel_error error;
@@ -885,10 +877,16 @@ static void dynamixel_cmd_scan(DynamixelManager* manager)
 
 	for(i = 1; i<254; i++)
 	{
-		error = manager->ping(i);
+		error = ax12.ping(i);
 		if(! error.transmit_error)
 		{
-			log_format(LOG_INFO, "dynamixel type %d id %3d détecté - status %#.2x", manager->getType(), i, error.internal_error);
+			log_format(LOG_INFO, "dynamixel type %d id %3d détecté - status %#.2x", ax12.getType(), i, error.internal_error);
+		}
+
+		error = rx24.ping(i);
+		if(! error.transmit_error)
+		{
+			log_format(LOG_INFO, "dynamixel type %d id %3d détecté - status %#.2x", rx24.getType(), i, error.internal_error);
 		}
 	}
 

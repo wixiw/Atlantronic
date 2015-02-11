@@ -4,6 +4,7 @@
 
 #define NO_WEAK_LOG
 #include "kernel/log.h"
+#include "kernel/driver/usb/ArdCom_c_wrapper.h"
 #undef NO_WEAK_LOG
 #include <stdarg.h>
 
