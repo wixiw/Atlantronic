@@ -43,7 +43,8 @@ class IpcMsg
          */
         virtual MsgSize getSize() const = 0;
 
-        bool fillDatagram(Datagram& dtg, uint8_t * const headerBuffer) const;
+        bool fillDatagram(Datagram& dtg) const;
+        bool fillDatagramAndHeader(Datagram& dtg, uint8_t * const headerBuffer) const;
 };
 
 } /* namespace arp_stm32 */

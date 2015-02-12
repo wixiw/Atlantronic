@@ -134,7 +134,7 @@ bool ArdCom::send(arp_stm32::IpcMsg& msg) const
 	Datagram dtg;
 	uint8_t headerBuffer[HEADER_SIZE];
 
-	if(!msg.fillDatagram(dtg,headerBuffer))
+	if(!msg.fillDatagramAndHeader(dtg,headerBuffer))
 	{
 		return false;
 	}

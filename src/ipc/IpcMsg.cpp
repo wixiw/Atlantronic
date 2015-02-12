@@ -14,7 +14,23 @@ namespace arp_stm32
 IpcMsg::IpcMsg(){}
 IpcMsg::~IpcMsg(){}
 
-bool IpcMsg::fillDatagram(Datagram& dtg, uint8_t * const headerBuffer) const
+bool IpcMsg::fillDatagram(Datagram& dtg) const
+{
+    Payload payload = dtg.getWritablePayload();
+    bool res = serialize(payload);
+    dtg.extractPayload(getSize());
+
+    IpcHeader h;
+    h.type = getType();
+    h.magic = MAGIC_NUMBER;
+    h.size = getSize();
+
+    dtg.setHeader(h);
+
+    return res;
+}
+
+bool IpcMsg::fillDatagramAndHeader(Datagram& dtg, uint8_t * const headerBuffer) const
 {
     Payload payload = dtg.getWritablePayload();
     bool res = serialize(payload);
