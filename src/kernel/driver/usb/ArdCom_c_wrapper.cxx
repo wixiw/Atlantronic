@@ -175,6 +175,7 @@ void usb_ard_init()
 	registerEventCallback(EVT_ENABLE_HEARTBEAT,  heartbeat_enable);
 	registerEventCallback(EVT_X86_INIT_DONE, led_inform_x86_ready);
 	registerEventCallback(EVT_SCAN_DYNAMIXELS, dynamixel_cmd_scan);
+	registerEventCallback(EVT_REQUEST_END_MATCH, end_quit_match);
 	com.registerMsgCallback(MSG_EVENT, msgCb_event);
 
 	//Register other messages

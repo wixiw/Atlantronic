@@ -31,13 +31,14 @@ typedef enum
 typedef enum
 {
     EVT_RESERVED,			//not used, reserved for coherency checks (0 is default memory value)
-    EVT_START_MATCH,		//sended by stm32, match beginning event, see end.cxx
-    EVT_END_MATCH,			//sended by stm32, match end event, see end.cxx
+    EVT_INFORM_START_MATCH,		//sended by stm32, match beginning event, see end.cxx
+    EVT_INFORM_END_MATCH,			//sended by stm32, match end event, see end.cxx
     EVT_REBOOT,				//sended by x86, request stm32 soft reboot
     EVT_LIST_TASKS,			//sended by x86, for debug purpose, display tasks data
     EVT_ENABLE_HEARTBEAT,	//sended by x86, to enable the x86 life check
     EVT_X86_INIT_DONE,		//sended by x86, to inform strat is deployed and ready
     EVT_SCAN_DYNAMIXELS, 	//sended by x86, debug only
+    EVT_REQUEST_END_MATCH,  //sended by x86, request the end of match
 
 } EventId;
 

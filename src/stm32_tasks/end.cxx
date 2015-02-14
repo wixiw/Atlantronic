@@ -12,14 +12,16 @@
 #include "kernel/driver/power.h"
 #include "ipc_disco/EventMessage.hpp"
 #include "kernel/driver/usb/ArdCom.h"
+#include "discovery/Signal.h"
 
 using namespace arp_stm32;
 
 #define END_STACK_SIZE           1024
-uint32_t end_match_time = 90000; //!< duree du match en ms
+uint32_t end_match_time = 0; //!< duree du match en ms
 
 static void end_task(void *arg);
 volatile int end_match;
+Signal endSignal;
 
 static int end_module_init()
 {
@@ -47,19 +49,32 @@ void end_cmd_set_time(uint32_t time)
 	}
 }
 
+void end_quit_match()
+{
+	endSignal.set();
+}
+
 static void end_task(void *arg)
 {
 	(void) arg;
 
 	gpio_wait_go();
-	EventMessage msgBegin(EVT_START_MATCH);
+	EventMessage msgBegin(EVT_INFORM_START_MATCH);
 	ArdCom::getInstance().send(msgBegin);
 
-	vTaskDelay(end_match_time);
+	if( end_match_time )
+	{
+		vTaskDelay(end_match_time);
+	}
+	else
+	{
+		endSignal.wait();
+	}
+
 	end_match = 1;
 
 	setLed(0x00);
-	EventMessage msgEnd(EVT_END_MATCH);
+	EventMessage msgEnd(EVT_INFORM_END_MATCH);
 	ArdCom::getInstance().send(msgEnd);
 
 	power_set(POWER_OFF_END_MATCH);
