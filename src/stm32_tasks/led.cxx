@@ -76,7 +76,7 @@ static void led_task(void *arg)
 		{
 			case LED_MODE_WAIT_X86:
 				led_two_half_chaser();
-				if(usb_is_get_version_done() && led_ready_for_init)
+				if(isX86Connected() && led_ready_for_init)
 				{
 					led_mode = LED_MODE_WAIT_COLOR_SELECTION;
 				}

@@ -240,7 +240,6 @@ int main()
             msg.setModuleStartConfig( BOOT_ID_CONTROL, true);
             msg.setModuleStartConfig( BOOT_ID_DETECTION, true);
             msg.setModuleStartConfig( BOOT_ID_FAULT, false);
-            msg.setModuleStartConfig( BOOT_ID_USB, true);
             msg.setModuleStartConfig( BOOT_ID_DYNAMIXEL, true);
             msg.setModuleStartConfig( BOOT_ID_HOKUYO, true);
 

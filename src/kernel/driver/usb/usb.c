@@ -19,7 +19,7 @@
 #define USB_TX_BUFER_SIZE       8192
 #define USB_RX_BUFER_SIZE       4096 //Take care to accord with MSG_MAX_SIZE in IpcTypes.hpp
 #define USB_READ_STACK_SIZE      800
-#define USB_WRITE_STACK_SIZE     150
+#define USB_WRITE_STACK_SIZE     800
 
 // variables statiques => segment bss, initialisation a 0
 
@@ -223,7 +223,7 @@ void usb_write_task(void * arg)
 {
 	(void) arg;
 
-	wait_start_signal(BOOT_ID_USB);
+	sendBootup();
 
 	while(1)
 	{

@@ -33,6 +33,10 @@ typedef struct
 //used by usb read task to deserialize a received message
 int deserialize_ard(CircularBuffer const * const buffer);
 
+//Send the version string as a bootup message, this message should be automatically sent at bootup
+//used by usb_write task
+void sendBootup();
+
 //Subscribe to let "fct" be the event "id" message callback
 void registerEventCallback(EventId id, EventCallback fct);
 
@@ -44,9 +48,9 @@ void usb_ard_init();
 //used by logging framework.
 void usb_add_log(enum log_level, const char* func, uint16_t line, const char* msg);
 
-//is non null when the x86 board has requested the version, which mean that the communication is established.
+//is non null when the x86 board has configured the stm32, which states that the communication is established.
 //used by led task
-unsigned char usb_is_get_version_done();
+unsigned char isX86Connected();
 
 #ifdef __cplusplus
 }

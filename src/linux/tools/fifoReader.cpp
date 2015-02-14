@@ -111,6 +111,20 @@ int main()
         		break;
         	}
 
+        	case MSG_EVENT:
+        	{
+        		EventMessage msg;
+        		if( msg.deserialize(dtg.getPayload()) )
+        		{
+        			cout << "Event message received, eventId=" << msg.getEventId() << endl;
+        		}
+        		else
+        		{
+        			cout << "Failed to deserialize Event message." << endl;
+        		}
+        		break;
+        	}
+
         	case MSG_STATUS:
         		//not displayed as oftently received
         		break;

@@ -33,7 +33,7 @@ using namespace std;
 using namespace arp_stm32;
 
 static char usb_ptask_buffer[400];
-static unsigned char usb_get_version_done = 0;
+static unsigned char x86Connected = 0;
 
 static std::map<EventId, EventCallback>* evtCallbacks;
 
@@ -42,14 +42,21 @@ void registerEventCallback(EventId id, EventCallback fct)
 	(*evtCallbacks)[id] = fct;
 }
 
-unsigned char usb_is_get_version_done()
+unsigned char isX86Connected()
 {
-	return usb_get_version_done;
+	return x86Connected;
 }
 
 int deserialize_ard(CircularBuffer const * const buffer)
 {
 	return ArdCom::getInstance().deserialize(buffer);
+}
+
+void sendBootup()
+{
+	//Provide version
+	VersionMessage msgV;
+	ArdCom::getInstance().send(msgV);
 }
 
 void evtCb_ptaskRequest()
@@ -116,7 +123,7 @@ void msgCb_x86Cmd(Datagram& dtg)
 
 void msgCb_configuration(Datagram& dtg)
 {
-	if( usb_get_version_done )
+	if( x86Connected )
 	{
 		log_format(LOG_ERROR, "protocol error, configuration is already done.");
 		return;
@@ -131,16 +138,15 @@ void msgCb_configuration(Datagram& dtg)
 
 	end_cmd_set_time(msg.getMatchDuration());
 	
-	//Provide version
-	usb_get_version_done = 1;
-	VersionMessage msgV;
-	ArdCom::getInstance().send(msgV);
-
-
 	//Start
 	log_format(LOG_INFO, "Configuration and version request received, started.");
 	modules_set_start_config(msg.getStartModuleConfig());
 	start_all_modules();
+
+	//Publish ready
+	x86Connected = 1; //TODO toujours d'actualite ?
+	EventMessage evt(EVT_INFORM_READY);
+	ArdCom::getInstance().send(evt);
 }
 
 void msgCb_gyro(Datagram& dtg)
