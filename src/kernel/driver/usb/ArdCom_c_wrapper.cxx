@@ -116,6 +116,12 @@ void msgCb_x86Cmd(Datagram& dtg)
 
 void msgCb_configuration(Datagram& dtg)
 {
+	if( usb_get_version_done )
+	{
+		log_format(LOG_ERROR, "protocol error, configuration is already done.");
+		return;
+	}
+
 	ConfigurationMsg msg;
 	if( !msg.deserialize(dtg.getPayload()) )
 	{
