@@ -50,19 +50,21 @@ int main()
         int readBytes = 0;
         while( readBytes < HEADER_SIZE)
         {
-        	readBytes += ::read(readFd, buffer+readBytes, HEADER_SIZE-readBytes);
-        	//cout << "Read H incomplete : " << readBytes << "/" << HEADER_SIZE << endl;
+        	int readSize = 0;
+        	readSize = ::read(readFd, buffer+readBytes, HEADER_SIZE-readBytes);
+       		readBytes += readSize;
+       		//cout << "Read H : " << readBytes << "/" << HEADER_SIZE << endl;
         }
 
         Datagram dtg;
 
         if( readBytes == HEADER_SIZE && dtg.deserializeHeader(buffer) )
         {
-            //cout << "Deserialized buffer successfully, type=" << (int) dtg.getHeader().type << endl;
+            //cout << "Deserialized header successfully, type=" << MessagePrinter::toString(dtg.getHeader()) << endl;
         }
         else
         {
-            cout << "Failed to deserialize header nb bytes=" << readBytes << endl;
+            cout << "Failed to deserialize header nb bytes=" << readBytes << " buf=" << MessagePrinter::uint8ToHexArray(buffer, 5) << endl;
             continue;
         }
 
@@ -72,7 +74,7 @@ int main()
         readBytes = 0;
         while( NULL != p.first)
         {
-        	//cout << "Receiving " << p.second << "/" << dtg.getHeader().size << endl;
+        	//cout << "Read P : " << p.second << "/" << dtg.getHeader().size << endl;
         	readBytes = ::read(readFd, p.first, p.second);
         	p = dtg.appendPayload(readBytes);
         }
@@ -108,6 +110,10 @@ int main()
         		}
         		break;
         	}
+
+        	case MSG_STATUS:
+        		//not displayed as oftently received
+        		break;
 
         	default:
         		cout << "Unknown message type (" << static_cast<unsigned int>(dtg.getHeader().type) << ")" << endl;

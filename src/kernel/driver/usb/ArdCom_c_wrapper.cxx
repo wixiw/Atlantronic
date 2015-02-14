@@ -65,11 +65,18 @@ void evtCb_versionRequest()
 
 	ArdCom::getInstance().send(msg);
 
-	int i;
-	for( i = 0 ; i < BOOT_SIGNAL_NB ; i++ )
-	{
-		boot_signals[i]->set();
-	}
+	//TODO
+//	int i;
+//	for( i = 0 ; i < BOOT_SIGNAL_NB ; i++ )
+//	{
+//		boot_signals[i]->set();
+//	}
+	usb_boot_signal.set();
+	//fault_boot_signal.set();
+	control_boot_signal.set();
+	//detection_boot_signal.set();
+	//dynamixel_boot_signal.set();
+	//hokuyo_boot_signal.set();
 
 	log_format(LOG_INFO, "Version request received, started.");
 }

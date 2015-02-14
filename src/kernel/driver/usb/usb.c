@@ -16,8 +16,8 @@
 
 // Attention, pour l'envoi de commandes par usb, on suppose que c'est envoyé en une seule trame usb
 
-#define USB_TX_BUFER_SIZE       4096
-#define USB_RX_BUFER_SIZE       2000 //Take care to accord with MSG_MAX_SIZE in IpcTypes.hpp
+#define USB_TX_BUFER_SIZE       8192
+#define USB_RX_BUFER_SIZE       4096 //Take care to accord with MSG_MAX_SIZE in IpcTypes.hpp
 #define USB_READ_STACK_SIZE      800
 #define USB_WRITE_STACK_SIZE     150
 
