@@ -9,7 +9,6 @@
 #define STM32_CONFIG_H_
 
 #include <stdint.h>
-#include "discovery/boot_signals.h"
 
 #ifdef __cplusplus
 extern "C" {
