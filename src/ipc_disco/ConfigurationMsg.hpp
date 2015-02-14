@@ -10,6 +10,7 @@
 
 #include "ipc/IpcMsg.hpp"
 #include "discovery/stm32_config.h"
+#include "discovery/boot_id.h"
 
 namespace arp_stm32
 {
