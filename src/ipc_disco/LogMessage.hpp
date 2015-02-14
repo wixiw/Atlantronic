@@ -43,6 +43,7 @@ class LogMessage: public arp_stm32::IpcMsg
         virtual MsgSize getSize() const;
 
         char const * getLogText() const;
+        log_level getLevel() const;
         char const * getLevelText() const;
 
         void logArd(enum log_level lvl, char const * const function_, uint16_t line, char const * const log_);

@@ -83,6 +83,11 @@ char const * LogMessage::getLogText() const
 	return reinterpret_cast<const char*>(m_log);
 }
 
+log_level LogMessage::getLevel() const
+{
+    return static_cast<log_level>(m_level);
+}
+
 char const * LogMessage::getLevelText() const
 {
 	switch(static_cast<log_level>(m_level))
