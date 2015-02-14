@@ -9,21 +9,11 @@
 #define BOOT_SIGNALS_H_
 
 #include "Signal.h"
+#include "boot_id.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef enum
-{
-	BOOT_ID_CONTROL,
-	BOOT_ID_DETECTION,
-	BOOT_ID_FAULT,
-	BOOT_ID_USB,
-	BOOT_ID_DYNAMIXEL,
-	BOOT_ID_HOKUYO,
-	BOOT_ID_SIZE
-} BootModuleId;
 
 //Call this inside a module when ready to start
 void wait_start_signal(BootModuleId id);
