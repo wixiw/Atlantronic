@@ -186,7 +186,39 @@ int main()
                 cout << "failed to serialize body." << endl;
             }
         }
-        else if( 0 == strcmp(line, "event"))
+        else if( 0 == strcmp(line, "reboot"))
+        {
+            memset(buffer, 0, MSG_MAX_SIZE);
+            header.magic = MAGIC_NUMBER;
+            header.type = MSG_EVENT;
+            header.size = EventMessage::SIZE;
+            if ( header.serialize(buffer) )
+            {
+                cout << "sending header (" << static_cast<unsigned short>(HEADER_SIZE) << "): " << MessagePrinter::uint8ToHexArray(buffer, HEADER_SIZE) << "." << endl;
+                int res = ::write(writeFd, buffer , HEADER_SIZE);
+                cout << "header sent with " << res << " bytes. HEADER_SIZE=" << HEADER_SIZE << endl;
+            }
+            else
+            {
+                cout << "failed to serialize header." << endl;
+            }
+
+            EventMessage msg(EVT_REBOOT);
+            Payload payload;
+            memset(buffer, 0, MSG_MAX_SIZE);
+            payload.first = buffer;
+            if ( msg.serialize(payload) )
+            {
+                cout << "sending body (" << static_cast<unsigned short>(payload.second) << "): " << MessagePrinter::uint8ToHexArray(buffer, payload.second) << "." << endl;
+                int res = ::write(writeFd, payload.first , payload.second);
+                cout << "payload sent with " << res << " bytes." << endl;
+            }
+            else
+            {
+                cout << "failed to serialize body." << endl;
+            }
+        }
+        else if( 0 == strcmp(line, "list"))
         {
             memset(buffer, 0, MSG_MAX_SIZE);
             header.magic = MAGIC_NUMBER;
@@ -338,7 +370,7 @@ int main()
         }
 
         cout << "***************************************************" << endl;
-        cout << "Choose msg to send (version, status, log, fault, event, opplist or raw)?" << endl;
+        cout << "Choose msg to send (version, status, log, fault, list, reboot, opplist or raw)?" << endl;
     } while (std::cin.getline(line, 100));
 }
 

@@ -45,7 +45,11 @@ void end_cmd_set_time(uint32_t time)
 	if( ! getGo() )
 	{
 		end_match_time = time;
-		log_format(LOG_INFO, "duree du match => %d ms", (int)end_match_time);
+
+		if( end_match_time )
+			log_format(LOG_INFO, "duree du match => %d ms", (int)end_match_time);
+		else
+			log_format(LOG_INFO, "duree du match => no limit");
 	}
 }
 
