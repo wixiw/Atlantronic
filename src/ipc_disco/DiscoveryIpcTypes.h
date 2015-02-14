@@ -31,8 +31,9 @@ typedef enum
 typedef enum
 {
     EVT_RESERVED,			//not used, reserved for coherency checks (0 is default memory value)
-    EVT_INFORM_START_MATCH,		//sended by stm32, match beginning event, see end.cxx
-    EVT_INFORM_END_MATCH,			//sended by stm32, match end event, see end.cxx
+    EVT_INFORM_READY,       //sended by stm32, to inform it's ready to operate
+    EVT_INFORM_START_MATCH,	//sended by stm32, match beginning event, see end.cxx
+    EVT_INFORM_END_MATCH,	//sended by stm32, match end event, see end.cxx
     EVT_REBOOT,				//sended by x86, request stm32 soft reboot
     EVT_LIST_TASKS,			//sended by x86, for debug purpose, display tasks data
     EVT_ENABLE_HEARTBEAT,	//sended by x86, to enable the x86 life check
