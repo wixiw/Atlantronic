@@ -210,7 +210,7 @@ void Hokuyo::task_wrapper(void* arg)
 
 void Hokuyo::task()
 {
-	hokuyo_boot_signal.wait();
+	wait_start_signal(BOOT_ID_HOKUYO);
 
 	uint32_t err;
 	struct systime last_scan_time;

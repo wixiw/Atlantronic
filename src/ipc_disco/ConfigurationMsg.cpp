@@ -18,12 +18,6 @@ ConfigurationMsg::ConfigurationMsg()
 {
 }
 
-ConfigurationMsg::ConfigurationMsg(stm32_config const& config)
-    : IpcMsg()
-    , m_config(config)
-{
-}
-
 ConfigurationMsg::~ConfigurationMsg(){}
 
 bool ConfigurationMsg::serialize(Payload& payload) const
@@ -65,6 +59,22 @@ MsgSize ConfigurationMsg::getSize() const
 uint32_t ConfigurationMsg::getMatchDuration() const
 {
 	return m_config.match_duration;
+}
+
+uint8_t ConfigurationMsg::getStartModuleConfig() const
+{
+	return m_config.start_module_flags;
+}
+
+void ConfigurationMsg::setMatchDuration(double durationInSeconds)
+{
+	m_config.match_duration = durationInSeconds * 1000;
+}
+
+void ConfigurationMsg::setModuleStartConfig(BootModuleId id, bool doStart)
+{
+	//change the bit at position "id" to be equal to doStart
+	m_config.start_module_flags ^= (-doStart ^ m_config.start_module_flags) & (1 << id);
 }
 
 } /* namespace arp_stm32 */

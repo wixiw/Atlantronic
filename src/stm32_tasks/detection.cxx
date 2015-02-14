@@ -93,7 +93,7 @@ static void detection_task(void* arg)
 	(void) arg;
 	unsigned char event;
 
-	detection_boot_signal.wait();
+	wait_start_signal(BOOT_ID_DETECTION);
 
 	while(1)
 	{

@@ -60,7 +60,7 @@ static void fault_task(void* arg)
 {
 	(void) arg;
 
-	fault_boot_signal.wait();
+	wait_start_signal(BOOT_ID_FAULT);
 
 	//Send message on usb com stack
 	FaultMessage msg(fault_status);

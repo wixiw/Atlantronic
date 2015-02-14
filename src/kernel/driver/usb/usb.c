@@ -223,7 +223,7 @@ void usb_write_task(void * arg)
 {
 	(void) arg;
 
-	wait_signal(&usb_boot_signal);
+	wait_start_signal(BOOT_ID_USB);
 
 	while(1)
 	{

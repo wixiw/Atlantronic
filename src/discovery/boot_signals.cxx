@@ -7,23 +7,33 @@
 
 #include "boot_signals.h"
 
-Signal control_boot_signal;
-Signal detection_boot_signal;
-Signal fault_boot_signal;
-Signal usb_boot_signal;
-Signal dynamixel_boot_signal;
-Signal hokuyo_boot_signal;
+Signal boot_signals[BOOT_ID_SIZE];
+uint8_t boot_signals_config;
 
-//Use this for debug purposes, this signal is never set.
-Signal no_boot_signal;
+void start_module(BootModuleId id)
+{
+	boot_signals[id].set();
+}
 
+void wait_start_signal(BootModuleId id)
+{
+	boot_signals[id].wait();
+}
 
-Signal* boot_signals[BOOT_SIGNAL_NB] = {
-		&usb_boot_signal,
-		&fault_boot_signal,
-		&control_boot_signal,
-		&detection_boot_signal,
-		&dynamixel_boot_signal,
-		&hokuyo_boot_signal
-};
+void modules_set_start_config(uint8_t config)
+{
+	boot_signals_config = config;
+}
+
+void start_all_modules()
+{
+	for( int id = 0 ; id < BOOT_ID_SIZE ; id++ )
+	{
+		//check that bit at position "id" is set
+		if( boot_signals_config & (1 << id))
+		{
+			boot_signals[id].set();
+		}
+	}
+}
 

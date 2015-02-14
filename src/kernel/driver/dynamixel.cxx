@@ -103,7 +103,7 @@ void DynamixelManager::task()
 	struct dynamixel_request req;
 	int id = 1;
 
-	dynamixel_boot_signal.wait();
+	wait_start_signal(BOOT_ID_DYNAMIXEL);
 
 	while(1)
 	{

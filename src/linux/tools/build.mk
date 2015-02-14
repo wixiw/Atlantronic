@@ -4,14 +4,20 @@ obj-linux-fifo += ipc/IpcHeader.o
 obj-linux-fifo += ipc/IpcMsg.o
 
 #ipc_disco folder
+obj-linux-fifo += ipc_disco/ConfigurationMsg.o
 obj-linux-fifo += ipc_disco/EventMessage.o
 obj-linux-fifo += ipc_disco/FaultMessage.o
+obj-linux-fifo += ipc_disco/GyroMsg.o
+obj-linux-fifo += ipc_disco/HokuyoMessage.o
 obj-linux-fifo += ipc_disco/LogMessage.o
 obj-linux-fifo += ipc_disco/OpponentListMsg.o
 obj-linux-fifo += ipc_disco/RawMessage.o
 obj-linux-fifo += ipc_disco/StatusMessage.o
 obj-linux-fifo += ipc_disco/VersionMessage.o
+obj-linux-fifo += ipc_disco/X86CmdMsg.o
+#X86 specific
 obj-linux-fifo += ipc_disco/MessagePrinter.o
+
 
 obj-linux-fifoWriter = $(obj-linux-fifo)
 obj-linux-fifoWriter += linux/tools/fifoWriter.o

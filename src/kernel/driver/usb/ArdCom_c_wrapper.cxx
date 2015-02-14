@@ -58,29 +58,6 @@ void evtCb_ptaskRequest()
 	log(LOG_INFO, usb_ptask_buffer);
 }
 
-void evtCb_versionRequest()
-{
-	usb_get_version_done = 1;
-	VersionMessage msg;
-
-	ArdCom::getInstance().send(msg);
-
-	//TODO
-//	int i;
-//	for( i = 0 ; i < BOOT_SIGNAL_NB ; i++ )
-//	{
-//		boot_signals[i]->set();
-//	}
-	usb_boot_signal.set();
-	//fault_boot_signal.set();
-	control_boot_signal.set();
-	//detection_boot_signal.set();
-	//dynamixel_boot_signal.set();
-	//hokuyo_boot_signal.set();
-
-	log_format(LOG_INFO, "Version request received, started.");
-}
-
 void evtCb_reboot()
 {
 	reboot();
@@ -147,6 +124,17 @@ void msgCb_configuration(Datagram& dtg)
 	}
 
 	end_cmd_set_time(msg.getMatchDuration());
+	
+	//Provide version
+	usb_get_version_done = 1;
+	VersionMessage msgV;
+	ArdCom::getInstance().send(msgV);
+
+
+	//Start
+	log_format(LOG_INFO, "Configuration and version request received, started.");
+	modules_set_start_config(msg.getStartModuleConfig());
+	start_all_modules();
 }
 
 void msgCb_gyro(Datagram& dtg)
@@ -176,7 +164,6 @@ void usb_ard_init()
 
 	//Register Event callbacks
 	evtCallbacks = new std::map<EventId, EventCallback>();
-	registerEventCallback(EVT_REQUEST_VERSION, evtCb_versionRequest);
 	registerEventCallback(EVT_LIST_TASKS, evtCb_ptaskRequest);
 	registerEventCallback(EVT_REBOOT,  evtCb_reboot);
 	registerEventCallback(EVT_ENABLE_HEARTBEAT,  heartbeat_enable);

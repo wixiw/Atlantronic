@@ -10,17 +10,35 @@
 
 #include "Signal.h"
 
-extern Signal control_boot_signal;
-extern Signal detection_boot_signal;
-extern Signal fault_boot_signal;
-extern Signal usb_boot_signal;
-extern Signal dynamixel_boot_signal;
-extern Signal hokuyo_boot_signal;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-extern Signal no_boot_signal;
+typedef enum
+{
+	BOOT_ID_CONTROL,
+	BOOT_ID_DETECTION,
+	BOOT_ID_FAULT,
+	BOOT_ID_USB,
+	BOOT_ID_DYNAMIXEL,
+	BOOT_ID_HOKUYO,
+	BOOT_ID_SIZE
+} BootModuleId;
 
-#define BOOT_SIGNAL_NB 6
+//Call this inside a module when ready to start
+void wait_start_signal(BootModuleId id);
 
-extern Signal* boot_signals[BOOT_SIGNAL_NB];
+//Call this in your startup manager to send the boot signal for a defined module
+void start_module(BootModuleId id);
+
+//Call this to configure which module is started with start_all_modules
+void modules_set_start_config(uint8_t config);
+
+//Call this in your startup manager to start all configured modules
+void start_all_modules();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* BOOT_SIGNALS_H_ */

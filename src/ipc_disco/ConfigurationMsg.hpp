@@ -18,7 +18,6 @@ class ConfigurationMsg: public arp_stm32::IpcMsg
 {
     public:
         ConfigurationMsg();
-        ConfigurationMsg(stm32_config const& config);
         virtual ~ConfigurationMsg();
 
         static const MsgSize SIZE = sizeof(stm32_config);
@@ -50,6 +49,20 @@ class ConfigurationMsg: public arp_stm32::IpcMsg
          * time of match in ms
          */
         uint32_t getMatchDuration() const;
+
+        /**
+         * Accessor
+         */
+        uint8_t getStartModuleConfig() const;
+
+        /**
+         * Configure the match duration
+         */
+        void setMatchDuration(double durationInSeconds);
+
+        //Call this to let a module being started by start_all_modules
+        //You have to provide config, typically from stm32_config structure
+        void setModuleStartConfig(BootModuleId id, bool doStart);
 
     protected:
         stm32_config m_config;

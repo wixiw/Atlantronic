@@ -11,9 +11,11 @@
 #include <unistd.h>
 #include <iostream>
 #include <string.h>
+#include "discovery/boot_signals.h"
 #include "ipc/IpcHeader.hpp"
 #include "ipc_disco/MessagePrinter.hpp"
 #include "ipc_disco/DiscoveryIpcTypes.h"
+#include "ipc_disco/ConfigurationMsg.hpp"
 #include "ipc_disco/VersionMessage.hpp"
 #include "ipc_disco/StatusMessage.hpp"
 #include "ipc_disco/LogMessage.hpp"
@@ -201,7 +203,47 @@ int main()
                 cout << "failed to serialize header." << endl;
             }
 
-            EventMessage msg(EVT_REQUEST_VERSION);
+            EventMessage msg(EVT_LIST_TASKS);
+            Payload payload;
+            memset(buffer, 0, MSG_MAX_SIZE);
+            payload.first = buffer;
+            if ( msg.serialize(payload) )
+            {
+                cout << "sending body (" << static_cast<unsigned short>(payload.second) << "): " << MessagePrinter::uint8ToHexArray(buffer, payload.second) << "." << endl;
+                int res = ::write(writeFd, payload.first , payload.second);
+                cout << "payload sent with " << res << " bytes." << endl;
+            }
+            else
+            {
+                cout << "failed to serialize body." << endl;
+            }
+        }
+        else if( 0 == strcmp(line, "config"))
+        {
+            memset(buffer, 0, MSG_MAX_SIZE);
+            header.magic = MAGIC_NUMBER;
+            header.type = MSG_CONFIGURATION;
+            header.size = ConfigurationMsg::SIZE;
+            if ( header.serialize(buffer) )
+            {
+                cout << "sending header (" << static_cast<unsigned short>(HEADER_SIZE) << "): " << MessagePrinter::uint8ToHexArray(buffer, HEADER_SIZE) << "." << endl;
+                int res = ::write(writeFd, buffer , HEADER_SIZE);
+                cout << "header sent with " << res << " bytes. HEADER_SIZE=" << HEADER_SIZE << endl;
+            }
+            else
+            {
+                cout << "failed to serialize header." << endl;
+            }
+
+            ConfigurationMsg msg;
+            msg.setMatchDuration(5.0);
+            msg.setModuleStartConfig( BOOT_ID_CONTROL, true);
+            msg.setModuleStartConfig( BOOT_ID_DETECTION, true);
+            msg.setModuleStartConfig( BOOT_ID_FAULT, false);
+            msg.setModuleStartConfig( BOOT_ID_USB, true);
+            msg.setModuleStartConfig( BOOT_ID_DYNAMIXEL, true);
+            msg.setModuleStartConfig( BOOT_ID_HOKUYO, true);
+
             Payload payload;
             memset(buffer, 0, MSG_MAX_SIZE);
             payload.first = buffer;
@@ -296,6 +338,7 @@ int main()
             cout << "unknown command" << endl;
         }
 
+        cout << "***************************************************" << endl;
         cout << "Choose msg to send (version, status, log, fault, event, opplist or raw)?" << endl;
     } while (std::cin.getline(line, 100));
 }
