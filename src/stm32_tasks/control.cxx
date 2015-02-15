@@ -22,6 +22,10 @@ using namespace arp_stm32;
 #define CONTROL_STACK_SIZE       1024
 
 static struct control_usb_data control_usb_data;
+static uint8_t control_task_period = 10;
+//#define CONTROL_PERIOD                            10
+//#define CONTROL_DT                            0.010f
+//#define CONTROL_HZ          (1000.0f/CONTROL_PERIOD)
 
 static void control_task(void* arg);
 
@@ -76,6 +80,11 @@ static void control_task(void* /*arg*/)
 		StatusMessage msg(control_usb_data);
 		ArdCom::getInstance().send(msg);
 
-		vTaskDelayUntil(&wake_time, CONTROL_PERIOD);
+		vTaskDelayUntil(&wake_time, control_task_period);
 	}
+}
+
+void set_control_period(uint8_t periodInMs)
+{
+	control_task_period = periodInMs;
 }

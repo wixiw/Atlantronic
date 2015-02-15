@@ -66,6 +66,11 @@ uint8_t ConfigurationMsg::getStartModuleConfig() const
 	return m_config.start_module_flags;
 }
 
+uint8_t ConfigurationMsg::getControlPeriod() const
+{
+	return m_config.control_task_period;
+}
+
 void ConfigurationMsg::setMatchDuration(double durationInSeconds)
 {
 	m_config.match_duration = durationInSeconds * 1000;
@@ -75,6 +80,11 @@ void ConfigurationMsg::setModuleStartConfig(BootModuleId id, bool doStart)
 {
 	//change the bit at position "id" to be equal to doStart
 	m_config.start_module_flags ^= (-doStart ^ m_config.start_module_flags) & (1 << id);
+}
+
+void ConfigurationMsg::setControlPeriod(double periodInS)
+{
+	m_config.control_task_period = periodInS*1000;
 }
 
 } /* namespace arp_stm32 */

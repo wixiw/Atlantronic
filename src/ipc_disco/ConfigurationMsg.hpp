@@ -57,6 +57,11 @@ class ConfigurationMsg: public arp_stm32::IpcMsg
         uint8_t getStartModuleConfig() const;
 
         /**
+         * Accessor
+         */
+        uint8_t getControlPeriod() const;
+
+        /**
          * Configure the match duration
          */
         void setMatchDuration(double durationInSeconds);
@@ -64,6 +69,11 @@ class ConfigurationMsg: public arp_stm32::IpcMsg
         //Call this to let a module being started by start_all_modules
         //You have to provide config, typically from stm32_config structure
         void setModuleStartConfig(BootModuleId id, bool doStart);
+
+        /**
+         * Configure the control task period, in seconds.
+         */
+        void setControlPeriod(double periodInS);
 
     protected:
         stm32_config m_config;

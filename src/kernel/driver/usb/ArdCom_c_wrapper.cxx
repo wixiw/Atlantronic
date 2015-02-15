@@ -26,9 +26,9 @@
 #include "kernel/driver/dynamixel.h"
 #include "kernel/driver/gyro.h"
 #include "discovery/location.h"
-#include "stm32_tasks/led.h"
+#include "stm32_tasks/control.h"
 #include "stm32_tasks/end.h"
-
+#include "stm32_tasks/led.h"
 using namespace std;
 using namespace arp_stm32;
 
@@ -129,6 +129,7 @@ void msgCb_configuration(Datagram& dtg)
 		return;
 	}
 
+	//Deserialize the message
 	ConfigurationMsg msg;
 	if( !msg.deserialize(dtg.getPayload()) )
 	{
@@ -136,9 +137,12 @@ void msgCb_configuration(Datagram& dtg)
 		return;
 	}
 
+	//Update stm32 modules config from config msg
 	end_cmd_set_time(msg.getMatchDuration());
+	set_control_period(msg.getControlPeriod());
+
 	
-	//Start
+	//Start all configured modules
 	log_format(LOG_INFO, "Configuration and version request received, started.");
 	modules_set_start_config(msg.getStartModuleConfig());
 	start_all_modules();
