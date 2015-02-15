@@ -17,8 +17,8 @@ namespace arp_stm32
 
 StatusMessage::StatusMessage()
     : IpcMsg()
-    , m_data()
 {
+    memset(&m_data, 0, sizeof(control_usb_data));
 }
 
 StatusMessage::StatusMessage(control_usb_data const& data)

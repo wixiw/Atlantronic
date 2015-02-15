@@ -12,6 +12,10 @@
 #include "kernel/driver/encoder.h"
 #include "kernel/driver/dynamixel.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //! période de la tache de controle en ms
 #define EPSILON                                 1e-4
 
@@ -33,5 +37,9 @@ struct control_usb_data
 	uint32_t power_state;
 	struct dynamixel_usb_data dynamixel;
 } __attribute__((packed));
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
