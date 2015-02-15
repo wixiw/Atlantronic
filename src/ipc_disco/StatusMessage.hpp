@@ -60,7 +60,7 @@ class StatusMessage: public arp_stm32::IpcMsg
         int getRawGpioData() const;
         bool getGpio(uint32_t mask) const;
         bool isPumpBlocked(uint8_t id) const;
-        std::string getColor() const;
+        char const * getColor() const;
 
     protected:
         control_usb_data m_data;

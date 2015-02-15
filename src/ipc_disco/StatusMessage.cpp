@@ -127,7 +127,7 @@ bool StatusMessage::isPumpBlocked(uint8_t id) const
     return (m_data.pumpState >> id) & 0x01;
 }
 
-std::string StatusMessage::getColor() const
+char const * StatusMessage::getColor() const
 {
     switch (m_data.color)
     {
