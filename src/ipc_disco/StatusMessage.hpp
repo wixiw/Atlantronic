@@ -45,6 +45,18 @@ class StatusMessage: public arp_stm32::IpcMsg
          */
         virtual MsgSize getSize() const;
 
+        //time in seconds since boot
+        double getTime() const;
+        bool isPowerOn() const;
+        bool isEmergencyStopActive() const;
+        bool isUnderVoltageErrorActive() const;
+        bool isPowerAllowedByStragety() const;
+        bool isPowerShutdownAtEndOfMatch() const;
+        bool isHeartBeatLost() const;
+        int getRawPowerData() const;
+        //in volts
+        double getBatteryVoltage() const;
+        int getRawGpioData() const;
 
     protected:
         control_usb_data m_data;

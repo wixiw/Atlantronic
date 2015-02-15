@@ -95,7 +95,7 @@ std::string MessagePrinter::toString(IpcHeader const & msg)
     		s << "MSG_X86_CMD";
     		break;
     	case MSG_CONFIGURATION:
-    		s << "MSG_X86_CMD";
+    		s << "MSG_CONFIGURATION";
     		break;
     	case MSG_GYRO_CMD:
     		s << "MSG_GYRO_CMD";
@@ -112,7 +112,7 @@ std::string MessagePrinter::toString(IpcHeader const & msg)
 
 std::string MessagePrinter::toString(Datagram const & msg)
 {
-	return MessagePrinter::toString(msg.getHeader()) + " " + uint8ToHexArray(msg.getPayload().first,MSG_MAX_SIZE);
+	return MessagePrinter::toString(msg.getHeader()) + " " + uint8ToHexArray(msg.getPayload().first,msg.getHeader().size);
 }
 
 string MessagePrinter::toString(LogMessage const & msg)
