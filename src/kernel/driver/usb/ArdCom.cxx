@@ -71,7 +71,11 @@ int ArdCom::waitingHeaderHook(CircularBuffer const * const buffer)
 	//on le deserialize pour connaitre la payload
     if( !m_recvDtg.deserializeHeader(m_headerBuffer) )
     {
-    	log_format(LOG_ERROR, "protocol error, header deserialization failed.");
+    	log_format(LOG_ERROR, "protocol error, header deserialization failed. magic=%x%x type=%d size=%d",
+    	        m_headerBuffer[0],
+    	        m_headerBuffer[1],
+    	        m_headerBuffer[2],
+    	        m_headerBuffer[3]+ m_headerBuffer[4]<<8);
     	m_state = STATE_ERROR;
     	return -1;
     }
