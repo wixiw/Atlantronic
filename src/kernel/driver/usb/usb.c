@@ -178,16 +178,35 @@ void usb_read_task(void * arg)
 		if( usb_rx_buffer_count )
 		{
 			CircularBuffer circularBuffer; //TODO refactorer le driver pour utiliser ça partout
+			portENTER_CRITICAL();
 			circularBuffer.data = usb_rx_buffer;
 			circularBuffer.size = USB_RX_BUFER_SIZE;
 			circularBuffer.start = usb_rx_buffer_tail;
 			circularBuffer.end = usb_rx_buffer_head;
 			circularBuffer.count = usb_rx_buffer_count;
+			portEXIT_CRITICAL();
 
-			int readBytes = deserialize_ard(&circularBuffer);
+			int totalRead = 0;
 
-			__sync_sub_and_fetch(&usb_rx_buffer_count, readBytes);
-			usb_rx_buffer_tail = (usb_rx_buffer_tail + readBytes) % sizeof(usb_rx_buffer);
+			while( circularBuffer.count > 0)
+			{
+				int readBytes = deserialize_ard(&circularBuffer);
+				if( readBytes > 0 )
+				{
+					circularBuffer.start += readBytes;
+					circularBuffer.count -= readBytes;
+					totalRead += readBytes;
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			portENTER_CRITICAL();
+			__sync_sub_and_fetch(&usb_rx_buffer_count, totalRead);
+			usb_rx_buffer_tail = (usb_rx_buffer_tail + totalRead) % sizeof(usb_rx_buffer);
+			portEXIT_CRITICAL();
 
 			if( unlikely(usb_rx_waiting != 0))
 			{

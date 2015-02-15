@@ -126,6 +126,7 @@ int ArdCom::deserialize(CircularBuffer const * const buffer)
 		case STATE_UNINITIALIZED:
 		case STATE_ERROR:
 		default:
+			log_format(LOG_ERROR, "Unknown State.");
 			res = -1;
 			break;
 	}

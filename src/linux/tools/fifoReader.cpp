@@ -23,6 +23,7 @@
 #include "ipc_disco/FaultMessage.hpp"
 #include "ipc_disco/EventMessage.hpp"
 #include "ipc_disco/OpponentListMsg.hpp"
+#include "ipc_disco/X86CmdMsg.hpp"
 
 using namespace std;
 using namespace arp_stm32;
@@ -128,6 +129,20 @@ int main()
         	case MSG_STATUS:
         		cout << "Status message received." << endl;
         		break;
+
+        	case MSG_X86_CMD:
+        	{
+        		X86CmdMsg msg;
+        		if( msg.deserialize(dtg.getPayload()) )
+        		{
+        			cout << "X86 cmd received." << endl;
+        		}
+        		else
+        		{
+        			cout << "Failed to deserialize x86cmd message." << endl;
+        		}
+        		break;
+        	}
 
         	default:
         		cout << "Unknown message type (" << static_cast<unsigned int>(dtg.getHeader().type) << ")" << endl;

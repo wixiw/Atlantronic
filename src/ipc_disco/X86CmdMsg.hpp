@@ -81,12 +81,6 @@ class X86CmdMsg: public arp_stm32::IpcMsg
          */
         void setPumpCmd(PumpId id, uint8_t cmd);
 
-        /**
-         * mutator
-         */
-        void setX86State(uint8_t state);
-
-
     protected:
         x86_cmd m_cmd;
 };

@@ -23,6 +23,7 @@
 #include "ipc_disco/EventMessage.hpp"
 #include "ipc_disco/OpponentListMsg.hpp"
 #include "ipc_disco/RawMessage.hpp"
+#include "ipc_disco/X86CmdMsg.hpp"
 
 using namespace std;
 using namespace arp_stm32;
@@ -290,6 +291,38 @@ int main()
                 cout << "failed to serialize body." << endl;
             }
         }
+        else if( 0 == strcmp(line, "x86cmd"))
+        {
+            memset(buffer, 0, MSG_MAX_SIZE);
+            header.magic = MAGIC_NUMBER;
+            header.type = MSG_X86_CMD;
+            header.size = X86CmdMsg::SIZE;
+            if ( header.serialize(buffer) )
+            {
+                cout << "sending header (" << static_cast<unsigned short>(HEADER_SIZE) << "): " << MessagePrinter::uint8ToHexArray(buffer, HEADER_SIZE) << "." << endl;
+                int res = ::write(writeFd, buffer , HEADER_SIZE);
+                cout << "header sent with " << res << " bytes. HEADER_SIZE=" << HEADER_SIZE << endl;
+            }
+            else
+            {
+                cout << "failed to serialize header." << endl;
+            }
+
+            X86CmdMsg msg;
+            Payload payload;
+            memset(buffer, 0, MSG_MAX_SIZE);
+            payload.first = buffer;
+            if ( msg.serialize(payload) )
+            {
+                cout << "sending body (" << static_cast<unsigned short>(payload.second) << "): " << MessagePrinter::uint8ToHexArray(buffer, payload.second) << "." << endl;
+                int res = ::write(writeFd, payload.first , payload.second);
+                cout << "payload sent with " << res << " bytes." << endl;
+            }
+            else
+            {
+                cout << "failed to serialize body." << endl;
+            }
+        }
         else if( 0 == strcmp(line, "opplist"))
         {
             OpponentListMsg msg;
@@ -371,7 +404,7 @@ int main()
         }
 
         cout << "***************************************************" << endl;
-        cout << "Choose msg to send (version, status, log, fault, list, reboot, opplist or raw)?" << endl;
+        cout << "Choose msg to send (version, status, log, fault, list, reboot, config, x86cmd, opplist or raw)?" << endl;
     } while (std::cin.getline(line, 100));
 }
 

@@ -103,9 +103,4 @@ void X86CmdMsg::setPumpCmd(PumpId id, uint8_t cmd)
 	m_cmd.pumpCmd[id] = cmd;
 }
 
-void X86CmdMsg::setX86State(uint8_t state)
-{
-	m_cmd.x86_state = state;
-}
-
 } /* namespace arp_stm32 */
