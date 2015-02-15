@@ -271,9 +271,10 @@ int main()
             msg.setMatchDuration(5.0);
             msg.setModuleStartConfig( BOOT_ID_CONTROL, true);
             msg.setModuleStartConfig( BOOT_ID_DETECTION, true);
-            msg.setModuleStartConfig( BOOT_ID_FAULT, false);
+            msg.setModuleStartConfig( BOOT_ID_FAULT, false);//TODO bugged
             msg.setModuleStartConfig( BOOT_ID_DYNAMIXEL, true);
             msg.setModuleStartConfig( BOOT_ID_HOKUYO, true);
+            msg.setControlPeriod(200);
 
             Payload payload;
             memset(buffer, 0, MSG_MAX_SIZE);

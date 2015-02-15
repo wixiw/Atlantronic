@@ -84,7 +84,10 @@ void ConfigurationMsg::setModuleStartConfig(BootModuleId id, bool doStart)
 
 void ConfigurationMsg::setControlPeriod(double periodInS)
 {
-	m_config.control_task_period = periodInS*1000;
+	if( periodInS > 0.255 )
+		m_config.control_task_period = 255 ;
+	else
+		m_config.control_task_period = periodInS*1000;
 }
 
 } /* namespace arp_stm32 */

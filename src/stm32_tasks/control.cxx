@@ -86,5 +86,6 @@ static void control_task(void* /*arg*/)
 
 void set_control_period(uint8_t periodInMs)
 {
+	log_format(LOG_INFO, "control periode => %d ms", (int)periodInMs);
 	control_task_period = periodInMs;
 }

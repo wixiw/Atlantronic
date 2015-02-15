@@ -126,7 +126,7 @@ int main()
         	}
 
         	case MSG_STATUS:
-        		//not displayed as oftently received
+        		cout << "Status message received." << endl;
         		break;
 
         	default:
