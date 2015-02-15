@@ -17,7 +17,7 @@
 using namespace arp_stm32;
 
 #define END_STACK_SIZE           1024
-uint32_t end_match_time = 0; //!< duree du match en ms
+uint32_t end_match_duration = 0; //!< duree du match en ms
 
 static void end_task(void *arg);
 volatile int end_match;
@@ -44,10 +44,10 @@ void end_cmd_set_time(uint32_t time)
 {
 	if( ! getGo() )
 	{
-		end_match_time = time;
+		end_match_duration = time;
 
-		if( end_match_time )
-			log_format(LOG_INFO, "duree du match => %d ms", (int)end_match_time);
+		if( end_match_duration )
+			log_format(LOG_INFO, "duree du match => %d ms", (int)end_match_duration);
 		else
 			log_format(LOG_INFO, "duree du match => no limit");
 	}
@@ -58,6 +58,11 @@ void end_quit_match()
 	endSignal.set();
 }
 
+uint32_t end_get_match_time_togo()
+{
+	return end_match_duration - systick_get_match_time().ms;
+}
+
 static void end_task(void *arg)
 {
 	(void) arg;
@@ -66,9 +71,9 @@ static void end_task(void *arg)
 	EventMessage msgBegin(EVT_INFORM_START_MATCH);
 	ArdCom::getInstance().send(msgBegin);
 
-	if( end_match_time )
+	if( end_match_duration )
 	{
-		vTaskDelay(end_match_time);
+		vTaskDelay(end_match_duration);
 	}
 	else
 	{

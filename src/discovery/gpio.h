@@ -145,6 +145,9 @@ void gpio_pin_init(GPIO_TypeDef* GPIOx, uint32_t pin, enum gpio_mode mode, enum 
 
 void gpio_af_config(GPIO_TypeDef* GPIOx, uint32_t pin, uint32_t gpio_af);
 
+//Call this function to let the stm32 know that the next start withdraw will be the match beginning.
+void gpio_next_go_is_match_begin();
+
 static inline void gpio_set_pin(GPIO_TypeDef* GPIOx, uint32_t pin)
 {
 	GPIOx->BSRRL = 1 << pin;

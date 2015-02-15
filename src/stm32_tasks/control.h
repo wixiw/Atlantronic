@@ -24,6 +24,8 @@ void set_control_period(uint8_t periodInMs);
 struct control_usb_data
 {
 	struct systime current_time;
+	uint32_t match_time_elapsed; //in ms
+	uint32_t match_time_togo;   //in ms
 	int16_t raw_data_gyro;
 	uint16_t encoder[ENCODER_MAX];
 	uint32_t gpio;

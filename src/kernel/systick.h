@@ -37,9 +37,6 @@ struct systime systick_get_time_from_isr(void);
 struct systime systick_get_match_time(void);
 
 //!< enregistrement du temps du debut du match (si match non débuté)
-void systick_start_match(void);
-
-//!< enregistrement du temps du debut du match (si match non débuté)
 void systick_start_match_from_isr(void);
 
 

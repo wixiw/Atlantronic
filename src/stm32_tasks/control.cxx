@@ -16,6 +16,7 @@
 #include "boot_signals.h"
 #include "ipc_disco/StatusMessage.hpp"
 #include "kernel/driver/usb/ArdCom.h"
+#include "stm32_tasks/end.h"
 
 using namespace arp_stm32;
 
@@ -55,6 +56,8 @@ static void control_task(void* /*arg*/)
 		heartbeat_update();
 
 		control_usb_data.current_time = systick_get_time();
+		control_usb_data.match_time_elapsed = systick_get_match_time().ms;
+		control_usb_data.match_time_togo = end_get_match_time_togo();
 		control_usb_data.raw_data_gyro = gyro_get_raw_data();
         control_usb_data.encoder[ENCODER_1] = encoder_get(ENCODER_1);
         control_usb_data.encoder[ENCODER_2] = encoder_get(ENCODER_2);

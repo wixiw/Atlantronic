@@ -75,7 +75,7 @@ int ArdCom::waitingHeaderHook(CircularBuffer const * const buffer)
     	        m_headerBuffer[0],
     	        m_headerBuffer[1],
     	        m_headerBuffer[2],
-    	        m_headerBuffer[3]+ m_headerBuffer[4]<<8);
+    	        m_headerBuffer[3]+ ((m_headerBuffer[4])<<8));
     	m_state = STATE_ERROR;
     	return -1;
     }

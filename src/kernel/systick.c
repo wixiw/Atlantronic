@@ -82,13 +82,6 @@ void systick_start_match_from_isr()
 	}
 }
 
-void systick_start_match()
-{
-	portENTER_CRITICAL();
-	systick_start_match_from_isr();
-	portEXIT_CRITICAL();
-}
-
 struct systime timediff(const struct systime t2, const struct systime t1)
 {
 	struct systime t;

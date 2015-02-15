@@ -123,6 +123,15 @@ void gpio_af_config(GPIO_TypeDef* GPIOx, uint32_t pin, uint32_t gpio_af)
 	GPIOx->AFR[pin >> 0x03] = temp_2;
 }
 
+void gpio_next_go_is_match_begin()
+{
+	if( gpio_enable_go != 1 )
+	{
+		gpio_enable_go = 1;
+		log(LOG_INFO, "Next start withdraw is match begin !");
+	}
+}
+
 uint32_t gpio_get_state()
 {
 	uint32_t res = 0;
