@@ -115,7 +115,11 @@ void msgCb_x86Cmd(Datagram& dtg)
 
 	for( int i = 0 ; i < NB_MAX_AX12+NB_MAX_RX24 ; ++i)
 	{
-		dynamixel_cmd(msg.getDynamixelCmd(i));
+		struct dynamixel_cmd_param const * const cmd = msg.getDynamixelCmd(i);
+		if( cmd != NULL )
+		{
+			dynamixel_cmd(cmd);
+		}
 	}
 
 	heartbeat_kick();

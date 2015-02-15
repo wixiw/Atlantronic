@@ -75,7 +75,15 @@ uint8_t X86CmdMsg::getPumpCmd(PumpId id) const
 
 struct dynamixel_cmd_param const * X86CmdMsg::getDynamixelCmd(uint8_t id) const
 {
-	return &(m_cmd.dynamixel_cmd[id]);
+	if( 2 <= m_cmd.dynamixel_cmd[id].id && m_cmd.dynamixel_cmd[id].id < 0xfe )
+	{
+		return &(m_cmd.dynamixel_cmd[id]);
+	}
+	else
+	{
+		return NULL;
+	}
+
 }
 
 void X86CmdMsg::setPose(VectPlan const & pose)

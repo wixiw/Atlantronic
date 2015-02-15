@@ -15,16 +15,12 @@ arm-none-eabi-gdb -q bin/discovery/baz_small -ex "target remote localhost:3333"
 [19:50:38] jb: puis ctrl + c sur le script jtag
 
  
-control_print_param             goto_near_xy                    quit
-arm_abz                         dynamixel_get_position          gyro_calib_start                reboot
-arm_bridge                      dynamixel_scan                  gyro_calib_stop                 recalage
-arm_hook                        dynamixel_set_goal_position     gyro_set_theta                  rotate
-arm_ventouse                    dynamixel_set_id                help                            rotate_to
-arm_xyz                         dynamixel_set_manager_baudrate  localization_set_position       set_actuator_speed
-can_lss                         dynamixel_set_op_baudrate       max_speed                       set_color
-can_lss_save                    free                            pince_set_position              set_match_time
-can_lss_set_nodeid              go                              ptask                           set_speed
-can_set_baudrate                goto                            q                               straight
-can_write                       goto_graph                      qemu_manage_canopen_connexion   straight_to_wall
-control_param                   goto_near                       qemu_set_clock_factorc
 
+
+#
+# Debug simu
+#
+ make -j8 && ./qemu.sh
+ard@ard-VirtualBox:~/chroot64_v5beta/chroot/home/robot/atlantronic$ ./bin/linux/fifoReader
+./scripts/arm-elf-gdb-localhost3333 ./bin/discovery/stm32_ard
+./bin/linux/fifoWriter

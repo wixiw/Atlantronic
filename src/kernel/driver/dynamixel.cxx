@@ -558,7 +558,7 @@ struct dynamixel_error DynamixelManager::set_moving_speed(uint8_t id, float spee
 	struct dynamixel_error error = write16(id, DYNAMIXEL_MOVING_SPEED_L, speed16);
 	if( error.transmit_error)
 	{
-		log(LOG_ERROR, "erreur de transmission");
+		log_format(LOG_ERROR, "erreur de transmission on dynamixel id=%d", id);
 	}
 	return error;
 }
@@ -626,7 +626,7 @@ struct dynamixel_error DynamixelManager::set_goal_position(uint8_t id, float the
 		err = write16(id+1, DYNAMIXEL_GOAL_POSITION_L, (uint16_t) alpha);
 		if( err.transmit_error)
 		{
-			log(LOG_ERROR, "erreur de transmission");
+			log_format(LOG_ERROR, "erreur de transmission on dynamixel id=%d", id);
 		}
 		else
 		{
@@ -695,7 +695,7 @@ struct dynamixel_error DynamixelManager::set_cw_angle_limit(uint8_t id, uint16_t
 	struct dynamixel_error error = write16(id, DYNAMIXEL_CW_ANGLE_LIMIT_L, val);
 	if( error.transmit_error)
 	{
-		log(LOG_ERROR, "erreur de transmission");
+		log_format(LOG_ERROR, "erreur de transmission on dynamixel id=%d", id);
 	}
 	else
 	{
@@ -710,7 +710,7 @@ struct dynamixel_error DynamixelManager::set_ccw_angle_limit(uint8_t id, uint16_
 	struct dynamixel_error error = write16(id, DYNAMIXEL_CCW_ANGLE_LIMIT_L, val);
 	if( error.transmit_error)
 	{
-		log(LOG_ERROR, "erreur de transmission");
+		log_format(LOG_ERROR, "erreur de transmission on dynamixel id=%d", id);
 	}
 	else
 	{
@@ -902,7 +902,7 @@ static void dynamixel_cmd_set_id(DynamixelManager* manager, uint8_t old_id, uint
 		error = manager->write8(old_id, DYNAMIXEL_ID, id);
 		if( error.transmit_error)
 		{
-			log(LOG_ERROR, "erreur de transmission");
+			log_format(LOG_ERROR, "erreur de transmission on dynamixel id=%d", id);
 		}
 		else
 		{

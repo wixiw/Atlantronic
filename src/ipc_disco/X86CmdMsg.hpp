@@ -62,6 +62,7 @@ class X86CmdMsg: public arp_stm32::IpcMsg
 
         /**
          * accessor
+         * May return NULL if the id is not un the correct range
          */
         struct dynamixel_cmd_param const * getDynamixelCmd(uint8_t id) const;
 
