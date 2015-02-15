@@ -23,9 +23,6 @@ using namespace arp_stm32;
 
 static struct control_usb_data control_usb_data;
 static uint8_t control_task_period = 10;
-//#define CONTROL_PERIOD                            10
-//#define CONTROL_DT                            0.010f
-//#define CONTROL_HZ          (1000.0f/CONTROL_PERIOD)
 
 static void control_task(void* arg);
 

@@ -8,6 +8,7 @@
 #include "StatusMessage.hpp"
 #include "DiscoveryIpcTypes.h"
 #include "kernel/driver/power.h"
+#include "discovery/gpio.h"
 #include <cstring>
 
 namespace arp_stm32
@@ -116,5 +117,30 @@ int StatusMessage::getRawGpioData() const
     return m_data.gpio;
 }
 
+bool StatusMessage::getGpio(uint32_t mask) const
+{
+    return (m_data.gpio & mask) ? true : false;
+}
+
+bool StatusMessage::isPumpBlocked(uint8_t id) const
+{
+    return (m_data.pumpState >> id) & 0x01;
+}
+
+std::string StatusMessage::getColor() const
+{
+    switch (m_data.color)
+    {
+        case COLOR_RED:
+            return "green";
+            break;
+        case COLOR_YELLOW:
+            return "yellow";
+            break;
+        default:
+            return "unknown";
+            break;
+    }
+}
 
 } /* namespace arp_stm32 */

@@ -40,6 +40,7 @@ typedef enum
     EVT_X86_INIT_DONE,		//sended by x86, to inform strat is deployed and ready
     EVT_SCAN_DYNAMIXELS, 	//sended by x86, debug only
     EVT_REQUEST_END_MATCH,  //sended by x86, request the end of match
+    EVT_X86_READY_FOR_MATCH,//sended by x86, when the strat is ready for the match
 
 } EventId;
 
