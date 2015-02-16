@@ -127,6 +127,17 @@ bool StatusMessage::isPumpBlocked(uint8_t id) const
     return (m_data.pumpState >> id) & 0x01;
 }
 
+double StatusMessage::getMatchTimeElapsed() const
+{
+    return m_data.match_time_elapsed/1000.;
+}
+
+double StatusMessage::getMatchTimeRemaining() const
+{
+    return m_data.match_time_togo/1000.;
+}
+
+
 char const * StatusMessage::getColor() const
 {
     switch (m_data.color)

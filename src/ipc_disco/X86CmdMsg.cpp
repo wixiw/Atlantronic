@@ -7,6 +7,7 @@
 
 #include "X86CmdMsg.hpp"
 #include "DiscoveryIpcTypes.h"
+#include "kernel/driver/dynamixel.h"
 #include <cstring>
 
 namespace arp_stm32
