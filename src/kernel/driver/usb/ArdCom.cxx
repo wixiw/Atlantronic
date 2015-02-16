@@ -112,7 +112,7 @@ int ArdCom::waitingPayloadHook(CircularBuffer const * const buffer)
 int ArdCom::deserialize(CircularBuffer const * const buffer)
 {
 	int res = 0;
-
+	static bool firstTimeInError = false;
 	switch(m_state)
 	{
 		case STATE_WAITING_HEADER:
@@ -126,8 +126,13 @@ int ArdCom::deserialize(CircularBuffer const * const buffer)
 		case STATE_UNINITIALIZED:
 		case STATE_ERROR:
 		default:
-			log_format(LOG_ERROR, "Unknown State.");
-			res = -1;
+
+			if( ! firstTimeInError )
+			{
+				firstTimeInError = true;
+				log_format(LOG_ERROR, "Unknown State.");
+				res = -1;
+			}
 			break;
 	}
 
