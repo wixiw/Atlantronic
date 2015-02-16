@@ -13,6 +13,7 @@
 using namespace std;
 using namespace arp_stm32;
 
+static bool firstTimeInError = false;
 
 ArdCom* ArdCom::m_instance=0;
 
@@ -112,7 +113,7 @@ int ArdCom::waitingPayloadHook(CircularBuffer const * const buffer)
 int ArdCom::deserialize(CircularBuffer const * const buffer)
 {
 	int res = 0;
-	static bool firstTimeInError = false;
+
 	switch(m_state)
 	{
 		case STATE_WAITING_HEADER:
