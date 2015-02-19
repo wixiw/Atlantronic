@@ -25,7 +25,6 @@ class GyroMsg: public arp_stm32::IpcMsg
 
         /**
          * Overloaded \see IpcMsg
-         * convert the string version
          */
         virtual bool serialize(Payload& payload) const;
 

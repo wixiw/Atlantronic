@@ -7,7 +7,6 @@
 
 #include "ConfigurationMsg.hpp"
 #include "DiscoveryIpcTypes.h"
-#include <cstring>
 
 namespace arp_stm32
 {

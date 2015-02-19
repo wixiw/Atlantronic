@@ -6,7 +6,7 @@
  */
 
 #include "Datagram.hpp"
-#include <cstring>
+#include <string>
 
 using namespace std;
 using namespace arp_stm32;

@@ -318,6 +318,11 @@ void EP2_OUT_Callback(void)
 	usb_rx_buffer_count += count;
 	usb_rx_buffer_head = (usb_rx_buffer_head + count) % sizeof(usb_rx_buffer);
 
+	if(usb_rx_buffer_count > USB_RX_BUFER_SIZE)
+	{
+		while(1);
+	}
+
 	int nMax = sizeof(usb_rx_buffer) - usb_rx_buffer_head;
 	count = sizeof(usb_rx_buffer) - usb_rx_buffer_count;
 	if( count < nMax )

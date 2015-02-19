@@ -69,11 +69,6 @@ class Datagram
          */
         bool serializeHeader(uint8_t * const buffer);
 
-        /**
-         * For debug purposes
-         */
-        //std::string toString() const;
-
     protected:
         IpcHeader m_header;
         uint8_t m_payload[MSG_MAX_SIZE];

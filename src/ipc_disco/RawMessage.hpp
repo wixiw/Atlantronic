@@ -24,7 +24,6 @@ class RawMessage: public IpcMsg
 
         /**
          * Overloaded \see IpcMsg
-         * convert the string verison
          */
         virtual bool serialize(Payload& payload) const;
 

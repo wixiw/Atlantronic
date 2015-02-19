@@ -6,7 +6,7 @@
  */
 
 #include "IpcHeader.hpp"
-#include <cstring>
+#include <string>
 
 using namespace arp_stm32;
 using namespace std;

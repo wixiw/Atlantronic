@@ -10,11 +10,7 @@
 
 #include <stdint.h>
 #include <utility>
-
-//TODO
-typedef unsigned char uint8_t;
-//TODO
-typedef unsigned short uint16_t;
+#include <string.h>
 
 namespace arp_stm32
 {

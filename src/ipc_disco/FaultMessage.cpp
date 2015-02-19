@@ -7,7 +7,6 @@
 
 #include "FaultMessage.hpp"
 #include "DiscoveryIpcTypes.h"
-#include <cstring>
 
 namespace arp_stm32
 {

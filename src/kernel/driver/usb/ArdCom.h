@@ -59,7 +59,7 @@ private:
 
 
 	arp_stm32::Datagram m_recvDtg;
-	std::map<DiscoveryMsgType, MsgCallback> m_msgCallbacks;
+	MsgCallback m_msgCallbacks[MSG_NB];
 	comState m_state;
 	uint8_t m_headerBuffer[arp_stm32::HEADER_SIZE];
 	static ArdCom* m_instance;

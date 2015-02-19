@@ -25,7 +25,8 @@ typedef enum
     MSG_HOKUYO_SCAN,		//sended by stm32, hokuyo raw scan, for debug purposes, see hokuyo.cxx
     MSG_X86_CMD,			//sended by x86, publish a consolidated list of commands for stm32 actuators
     MSG_CONFIGURATION,		//sended by x86, send configuration parameters to the stm32
-    MSG_GYRO_CMD			//sended by x86, gyrometer related commands (calibration, config, set pose)
+    MSG_GYRO_CMD,			//sended by x86, gyrometer related commands (calibration, config, set pose)
+    MSG_NB
 } DiscoveryMsgType;
 
 typedef enum
@@ -41,7 +42,7 @@ typedef enum
     EVT_SCAN_DYNAMIXELS, 	//sended by x86, debug only
     EVT_REQUEST_END_MATCH,  //sended by x86, request the end of match
     EVT_X86_READY_FOR_MATCH,//sended by x86, when the strat is ready for the match
-
+    EVT_NB
 } EventId;
 
 #ifdef __cplusplus

@@ -30,3 +30,7 @@ obj-linux-fifoReader += linux/tools/fifoReader.o
 lib-linux-fifoReader += -lm
 bin-linux += fifoReader
 
+obj-linux-bootScenario = $(obj-linux-fifo)
+obj-linux-bootScenario += linux/tools/bootScenario.o
+lib-linux-bootScenario += -lm
+bin-linux += bootScenario

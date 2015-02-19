@@ -127,7 +127,7 @@ int main()
         	}
 
         	case MSG_STATUS:
-        		cout << "Status message received." << endl;
+        		//cout << "Status message received." << endl;
         		break;
 
         	case MSG_X86_CMD:

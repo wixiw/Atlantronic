@@ -9,7 +9,6 @@
 #include "DiscoveryIpcTypes.h"
 #include "kernel/driver/power.h"
 #include "discovery/gpio.h"
-#include <cstring>
 
 namespace arp_stm32
 {

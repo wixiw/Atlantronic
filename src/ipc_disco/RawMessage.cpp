@@ -6,7 +6,6 @@
  */
 
 #include "RawMessage.hpp"
-#include <cstring>
 
 using namespace arp_stm32;
 using namespace std;

@@ -10,7 +10,6 @@
 
 #include "ipc/IpcMsg.hpp"
 #include "stm32_tasks/control.h"
-#include <string>
 
 namespace arp_stm32
 {
@@ -26,7 +25,6 @@ class StatusMessage: public arp_stm32::IpcMsg
 
         /**
          * Overloaded \see IpcMsg
-         * convert the string version
          */
         virtual bool serialize(Payload& payload) const;
 

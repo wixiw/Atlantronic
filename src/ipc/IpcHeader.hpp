@@ -54,11 +54,6 @@ class IpcHeader
          *
          */
         bool deserialize(uint8_t const * const buffer);
-
-        /**
-         * For debug purposes
-         */
-//        std::string toString() const;
 };
 
 } /* namespace arp_stm32 */

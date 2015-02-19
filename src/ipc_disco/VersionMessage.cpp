@@ -7,7 +7,6 @@
 
 #include "VersionMessage.hpp"
 #include "DiscoveryIpcTypes.h"
-#include <cstring>
 
 using namespace arp_stm32;
 using namespace std;

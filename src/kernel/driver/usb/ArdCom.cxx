@@ -7,7 +7,6 @@
 
 #include "ArdCom.h"
 #include "kernel/log.h"
-#include <cstring>
 #include "kernel/driver/usb.h"
 
 using namespace std;
@@ -21,6 +20,10 @@ ArdCom::ArdCom()
 	: m_recvDtg()
 	, m_state(STATE_UNINITIALIZED)
 {
+	for( int i = 0 ; i < MSG_NB ; i++ )
+	{
+		m_msgCallbacks[i] = NULL;
+	}
 }
 
 void ArdCom::init()
@@ -100,11 +103,14 @@ int ArdCom::waitingPayloadHook(CircularBuffer const * const buffer)
 	m_recvDtg.appendPayload(m_recvDtg.getHeader().size);
 
 	//Call message callback associated to received header type.
-	map<DiscoveryMsgType, MsgCallback>::iterator element = m_msgCallbacks.find(static_cast<DiscoveryMsgType>(m_recvDtg.getHeader().type));
-	if( element == m_msgCallbacks.end() )
-		log_format(LOG_ERROR, "protocol error, unknown message type=%d.", m_recvDtg.getHeader().type);
+	if( m_recvDtg.getHeader().type < MSG_NB && m_msgCallbacks[m_recvDtg.getHeader().type] != NULL )
+	{
+		m_msgCallbacks[m_recvDtg.getHeader().type](m_recvDtg);
+	}
 	else
-		element->second(m_recvDtg);
+	{
+		log_format(LOG_ERROR, "protocol error, unknown message type=%d.", m_recvDtg.getHeader().type);
+	}
 
     m_state = STATE_WAITING_HEADER;
 	return m_recvDtg.getHeader().size;

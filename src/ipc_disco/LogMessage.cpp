@@ -7,7 +7,6 @@
 
 #include "LogMessage.hpp"
 #include "DiscoveryIpcTypes.h"
-#include <cstring>
 #include <cstdio>
 
 namespace arp_stm32

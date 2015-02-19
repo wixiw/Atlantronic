@@ -36,11 +36,11 @@ using namespace arp_stm32;
 static char usb_ptask_buffer[400];
 static unsigned char x86Connected = 0;
 
-static std::map<EventId, EventCallback>* evtCallbacks;
+static EventCallback evtCallbacks[EVT_NB];
 
 void registerEventCallback(EventId id, EventCallback fct)
 {
-	(*evtCallbacks)[id] = fct;
+	evtCallbacks[id] = fct;
 }
 
 unsigned char isX86Connected()
@@ -81,11 +81,14 @@ void msgCb_event(Datagram& dtg)
 	}
 
 	//Call event callback associated to received event id.
-	std::map<EventId, EventCallback>::iterator element = evtCallbacks->find(msg.getEventId());
-	if( element == evtCallbacks->end() )
-		log_format(LOG_ERROR, "protocol error, unknown message type=%d.", dtg.getHeader().type);
+	if(msg.getEventId() < EVT_NB && evtCallbacks[msg.getEventId()] != NULL )
+	{
+		evtCallbacks[msg.getEventId()]();
+	}
 	else
-		element->second();
+	{
+		log_format(LOG_ERROR, "protocol error, unknown message type=%d.", dtg.getHeader().type);
+	}
 }
 
 void msgCb_x86Cmd(Datagram& dtg)
@@ -146,7 +149,7 @@ void msgCb_configuration(Datagram& dtg)
 	end_cmd_set_time(msg.getMatchDuration());
 	set_control_period(msg.getControlPeriod());
 
-	
+
 	//Start all configured modules
 	log_format(LOG_INFO, "Configuration and version request received, started.");
 	modules_set_start_config(msg.getStartModuleConfig());
@@ -183,8 +186,12 @@ void usb_ard_init()
 
 	com.init();
 
+	for( int i = 0 ; i < EVT_NB ; i++ )
+	{
+		evtCallbacks[i] = NULL;
+	}
+
 	//Register Event callbacks
-	evtCallbacks = new std::map<EventId, EventCallback>();
 	registerEventCallback(EVT_LIST_TASKS, evtCb_ptaskRequest);
 	registerEventCallback(EVT_REBOOT,  evtCb_reboot);
 	registerEventCallback(EVT_ENABLE_HEARTBEAT,  heartbeat_enable);

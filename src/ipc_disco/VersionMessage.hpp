@@ -9,7 +9,6 @@
 #define VERSIONMESSAGE_HPP_
 
 #include "ipc/IpcMsg.hpp"
-#include <string>
 
 #ifndef VERSION
 #error VERSION not defined

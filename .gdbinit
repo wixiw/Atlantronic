@@ -169,9 +169,9 @@ define pstack
 end
 
 #WLA : 
-#b isr_usage_fault
-#b isr_hard_fault_stack
-#b kernel_panic
-#b vApplicationStackOverflowHook
-#b vApplicationMallocFailedHook
+b isr_usage_fault
+b isr_hard_fault_stack
+b kernel_panic
+b vApplicationStackOverflowHook
+b vApplicationMallocFailedHook
 set auto-load safe-path /
