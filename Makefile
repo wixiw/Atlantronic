@@ -103,7 +103,7 @@ else
 all:
 	$(MAKE) ARCH=disco
 	$(MAKE) ARCH=linux
-	$(MAKE) ARCH=disco stat
+	#$(MAKE) ARCH=disco stat
 
 stat:
 	$(MAKE) ARCH=disco stat
