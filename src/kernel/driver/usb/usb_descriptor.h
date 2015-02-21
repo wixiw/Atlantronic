@@ -13,6 +13,12 @@
 #define USB_CONFIG_DESCRIPTOR_SIZE                32
 #define USB_STRING_LANG_ID_SIZE                    4
 
+//EP= EntryPoint, cf usb reference
+#define USB_TX_EP_ID			   				   1
+#define USB_TX_EP_ADDR			   				0x81
+#define USB_RX_EP_ID			   				   2
+#define USB_RX_EP_ADDR			   				0x02
+
 extern const uint8_t usb_device_descriptor[USB_DEVICE_DESCRIPTOR_SIZE];
 extern const uint8_t usb_config_descriptor[USB_CONFIG_DESCRIPTOR_SIZE];
 extern const uint8_t usb_string_langID[USB_STRING_LANG_ID_SIZE];

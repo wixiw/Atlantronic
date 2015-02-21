@@ -174,4 +174,9 @@ b isr_hard_fault_stack
 b kernel_panic
 b vApplicationStackOverflowHook
 b vApplicationMallocFailedHook
+
+b usb.c:263
+watch USB_OTG_dev.dev.out_ep[2].xfer_count
+b DCD_HandleOutEP_ISR
+
 set auto-load safe-path /

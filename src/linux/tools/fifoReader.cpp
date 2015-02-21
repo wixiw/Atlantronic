@@ -14,16 +14,7 @@
 #include <string.h>
 #include "ipc/IpcHeader.hpp"
 #include "ipc/Datagram.hpp"
-#include "ipc_disco/MessagePrinter.hpp"
-#include "ipc_disco/RawMessage.hpp"
-#include "ipc_disco/DiscoveryIpcTypes.h"
-#include "ipc_disco/VersionMessage.hpp"
-#include "ipc_disco/StatusMessage.hpp"
-#include "ipc_disco/LogMessage.hpp"
-#include "ipc_disco/FaultMessage.hpp"
-#include "ipc_disco/EventMessage.hpp"
-#include "ipc_disco/OpponentListMsg.hpp"
-#include "ipc_disco/X86CmdMsg.hpp"
+#include "ipc_disco/DiscoveryIpcMessage.hpp"
 
 using namespace std;
 using namespace arp_stm32;

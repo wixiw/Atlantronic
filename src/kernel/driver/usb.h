@@ -13,13 +13,13 @@ extern "C" {
 void usb_write(const void* buffer, int size);
 
 //Hold the lock on the usb stack to prevent mixing when sending a message
-void takeUsbMutex();
+void take_txUsbMutex();
 
 //Release the lock on the usb stack after having called takeUsbMutex
-void releaseUsbMutex();
+void release_txUsbMutex();
 
 //Signal the writing task that a message is ready
-void signalUsbMsg();
+void signal_txUsbMsg();
 
 //TODO a enlever
 enum

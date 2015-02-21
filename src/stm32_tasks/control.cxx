@@ -15,7 +15,7 @@
 #include "kernel/pump.h"
 #include "boot_signals.h"
 #include "ipc_disco/StatusMessage.hpp"
-#include "kernel/driver/usb/ArdCom.h"
+#include "kernel/driver/usb/ArdCom.hpp"
 #include "stm32_tasks/end.h"
 
 using namespace arp_stm32;

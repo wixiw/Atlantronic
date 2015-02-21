@@ -2,6 +2,8 @@
 #include "usbd_desc.h"
 #include "usbd_req.h"
 
+#define USB_EP_TX
+
 static uint8_t usbd_atlantronic_init(void* pdev , uint8_t cfgidx);
 static uint8_t usbd_atlantronic_deinit(void* pdev , uint8_t cfgidx);
 static uint8_t usbd_atlantronic_setup(void* pdev , USB_SETUP_REQ* req);
@@ -29,8 +31,8 @@ USBD_Class_cb_TypeDef USBD_atlantronic_cb =
 static uint8_t usbd_atlantronic_init(void* pdev , uint8_t cfgidx)
 {
 	(void) cfgidx;
-	DCD_EP_Open(pdev, 0x81, 0x40, USB_OTG_EP_BULK);
-	DCD_EP_Open(pdev, 0x02, 0x40, USB_OTG_EP_BULK);
+	DCD_EP_Open(pdev, USB_TX_EP_ADDR, 0x40, USB_OTG_EP_BULK);
+	DCD_EP_Open(pdev, USB_RX_EP_ADDR, 0x40, USB_OTG_EP_BULK);
 
 	return USBD_OK;
 }
@@ -38,8 +40,8 @@ static uint8_t usbd_atlantronic_init(void* pdev , uint8_t cfgidx)
 static uint8_t usbd_atlantronic_deinit(void* pdev , uint8_t cfgidx)
 {
 	(void) cfgidx;
-	DCD_EP_Close(pdev, 0x81);
-	DCD_EP_Close(pdev, 0x02);
+	DCD_EP_Close(pdev, USB_TX_EP_ADDR);
+	DCD_EP_Close(pdev, USB_RX_EP_ADDR);
 
 	return USBD_OK;
 }
@@ -54,7 +56,7 @@ static uint8_t usbd_atlantronic_setup(void* pdev , USB_SETUP_REQ* req)
 static uint8_t usbd_atlantronic_data_in(void* pdev , uint8_t epnum)
 {
 	(void) pdev;
-	if( epnum == 0x01)
+	if( epnum == USB_TX_EP_ID)
 	{
 		EP1_IN_Callback();
 	}
@@ -64,7 +66,7 @@ static uint8_t usbd_atlantronic_data_in(void* pdev , uint8_t epnum)
 static uint8_t usbd_atlantronic_data_out(void* pdev , uint8_t epnum)
 {
 	(void) pdev;
-	if( epnum == 0x02)
+	if( epnum == USB_RX_EP_ID)
 	{
 		EP2_OUT_Callback();
 	}	return USBD_OK;

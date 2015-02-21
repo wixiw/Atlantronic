@@ -12,7 +12,7 @@
 #include <string.h>
 #include "boot_signals.h"
 #include "ipc_disco/HokuyoMessage.hpp"
-#include "kernel/driver/usb/ArdCom.h"
+#include "kernel/driver/usb/ArdCom.hpp"
 
 using namespace arp_stm32;
 

@@ -5,22 +5,16 @@
  *      Author: willy
  */
 
-
-#include <map>
+#include "ArdCom_c_wrapper.h"
+#include "ArdCom.hpp"
 #include "kernel/log.h"
-#include "ipc_disco/ConfigurationMsg.hpp"
-#include "ipc_disco/EventMessage.hpp"
-#include "ipc_disco/GyroMsg.hpp"
-#include "ipc_disco/LogMessage.hpp"
-#include "ipc_disco/VersionMessage.hpp"
-#include "ipc_disco/X86CmdMsg.hpp"
+#include "ipc_disco/DiscoveryIpcMessage.hpp"
 #include "boot_signals.h"
 #include "kernel/FreeRTOS.h"
 #include "kernel/task.h"
 #include "kernel/semphr.h"
 #include "kernel/module.h"
 #include "priority.h"
-#include "ArdCom.h"
 #include "kernel/heartbeat.h"
 #include "discovery/gpio.h"
 #include "kernel/driver/power.h"
@@ -30,7 +24,6 @@
 #include "stm32_tasks/control.h"
 #include "stm32_tasks/end.h"
 #include "stm32_tasks/led.h"
-using namespace std;
 using namespace arp_stm32;
 
 static char usb_ptask_buffer[400];
@@ -48,7 +41,7 @@ unsigned char isX86Connected()
 	return x86Connected;
 }
 
-int deserialize_ard(CircularBuffer const * const buffer)
+int deserialize_ard(CircularBuffer * const buffer)
 {
 	return ArdCom::getInstance().deserialize(buffer);
 }
@@ -126,6 +119,8 @@ void msgCb_x86Cmd(Datagram& dtg)
 	}
 
 	heartbeat_kick();
+
+	log_format(LOG_INFO, "X86 msg.");
 }
 
 

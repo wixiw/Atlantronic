@@ -8,10 +8,10 @@
 #ifndef ARDCOM_H_
 #define ARDCOM_H_
 
-#include <map>
 #include "ipc/IpcMsg.hpp"
 #include "ipc/Datagram.hpp"
-#include "ArdCom_c_wrapper.h"
+#include "ipc_disco/DiscoveryIpcTypes.h"
+#include "circular_buffer.h"
 
 class ArdCom {
 public:
@@ -19,7 +19,7 @@ public:
 
 	virtual ~ArdCom();
 
-	int deserialize(CircularBuffer const * const buffer);
+	int deserialize(CircularBuffer * const buffer);
 
 	void registerMsgCallback(DiscoveryMsgType id, MsgCallback fct);
 
@@ -48,12 +48,9 @@ private:
 
 	//try to deserialize the header which is a fixed size message
 	//@return nb bytes read on success, negative number on error.
-	int waitingHeaderHook(CircularBuffer const * const buffer);
+	int waitingHeaderHook(CircularBuffer * const buffer);
 
-	int waitingPayloadHook(CircularBuffer const * const buffer);
-
-	void memcpy_circularToLinear(uint8_t* const linearBuffer, CircularBuffer const * const circularBuffer, arp_stm32::MsgSize const sizeToCopy);
-
+	int waitingPayloadHook(CircularBuffer * const buffer);
 
 	void msgCb_event(arp_stm32::Datagram& dtg);
 

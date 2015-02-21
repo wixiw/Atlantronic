@@ -14,6 +14,7 @@
 #include "ipc_disco/RawMessage.hpp"
 #include "ipc_disco/VersionMessage.hpp"
 #include "ipc_disco/LogMessage.hpp"
+#include <string>
 
 namespace arp_stm32
 {

@@ -13,60 +13,65 @@
 #include "kernel/driver/usb.h"
 #include "boot_signals.h"
 #include "kernel/driver/usb/ArdCom_c_wrapper.h"
+#include <stdint.h>
 
-// Attention, pour l'envoi de commandes par usb, on suppose que c'est envoyé en une seule trame usb
-
+//
+// STM32 => outdoor
+//
 #define USB_TX_BUFER_SIZE       8192
-#define USB_RX_BUFER_SIZE       4096 //Take care to accord with MSG_MAX_SIZE in IpcTypes.hpp
-#define USB_READ_STACK_SIZE      800
-#define USB_WRITE_STACK_SIZE     800
-
-// variables statiques => segment bss, initialisation a 0
-
-static unsigned char usb_buffer[USB_TX_BUFER_SIZE];
-static int usb_buffer_begin;
-static int usb_buffer_end;
-static int usb_buffer_size;
-static unsigned char usb_rx_buffer_ep[64]; //!< buffer usb de reception d'un endpoint si on n'a pas 64 octets contigus pour le mettre directement dans le buffer circulaire
-static unsigned char usb_rx_buffer[USB_RX_BUFER_SIZE]; //!< buffer usb de reception (circulaire)
-static unsigned int usb_rx_buffer_head; //!< position ou on doit ajouter les nouveaux octets
-static unsigned int usb_rx_buffer_tail; //!< position ou on doit lire les octets
-static volatile unsigned int usb_rx_buffer_count; //!< taille du buffer usb de reception
-static unsigned int usb_rx_buffer_ep_used;
-static int usb_rx_waiting; //!< overflow sur usb - reception. Vaut 1 si on doit relancer la reception
-static xSemaphoreHandle usb_mutex;
-
-void usb_read_task(void *);
+#define USB_TX_STACK_SIZE     	800
+static uint8_t usb_tx_buffer[USB_TX_BUFER_SIZE];
+static int usb_tx_buffer_begin;
+static int usb_tx_buffer_end;
+static int usb_tx_buffer_size;
+static xSemaphoreHandle usb_tx_mutex;
+static xSemaphoreHandle usb_tx_sem;
 void usb_write_task(void *);
 
-static xSemaphoreHandle usb_write_sem;
-static xSemaphoreHandle usb_read_sem;
+//
+// OUTDOOR => STM32
+//
+#define USB_RX_BUFER_SIZE        200
+#define USB_RX_CIRCULAR_SIZE     512  //Take care to accord with MSG_MAX_SIZE in IpcTypes.hpp //TODO a reaugmenter apres debug
+#define USB_RX_STACK_SIZE      	 800
+static uint8_t usb_rx_circular_buffer[USB_RX_CIRCULAR_SIZE]; //private buffer should not be accessed directly
+static uint8_t usb_rx_tmp_buffer[USB_RX_BUFER_SIZE]; 		 // buffer de reception du endpoint il est utilisé par le HW
+static CircularBuffer usb_rx_buffer;      					 // buffer (normal) usb de reception, il est mis à jour par l'IT avec usb_rx_tmp_buffer
+static xSemaphoreHandle usb_rx_sem;
+void usb_read_task(void *);
+
+
 static volatile unsigned int usb_endpoint_ready;
 static __ALIGN_BEGIN USB_OTG_CORE_HANDLE USB_OTG_dev __ALIGN_END;
 void USB_OTG_BSP_mDelay (const uint32_t msec);
 
-void takeUsbMutex()
+
+void take_txUsbMutex()
 {
-	xSemaphoreTake(usb_mutex, portMAX_DELAY);
+	xSemaphoreTake(usb_tx_mutex, portMAX_DELAY);
 }
 
-void releaseUsbMutex()
+void release_txUsbMutex()
 {
-	xSemaphoreGive(usb_mutex);
+	xSemaphoreGive(usb_tx_mutex);
 }
 
-void signalUsbMsg()
+void signal_txUsbMsg()
 {
-	xSemaphoreGive(usb_write_sem);
+	xSemaphoreGive(usb_tx_sem);
 }
+
 
 static int usb_module_init(void)
 {
 	usb_endpoint_ready = 1;
 
-	usb_mutex = xSemaphoreCreateMutex();
+	//mapping de la structure de gestion du buffer circulaire sur le buffer de reception usb
+	circular_create( &usb_rx_buffer, usb_rx_circular_buffer, USB_RX_CIRCULAR_SIZE);
 
-	if(usb_mutex == NULL)
+	usb_tx_mutex = xSemaphoreCreateMutex();
+
+	if(usb_tx_mutex == NULL)
 	{
 		return ERR_INIT_USB;
 	}
@@ -84,33 +89,33 @@ static int usb_module_init(void)
 	gpio_af_config(GPIOA, 11, GPIO_AF_OTG_FS);
 	gpio_af_config(GPIOA, 12, GPIO_AF_OTG_FS);
 	USBD_Init(&USB_OTG_dev, 1, &USR_desc, &USBD_atlantronic_cb, &USR_cb);
-	DCD_EP_PrepareRx(&USB_OTG_dev, 2, usb_rx_buffer, sizeof(usb_rx_buffer));
+	DCD_EP_PrepareRx(&USB_OTG_dev, USB_RX_EP_ADDR, usb_rx_tmp_buffer, sizeof(usb_rx_tmp_buffer));
 
 	NVIC_SetPriority(OTG_FS_IRQn, PRIORITY_IRQ_USB);
 	NVIC_EnableIRQ(OTG_FS_IRQn);
 
-	vSemaphoreCreateBinary(usb_write_sem);
-	if( usb_write_sem == NULL )
+	vSemaphoreCreateBinary(usb_tx_sem);
+	if( usb_tx_sem == NULL )
 	{
 		return ERR_INIT_USB;
 	}
-	xSemaphoreTake(usb_write_sem, 0);
+	xSemaphoreTake(usb_tx_sem, 0);
 
-	vSemaphoreCreateBinary(usb_read_sem);
-	if( usb_read_sem == NULL )
+	vSemaphoreCreateBinary(usb_rx_sem);
+	if( usb_rx_sem == NULL )
 	{
 		return ERR_INIT_USB;
 	}
-	xSemaphoreTake(usb_read_sem, 0);
+	xSemaphoreTake(usb_rx_sem, 0);
 
-	portBASE_TYPE err = xTaskCreate(usb_read_task, "usb_r", USB_READ_STACK_SIZE, NULL, PRIORITY_TASK_USB, NULL);
+	portBASE_TYPE err = xTaskCreate(usb_read_task, "usb_rx", USB_RX_STACK_SIZE, NULL, PRIORITY_TASK_USB, NULL);
 
 	if(err != pdPASS)
 	{
 		return ERR_INIT_USB;
 	}
 
-	err = xTaskCreate(usb_write_task, "usb_w", USB_WRITE_STACK_SIZE, NULL, PRIORITY_TASK_USB, NULL);
+	err = xTaskCreate(usb_write_task, "usb_tx", USB_TX_STACK_SIZE, NULL, PRIORITY_TASK_USB, NULL);
 
 	if(err != pdPASS)
 	{
@@ -126,40 +131,40 @@ module_init(usb_module_init, INIT_USB);
 
 void usb_write_byte(unsigned char byte)
 {
-	usb_buffer[usb_buffer_end] = byte;
-	usb_buffer_end = (usb_buffer_end + 1) % USB_TX_BUFER_SIZE;
-	usb_buffer_size++;
+	usb_tx_buffer[usb_tx_buffer_end] = byte;
+	usb_tx_buffer_end = (usb_tx_buffer_end + 1) % USB_TX_BUFER_SIZE;
+	usb_tx_buffer_size++;
 
-	if( usb_buffer_size > USB_TX_BUFER_SIZE)
+	if( usb_tx_buffer_size > USB_TX_BUFER_SIZE)
 	{
-		usb_buffer_size = USB_TX_BUFER_SIZE;
-		usb_buffer_begin = usb_buffer_end;
+		usb_tx_buffer_size = USB_TX_BUFER_SIZE;
+		usb_tx_buffer_begin = usb_tx_buffer_end;
 	}
 }
 
 void usb_write(const void* buffer, int size)
 {
-	int nMax = USB_TX_BUFER_SIZE - usb_buffer_end;
+	int nMax = USB_TX_BUFER_SIZE - usb_tx_buffer_end;
 
-	usb_buffer_size += size;
+	usb_tx_buffer_size += size;
 
 	if( likely(size <= nMax) )
 	{
-		memcpy(&usb_buffer[usb_buffer_end], buffer, size);
-		usb_buffer_end = (usb_buffer_end + size) % USB_TX_BUFER_SIZE;
+		memcpy(&usb_tx_buffer[usb_tx_buffer_end], buffer, size);
+		usb_tx_buffer_end = (usb_tx_buffer_end + size) % USB_TX_BUFER_SIZE;
 	}
 	else
 	{
-		memcpy(&usb_buffer[usb_buffer_end], buffer, nMax);
+		memcpy(&usb_tx_buffer[usb_tx_buffer_end], buffer, nMax);
 		size -= nMax;
-		memcpy(&usb_buffer[0], buffer + nMax, size);
-		usb_buffer_end = size;
+		memcpy(&usb_tx_buffer[0], buffer + nMax, size);
+		usb_tx_buffer_end = size;
 	}
 
-	if( usb_buffer_size > USB_TX_BUFER_SIZE)
+	if( usb_tx_buffer_size > USB_TX_BUFER_SIZE)
 	{
-		usb_buffer_size = USB_TX_BUFER_SIZE;
-		usb_buffer_begin = usb_buffer_end;
+		usb_tx_buffer_size = USB_TX_BUFER_SIZE;
+		usb_tx_buffer_begin = usb_tx_buffer_end;
 	}
 }
 
@@ -175,65 +180,20 @@ void usb_read_task(void * arg)
 			vTaskDelay( ms_to_tick(100) );
 		}
 
-		if( usb_rx_buffer_count )
+		while( circular_getOccupiedRoom(&usb_rx_buffer) > 0)
 		{
-			CircularBuffer circularBuffer; //TODO refactorer le driver pour utiliser ça partout
 			portENTER_CRITICAL();
-			circularBuffer.data = usb_rx_buffer;
-			circularBuffer.size = USB_RX_BUFER_SIZE;
-			circularBuffer.start = usb_rx_buffer_tail;
-			circularBuffer.end = usb_rx_buffer_head;
-			circularBuffer.count = usb_rx_buffer_count;
+			int readBytes = deserialize_ard(&usb_rx_buffer);
 			portEXIT_CRITICAL();
 
-			int totalRead = 0;
-
-			while( circularBuffer.count > 0)
+			if( readBytes <= 0 )
 			{
-				int readBytes = deserialize_ard(&circularBuffer);
-				if( readBytes > 0 )
-				{
-					circularBuffer.start += readBytes;
-					circularBuffer.count -= readBytes;
-					totalRead += readBytes;
-				}
-				else
-				{
-					break;
-				}
-			}
-
-			portENTER_CRITICAL();
-			__sync_sub_and_fetch(&usb_rx_buffer_count, totalRead);
-			usb_rx_buffer_tail = (usb_rx_buffer_tail + totalRead) % sizeof(usb_rx_buffer);
-			portEXIT_CRITICAL();
-
-			if( unlikely(usb_rx_waiting != 0))
-			{
-				int nMax = sizeof(usb_rx_buffer) - usb_rx_buffer_head;
-				int count = sizeof(usb_rx_buffer) - usb_rx_buffer_count;
-				if( count < nMax )
-				{
-					nMax = count;
-				}
-
-				if( nMax > 0 )
-				{
-					// on a eu un overflow, il faut relancer la reception des messages
-					DCD_EP_PrepareRx(&USB_OTG_dev, 2, &usb_rx_buffer[usb_rx_buffer_head], nMax);
-					usb_rx_waiting = 0;
-				}
-			}
-
-			if( usb_rx_buffer_count )
-			{
-				// on a traite un message et il en reste
-				// on enchaine sans prendre la semaphore
-				continue;
+				//The buffer is not empty, but it doesn't contain a complete datagram
+				break;
 			}
 		}
 
-		xSemaphoreTake(usb_read_sem, portMAX_DELAY);
+		xSemaphoreTake(usb_rx_sem, portMAX_DELAY);
 	}
 }
 
@@ -253,24 +213,24 @@ void usb_write_task(void * arg)
 
 		if( usb_endpoint_ready )
 		{
-			takeUsbMutex();
-			if(usb_buffer_size > 0)
+			take_txUsbMutex();
+			if(usb_tx_buffer_size > 0)
 			{
-				int sizeMax = USB_TX_BUFER_SIZE - usb_buffer_begin;
-				if(usb_buffer_size < sizeMax )
+				int sizeMax = USB_TX_BUFER_SIZE - usb_tx_buffer_begin;
+				if(usb_tx_buffer_size < sizeMax )
 				{
-					sizeMax = usb_buffer_size;
+					sizeMax = usb_tx_buffer_size;
 				}
 
 				usb_endpoint_ready = 0;
-				DCD_EP_Tx(&USB_OTG_dev, 0x81, usb_buffer + usb_buffer_begin, sizeMax);
-				usb_buffer_size -= sizeMax;
-				usb_buffer_begin = (usb_buffer_begin + sizeMax) % USB_TX_BUFER_SIZE;
+				DCD_EP_Tx(&USB_OTG_dev, USB_TX_EP_ADDR, usb_tx_buffer + usb_tx_buffer_begin, sizeMax);
+				usb_tx_buffer_size -= sizeMax;
+				usb_tx_buffer_begin = (usb_tx_buffer_begin + sizeMax) % USB_TX_BUFER_SIZE;
 			}
-			releaseUsbMutex();
+			release_txUsbMutex();
 		}
 
-		xSemaphoreTake(usb_write_sem, portMAX_DELAY);
+		xSemaphoreTake(usb_tx_sem, portMAX_DELAY);
 	}
 }
 
@@ -287,7 +247,7 @@ void EP1_IN_Callback(void)
 	if( ! usb_endpoint_ready )
 	{
 		usb_endpoint_ready = 1;
-		xSemaphoreGiveFromISR(usb_write_sem, &xHigherPriorityTaskWoken);
+		xSemaphoreGiveFromISR(usb_tx_sem, &xHigherPriorityTaskWoken);
 	}
 
 	portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
@@ -299,53 +259,19 @@ void EP2_OUT_Callback(void)
 	portBASE_TYPE xHigherPriorityTaskWoken = 0;
 	portSET_INTERRUPT_MASK_FROM_ISR();
 
-	// pas de commande en cours de traitement
-	int count = USBD_GetRxCount(&USB_OTG_dev, 0x02);
-	if( unlikely(usb_rx_buffer_ep_used) )
+	int rxDataSize = USBD_GetRxCount(&USB_OTG_dev, USB_RX_EP_ID);
+	if( !circular_append(&usb_rx_buffer, usb_rx_tmp_buffer, rxDataSize))
 	{
-		int nMax = sizeof(usb_rx_buffer) - usb_rx_buffer_head;
-		if( count <= nMax )
-		{
-			memcpy(&usb_rx_buffer[usb_rx_buffer_head], usb_rx_buffer_ep, count);
-		}
-		else
-		{
-			memcpy(&usb_rx_buffer[usb_rx_buffer_head], usb_rx_buffer_ep, nMax);
-			memcpy(usb_rx_buffer, &usb_rx_buffer_ep[nMax], count - nMax);
-		}
-	}
-	usb_rx_buffer_ep_used = 0;
-	usb_rx_buffer_count += count;
-	usb_rx_buffer_head = (usb_rx_buffer_head + count) % sizeof(usb_rx_buffer);
-
-	if(usb_rx_buffer_count > USB_RX_BUFER_SIZE)
-	{
+		//s'il n'y a plus de place dans le buffer tournant c'est la merde
 		while(1);
 	}
 
-	int nMax = sizeof(usb_rx_buffer) - usb_rx_buffer_head;
-	count = sizeof(usb_rx_buffer) - usb_rx_buffer_count;
-	if( count < nMax )
-	{
-		nMax = count;
-	}
-
-	if( likely(nMax >= 64) )
-	{
-		DCD_EP_PrepareRx(&USB_OTG_dev, 2, &usb_rx_buffer[usb_rx_buffer_head], nMax);
-	}
-	else if( count > 64)
-	{
-		DCD_EP_PrepareRx(&USB_OTG_dev, 2, usb_rx_buffer_ep, nMax);
-		usb_rx_buffer_ep_used = 1;
-	}
-	else
-	{
-		// overflow
-		usb_rx_waiting = 1;
-	}
-
-	xSemaphoreGiveFromISR(usb_read_sem, &xHigherPriorityTaskWoken);
+	//
+	//Relancement de la lecture des buffers USB :
+	//
+	memset(usb_rx_tmp_buffer, 0, sizeof(usb_rx_tmp_buffer));
+	DCD_EP_PrepareRx(&USB_OTG_dev, USB_RX_EP_ADDR, usb_rx_tmp_buffer, sizeof(usb_rx_tmp_buffer));
+	xSemaphoreGiveFromISR(usb_rx_sem, &xHigherPriorityTaskWoken);
 
 	portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
 	portCLEAR_INTERRUPT_MASK_FROM_ISR(0);

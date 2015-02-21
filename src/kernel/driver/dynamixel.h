@@ -15,8 +15,8 @@
 #define WEAK_DYNAMIXEL __attribute__((weak, alias("nop_function") ))
 #endif
 
-#define NB_MAX_AX12 10
-#define NB_MAX_RX24 4
+#define NB_MAX_AX12 2
+#define NB_MAX_RX24 2
 
 void dynamixel_cmd_scan();
 

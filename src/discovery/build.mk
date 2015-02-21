@@ -9,6 +9,7 @@ obj-discovery-stm32_ard += kernel/list.o
 obj-discovery-stm32_ard += kernel/heap_1.o
 obj-discovery-stm32_ard += kernel/log.o
 obj-discovery-stm32_ard += kernel/heartbeat.o
+obj-discovery-stm32_ard += kernel/driver/usb/circular_buffer.o
 obj-discovery-stm32_ard += kernel/driver/usb/usb.o
 obj-discovery-stm32_ard += kernel/driver/usb/ArdCom.o
 obj-discovery-stm32_ard += kernel/driver/usb/ArdCom_c_wrapper.o

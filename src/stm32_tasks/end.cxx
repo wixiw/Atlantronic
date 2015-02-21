@@ -11,7 +11,7 @@
 #include "gpio.h"
 #include "kernel/driver/power.h"
 #include "ipc_disco/EventMessage.hpp"
-#include "kernel/driver/usb/ArdCom.h"
+#include "kernel/driver/usb/ArdCom.hpp"
 #include "discovery/Signal.h"
 
 using namespace arp_stm32;
