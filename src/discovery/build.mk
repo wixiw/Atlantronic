@@ -1,3 +1,20 @@
+#driver USB ST-ARD wrapper
+obj-discovery-stm32_ard += kernel/driver/usb/usb.o
+obj-discovery-stm32_ard += kernel/driver/usb/usb_descriptor.o
+#driver USB from ST
+obj-discovery-stm32_ard += kernel/driver/usb/stm32f4xx/stm32f4xx_hal_pcd.o
+obj-discovery-stm32_ard += kernel/driver/usb/stm32f4xx/stm32f4xx_hal_pcd_ex.o
+obj-discovery-stm32_ard += kernel/driver/usb/stm32f4xx/stm32f4xx_ll_usb.o
+obj-discovery-stm32_ard += kernel/driver/usb/stm32f4xx/usbd_conf.o
+obj-discovery-stm32_ard += kernel/driver/usb/stm32f4xx/usbd_core.o
+obj-discovery-stm32_ard += kernel/driver/usb/stm32f4xx/usbd_ctlreq.o
+obj-discovery-stm32_ard += kernel/driver/usb/stm32f4xx/usbd_ioreq.o
+#driver USB - custom ARD
+obj-discovery-stm32_ard += kernel/driver/usb/ArdCom.o
+obj-discovery-stm32_ard += kernel/driver/usb/ArdCom_c_wrapper.o
+obj-discovery-stm32_ard += kernel/driver/usb/circular_buffer.o
+
+#autres drivers
 obj-discovery-stm32_ard  += kernel/main.o
 obj-discovery-stm32_ard += kernel/asm/isr_stm32f4xx.o
 obj-discovery-stm32_ard += kernel/rcc.o
@@ -9,20 +26,6 @@ obj-discovery-stm32_ard += kernel/list.o
 obj-discovery-stm32_ard += kernel/heap_1.o
 obj-discovery-stm32_ard += kernel/log.o
 obj-discovery-stm32_ard += kernel/heartbeat.o
-obj-discovery-stm32_ard += kernel/driver/usb/circular_buffer.o
-obj-discovery-stm32_ard += kernel/driver/usb/usb.o
-obj-discovery-stm32_ard += kernel/driver/usb/ArdCom.o
-obj-discovery-stm32_ard += kernel/driver/usb/ArdCom_c_wrapper.o
-obj-discovery-stm32_ard += kernel/driver/usb/usb_descriptor.o
-obj-discovery-stm32_ard += kernel/driver/usb/stm32f4xx/usb_core.o
-obj-discovery-stm32_ard += kernel/driver/usb/stm32f4xx/usb_dcd.o
-obj-discovery-stm32_ard += kernel/driver/usb/stm32f4xx/usb_dcd_int.o
-obj-discovery-stm32_ard += kernel/driver/usb/stm32f4xx/usbd_core.o
-obj-discovery-stm32_ard += kernel/driver/usb/stm32f4xx/usbd_ioreq.o
-obj-discovery-stm32_ard += kernel/driver/usb/stm32f4xx/usbd_req.o
-obj-discovery-stm32_ard += kernel/driver/usb/stm32f4xx/usbd_atlantronic_core.o
-obj-discovery-stm32_ard += kernel/driver/usb/stm32f4xx/usbd_usr.o
-obj-discovery-stm32_ard += kernel/driver/usb/stm32f4xx/usbd_desc.o
 obj-discovery-stm32_ard += kernel/state_machine/state_machine.o
 obj-discovery-stm32_ard += kernel/driver/power.o
 obj-discovery-stm32_ard += kernel/driver/usart.o

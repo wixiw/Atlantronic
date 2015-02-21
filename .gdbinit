@@ -175,8 +175,7 @@ b kernel_panic
 b vApplicationStackOverflowHook
 b vApplicationMallocFailedHook
 
-b usb.c:263
-watch USB_OTG_dev.dev.out_ep[2].xfer_count
-b DCD_HandleOutEP_ISR
+watch ((PCD_HandleTypeDef*)(usb_handle.pData))->OUT_ep[2].xfer_count
+
 
 set auto-load safe-path /

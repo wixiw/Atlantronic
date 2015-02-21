@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "usb_descriptor.h"
+#include "kernel/driver/usb/stm32f4xx/usbd_def.h"
 
 // USB Standard Device Descriptor
 const uint8_t usb_device_descriptor[USB_DEVICE_DESCRIPTOR_SIZE] __attribute__ ((aligned (4))) =
@@ -14,18 +15,8 @@ const uint8_t usb_device_descriptor[USB_DEVICE_DESCRIPTOR_SIZE] __attribute__ ((
 	0x40,   // bMaxPacketSize0
 	0x18,
 	0x18,   // idVendor = 0x1818
-#if defined( __foo__ )
-	0x01,
-	0x00,   // idProduct = 0x0001
-#elif defined( __bar__ )
-	0x02,
-	0x00,   // idProduct = 0x0002
-#elif defined(__discovery__)
-	0x03,                       // idProduct = 0x0003
+	0x03,   // idProduct = 0x0003
 	0x00,
-#else
-#error unknown card
-#endif
 	0x00,
 	0x01,   // bcdDevice = 1.00
 	1,      // Index of string descriptor describing manufacturer
@@ -59,7 +50,7 @@ const uint8_t usb_config_descriptor[USB_CONFIG_DESCRIPTOR_SIZE] __attribute__ ((
 // Endpoint Descriptor (IN1)
 	0x07,                           // bLength: Endpoint Descriptor size
 	USB_ENDPOINT_DESCRIPTOR_TYPE,   // bDescriptorType: Endpoint
-	0x81,                           // bEndpointAddress: IN1
+	USB_TX_EP_ADDR,                 // bEndpointAddress: IN1
 	0x02,                           // bmAttributes: terminaison de type bloc
 	0x40,                           // wMaxPacketSize: 64 octets max
 	0x00,
@@ -67,7 +58,7 @@ const uint8_t usb_config_descriptor[USB_CONFIG_DESCRIPTOR_SIZE] __attribute__ ((
 // Endpoint Descriptor (OUT2)
 	0x07,                           // bLength: Endpoint Descriptor size
 	USB_ENDPOINT_DESCRIPTOR_TYPE,   // bDescriptorType: Endpoint
-	0x02,                           // bEndpointAddress: OUT2
+	USB_RX_EP_ADDR,                 // bEndpointAddress: OUT2
 	0x02,                           // bmAttributes: terminaison de type bloc
 	0x40,                           // wMaxPacketSize: 64 octets max
 	0x00,
@@ -82,3 +73,19 @@ const uint8_t usb_string_langID[USB_STRING_LANG_ID_SIZE] __attribute__ ((aligned
 	0x0c,
 	0x04 // LangID = 0x040c: Fr
 };
+
+/* USB Standard Device Descriptor */
+uint8_t usb_device_qualifier_desc[USB_LEN_DEV_QUALIFIER_DESC] __attribute__ ((aligned (4))) =
+{
+  USB_LEN_DEV_QUALIFIER_DESC,
+  USB_DESC_TYPE_DEVICE_QUALIFIER,
+  0x00,
+  0x02,
+  0x00,
+  0x00,
+  0x00,
+  0x40,
+  0x01,
+  0x00,
+};
+
