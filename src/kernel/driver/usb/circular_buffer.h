@@ -31,6 +31,7 @@ typedef struct
 void circular_create(CircularBuffer * const circularBuffer, uint8_t * const linearBuffer, size_t const size);
 
 //pop (with copy) a circular buffer into a linear buffer
+//circular_pop can be safely used with circular_append in multi-thread or thread/it competition since both doesn't fill the buffer entirely (most common case)
 //@return false if the size doesn't match
 bool circular_pop(uint8_t* const linearBuffer, CircularBuffer* const circularBuffer, size_t const sizeToCopy);
 
@@ -38,20 +39,15 @@ bool circular_pop(uint8_t* const linearBuffer, CircularBuffer* const circularBuf
 //@return false if the size doesn't match
 bool circular_append(CircularBuffer * const circularBuffer, uint8_t const * const linearBuffer, size_t const sizeToCopy);
 
-//return true if the circular buffer has not reached its end, so data are contigous in memory
-bool circular_isDataContigous(CircularBuffer const * const circularBuffer);
-
 //returns the occupied room in the circular buffer
 size_t circular_getOccupiedRoom(CircularBuffer const * const circularBuffer);
 
 //returns the free room in the circular buffer
 size_t circular_getFreeRoom(CircularBuffer const * const circularBuffer);
 
-//returns the occupied room to the end circular buffer
-size_t circular_getOccupiedRoomToTheEnd(CircularBuffer const * const circularBuffer);
+//reset the circular buffer and empty the memory
+void circular_reset(CircularBuffer * const circularBuffer);
 
-//returns the room to the end circular buffer
-size_t circular_getEmptyRoomToTheEnd(CircularBuffer const * const circularBuffer);
 
 #ifdef __cplusplus
 }

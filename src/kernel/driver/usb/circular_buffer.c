@@ -8,6 +8,36 @@
 #include "circular_buffer.h"
 #include <string.h>
 
+//return true if you can read sizeToRead until the end of the buffer
+bool circular_canIReadContigousData(CircularBuffer const * const circularBuffer, size_t sizeToRead)
+{
+	unsigned int endOfRead = circularBuffer->start + sizeToRead;
+
+	//detection d'overflow dans le int :
+	if( endOfRead < circularBuffer->start || endOfRead < sizeToRead )
+	{
+		return false;
+	}
+
+
+	return endOfRead < circularBuffer->size ? true : false;
+}
+
+//return true if you can write sizeToRead until the end of the buffer
+bool circular_canIWriteContigousData(CircularBuffer const * const circularBuffer, size_t sizeToWrite)
+{
+	unsigned int endOfWrite = circularBuffer->end + sizeToWrite;
+
+	//detection d'overflow dans le int :
+	if( endOfWrite < circularBuffer->end || endOfWrite < sizeToWrite )
+	{
+		return false;
+	}
+
+
+	return endOfWrite < circularBuffer->size ? true : false;
+}
+
 void circular_create(CircularBuffer * const circularBuffer, uint8_t * const linearBuffer, size_t const size)
 {
 	circularBuffer->data = linearBuffer;
@@ -21,18 +51,18 @@ bool circular_pop(uint8_t* const linearBuffer, CircularBuffer * const circularBu
 		return false;
 	}
 
-	if( circular_isDataContigous(circularBuffer) )
+	if( circular_canIReadContigousData(circularBuffer, sizeToCopy) )
 	{
 		// message deja contigu en memoire
 		memcpy(linearBuffer, circularBuffer->data + circularBuffer->start, sizeToCopy);
 	}
 	else
 	{
-		size_t sizeToTheEnd = circular_getOccupiedRoomToTheEnd(circularBuffer);
+		size_t roomToEnd = circularBuffer->size - circularBuffer->start;
 		//une partie est mise a la fin
-		memcpy(linearBuffer, circularBuffer->data + circularBuffer->start, sizeToTheEnd);
+		memcpy(linearBuffer, circularBuffer->data + circularBuffer->start, roomToEnd);
 		//la suite au debut
-		memcpy(linearBuffer + sizeToTheEnd, circularBuffer->data, sizeToCopy - sizeToTheEnd);
+		memcpy(linearBuffer + roomToEnd, circularBuffer->data, sizeToCopy - roomToEnd);
 	}
 
 	circularBuffer->start = (circularBuffer->start + sizeToCopy) % circularBuffer-> size;
@@ -46,28 +76,25 @@ bool circular_append(CircularBuffer * const circularBuffer, uint8_t const * cons
 		return false;
 	}
 
-	size_t roomToTheEnd = circular_getEmptyRoomToTheEnd(circularBuffer);
-	if( sizeToCopy <= roomToTheEnd)
+
+	if( circular_canIWriteContigousData(circularBuffer, sizeToCopy) )
 	{
 		// message deja contigu en memoire
 		memcpy(circularBuffer->data + circularBuffer->end, linearBuffer, sizeToCopy);
 	}
 	else
 	{
+		size_t roomToEnd = circularBuffer->size - circularBuffer->end;
 		//une partie est mise a la fin
-		memcpy(circularBuffer->data + circularBuffer->end, linearBuffer, roomToTheEnd);
+		memcpy(circularBuffer->data + circularBuffer->end, linearBuffer, roomToEnd);
 		//la suite au debut
-		memcpy(circularBuffer->data, linearBuffer + roomToTheEnd, sizeToCopy - roomToTheEnd);
+		memcpy(circularBuffer->data, linearBuffer + roomToEnd, sizeToCopy - roomToEnd);
 	}
 
 	circularBuffer->end = (circularBuffer->end + sizeToCopy) % circularBuffer-> size;
 	return true;
 }
 
-bool circular_isDataContigous(CircularBuffer const * const circularBuffer)
-{
-	return circularBuffer->start < circularBuffer->end ? true : false;
-}
 
 size_t circular_getOccupiedRoom(CircularBuffer const * const circularBuffer)
 {
@@ -79,21 +106,11 @@ size_t circular_getFreeRoom(CircularBuffer const * const circularBuffer)
 	return circularBuffer->size - circular_getOccupiedRoom(circularBuffer);
 }
 
-size_t circular_getOccupiedRoomToTheEnd(CircularBuffer const * const circularBuffer)
+void circular_reset(CircularBuffer * const circularBuffer)
 {
-	if( circular_isDataContigous(circularBuffer) )
-	{
-		return circularBuffer->end - circularBuffer->start;
-	}
-	else
-	{
-		return circularBuffer->size - circularBuffer->start;
-	}
-}
-
-size_t circular_getEmptyRoomToTheEnd(CircularBuffer const * const circularBuffer)
-{
-	return circularBuffer->size - circularBuffer->end;
+	circularBuffer->start = 0;
+	circularBuffer->end = 0;
+	memset(circularBuffer->data, 0, circularBuffer->size);
 }
 
 

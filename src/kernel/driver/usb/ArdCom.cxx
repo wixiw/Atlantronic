@@ -16,6 +16,7 @@ ArdCom* ArdCom::m_instance=0;
 ArdCom::ArdCom()
 	: m_recvDtg()
 	, m_state(STATE_UNINITIALIZED)
+	, m_resyncMagicByteNb(0)
 {
 	for( int i = 0 ; i < MSG_NB ; i++ )
 	{
@@ -40,26 +41,36 @@ void ArdCom::registerMsgCallback(DiscoveryMsgType id, MsgCallback fct)
 int ArdCom::waitingHeaderHook(CircularBuffer * const buffer)
 {
 	//Si on a recu un message trop petit on attend la suite
-	if( circular_getOccupiedRoom(buffer) < HEADER_SIZE )
+	if( circular_getOccupiedRoom(buffer) < HEADER_SIZE - m_resyncMagicByteNb )
 	{
 		return 0;
 	}
 
+	if( m_resyncMagicByteNb == 0 )
+	{
+		memset(m_headerBuffer, 0, sizeof(m_headerBuffer));
+	}
+
 	//decircularisation du buffer de reception
-	memset(m_headerBuffer, 0, sizeof(m_headerBuffer));
-	circular_pop( m_headerBuffer, buffer, HEADER_SIZE);
+	circular_pop( m_headerBuffer + m_resyncMagicByteNb, buffer, HEADER_SIZE - m_resyncMagicByteNb);
 
 	//On a recu un message qui fait au moins la taille d'un header
 	//on le deserialize pour connaitre la payload
     if( !m_recvDtg.deserializeHeader(m_headerBuffer) )
     {
-    	log_format(LOG_ERROR, "protocol error, header deserialization failed. magic=%x%x type=%d size=%d",
+    	log_format(LOG_ERROR, "protocol error, header deserialization failed : magic=%02X%02X type=%d size=%d. Going to resync...",
     	        m_headerBuffer[0],
     	        m_headerBuffer[1],
     	        m_headerBuffer[2],
     	        m_headerBuffer[3]+ ((m_headerBuffer[4])<<8));
-    	m_state = STATE_ERROR;
+    	m_state = STATE_RESYNC;
     	return -1;
+    }
+
+    //If we start the deserialization with a pre-fetched magic number, we consider the communication re-established
+    if( m_resyncMagicByteNb != 0 )
+    {
+    	m_resyncMagicByteNb = 0;
     }
 
     m_state = STATE_WAITING_PAYLOAD;
@@ -92,6 +103,41 @@ int ArdCom::waitingPayloadHook(CircularBuffer * const buffer)
 	return m_recvDtg.getHeader().size;
 }
 
+int ArdCom::resyncHook(CircularBuffer * const buffer)
+{
+	size_t readByteNb = 0;
+
+	//On ne reset le buffer que si on commence le resync, sinon on peut avoir fini avec un bout de magic dans le tour précédent
+	if( m_resyncMagicByteNb == 0 )
+	{
+		memset(m_headerBuffer, 0, sizeof(m_headerBuffer));
+	}
+
+	//Tant qu'il y a des nouveaux octets et qu'on a pas trouvé les 2 octets magiques :
+	while( 0 < circular_getOccupiedRoom(buffer) && m_resyncMagicByteNb < sizeof(IpcHeader::magic) )
+	{
+		//on lit le premier byte :
+		circular_pop( m_headerBuffer + m_resyncMagicByteNb, buffer, 1);
+		if( m_headerBuffer[m_resyncMagicByteNb] == 0x5A ) //TODO voir comment on peut lier à MAGIC_NUMBER
+		{
+			m_resyncMagicByteNb++;
+		}
+
+		readByteNb++;
+	}
+
+
+	//On a recu un message qui fait au moins la taille d'un header
+	//on le deserialize pour connaitre la payload
+    if( m_resyncMagicByteNb == sizeof(IpcHeader::magic))
+    {
+    	log_format(LOG_INFO, "Communication re-sync'ed");
+    	m_state = STATE_WAITING_HEADER;
+    }
+
+    return readByteNb;
+}
+
 int ArdCom::deserialize(CircularBuffer * const buffer)
 {
 	int res = 0;
@@ -106,6 +152,9 @@ int ArdCom::deserialize(CircularBuffer * const buffer)
 			res = waitingPayloadHook(buffer);
 			break;
 
+		case STATE_RESYNC:
+			res = resyncHook(buffer);
+			break;
 		case STATE_UNINITIALIZED:
 		case STATE_ERROR:
 		default:

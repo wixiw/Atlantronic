@@ -60,8 +60,8 @@ const uint8_t usb_config_descriptor[USB_CONFIG_DESCRIPTOR_SIZE] __attribute__ ((
 	USB_ENDPOINT_DESCRIPTOR_TYPE,   // bDescriptorType: Endpoint
 	USB_RX_EP_ADDR,                 // bEndpointAddress: OUT2
 	0x02,                           // bmAttributes: terminaison de type bloc
-	0x40,                           // wMaxPacketSize: 64 octets max
-	0x00,
+	0x00,                           // wMaxPacketSize: 128 octets max
+	0x02,									//bits de poid fort pour wMaxPacketSize
 	0x00,                           // bInterval: ignorée pour les terminaisons de type bloc
 };
 

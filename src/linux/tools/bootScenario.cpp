@@ -106,25 +106,29 @@ int main()
     sendMsg(msgConfig, writeFd);
 
 
-
+            char line[100];
+            cout << "hit any key to send cmd..." << endl;
+            std::cin.getline(line, 100);
 
     int i = 0;
     while(1)
     {
-        char line[100];
-        cout << "hit any key to send cmd..." << endl;
-        std::cin.getline(line, 100);
+//        char line[100];
+//        cout << "hit any key to send cmd..." << endl;
+//        std::cin.getline(line, 100);
+
+
     	X86CmdMsg msgCmd;
     	sendMsg(msgCmd, writeFd);
 
     	if( i%10 == 0 )
     	{
-        	EventMessage msgEvt(EVT_LIST_TASKS);
+    		EventMessage msgEvt(EVT_LIST_TASKS);
         	sendMsg(msgEvt, writeFd);
     	}
     	i++;
-
-    	usleep(50*1E3);
+    	cout << "i=" << i << endl;
+    	usleep(1500*1E3);
     }
 }
 

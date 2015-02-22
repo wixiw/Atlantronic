@@ -174,8 +174,10 @@ b isr_hard_fault_stack
 b kernel_panic
 b vApplicationStackOverflowHook
 b vApplicationMallocFailedHook
-
-watch ((PCD_HandleTypeDef*)(usb_handle.pData))->OUT_ep[2].xfer_count
+b usb.c:314
+b usb.c:316
+b usb.c:320
+#watch ((PCD_HandleTypeDef*)(usb_handle.pData))->OUT_ep[2].xfer_count
 
 
 set auto-load safe-path /

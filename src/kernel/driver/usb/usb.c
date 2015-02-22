@@ -28,7 +28,7 @@ uint8_t* usb_get_interface_str_descriptor( USBD_SpeedTypeDef speed , uint16_t *l
 //
 // STM32 => outdoor
 //
-#define USB_TX_BUFER_SIZE       8192
+#define USB_TX_BUFER_SIZE       4096
 #define USB_TX_STACK_SIZE     	800
 static uint8_t usb_tx_buffer[USB_TX_BUFER_SIZE];
 static int usb_tx_buffer_begin;
@@ -41,11 +41,11 @@ void usb_write_task(void *);
 //
 // OUTDOOR => STM32
 //
-#define USB_RX_BUFER_SIZE        200
-#define USB_RX_CIRCULAR_SIZE     512  //Take care to accord with MSG_MAX_SIZE in IpcTypes.hpp //TODO a reaugmenter apres debug
+#define USB_RX_TMP_BUFER_SIZE   4096
+#define USB_RX_CIRCULAR_SIZE    8096
 #define USB_RX_STACK_SIZE      	 800
 static uint8_t usb_rx_circular_buffer[USB_RX_CIRCULAR_SIZE]; //private buffer should not be accessed directly
-static uint8_t usb_rx_tmp_buffer[USB_RX_BUFER_SIZE]; 		 // buffer de reception du endpoint il est utilisé par le HW
+static uint8_t usb_rx_tmp_buffer[USB_RX_TMP_BUFER_SIZE]; 		 // buffer de reception du endpoint il est utilisé par le HW
 static CircularBuffer usb_rx_buffer;      					 // buffer (normal) usb de reception, il est mis à jour par l'IT avec usb_rx_tmp_buffer
 static xSemaphoreHandle usb_rx_sem;
 void usb_read_task(void *);
@@ -130,19 +130,35 @@ static int usb_module_init(void)
 	{
 		return ERR_INIT_USB;
 	}
+#ifdef STM32F4_USB_HS
+	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
+	RCC->AHB1ENR |= RCC_AHB1ENR_OTGHSEN;
+	//gpio_pin_init(GPIOB, 12, GPIO_MODE_AF, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // ID pas utile en mode device
+	//gpio_pin_init(GPIOB, 13, GPIO_MODE_IN, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // VBUS pas utile en mode device
+	gpio_pin_init(GPIOB, 14, GPIO_MODE_AF, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // DM
+	gpio_pin_init(GPIOB, 15, GPIO_MODE_AF, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // DP
 
+	//gpio_af_config(GPIOB, 12, GPIO_AF_OTG_HS_FS); // pas utile en mode device
+	//gpio_af_config(GPIOB, 13, GPIO_AF_OTG_HS_FS); // pas utile en mode device
+	gpio_af_config(GPIOB, 14, GPIO_AF_OTG_HS_FS);
+	gpio_af_config(GPIOB, 15, GPIO_AF_OTG_HS_FS);
+	USBD_Init(&usb_handle, &usb_descriptors, 0);
+	USBD_RegisterClass(&usb_handle, &usb_cb);
+	USBD_Start(&usb_handle);
+	USBD_LL_PrepareReceive(&usb_handle, USB_RX_EP_ADDR, usb_rx_tmp_buffer, sizeof(usb_rx_tmp_buffer));
+
+	NVIC_SetPriority(OTG_HS_IRQn, PRIORITY_IRQ_USB);
+	NVIC_EnableIRQ(OTG_HS_IRQn);
+#else
 	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
-	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN;
 	RCC->AHB2ENR |= RCC_AHB2ENR_OTGFSEN;
-    gpio_pin_init(GPIOA, 9, GPIO_MODE_IN, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // VBUS
-    //TODO old version :	gpio_pin_init(GPIOA,  9, GPIO_MODE_AF, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // VBUS
-	gpio_pin_init(GPIOA, 10, GPIO_MODE_AF, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // ID
-	//TODO old versions : 	gpio_pin_init(GPIOA, 10, GPIO_MODE_AF, GPIO_SPEED_100MHz, GPIO_OTYPE_OD, GPIO_PUPD_UP);     // ID
+	//gpio_pin_init(GPIOA, 9, GPIO_MODE_IN, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // VBUS pas utile en mode device
+	//gpio_pin_init(GPIOA, 10, GPIO_MODE_AF, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // ID pas utile en mode devide
 	gpio_pin_init(GPIOA, 11, GPIO_MODE_AF, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // DM
 	gpio_pin_init(GPIOA, 12, GPIO_MODE_AF, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // DP
 
-	gpio_af_config(GPIOA,  9, GPIO_AF_OTG_FS);
-	gpio_af_config(GPIOA, 10, GPIO_AF_OTG_FS);
+	//gpio_af_config(GPIOA, 9, GPIO_AF_OTG_FS); // pas utile en mode device
+	//gpio_af_config(GPIOA, 10, GPIO_AF_OTG_FS);// pas utile en mode devide
 	gpio_af_config(GPIOA, 11, GPIO_AF_OTG_FS);
 	gpio_af_config(GPIOA, 12, GPIO_AF_OTG_FS);
 	USBD_Init(&usb_handle, &usb_descriptors, 1);
@@ -152,6 +168,7 @@ static int usb_module_init(void)
 
 	NVIC_SetPriority(OTG_FS_IRQn, PRIORITY_IRQ_USB);
 	NVIC_EnableIRQ(OTG_FS_IRQn);
+#endif
 
 	vSemaphoreCreateBinary(usb_tx_sem);
 	if( usb_tx_sem == NULL )
@@ -292,10 +309,17 @@ uint8_t usb_cb_DataOut(struct _USBD_HandleTypeDef *pdev , uint8_t epnum)
 	portSET_INTERRUPT_MASK_FROM_ISR();
 
 	int rxDataSize = USBD_GetRxCount(&usb_handle, USB_RX_EP_ID);
+	if( rxDataSize > sizeof(usb_rx_tmp_buffer))
+	{
+		log_format(LOG_ERROR, "Can't handle such bandwith in RX :(, I'm dead.");
+		return USBD_FAIL;
+	}
+
 	if( !circular_append(&usb_rx_buffer, usb_rx_tmp_buffer, rxDataSize))
 	{
 		//s'il n'y a plus de place dans le buffer tournant c'est la merde
-		return USBD_BUSY;
+		log_format(LOG_ERROR, "Can't handle such bandwith in RX :(, I'm dead.");
+		return USBD_FAIL;
 	}
 
 	//
@@ -390,9 +414,7 @@ void usb_read_task(void * arg)
 
 		while( circular_getOccupiedRoom(&usb_rx_buffer) > 0)
 		{
-			portENTER_CRITICAL();
 			int readBytes = deserialize_ard(&usb_rx_buffer);
-			portEXIT_CRITICAL();
 
 			if( readBytes <= 0 )
 			{
@@ -442,7 +464,11 @@ void usb_write_task(void * arg)
 	}
 }
 
+#ifdef STM32F4_USB_HS
+void isr_otg_hs(void)
+#else
 void isr_otg_fs(void)
+#endif
 {
 	HAL_PCD_IRQHandler(usb_handle.pData);
 }

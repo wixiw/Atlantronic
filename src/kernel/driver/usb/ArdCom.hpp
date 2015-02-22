@@ -29,6 +29,7 @@ public:
 		STATE_UNINITIALIZED,
 		STATE_WAITING_HEADER,
 		STATE_WAITING_PAYLOAD,
+		STATE_RESYNC,
 		STATE_ERROR
 	} comState;
 
@@ -52,6 +53,11 @@ private:
 
 	int waitingPayloadHook(CircularBuffer * const buffer);
 
+	//In case something bad happened in communication, this state will
+	//unqueue any byte that is not part of the magic number.
+	//When the magic number is received, then we will return to a header waiting state
+	int resyncHook(CircularBuffer * const buffer);
+
 	void msgCb_event(arp_stm32::Datagram& dtg);
 
 
@@ -60,6 +66,7 @@ private:
 	comState m_state;
 	uint8_t m_headerBuffer[arp_stm32::HEADER_SIZE];
 	static ArdCom* m_instance;
+	size_t m_resyncMagicByteNb;
 };
 
 #endif /* ARDCOM_H_ */
