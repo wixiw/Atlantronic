@@ -37,7 +37,7 @@ PRIORITY=1
 PID=$$
 #chrt -p -f $PRIORITY $PID 
 
-PROG_OPTS+=" -M atlantronic"
+PROG_OPTS+=" -M stm32_ard"
 PROG_OPTS+=" -nodefaults"
 PROG_OPTS+=" -nographic"
 PROG_OPTS+=" -chardev pipe,id=foo_usb,path=$PROP_FAKE_USB_FIFO"
