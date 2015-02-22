@@ -1,5 +1,8 @@
 #!/bin/bash
 
+<<<<<<< Updated upstream
 #openocd -d3 -f scripts/jtag/conf_discovery -c "init" -c targets -c "reset halt"
+=======
+>>>>>>> Stashed changes
 openocd -d0 -f scripts/jtag/conf_discovery -c "init" -c targets -c "reset halt"
 

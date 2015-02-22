@@ -1,0 +1,1 @@
+arm-none-eabi-gdb -q bin/discovery/$1 -ex "target remote localhost:3333"
