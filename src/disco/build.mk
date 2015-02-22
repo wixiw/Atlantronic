@@ -12,6 +12,7 @@ core_os += kernel/driver/gpio.o
 core_os += kernel/log.o
 
 core_usb += kernel/driver/usb/usb.o
+#core_usb += kernel/driver/usb/circular_buffer.o
 core_usb += kernel/driver/usb/usb_descriptor.o
 core_usb += kernel/driver/usb/stm32f4xx/stm32f4xx_hal_pcd.o
 core_usb += kernel/driver/usb/stm32f4xx/stm32f4xx_hal_pcd_ex.o
