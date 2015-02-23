@@ -13,8 +13,8 @@ const uint8_t usb_device_descriptor[USB_DEVICE_DESCRIPTOR_SIZE] __attribute__ ((
 	0x00,   // bDeviceSubClass
 	0x00,   // bDeviceProtocol
 	0x40,   // bMaxPacketSize0
-	0x18,
-	0x18,   // idVendor = 0x1818
+	0x66,
+	0x66,   // idVendor = 0x0666
 	0x03,   // idProduct = 0x0003
 	0x00,
 	0x00,

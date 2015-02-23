@@ -1,1 +1,1 @@
-obj-m += atlantronic_usb.o
+obj-m += ard_usb.o
