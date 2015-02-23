@@ -2,7 +2,6 @@
 #include "kernel/module.h"
 #include "kernel/cpu/cpu.h"
 #include "kernel/log.h"
-#include "kernel/driver/usb.h"
 #include "gpio.h"
 #include "kernel/FreeRTOS.h"
 #include "kernel/task.h"

@@ -141,7 +141,7 @@ char const * StatusMessage::getColor() const
 {
     switch (m_data.color)
     {
-        case COLOR_RED:
+        case COLOR_GREEN:
             return "green";
             break;
         case COLOR_YELLOW:

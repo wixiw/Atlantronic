@@ -6,7 +6,6 @@
 #include "kernel/rcc.h"
 #include "kernel/hokuyo_tools.h"
 #include "kernel/log.h"
-#include "kernel/driver/usb.h"
 #include "location.h"
 #include "fault.h"
 #include <string.h>

@@ -10,10 +10,13 @@
 #include "kernel/systick.h"
 
 #ifndef WEAK_PUMP
+
 #define WEAK_PUMP __attribute__((weak, alias("nop_function") ))
 #endif
 
 #define PUMP_SAMPLE_STDDEV              10
+
+uint32_t pump_update() WEAK_PUMP;
 
 typedef enum
 {
@@ -46,8 +49,6 @@ class Pump
 };
 
 extern Pump pump[PUMP_MAX];
-
-uint32_t pump_update() WEAK_PUMP;
 
 //------------------ interface usb -------------------
 struct pump_cmd_arg

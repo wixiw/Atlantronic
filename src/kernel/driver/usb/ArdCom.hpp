@@ -33,14 +33,7 @@ public:
 		STATE_ERROR
 	} comState;
 
-	static ArdCom& getInstance()
-	{
-		if( 0 == m_instance )
-		{
-			m_instance = new ArdCom();
-		}
-		return *m_instance;
-	}
+	static ArdCom& getInstance();
 
 	bool send(arp_stm32::IpcMsg& msg) const;
 

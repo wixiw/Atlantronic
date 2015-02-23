@@ -24,45 +24,59 @@ using namespace arp_stm32;
 
 void sendMsg(IpcMsg& msg, int writeFd)
 {
-    Datagram dtg;
-    uint8_t headerBuffer[HEADER_SIZE];
-    if( ! msg.fillDatagramAndHeader(dtg, headerBuffer) )
-    {
-    	cout << "failed to serialize msg" << endl;
-    	return;
-    }
+	Datagram dtg;
+	uint8_t headerBuffer[HEADER_SIZE];
+	if (!msg.fillDatagramAndHeader(dtg, headerBuffer))
+	{
+		cout << "failed to serialize msg" << endl;
+		return;
+	}
 
-   int writeSize = 0;
-    while( writeSize != HEADER_SIZE)
-    {
-    	writeSize += ::write(writeFd, headerBuffer+writeSize , HEADER_SIZE-writeSize);
-    	cout << " written : " << writeSize << endl;
-    	usleep(50);
-    }
+	int writeSize = 0;
+	while (writeSize != HEADER_SIZE)
+	{
+		int bytes = ::write(writeFd, headerBuffer + writeSize, HEADER_SIZE - writeSize);
+		if (bytes < 0)
+		{
+			cout << "ERROR : negative write" << endl;
+			while (1);
+		}
 
+		writeSize += bytes;
+		cout << " written : " << writeSize << endl;
+		usleep(50);
+	}
 
-
-    writeSize = 0;
-    Payload p = dtg.extractPayload(0);
-     while( p.first != NULL)
-     {
-    	 writeSize += ::write(writeFd, dtg.getPayload().first, dtg.getPayload().second);
-    	 cout << " written : " << writeSize << endl;
-    	 p = dtg.extractPayload(writeSize);
-    	 usleep(50);
-     }
+	writeSize = 0;
+	Payload p = dtg.extractPayload(0);
+	while (p.first != NULL)
+	{
+		int bytes = ::write(writeFd, dtg.getPayload().first, dtg.getPayload().second);
+		if (bytes < 0)
+		{
+			cout << "ERROR : negative write" << endl;
+			while (1);
+		}
+		writeSize += bytes;
+		cout << " written : " << writeSize << endl;
+		p = dtg.extractPayload(writeSize);
+		usleep(50);
+	}
 }
 
 int openFd()
 {
-    //Try to open the file, this call is blocking if no reader are present
-    int writeFd = ::open("/tmp/carte.in", O_WRONLY);
-    if( writeFd < 0 )
-    {
-        cout << "Open returned an error" << strerror(errno) << endl;
-        return -1;
-    }
-    return writeFd;
+	//Try to open the file, this call is blocking if no reader are present
+	int writeFd = ::open("/tmp/carte.in", O_WRONLY);
+	//int writeFd = ::open("/dev/discovery3", O_WRONLY);
+	//cout << "Opening : " << "/dev/discovery3" << endl;
+
+	if (writeFd < 0)
+	{
+		cout << "Open returned an error" << strerror(errno) << endl;
+		return -1;
+	}
+	return writeFd;
 }
 
 void displayMsgSizes()
@@ -95,41 +109,36 @@ int main()
 
 	int writeFd = openFd();
 
-    ConfigurationMsg msgConfig;
-    msgConfig.setMatchDuration(5.0);
-	msgConfig.setModuleStartConfig( BOOT_ID_CONTROL, true);
-	msgConfig.setModuleStartConfig( BOOT_ID_DETECTION, true);
-	msgConfig.setModuleStartConfig( BOOT_ID_FAULT, false);//TODO bugged
-	msgConfig.setModuleStartConfig( BOOT_ID_DYNAMIXEL, true);
-	msgConfig.setModuleStartConfig( BOOT_ID_HOKUYO, true);
+	ConfigurationMsg msgConfig;
+	msgConfig.setMatchDuration(5.0);
+	msgConfig.setModuleStartConfig(BOOT_ID_CONTROL, true);
+	msgConfig.setModuleStartConfig(BOOT_ID_DETECTION, true);
+	msgConfig.setModuleStartConfig(BOOT_ID_FAULT, false);    //TODO bugged
+	msgConfig.setModuleStartConfig(BOOT_ID_DYNAMIXEL, true);
+	msgConfig.setModuleStartConfig(BOOT_ID_HOKUYO, true);
 	msgConfig.setControlPeriod(200);
-    sendMsg(msgConfig, writeFd);
+	sendMsg(msgConfig, writeFd);
 
+	char line[100];
+	cout << "hit any key to send cmd..." << endl;
+	std::cin.getline(line, 100);
 
-            char line[100];
-            cout << "hit any key to send cmd..." << endl;
-            std::cin.getline(line, 100);
-
-    int i = 0;
-    while(1)
-    {
+	int i = 0;
+	while (1) {
 //        char line[100];
 //        cout << "hit any key to send cmd..." << endl;
 //        std::cin.getline(line, 100);
 
+		X86CmdMsg msgCmd;
+		sendMsg(msgCmd, writeFd);
 
-    	X86CmdMsg msgCmd;
-    	sendMsg(msgCmd, writeFd);
-
-    	if( i%10 == 0 )
-    	{
-    		EventMessage msgEvt(EVT_LIST_TASKS);
-        	sendMsg(msgEvt, writeFd);
-    	}
-    	i++;
-    	cout << "i=" << i << endl;
-    	usleep(1500*1E3);
-    }
+		if (i % 10 == 0) {
+			EventMessage msgEvt(EVT_LIST_TASKS);
+			//sendMsg(msgEvt, writeFd);
+		}
+		i++;
+		cout << "i=" << i << endl;
+		//usleep(1 * 1E3);
+	}
 }
-
 

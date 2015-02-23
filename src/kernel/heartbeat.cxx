@@ -1,3 +1,4 @@
+#define WEAK_USB
 #include "kernel/driver/power.h"
 #include "heartbeat.h"
 #include "kernel/systick.h"

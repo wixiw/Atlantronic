@@ -16,10 +16,15 @@
 extern "C" {
 #endif
 
+#ifndef WEAK_CONTROL
+#include "kernel/asm/asm_base_func.h"
+#define WEAK_CONTROL __attribute__((weak, alias("nop_function") ))
+#endif
+
 //! période de la tache de controle en ms
 #define EPSILON                                 1e-4
 
-void set_control_period(uint8_t periodInMs);
+void set_control_period(uint8_t periodInMs) WEAK_CONTROL;
 
 struct control_usb_data
 {

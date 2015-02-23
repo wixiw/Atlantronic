@@ -10,7 +10,6 @@
 #include "kernel/asm/asm_base_func.h"
 #include "kernel/rcc.h"
 #include "kernel/log_level.h"
-#include "kernel/driver/usb.h"
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>

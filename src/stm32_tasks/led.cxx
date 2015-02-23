@@ -3,7 +3,6 @@
 #include "kernel/FreeRTOS.h"
 #include "kernel/task.h"
 #include "kernel/systick.h"
-#include "kernel/driver/usb.h"
 #include "kernel/driver/power.h"
 #include "kernel/log.h"
 #include "end.h"
@@ -25,9 +24,9 @@ enum
 };
 
 static void led_task(void *arg);
-static void led_two_half_chaser();
+//static void led_two_half_chaser();
 static void led_chaser();
-//static void led_tetris();
+static void led_tetris();
 
 static int led_mode = LED_MODE_BOOT;
 static int led_step;
@@ -46,7 +45,7 @@ static int led_module_init(void)
 	gpio_pin_init(GPIOE, 2, GPIO_MODE_OUT, GPIO_SPEED_50MHz, GPIO_OTYPE_PP, GPIO_PUPD_UP); // LED carte led deportee
 	gpio_pin_init(GPIOE, 4, GPIO_MODE_OUT, GPIO_SPEED_50MHz, GPIO_OTYPE_PP, GPIO_PUPD_UP); // LED carte led deportee
 
-	setLed( LED_CPU_RED | LED_CPU_BLUE | LED_EXT_BLUE | LED_EXT_GREEN | LED_EXT_ORANGE1 | LED_EXT_ORANGE2 | LED_EXT_RED);
+	setLed( LED_CPU_RED | LED_CPU_BLUE | LED_EXT_BLUE | LED_EXT_GREEN | LED_EXT_YELLOW | LED_EXT_ORANGE2 | LED_EXT_RED);
 
 	xTaskHandle xHandle;
 	portBASE_TYPE err = xTaskCreate(led_task, "led", LED_STACK_SIZE, NULL, PRIORITY_TASK_LED, &xHandle);
@@ -75,17 +74,16 @@ static void led_task(void *arg)
 		switch(led_mode)
 		{
 			case LED_MODE_WAIT_X86:
-				led_two_half_chaser();
+				led_tetris();
 				if(isX86Connected() && led_ready_for_init)
 				{
 					led_mode = LED_MODE_WAIT_COLOR_SELECTION;
 				}
 				break;
 			case LED_MODE_WAIT_COLOR_SELECTION:
-				//led_tetris();
 				if( led_step & 0x01)
 				{
-					setLed(LED_EXT_RED | LED_EXT_ORANGE1);
+					setLed(LED_EXT_GREEN | LED_EXT_YELLOW);
 				}
 				else
 				{
@@ -100,13 +98,13 @@ static void led_task(void *arg)
 				old_color = color;
 				break;
 			case LED_MODE_COLOR_SELECTION:
-				if(getcolor() == COLOR_RED)
+				if(getcolor() == COLOR_GREEN)
 				{
-					setLed(LED_EXT_RED);
+					setLed(LED_EXT_GREEN);
 				}
 				else
 				{
-					setLed(LED_EXT_ORANGE1);
+					setLed(LED_EXT_YELLOW);
 				}
 				if( gpio_get_state() & GPIO_IN_GO && getcolor() != COLOR_UNKNOWN)
 				{
@@ -117,13 +115,13 @@ static void led_task(void *arg)
 			case LED_MODE_WAIT_INIT:
 				if( led_step & 0x01)
 				{
-					if(getcolor() == COLOR_RED)
+					if(getcolor() == COLOR_GREEN)
 					{
-						setLed(LED_EXT_RED);
+						setLed(LED_EXT_GREEN);
 					}
 					else
 					{
-						setLed(LED_EXT_ORANGE1);
+						setLed(LED_EXT_YELLOW);
 					}
 				}
 				else
@@ -139,18 +137,18 @@ static void led_task(void *arg)
 			case LED_MODE_INIT_DONE:
 				if( led_step & 0x01)
 				{
-					if(getcolor() == COLOR_RED)
+					if(getcolor() == COLOR_GREEN)
 					{
-						setLed(LED_EXT_BLUE | LED_EXT_GREEN | LED_EXT_ORANGE1 | LED_EXT_ORANGE2);;//setLed(LED_EXT_RED);
+						setLed(LED_EXT_BLUE | /*LED_EXT_GREEN | */ LED_EXT_YELLOW | LED_EXT_ORANGE2 | LED_EXT_RED );
 					}
 					else
 					{
-						setLed(LED_EXT_RED | LED_EXT_BLUE | LED_EXT_GREEN | LED_EXT_ORANGE2);//setLed(LED_EXT_ORANGE1);
+						setLed(LED_EXT_BLUE | LED_EXT_GREEN | /*LED_EXT_YELLOW | */LED_EXT_ORANGE2 | LED_EXT_RED );
 					}
 				}
 				else
 				{
-					setLed(LED_EXT_RED | LED_EXT_BLUE | LED_EXT_GREEN | LED_EXT_ORANGE1 | LED_EXT_ORANGE2);
+					setLed(LED_EXT_BLUE | LED_EXT_GREEN | LED_EXT_YELLOW | LED_EXT_ORANGE2 | LED_EXT_RED);
 				}
 
 				if( getGo() )
@@ -159,7 +157,7 @@ static void led_task(void *arg)
 				}
 				break;
 			case LED_MODE_MATCH_RUNNING:
-				if( ! end_match )
+				if( ! isMatchEnded )
 				{
 					led_chaser();
 				}
@@ -188,27 +186,30 @@ void setLed(uint32_t mask)
 	GPIOD->BSRRL = (uint16_t)(mask & (LED_CPU_RED | LED_CPU_BLUE));
 	GPIOD->BSRRH = (uint16_t)((~mask) & ( LED_CPU_RED | LED_CPU_BLUE));
 
-	GPIOE->BSRRL = (uint16_t)((mask & (LED_EXT_ORANGE1 | LED_EXT_ORANGE2)) >> 16);
-	GPIOE->BSRRH = (uint16_t)(((~mask) & (LED_EXT_ORANGE1 | LED_EXT_ORANGE2)) >> 16);
+	GPIOE->BSRRL = (uint16_t)((mask & (LED_EXT_YELLOW | LED_EXT_ORANGE2)) >> 16);
+	GPIOE->BSRRH = (uint16_t)(((~mask) & (LED_EXT_YELLOW | LED_EXT_ORANGE2)) >> 16);
 }
 
-static void led_two_half_chaser()
-{
-	switch(led_step)
-	{
-		default:
-			led_step = 0;
-		case 0:
-			setLed(LED_EXT_BLUE | LED_EXT_RED);
-			break;
-		case 1:
-			setLed(LED_EXT_GREEN | LED_EXT_ORANGE2);
-			break;
-		case 2:
-			setLed(LED_EXT_ORANGE1);
-			break;
-	}
-}
+//static void led_two_half_chaser()
+//{
+//	switch(led_step)
+//	{
+//		default:
+//			led_step = 0;
+//		case 0:
+//			setLed(LED_EXT_BLUE | LED_EXT_RED);
+//			break;
+//		case 1:
+//			setLed(LED_EXT_GREEN | LED_EXT_ORANGE2);
+//			break;
+//		case 2:
+//			setLed(LED_EXT_YELLOW);
+//			break;
+//		case 3:
+//			setLed(0);
+//			break;
+//	}
+//}
 
 static void led_chaser()
 {
@@ -217,23 +218,26 @@ static void led_chaser()
 		default:
 			led_step = 0;
 		case 0:
-			setLed(LED_EXT_BLUE);
+			setLed(0);
 			break;
 		case 1:
-			setLed(LED_EXT_GREEN);
+			setLed(LED_EXT_BLUE);
 			break;
 		case 2:
-			setLed(LED_EXT_ORANGE1);
+			setLed(LED_EXT_GREEN);
 			break;
 		case 3:
-			setLed(LED_EXT_ORANGE2);
+			setLed(LED_EXT_YELLOW);
 			break;
 		case 4:
+			setLed(LED_EXT_ORANGE2);
+			break;
+		case 5:
 			setLed(LED_EXT_RED);
 			break;
 	}
 }
-/*
+
 static void led_tetris()
 {
 	switch(led_step)
@@ -247,16 +251,19 @@ static void led_tetris()
 			setLed(LED_EXT_RED | LED_EXT_ORANGE2);
 			break;
 		case 2:
-			setLed(LED_EXT_RED | LED_EXT_ORANGE2 | LED_EXT_ORANGE1);
+			setLed(LED_EXT_RED | LED_EXT_ORANGE2 | LED_EXT_YELLOW);
 			break;
 		case 3:
-			setLed(LED_EXT_RED | LED_EXT_ORANGE2 | LED_EXT_ORANGE1 | LED_EXT_GREEN);
+			setLed(LED_EXT_RED | LED_EXT_ORANGE2 | LED_EXT_YELLOW | LED_EXT_GREEN);
 			break;
 		case 4:
-			setLed(LED_EXT_RED | LED_EXT_ORANGE2 | LED_EXT_ORANGE1 | LED_EXT_GREEN | LED_EXT_BLUE);
+			setLed(LED_EXT_RED | LED_EXT_ORANGE2 | LED_EXT_YELLOW | LED_EXT_GREEN | LED_EXT_BLUE);
+			break;
+		case 5:
+			setLed(0);
 			break;
 	}
-}*/
+}
 
 void led_inform_x86_ready()
 {

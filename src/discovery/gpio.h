@@ -15,12 +15,12 @@ extern "C" {
 #define LED_CPU_BLUE     0x00008000
 #define LED_EXT_BLUE     0x80000000
 #define LED_EXT_GREEN    0x20000000
-#define LED_EXT_ORANGE1  0x00100000
+#define LED_EXT_YELLOW   0x00100000
 #define LED_EXT_ORANGE2  0x00040000
 #define LED_EXT_RED      0x01000000
 
 #define COLOR_UNKNOWN     0
-#define COLOR_RED         1
+#define COLOR_GREEN       1
 #define COLOR_YELLOW      2
 
 #define GPIO_IN_1          0x01  // IN_1

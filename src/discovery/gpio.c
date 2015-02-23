@@ -4,7 +4,6 @@
 #include "kernel/FreeRTOS.h"
 #include "kernel/queue.h"
 #include "kernel/systick.h"
-#include "kernel/driver/usb.h"
 #include "kernel/log.h"
 
 volatile uint32_t color;
@@ -214,7 +213,7 @@ void isr_exti15_10(void)
 				gpio_color_change_time = t;
 				if(color == COLOR_YELLOW)
 				{
-					color = COLOR_RED;
+					color = COLOR_GREEN;
 				}
 				else
 				{

@@ -1,9 +1,10 @@
+#define WEAK_GYRO
+
 #include "spi.h"
 #include "gyro.h"
 #include "kernel/module.h"
 #include "kernel/cpu/cpu.h"
 #include "kernel/log.h"
-#include "kernel/driver/usb.h"
 #include "kernel/math/simpson_integrator.h"
 #include "gpio.h"
 #include "fault.h"

@@ -171,13 +171,9 @@ end
 #WLA : 
 b isr_usage_fault
 b isr_hard_fault_stack
-b kernel_panic
-b vApplicationStackOverflowHook
-b vApplicationMallocFailedHook
-b usb.c:314
-b usb.c:316
-b usb.c:320
-#watch ((PCD_HandleTypeDef*)(usb_handle.pData))->OUT_ep[2].xfer_count
+#b kernel_panic
+#b vApplicationStackOverflowHook
+#b vApplicationMallocFailedHook
 
 
 set auto-load safe-path /

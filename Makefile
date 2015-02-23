@@ -107,9 +107,10 @@ stat: $(addprefix $(bin)/$(ARCH)/,$(bin-$(ARCH)))
 .PHONY: stat_$(ARCH)
 else
 all:
+	@echo [ DISCOVERY ]
 	$(MAKE) ARCH=discovery
+	@echo [ LINUX ]
 	$(MAKE) ARCH=linux
-	$(MAKE) ARCH=discovery stat
 
 stat:
 	$(MAKE) ARCH=discovery stat

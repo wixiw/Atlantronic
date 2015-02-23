@@ -1,25 +1,29 @@
 #ifndef USB_H
 #define USB_H
 
-//! @file usb.h
-//! @brief USB
-//! @author Atlantronic
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#ifndef WEAK_USB
+#include "kernel/asm/asm_base_func.h"
+#define WEAK_USB __attribute__((weak, alias("nop_function") ))
+#endif
+
+#include "kernel/portmacro.h"
+
 //Send a message on usb, you have to call getUsbMutex() before
-void usb_write(const void* buffer, int size);
+void usb_write(const void* buffer, int size) WEAK_USB;
 
 //Hold the lock on the usb stack to prevent mixing when sending a message
-void take_txUsbMutex();
+void take_txUsbMutex() WEAK_USB;
 
 //Release the lock on the usb stack after having called takeUsbMutex
-void release_txUsbMutex();
+void release_txUsbMutex() WEAK_USB;
 
-//Signal the writing task that a message is ready
-void signal_txUsbMsg();
+//Signal the writing task that a message is ready, you shall NOT use this from an interrupt context
+void signal_txUsbMsg() WEAK_USB;
+
 
 //TODO a enlever
 enum

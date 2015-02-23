@@ -6,7 +6,6 @@
 #include "kernel/hokuyo_tools.h"
 #include "kernel/rcc.h"
 #include "kernel/log.h"
-#include "kernel/driver/usb.h"
 #include "kernel/robot_parameters.h"
 #include "kernel/math/regression.h"
 #include "kernel/math/segment_intersection.h"

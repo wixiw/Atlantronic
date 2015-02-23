@@ -1,3 +1,5 @@
+#define WEAK_CONTROL
+
 #include "kernel/FreeRTOS.h"
 #include "kernel/task.h"
 #include "kernel/semphr.h"
@@ -5,7 +7,6 @@
 #include "kernel/log.h"
 #include "control.h"
 #include "location.h"
-#include "kernel/driver/usb.h"
 #include "kernel/driver/gyro.h"
 #include "kernel/driver/adc.h"
 #include "kernel/driver/power.h"

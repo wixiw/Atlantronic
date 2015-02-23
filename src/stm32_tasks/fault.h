@@ -1,10 +1,6 @@
 #ifndef FAULT_H
 #define FAULT_H
 
-//! @file fault.h
-//! @brief Gestion des defauts
-//! @author Atlantronic
-
 #include <stdint.h>
 #include "kernel/error_codes.h"
 
@@ -15,6 +11,11 @@
 extern "C" {
 #endif
 
+#ifndef WEAK_FAULT
+#include "kernel/asm/asm_base_func.h"
+#define WEAK_FAULT __attribute__((weak, alias("nop_function") ))
+#endif
+
 struct fault_status
 {
 	uint32_t state;      //!< dernier bit : actif ou non. state >> 1 : nombre de defauts de ce type depuis le debut
@@ -23,10 +24,10 @@ struct fault_status
 } __attribute__((packed));
 
 //!< monter / descendre un defaut
-void fault(enum fault id, unsigned char new_state);
+void fault(enum fault id, unsigned char new_state) WEAK_FAULT;
 
 //!< monter / descendre un defaut depuis une IT
-long fault_from_isr(enum fault id, unsigned char new_state, const char* debugText);
+long fault_from_isr(enum fault id, unsigned char new_state, const char* debugText) WEAK_FAULT;
 
 #ifdef __cplusplus
 }

@@ -7,6 +7,7 @@
 
 #include "ArdCom.hpp"
 #include "circular_buffer.h"
+#include "usb.h"
 #include "kernel/log.h"
 
 using namespace arp_stm32;
@@ -181,9 +182,21 @@ bool ArdCom::send(arp_stm32::IpcMsg& msg) const
 	usb_write(&headerBuffer, HEADER_SIZE);
 	usb_write(dtg.getPayload().first, dtg.getPayload().second);
 
-	signal_txUsbMsg();
 	release_txUsbMutex();
 
+	signal_txUsbMsg();
+
 	return true;
+}
+
+ArdCom& ArdCom::getInstance()
+{
+	take_txUsbMutex();
+	if( 0 == m_instance )
+	{
+		m_instance = new ArdCom();
+	}
+	release_txUsbMutex();
+	return *m_instance;
 }
 

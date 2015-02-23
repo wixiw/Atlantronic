@@ -5,7 +5,6 @@
 #include "kernel/module.h"
 #include "kernel/FreeRTOS.h"
 #include "kernel/task.h"
-#include "kernel/driver/usb.h"
 #include "kernel/log.h"
 #include "led.h"
 #include "gpio.h"
@@ -91,4 +90,9 @@ static void end_task(void *arg)
 
 	exitModules();
 	vTaskSuspend(0);
+}
+
+int isMatchEnded()
+{
+	return end_match;
 }

@@ -3,7 +3,6 @@
 #include "kernel/module.h"
 #include "kernel/driver/pwm.h"
 #include "kernel/driver/adc.h"
-#include "kernel/driver/usb.h"
 #include "kernel/log.h"
 
 // pompe 12V

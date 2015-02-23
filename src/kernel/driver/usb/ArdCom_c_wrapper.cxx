@@ -5,6 +5,8 @@
  *      Author: willy
  */
 
+#define WEAK_USB
+
 #include "ArdCom_c_wrapper.h"
 #include "ArdCom.hpp"
 #include "kernel/log.h"
@@ -120,7 +122,7 @@ void msgCb_x86Cmd(Datagram& dtg)
 
 	heartbeat_kick();
 
-	log_format(LOG_INFO, "X86 msg.");
+	//log_format(LOG_INFO, "X86 msg.");
 }
 
 

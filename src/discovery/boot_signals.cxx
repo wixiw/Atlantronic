@@ -7,6 +7,7 @@
 
 #include "boot_signals.h"
 
+Signal sleep;
 Signal boot_signals[BOOT_ID_SIZE];
 uint8_t boot_signals_config;
 
@@ -37,3 +38,7 @@ void start_all_modules()
 	}
 }
 
+void sleep_and_never_wakeup()
+{
+	sleep.wait();
+}

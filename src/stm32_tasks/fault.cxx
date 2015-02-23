@@ -2,6 +2,8 @@
 //! @brief Gestion des defauts
 //! @author Atlantronic
 
+#define WEAK_FAULT
+
 #include "kernel/FreeRTOS.h"
 #include "kernel/task.h"
 #include "kernel/queue.h"

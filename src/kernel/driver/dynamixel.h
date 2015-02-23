@@ -18,7 +18,16 @@
 #define NB_MAX_AX12 2
 #define NB_MAX_RX24 2
 
-void dynamixel_cmd_scan();
+void dynamixel_cmd(struct dynamixel_cmd_param const * const param) WEAK_DYNAMIXEL;
+void dynamixel_cmd_scan() WEAK_DYNAMIXEL;
+
+#ifndef LINUX
+
+void dynamixel_update_usb_data(struct dynamixel_usb_data* dynamixel) WEAK_DYNAMIXEL;
+void dynamixel_disable() WEAK_DYNAMIXEL;
+void dynamixel_enable() WEAK_DYNAMIXEL;
+
+#endif
 
 enum
 {
@@ -247,17 +256,5 @@ struct dynamixel_usb_data
 	struct dynamixel_usb_device_data rx24[NB_MAX_RX24];
 
 } __attribute((packed));
-
-void dynamixel_cmd(struct dynamixel_cmd_param const * const param);
-
-#ifndef LINUX
-
-void dynamixel_update_usb_data(struct dynamixel_usb_data* dynamixel) WEAK_DYNAMIXEL;
-
-void dynamixel_disable() WEAK_DYNAMIXEL;
-
-void dynamixel_enable() WEAK_DYNAMIXEL;
-
-#endif
 
 #endif
