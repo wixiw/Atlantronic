@@ -3,11 +3,11 @@
 
 inherit autotools eutils git-2
 
-DESCRIPTION="Atlantronic usb module"
-HOMEPAGE="http://www.atlantronic.fr"
+DESCRIPTION="A.R.D. usb module"
+HOMEPAGE="http://team-ard.fr"
 SRC_URI=""
-EGIT_REPO_URI="git://github.com/jbtredez/Atlantronic.git"
-EGIT_MASTER="jb"
+EGIT_REPO_URI="git://github.com/wixiw/Atlantronic.git"
+EGIT_MASTER="Willy Lambert"
 
 LICENSE="GPL-2"
 KEYWORDS="amd64 x86"
