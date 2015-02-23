@@ -26,9 +26,9 @@ using namespace arp_stm32;
 int main()
 {
     //Try to open the file, this call is blocking if no reader are present
-	int readFd = ::open("/tmp/carte.out", O_RDONLY);
-	//int readFd = ::open("/dev/discovery2", O_RDONLY);
-    //cout << "Opening : /dev/discovery2" << endl;
+	//int readFd = ::open("/tmp/carte.out", O_RDONLY);
+	int readFd = ::open("/dev/discovery0", O_RDONLY);
+    cout << "Opening : /dev/discovery0" << endl;
 
     if( readFd < 0 )
     {

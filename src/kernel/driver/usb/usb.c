@@ -5,26 +5,19 @@
 #include "kernel/module.h"
 #include "priority.h"
 
-#include "kernel/driver/usb/stm32f4xx/usbd_core.h"
-#include "kernel/driver/usb/stm32f4xx/usbd_def.h"
-#include "kernel/driver/usb/stm32f4xx/stm32f4xx_hal_pcd.h"
-#include "gpio.h"
-
 #include "usb.h"
 #include "usb_cb.h"
 #include "usb_descriptor.h"
+#include "gpio.h"
+#include "driver_ST/usb_dcd_int.h"
+#include "driver_ST/usbd_core.h"
+#include "driver_ST/usbd_def.h"
+#include "driver_ST/usbd_ioreq.h"
+#include "driver_ST/usbd_usr.h"
+
 #include "boot_signals.h"
 #include "kernel/driver/usb/ArdCom_c_wrapper.h"
 #include <stdint.h>
-
-//Configuration specifique pour le stm32 ARD
-uint8_t* usb_get_device_descriptor( USBD_SpeedTypeDef speed , uint16_t *length);
-uint8_t* usb_get_lang_id_str_descriptor( USBD_SpeedTypeDef speed , uint16_t *length);
-uint8_t* usb_get_manufacturer_str_descriptor( USBD_SpeedTypeDef speed , uint16_t *length);
-uint8_t* usb_get_product_str_descriptor( USBD_SpeedTypeDef speed , uint16_t *length);
-uint8_t* usb_get_serial_str_descriptor( USBD_SpeedTypeDef speed , uint16_t *length);
-uint8_t* usb_get_configuration_str_descriptor( USBD_SpeedTypeDef speed , uint16_t *length);
-uint8_t* usb_get_interface_str_descriptor( USBD_SpeedTypeDef speed , uint16_t *length);
 
 //
 // STM32 => outdoor
@@ -40,6 +33,8 @@ int create_txUsbMutex();
 int create_txUsbSignal();
 void wait_txUsbMsg();
 void signal_txUsbMsgFromIsr(portBASE_TYPE* xHigherPriorityTaskWoken) WEAK_USB;
+static volatile unsigned int usb_endpoint_ready;
+uint8_t usb_cb_DataIn(void* pdev , uint8_t epnum); //Attention le IN est veut dire TX, c'est in pour stm32=>OTG
 
 
 //
@@ -53,48 +48,62 @@ static uint8_t usb_rx_tmp_buffer[USB_RX_TMP_BUFER_SIZE]; 		 // buffer de recepti
 static CircularBuffer usb_rx_buffer;      					 // buffer (normal) usb de reception, il est mis à jour par l'IT avec usb_rx_tmp_buffer
 static xSemaphoreHandle usb_rx_sem;
 void usb_read_task(void *);
+uint8_t usb_cb_DataOut(void* pdev , uint8_t epnum); //Attention le OUT est veut dire RX, c'est in pour OTG=>stm32
 
 
-static volatile unsigned int usb_endpoint_ready;
-static USBD_HandleTypeDef usb_handle;
-static USBD_DescriptorsTypeDef usb_descriptors =
+//
+// ST driver related
+//
+
+static __ALIGN_BEGIN USB_OTG_CORE_HANDLE USB_OTG_dev __ALIGN_END;
+void USB_OTG_BSP_mDelay (const uint32_t msec);
+
+USBD_DEVICE USR_desc =
 {
-	usb_get_device_descriptor,
-	usb_get_lang_id_str_descriptor,
-	usb_get_manufacturer_str_descriptor,
-	usb_get_product_str_descriptor,
-	usb_get_serial_str_descriptor,
-	usb_get_configuration_str_descriptor,
-	usb_get_interface_str_descriptor,
+  USBD_USR_DeviceDescriptor,
+  USBD_USR_LangIDStrDescriptor,
+  USBD_USR_ManufacturerStrDescriptor,
+  USBD_USR_ProductStrDescriptor,
+  USBD_USR_SerialStrDescriptor,
+  USBD_USR_ConfigStrDescriptor,
+  USBD_USR_InterfaceStrDescriptor,
+};
+
+ USBD_Class_cb_TypeDef USBD_atlantronic_cb =
+{
+	usbd_atlantronic_init,
+	usbd_atlantronic_deinit,
+	usbd_atlantronic_setup,
+	0,
+	0,
+	usb_cb_DataIn,
+	usb_cb_DataOut,
+	0,
+	0,
+	0,
+	usbd_atlantronic_get_config,
 };
 
 
-/* Data in/out IT callbacks */
-uint8_t usb_cb_DataIn(struct _USBD_HandleTypeDef *pdev , uint8_t epnum);
-uint8_t usb_cb_DataOut(struct _USBD_HandleTypeDef *pdev , uint8_t epnum);
 
+//------------------------------------------------------------
 
-static USBD_ClassTypeDef usb_cb =
-{
-		usb_cb_init,
-		usb_cb_de_init,
-		usb_cb_Setup,
-		NULL,//usb_cb_EP0_TxSent,
-		NULL,//usb_cb_EP0_RxReady,
-		usb_cb_DataIn,
-		usb_cb_DataOut,
-		NULL,//usb_cb_SOF,
-		NULL,//usb_cb_IsoINIncomplete,
-		NULL,//usb_cb_IsoOUTIncomplete,
-		usb_cb_GetHSConfigDescriptor,
-		usb_cb_GetFSConfigDescriptor,
-		usb_cb_GetOtherSpeedConfigDescriptor,
-		usb_cb_GetDeviceQualifierDescriptor,
-};
 
 static int usb_module_init(void)
 {
+	//Configure USB HW
+	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+	RCC->AHB2ENR |= RCC_AHB2ENR_OTGFSEN;
+	gpio_pin_init(GPIOA, 11, GPIO_MODE_AF, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // DM
+	gpio_pin_init(GPIOA, 12, GPIO_MODE_AF, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // DP
+	gpio_af_config(GPIOA, 11, GPIO_AF_OTG_FS);
+	gpio_af_config(GPIOA, 12, GPIO_AF_OTG_FS);
+
+	USBD_Init(&USB_OTG_dev, 1, &USR_desc, &USBD_atlantronic_cb, &USR_cb);
+	DCD_EP_PrepareRx(&USB_OTG_dev, USB_RX_EP_ADDR, usb_rx_tmp_buffer, sizeof(usb_rx_tmp_buffer));
 	usb_endpoint_ready = 1;
+	NVIC_SetPriority(OTG_FS_IRQn, PRIORITY_IRQ_USB);
+	NVIC_EnableIRQ(OTG_FS_IRQn);
 
 	//mapping de la structure de gestion du buffer circulaire sur le buffer de reception usb
 	circular_create( &usb_rx_buffer, usb_rx_circular_buffer, USB_RX_CIRCULAR_SIZE);
@@ -103,25 +112,6 @@ static int usb_module_init(void)
 	{
 		return ERR_INIT_USB;
 	}
-
-	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
-	RCC->AHB2ENR |= RCC_AHB2ENR_OTGFSEN;
-	gpio_pin_init(GPIOA,  9, GPIO_MODE_IN, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // VBUS pas utile en mode device
-    gpio_pin_init(GPIOA, 10, GPIO_MODE_AF, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // ID pas utile en mode devide
-	gpio_pin_init(GPIOA, 11, GPIO_MODE_AF, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // DM
-	gpio_pin_init(GPIOA, 12, GPIO_MODE_AF, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // DP
-
-	gpio_af_config(GPIOA,  9, GPIO_AF_OTG_FS); // pas utile en mode device
-	gpio_af_config(GPIOA, 10, GPIO_AF_OTG_FS);// pas utile en mode devide
-	gpio_af_config(GPIOA, 11, GPIO_AF_OTG_FS);
-	gpio_af_config(GPIOA, 12, GPIO_AF_OTG_FS);
-	USBD_Init(&usb_handle, &usb_descriptors, 1);
-	USBD_RegisterClass(&usb_handle, &usb_cb);
-	USBD_Start(&usb_handle);
-	USBD_LL_PrepareReceive(&usb_handle, USB_RX_EP_ADDR, usb_rx_tmp_buffer, sizeof(usb_rx_tmp_buffer));
-
-	NVIC_SetPriority(OTG_FS_IRQn, PRIORITY_IRQ_USB);
-	NVIC_EnableIRQ(OTG_FS_IRQn);
 
 	if( !create_txUsbSignal() )
 	{
@@ -156,6 +146,19 @@ static int usb_module_init(void)
 
 module_init(usb_module_init, INIT_USB);
 
+//Interrupt callback for the ST usb driver
+void isr_otg_fs(void)
+{
+	USBD_OTG_ISR_Handler(&USB_OTG_dev);
+}
+
+
+
+//--------------------------------------------//
+// STM32 => outside
+//--------------------------------------------//
+
+//ARD utility function to write in the circular TX buffer
 void usb_write(const void* buffer, int size)
 {
 	int nMax = USB_TX_BUFER_SIZE - usb_tx_buffer_end;
@@ -182,13 +185,8 @@ void usb_write(const void* buffer, int size)
 	}
 }
 
-
-//--------------------------------------------//
-// STM32 => outside
-//--------------------------------------------//
-
 //ST callback to send data from stm32=>outside
-uint8_t usb_cb_DataIn(struct _USBD_HandleTypeDef *pdev , uint8_t epnum)
+uint8_t usb_cb_DataIn(void* pdev , uint8_t epnum)
 {
 	UNUSED(pdev);
 	if( epnum == USB_TX_EP_ID)
@@ -211,9 +209,9 @@ uint8_t usb_cb_DataIn(struct _USBD_HandleTypeDef *pdev , uint8_t epnum)
 //! Usb write task
 void usb_write_task(void * arg)
 {
-	(void) arg;
+	UNUSED(arg);
 
-	while( usb_handle.dev_state != USBD_STATE_CONFIGURED )
+	while( USB_OTG_dev.dev.device_status != USB_OTG_CONFIGURED )
 	{
 		vTaskDelay( ms_to_tick(100) );
 	}
@@ -234,7 +232,7 @@ void usb_write_task(void * arg)
 				}
 
 				usb_endpoint_ready = 0;
-				USBD_LL_Transmit(&usb_handle, USB_TX_EP_ADDR, usb_tx_buffer + usb_tx_buffer_begin, sizeMax);
+				DCD_EP_Tx(&USB_OTG_dev, USB_TX_EP_ADDR, usb_tx_buffer + usb_tx_buffer_begin, sizeMax);
 				usb_tx_buffer_size -= sizeMax;
 				usb_tx_buffer_begin = (usb_tx_buffer_begin + sizeMax) % USB_TX_BUFER_SIZE;
 			}
@@ -252,39 +250,37 @@ void usb_write_task(void * arg)
 
 
 //ST callback to receive data from outside=>stm32
-uint8_t usb_cb_DataOut(struct _USBD_HandleTypeDef *pdev , uint8_t epnum)
+uint8_t usb_cb_DataOut(void* pdev , uint8_t epnum)
 {
 	UNUSED(pdev);
 	if( epnum == USB_RX_EP_ID)
 	{
+		portBASE_TYPE xHigherPriorityTaskWoken = 0;
+		portSET_INTERRUPT_MASK_FROM_ISR();
 
-	portBASE_TYPE xHigherPriorityTaskWoken = 0;
-	portSET_INTERRUPT_MASK_FROM_ISR();
+		uint16_t rxDataSize = USBD_GetRxCount(&USB_OTG_dev, USB_RX_EP_ID);
+		if( rxDataSize > sizeof(usb_rx_tmp_buffer))
+		{
+			log_format(LOG_ERROR, "Can't handle such bandwith in RX :(, I'm dead.");
+			return USBD_FAIL;
+		}
 
-	uint16_t rxDataSize = USBD_GetRxCount(&usb_handle, USB_RX_EP_ID);
-	if( rxDataSize > sizeof(usb_rx_tmp_buffer))
-	{
-		log_format(LOG_ERROR, "Can't handle such bandwith in RX :(, I'm dead.");
-		return USBD_FAIL;
-	}
+		if( !circular_append(&usb_rx_buffer, usb_rx_tmp_buffer, rxDataSize))
+		{
+			//s'il n'y a plus de place dans le buffer tournant c'est la merde
+			log_format(LOG_ERROR, "Can't handle such bandwith in RX :(, I'm dead.");
+			return USBD_FAIL;
+		}
 
-	if( !circular_append(&usb_rx_buffer, usb_rx_tmp_buffer, rxDataSize))
-	{
-		//s'il n'y a plus de place dans le buffer tournant c'est la merde
-		log_format(LOG_ERROR, "Can't handle such bandwith in RX :(, I'm dead.");
-		return USBD_FAIL;
-	}
+		//
+		//Relancement de la lecture des buffers USB :
+		//
+		memset(usb_rx_tmp_buffer, 0, sizeof(usb_rx_tmp_buffer));
+		DCD_EP_PrepareRx(&USB_OTG_dev, USB_RX_EP_ADDR, usb_rx_tmp_buffer, sizeof(usb_rx_tmp_buffer));
+		xSemaphoreGiveFromISR(usb_rx_sem, &xHigherPriorityTaskWoken);
 
-	//
-	//Relancement de la lecture des buffers USB :
-	//
-	memset(usb_rx_tmp_buffer, 0, sizeof(usb_rx_tmp_buffer));
-	USBD_LL_PrepareReceive(&usb_handle, USB_RX_EP_ADDR, usb_rx_tmp_buffer, sizeof(usb_rx_tmp_buffer));
-	xSemaphoreGiveFromISR(usb_rx_sem, &xHigherPriorityTaskWoken);
-
-	portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
-	portCLEAR_INTERRUPT_MASK_FROM_ISR(0);
-
+		portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
+		portCLEAR_INTERRUPT_MASK_FROM_ISR(0);
 	}
 
 	return USBD_OK;
@@ -294,11 +290,11 @@ uint8_t usb_cb_DataOut(struct _USBD_HandleTypeDef *pdev , uint8_t epnum)
 //! Usb read task
 void usb_read_task(void * arg)
 {
-	(void) arg;
+	UNUSED(arg);
 
 	while(1)
 	{
-		while( usb_handle.dev_state != USBD_STATE_CONFIGURED )
+		while( USB_OTG_dev.dev.device_status != USB_OTG_CONFIGURED )
 		{
 			vTaskDelay( ms_to_tick(100) );
 		}
@@ -315,11 +311,6 @@ void usb_read_task(void * arg)
 
 		xSemaphoreTake(usb_rx_sem, portMAX_DELAY);
 	}
-}
-
-void isr_otg_fs(void)
-{
-	HAL_PCD_IRQHandler(usb_handle.pData);
 }
 
 

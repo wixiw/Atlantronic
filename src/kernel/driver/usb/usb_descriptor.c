@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include "usb_descriptor.h"
-#include "kernel/driver/usb/stm32f4xx/usbd_def.h"
+#include "kernel/driver/usb/driver_ST/usbd_def.h"
 
 // USB Standard Device Descriptor
 const uint8_t usb_device_descriptor[USB_DEVICE_DESCRIPTOR_SIZE] __attribute__ ((aligned (4))) =

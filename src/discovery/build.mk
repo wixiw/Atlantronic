@@ -34,13 +34,14 @@ obj-discovery-usb_stack += kernel/driver/usb/usb_cb.o
 obj-discovery-usb_stack += kernel/driver/usb/usb_mutex.o
 obj-discovery-usb_stack += kernel/driver/usb/usb_descriptor.o
 ##driver USB from ST
-obj-discovery-usb_stack += kernel/driver/usb/stm32f4xx/stm32f4xx_hal_pcd.o
-obj-discovery-usb_stack += kernel/driver/usb/stm32f4xx/stm32f4xx_hal_pcd_ex.o
-obj-discovery-usb_stack += kernel/driver/usb/stm32f4xx/stm32f4xx_ll_usb.o
-obj-discovery-usb_stack += kernel/driver/usb/stm32f4xx/usbd_conf.o
-obj-discovery-usb_stack += kernel/driver/usb/stm32f4xx/usbd_core.o
-obj-discovery-usb_stack += kernel/driver/usb/stm32f4xx/usbd_ctlreq.o
-obj-discovery-usb_stack += kernel/driver/usb/stm32f4xx/usbd_ioreq.o
+obj-discovery-core += kernel/driver/usb/usb_descriptor.o
+obj-discovery-core += kernel/driver/usb/driver_ST/usb_core.o
+obj-discovery-core += kernel/driver/usb/driver_ST/usb_dcd.o
+obj-discovery-core += kernel/driver/usb/driver_ST/usb_dcd_int.o
+obj-discovery-core += kernel/driver/usb/driver_ST/usbd_core.o
+obj-discovery-core += kernel/driver/usb/driver_ST/usbd_ioreq.o
+obj-discovery-core += kernel/driver/usb/driver_ST/usbd_req.o
+obj-discovery-core += kernel/driver/usb/driver_ST/usbd_usr.o
 obj-discovery-usb_stack += kernel/heartbeat.o
 
 #Log

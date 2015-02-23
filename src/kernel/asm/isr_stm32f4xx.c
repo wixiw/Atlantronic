@@ -75,8 +75,7 @@ void isr_uart4(void) __attribute__((weak, alias("isr_unexpected") )); //!< inter
 void isr_uart5(void) __attribute__((weak, alias("isr_unexpected") )); //!< interruption uart5
 void isr_usart6(void) __attribute__((weak, alias("isr_unexpected") )); //!< interruption usart6
 
-void isr_otg_fs(void) __attribute__((weak, alias("isr_unexpected") )); //!< interruption usb otg fs
-void isr_otg_hs(void) __attribute__((weak, alias("isr_unexpected") )); //!< interruption usb otg hs
+void isr_otg_fs(void) __attribute__((weak, alias("isr_unexpected") )); //!< interruption usb otg
 void isr_can1_tx(void) __attribute__((weak, alias("isr_unexpected") )); //!< interruption transmission CAN1
 void isr_can1_rx0(void) __attribute__((weak, alias("isr_unexpected") )); //!< interruption reception CAN1
 void isr_can1_sce(void) __attribute__((weak, alias("isr_unexpected") )); //!< interruption status change error CAN1
@@ -199,7 +198,7 @@ void (* const g_pfnVectors[])(void) =
 	isr_unexpected,
 	isr_unexpected,
 	isr_unexpected,
-	isr_otg_hs,
+	isr_unexpected,
 	isr_unexpected,
 	isr_unexpected,
 	isr_unexpected,

@@ -67,9 +67,9 @@ void sendMsg(IpcMsg& msg, int writeFd)
 int openFd()
 {
 	//Try to open the file, this call is blocking if no reader are present
-	int writeFd = ::open("/tmp/carte.in", O_WRONLY);
-	//int writeFd = ::open("/dev/discovery3", O_WRONLY);
-	//cout << "Opening : " << "/dev/discovery3" << endl;
+	//int writeFd = ::open("/tmp/carte.in", O_WRONLY);
+	int writeFd = ::open("/dev/discovery0", O_WRONLY);
+	cout << "Opening : " << "/dev/discovery0s" << endl;
 
 	if (writeFd < 0)
 	{
@@ -134,7 +134,7 @@ int main()
 
 		if (i % 10 == 0) {
 			EventMessage msgEvt(EVT_LIST_TASKS);
-			//sendMsg(msgEvt, writeFd);
+			sendMsg(msgEvt, writeFd);
 		}
 		i++;
 		cout << "i=" << i << endl;
