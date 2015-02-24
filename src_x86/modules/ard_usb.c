@@ -789,7 +789,7 @@ static int __init ard_init(void)
 {
 	int rep = 0;
 
-	info("A.R.D._log : init");
+	info("A.R.D. log : init");
 
 	INIT_LIST_HEAD(&ard_discovery_list.list);
 	ard_discovery_list.id = -1;
@@ -806,7 +806,7 @@ static int __init ard_init(void)
 
 static void __exit ard_exit(void)
 {
-	info("A.R.D._log : exit");
+	info("A.R.D. log : exit");
 	usb_deregister(&ard_driver);
 }
 

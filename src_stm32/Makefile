@@ -144,6 +144,6 @@ $(bin)/$(ARCH)/%:
 
 .PHONY: clean
 clean:
-	rm -frv $(obj)/stm32
-	rm -frv $(bin)/stm32
+	rm -frv $(obj)/$(ARCH)
+	rm -frv $(bin)/$(ARCH)
 

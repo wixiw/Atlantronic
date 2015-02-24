@@ -8,7 +8,6 @@
 #ifndef MESSAGEPRINTER_HPP_
 #define MESSAGEPRINTER_HPP_
 
-#include "com/stack_com/IpcMsg.hpp"
 #include "com/stack_com/IpcHeader.hpp"
 #include "com/stack_com/Datagram.hpp"
 #include "com/msgs/DiscoveryIpcMessage.hpp"

@@ -2,15 +2,11 @@
  * DiscoveryIpcMessage.hpp
  *
  *  Created on: Feb 20, 2015
- *      Author: robot
+ *      Author: willy
  */
 
 #ifndef DISCOVERYIPCMESSAGE_HPP_
 #define DISCOVERYIPCMESSAGE_HPP_
-
-#ifdef LINUX
-#include "ipc_disco/MessagePrinter.hpp"
-#endif
 
 #include "com/msgs/DiscoveryIpcTypes.h"
 
@@ -26,5 +22,8 @@
 #include "com/msgs/VersionMessage.hpp"
 #include "com/msgs/X86CmdMsg.hpp"
 
+#ifdef LINUX
+#include "com/msgs/MessagePrinter.hpp"
+#endif
 
 #endif /* DISCOVERYIPCMESSAGE_HPP_ */

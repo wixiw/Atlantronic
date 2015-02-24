@@ -12,7 +12,7 @@
 #include <iostream>
 #include <string.h>
 #include <stdlib.h>
-#include "discovery/boot_signals.h"
+#include "core/boot_signals.h"
 #include "com/stack_com/IpcHeader.hpp"
 #include "com/msgs/DiscoveryIpcMessage.hpp"
 

@@ -13,6 +13,8 @@
 #include "core/module.h"
 #include "core/usart.h"
 #include "os/os.h"
+#else
+#include "os/systick.h"
 #endif
 
 #define HOKUYO_NUM_POINTS            682
@@ -26,6 +28,10 @@
 #define HOKUYO_START_ANGLE               ((- 135 * M_PI / 180.0f) + 44 * HOKUYO_DTHETA)      //!< 135 degrés + 44 HOKUYO_DTHETA
 #define HOKUYO_MAX_RANGE                                                           4000
 #define HOKUYO_POINT_TO_POINT_DT                                         (0.1f/1024.0f)
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 enum hokuyo_id
 {
@@ -91,6 +97,10 @@ class Hokuyo
 
 extern struct Hokuyo hokuyo[HOKUYO_MAX];
 
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif

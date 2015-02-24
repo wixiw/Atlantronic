@@ -16,15 +16,12 @@
 export INSTALL_MOD_PATH:=$(DESTDIR)
 
 # dossiers
-src := src
-obj := obj
-bin := bin
-doc := doc
+# dossiers
+src := .
+obj := ../obj
+bin := ../bin
 
-# ajout de la configuration perso si elle existe
--include .cfg
-
-INCLUDES:=-I. -Iinclude -Isrc
+INCLUDES:=-I.
 
 MAKEFLAGS += -rR --no-print-directory
 
@@ -36,19 +33,39 @@ ifeq ($(VERBOSE),0)
 MAKEFLAGS += --quiet
 endif
 
-ifeq ($(MAKECMDGOALS),discovery)
-ARCH=discovery
-endif
-
-ifeq ($(MAKECMDGOALS),foo)
-ARCH=foo
-endif
-
-ifeq ($(MAKECMDGOALS),linux)
 ARCH=linux
+
+MARCH ?= core2
+
+# on tente de détecter la configuration native
+BIT ?= $(shell getconf LONG_BIT)
+
+DEF+=LINUX
+LDSCRIPT:=scripts/ld/elf_linux_$(BIT).ld
+
+CFLAGS:=-march=$(MARCH)
+CFLAGS+=-m$(BIT)
+CFLAGS+=-Wall
+CFLAGS+=-Wextra
+CFLAGS+=-g
+
+LDFLAGS:=-march=$(MARCH)
+LDFLAGS+=-m$(BIT)
+LDFLAGS+=-T $(LDSCRIPT)
+LDFLAGS+=-pthread
+LDFLAGS+=-lrt
+
+ifneq ($(DEBUG),1)
+DEF+= NDEBUG
+CFLAGS+=-O2
+CFLAGS+=-fomit-frame-pointer
+else
+CFLAGS+=-O0
 endif
 
--include src/$(ARCH)/Makefile
+CFLAGS+=$(addprefix -D,$(DEF))
+CXXFLAGS:=$(CFLAGS)
+
 
 AS:=$(CROSSCOMPILE)as
 CC:=$(CROSSCOMPILE)gcc
@@ -56,7 +73,6 @@ CXX:=$(CROSSCOMPILE)g++
 OBJCOPY:=$(CROSSCOMPILE)objcopy
 STRIP:=$(CROSSCOMPILE)strip
 SIZE:=$(CROSSCOMPILE)size
-DOT:=dot
 VERSION=$(shell git rev-parse HEAD)
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -76,7 +92,7 @@ $(obj)/$(ARCH)/%.o: $(src)/%.c
 	$(CC) $(CFLAGS) -DVERSION=\"$(VERSION)\" $($(patsubst $(obj)/$(ARCH)/%,cflags-$(ARCH)-%, $@)) -c $< -o $@ -MMD -MF$(@:.o=.d) $(INCLUDES) || ( rm -vfr $@ $(@:.o=.d) ; exit 1 )
 
 $(obj)/$(ARCH)/%.o: $(src)/%.cxx
-	@echo "   CXX    " $@
+	@echo "   CPP    " $@
 	mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -DVERSION=\"$(VERSION)\" $($(patsubst $(obj)/$(ARCH)/%,cxxflags-$(ARCH)-%, $@)) -c $< -o $@ -MMD -MF$(@:.o=.d) $(INCLUDES) || ( rm -vfr $@ $(@:.o=.d) ; exit 1 )
 
@@ -90,34 +106,13 @@ $(obj)/$(ARCH)/%.o: $(src)/%.S
 	@echo [AS] $@
 	$(AS) $(AFLAGS) -c $< -o $@ -MMD -MF$(@:.o=.d) $(INCLUDES)
 
-%.pdf: %.tex
-	pdflatex -output-directory doc $<
-	pdflatex -output-directory doc $<
-
-# cibles
-# cible par defaut :
-ifneq ($(ARCH),)
+.PHONY: all
 all: $(addprefix $(bin)/$(ARCH)/,$(bin-$(ARCH)))
 
-.PHONY: $(ARCH)
-
+.PHONY: stat
 stat: $(addprefix $(bin)/$(ARCH)/,$(bin-$(ARCH)))
 	$(SIZE) -B $^ | tail -n $(SKIP_SIZE_HEADER)
 
-.PHONY: stat_$(ARCH)
-else
-all:
-	@echo [ DISCOVERY ]
-	$(MAKE) ARCH=discovery
-	@echo [ LINUX ]
-	$(MAKE) ARCH=linux
-
-stat:
-	$(MAKE) ARCH=discovery stat
-
-endif
-
-.PHONY: all
 
 modules:
 	+make MAKEFLAGS=--no-print-directory -C /lib/modules/`uname -r`/build M=`pwd`/src/linux/modules
@@ -148,40 +143,10 @@ $(bin)/$(ARCH)/%:
 	$(OBJCOPY) --add-gnu-debuglink $@.debug $@
 	$(STRIP) $@
 
-#$(bin)/$(ARCH)/%.stat:
-#	$(SIZE) -B $(@:.stat=) | tail -n 1 | awk '{ print $$1/1000 "k / " ($$2 + $$3)/1000 "k  : $(@:.stat=)" }'
-
-%.png: %.dot
-	@echo [DOT] $@
-	$(DOT) $< -Tpng -o $@
-
-dot: $(BIN_DOC)
-
-.PHONY: dot
-
-pdf: $(doc)/atlantronic.pdf
-
-.PHONY: pdf
-
-TEXSRC:= $(shell find $(doc)/ -name "*.tex")
-
-doc/atlantronic.pdf: $(TEXSRC)
-
-doc: dot pdf
-	@mkdir -p $(doc)/doxygen
-	doxygen Doxyfile > /dev/null
-
-.PHONY: doc
-
-clean:
-	rm -frv $(obj)
-	rm -frv $(bin)
-	rm -frv $(doc)/doxygen
-	rm -fv $(doc)/*.pdf
-	rm -fv $(doc)/*.dvi
-	rm -fv $(doc)/*.aux
-	rm -fv $(doc)/*.ps
-	rm -fv $(doc)/*.log
-	rm -fv $(doc)/*.toc
 
 .PHONY: clean
+clean:
+	rm -frv $(obj)/$(ARCH)
+	rm -frv $(bin)/$(ARCH)
+
+
