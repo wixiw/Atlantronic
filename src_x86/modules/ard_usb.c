@@ -85,7 +85,7 @@ static struct ard_id ard_discovery_list;
 
 static struct usb_driver ard_driver =
 {
-	.name = "A.R.D.",
+	.name = "Team ARD",
 	.id_table = ard_device_id,
 	.probe = ard_probe,
 	.disconnect = ard_disconnect,
@@ -567,7 +567,7 @@ static int ard_probe(struct usb_interface *interface, const struct usb_device_id
 	{
 		dev->id.id = ard_get_min_id(&ard_discovery_list);
 		list_add(&dev->id.list, &ard_discovery_list.list);
-		snprintf(dev->class.name, ARD_MAX_PRODUCT_NAME_SIZE - 1, "discovery%d", dev->id.id);
+		snprintf(dev->class.name, ARD_MAX_PRODUCT_NAME_SIZE - 1, "stm32_ard");
 	}
 	else
 	{

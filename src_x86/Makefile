@@ -1,7 +1,6 @@
 # @file Makefile
 # @author Jean-Baptiste Trédez
 #
-# fichier de configuration : .cfg
 # les fichiers objets *.o sont construits à partir des fichiers *.c ou *.S
 #
 # fonctionnement :
@@ -36,7 +35,7 @@ endif
 
 ARCH=x86
 
-MARCH ?= core2
+MARCH ?= atom
 
 # on tente de détecter la configuration native
 BIT ?= $(shell getconf LONG_BIT)
@@ -117,15 +116,11 @@ stat: $(addprefix $(bin)/$(ARCH)/,$(bin-$(ARCH)))
 .PHONY: modules
 modules:
 	+make MAKEFLAGS=--no-print-directory -C /lib/modules/`uname -r`/build M=`pwd`/modules	
-	mkdir -p $(bin)/$(ARCH)/modules
-	mv `pwd`/modules/ard_usb.ko $(bin)/$(ARCH)/modules
-	+make MAKEFLAGS=--no-print-directory -C /lib/modules/`uname -r`/build M=`pwd`/modules clean
 
 .PHONY: modules_install
-modules_install: modules
-	+make MAKEFLAGS=--no-print-directory -C /lib/modules/`uname -r`/build M=`pwd`/modules	
+modules_install: modules	
 	+make MAKEFLAGS=--no-print-directory -C /lib/modules/`uname -r`/build M=`pwd`/modules modules_install
-	+make MAKEFLAGS=--no-print-directory -C /lib/modules/`uname -r`/build M=`pwd`/modules clean
+	
 
 $(foreach var,$(bin-$(ARCH)),$(eval $(bin)/$(ARCH)/$(var):$(addprefix $(obj)/$(ARCH)/,$(obj-$(ARCH)-$(var)) )))
 $(foreach var,$(bin-$(ARCH)),$(eval DEP += $(addprefix $(obj)/$(ARCH)/,$(obj-$(ARCH)-$(var):.o=.d))))
@@ -147,5 +142,5 @@ $(bin)/$(ARCH)/%:
 clean:
 	rm -frv $(obj)/$(ARCH)
 	rm -frv $(bin)/$(ARCH)
-
+	+make MAKEFLAGS=--no-print-directory -C /lib/modules/`uname -r`/build M=`pwd`/modules clean
 
