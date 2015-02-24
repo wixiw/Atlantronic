@@ -35,7 +35,7 @@ endif
 
 ARCH=x86
 
-MARCH ?= atom
+MARCH ?= core2
 
 # on tente de détecter la configuration native
 BIT ?= $(shell getconf LONG_BIT)
@@ -130,6 +130,7 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 $(bin)/$(ARCH)/%:
+	@echo "    LD    script used : ${LDSCRIPT}"
 	@echo "    LD    " $@
 	mkdir -p $(dir $@)
 	$(CXX) $^ -o $@ $($(patsubst $(bin)/$(ARCH)/%,lib-$(ARCH)-%, $@)) -Wl,-Map="$@.map" $(LDFLAGS)
