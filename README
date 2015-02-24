@@ -31,14 +31,25 @@ jtag :
 Organisation des dossiers :
 --------------------------------------------------------
 
+doc : self explanatory
 
-src/kernel : Code générique ou commun aux cartes
-src/discovery : Code pour la carte discovery
-src/linux : Code utilitaire pour linux
-	- src/linux/modules : module usb pour se connecter à la carte sous linux
-	- src/linu/test : tests unitaires réalisables sous linux
-	- src/linux/tools : outils
+old : code non utilisé mais qui pourrait être intéressant plus tard
 
+scripts : scripts utilitaires dont scripts de programmation/debug
+
+src_stm32 : Code pour la carte discovery
+	- src_stm32/com : stack de communication sur USB
+	- src_stm32/components : ensembles fonctionnels
+	- src_stm32/core : base de code commune (dont bsp)
+	- src_stm32/master : code de pilotage haut niveau
+	- src_stm32/os : operating system du stm32 (freertos)
+	
+src_x86 : Code utilitaire pour linux
+	- src_x86/linux/modules : module usb pour se connecter à la carte sous linux
+	- src_x86/linu/test : tests unitaires réalisables sous linux
+	- src_x86/linux/tools : outils
+
+toolchain : cross compilateur
 
 --------------------------------------------------------
 Programmation / Debug
