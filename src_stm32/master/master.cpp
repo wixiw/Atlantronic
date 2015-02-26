@@ -6,7 +6,7 @@
  */
 
 #include "components/power/power.h"
-#include "core/module.h"
+#include "os/module.h"
 #include "master/fsm.h"
 #include "os/os.h"
 #include "master.h"

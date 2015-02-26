@@ -1,5 +1,5 @@
 #include "spi.h"
-#include "core/module.h"
+#include "os/module.h"
 #include "core/cpu/cpu.h"
 #include "core/gpio.h"
 #include "components/log/log.h"

@@ -1,10 +1,11 @@
 //! @file end.c
 //! @brief Task waiting during the math, will send halt event.
 //! @author Atlantronic
+#define WEAK_END
 
-#include "core/module.h"
+#include "os/module.h"
 #include "core/gpio.h"
-#include "core/Signal.h"
+#include "os/Signal.h"
 #include "com/msgs/EventMessage.hpp"
 #include "com/stack_com/ArdCom.hpp"
 #include "components/log/log.h"
@@ -12,8 +13,8 @@
 #include "components/power/power.h"
 #include "master/uiMiddleware.h"
 #include "os/os.h"
-
-
+#include "end.h"
+#include "match_time.h"
 
 using namespace arp_stm32;
 
@@ -41,28 +42,6 @@ static int end_module_init()
 }
 
 module_init(end_module_init, INIT_END);
-
-void end_cmd_set_time(uint32_t time)
-{
-	if( !begin_match )
-	{
-		end_match_duration = time;
-
-		if( end_match_duration )
-			log_format(LOG_INFO, "duree du match => %d ms", (int)end_match_duration);
-		else
-			log_format(LOG_INFO, "duree du match => no limit");
-	}
-	else
-	{
-		log_format(LOG_ERROR, "Can't reconfigure match duration");
-	}
-}
-
-void end_quit_match()
-{
-	endSignal.set();
-}
 
 uint32_t end_get_match_time_togo()
 {

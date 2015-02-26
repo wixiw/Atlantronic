@@ -1,7 +1,7 @@
 #define WEAK_PUMP
 #include "pump.h"
 #include "pwm.h"
-#include "core/module.h"
+#include "os/module.h"
 #include "core/adc.h"
 #include "components/log/log.h"
 

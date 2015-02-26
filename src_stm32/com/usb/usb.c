@@ -11,7 +11,7 @@
 #include "driver_ST/usbd_usr.h"
 
 #include "os/os.h"
-#include "core/module.h"
+#include "os/module.h"
 #include "core/gpio.h"
 #include "core/boot_signals.h"
 #include "master/ArdCom_c_wrapper.h"

@@ -83,7 +83,7 @@ task.h is included from an application file. */
 #define MPU_WRAPPERS_INCLUDED_FROM_API_FILE
 
 /* FreeRTOS includes. */
-#include "os/os.h"
+#include "FreeRTOS.h"
 #include "task.h"
 #include "timers.h"
 #include "StackMacros.h"
@@ -230,7 +230,6 @@ PRIVILEGED_DATA static volatile portTickType xNextTaskUnblockTime				= ( portTic
 /*-----------------------------------------------------------*/
 
 #if ( configUSE_PORT_OPTIMISED_TASK_SELECTION == 0 )
-
 	/* If configUSE_PORT_OPTIMISED_TASK_SELECTION is 0 then task selection is
 	performed in a generic way that is not optimised to any particular
 	microcontroller architecture. */

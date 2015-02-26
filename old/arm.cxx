@@ -5,9 +5,9 @@
 #define WEAK_ARM
 #include "arm.h"
 #include "os/os.h"
-#include "core/module.h"
+#include "os/module.h"
 #include "os/systick.h"
-#include "core/rcc.h"
+#include "os/rcc.h"
 #include "components/log/log.h"
 #include "kernel/driver/usb.h"
 #include "components/dynamixel/dynamixel.h"

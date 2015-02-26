@@ -2,8 +2,8 @@
 //! @brief ADC
 //! @author Atlantronic
 
-#include "core/module.h"
-#include "core/rcc.h"
+#include "os/module.h"
+#include "os/rcc.h"
 #include "components/power/power.h"
 #include "os/systick.h"
 #include "gpio.h"

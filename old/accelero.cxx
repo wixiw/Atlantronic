@@ -1,6 +1,6 @@
 #include "spi.h"
 #include "accelero.h"
-#include "core/module.h"
+#include "os/module.h"
 #include "core/cpu/cpu.h"
 #include "components/log/log.h"
 #include "kernel/driver/usb.h"

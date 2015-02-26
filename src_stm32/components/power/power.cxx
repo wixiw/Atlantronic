@@ -1,6 +1,6 @@
 #include "power.h"
 #include "core/gpio.h"
-#include "core/module.h"
+#include "os/module.h"
 #include "components/log/log.h"
 #include "components/pump/pwm.h"
 

@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-#include "os/os.h"
+#include "FreeRTOS.h"
 #include "os/queue.h"
 
 #ifdef __cplusplus

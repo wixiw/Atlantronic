@@ -5,7 +5,7 @@
 #define WEAK_PWM
 #include "pwm.h"
 #include "core/gpio.h"
-#include "core/module.h"
+#include "os/module.h"
 #include "core/cpu/cpu.h"
 
 void isr_pwm_reset(void);

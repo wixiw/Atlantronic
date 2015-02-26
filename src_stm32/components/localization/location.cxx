@@ -5,7 +5,7 @@
 #define WEAK_LOCALIZATION
 
 #include "location.h"
-#include "core/module.h"
+#include "os/module.h"
 #include "os/os.h"
 
 VectPlan location_pos(0, 700, -M_PI/2);

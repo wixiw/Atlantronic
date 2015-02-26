@@ -7,10 +7,7 @@
 
 #ifndef LINUX
 #include "core/cpu/cpu.h"
-#include "os/portmacro.h"
 #include "os/os.h"
-#include "kernel/task.h"
-#include "kernel/queue.h"
 #endif
 #include "os/systick.h"
 

@@ -1,7 +1,7 @@
-#include "core/module.h"
+#include "os/module.h"
 #include "usart.h"
 #include "os/os.h"
-#include "core/rcc.h"
+#include "os/rcc.h"
 #include "components/log/log.h"
 #include "gpio.h"
 

@@ -6,7 +6,7 @@
 //! @author Atlantronic
 
 #include <stdint.h>
-#include "core/rcc.h"
+#include "os/rcc.h"
 #include "components/log/log.h"
 
 #ifdef __cplusplus

@@ -6,6 +6,11 @@
 #define WEAK_END __attribute__((weak, alias("nop_function") ))
 #endif
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 //Configure the end of match duration in milliseconds. If zero, desactivates the end of match
 void end_cmd_set_time(uint32_t time) WEAK_END;
 
@@ -21,5 +26,8 @@ bool isMatchBegun() WEAK_END;
 //self explainatory
 bool isMatchEnded() WEAK_END;
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

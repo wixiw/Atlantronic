@@ -3,7 +3,7 @@
 //! @author Atlantronic
 
 #include "core/boot_signals.h"
-#include "core/rcc.h"
+#include "os/rcc.h"
 #include "com/msgs/HokuyoMessage.hpp"
 #include "com/stack_com/ArdCom.hpp"
 #include "components/log/fault.h"

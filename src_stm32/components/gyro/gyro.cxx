@@ -1,6 +1,7 @@
 #define WEAK_GYRO
 
-#include "core/module.h"
+#include "os/module.h"
+#include "os/os.h"
 #include "core/cpu/cpu.h"
 #include "core/gpio.h"
 #include "components/log/log.h"
@@ -48,9 +49,7 @@ static int gyro_update(float dt);
 int gyro_module_init()
 {
 	gyro_state = GYRO_STATE_DISCONNECTED;
-
 	spi_register_callback(SPI_DEVICE_GYRO, gyro_spi_callback);
-
 	gyro_scale = 0.000218166156f;  // from datasheet
 
 	return MODULE_INIT_SUCCESS;

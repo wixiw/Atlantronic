@@ -3,7 +3,7 @@
 //! @author Atlantronic
 
 #include "encoder.h"
-#include "core/module.h"
+#include "os/module.h"
 #include "core/cpu/cpu.h"
 #include "gpio.h"
 

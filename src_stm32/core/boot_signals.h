@@ -8,7 +8,7 @@
 #ifndef BOOT_SIGNALS_H_
 #define BOOT_SIGNALS_H_
 
-#include "Signal.h"
+#include "os/Signal.h"
 #include "boot_id.h"
 
 #ifdef __cplusplus

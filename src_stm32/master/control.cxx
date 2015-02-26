@@ -1,6 +1,6 @@
 #define WEAK_CONTROL
 
-#include "core/module.h"
+#include "os/module.h"
 #include "core/boot_signals.h"
 #include "core/adc.h"
 #include "core/gpio.h"
@@ -13,10 +13,8 @@
 #include "components/log/fault.h"
 #include "components/pump/pump.h"
 #include "components/power/power.h"
+#include "match_time.h"
 #include "os/os.h"
-#include "master/color.h"
-
-
 #include "control.h"
 #include "end.h"
 
@@ -71,7 +69,7 @@ static void control_task(void* /*arg*/)
 		control_usb_data.iPwm[2] = adc_filtered_data.i[2];
 		control_usb_data.iPwm[3] = adc_filtered_data.i[3];
 		control_usb_data.pumpState = pump_update();
-		control_usb_data.color = getColor();
+		//TODO control_usb_data.color = (uint8_t) getColor();
 		control_usb_data.power_state = power_get();
 		dynamixel_update_usb_data(&control_usb_data.dynamixel);
 

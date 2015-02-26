@@ -10,8 +10,6 @@ extern "C" {
 #define WEAK_USB __attribute__((weak, alias("nop_function") ))
 #endif
 
-#include "os/portmacro.h"
-
 //Send a message on usb, you have to call getUsbMutex() before
 void usb_write(const void* buffer, int size) WEAK_USB;
 

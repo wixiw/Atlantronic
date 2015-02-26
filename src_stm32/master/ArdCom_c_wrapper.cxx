@@ -7,7 +7,7 @@
 
 #define WEAK_USB
 
-#include "core/module.h"
+#include "os/module.h"
 #include "core/gpio.h"
 #include "core/boot_signals.h"
 

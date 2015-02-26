@@ -2,7 +2,7 @@
 #define __USB_BSP__H__
 
 #include "usb_core.h"
-#include "core/rcc.h"
+#include "os/rcc.h"
 
 #define USB_OTG_BSP_uDelay(usec)  wait_active(us_to_systick(usec))
 #define USB_OTG_BSP_mDelay(usec)  wait_active(ms_to_systick(usec))

@@ -7,10 +7,11 @@
 
 #include "uiMiddleware.h"
 #include "core/gpio.h"
-#include "core/module.h"
-#include "core/Signal.h"
+#include "os/module.h"
+#include "os/Signal.h"
 #include "components/led/led.h"
 #include "components/log/log.h"
+#include "match_time.h"
 
 static Signal colorConfiguredSignal;
 static Signal selfTestStartSignal;

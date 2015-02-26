@@ -104,7 +104,8 @@ not necessary for to use this port.  They are defined so the common demo files
 	/*-----------------------------------------------------------*/
 
 	#define portGET_HIGHEST_PRIORITY( uxTopPriority, uxReadyPriorities ) uxTopPriority = ( 31 - ucPortCountLeadingZeros( ( uxReadyPriorities ) ) )
-
+#else
+#error "configUSE_PORT_OPTIMISED_TASK_SELECTION should be set to 1"
 #endif /* configUSE_PORT_OPTIMISED_TASK_SELECTION */
 
 /*-----------------------------------------------------------*/

@@ -5,7 +5,7 @@
 #define WEAK_FAULT
 
 #include "os/os.h"
-#include "core/module.h"
+#include "os/module.h"
 #include "fault.h"
 #include <stdlib.h>
 #include <stdio.h>

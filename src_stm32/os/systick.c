@@ -2,35 +2,18 @@
 //! @brief Systick module
 //! @author Atlantronic
 
-#include "os/os.h"
-#include "core/module.h"
-#include "components/log/log.h"
-
-
 #define portNVIC_INT_CTRL			( ( volatile unsigned long *) 0xe000ed04 )
 #define portNVIC_PENDSVSET			0x10000000
 
+#include "FreeRTOSConfig.h"
+#include "portmacro.h"
+#include "core/cpu/cpu.h"
+#include "systick.h"
+
 static struct systime systick_time;
-static struct systime systick_time_start_match;
-portTickType systick_tickcount_start_match;
 void isr_systick( void );
-extern void vTaskIncrementTick( );
 
-extern void vTaskStartScheduler(void);
-
-static int systick_module_init()
-{
-	log(LOG_INFO, "Lancement de l'ordonanceur");
-
-	// 4 bits for pre-emption priority, 0 bit sub priority
-	SCB->AIRCR = 0x05FA0300;
-
-	vTaskStartScheduler();
-
-	return ERR_SYSTICK;
-}
-
-module_init(systick_module_init, INIT_SYSTICK);
+extern void vTaskIncrementTick( void );
 
 //! interruption systick, on declenche l'IT de changement de contexte
 //! on desactive les IT avant de toucher au systick pour ne pas entrer
@@ -61,31 +44,6 @@ __attribute__((optimize("-O2"))) struct systime systick_get_time_from_isr()
 	// formule pour eviter les debordements sur 32 bits
 	systick_time.ns = (1000 * (SysTick->LOAD - SysTick->VAL)) / RCC_SYSCLK_MHZ;
 	return systick_time;
-}
-
-struct systime systick_get_match_time()
-{
-	struct systime t;
-	portENTER_CRITICAL();
-	t = systick_get_time_from_isr();
-	t = timediff(t, systick_time_start_match);
-	portEXIT_CRITICAL();
-
-	return t;
-}
-
-void systick_start_match_from_isr()
-{
-	if( systick_time_start_match.ms == 0 && systick_time_start_match.ns == 0)
-	{
-		systick_time_start_match = systick_get_time_from_isr();
-		systick_tickcount_start_match = xTaskGetTickCountFromISR();
-	}
-}
-
-struct systime systick_get_match_begin_date()
-{
-	return systick_time_start_match;
 }
 
 struct systime timediff(const struct systime t2, const struct systime t1)

@@ -6,7 +6,7 @@
 // configMAX_SYSCALL_INTERRUPT_PRIORITY in priority.h
 #include "priority.h"
 #include "systick.h"
-#include "core/rcc.h"
+#include "rcc.h"
 #include <stdint.h>
 
 #define configUSE_PREEMPTION			1

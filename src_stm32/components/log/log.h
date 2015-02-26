@@ -5,10 +5,7 @@
 //! @brief Log task, log avec differents niveaux, formatés ou non (prend beaucoup plus de stack pour les logs formatés)
 //! @author Atlantronic
 
-#include "os/systick.h"
-#include "os/portmacro.h"
 #include "core/asm/asm_base_func.h"
-#include "core/rcc.h"
 #include "components/log/log_level.h"
 #include <stdio.h>
 #include <errno.h>

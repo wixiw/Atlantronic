@@ -2,6 +2,7 @@
 //! @brief isr
 //! @author Atlantronic
 
+#include "core/cpu/cpu.h"
 #include "os/os.h"
 #include "priority.h"
 #include "components/log/fault.h"

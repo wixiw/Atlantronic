@@ -1,5 +1,5 @@
 #include "xbee.h"
-#include "core/module.h"
+#include "os/module.h"
 #include "kernel/driver/usart.h"
 #include "kernel/driver/usb.h"
 #include "components/log/log.h"

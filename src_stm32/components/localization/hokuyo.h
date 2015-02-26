@@ -10,11 +10,11 @@
 #include "vect_plan.h"
 
 #ifndef LINUX
-#include "core/module.h"
 #include "core/usart.h"
+#include "os/module.h"
 #include "os/os.h"
 #else
-#include "os/systick.h"
+#include "os/systime.h"
 #endif
 
 #define HOKUYO_NUM_POINTS            682

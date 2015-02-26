@@ -4,12 +4,12 @@
 
 #include "kernel/driver/can.h"
 #include "kernel/semphr.h"
-#include "core/rcc.h"
+#include "os/rcc.h"
 #include "components/log/log.h"
 #include "fault.h"
 #include "kernel/driver/usb.h"
 #include "components/log/error_codes.h"
-#include "core/module.h"
+#include "os/module.h"
 #include "gpio.h"
 
 static void can_write_mailbox(struct can_msg *msg);

@@ -2,8 +2,8 @@
 //! @brief Gestion Reset et Clock
 //! @author Atlantronic
 
-#include "core/rcc.h"
-#include "core/module.h"
+#include "rcc.h"
+#include "module.h"
 #include "core/cpu/cpu.h"
 
 // PLL_VCO = (HSE_VALUE or HSI_VALUE / PLL_M) * PLL_N 

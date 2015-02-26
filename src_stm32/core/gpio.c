@@ -1,6 +1,6 @@
 #include "gpio.h"
-#include "core/module.h"
-#include "core/rcc.h"
+#include "os/module.h"
+#include "os/rcc.h"
 #include "os/os.h"
 #include "components/log/log.h"
 

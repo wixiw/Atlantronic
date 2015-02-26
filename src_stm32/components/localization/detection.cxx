@@ -1,6 +1,6 @@
 #include "os/os.h"
-#include "core/module.h"
-#include "core/rcc.h"
+#include "os/module.h"
+#include "os/rcc.h"
 #include "core/gpio.h"
 #include "core/boot_signals.h"
 #include "components/log/log.h"
