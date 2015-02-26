@@ -15,114 +15,14 @@
 #include "core/boot_signals.h"
 #include "com/stack_com/IpcHeader.hpp"
 #include "com/msgs/DiscoveryIpcMessage.hpp"
+#include "linux_rw.hpp"
 
 using namespace std;
 using namespace arp_stm32;
 
-#ifndef LINUX
-#define LINUX
-#endif
-
-void sendMsg(IpcMsg& msg, int writeFd)
-{
-	Datagram dtg;
-	uint8_t headerBuffer[HEADER_SIZE];
-	if (!msg.fillDatagramAndHeader(dtg, headerBuffer))
-	{
-		cout << "failed to serialize msg" << endl;
-		return;
-	}
-
-	int writeSize = 0;
-	while (writeSize != HEADER_SIZE)
-	{
-		int bytes = ::write(writeFd, headerBuffer + writeSize, HEADER_SIZE - writeSize);
-		if (bytes < 0)
-		{
-			cout << "ERROR : negative write" << endl;
-			while (1);
-		}
-
-		writeSize += bytes;
-		cout << " written : " << writeSize << endl;
-		usleep(50);
-	}
-
-	writeSize = 0;
-	Payload p = dtg.extractPayload(0);
-	while (p.first != NULL)
-	{
-		int bytes = ::write(writeFd, dtg.getPayload().first, dtg.getPayload().second);
-		if (bytes < 0)
-		{
-			cout << "ERROR : negative write" << endl;
-			while (1);
-		}
-		writeSize += bytes;
-		cout << " written : " << writeSize << endl;
-		p = dtg.extractPayload(writeSize);
-		usleep(50);
-	}
-}
-
-void sendMsgWithPause(IpcMsg& msg, int writeFd)
-{
-	sendMsg(msg, writeFd);
-
-	char line[100];
-	cout << "hit enter to send cmd..." << endl;
-	std::cin.getline(line, 100);
-}
-
-int openFd( int argc, char *argv[] )
-{
-    if ( argc != 2 ) /* argc should be 2 for correct execution */
-    {
-        /* We print argv[0] assuming it is the program name */
-       cout << "Wrong parameter : usage: " << argv[0] << " filename" << endl;
-       exit(-1);
-    }
-    else
-    {
-		cout << "Opening : " << argv[1] << endl;
-
-		int writeFd = ::open(argv[1], O_WRONLY);
-		if (writeFd < 0)
-		{
-			cout << "Open returned an error" << strerror(errno) << endl;
-			return -1;
-		}
-		return writeFd;
-    }
-}
-
-void displayMsgSizes()
-{
-	cout << "----------------------------------------------------" << endl;
-	ConfigurationMsg msgConfig;
-	cout << "ConfigurationMsg : \t" << msgConfig.getSize() << endl;
-	EventMessage msgEvent;
-	cout << "EventMsg : \t\t" << msgEvent.getSize() << endl;
-	FaultMessage msgFault;
-	cout << "FaultMessage : \t\t" << msgFault.getSize() << endl;
-	GyroMsg msgGyro;
-	cout << "GyroMsg : \t\t" << msgGyro.getSize() << endl;
-	HokuyoMessage msgHky;
-	cout << "HokuyoMessage : \t" << msgHky.getSize() << endl;
-	OpponentListMsg msgOpp;
-	cout << "OpponentListMsg : \t" << msgOpp.getSize() << endl;
-	StatusMessage msgStatus;
-	cout << "StatusMessage : \t" << msgStatus.getSize() << endl;
-	VersionMessage msgVersion;
-	cout << "VersionMessage : \t" << msgVersion.getSize() << endl;
-	X86CmdMsg msgCmd;
-	cout << "X86CmdMsg : \t\t" << msgCmd.getSize() << endl;
-	cout << "----------------------------------------------------" << endl;
-}
-
 int main ( int argc, char *argv[] )
 {
-	int writeFd = openFd(argc, argv);
+	int writeFd = openFd(argc, argv, O_WRONLY);
 
 	displayMsgSizes();
 
@@ -132,7 +32,13 @@ int main ( int argc, char *argv[] )
 
 	EventMessage msgReboot(EVT_REBOOT);
 	cout << "Reboot request sended." << endl;
-	sendMsgWithPause(msgReboot, writeFd);
+	sendMsg(msgReboot, writeFd);
+	cout << "Waiting reboot for 3s..." << endl;
+	sleep(3);
+	do {writeFd = openFd(argc, argv, O_WRONLY);} while(writeFd <= 0);
+
+	cout << "hit enter to start..." << endl;
+	std::cin.getline(line, 100);
 
 	ConfigurationMsg msgConfig;
 	msgConfig.setMatchDuration(5.0);
@@ -146,7 +52,7 @@ int main ( int argc, char *argv[] )
 	sendMsgWithPause(msgConfig, writeFd);
 
 
-	EventMessage msgx86initOk(EVT_X86_INIT_DONE);
+	EventMessage msgx86initOk(EVT_X86_SELF_TEST_BEGIN);
 	cout << "X86 booted event sended." << endl;
 	sendMsgWithPause(msgx86initOk, writeFd);
 

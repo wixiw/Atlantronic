@@ -68,5 +68,6 @@ enum fault
 #define ERR_INIT_XBEE           0x219
 #define ERR_INIT_LED            0x220
 #define ERR_INIT_TEST           0x221
+#define ERR_INIT_MASTER         0x222
 
 #endif

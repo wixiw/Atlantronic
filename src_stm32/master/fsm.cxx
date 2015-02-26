@@ -1,4 +1,4 @@
-#include "state_machine.h"
+#include "fsm.h"
 #include "components/log/log.h"
 
 StateMachine::StateMachine(StateMachineState* States, unsigned int Size)
@@ -35,7 +35,8 @@ int StateMachine::execute()
 	if( wantedStateId != currentStateId )
 	{
 		currentStateId = wantedStateId;
-		log_format(LOG_INFO, "%s", states[currentStateId].name);
+		states[currentStateId].exit();
+		log_format(LOG_INFO, "FSM transiting :  from %s to %s", states[wantedStateId].name, states[currentStateId].name);
 	}
 
 	return 0;

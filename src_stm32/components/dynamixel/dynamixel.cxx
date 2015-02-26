@@ -90,7 +90,7 @@ int DynamixelManager::init(const char* name, enum usart_id usart_id, uint32_t fr
 		devices[i].flags = DYNAMIXEL_FLAG_TARGET_REACHED | DYNAMIXEL_FLAG_CONTROL_OFF | DYNAMIXEL_FLAG_TORQUE_TO_UPDATE;
 	}
 
-	return 0;
+	return MODULE_INIT_SUCCESS;
 }
 
 void DynamixelManager::task_wrapper(void* arg)

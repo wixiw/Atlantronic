@@ -43,9 +43,14 @@ void usb_ard_init() WEAK_USB;
 //used by logging framework.
 void usb_add_log(enum log_level, const char* func, uint16_t line, const char* msg) WEAK_USB;
 
-//is non null when the x86 board has configured the stm32, which states that the communication is established.
-//used by led task
-unsigned char isX86Connected() WEAK_USB;
+//is true when the x86 board has configured the stm32, which states that the communication is established.
+bool isX86Connected() WEAK_USB;
+
+//is true when the x86 is ready to begin self tests
+bool isX86ReadyForSelfTest() WEAK_USB;
+
+//is true when the x86 is reading to begin the match
+bool isX86ReadyForMatch() WEAK_USB;
 
 #ifdef __cplusplus
 }

@@ -94,8 +94,13 @@ static int usb_module_init(void)
 	//Configure USB HW
 	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
 	RCC->AHB2ENR |= RCC_AHB2ENR_OTGFSEN;
+	gpio_pin_init(GPIOA,  9, GPIO_MODE_IN, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // VBUS pas utile en mode device
+    gpio_pin_init(GPIOA, 10, GPIO_MODE_AF, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // ID pas utile en mode devide
 	gpio_pin_init(GPIOA, 11, GPIO_MODE_AF, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // DM
 	gpio_pin_init(GPIOA, 12, GPIO_MODE_AF, GPIO_SPEED_100MHz, GPIO_OTYPE_PP, GPIO_PUPD_NOPULL); // DP
+
+	gpio_af_config(GPIOA,  9, GPIO_AF_OTG_FS); // pas utile en mode device
+	gpio_af_config(GPIOA, 10, GPIO_AF_OTG_FS);// pas utile en mode devide
 	gpio_af_config(GPIOA, 11, GPIO_AF_OTG_FS);
 	gpio_af_config(GPIOA, 12, GPIO_AF_OTG_FS);
 
@@ -141,7 +146,7 @@ static int usb_module_init(void)
 
 	usb_ard_init();
 
-	return 0;
+	return MODULE_INIT_SUCCESS;
 }
 
 module_init(usb_module_init, INIT_USB);

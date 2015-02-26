@@ -15,7 +15,11 @@ void end_quit_match() WEAK_END;
 //Retrieve the time until the end of the match in ms
 uint32_t end_get_match_time_togo() WEAK_END;
 
-//Is the match finished
-int isMatchEnded() WEAK_END;
+//self explainatory
+bool isMatchBegun() WEAK_END;
+
+//self explainatory
+bool isMatchEnded() WEAK_END;
+
 
 #endif

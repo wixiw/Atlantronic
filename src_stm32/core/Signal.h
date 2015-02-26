@@ -45,6 +45,7 @@ extern "C" {
 #endif
 
 void set_signal(Signal* s);
+void set_signal_FromIsr(Signal* s);
 void wait_signal(Signal* s);
 
 #ifdef __cplusplus

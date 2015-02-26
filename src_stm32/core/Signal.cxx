@@ -39,6 +39,11 @@ void set_signal(Signal* s)
 	s->set();
 }
 
+void set_signal_FromIsr(Signal* s)
+{
+	s->setFromIsr();
+}
+
 void wait_signal(Signal* s)
 {
 	s->wait();

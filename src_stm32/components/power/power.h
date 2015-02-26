@@ -17,8 +17,8 @@ extern "C" {
 #define POWER_OFF_HEARTBEAT      0x10    //!< extinction de la puissance a caude de la perte du heartbeat
 
 void power_set(int powerEventMask);
-
 void power_clear(int powerEventMask);
+bool power_isEmergencyStopFired();
 
 //------------------ fonctions inline------------------
 

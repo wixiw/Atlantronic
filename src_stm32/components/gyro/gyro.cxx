@@ -53,7 +53,7 @@ int gyro_module_init()
 
 	gyro_scale = 0.000218166156f;  // from datasheet
 
-	return 0;
+	return MODULE_INIT_SUCCESS;
 }
 
 module_init(gyro_module_init, INIT_GYRO);

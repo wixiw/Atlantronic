@@ -92,7 +92,7 @@ int Hokuyo::init(enum usart_id id, const char* name, int hokuyo_id)
 		return ERR_INIT_HOKUYO;
 	}
 
-	return 0;
+	return MODULE_INIT_SUCCESS;
 }
 
 void Hokuyo::setPosition(VectPlan pos, int sens)

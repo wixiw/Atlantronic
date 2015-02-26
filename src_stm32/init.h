@@ -53,7 +53,8 @@
 #define INIT_TRAJECTORY               "44"
 #define INIT_PUMP                     "45"
 
-#define INIT_STRATEGY                 "60"
+#define INIT_MASTER                   "60"
+#define INIT_UIMDW					  "61"
 
 #define INIT_TEST                     "80"
 #define INIT_TEST_PINCE               "80"

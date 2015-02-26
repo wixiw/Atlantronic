@@ -2,17 +2,17 @@
 //! @brief Systick module
 //! @author Atlantronic
 
-#include "systick.h"
+#include "os/os.h"
 #include "core/module.h"
 #include "components/log/log.h"
-#include "FreeRTOSConfig.h"
-#include "portmacro.h"
+
 
 #define portNVIC_INT_CTRL			( ( volatile unsigned long *) 0xe000ed04 )
 #define portNVIC_PENDSVSET			0x10000000
 
 static struct systime systick_time;
 static struct systime systick_time_start_match;
+portTickType systick_tickcount_start_match;
 void isr_systick( void );
 extern void vTaskIncrementTick( );
 
@@ -79,7 +79,13 @@ void systick_start_match_from_isr()
 	if( systick_time_start_match.ms == 0 && systick_time_start_match.ns == 0)
 	{
 		systick_time_start_match = systick_get_time_from_isr();
+		systick_tickcount_start_match = xTaskGetTickCountFromISR();
 	}
+}
+
+struct systime systick_get_match_begin_date()
+{
+	return systick_time_start_match;
 }
 
 struct systime timediff(const struct systime t2, const struct systime t1)

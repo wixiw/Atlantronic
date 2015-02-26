@@ -85,3 +85,7 @@ void power_clear(int powerEventMask)
 	}
 }
 
+bool power_isEmergencyStopFired()
+{
+	return power_state & POWER_OFF_AU;
+}

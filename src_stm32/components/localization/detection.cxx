@@ -79,7 +79,7 @@ int detection_module_init()
 
 	detection_reg_size = 0;
 
-	return 0;
+	return MODULE_INIT_SUCCESS;
 }
 
 module_init(detection_module_init, INIT_DETECTION);

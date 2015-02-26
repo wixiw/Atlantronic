@@ -14,7 +14,7 @@ obj-x86-fifo += ../src_stm32/com/msgs/VersionMessage.o
 obj-x86-fifo += ../src_stm32/com/msgs/X86CmdMsg.o
 #X86 specific
 obj-x86-fifo += ../src_stm32/com/msgs/MessagePrinter.o
-
+obj-x86-fifo += tools/linux_rw.o
 
 obj-x86-fifoWriter = $(obj-x86-fifo)
 obj-x86-fifoWriter += tools/fifoWriter.o

@@ -9,6 +9,7 @@
 #include "DiscoveryIpcTypes.h"
 #include "components/power/power.h"
 #include "core/gpio.h"
+#include "master/color.h"
 
 namespace arp_stm32
 {
@@ -141,10 +142,10 @@ char const * StatusMessage::getColor() const
 {
     switch (m_data.color)
     {
-        case COLOR_GREEN:
+        case COLOR_SYM:
             return "green";
             break;
-        case COLOR_YELLOW:
+        case COLOR_PREF:
             return "yellow";
             break;
         default:

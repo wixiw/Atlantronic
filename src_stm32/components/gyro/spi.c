@@ -123,7 +123,7 @@ int spi_module_init()
 	// activation
 	TIM6->CR1 |= TIM_CR1_CEN;
 
-	return 0;
+	return MODULE_INIT_SUCCESS;
 }
 
 module_init(spi_module_init, INIT_SPI);

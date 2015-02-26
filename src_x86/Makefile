@@ -1,5 +1,6 @@
 # @file Makefile
 # @author Jean-Baptiste Trédez
+# @author Willy Lambert
 #
 # les fichiers objets *.o sont construits à partir des fichiers *.c ou *.S
 #
@@ -14,7 +15,6 @@
 # pour le module noyau
 export INSTALL_MOD_PATH:=$(DESTDIR)
 
-# dossiers
 # dossiers
 src := .
 obj := ../obj
@@ -55,13 +55,8 @@ LDFLAGS+=-T $(LDSCRIPT)
 LDFLAGS+=-pthread
 LDFLAGS+=-lrt
 
-ifneq ($(DEBUG),1)
-DEF+= NDEBUG
-CFLAGS+=-O2
-CFLAGS+=-fomit-frame-pointer
-else
+#Workaround ARD, segfault avant le main si on ne met pas O0 pour une raison obscure
 CFLAGS+=-O0
-endif
 
 CFLAGS+=$(addprefix -D,$(DEF))
 CXXFLAGS:=$(CFLAGS)
@@ -79,9 +74,6 @@ ifneq ($(MAKECMDGOALS),clean)
 MK:=$(shell find . -name 'build.mk')
 -include $(MK)
 endif
-
-SRC_DOC=$(shell find . -name '*.dot')
-BIN_DOC=$(SRC_DOC:.dot=.png)
 
 # règles
 $(obj)/$(ARCH)/%.d: $(obj)/$(ARCH)/%.o
@@ -130,7 +122,6 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 $(bin)/$(ARCH)/%:
-	@echo "    LD    script used : ${LDSCRIPT}"
 	@echo "    LD    " $@
 	mkdir -p $(dir $@)
 	$(CXX) $^ -o $@ $($(patsubst $(bin)/$(ARCH)/%,lib-$(ARCH)-%, $@)) -Wl,-Map="$@.map" $(LDFLAGS)
@@ -138,10 +129,10 @@ $(bin)/$(ARCH)/%:
 	$(OBJCOPY) --add-gnu-debuglink $@.debug $@
 	$(STRIP) $@
 
-
 .PHONY: clean
 clean:
 	rm -frv $(obj)/$(ARCH)
 	rm -frv $(bin)/$(ARCH)
 	+make MAKEFLAGS=--no-print-directory -C /lib/modules/`uname -r`/build M=`pwd`/modules clean
+
 

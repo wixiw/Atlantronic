@@ -15,6 +15,9 @@
 
 #include "init.h"
 
+//Module initialization feedback
+#define MODULE_INIT_SUCCESS 0
+
 // macro pour optimiser les fonctions d'init en fonction de la taille
 #define __OPTIMIZE_SIZE__ __attribute__((optimize("-Os")))
 #define __OPTIMIZE_ZERO__ __attribute__((optimize("-O0")))
@@ -32,6 +35,7 @@ typedef void (*exitcall_t)();
 #define module_exit(fn, lv) \
 	static const exitcall_t __exitcall_##fn __attribute__((used)) \
 	__attribute__((__section__(".exitcall.exit." lv))) = fn
+
 
 //! Fonction d'initialisation des modules
 //! Les modules sont initialisés dans l'ordre

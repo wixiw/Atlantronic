@@ -10,6 +10,7 @@
 #include "components/log/log.h"
 #include "components/led/led.h"
 #include "components/power/power.h"
+#include "master/uiMiddleware.h"
 #include "os/os.h"
 
 
@@ -20,7 +21,8 @@ using namespace arp_stm32;
 uint32_t end_match_duration = 0; //!< duree du match en ms
 
 static void end_task(void *arg);
-volatile int end_match;
+volatile bool end_match;
+volatile bool begin_match;
 Signal endSignal;
 
 static int end_module_init()
@@ -35,14 +37,14 @@ static int end_module_init()
 		return ERR_INIT_END;
 	}
 
-	return 0;
+	return MODULE_INIT_SUCCESS;
 }
 
 module_init(end_module_init, INIT_END);
 
 void end_cmd_set_time(uint32_t time)
 {
-	if( ! getGo() )
+	if( !begin_match )
 	{
 		end_match_duration = time;
 
@@ -50,6 +52,10 @@ void end_cmd_set_time(uint32_t time)
 			log_format(LOG_INFO, "duree du match => %d ms", (int)end_match_duration);
 		else
 			log_format(LOG_INFO, "duree du match => no limit");
+	}
+	else
+	{
+		log_format(LOG_ERROR, "Can't reconfigure match duration");
 	}
 }
 
@@ -67,14 +73,26 @@ static void end_task(void *arg)
 {
 	(void) arg;
 
-	gpio_wait_go();
+	//Blocking call until the math starts
+	ui_waitForMatchStart();
+
+	begin_match = 1;
+
+	//Propagate event to master
 	EventMessage msgBegin(EVT_INFORM_START_MATCH);
 	ArdCom::getInstance().send(msgBegin);
 
+	//Inform user
+	ui_matchRuning();
+
+	//If a match duration is set, wait until the timeout
 	if( end_match_duration )
 	{
-		vTaskDelay(end_match_duration);
+		portTickType lastWakeTime = systick_get_match_begin_tickcount();
+		portTickType periodInMs = ms_to_tick(end_match_duration);
+		vTaskDelayUntil( &lastWakeTime, periodInMs );
 	}
+	//else wait a signal to trigger the match end
 	else
 	{
 		endSignal.wait();
@@ -82,9 +100,12 @@ static void end_task(void *arg)
 
 	end_match = 1;
 
-	setLed(0x00);
+	//Propagate event to master
 	EventMessage msgEnd(EVT_INFORM_END_MATCH);
 	ArdCom::getInstance().send(msgEnd);
+
+	//Inform user
+	ui_matchEnded();
 
 	power_set(POWER_OFF_END_MATCH);
 	log(LOG_INFO, "Fin du match");
@@ -93,7 +114,12 @@ static void end_task(void *arg)
 	vTaskSuspend(0);
 }
 
-int isMatchEnded()
+bool isMatchEnded()
 {
 	return end_match;
+}
+
+bool isMatchBegun()
+{
+	return begin_match;
 }

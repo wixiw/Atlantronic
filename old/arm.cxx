@@ -5,8 +5,6 @@
 #define WEAK_ARM
 #include "arm.h"
 #include "os/os.h"
-#include "kernel/task.h"
-#include "kernel/semphr.h"
 #include "core/module.h"
 #include "os/systick.h"
 #include "core/rcc.h"

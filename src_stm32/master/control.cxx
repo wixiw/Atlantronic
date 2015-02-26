@@ -4,19 +4,18 @@
 #include "core/boot_signals.h"
 #include "core/adc.h"
 #include "core/gpio.h"
-
 #include "com/msgs/StatusMessage.hpp"
 #include "com/stack_com/heartbeat.h"
 #include "com/stack_com/ArdCom.hpp"
-
 #include "components/gyro/gyro.h"
 #include "components/localization/location.h"
 #include "components/log/log.h"
 #include "components/log/fault.h"
 #include "components/pump/pump.h"
 #include "components/power/power.h"
-
 #include "os/os.h"
+#include "master/color.h"
+
 
 #include "control.h"
 #include "end.h"
@@ -39,7 +38,7 @@ static int control_module_init()
 		return ERR_INIT_CONTROL;
 	}
 
-	return 0;
+	return MODULE_INIT_SUCCESS;
 }
 
 module_init(control_module_init, INIT_CONTROL);
@@ -72,7 +71,7 @@ static void control_task(void* /*arg*/)
 		control_usb_data.iPwm[2] = adc_filtered_data.i[2];
 		control_usb_data.iPwm[3] = adc_filtered_data.i[3];
 		control_usb_data.pumpState = pump_update();
-		control_usb_data.color = getcolor();
+		control_usb_data.color = getColor();
 		control_usb_data.power_state = power_get();
 		dynamixel_update_usb_data(&control_usb_data.dynamixel);
 

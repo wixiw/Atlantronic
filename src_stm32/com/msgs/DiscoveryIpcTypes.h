@@ -38,7 +38,7 @@ typedef enum
     EVT_REBOOT,				//sended by x86, request stm32 soft reboot
     EVT_ENABLE_HEARTBEAT,	//sended by x86, to enable the x86 life check
     EVT_LIST_TASKS,			//sended by x86, for debug purpose, display tasks data
-    EVT_X86_INIT_DONE,		//sended by x86, to inform strat is deployed and ready
+    EVT_X86_SELF_TEST_BEGIN,		//sended by x86, to inform strat is deployed and ready
     EVT_SCAN_DYNAMIXELS, 	//sended by x86, debug only
     EVT_REQUEST_END_MATCH,  //sended by x86, request the end of match
     EVT_X86_READY_FOR_MATCH,//sended by x86, when the strat is ready for the match

@@ -32,7 +32,9 @@
 using namespace arp_stm32;
 
 static char usb_ptask_buffer[400];
-static unsigned char x86Connected = 0;
+static bool x86Connected = false;
+static bool x86WaitingSelfTest = false;
+static bool x86ReadyForMatch = false;
 
 static EventCallback evtCallbacks[EVT_NB];
 
@@ -41,9 +43,30 @@ void registerEventCallback(EventId id, EventCallback fct)
 	evtCallbacks[id] = fct;
 }
 
-unsigned char isX86Connected()
+//TODO a deplacer dans master
+bool isX86Connected()
 {
 	return x86Connected;
+}
+
+bool isX86ReadyForSelfTest()
+{
+	return x86WaitingSelfTest;
+}
+
+void setX86ReadyForSelfTest()
+{
+	x86WaitingSelfTest = true;
+}
+
+bool isX86ReadyForMatch()
+{
+	return x86ReadyForMatch;
+}
+
+void setX86ReadyForMatch()
+{
+	x86ReadyForMatch = true;
 }
 
 int deserialize_ard(CircularBuffer * const buffer)
@@ -156,7 +179,7 @@ void msgCb_configuration(Datagram& dtg)
 	start_all_modules();
 
 	//Publish ready
-	x86Connected = 1; //TODO toujours d'actualite ?
+	x86Connected = 1;
 	EventMessage evt(EVT_INFORM_READY);
 	ArdCom::getInstance().send(evt);
 }
@@ -191,14 +214,16 @@ void usb_ard_init()
 		evtCallbacks[i] = NULL;
 	}
 
+	//TODO verifier connection avec master...
+
 	//Register Event callbacks
 	registerEventCallback(EVT_LIST_TASKS, evtCb_ptaskRequest);
 	registerEventCallback(EVT_REBOOT,  evtCb_reboot);
 	registerEventCallback(EVT_ENABLE_HEARTBEAT,  heartbeat_enable);
-	registerEventCallback(EVT_X86_INIT_DONE, led_inform_x86_ready);
+	registerEventCallback(EVT_X86_SELF_TEST_BEGIN, setX86ReadyForSelfTest);
 	registerEventCallback(EVT_SCAN_DYNAMIXELS, dynamixel_cmd_scan);
 	registerEventCallback(EVT_REQUEST_END_MATCH, end_quit_match);
-	registerEventCallback(EVT_X86_READY_FOR_MATCH, gpio_next_go_is_match_begin);
+	registerEventCallback(EVT_X86_READY_FOR_MATCH, setX86ReadyForMatch);
 	com.registerMsgCallback(MSG_EVENT, msgCb_event);
 
 	//Register other messages

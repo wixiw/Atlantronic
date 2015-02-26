@@ -6,6 +6,7 @@
 //! @author Atlantronic
 #ifndef LINUX
 #include "core/cpu/cpu.h"
+#include "portmacro.h"
 #endif
 #include <stdint.h>
 
@@ -35,6 +36,9 @@ struct systime systick_get_time_from_isr(void);
 
 //!< recuperation du temps depuis le debut du match
 struct systime systick_get_match_time(void);
+
+//!< récupération du tickcount de début de match
+portTickType systick_get_match_begin_tickcount(void);
 
 //!< enregistrement du temps du debut du match (si match non débuté)
 void systick_start_match_from_isr(void);
