@@ -11,8 +11,11 @@
 #ifndef MASTER_H_
 #define MASTER_H_
 
+#include "os/systime.h"
+
 typedef enum
 {
+	MASTER_STATE_WAITING_START_IN,
 	MASTER_STATE_WAITING_COLOR_CHOICE,
 	MASTER_STATE_WAIT_AU_UP,
 	MASTER_STATE_UNCONFIGURED,
@@ -25,6 +28,24 @@ typedef enum
 	MASTER_STATE_MATCH_ENDED,
 	MASTER_STATE_MAX,
 } eMasterState;
+
+struct control_usb_data
+{
+	struct systime current_time;
+	uint32_t match_time_elapsed; //in ms
+	uint32_t match_time_togo;   //in ms
+	int16_t raw_data_gyro;
+	uint32_t gpio;
+	float omega_gyro;
+	float pos_theta_gyro_euler;
+	float pos_theta_gyro_simpson;
+	float vBat;
+	float iPwm[4];
+	uint8_t pumpState;
+	uint8_t color;
+	uint32_t power_state;
+	//struct dynamixel_usb_data dynamixel; TODO a remettre en rangeant mieux la structure de donnee e dynamixel
+} __attribute__((packed));
 
 
 #endif /* MASTER_H_ */

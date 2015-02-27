@@ -9,7 +9,7 @@
 #define STATUSMESSAGE_HPP_
 
 #include "com/stack_com/IpcMsg.hpp"
-#include "master/control.h"
+#include "master/master.h"
 
 namespace arp_stm32
 {

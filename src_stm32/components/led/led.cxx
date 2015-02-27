@@ -3,7 +3,7 @@
 #include "os/os.h"
 #include "led.h"
 #include "core/gpio.h"
-#include "master/color.h"
+#include "components/robot/color.h"
 
 #define LED_STACK_SIZE           300
 
@@ -16,7 +16,7 @@ static void led_slow_blink(uint32_t maskOn, uint32_t maskOff);
 
 static eLedState led_mode;
 static int led_step;
-const portTickType periodInMs = ms_to_tick(100);
+const portTickType periodInTicks = ms_to_tick(100);
 
 #define LED_CPU_RED      0x00004000
 #define LED_CPU_BLUE     0x00008000
@@ -65,7 +65,7 @@ static int led_module_init(void)
 	}
 
 	setLed( LED_NOTHING);
-	led_mode = LED_MODE_WAIT_X86;
+	led_mode = LED_SHUTDOWN;
 
 	return MODULE_INIT_SUCCESS;
 }
@@ -76,14 +76,16 @@ static void led_task(void *arg)
 {
 	UNUSED(arg);
 
-	portTickType lastWakeTime;
+	portTickType lastWakeTime = xTaskGetTickCount ();
 
 	while(1)
 	{
-		lastWakeTime = xTaskGetTickCount ();
-
 		switch(led_mode)
 		{
+			case LED_MODE_WAIT_START_IN:
+				setLed(LED_EXT_BLUE);
+				break;
+
 			case LED_MODE_WAIT_AU_UP:
 				setLed(LED_EXT_RED);
 				break;
@@ -93,26 +95,26 @@ static void led_task(void *arg)
 				break;
 
 			case LED_MODE_WAIT_COLOR_SELECTION:
-				led_blink(LED_EXT_GREEN | LED_EXT_YELLOW, LED_NOTHING);
+				setLed(LED_EXT_GREEN | LED_EXT_YELLOW, LED_NOTHING);
 				break;
 
 			case LED_MODE_COLOR_SELECTION_PREF:
-				led_blink(LED_EXT_BLUE | LED_EXT_YELLOW, LED_EXT_YELLOW);
+				led_slow_blink(LED_EXT_BLUE | LED_EXT_YELLOW, LED_EXT_BLUE);
 				break;
 
 			case LED_MODE_COLOR_SELECTION_SYM:
-				led_blink(LED_EXT_BLUE | LED_EXT_GREEN, LED_EXT_GREEN);
+				led_slow_blink(LED_EXT_BLUE | LED_EXT_GREEN, LED_EXT_BLUE);
 				break;
 
 			case LED_MODE_COLOR_VALIDATED:
 				if(getColor() == COLOR_PREF)
 				{
-					setLed(LED_EXT_YELLOW);
+					led_blink(LED_EXT_YELLOW, LED_NOTHING);
 					break;
 				}
 				else
 				{
-					setLed(LED_EXT_GREEN);
+					led_blink(LED_EXT_GREEN, LED_NOTHING);
 					break;
 				}
 
@@ -137,13 +139,13 @@ static void led_task(void *arg)
 				if(getColor() == COLOR_PREF)
 				{
 					led_slow_blink(
-							LED_EXT_BLUE | LED_EXT_GREEN | /*LED_EXT_YELLOW | */LED_EXT_ORANGE2 | LED_EXT_RED,
+							LED_EXT_BLUE | LED_EXT_GREEN | LED_EXT_YELLOW | LED_EXT_ORANGE2 | LED_EXT_RED,
 							LED_EXT_BLUE | LED_EXT_YELLOW);
 				}
 				else
 				{
 					led_slow_blink(
-							LED_EXT_BLUE | /*LED_EXT_GREEN | */ LED_EXT_YELLOW | LED_EXT_ORANGE2 | LED_EXT_RED,
+							LED_EXT_BLUE | LED_EXT_GREEN | LED_EXT_YELLOW | LED_EXT_ORANGE2 | LED_EXT_RED,
 							LED_EXT_BLUE |LED_EXT_GREEN);
 				}
 				break;
@@ -163,13 +165,17 @@ static void led_task(void *arg)
 				}
 				break;
 
+			case LED_SHUTDOWN:
+				setLed(LED_NOTHING);
+				break;
+
 			default:
 				setLed(LED_NOTHING);
 				break;
 		}
 
 		led_step++;
-		vTaskDelayUntil( &lastWakeTime, periodInMs );
+		vTaskDelayUntil( &lastWakeTime, periodInTicks );
 	}
 }
 
@@ -228,21 +234,27 @@ static void led_tetris()
 		default:
 			led_step = 0;
 		case 0:
+		case 1:
 			setLed(LED_EXT_RED);
 			break;
-		case 1:
+		case 2:
+		case 3:
 			setLed(LED_EXT_RED | LED_EXT_ORANGE2);
 			break;
-		case 2:
+		case 4:
+		case 5:
 			setLed(LED_EXT_RED | LED_EXT_ORANGE2 | LED_EXT_YELLOW);
 			break;
-		case 3:
+		case 6:
+		case 7:
 			setLed(LED_EXT_RED | LED_EXT_ORANGE2 | LED_EXT_YELLOW | LED_EXT_GREEN);
 			break;
-		case 4:
+		case 8:
+		case 9:
 			setLed(LED_EXT_RED | LED_EXT_ORANGE2 | LED_EXT_YELLOW | LED_EXT_GREEN | LED_EXT_BLUE);
 			break;
-		case 5:
+		case 10:
+		case 11:
 			setLed(0);
 			break;
 	}

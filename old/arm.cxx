@@ -12,7 +12,7 @@
 #include "kernel/driver/usb.h"
 #include "components/dynamixel/dynamixel.h"
 #include "kernel/state_machine/state_machine.h"
-#include "components/power/power.h"
+#include "components/robot/power.h"
 #include "components/pump/pump.h"
 #include <math.h>
 #include <stdlib.h>

@@ -1,3 +1,5 @@
+#define WEAK_POWER
+
 #include "power.h"
 #include "core/gpio.h"
 #include "os/module.h"

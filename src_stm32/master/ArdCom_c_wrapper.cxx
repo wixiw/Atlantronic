@@ -15,7 +15,7 @@
 #include "com/stack_com/ArdCom.hpp"
 #include "com/stack_com/heartbeat.h"
 
-#include "components/power/power.h"
+#include "components/robot/power.h"
 #include "components/dynamixel/dynamixel.h"
 #include "components/gyro/gyro.h"
 #include "components/localization/location.h"
@@ -69,7 +69,7 @@ void setX86ReadyForMatch()
 	x86ReadyForMatch = true;
 }
 
-int deserialize_ard(CircularBuffer * const buffer)
+int usb_received_buffer_CB(CircularBuffer * const buffer)
 {
 	return ArdCom::getInstance().deserialize(buffer);
 }

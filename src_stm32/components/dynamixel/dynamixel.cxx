@@ -8,7 +8,7 @@
 #include "os/rcc.h"
 #include "core/boot_signals.h"
 #include "com/stack_com/ArdCom.hpp"
-#include "components/power/power.h"
+#include "components/robot/power.h"
 #include "components/log/log.h"
 #include "master/end.h"
 

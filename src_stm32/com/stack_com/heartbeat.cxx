@@ -1,5 +1,5 @@
 #define WEAK_USB
-#include "components/power/power.h"
+#include "components/robot/power.h"
 #include "heartbeat.h"
 #include "os/systick.h"
 

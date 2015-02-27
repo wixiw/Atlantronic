@@ -7,6 +7,7 @@
 #include "priority.h"
 #include "systick.h"
 #include "rcc.h"
+#include "core/cpu/cpu.h" //usefull for having "ptasks" command working in gdb, don't ask me why ...
 #include <stdint.h>
 
 #define configUSE_PREEMPTION			1

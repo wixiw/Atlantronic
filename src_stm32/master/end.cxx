@@ -10,7 +10,7 @@
 #include "com/stack_com/ArdCom.hpp"
 #include "components/log/log.h"
 #include "components/led/led.h"
-#include "components/power/power.h"
+#include "components/robot/power.h"
 #include "master/uiMiddleware.h"
 #include "os/os.h"
 #include "end.h"

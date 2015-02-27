@@ -7,9 +7,9 @@
 
 #include "StatusMessage.hpp"
 #include "DiscoveryIpcTypes.h"
-#include "components/power/power.h"
+#include "components/robot/power.h"
 #include "core/gpio.h"
-#include "master/color.h"
+#include "components/robot/color.h"
 
 namespace arp_stm32
 {

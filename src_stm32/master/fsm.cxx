@@ -1,6 +1,11 @@
 #include "fsm.h"
 #include "components/log/log.h"
 
+void no_entry(){};
+void no_run(){};
+void no_exit(){};
+unsigned int no_transition(unsigned int state){return state;};
+
 StateMachine::StateMachine(StateMachineState* States, unsigned int Size)
 {
 	states = States;
@@ -36,7 +41,7 @@ int StateMachine::execute()
 	{
 		currentStateId = wantedStateId;
 		states[currentStateId].exit();
-		log_format(LOG_INFO, "FSM transiting :  from %s to %s", states[wantedStateId].name, states[currentStateId].name);
+		//log_format(LOG_INFO, "FSM transiting :  from %s to %s", states[wantedStateId].name, states[currentStateId].name);
 	}
 
 	return 0;

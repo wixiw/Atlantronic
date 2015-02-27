@@ -23,11 +23,17 @@ static uint8_t color_choice_enable;
 static uint8_t match_start_enable;
 static uint8_t seltTest_start_enable;
 
-static struct systime gpio_color_change_time;
+static struct systime colorSwitch_change_time;
 
 //
 // UI Display
 //
+
+void ui_ubiquityWaitingStartIn()
+{
+	led_setState(LED_MODE_WAIT_START_IN);
+	log(LOG_INFO, "Waiting start to be inserted before beginning");
+}
 
 void ui_ubiquityBooting()
 {
@@ -117,19 +123,25 @@ bool ui_isStartPlugged()
 // UIH
 //
 
+//As there is no debounce on inputs, ensure flags are not set without a start plugged in.s
 void uih_startWithdraw()
 {
 	if( match_start_enable )
 	{
 		systick_start_match_from_isr();
-		matchStartSignal.setFromIsr();
 		match_start_enable = 0;
+		matchStartSignal.setFromIsr();
 	}
 	else if( seltTest_start_enable )
 	{
-		selfTestStartSignal.setFromIsr();
 		seltTest_start_enable = 0;
+		selfTestStartSignal.setFromIsr();
 	}
+	else if( color_choice_enable )
+	{
+		colorConfiguredSignal.setFromIsr();
+	}
+
 }
 
 //This
@@ -193,6 +205,9 @@ static int uimdw_module_init(void)
 
 module_init(uimdw_module_init, INIT_UIMDW);
 
+extern "C"
+{
+
 //Start IT
 void isr_exti3(void)
 {
@@ -202,6 +217,7 @@ void isr_exti3(void)
 	if( EXTI->PR & EXTI_PR_PR3)
 	{
 		EXTI->PR = EXTI_PR_PR3;
+
 		uih_startWithdraw();
 	}
 	portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
@@ -218,10 +234,10 @@ void isr_exti15_10(void)
 		EXTI->PR = EXTI_PR_PR14;
 
 		struct systime t = systick_get_time_from_isr();
-		struct systime dt = timediff(t, gpio_color_change_time);
+		struct systime dt = timediff(t, colorSwitch_change_time);
 		if( dt.ms > 300)
 		{
-			gpio_color_change_time = t;
+			colorSwitch_change_time = t;
 			uih_colorButtonPushed();
 		}
 	}
@@ -241,5 +257,8 @@ void isr_exti15_10(void)
 //
 //	portCLEAR_INTERRUPT_MASK_FROM_ISR(0);
 //}
+
+
+}
 
 

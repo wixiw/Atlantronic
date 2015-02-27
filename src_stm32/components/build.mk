@@ -26,8 +26,9 @@ obj-stm32-stm32_ard += components/localization/vect2.o
 obj-stm32-stm32_ard += components/log/log.o
 #TODO : obj-stm32-stm32_ard += components/log/fault.o (buggé)
 
-#Power
-obj-stm32-stm32_ard += components/power/power.o
+#Robot
+obj-stm32-stm32_ard += components/robot/color.o
+obj-stm32-stm32_ard += components/robot/power.o
 
 #Pump
 obj-stm32-stm32_ard += components/pump/pwm.o

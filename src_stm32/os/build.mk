@@ -9,6 +9,7 @@ obj-stm32-stm32_ard += os/queue.o
 obj-stm32-stm32_ard += os/rcc.o
 obj-stm32-stm32_ard += os/Signal.o
 obj-stm32-stm32_ard += os/systick.o
+obj-stm32-stm32_ard += os/scheduler_module.o
 obj-stm32-stm32_ard += os/tasks.o
 obj-stm32-stm32_ard += os/timers.o
 

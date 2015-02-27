@@ -4,7 +4,7 @@
 
 #include "os/module.h"
 #include "os/rcc.h"
-#include "components/power/power.h"
+#include "components/robot/power.h"
 #include "os/systick.h"
 #include "gpio.h"
 #include "adc.h"

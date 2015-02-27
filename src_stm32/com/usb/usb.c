@@ -49,7 +49,7 @@ static CircularBuffer usb_rx_buffer;      					 // buffer (normal) usb de recept
 static xSemaphoreHandle usb_rx_sem;
 void usb_read_task(void *);
 uint8_t usb_cb_DataOut(void* pdev , uint8_t epnum); //Attention le OUT est veut dire RX, c'est in pour OTG=>stm32
-
+extern int usb_received_buffer_CB(CircularBuffer* buffer);
 
 //
 // ST driver related
@@ -306,7 +306,7 @@ void usb_read_task(void * arg)
 
 		while( circular_getOccupiedRoom(&usb_rx_buffer) > 0)
 		{
-			int readBytes = deserialize_ard(&usb_rx_buffer);
+			int readBytes = usb_received_buffer_CB(&usb_rx_buffer);
 			if( readBytes <= 0 )
 			{
 				//The buffer is not empty, but it doesn't contain a complete datagram

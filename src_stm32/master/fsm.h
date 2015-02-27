@@ -16,10 +16,10 @@ struct StateMachineState
 };
 
 //Default callbacks :
-StateMachineEntry_t no_entry();
-StateMachineRun_t no_run();
-StateMachineExit_t no_exit();
-StateMachineExit_t no_transition();
+void no_entry();
+void no_run();
+void no_exit();
+unsigned int no_transition(unsigned int state);
 
 class StateMachine
 {

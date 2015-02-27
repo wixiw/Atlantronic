@@ -5,13 +5,14 @@
  *      Author: willy
  */
 
-#include "error_hook.h"
 #include "module.h"
 #include "components/log/log.h"
+#include "core/cpu/cpu.h"
+#include "os/os.h"
 
 static int systick_module_init()
 {
-	log(LOG_INFO, "Lancement de l'ordonanceur");
+	//log(LOG_INFO, "Lancement de l'ordonanceur");
 
 	// 4 bits for pre-emption priority, 0 bit sub priority
 	SCB->AIRCR = 0x05FA0300;

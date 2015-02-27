@@ -16,7 +16,8 @@
 
 #define PUMP_SAMPLE_STDDEV              10
 
-uint32_t pump_update() WEAK_PUMP;
+void pumps_update() WEAK_PUMP;
+uint32_t pumps_get_state() WEAK_PUMP;
 
 typedef enum
 {

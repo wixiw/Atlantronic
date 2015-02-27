@@ -19,13 +19,21 @@ Pump pump[PUMP_MAX] =
 	Pump(PWM_4)
 };
 
-uint32_t pump_update()
+void pumps_update()
+{
+	for(int i = 0; i < PUMP_MAX; i++)
+	{
+		pump[i].update();
+	}
+
+}
+
+uint32_t pumps_get_state()
 {
 	uint32_t res = 0;
 
 	for(int i = 0; i < PUMP_MAX; i++)
 	{
-		pump[i].update();
 		res |= (pump[i].isBlocked() << i);
 	}
 
