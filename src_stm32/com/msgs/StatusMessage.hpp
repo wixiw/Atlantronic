@@ -55,8 +55,6 @@ class StatusMessage: public arp_stm32::IpcMsg
         int getRawPowerData() const;
         //in volts
         double getBatteryVoltage() const;
-        int getRawGpioData() const;
-        bool getGpio(uint32_t mask) const;
         bool isPumpBlocked(uint8_t id) const;
         double getMatchTimeElapsed() const;
         double getMatchTimeRemaining() const;

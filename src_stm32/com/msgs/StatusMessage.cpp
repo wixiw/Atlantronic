@@ -112,16 +112,6 @@ double StatusMessage::getBatteryVoltage() const
     return m_data.vBat;
 }
 
-int StatusMessage::getRawGpioData() const
-{
-    return m_data.gpio;
-}
-
-bool StatusMessage::getGpio(uint32_t mask) const
-{
-    return (m_data.gpio & mask) ? true : false;
-}
-
 bool StatusMessage::isPumpBlocked(uint8_t id) const
 {
     return (m_data.pumpState >> id) & 0x01;

@@ -37,6 +37,8 @@ public:
 
 	bool send(arp_stm32::IpcMsg& msg) const;
 
+	bool isConnected() const;
+
 private:
 	ArdCom();
 
@@ -60,6 +62,7 @@ private:
 	uint8_t m_headerBuffer[arp_stm32::HEADER_SIZE];
 	static ArdCom* m_instance;
 	size_t m_resyncMagicByteNb;
+	bool m_isConnected;
 };
 
 #endif /* ARDCOM_H_ */

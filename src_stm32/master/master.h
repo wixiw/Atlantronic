@@ -12,6 +12,8 @@
 #define MASTER_H_
 
 #include "os/systime.h"
+#include "components/dynamixel/dynamixel_types.h"
+#include "com/stack_com/Datagram.hpp"
 
 typedef enum
 {
@@ -34,7 +36,6 @@ struct control_usb_data
 	uint32_t match_time_elapsed; //in ms
 	uint32_t match_time_togo;   //in ms
 	int16_t raw_data_gyro;
-	uint32_t gpio;
 	float omega_gyro;
 	float pos_theta_gyro_euler;
 	float pos_theta_gyro_simpson;
@@ -43,8 +44,12 @@ struct control_usb_data
 	uint8_t pumpState;
 	uint8_t color;
 	uint32_t power_state;
-	//struct dynamixel_usb_data dynamixel; TODO a remettre en rangeant mieux la structure de donnee e dynamixel
+	struct dynamixel_usb_data dynamixel;
 } __attribute__((packed));
 
+
+void setX86ReadyForMatch();
+void master_command(arp_stm32::Datagram& dtg);
+void master_configuration(arp_stm32::Datagram& dtg);
 
 #endif /* MASTER_H_ */

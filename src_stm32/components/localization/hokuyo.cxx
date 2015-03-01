@@ -260,9 +260,12 @@ void Hokuyo::task()
 				callback();
 			}
 
-			// on envoi les donnees par usb pour le debug
-			HokuyoMessage msg(scan);
-			ArdCom::getInstance().send(msg);
+			if( ArdCom::getInstance().isConnected() )
+			{
+				// on envoi les donnees par usb pour le debug
+				HokuyoMessage msg(scan);
+				ArdCom::getInstance().send(msg);
+			}
 		}
 	}
 }

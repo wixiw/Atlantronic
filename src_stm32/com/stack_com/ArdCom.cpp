@@ -33,6 +33,11 @@ ArdCom::~ArdCom() {
 }
 
 
+bool ArdCom::isConnected() const
+{
+	return m_isConnected;
+}
+
 void ArdCom::registerMsgCallback(DiscoveryMsgType id, MsgCallback fct)
 {
 	m_msgCallbacks[id] = fct;
@@ -98,6 +103,8 @@ int ArdCom::waitingPayloadHook(CircularBuffer * const buffer)
 	{
 		log_format(LOG_ERROR, "protocol error, unknown message type=%d.", m_recvDtg.getHeader().type);
 	}
+
+	m_isConnected = true;
 
     m_state = STATE_WAITING_HEADER;
 	return m_recvDtg.getHeader().size;

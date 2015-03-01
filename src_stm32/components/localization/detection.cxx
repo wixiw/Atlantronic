@@ -100,30 +100,33 @@ static void detection_task(void* arg)
 		// attente d'un evenement hokuyo ou sick
 		if( xQueueReceive(detection_queue, &event, portMAX_DELAY) )
 		{
-			//xSemaphoreTake(hokuyo_scan_mutex, portMAX_DELAY);
-			if( event == DETECTION_EVENT_HOKUYO_1 )
+			if( ArdCom::getInstance().isConnected() )
 			{
-				detection_compute(HOKUYO_AVANT);
+				//xSemaphoreTake(hokuyo_scan_mutex, portMAX_DELAY);
+				if( event == DETECTION_EVENT_HOKUYO_1 )
+				{
+					detection_compute(HOKUYO_AVANT);
 
-				//TODO
-				//xSemaphoreGive(hokuyo_scan_mutex);
+					//TODO
+					//xSemaphoreGive(hokuyo_scan_mutex);
 
-				// on envoi les donnees par usb pour le debug
-				OpponentListMsg msg(detection_obj1, detection_num_obj[HOKUYO_AVANT]);
-				ArdCom::getInstance().send(msg);
+					// on envoi les donnees par usb pour le debug
+					OpponentListMsg msg(detection_obj1, detection_num_obj[HOKUYO_AVANT]);
+					ArdCom::getInstance().send(msg);
+				}
+				if( event == DETECTION_EVENT_HOKUYO_2 )
+				{
+					detection_compute(HOKUYO_ARRIERE);
+
+					//TODO
+					//xSemaphoreGive(hokuyo_scan_mutex);
+
+					OpponentListMsg msg(detection_obj2, detection_num_obj[HOKUYO_ARRIERE]);
+					ArdCom::getInstance().send(msg);
+				}
+
+				detection_callback_function();
 			}
-			if( event == DETECTION_EVENT_HOKUYO_2 )
-			{
-				detection_compute(HOKUYO_ARRIERE);
-
-				//TODO
-				//xSemaphoreGive(hokuyo_scan_mutex);
-
-				OpponentListMsg msg(detection_obj2, detection_num_obj[HOKUYO_ARRIERE]);
-				ArdCom::getInstance().send(msg);
-			}
-
-			detection_callback_function();
 		}
 	}
 }

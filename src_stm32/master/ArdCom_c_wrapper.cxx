@@ -7,55 +7,30 @@
 
 #define WEAK_USB
 
-#include "os/module.h"
 #include "core/gpio.h"
-#include "core/boot_signals.h"
 
 #include "com/msgs/DiscoveryIpcMessage.hpp"
 #include "com/stack_com/ArdCom.hpp"
 #include "com/stack_com/heartbeat.h"
 
-#include "components/robot/power.h"
-#include "components/dynamixel/dynamixel.h"
 #include "components/gyro/gyro.h"
-#include "components/localization/location.h"
-#include "components/led/led.h"
 #include "components/log/log.h"
 
 #include "os/os.h"
 #include "priority.h"
 
 #include "ArdCom_c_wrapper.h"
-#include "control.h"
 #include "end.h"
 
 using namespace arp_stm32;
 
 static char usb_ptask_buffer[400];
-static bool x86Connected = false;
-static bool x86ReadyForMatch = false;
 
 static EventCallback evtCallbacks[EVT_NB];
 
 void registerEventCallback(EventId id, EventCallback fct)
 {
 	evtCallbacks[id] = fct;
-}
-
-//TODO a deplacer dans master
-bool isX86Connected()
-{
-	return x86Connected;
-}
-
-bool isX86ReadyForMatch()
-{
-	return x86ReadyForMatch;
-}
-
-void setX86ReadyForMatch()
-{
-	x86ReadyForMatch = true;
 }
 
 int usb_received_buffer_CB(CircularBuffer * const buffer)
@@ -101,78 +76,6 @@ void msgCb_event(Datagram& dtg)
 	}
 }
 
-void msgCb_x86Cmd(Datagram& dtg)
-{
-	X86CmdMsg msg;
-	if( !msg.deserialize(dtg.getPayload()) )
-	{
-		log_format(LOG_ERROR, "protocol error, failed to deserialize x86Cmd Msg.");
-		return;
-	}
-
-	if( msg.powerOn() )
-	{
-		power_clear(POWER_OFF);
-	}
-	else
-	{
-		power_set(POWER_OFF);
-	}
-
-	location_set_position(msg.getPose());
-
-	pump[PUMP_1].set(msg.getPumpCmd(PUMP_1)/100.0f);
-	pump[PUMP_2].set(msg.getPumpCmd(PUMP_2)/100.0f);
-	pump[PUMP_3].set(msg.getPumpCmd(PUMP_3)/100.0f);
-	pump[PUMP_4].set(msg.getPumpCmd(PUMP_4)/100.0f);
-
-	for( int i = 0 ; i < NB_MAX_AX12+NB_MAX_RX24 ; ++i)
-	{
-		struct dynamixel_cmd_param const * const cmd = msg.getDynamixelCmd(i);
-		if( cmd != NULL )
-		{
-			dynamixel_cmd(cmd);
-		}
-	}
-
-	heartbeat_kick();
-
-	//log_format(LOG_INFO, "X86 msg.");
-}
-
-
-void msgCb_configuration(Datagram& dtg)
-{
-	if( x86Connected )
-	{
-		log_format(LOG_ERROR, "protocol error, configuration is already done.");
-		return;
-	}
-
-	//Deserialize the message
-	ConfigurationMsg msg;
-	if( !msg.deserialize(dtg.getPayload()) )
-	{
-		log_format(LOG_ERROR, "protocol error, failed to deserialize Configuration Msg.");
-		return;
-	}
-
-	//Update stm32 modules config from config msg
-	end_cmd_set_time(msg.getMatchDuration());
-	set_control_period(msg.getControlPeriod());
-
-
-	//Start all configured modules
-	log_format(LOG_INFO, "Configuration and version request received, started.");
-	modules_set_start_config(msg.getStartModuleConfig());
-	start_all_modules();
-
-	//Publish ready
-	x86Connected = 1;
-	EventMessage evt(EVT_INFORM_READY);
-	ArdCom::getInstance().send(evt);
-}
-
 void msgCb_gyro(Datagram& dtg)
 {
 	GyroMsg msg;
@@ -203,8 +106,6 @@ void usb_ard_init()
 		evtCallbacks[i] = NULL;
 	}
 
-	//TODO verifier connection avec master...
-
 	//Register Event callbacks
 	registerEventCallback(EVT_LIST_TASKS, evtCb_ptaskRequest);
 	registerEventCallback(EVT_REBOOT,  evtCb_reboot);
@@ -215,7 +116,7 @@ void usb_ard_init()
 	com.registerMsgCallback(MSG_EVENT, msgCb_event);
 
 	//Register other messages
-	com.registerMsgCallback(MSG_X86_CMD, msgCb_x86Cmd);
-	com.registerMsgCallback(MSG_CONFIGURATION, msgCb_configuration);
+	com.registerMsgCallback(MSG_X86_CMD, master_command);
+	com.registerMsgCallback(MSG_CONFIGURATION, master_configuration);
 	com.registerMsgCallback(MSG_GYRO_CMD, msgCb_gyro);
 }
