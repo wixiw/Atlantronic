@@ -30,19 +30,18 @@ int main ( int argc, char *argv[] )
 	cout << "hit enter to start..." << endl;
 	std::cin.getline(line, 100);
 
-	EventMessage msgReboot(EVT_REBOOT);
-	cout << "Reboot request sended." << endl;
-	sendMsg(msgReboot, writeFd);
-	cout << "Waiting reboot for 3s..." << endl;
-	sleep(3);
-	do {writeFd = openFd(argc, argv, O_WRONLY);} while(writeFd <= 0);
-
-	cout << "hit enter to start..." << endl;
-	std::cin.getline(line, 100);
+//	EventMessage msgReboot(EVT_REBOOT);
+//	cout << "Reboot request sended." << endl;
+//	sendMsg(msgReboot, writeFd);
+//	cout << "Waiting reboot for 3s..." << endl;
+//	sleep(3);
+//	do {writeFd = openFd(argc, argv, O_WRONLY);} while(writeFd <= 0);
+//
+//	cout << "hit enter to start..." << endl;
+//	std::cin.getline(line, 100);
 
 	ConfigurationMsg msgConfig;
 	msgConfig.setMatchDuration(5.0);
-	msgConfig.setModuleStartConfig(BOOT_ID_CONTROL, true);
 	msgConfig.setModuleStartConfig(BOOT_ID_DETECTION, true);
 	msgConfig.setModuleStartConfig(BOOT_ID_FAULT, false);    //TODO bugged
 	msgConfig.setModuleStartConfig(BOOT_ID_DYNAMIXEL, true);
@@ -50,11 +49,6 @@ int main ( int argc, char *argv[] )
 	msgConfig.setControlPeriod(200);
 	cout << "Config request sended." << endl;
 	sendMsgWithPause(msgConfig, writeFd);
-
-
-	EventMessage msgx86initOk(EVT_X86_SELF_TEST_BEGIN);
-	cout << "X86 booted event sended." << endl;
-	sendMsgWithPause(msgx86initOk, writeFd);
 
 	EventMessage msgx86readyForMatch(EVT_X86_READY_FOR_MATCH);
 	cout << "Ready for match sended." << endl;

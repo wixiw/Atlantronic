@@ -27,8 +27,11 @@ void ui_ubiquityWaitingStartIn();
 /** Inform the user that the robot is booting */
 void ui_ubiquityBooting();
 
-/** Inform the user that the robot is booting */
+/** Inform the user that the robot is ready for the match */
 void ui_ubiquityReadyForMatch();
+
+/** Inform the user that the robot is waiting match start */
+void ui_ubiquityWaitForMatch();
 
 /** Inform the user that the robot is ready to begin its self tests*/
 void ui_ubiquityReadyForSelfTests();

@@ -26,6 +26,12 @@ volatile bool end_match;
 volatile bool begin_match;
 Signal endSignal;
 
+void end_cmd_set_time(uint32_t time)
+{
+	end_match_duration = time;
+	log_format(LOG_INFO, "Match duration configured to %lu ms.", end_match_duration);
+}
+
 static int end_module_init()
 {
 	end_match = 0;

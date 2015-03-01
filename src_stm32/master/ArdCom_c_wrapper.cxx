@@ -33,7 +33,6 @@ using namespace arp_stm32;
 
 static char usb_ptask_buffer[400];
 static bool x86Connected = false;
-static bool x86WaitingSelfTest = false;
 static bool x86ReadyForMatch = false;
 
 static EventCallback evtCallbacks[EVT_NB];
@@ -47,16 +46,6 @@ void registerEventCallback(EventId id, EventCallback fct)
 bool isX86Connected()
 {
 	return x86Connected;
-}
-
-bool isX86ReadyForSelfTest()
-{
-	return x86WaitingSelfTest;
-}
-
-void setX86ReadyForSelfTest()
-{
-	x86WaitingSelfTest = true;
 }
 
 bool isX86ReadyForMatch()
@@ -220,7 +209,6 @@ void usb_ard_init()
 	registerEventCallback(EVT_LIST_TASKS, evtCb_ptaskRequest);
 	registerEventCallback(EVT_REBOOT,  evtCb_reboot);
 	registerEventCallback(EVT_ENABLE_HEARTBEAT,  heartbeat_enable);
-	registerEventCallback(EVT_X86_SELF_TEST_BEGIN, setX86ReadyForSelfTest);
 	registerEventCallback(EVT_SCAN_DYNAMIXELS, dynamixel_cmd_scan);
 	registerEventCallback(EVT_REQUEST_END_MATCH, end_quit_match);
 	registerEventCallback(EVT_X86_READY_FOR_MATCH, setX86ReadyForMatch);

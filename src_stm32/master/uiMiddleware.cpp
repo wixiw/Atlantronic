@@ -32,15 +32,22 @@ static struct systime colorSwitch_change_time;
 void ui_ubiquityWaitingStartIn()
 {
 	led_setState(LED_MODE_WAIT_START_IN);
-	log(LOG_INFO, "Waiting start to be inserted before beginning");
+	log(LOG_INFO, "Waiting start to be inserted before beginning.");
 }
 
 void ui_ubiquityBooting()
 {
 	led_setState(LED_MODE_WAIT_X86);
+	log(LOG_INFO, "Waiting x86 boot...");
 }
 
 void ui_ubiquityReadyForMatch()
+{
+	led_setState(LED_MODE_READY_MATCH);
+	log(LOG_INFO, "Please insert start for the match.");
+}
+
+void ui_ubiquityWaitForMatch()
 {
 	match_start_enable = 1;
 	led_setState(LED_MODE_WAIT_MATCH);
@@ -51,12 +58,12 @@ void ui_ubiquityReadyForSelfTests()
 {
 	seltTest_start_enable = 1;
 	led_setState(LED_MODE_WAIT_SELF_TEST);
-	log(LOG_INFO, "Waiting self tests");
+	log(LOG_INFO, "Waiting self tests.");
 }
 
 void ui_selfTesting()
 {
-	led_setState(LED_MODE_WAIT_COLOR_SELECTION);
+	led_setState(LED_MODE_SELF_TESTING);
 	log(LOG_INFO, "Self Testing...");
 }
 
@@ -69,7 +76,7 @@ void ui_matchRuning()
 void ui_matchEnded()
 {
 	led_setState(LED_MODE_MATCH_ENDED);
-	log(LOG_INFO, "Match ended");
+	log(LOG_INFO, "Match ended.");
 }
 
 void ui_displayEmergencyStopActive()
@@ -137,7 +144,7 @@ void uih_startWithdraw()
 		seltTest_start_enable = 0;
 		selfTestStartSignal.setFromIsr();
 	}
-	else if( color_choice_enable )
+	else if( color_choice_enable && colorRequest != COLOR_UNKNOWN)
 	{
 		colorConfiguredSignal.setFromIsr();
 	}

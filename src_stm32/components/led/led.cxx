@@ -95,7 +95,7 @@ static void led_task(void *arg)
 				break;
 
 			case LED_MODE_WAIT_COLOR_SELECTION:
-				setLed(LED_EXT_GREEN | LED_EXT_YELLOW, LED_NOTHING);
+				setLed(LED_EXT_GREEN | LED_EXT_YELLOW);
 				break;
 
 			case LED_MODE_COLOR_SELECTION_PREF:
@@ -135,18 +135,27 @@ static void led_task(void *arg)
 				led_two_half_chaser();
 				break;
 
-			case LED_MODE_WAIT_MATCH:
+			case LED_MODE_READY_MATCH:
 				if(getColor() == COLOR_PREF)
 				{
-					led_slow_blink(
-							LED_EXT_BLUE | LED_EXT_GREEN | LED_EXT_YELLOW | LED_EXT_ORANGE2 | LED_EXT_RED,
-							LED_EXT_BLUE | LED_EXT_YELLOW);
+					led_blink(
+							LED_EXT_BLUE | LED_EXT_YELLOW, LED_EXT_BLUE );
 				}
 				else
 				{
-					led_slow_blink(
-							LED_EXT_BLUE | LED_EXT_GREEN | LED_EXT_YELLOW | LED_EXT_ORANGE2 | LED_EXT_RED,
-							LED_EXT_BLUE |LED_EXT_GREEN);
+					led_blink(
+							LED_EXT_BLUE | LED_EXT_GREEN, LED_EXT_BLUE);
+				}
+				break;
+
+			case LED_MODE_WAIT_MATCH:
+				if(getColor() == COLOR_PREF)
+				{
+					led_slow_blink(LED_EXT_YELLOW,	LED_NOTHING);
+				}
+				else
+				{
+					led_slow_blink(LED_EXT_GREEN,	LED_NOTHING);
 				}
 				break;
 

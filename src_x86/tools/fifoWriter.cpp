@@ -260,7 +260,6 @@ int main()
 
             ConfigurationMsg msg;
             msg.setMatchDuration(5.0);
-            msg.setModuleStartConfig( BOOT_ID_CONTROL, true);
             msg.setModuleStartConfig( BOOT_ID_DETECTION, true);
             msg.setModuleStartConfig( BOOT_ID_FAULT, false);//TODO bugged
             msg.setModuleStartConfig( BOOT_ID_DYNAMIXEL, true);

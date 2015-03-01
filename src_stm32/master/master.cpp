@@ -14,6 +14,7 @@
 #include "end.h"
 #include "uiMiddleware.h"
 #include "ArdCom_c_wrapper.h"
+#include "selftests.hpp"
 
 #define MASTER_STACK_SIZE    800
 #define MASTER_PERIOD_MS	 100
@@ -30,7 +31,6 @@ unsigned int master_waitStartIn_transition (unsigned int currentState)
 	}
 }
 
-
 void master_waitColor_entry()
 {
 	eMatchColor color = ui_requestMatchColor();
@@ -46,22 +46,15 @@ unsigned int master_waitAu_transition (unsigned int currentState)
 	}
 	else
 	{
-		if(isX86Connected())
-		{
-			return MASTER_STATE_UNCONFIGURED;
-		}
-		else
-		{
-			return MASTER_STATE_DEPLOYING;
-		}
+		return MASTER_STATE_STM32_SELF_TESTS;
 	}
 }
 
-unsigned int master_deployed_transition (unsigned int currentState)
+unsigned int master_waitEndSelfTestStm32_transition (unsigned int currentState)
 {
-	if( isX86ReadyForSelfTest())
+	if( isSelftestFinished() )
 	{
-		return MASTER_STATE_WAITING_SELF_TEST_BEGIN;
+		return MASTER_STATE_WAITING_SELF_TEST_X86;
 	}
 	else
 	{
@@ -69,23 +62,34 @@ unsigned int master_deployed_transition (unsigned int currentState)
 	}
 }
 
-unsigned int master_beginSelfTest_transition (unsigned int currentState)
+unsigned int master_beginSelfTestX86_transition (unsigned int currentState)
 {
-	UNUSED(currentState);
-	ui_waitForSelfTestStart();
-	return MASTER_STATE_SELF_TESTING;
+	if( isX86Connected() )
+	{
+		return MASTER_STATE_X86_SELF_TESTING;
+	}
+	else
+	{
+		return currentState;
+	}
 }
 
-unsigned int master_endSelfTest_transition (unsigned int currentState)
+unsigned int master_endSelfTestX86_transition (unsigned int currentState)
 {
 	UNUSED(currentState);
-	//TODO verifier que les tests sont faits
-	return MASTER_STATE_PLACING_ROBOT_FOR_MATCH;
-}
-
-unsigned int master_placingRobot_transition (unsigned int currentState)
-{
 	if( isX86ReadyForMatch() )
+	{
+		return MASTER_STATE_WAITING_START_PLUG;
+	}
+	else
+	{
+		return currentState;
+	}
+}
+
+unsigned int master_waitingMatchStartIn_transition (unsigned int currentState)
+{
+	if(ui_isStartPlugged())
 	{
 		return MASTER_STATE_WAITING_MATCH_BEGIN;
 	}
@@ -137,33 +141,28 @@ static StateMachineState master_states[] = {
 				&no_run,
 				&no_exit,
 				&master_waitAu_transition },
-		{ "MASTER_STATE_UNCONFIGURED",
+		{ "MASTER_STATE_STM32_SELF_TESTS",
+				&ui_selfTesting,
+				&selftests_run,
+				&no_exit,
+				&master_waitEndSelfTestStm32_transition },
+		{ "MASTER_STATE_WAITING_SELF_TEST_X86",
 				&ui_ubiquityBooting,
 				&no_run,
 				&no_exit,
-				&master_waitAu_transition },
-		{ "MASTER_STATE_DEPLOYING",
-				&ui_ubiquityBooting,
-				&no_run,
-				&no_exit,
-				&master_deployed_transition},
-		{ "MASTER_STATE_WAITING_SELF_TEST_BEGIN",
-				&ui_ubiquityReadyForSelfTests,
-				&no_run,
-				&no_exit,
-				&master_beginSelfTest_transition},
-		{ "MASTER_STATE_SELF_TESTING",
+				&master_beginSelfTestX86_transition},
+		{ "MASTER_STATE_X86_SELF_TESTING",
 				&ui_selfTesting,
 				&no_run,
 				&no_exit,
-				&master_endSelfTest_transition},
-		{ "MASTER_STATE_PLACING_ROBOT_FOR_MATCH",
-				&ui_selfTesting,
-				&no_run,
-				&no_exit,
-				&master_placingRobot_transition},
-		{ "MASTER_STATE_WAITING_MATCH_BEGIN",
+				&master_endSelfTestX86_transition},
+		{ "MASTER_STATE_WAITING_START_PLUG",
 				&ui_ubiquityReadyForMatch,
+				&no_run,
+				&no_exit,
+				&master_waitingMatchStartIn_transition},
+		{ "MASTER_STATE_WAITING_MATCH_BEGIN",
+				&ui_ubiquityWaitForMatch,
 				&no_run,
 				&no_exit,
 				&master_waitingMatch_transition},
