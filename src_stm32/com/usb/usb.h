@@ -23,18 +23,6 @@ void release_txUsbMutex() WEAK_USB;
 void signal_txUsbMsg() WEAK_USB;
 
 
-//TODO a enlever
-enum
-{
-	USB_DETECTION_DYNAMIC_OBJECT_SIZE1 = 7,
-	USB_DETECTION_DYNAMIC_OBJECT_SIZE2 = 8,
-	USB_DETECTION_DYNAMIC_OBJECT1 = 9,
-	USB_DETECTION_DYNAMIC_OBJECT2 = 10,
-	USB_DATA_MAX = 12,     //!< nombre d'id, laisser en dernier
-};
-
-
-
 #ifdef __cplusplus
 }
 #endif

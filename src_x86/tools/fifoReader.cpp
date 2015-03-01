@@ -92,7 +92,7 @@ begin:
         	}
 
         	case MSG_STATUS:
-        		//cout << "Status message received." << endl;
+        		cout << "Status message received." << endl;
         		break;
 
         	case MSG_X86_CMD:
@@ -106,6 +106,18 @@ begin:
         		{
         			cout << "Failed to deserialize x86cmd message." << endl;
         		}
+        		break;
+        	}
+
+        	case MSG_HOKUYO_SCAN:
+        	{
+        		cout << "Hokuyo scan." << endl;
+        		break;
+        	}
+
+        	case MSG_OPP_LIST:
+        	{
+        		cout << "Opponent List." << endl;
         		break;
         	}
 

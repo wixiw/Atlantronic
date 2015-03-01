@@ -11,11 +11,15 @@
 #include "polyline.h"
 #include "location.h"
 #include "detection.h"
+#include "com/msgs/OpponentListMsg.hpp"
+#include "com/stack_com/ArdCom.hpp"
 #include "table.h"
+
+using namespace arp_stm32;
 
 //! @todo réglage au pif
 #define DETECTION_STACK_SIZE        1024
-#define DETECTION_QUEUE_SIZE          20
+#define DETECTION_QUEUE_SIZE           2
 #define HOKUYO_REG_SEG               200
 #define SIMILARITY_ACCEPTANCE        200
 
@@ -99,55 +103,24 @@ static void detection_task(void* arg)
 			//xSemaphoreTake(hokuyo_scan_mutex, portMAX_DELAY);
 			if( event == DETECTION_EVENT_HOKUYO_1 )
 			{
-		//		struct systime last_time = systick_get_time();
 				detection_compute(HOKUYO_AVANT);
-		//		struct systime current_time = systick_get_time();
-		//		struct systime dt = timediff(current_time, last_time);
-		//		log_format(LOG_INFO, "compute_time : %lu us", dt.ms * 1000 + dt.ns/1000);
 
 				//TODO
 				//xSemaphoreGive(hokuyo_scan_mutex);
 
-				int16_t detect_size = detection_num_obj[HOKUYO_AVANT];
-				usb_add(USB_DETECTION_DYNAMIC_OBJECT_SIZE1, &detect_size, sizeof(detect_size));
-
-				//log_format(LOG_INFO, "%d obj", (int)detection_num_obj);
-				/*for(i = 0 ; i < detection_num_obj; i++)
-				{
-					usb_add(USB_DETECTION_DYNAMIC_OBJECT_POLYLINE, detection_object_polyline[i].pt, sizeof(detection_object_polyline[i].pt[0]) * detection_object_polyline[i].size);
-				}*/
-
-				usb_add(USB_DETECTION_DYNAMIC_OBJECT1, detection_obj1, DETECTION_NUM_OBJECT_USB * sizeof(detection_obj1[0]));
-				/*for(i = 0 ; i < detection_num_obj; i++)
-				{
-					log_format(LOG_INFO, "obj = %d %d", (int)detection_obj[i].x, (int)detection_obj[i].y);
-				}*/
+				// on envoi les donnees par usb pour le debug
+				OpponentListMsg msg(detection_obj1, detection_num_obj[HOKUYO_AVANT]);
+				ArdCom::getInstance().send(msg);
 			}
 			if( event == DETECTION_EVENT_HOKUYO_2 )
 			{
-		//		struct systime last_time = systick_get_time();
 				detection_compute(HOKUYO_ARRIERE);
-		//		struct systime current_time = systick_get_time();
-		//		struct systime dt = timediff(current_time, last_time);
-		//		log_format(LOG_INFO, "compute_time : %lu us", dt.ms * 1000 + dt.ns/1000);
 
 				//TODO
 				//xSemaphoreGive(hokuyo_scan_mutex);
 
-				int16_t detect_size = detection_num_obj[HOKUYO_ARRIERE];
-				usb_add(USB_DETECTION_DYNAMIC_OBJECT_SIZE2, &detect_size, sizeof(detect_size));
-
-				//log_format(LOG_INFO, "%d obj", (int)detection_num_obj);
-				/*for(i = 0 ; i < detection_num_obj; i++)
-				{
-					usb_add(USB_DETECTION_DYNAMIC_OBJECT_POLYLINE, detection_object_polyline[i].pt, sizeof(detection_object_polyline[i].pt[0]) * detection_object_polyline[i].size);
-				}*/
-
-				usb_add(USB_DETECTION_DYNAMIC_OBJECT2, detection_obj2, DETECTION_NUM_OBJECT_USB * sizeof(detection_obj2[0]));
-				/*for(i = 0 ; i < detection_num_obj; i++)
-				{
-					log_format(LOG_INFO, "obj = %d %d", (int)detection_obj[i].x, (int)detection_obj[i].y);
-				}*/
+				OpponentListMsg msg(detection_obj2, detection_num_obj[HOKUYO_ARRIERE]);
+				ArdCom::getInstance().send(msg);
 			}
 
 			detection_callback_function();

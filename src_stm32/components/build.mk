@@ -10,7 +10,7 @@ obj-stm32-stm32_ard += components/gyro/gyro.o
 obj-stm32-stm32_ard += components/led/led.o
 
 #Localisation
-#obj-stm32-stm32_ard += components/localization/detection.o TODO messages non integres sur USB
+obj-stm32-stm32_ard += components/localization/detection.o
 obj-stm32-stm32_ard += components/localization/hokuyo.o
 obj-stm32-stm32_ard += components/localization/hokuyo_tools.o
 obj-stm32-stm32_ard += components/localization/location.o

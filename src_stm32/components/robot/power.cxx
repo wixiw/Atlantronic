@@ -6,7 +6,7 @@
 #include "components/log/log.h"
 #include "components/pump/pwm.h"
 
-int power_state = POWER_ON;
+int power_state = POWER_OFF;
 
 void power_set(int powerEventMask)
 {

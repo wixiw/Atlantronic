@@ -50,6 +50,13 @@ unsigned int master_waitAu_transition (unsigned int currentState)
 	}
 }
 
+void master_selftestStm32_entry()
+{
+	ui_selfTesting();
+	power_clear(POWER_OFF);
+}
+
+
 unsigned int master_waitEndSelfTestStm32_transition (unsigned int currentState)
 {
 	if( isSelftestFinished() )
@@ -142,7 +149,7 @@ static StateMachineState master_states[] = {
 				&no_exit,
 				&master_waitAu_transition },
 		{ "MASTER_STATE_STM32_SELF_TESTS",
-				&ui_selfTesting,
+				&master_selftestStm32_entry,
 				&selftests_run,
 				&no_exit,
 				&master_waitEndSelfTestStm32_transition },

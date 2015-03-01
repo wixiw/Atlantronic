@@ -10,7 +10,6 @@
 
 #include "com/stack_com/IpcMsg.hpp"
 #include "components/localization/detection.h"
-#include <list>
 
 namespace arp_stm32
 {
@@ -18,7 +17,8 @@ namespace arp_stm32
 class OpponentListMsg: public arp_stm32::IpcMsg
 {
     public:
-        OpponentListMsg();
+		OpponentListMsg();
+        OpponentListMsg(detection_object const * const objs, uint8_t const obj_size);
         virtual ~OpponentListMsg();
 
         /**
@@ -41,12 +41,16 @@ class OpponentListMsg: public arp_stm32::IpcMsg
          */
         virtual MsgSize getSize() const;
 
-        std::list<detection_object> const & getOppList() const;
+        detection_object const * getOppList() const;
 
-        void addOpponent(detection_object& opp);
+        /**
+         * Returns false if the list is full.
+         */
+        bool addOpponent(detection_object& opp);
 
     protected:
-        std::list<detection_object> m_oppList;
+        uint8_t m_oppListSize;
+        detection_object m_oppList[DETECTION_NUM_OBJECT];
 };
 
 } /* namespace arp_stm32 */

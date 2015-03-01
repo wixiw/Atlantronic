@@ -60,13 +60,13 @@ int main ( int argc, char *argv[] )
 		X86CmdMsg msgCmd;
 		sendMsg(msgCmd, writeFd);
 
-		if (i % 10 == 0) {
-			EventMessage msgEvt(EVT_LIST_TASKS);
-			sendMsg(msgEvt, writeFd);
-		}
+//		if (i % 10 == 0) {
+//			EventMessage msgEvt(EVT_LIST_TASKS);
+//			sendMsg(msgEvt, writeFd);
+//		}
 		i++;
 		cout << "i=" << i << endl;
-		//usleep(1 * 1E3);
+		usleep(10 * 1E3);
 	}
 }
 

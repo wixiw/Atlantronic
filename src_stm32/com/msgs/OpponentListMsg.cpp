@@ -11,42 +11,49 @@
 namespace arp_stm32
 {
 
-
-using namespace std;
+OpponentListMsg::OpponentListMsg(detection_object const * const objs, uint8_t const obj_size)
+    : IpcMsg()
+	, m_oppListSize(obj_size)
+{
+	memset(m_oppList, 0, DETECTION_NUM_OBJECT);
+	if( obj_size < DETECTION_NUM_OBJECT)
+	{
+		memcpy(m_oppList, objs, obj_size*sizeof(detection_object));
+	}
+}
 
 OpponentListMsg::OpponentListMsg()
-    : IpcMsg()
-    , m_oppList()
-{}
+	: IpcMsg()
+	, m_oppListSize(0)
+{
+	memset(m_oppList, 0, DETECTION_NUM_OBJECT);
+}
 
 OpponentListMsg::~OpponentListMsg(){}
 
 bool OpponentListMsg::serialize(Payload& payload) const
 {
-    MsgSize expectedSize = m_oppList.size() * sizeof(detection_object);
-    if( MSG_MAX_SIZE < expectedSize)
+    if( MSG_MAX_SIZE < getSize())
     {
         payload.second = 0;
         return false;
     }
 
     uint8_t* currentPos = payload.first;
-    list<detection_object>::const_iterator i;
-    detection_object obj;
-    for( i = m_oppList.begin() ; i != m_oppList.end() ; i++)
-    {
-        obj = *i;
-        memcpy(currentPos, &obj, sizeof(detection_object));
-        currentPos += sizeof(detection_object);
-    }
 
-    if(currentPos - payload.first != expectedSize)
+    memcpy(currentPos, &m_oppListSize, sizeof(m_oppListSize));
+    currentPos += m_oppListSize;
+
+	memcpy(currentPos, &m_oppList, m_oppListSize*sizeof(detection_object));
+	currentPos += m_oppListSize*sizeof(detection_object);
+
+    if(currentPos - payload.first != getSize())
     {
         payload.second = 0;
         return false;
     }
 
-    payload.second = expectedSize;
+    payload.second = getSize();
     return true;
 }
 
@@ -58,22 +65,23 @@ bool OpponentListMsg::deserialize(PayloadConst payload)
         //cout << "Size = " << payload.second << " modulo=" << sizeof(detection_object) << " res=" << payload.second % sizeof(detection_object);
         return false;
     }
-    m_oppList.clear();
 
-    int16_t nbOpp = payload.second / sizeof(detection_object);
-    detection_object obj;
-    uint8_t const* currentPos = payload.first;
-    for( int i = 0 ; i < nbOpp ; i++)
-    {
-        memcpy(&obj, currentPos, sizeof(detection_object));
-        m_oppList.push_back(obj);
-        currentPos += sizeof(detection_object);
-    }
+    uint8_t const * currentPos = payload.first;
+
+
+    memcpy(&m_oppListSize, currentPos, sizeof(m_oppListSize));
+    currentPos += m_oppListSize;
+
+
+    memset( m_oppList, 0, DETECTION_NUM_OBJECT);
+
+    memcpy(m_oppList, currentPos, m_oppListSize*sizeof(detection_object));
+    currentPos += m_oppListSize*sizeof(detection_object);
 
     return true;
 }
 
-std::list<detection_object> const & OpponentListMsg::getOppList() const
+detection_object const * OpponentListMsg::getOppList() const
 {
     return m_oppList;
 }
@@ -85,13 +93,21 @@ MsgType OpponentListMsg::getType() const
 
 MsgSize OpponentListMsg::getSize() const
 {
-	//TODO
-	return 0;
+	return sizeof(m_oppListSize) + m_oppListSize * sizeof(detection_object);
 }
 
-void OpponentListMsg::addOpponent(detection_object& opp)
+bool OpponentListMsg::addOpponent(detection_object& opp)
 {
-    m_oppList.push_back(opp);
+	if( m_oppListSize < DETECTION_NUM_OBJECT )
+	{
+		memcpy(&(m_oppList[m_oppListSize]), &opp, sizeof(detection_object));
+		m_oppListSize++;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 } /* namespace arp_stm32 */

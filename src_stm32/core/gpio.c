@@ -53,8 +53,8 @@ static int gpio_module_init(void)
 	gpio_pin_init(GPIOE, 6, GPIO_MODE_IN, GPIO_SPEED_50MHz, GPIO_OTYPE_PP, GPIO_PUPD_UP);  // IN_13
 	gpio_pin_init(GPIOE, 5, GPIO_MODE_IN, GPIO_SPEED_50MHz, GPIO_OTYPE_PP, GPIO_PUPD_UP);  // IN_14
 
-	//TODO c'est moche de piloter ca ici
-	gpio_power_on();
+	//TODO c'est moche de piloter ca ici, ca devrait aller dans le module power
+	gpio_power_off();
 
 	return 0;
 }

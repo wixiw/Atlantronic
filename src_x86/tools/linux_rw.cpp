@@ -30,7 +30,7 @@ void displayMsgSizes()
 	HokuyoMessage msgHky;
 	cout << "HokuyoMessage : \t" << msgHky.getSize() << endl;
 	OpponentListMsg msgOpp;
-	cout << "OpponentListMsg : \t" << msgOpp.getSize() << endl;
+	cout << "OpponentListMsg : \tchanging" << endl;
 	StatusMessage msgStatus;
 	cout << "StatusMessage : \t" << msgStatus.getSize() << endl;
 	VersionMessage msgVersion;
