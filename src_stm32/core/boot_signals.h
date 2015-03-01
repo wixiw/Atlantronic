@@ -25,7 +25,7 @@ void start_module(BootModuleId id);
 void modules_set_start_config(uint8_t config);
 
 //Call this in your startup manager to start all configured modules
-void start_all_modules();
+void start_optionnal_modules();
 
 //Call this to sleep infinitly for debug purposes
 void sleep_and_never_wakeup();

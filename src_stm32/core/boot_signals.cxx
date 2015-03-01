@@ -26,7 +26,7 @@ void modules_set_start_config(uint8_t config)
 	boot_signals_config = config;
 }
 
-void start_all_modules()
+void start_optionnal_modules()
 {
 	for( int id = 0 ; id < BOOT_ID_SIZE ; id++ )
 	{

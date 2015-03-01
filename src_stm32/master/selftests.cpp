@@ -7,9 +7,22 @@
 
 #include "selftests.hpp"
 #include "components/pump/pump.h"
+#include "components/dynamixel/dynamixel.h"
 #include "os/os.h"
 
 static bool selfTestFinished = false;
+
+void setDefaultCmd()
+{
+	for(int i = 0; i < PUMP_MAX; i++)
+	{
+		pump[i].set(0.00);
+	}
+
+	ax12.set_goal_position(2, 0.0);
+	ax12.set_goal_position(3, 0.0);
+	rx24.set_goal_position(2, 0.0);
+}
 
 void selftests_run()
 {
@@ -18,12 +31,14 @@ void selftests_run()
 		pump[i].set(0.40);
 	}
 
+	ax12.set_goal_position(2, 1.0);
+	ax12.set_goal_position(3, 1.0);
+	rx24.set_goal_position(2, 1.0);
+
 	vTaskDelay(ms_to_tick(1000));
 
-	for(int i = 0; i < PUMP_MAX; i++)
-	{
-		pump[i].set(0.00);
-	}
+	//Return to idle state.
+	setDefaultCmd();
 
 	selfTestFinished = true;
 }

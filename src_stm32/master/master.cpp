@@ -32,10 +32,11 @@ using namespace arp_stm32;
 
 
 #define MASTER_STACK_SIZE    800
-#define MASTER_PERIOD_MS	 100
+static portTickType periodInTicks = ms_to_tick(100);
 
 static struct control_usb_data status_msg_data;
 static bool x86ReadyForMatch = false;
+static bool x86SentConfig = false;
 
 bool isX86ReadyForMatch()
 {
@@ -100,7 +101,7 @@ unsigned int master_waitEndSelfTestStm32_transition (unsigned int currentState)
 
 unsigned int master_beginSelfTestX86_transition (unsigned int currentState)
 {
-	if( ArdCom::getInstance().isConnected() )
+	if( x86SentConfig )
 	{
 		return MASTER_STATE_X86_SELF_TESTING;
 	}
@@ -215,6 +216,41 @@ static StateMachineState master_states[] = {
 };
 static StateMachine master_fsm(master_states, MASTER_STATE_MAX);
 
+void master_configuration(Datagram& dtg)
+{
+	if( ArdCom::getInstance().isConnected() )
+	{
+		log_format(LOG_ERROR, "protocol error, configuration is already done.");
+		return;
+	}
+
+	//Deserialize the message
+	ConfigurationMsg msg;
+	if( !msg.deserialize(dtg.getPayload()) )
+	{
+		log_format(LOG_ERROR, "protocol error, failed to deserialize Configuration Msg.");
+		return;
+	}
+
+	//Update stm32 modules config from config msg
+	end_cmd_set_time(msg.getMatchDuration());
+	if( msg.getControlPeriod() )
+	{
+		periodInTicks = ms_to_tick(msg.getControlPeriod());
+	}
+
+	//Start all configured modules
+	log_format(LOG_INFO, "Configuration and version request received, started.");
+	modules_set_start_config(msg.getStartModuleConfig());
+	start_optionnal_modules();
+
+	//Publish ready
+	EventMessage evt(EVT_INFORM_READY);
+	ArdCom::getInstance().send(evt);
+
+	x86SentConfig = true;
+}
+
 void master_sendFeedback()
 {
 	if(ArdCom::getInstance().isConnected())
@@ -240,37 +276,6 @@ void master_sendFeedback()
 		StatusMessage msg(status_msg_data);
 		ArdCom::getInstance().send(msg);
 	}
-}
-
-void master_configuration(Datagram& dtg)
-{
-	if( ArdCom::getInstance().isConnected() )
-	{
-		log_format(LOG_ERROR, "protocol error, configuration is already done.");
-		return;
-	}
-
-	//Deserialize the message
-	ConfigurationMsg msg;
-	if( !msg.deserialize(dtg.getPayload()) )
-	{
-		log_format(LOG_ERROR, "protocol error, failed to deserialize Configuration Msg.");
-		return;
-	}
-
-	//Update stm32 modules config from config msg
-	end_cmd_set_time(msg.getMatchDuration());
-	set_control_period(msg.getControlPeriod());
-
-
-	//Start all configured modules
-	log_format(LOG_INFO, "Configuration and version request received, started.");
-	modules_set_start_config(msg.getStartModuleConfig());
-	start_all_modules();
-
-	//Publish ready
-	EventMessage evt(EVT_INFORM_READY);
-	ArdCom::getInstance().send(evt);
 }
 
 void master_command(Datagram& dtg)
@@ -309,7 +314,8 @@ void master_command(Datagram& dtg)
 
 	heartbeat_kick();
 
-	//log_format(LOG_INFO, "X86 msg.");
+	//Send data to x86
+	master_sendFeedback();
 }
 
 void master_task(void* arg)
@@ -317,7 +323,6 @@ void master_task(void* arg)
 	UNUSED(arg);
 
 	portTickType lastWakeTime;
-	const portTickType periodInTicks = ms_to_tick(MASTER_PERIOD_MS);
 
 	//On laisse un peu de temps à tout le monde pour booter
 	vTaskDelay(ms_to_tick(200));
@@ -331,15 +336,11 @@ void master_task(void* arg)
 		//Execution du step de la machine
 		master_fsm.execute();
 
-		//Send data to x86
-		master_sendFeedback();
-
 		//delai
 		vTaskDelayUntil( &lastWakeTime, periodInTicks );
 	}
 
 }
-
 
 
 static int master_module_init()
