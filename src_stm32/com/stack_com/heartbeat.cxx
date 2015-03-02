@@ -1,32 +1,34 @@
 #define WEAK_USB
-#include "components/robot/power.h"
 #include "heartbeat.h"
 #include "os/systick.h"
-
-#define HEARTBEAT_TIMEOUT                 5000
+#include "os/rcc.h"
 
 static systime heartbeat_last_time;
-static int heartbeat_disabled = 1;
+static uint32_t timeoutInMs = 0;
+
+extern void hearbeat_lost_CB();
 
 void heartbeat_kick()
 {
 	heartbeat_last_time = systick_get_time();
 }
 
-void heartbeat_enable()
+void heartbeat_setTimeout(uint32_t new_timeoutInMs)
 {
-	heartbeat_disabled = 0;
+	timeoutInMs = new_timeoutInMs;
+	heartbeat_kick();
 }
 
 void heartbeat_update()
 {
-	systime t = systick_get_time();
-	if( (t - heartbeat_last_time).ms > HEARTBEAT_TIMEOUT && ! heartbeat_disabled)
+	//Si le timeout est mis à 0 il n'y a pas de verification.
+	if( timeoutInMs )
 	{
-		power_set(POWER_OFF_HEARTBEAT);
-	}
-	else
-	{
-		power_clear(POWER_OFF_HEARTBEAT);
+		systime t = systick_get_time();
+
+		if( timeoutInMs < (t - heartbeat_last_time).ms )
+		{
+			hearbeat_lost_CB();
+		}
 	}
 }

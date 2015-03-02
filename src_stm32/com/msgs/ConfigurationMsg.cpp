@@ -70,6 +70,11 @@ uint8_t ConfigurationMsg::getControlPeriod() const
 	return m_config.control_task_period;
 }
 
+uint8_t ConfigurationMsg::getHeartbeatTimeout() const
+{
+	return m_config.hearbeat_timeout;
+}
+
 void ConfigurationMsg::setMatchDuration(double durationInSeconds)
 {
 	m_config.match_duration = durationInSeconds * 1000;
@@ -87,6 +92,14 @@ void ConfigurationMsg::setControlPeriod(double periodInS)
 		m_config.control_task_period = 255 ;
 	else
 		m_config.control_task_period = periodInS*1000;
+}
+
+void ConfigurationMsg::setHeartbeatTimeout(double timeoutInS)
+{
+	if( timeoutInS > 255 )
+		m_config.hearbeat_timeout = 255;
+	else
+		m_config.hearbeat_timeout = timeoutInS;
 }
 
 } /* namespace arp_stm32 */

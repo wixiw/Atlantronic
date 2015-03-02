@@ -36,7 +36,6 @@ typedef enum
     EVT_INFORM_START_MATCH,	//sended by stm32, match beginning event, see end.cxx
     EVT_INFORM_END_MATCH,	//sended by stm32, match end event, see end.cxx
     EVT_REBOOT,				//sended by x86, request stm32 soft reboot
-    EVT_ENABLE_HEARTBEAT,	//sended by x86, to enable the x86 life check
     EVT_LIST_TASKS,			//sended by x86, for debug purpose, display tasks data
     EVT_SCAN_DYNAMIXELS, 	//sended by x86, debug only
     EVT_REQUEST_END_MATCH,  //sended by x86, request the end of match

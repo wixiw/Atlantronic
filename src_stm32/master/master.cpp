@@ -161,6 +161,14 @@ unsigned int master_matchRunning_transition (unsigned int currentState)
 	}
 }
 
+void master_end_run()
+{
+	//Si le start est pluggué c'est une demande de reset
+	if( ui_isStartPlugged() )
+	{
+		reboot();
+	}
+}
 
 static StateMachineState master_states[] = {
 		{ "MASTER_STATE_WAITING_START_IN",
@@ -210,7 +218,7 @@ static StateMachineState master_states[] = {
 				&master_matchRunning_transition},
 		{ "MASTER_STATE_MATCH_ENDED",
 				&ui_matchEnded,
-				&no_run,
+				&master_end_run,
 				&no_exit,
 				&no_transition}
 };
@@ -247,6 +255,9 @@ void master_configuration(Datagram& dtg)
 	//Publish ready
 	EventMessage evt(EVT_INFORM_READY);
 	ArdCom::getInstance().send(evt);
+
+	//Configure Hearbeat
+	heartbeat_setTimeout(msg.getHeartbeatTimeout()*1000);
 
 	x86SentConfig = true;
 }
@@ -317,6 +328,14 @@ void master_command(Datagram& dtg)
 	//Send data to x86
 	master_sendFeedback();
 }
+
+void hearbeat_lost_CB()
+{
+	ui_heartbeatLost();
+	vTaskDelay(ms_to_tick(5000));
+	reboot();
+}
+
 
 void master_task(void* arg)
 {

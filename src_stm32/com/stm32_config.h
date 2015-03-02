@@ -19,6 +19,7 @@ typedef struct {
 	uint32_t match_duration; //in ms
 	uint8_t start_module_flags;
 	uint8_t control_task_period; //in ms
+	uint8_t hearbeat_timeout; //in s
 
 } __attribute__((packed)) stm32_config ;
 

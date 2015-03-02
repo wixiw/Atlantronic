@@ -85,6 +85,12 @@ void ui_displayEmergencyStopActive()
 	log(LOG_INFO, "AU is pushed !!");
 }
 
+void ui_heartbeatLost()
+{
+	led_setState(LED_MODE_HEARTBEAT_LOST);
+	log(LOG_ERROR, "Hearbeat lost !!");
+}
+
 //
 // UI Request
 //

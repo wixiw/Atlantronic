@@ -48,6 +48,9 @@ void ui_matchEnded();
 /** Inform the user that the Emergency Stop is active */
 void ui_displayEmergencyStopActive();
 
+/** Inform the user that the heartbeat has not been received for long */
+void ui_heartbeatLost();
+
 //
 // Requests : Robot => User => Robot
 //

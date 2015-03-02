@@ -26,19 +26,20 @@ void setDefaultCmd()
 
 void selftests_run()
 {
-	for(int i = 0; i < PUMP_MAX; i++)
-	{
-		pump[i].set(0.40);
-	}
-
-	ax12.set_goal_position(2, 1.0);
-	ax12.set_goal_position(3, 1.0);
-	rx24.set_goal_position(2, 1.0);
+	//TODO
+//	for(int i = 0; i < PUMP_MAX; i++)
+//	{
+//		pump[i].set(0.40);
+//	}
+//
+//	ax12.set_goal_position(2, 1.0);
+//	ax12.set_goal_position(3, 1.0);
+//	rx24.set_goal_position(2, 1.0);
 
 	vTaskDelay(ms_to_tick(1000));
 
 	//Return to idle state.
-	setDefaultCmd();
+	//TODO setDefaultCmd();
 
 	selfTestFinished = true;
 }

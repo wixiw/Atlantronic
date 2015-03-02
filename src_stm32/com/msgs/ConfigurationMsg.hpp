@@ -61,18 +61,32 @@ class ConfigurationMsg: public arp_stm32::IpcMsg
         uint8_t getControlPeriod() const;
 
         /**
+         * Accessor
+         */
+        uint8_t getHeartbeatTimeout() const;
+
+        /**
          * Configure the match duration
          */
         void setMatchDuration(double durationInSeconds);
 
-        //Call this to let a module being started by start_all_modules
-        //You have to provide config, typically from stm32_config structure
+        /**
+         * Call this to let a module being started by start_all_modules
+         * You have to provide config, typically from stm32_config structure
+         */
         void setModuleStartConfig(BootModuleId id, bool doStart);
 
         /**
          * Configure the control task period, in seconds.
          */
         void setControlPeriod(double periodInS);
+
+        /**
+         * Configure the timeout of the communication watchdog
+         * A configuration of 0 mean no hearbeat detection
+         */
+        void setHeartbeatTimeout(double timeoutInS);
+
 
     protected:
         stm32_config m_config;

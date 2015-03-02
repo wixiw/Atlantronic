@@ -44,9 +44,9 @@ int main ( int argc, char *argv[] )
 	msgConfig.setMatchDuration(5.0);
 	msgConfig.setModuleStartConfig(BOOT_ID_DETECTION, true);
 	msgConfig.setModuleStartConfig(BOOT_ID_FAULT, false);    //TODO bugged
-	msgConfig.setModuleStartConfig(BOOT_ID_DYNAMIXEL, true);
 	msgConfig.setModuleStartConfig(BOOT_ID_HOKUYO, true);
-	msgConfig.setControlPeriod(200);
+	msgConfig.setControlPeriod(100);
+	msgConfig.setHeartbeatTimeout(3);
 	cout << "Config request sended." << endl;
 	sendMsgWithPause(msgConfig, writeFd);
 

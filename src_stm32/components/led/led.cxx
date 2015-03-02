@@ -178,6 +178,10 @@ static void led_task(void *arg)
 				setLed(LED_NOTHING);
 				break;
 
+			case LED_MODE_HEARTBEAT_LOST:
+				led_slow_blink(LED_EXT_BLUE | LED_EXT_RED, LED_EXT_RED);
+				break;
+
 			default:
 				setLed(LED_NOTHING);
 				break;

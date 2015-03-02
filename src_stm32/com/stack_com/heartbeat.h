@@ -10,8 +10,10 @@ extern "C" {
 #define WEAK_USB __attribute__((weak, alias("nop_function") ))
 #endif
 
+#include <stdint.h>
+
 void heartbeat_kick() WEAK_USB;
-void heartbeat_enable() WEAK_USB;
+void heartbeat_setTimeout(uint32_t new_timeoutInMs) WEAK_USB;
 void heartbeat_update() WEAK_USB;
 
 

@@ -109,7 +109,6 @@ void usb_ard_init()
 	//Register Event callbacks
 	registerEventCallback(EVT_LIST_TASKS, evtCb_ptaskRequest);
 	registerEventCallback(EVT_REBOOT,  evtCb_reboot);
-	registerEventCallback(EVT_ENABLE_HEARTBEAT,  heartbeat_enable);
 	registerEventCallback(EVT_SCAN_DYNAMIXELS, dynamixel_cmd_scan);
 	registerEventCallback(EVT_REQUEST_END_MATCH, end_quit_match);
 	registerEventCallback(EVT_X86_READY_FOR_MATCH, setX86ReadyForMatch);
