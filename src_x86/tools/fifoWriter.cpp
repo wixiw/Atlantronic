@@ -11,7 +11,6 @@
 #include <unistd.h>
 #include <iostream>
 #include <string.h>
-#include "core/boot_signals.h"
 #include "com/stack_com/IpcHeader.hpp"
 #include "com/msgs/DiscoveryIpcMessage.hpp"
 
@@ -260,9 +259,7 @@ int main()
 
             ConfigurationMsg msg;
             msg.setMatchDuration(5.0);
-            msg.setModuleStartConfig( BOOT_ID_DETECTION, true);
-            msg.setModuleStartConfig( BOOT_ID_FAULT, false);//TODO bugged
-            msg.setModuleStartConfig( BOOT_ID_HOKUYO, true);
+            msg.setHokuyoDebug();
             msg.setControlPeriod(200);
 
             Payload payload;

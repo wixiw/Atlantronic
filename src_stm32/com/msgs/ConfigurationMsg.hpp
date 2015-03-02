@@ -10,7 +10,6 @@
 
 #include "com/stack_com/IpcMsg.hpp"
 #include "com/stm32_config.h"
-#include "core/boot_id.h"
 
 namespace arp_stm32
 {
@@ -53,7 +52,7 @@ class ConfigurationMsg: public arp_stm32::IpcMsg
         /**
          * Accessor
          */
-        uint8_t getStartModuleConfig() const;
+        bool isHokuyoDebug() const;
 
         /**
          * Accessor
@@ -71,10 +70,9 @@ class ConfigurationMsg: public arp_stm32::IpcMsg
         void setMatchDuration(double durationInSeconds);
 
         /**
-         * Call this to let a module being started by start_all_modules
-         * You have to provide config, typically from stm32_config structure
+         * Call this to let hokuyo send their raw scan on USB
          */
-        void setModuleStartConfig(BootModuleId id, bool doStart);
+        void setHokuyoDebug();
 
         /**
          * Configure the control task period, in seconds.
@@ -89,6 +87,8 @@ class ConfigurationMsg: public arp_stm32::IpcMsg
 
 
     protected:
+        static const uint8_t HOKUYO_DEBUG =  0X01;
+
         stm32_config m_config;
 };
 

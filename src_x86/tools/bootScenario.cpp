@@ -12,7 +12,6 @@
 #include <iostream>
 #include <string.h>
 #include <stdlib.h>
-#include "core/boot_signals.h"
 #include "com/stack_com/IpcHeader.hpp"
 #include "com/msgs/DiscoveryIpcMessage.hpp"
 #include "linux_rw.hpp"
@@ -42,11 +41,9 @@ int main ( int argc, char *argv[] )
 
 	ConfigurationMsg msgConfig;
 	msgConfig.setMatchDuration(5.0);
-	msgConfig.setModuleStartConfig(BOOT_ID_DETECTION, true);
-	msgConfig.setModuleStartConfig(BOOT_ID_FAULT, false);    //TODO bugged
-	msgConfig.setModuleStartConfig(BOOT_ID_HOKUYO, true);
+	msgConfig.setHokuyoDebug();
 	msgConfig.setControlPeriod(100);
-	msgConfig.setHeartbeatTimeout(3);
+	msgConfig.setHeartbeatTimeout(0);
 	cout << "Config request sended." << endl;
 	sendMsgWithPause(msgConfig, writeFd);
 

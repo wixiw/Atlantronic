@@ -60,9 +60,9 @@ uint32_t ConfigurationMsg::getMatchDuration() const
 	return m_config.match_duration;
 }
 
-uint8_t ConfigurationMsg::getStartModuleConfig() const
+bool ConfigurationMsg::isHokuyoDebug() const
 {
-	return m_config.start_module_flags;
+	return m_config.start_module_flags | HOKUYO_DEBUG;
 }
 
 uint8_t ConfigurationMsg::getControlPeriod() const
@@ -80,10 +80,10 @@ void ConfigurationMsg::setMatchDuration(double durationInSeconds)
 	m_config.match_duration = durationInSeconds * 1000;
 }
 
-void ConfigurationMsg::setModuleStartConfig(BootModuleId id, bool doStart)
+void ConfigurationMsg::setHokuyoDebug()
 {
 	//change the bit at position "id" to be equal to doStart
-	m_config.start_module_flags ^= (-doStart ^ m_config.start_module_flags) & (1 << id);
+	m_config.start_module_flags &= HOKUYO_DEBUG;
 }
 
 void ConfigurationMsg::setControlPeriod(double periodInS)

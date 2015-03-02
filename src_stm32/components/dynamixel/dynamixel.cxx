@@ -6,7 +6,6 @@
 #include "dynamixel.h"
 #include "os/module.h"
 #include "os/rcc.h"
-#include "core/boot_signals.h"
 #include "com/stack_com/ArdCom.hpp"
 #include "components/robot/power.h"
 #include "components/log/log.h"

@@ -70,6 +70,9 @@ class Hokuyo
 		xSemaphoreHandle scan_mutex;
 		struct hokuyo_scan scan;
 
+		//when set to true the hokuyo will send its raw scan on usb
+		void setDebug(bool debug);
+
 	protected:
 		static void task_wrapper(void* arg);
 		void task();
@@ -93,6 +96,8 @@ class Hokuyo
 		enum usart_id usartId;
 		// variable alignee pour le dma
 		uint8_t read_dma_buffer[HOKUYO_SCAN_BUFFER_SIZE] __attribute__ ((aligned (16)));
+
+		bool m_debug;
 };
 
 extern struct Hokuyo hokuyo[HOKUYO_MAX];

@@ -7,7 +7,7 @@
 #include "control.h"
 #include "components/log/log.h"
 
-#define CONTROL_STACK_SIZE       800
+#define CONTROL_STACK_SIZE       200
 
 static uint8_t control_task_period = 10;
 

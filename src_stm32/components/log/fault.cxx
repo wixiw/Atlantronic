@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "gpio.h"
-#include "boot_signals.h"
 #include "com/msgs/FaultMessage.hpp"
 #include "com/stack_com/ArdCom.hpp"
 
@@ -56,8 +55,6 @@ module_init(fault_module_init, INIT_FAULT);
 static void fault_task(void* arg)
 {
 	(void) arg;
-
-	wait_start_signal(BOOT_ID_FAULT);
 
 	//Send message on usb com stack
 	FaultMessage msg(fault_status);

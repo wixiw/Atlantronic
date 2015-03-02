@@ -7,7 +7,7 @@
 #include "os/os.h"
 #include <math.h>
 
-#define SPI_STACK_SIZE             1024
+#define SPI_STACK_SIZE             300
 
 static xSemaphoreHandle spi_sem;
 static xSemaphoreHandle tim_sem;

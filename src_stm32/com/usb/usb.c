@@ -13,7 +13,6 @@
 #include "os/os.h"
 #include "os/module.h"
 #include "core/gpio.h"
-#include "core/boot_signals.h"
 #include "master/ArdCom_c_wrapper.h"
 
 
@@ -42,7 +41,7 @@ uint8_t usb_cb_DataIn(void* pdev , uint8_t epnum); //Attention le IN est veut di
 //
 #define USB_RX_TMP_BUFER_SIZE   4096
 #define USB_RX_CIRCULAR_SIZE    8096
-#define USB_RX_STACK_SIZE      	 800
+#define USB_RX_STACK_SIZE      	1500
 static uint8_t usb_rx_circular_buffer[USB_RX_CIRCULAR_SIZE]; //private buffer should not be accessed directly
 static uint8_t usb_rx_tmp_buffer[USB_RX_TMP_BUFER_SIZE]; 		 // buffer de reception du endpoint il est utilisé par le HW
 static CircularBuffer usb_rx_buffer;      					 // buffer (normal) usb de reception, il est mis à jour par l'IT avec usb_rx_tmp_buffer

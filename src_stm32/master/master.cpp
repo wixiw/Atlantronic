@@ -27,11 +27,10 @@
 #include "components/log/fault.h"
 #include "components/pump/pump.h"
 #include "components/robot/power.h"
-#include "core/boot_signals.h"
 using namespace arp_stm32;
 
 
-#define MASTER_STACK_SIZE    800
+#define MASTER_STACK_SIZE    1500
 static portTickType periodInTicks = ms_to_tick(100);
 
 static struct control_usb_data status_msg_data;
@@ -247,16 +246,22 @@ void master_configuration(Datagram& dtg)
 		periodInTicks = ms_to_tick(msg.getControlPeriod());
 	}
 
+	if( msg.isHokuyoDebug() )
+	{
+		log_format(LOG_INFO, "Hokuyo are configured in debug mode hence sending their data on usb.");
+		hokuyo[HOKUYO_AVANT].setDebug(true);
+		hokuyo[HOKUYO_ARRIERE].setDebug(true);
+	}
+
 	//Start all configured modules
-	log_format(LOG_INFO, "Configuration and version request received, started.");
-	modules_set_start_config(msg.getStartModuleConfig());
-	start_optionnal_modules();
+	log_format(LOG_INFO, "Configuration request received, started.");
 
 	//Publish ready
 	EventMessage evt(EVT_INFORM_READY);
 	ArdCom::getInstance().send(evt);
 
 	//Configure Hearbeat
+	log_format(LOG_INFO, "Heartbeat configured to %d ms.", msg.getHeartbeatTimeout()*1000);
 	heartbeat_setTimeout(msg.getHeartbeatTimeout()*1000);
 
 	x86SentConfig = true;

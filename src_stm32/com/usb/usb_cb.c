@@ -12,8 +12,8 @@
 uint8_t usbd_atlantronic_init(void* pdev , uint8_t cfgidx)
 {
 	(void) cfgidx;
-	DCD_EP_Open(pdev, 0x81, 0x40, USB_OTG_EP_BULK);
-	DCD_EP_Open(pdev, 0x02, 0x40, USB_OTG_EP_BULK);
+	DCD_EP_Open(pdev, USB_TX_EP_ADDR, 0x40, USB_OTG_EP_BULK);
+	DCD_EP_Open(pdev, USB_RX_EP_ADDR, 0x40, USB_OTG_EP_BULK);
 
 	return USBD_OK;
 }
@@ -21,8 +21,8 @@ uint8_t usbd_atlantronic_init(void* pdev , uint8_t cfgidx)
 uint8_t usbd_atlantronic_deinit(void* pdev , uint8_t cfgidx)
 {
 	(void) cfgidx;
-	DCD_EP_Close(pdev, 0x81);
-	DCD_EP_Close(pdev, 0x02);
+	DCD_EP_Close(pdev, USB_TX_EP_ADDR);
+	DCD_EP_Close(pdev, USB_RX_EP_ADDR);
 
 	return USBD_OK;
 }

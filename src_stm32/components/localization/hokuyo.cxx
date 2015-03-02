@@ -2,7 +2,6 @@
 //! @brief Hokuyo module
 //! @author Atlantronic
 
-#include "core/boot_signals.h"
 #include "os/rcc.h"
 #include "com/msgs/HokuyoMessage.hpp"
 #include "com/stack_com/ArdCom.hpp"
@@ -27,7 +26,7 @@ using namespace arp_stm32;
 #define ERR_HOKUYO_BAUD_RATE            0x80
 #define ERR_HOKUYO_LASER_MALFUNCTION   0x100
 
-#define HOKUYO_STACK_SIZE               2048
+#define HOKUYO_STACK_SIZE               1400
 #define HOKUYO_SPEED                  750000
 #define HOKUYO_SPEED_PRE_CONFIGURED
 
@@ -78,6 +77,7 @@ int Hokuyo::init(enum usart_id id, const char* name, int hokuyo_id)
 	scan.id = hokuyo_id;
 	callback = NULL;
 	last_error = 0;
+	m_debug = false;
 
 	portBASE_TYPE err = xTaskCreate(task_wrapper, name, HOKUYO_STACK_SIZE, this, PRIORITY_TASK_HOKUYO, NULL);
 
@@ -104,6 +104,11 @@ void Hokuyo::setPosition(VectPlan pos, int sens)
 void Hokuyo::register_callback(hokuyo_callback _callback)
 {
 	callback = _callback;
+}
+
+void Hokuyo::setDebug(bool debug)
+{
+	m_debug = debug;
 }
 
 void Hokuyo::fault_update(uint32_t err)
@@ -210,8 +215,6 @@ void Hokuyo::task_wrapper(void* arg)
 
 void Hokuyo::task()
 {
-	wait_start_signal(BOOT_ID_HOKUYO);
-
 	uint32_t err;
 	struct systime last_scan_time;
 	struct systime current_time;
@@ -260,7 +263,7 @@ void Hokuyo::task()
 				callback();
 			}
 
-			if( ArdCom::getInstance().isConnected() )
+			if( ArdCom::getInstance().isConnected() && m_debug)
 			{
 				// on envoi les donnees par usb pour le debug
 				HokuyoMessage msg(scan);

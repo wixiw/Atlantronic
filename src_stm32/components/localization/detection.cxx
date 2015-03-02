@@ -2,7 +2,6 @@
 #include "os/module.h"
 #include "os/rcc.h"
 #include "core/gpio.h"
-#include "core/boot_signals.h"
 #include "components/log/log.h"
 #include "hokuyo_tools.h"
 #include "hokuyo.h"
@@ -92,8 +91,6 @@ static void detection_task(void* arg)
 {
 	(void) arg;
 	unsigned char event;
-
-	wait_start_signal(BOOT_ID_DETECTION);
 
 	while(1)
 	{

@@ -36,7 +36,7 @@ namespace arp_stm32
     } __attribute((packed)); //without packed, the struct is aligned on uint16_t.
 
     static const MsgSize HEADER_SIZE = sizeof(IpcHeaderPod);
-    static const MsgSize MSG_MAX_SIZE = 1000; //Take care to accord with USB_RX_BUFER_SIZE in usb.c
+    static const MsgSize MSG_MAX_SIZE = 1420; //Take care to accord with USB_RX_BUFER_SIZE in usb.c
 
     typedef std::pair<uint8_t *, MsgSize> Payload;
     typedef std::pair<uint8_t const * const, MsgSize const> PayloadConst;
