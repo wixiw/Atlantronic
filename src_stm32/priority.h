@@ -35,14 +35,9 @@ enum
 
 // priorites des IT bloquees par l'os
 #define PRIORITY_IRQ_SYSCALL          5
+#define PRIORITY_IRQ_USB              8
 //#define PRIORITY_IRQ_EXTI0            9
 //#define PRIORITY_IRQ_EXTI1            9
-#define PRIORITY_IRQ_EXTI3            9
-#define PRIORITY_IRQ_EXTI9_5          9
-#define PRIORITY_IRQ_EXTI15_10        9
-#define PRIORITY_IRQ_CAN1_SCE        10
-#define PRIORITY_IRQ_CAN1_RX0        10
-#define PRIORITY_IRQ_CAN1_TX         11
 #define PRIORITY_IRQ_USART2          12
 #define PRIORITY_IRQ_DMA1_STREAM5    12
 #define PRIORITY_IRQ_DMA1_STREAM6    12
@@ -62,8 +57,14 @@ enum
 #define PRIORITY_IRQ_DMA2_STREAM0    12
 #define PRIORITY_IRQ_DMA2_STREAM3    12
 #define PRIORITY_IRQ_DMA2_STREAM4    12
-#define PRIORITY_IRQ_USB             14
+#define PRIORITY_IRQ_EXTI3           13
+#define PRIORITY_IRQ_EXTI9_5         13
+#define PRIORITY_IRQ_EXTI15_10       13
+#define PRIORITY_IRQ_CAN1_SCE        14
+#define PRIORITY_IRQ_CAN1_RX0        14
+#define PRIORITY_IRQ_CAN1_TX         14
 #define PRIORITY_IRQ_KERNEL          15
+
 #define PRIORITY_IRQ_PENDSV          PRIORITY_IRQ_KERNEL
 #define PRIORITY_IRQ_SYSTICK         PRIORITY_IRQ_KERNEL
 

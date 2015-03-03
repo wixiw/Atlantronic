@@ -55,6 +55,7 @@ int main ( int argc, char *argv[] )
 	int i = 0;
 	while (1) {
 		X86CmdMsg msgCmd;
+		msgCmd.powerOn(true);
 		sendMsg(msgCmd, writeFd);
 
 //		if (i % 10 == 0) {

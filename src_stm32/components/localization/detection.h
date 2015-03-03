@@ -9,7 +9,7 @@
 #include "vect_pos.h"
 #include "vect_plan.h"
 
-#define DETECTION_NUM_OBJECT         10
+#define DETECTION_NUM_OBJECT         100
 
 enum detection_type
 {

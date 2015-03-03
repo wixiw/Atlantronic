@@ -12,6 +12,6 @@ struct polyline
 {
 	struct vect2* pt;
 	int16_t size;
-};
+} __attribute__((packed));
 
 #endif

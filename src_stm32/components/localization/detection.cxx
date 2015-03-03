@@ -13,6 +13,7 @@
 #include "com/msgs/OpponentListMsg.hpp"
 #include "com/stack_com/ArdCom.hpp"
 #include "table.h"
+#include "os/error_hook.h"
 
 using namespace arp_stm32;
 
@@ -237,8 +238,10 @@ static void detection_remove_static_elements_from_dynamic_list(int id)
 				for(l=1; (l<table_obj[k].size)&&(!similar_static_segment_found); l++)
 				{
 					int32_t similarity = detection_get_segment_similarity(
-						current_dyn_object->pt +j-1, current_dyn_object->pt +j,
-						table_obj[k].pt +l-1, table_obj[k].pt +l);
+						current_dyn_object->pt +j-1,
+						current_dyn_object->pt +j,
+						table_obj[k].pt +l-1,
+						table_obj[k].pt +l);
 
 					if ( similarity < SIMILARITY_ACCEPTANCE)
 					{
@@ -293,6 +296,11 @@ static void detection_remove_static_elements_from_dynamic_list(int id)
 //méthode heuristique pour estimer une resemblance entre deux segments
 static float detection_get_segment_similarity(const vect2* a, const vect2* b, const vect2* m, const vect2* n)
 {
+	ardAssert(NULL != a);
+	ardAssert(NULL != b);
+	ardAssert(NULL != m);
+	ardAssert(NULL != n);
+
 	float similarity = 0;
 //	vect2 ab = b - a;
 //	vect2 mn = n - m;

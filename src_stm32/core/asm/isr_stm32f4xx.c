@@ -6,6 +6,8 @@
 #include "os/os.h"
 #include "priority.h"
 #include "components/log/fault.h"
+#include "os/module.h"
+#include "os/error_hook.h"
 
 struct stack_t
 {
@@ -14,9 +16,9 @@ struct stack_t
 	uint32_t r2;
 	uint32_t r3;
 	uint32_t r12;
-	uint32_t lr;
-	uint32_t pc;
-	uint32_t psr;
+	uint32_t lr; // link register = address of function return
+	uint32_t pc; // program counter
+	uint32_t psr;// program status register
 };
 
 #define SCB_CFSR_MEMMANAG_IACCVIOL        0x01
@@ -329,151 +331,127 @@ static void isr_nmi(void)
 	}
 }
 
-void isr_hard_fault_stack(struct stack_t* fault_stack)
+__OPTIMIZE_ZERO__  void isr_hard_fault_stack(struct stack_t* fault_stack)
 {
-	(void)fault_stack;
-	// regarder fault_stack->pc pour voir d'ou vient le probleme
+	char const * taskName = isr_kill_current_task();
+	UNUSED(fault_stack);
+	UNUSED(taskName);
+	// regarder fault_stack->pc pour voir d'ou vient le probleme, quitte à poser un breakpoint sur l'adresse pour voir le nom de la fonction ("b *0x....")
 
 	if( SCB->CFSR & SCB_CFSR_MEMMANAG_IACCVIOL )
 	{
 		// Instruction access violation
-		// TODO : action ?
-		while( 1 ) ;
+		ardPanicFromIsr();
 	}
 
 	if( SCB->CFSR & SCB_CFSR_MEMMANAG_DACCVIOL )
 	{
 		// Data access violation
-		// TODO : action ?
-		while( 1 ) ;
+		ardPanicFromIsr();
 	}
 
 	if( SCB->CFSR & SCB_CFSR_MEMMANAG_MUNSTKERR)
 	{
 		// Memory Management Fault on unstacking for a return from exception
-		// TODO : action ?
-		while( 1 ) ;
+		ardPanicFromIsr();
 	}
 
 	if( SCB->CFSR & SCB_CFSR_MEMMANAG_MSTKERR )
 	{
 		// Memory Management Fault on stacking for exception entry
-		// TODO : action ?
-		while( 1 ) ;
+		ardPanicFromIsr();
 	}
 
 	if( SCB->CFSR & SCB_CFSR_MEMMANAG_MLSPERR )
 	{
 		// Memory Management Fault during floating point lazy state preservation
-		// TODO : action ?
-		while( 1 ) ;
+		ardPanicFromIsr();
 	}
 
 	if( SCB->CFSR & SCB_CFSR_MEMMANAG_MMARVALID )
 	{
 		// Memory Management Fault Address Register (SCB->MMFAR) valid flag
-		// TODO : action ?
-		while( 1 ) ;
+		ardPanicFromIsr();
 	}
 
 	if( SCB->CFSR & SCB_CFSR_BUS_IBUSERR )
 	{
 		// Instruction bus error
-		// TODO : action ?
-		while( 1 ) ;
+		ardPanicFromIsr();
 	}
 
 	if( SCB->CFSR & SCB_CFSR_BUS_PRECISERR )
 	{
 		// Precise data bus error
-		// TODO : action ?
-		while( 1 ) ;
+		ardPanicFromIsr();
 	}
 
 	if( SCB->CFSR & SCB_CFSR_BUS_IMPRECISERR )
 	{
 		// Imprecise data bus error
-		// TODO : action ?
-		while( 1 ) ;
+		ardPanicFromIsr();
 	}
 
 	if( SCB->CFSR & SCB_CFSR_BUS_UNSTKERR )
 	{
 		// BusFault on unstacking for a return from exception
-		// TODO : action ?
-		while( 1 ) ;
+		ardPanicFromIsr();
 	}
 
 	if( SCB->CFSR & SCB_CFSR_BUS_STKERR )
 	{
 		// BusFault on stacking for exception entry
-		// TODO : action ?
-		while( 1 ) ;
+		ardPanicFromIsr();
 	}
 
 	if( SCB->CFSR & SCB_CFSR_BUS_LSPERR )
 	{
 		// Bus Fault during floating point lazy state preservation
-		// TODO : action ?
-		while( 1 ) ;
+		ardPanicFromIsr();
 	}
 
 	if( SCB->CFSR & SCB_CFSR_BUS_BFARVALID )
 	{
 		// Bus Fault Address Register (SCB->BFAR) valid flag
-		// TODO : action ?
-		while( 1 ) ;
+		ardPanicFromIsr();
 	}
 
 	if( SCB->CFSR & SCB_CFSR_USAGE_UNDEFINSTR )
 	{
 		// Undefined instruction Usage Fault
-		// TODO : action ?
-		while( 1 ) ;
+		ardPanicFromIsr();
 	}
 
 	if( SCB->CFSR & SCB_CFSR_USAGE_INVSTATE )
 	{
 		// Invalid state Usage Fault
-		// TODO : action ?
-		while( 1 ) ;
+		ardPanicFromIsr();
 	}
 
 	if( SCB->CFSR & SCB_CFSR_USAGE_INVPC )
 	{
 		// Invalid PC load Usage Fault, caused by an invalid EXC_RETURN value
-		// TODO : action ?
-		while( 1 ) ;
+		ardPanicFromIsr();
 	}
 
 	if( SCB->CFSR & SCB_CFSR_USAGE_NOCP )
 	{
 		// No coprocessor Usage Fault. The processor does not support coprocessor instructions
-		// TODO : action ?
-		while( 1 ) ;
+		ardPanicFromIsr();
 	}
 
 	if( SCB->CFSR & SCB_CFSR_USAGE_UNALIGNED )
 	{
 		// Unaligned access
-		// on supprime la tache courante
-		SCB->CFSR |= SCB_CFSR_USAGE_UNALIGNED;
-		SCB->HFSR |= SCB_HFSR_FORCED_Msk;
-		const char* taskName = isr_kill_current_task();
-		fault_from_isr(FAULT_UNALIGNED, FAULT_ACTIVE, taskName);
+		ardPanicFromIsr();
 	}
 
 	if( SCB->CFSR & SCB_CFSR_USAGE_DIVBYZERO )
 	{
 		// Divide by zero
-		// on supprime la tache courante
-		SCB->CFSR |= SCB_CFSR_USAGE_DIVBYZERO;
-		SCB->HFSR |= SCB_HFSR_FORCED_Msk;
-		const char* taskName = isr_kill_current_task();
-		fault_from_isr(FAULT_DIVBY0, FAULT_ACTIVE, taskName);
+		ardPanicFromIsr();
 	}
 
-//	isr_pwm_reset();
 }
 
 static void isr_hard_fault(void)
